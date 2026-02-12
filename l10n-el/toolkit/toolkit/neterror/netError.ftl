@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = Αποκλεισμένη σελίδα
 neterror-captive-portal-page-title = Σύνδεση στο δίκτυο
 neterror-dns-not-found-title = Ο διακομιστής δεν βρέθηκε
 neterror-malformed-uri-page-title = Μη έγκυρο URL
+general-body-title = Να προσέχετε. Κάτι δεν πάει καλά.
+problem-with-this-site-title = Φαίνεται ότι υπάρχει κάποιο πρόβλημα με αυτόν τον ιστότοπο
 
 ## Error page actions
 
@@ -43,6 +45,7 @@ neterror-load-error-connection = Αν δεν μπορείτε να φορτώσ�
 neterror-load-error-firewall = Αν ο υπολογιστής ή το δίκτυό σας προστατεύονται από τείχος προστασίας ή διακομιστή μεσολάβησης, βεβαιωθείτε ότι επιτρέπεται στο { -brand-short-name } η πρόσβαση στο διαδίκτυο.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Εάν προσπαθείτε να φορτώσετε μια σελίδα τοπικού δικτύου, ελέγξτε αν έχουν χορηγηθεί στο { -brand-short-name } δικαιώματα τοπικού δικτύου από τις ρυθμίσεις απορρήτου και ασφάλειας του macOS.
+neterror-http-error-page = Ελέγξτε αν έχετε πληκτρολογήσει σωστά τη διεύθυνση του ιστοτόπου.
 neterror-captive-portal = Πρέπει να συνδεθείτε σε αυτό το δίκτυο πριν μπορέσετε να αποκτήσετε πρόσβαση στο διαδίκτυο.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -51,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Εάν πληκτρολογήσατ
 neterror-dns-not-found-hint-try-again = Δοκιμάσετε ξανά αργότερα
 neterror-dns-not-found-hint-check-network = Ελέγξετε τη σύνδεσή σας στο δίκτυο
 neterror-dns-not-found-hint-firewall = Ελέγξετε εάν το { -brand-short-name } έχει άδεια πρόσβασης στο διαδίκτυο (ενδέχεται να έχετε συνδεθεί, αλλά μέσω τείχους προστασίας)
+neterror-dns-not-found-offline-hint-header = <strong>Τι μπορείτε να κάνετε γι' αυτό;</strong>
+neterror-dns-not-found-offline-hint-different-device = Δοκιμάστε να συνδεθείτε από κάποια άλλη συσκευή.
+neterror-dns-not-found-offline-hint-modem = Ελέγξτε το modem ή το router σας.
+neterror-dns-not-found-offline-hint-reconnect = Αποσυνδεθείτε και συνδεθείτε ξανά στο Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -74,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Απροσδόκητο πρόβλη
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = Το { -brand-short-name } δεν μπορεί να προστατεύσει το αίτημά σας για τη διεύθυνση αυτού του ιστοτόπου μέσω της έμπιστης υπηρεσίας ανάλυσης DNS. Αυτό συμβαίνει επειδή:
-neterror-dns-not-found-native-fallback-reason2 = Το { -brand-short-name } δεν μπορεί να προστατεύσει το αίτημά σας για τη διεύθυνση αυτού του ιστοτόπου μέσω του ασφαλούς παρόχου DNS. Αυτό συμβαίνει επειδή:
 neterror-dns-not-found-native-fallback-heuristic = Το DNS μέσω HTTPS έχει απενεργοποιηθεί στο δίκτυό σας.
 neterror-dns-not-found-native-fallback-not-confirmed2 = Το { -brand-short-name } δεν μπόρεσε να συνδεθεί στο { $trrDomain }.
 
@@ -96,10 +102,13 @@ neterror-proxy-resolve-failure-connection = Ελέγξτε αν ο υπολογ�
 neterror-proxy-resolve-failure-firewall = Αν ο υπολογιστής ή το δίκτυό σας προστατεύονται από τείχος προστασίας ή διακομιστή μεσολάβησης, βεβαιωθείτε ότι επιτρέπεται στο { -brand-short-name } η πρόσβαση στο διαδίκτυο.
 neterror-proxy-connect-failure-settings = Ελέγξτε τις ρυθμίσεις διακομιστή μεσολάβησης για να επιβεβαιώσετε ότι είναι σωστές.
 neterror-proxy-connect-failure-contact-admin = Επικοινωνήστε με τον διαχειριστή του δικτύου σας για να βεβαιωθείτε ότι ο διακομιστής μεσολάβησης λειτουργεί.
-neterror-content-encoding-error = Παρακαλώ επικοινωνήστε με τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
-neterror-unsafe-content-type = Παρακαλώ επικοινωνήστε με τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
-neterror-nss-failure-not-verified = Η σελίδα που προσπαθείτε να δείτε δεν μπορεί να εμφανιστεί επειδή δεν ήταν δυνατή η επαλήθευση των ληφθέντων δεδομένων.
-neterror-nss-failure-contact-website = Παρακαλώ επικοινωνήστε με τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
+neterror-content-encoding-error = Επικοινωνήστε με τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
+neterror-unsafe-content-type = Επικοινωνήστε με τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = Το { -brand-short-name } δεν εμπιστεύεται το { $hostname } επειδή η σύνδεση δεν είναι ασφαλής. Δοκιμάστε να αλλάξετε το URL σε HTTPS.
+neterror-nss-failure-not-verified = Δεν είναι δυνατή η εμφάνιση της σελίδας που προσπαθείτε να προβάλετε επειδή δεν ήταν δυνατή η επαλήθευση της αυθεντικότητας των ληφθέντων δεδομένων.
+neterror-nss-failure-contact-website = Επικοινωνήστε με τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-intro = Το { -brand-short-name } ανίχνευσε μια πιθανή απειλή ασφαλείας και δεν συνέχισε στο <b>{ $hostname }</b>. Αν επισκεφθείτε αυτόν τον ιστότοπο, οι εισβολείς ενδέχεται να προσπαθήσουν να υποκλέψουν πληροφορίες, όπως τους κωδικούς πρόσβασης, τα email ή τα στοιχεία των πιστωτικών καρτών σας.
@@ -114,7 +123,7 @@ certerror-expired-cert-intro = Το { -brand-short-name } εντόπισε έν�
 # $mitm (String) - The name of the software intercepting communications between you and the website (or “man in the middle”)
 certerror-mitm = Το <b>{ $hostname }</b> είναι πιθανότατα ένας ασφαλής ιστότοπος, αλλά δεν ήταν δυνατή η δημιουργία ασφαλούς σύνδεσης. Αυτό το ζήτημα προκαλείται από το <b>{ $mitm }</b>, που είναι λογισμικό είτε στον υπολογιστή σας είτε στο δίκτυό σας.
 neterror-corrupted-content-intro = Η σελίδα που προσπαθείτε να δείτε δεν μπορεί να εμφανιστεί επειδή ανιχνεύθηκε σφάλμα κατά τη μετάδοση δεδομένων.
-neterror-corrupted-content-contact-website = Παρακαλώ ενημερώστε τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
+neterror-corrupted-content-contact-website = Επικοινωνήστε με τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
 # Do not translate "SSL_ERROR_UNSUPPORTED_VERSION".
 neterror-sslv3-used = Σύνθετες πληροφορίες: SSL_ERROR_UNSUPPORTED_VERSION
 # Variables:
@@ -127,7 +136,7 @@ neterror-inadequate-security-code = Κωδικός σφάλματος: NS_ERROR_
 # $now (Date) - The current datetime, to be formatted as a date
 neterror-clock-skew-error = Ο υπολογιστής σας νομίζει ότι είναι { DATETIME($now, dateStyle: "medium") }, εμποδίζοντας την ασφαλή σύνδεση του { -brand-short-name }. Για να επισκεφθείτε το <b>{ $hostname }</b>, ενημερώστε το ρολόι του υπολογιστή στην τρέχουσα ημερομηνία, ώρα και ζώνη ώρας από τις ρυθμίσεις συστήματος και, έπειτα, κάντε ανανέωση του <b>{ $hostname }</b>.
 neterror-network-protocol-error-intro = Δεν είναι δυνατή η εμφάνιση αυτής της σελίδας επειδή προέκυψε σφάλμα στο πρωτόκολλο του δικτύου.
-neterror-network-protocol-error-contact-website = Παρακαλώ επικοινωνήστε με τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
+neterror-network-protocol-error-contact-website = Επικοινωνήστε με τους ιδιοκτήτες του ιστοτόπου για να τους ενημερώσετε σχετικά με αυτό το πρόβλημα.
 certerror-expired-cert-second-para = Το πιστοποιητικό του ιστοτόπου έχει πιθανότατα λήξει, εμποδίζοντας την ασφαλή σύνδεση με το { -brand-short-name }. Αν επισκεφθείτε αυτόν τον ιστότοπο, οι εισβολείς ενδέχεται να αποπειραθούν να υποκλέψουν πληροφορίες, όπως τους κωδικούς πρόσβασης, τα email ή τα στοιχεία των πιστωτικών καρτών σας.
 certerror-expired-cert-sts-second-para = Το πιστοποιητικό του ιστοτόπου έχει πιθανότατα λήξει, εμποδίζοντας την ασφαλή σύνδεση με το { -brand-short-name }.
 certerror-what-can-you-do-about-it-title = Τι μπορείτε να κάνετε για αυτό;
@@ -151,7 +160,20 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Αν δεν γνωρίζε�
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = Το <b>{ $hostname }</b> έχει μια πολιτική ασφαλείας, που ονομάζεται HTTP Strict Transport Security (HSTS) και σημαίνει ότι το { -brand-short-name } μπορεί να συνδεθεί μόνο με ασφαλή τρόπο. Δεν μπορείτε να προσθέσετε εξαίρεση για να επισκεφτείτε αυτόν τον ιστότοπο.
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = Ίσως χωρίς σημασία, αφού είναι πιθανό να υπάρχει πρόβλημα με τον ίδιο τον ιστότοπο.
+certerror-blocked-by-corp-headers-description = Μερικές φορές, οι ιστότοποι υλοποιούν προστασίες για τους εαυτούς τους και για άτομα όπως εσείς, ενάντια σε ανεπιθύμητες αλληλεπιδράσεις με άλλους ιστοτόπους.
+certerror-coop-learn-more = Μάθετε περισσότερα για τα κριτήρια COOP (Cross Origin Opener Policies)
+certerror-coep-learn-more = Μάθετε περισσότερα για τα κριτήρια COEP (Cross Origin Embedder Policies)
 # Variables:
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Κωδικός σφάλματος: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = Το { -brand-short-name } δεν μπορεί να δημιουργήσει ασφαλή σύνδεση με τον διακομιστή στο { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Φαίνεται ότι αυτός ο ιστότοπος χρησιμοποιεί παλιό λογισμικό με γνωστά ζητήματα ασφαλείας.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Βεβαιωθείτε ότι χρησιμοποιείτε την πιο πρόσφατη έκδοση του { -brand-short-name }. Επιλέξτε «Βοήθεια» > «Σχετικά με το { -brand-short-name }» στο μενού. Εάν χρησιμοποιείτε το πιο πρόσφατο { -brand-short-name }, το πρόβλημα οφείλεται κατά πάσα πιθανότητα στον ίδιο τον ιστότοπο.

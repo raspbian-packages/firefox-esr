@@ -129,6 +129,3 @@ perftools-presets-media-description2 = Nustatymas „{ -brand-shorter-name }“ 
 perftools-presets-networking-label = Tinklas
 perftools-presets-networking-description = Nustatymas „{ -brand-shorter-name }“ tinklo problemų diagnozavimui.
 perftools-presets-custom-label = Kitas
-
-##
-

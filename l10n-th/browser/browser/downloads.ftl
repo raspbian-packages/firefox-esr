@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = รายละเอียดการดาวน์โหลด
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = ไฟล์จะยังอยู่ในอุปกรณ์ของคุณ
+downloads-private-browsing-message = ใครก็ตามที่ใช้อุปกรณ์นี้สามารถดูรายการดาวน์โหลดได้ แม้ว่าคุณจะปิดหน้าต่างส่วนตัวทั้งหมดก็ตาม
+downloads-private-browsing-delete-button =
+    .label = ลบไฟล์โดยอัตโนมัติ
+    .accesskey = ล
+downloads-private-browsing-accept-button =
+    .label = เข้าใจแล้ว
+    .accesskey = ข
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

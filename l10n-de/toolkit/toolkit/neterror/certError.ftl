@@ -17,7 +17,7 @@ cert-error-trust-untrusted-issuer = Dem Zertifikat wird nicht vertraut, weil dem
 cert-error-trust-signature-algorithm-disabled = Dem Zertifikat wird nicht vertraut, weil es mit einem Signatur-Algorithmus signiert wurde, der deaktiviert wurde, weil er nicht sicher ist.
 cert-error-trust-expired-issuer = Dem Zertifikat wird nicht vertraut, weil das Aussteller-Zertifikat abgelaufen ist.
 cert-error-trust-self-signed = Dem Zertifikat wird nicht vertraut, weil es vom Aussteller selbst signiert wurde.
-cert-error-trust-symantec = Von GeoTrust, RapidSSL, Symantec, Thawte oder VeriSign ausgestellte Zertifikate werden nicht mehr als vertrauenswürdig eingestuft, da sich die ausstellende Organisationen in der Vergangenheit nicht an Sicherheitsregeln gehalten haben.
+cert-error-trust-symantec = Von GeoTrust, RapidSSL, Symantec, Thawte oder VeriSign ausgestellte Zertifikate werden nicht mehr als vertrauenswürdig eingestuft, da sich die ausstellenden Organisationen in der Vergangenheit nicht an Sicherheitsregeln gehalten haben.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 cert-error-trust-certificate-transparency = { -brand-short-name } vertraut { $hostname } nicht, weil es nicht nachweisen konnte, dass es die Anforderungen an die Transparenz öffentlicher Zertifikate erfüllt.
@@ -107,9 +107,35 @@ fp-cert-error-code = Fehlercode: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } vertraut { $hostname } nicht, weil es nicht nachweisen konnte, dass es die Anforderungen an die Transparenz öffentlicher Zertifikate erfüllt.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Wahrscheinlich nichts, da es wahrscheinlich ein Problem mit der Website selbst gibt.
 fp-learn-more-about-secure-connection-failures = Weitere Informationen zu Fehlern bei sicheren Verbindungen
 fp-learn-more-about-cert-issues = Weitere Informationen über diese Art von Zertifikatsproblemen
 fp-learn-more-about-time-related-errors = Weitere Informationen über die Behebung von zeitbezogenen Fehlern
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, da das für { $hostname } bereitgestellte Zertifikat widerrufen wurde und ihm nicht mehr vertraut wird.
+cert-error-bad-signature = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, da die Signatur des Zertifikats für { $hostname } nicht gültig ist.
+cert-error-key-pinning-failure = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, weil das für { $hostname } bereitgestellte Zertifikat einen anderen öffentlichen Schlüssel verwendet als erwartet.
+cert-error-bad-der = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, da das Zertifikat für { $hostname } nicht korrekt kodiert ist.
+cert-error-cert-not-in-name-space = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, weil das für { $hostname } bereitgestellte Zertifikat nicht den Namensbeschränkungen eines Zertifikats entspricht, das es ausgestellt hat.
+cert-error-inadequate-cert-type = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, weil das für { $hostname } bereitgestellte Zertifikat nicht von einem Web-Server verwendet werden darf.
+cert-error-path-len-constraint-invalid = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, weil das für { $hostname } bereitgestellte Zertifikat zu viele Zwischenzertifikate im Pfad zum Stammzertifikat hat.
+cert-error-invalid-key = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, da das Zertifikat für { $hostname } einen ungültigen Schlüssel enthält. Höchstwahrscheinlich ist er zu klein, um sicher zu sein.
+cert-error-unknown-critical-extension = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, da das für { $hostname } bereitgestellte Zertifikat eine nicht unterstützte kritische Erweiterung enthält.
+cert-error-extension-value-invalid = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, da das für { $hostname } bereitgestellte Zertifikat eine ungültige Erweiterung enthält.
+cert-error-untrusted-issuer = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, weil das für { $hostname } bereitgestellte Zertifikat von einer Zertifizierungsstelle ausgestellt wurde, der nicht mehr vertraut wird.
+cert-error-untrusted-cert = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, weil das Zertifikat für { $hostname } als nicht vertrauenswürdig markiert ist.
+cert-error-invalid-integer-encoding = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, da das bereitgestellte Zertifikat für { $hostname } die ungültige Kodierung einer ganzen Zahl enthält. Häufige Ursachen sind negative Seriennummern, negative RSA-Module und Kodierungen, die länger als notwendig sind.
+cert-error-unsupported-keyalg = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, weil das Zertifikat für { $hostname } einen nicht unterstützten Schlüsseltyp hat.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, weil der Zertifizierungsstelle, die das Zertifikat für { $hostname } ausgestellt hat, nicht mehr vertraut wird.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } hat Ihren Besuch auf dieser Website blockiert, da der Signatur-Algorithmus des Zertifikats, das für { $hostname } bereitgestellt wurde, nicht mit dem Signatur-Algorithmus-Feld übereinstimmt.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Dieser Port ist aus Sicherheitsgründen blockiert
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Seite wurde nicht gefunden
+internet-connection-offline-title = Anscheinend gibt es ein Problem mit Ihrer Internetverbindung.
 dns-not-found-trr-only-title2 = Mögliches Sicherheitsrisiko beim Nachschlagen dieser Domain
 dns-not-found-native-fallback-title2 = Mögliches Sicherheitsrisiko beim Nachschlagen dieser Domain
 fileNotFound-title = Fehler: Datei nicht gefunden
@@ -134,6 +161,7 @@ contentEncodingError-title = Content-Encoding-Fehler
 unsafeContentType-title = Unsicherer Dateityp
 netReset-title = Fehler: Verbindung unterbrochen
 netTimeout-title = Fehler: Netzwerk-Zeitüberschreitung
+httpErrorPage-title = Anscheinend gibt es ein Problem mit dieser Website
 serverError-title = Anscheinend gibt es ein Problem mit dieser Website
 unknownProtocolFound-title = Adresse nicht erkannt
 proxyConnectFailure-title = Fehler: Proxy-Server verweigert die Verbindung
@@ -142,6 +170,7 @@ redirectLoop-title = Fehler: Umleitungsfehler
 unknownSocketType-title = Fehler: Unerwartete Antwort
 nssFailure2-title = Fehler: Gesicherte Verbindung fehlgeschlagen
 csp-xfo-error-title = { -brand-short-name } darf diese eingebettete Seite nicht öffnen
+corruptedContentErrorv2-title = Fehler: Beschädigter Inhalt
 corruptedContentError-title = Fehler: Beschädigte Inhalte
 sslv3Used-title = Keine sichere Verbindung möglich
 inadequateSecurityError-title = Diese Verbindung ist nicht sicher
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Erweitert ausblenden
 fp-certerror-override-exception-button = Weiter zu { $hostname } (riskant)
 fp-certerror-intro = { -brand-short-name } hat ein möglicherweise schwerwiegendes Sicherheitsproblem auf <strong>{ $hostname }</strong> entdeckt. Jemand, der sich als die Website ausgibt, könnte versuchen, Dinge wie Kreditkartendaten, Passwörter oder E-Mails zu stehlen.
 fp-certerror-expired-into = { -brand-short-name } hat ein Sicherheitsproblem auf <strong>{ $hostname }</strong> entdeckt. Entweder ist die Website nicht richtig eingerichtet oder die Uhr Ihres Geräts ist auf das falsche Datum/die falsche Uhrzeit eingestellt.
+fp-certerror-transparency-intro = Jemand, der sich als <strong>{ $hostname }</strong> ausgibt, könnte versuchen, Kreditkartendaten, Passwörter oder E-Mails zu stehlen.

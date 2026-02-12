@@ -18,6 +18,10 @@ support-addons-type = Typ
 support-addons-enabled = Povolené
 support-addons-version = Verzia
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Umiestnenie
 legacy-user-stylesheets-title = Staré šablóny so štýlmi používateľa
 legacy-user-stylesheets-enabled = Aktívne
 legacy-user-stylesheets-stylesheet-types = Šablóny so štýlmi
@@ -153,7 +157,7 @@ troubleshoot-mode-title = Diagnostika problémov
 restart-in-troubleshoot-mode-label = Režim riešenia problémov…
 clear-startup-cache-title = Skúste vyčistiť vyrovnávaciu pamäť spustenia
 clear-startup-cache-label = Vymazať vyrovnávaciu pamäť spustenia…
-startup-cache-dialog-title2 = Reštartovať { -brand-short-name } a vyčistiť vyrovnávaciu pamäť spustenia?
+startup-cache-dialog-title2 = Reštartovať { -brand-short-name(case: "acc") } a vyčistiť vyrovnávaciu pamäť spustenia?
 startup-cache-dialog-body2 = Vaše nastavenia a nainštalované rozšírenia to nijako neovplyvní.
 restart-button-label = Reštartovať
 
@@ -184,6 +188,8 @@ media-capabilities-enumerate = Vypísanie databázy
 
 media-codec-support-sw-decoding = Softvérové dekódovanie
 media-codec-support-hw-decoding = Hardvérové dekódovanie
+media-codec-support-sw-encoding = Softvérové kódovanie
+media-codec-support-hw-encoding = Hardvérové kódovanie
 media-codec-support-codec-name = Názov kodeku
 media-codec-support-supported = Podporované
 media-codec-support-unsupported = Nepodporované

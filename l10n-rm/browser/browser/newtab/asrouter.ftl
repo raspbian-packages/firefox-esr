@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } utilisaders
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Sincronisescha tes segnapaginas dapertut.
 cfr-doorhanger-bookmark-fxa-body = Ina buna scuverta! Fa ussa la segira che ti chattas quest segnapagina era sin tes apparats mobils. Creescha in { -fxaccount-brand-name }.
@@ -68,6 +68,11 @@ cfr-doorhanger-bookmark-fxa-link-text = Sincronisar ussa ils segnapaginas…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Buttun per serrar
     .title = Serrar
+fxa-adoption-addresses-backup-title = Far copias da segirezza da las adressas memorisadas
+fxa-adoption-addresses-backup-subtitle = Protegia tias adressas memorisadas cun las sincronisar a moda criptada cun tes apparats.
+fxa-adoption-credit-cards-backup-title = Far copias da segirezza da las metodas da pajament
+fxa-adoption-credit-cards-backup-subtitle = Protegia tias metodas da pajament cun las sincronisar a moda criptada cun tes apparats.
+fxa-adoption-primary-button-label = Crear in conto
 
 ## Protections panel
 
@@ -311,8 +316,11 @@ fxa-menu-message-close-button =
     .title = Serrar
     .aria-label = Serrar
 fxa-menu-message-sign-up-button = Sa registrar
+fxa-menu-message-sign-in-button = S’annunziar
+fxa-menu-message-sync-button = Cumenzar a sincronisar
 fxa-menu-message-sync-devices-primary-text = Sincronisescha tut tes apparats
 fxa-menu-message-sync-devices-secondary-text = Acceda immediatamain a tias datas – sco segnapaginas e pleds-clav – dapertut là nua che ti utiliseschas { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Acceda en in batterdegl a tes segnapaginas, pleds-clav e dapli – sin tut ils apparats connectads cun { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Sincronisescha tut tes apparats
 fxa-menu-message-backup-data-primary-text = Fa copias da segirezza da tias datas dal navigatur
 fxa-menu-message-backup-data-secondary-text = Protegia automaticamain segnapaginas, pleds-clav ed autras infurmaziuns sin tut tes apparats.
@@ -343,3 +351,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Endrizza tes navigatur preferì e spezialisà en la protecziun da datas uschia ch’el è accessibel cun mo in clic. Definescha { -brand-short-name } sco tes navigatur standard per avrir colliaziuns ed al fixescha en tia taskbar.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Endrizza tes navigatur preferì e spezialisà en la protecziun da datas uschia ch’el è accessibel cun mo in clic. Definescha { -brand-short-name } sco tes navigatur standard per avrir colliaziuns ed al fixescha en tia taskbar ed en il menu «Start».
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Actualiseschas ti prest Windows 10?
+windows-10-eos-sync-spotlight-subtitle = Segirescha tes pleds-clav e tes segnapaginas per che ti sajas pront da midar a mintga apparat.
+windows-10-eos-sync-spotlight-primary-label = Segirescha tes { -brand-short-name }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Actualiseschas ti a Windows 11? Betg perda tes segnapaginas e tes pleds-clav.
+windows-10-eos-sync-toast-subtitle = Segirescha tias datas per che { -brand-short-name } saja da tut temp pront per il diever, sin quest computer e sin il proxim.
+windows-10-eos-sync-toast-primary-label = Cumenzar
+windows-10-eos-sync-toast-secondary-label = Ma regurdar pli tard
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } n’è betg preinstallà sco ils navigaturs da concerns da tecnologia. Quai è il punct.
+windows-10-eos-challenger-sync-callout-subtitle = Sche ti segireschas tes segnapaginas e tes pleds-clav da { -brand-product-name }, èsi pli simpel da midar cun il navigatur che ti has tschernì sin tes nov apparat.
+windows-10-eos-challenger-pin-callout-subtitle = Fixescha { -brand-shorter-name } en tia taskbar per ch’il navigatur che ti has tschernì saja adina per mauns cura che ti al dovras.
+windows-10-eos-challenger-sync-primary-button = Segirar { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Fixar { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } blochescha criptominiers, fastizaders da social media ed improntaders.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Fastizaders na pon betg identifitgar tes apparat u ta persequitar en il web – perquai che nus n’als dain betg la pussaivladad.
+windows-10-eos-sync-callout-privacy-screen-2-title = Segirescha tes pleds-clav e tes segnapaginas per tes proxim apparat.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Cun segirar { -brand-shorter-name } daventi simpel da prender tias datas e tes parameters per la protecziun da datas cun tai.
+windows-10-eos-sync-callout-privacy-info-button = Vesair tge che vegn bloccà
+windows-10-eos-callout-addons-title = Emprova supplements: simplas actualisaziuns, gronds resultats
+windows-10-eos-callout-addons-subtitle = Questas extensiuns èn vegnidas selecziunadas per ta gidar a restar productiv, protegì e concentrà.
+windows-10-eos-callout-addons-primary-button = Scuvrir nossa selecziun
+windows-10-eos-sync-callout-addons-title = Betg perda tes supplements cura che ti actualiseschas Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Sincronisescha ussa per ch’ils supplements da { -brand-product-name } stettian adina a disposiziun, era suenter avair midà apparat.
+windows-10-eos-sync-callout-next-button = Enavant
+windows-10-eos-sync-callout-get-started-button = Cumenzar
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Ils tabs verticals e las gruppas da tabs èn qua!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = { -brand-product-name } ha reagì a la gronda dumonda e gist publitgà novas funcziuns che ta pussibiliteschan da navigar a moda effizienta e focussada.
+windows-10-eos-feature-toast-whats-new-button = Scuvrir las novaziuns
+windows-10-eos-feature-toast-dismiss-button = Serrar
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>La protecziun stricta cunter fastizaders po avair per consequenza che paginas na funcziunan betg endretg.</strong> Curregia problems frequents cun debloccar elements essenzials che pudessan cuntegnair fastizaders.
+etp-strict-exceptions-infobar-learn-more = Ulteriuras infurmaziuns
+etp-strict-exceptions-infobar-button = Applitgar las correcturas
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Betg ussa
+    .accesskey = B

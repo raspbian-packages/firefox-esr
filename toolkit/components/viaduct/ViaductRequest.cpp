@@ -127,7 +127,8 @@ nsresult ViaductRequest::LaunchRequest(
                      nullptr, loadFlags);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsCOMPtr<nsIHttpChannel> httpChannel = do_QueryInterface(mChannel);
+  nsCOMPtr<nsIHttpChannel> httpChannel = do_QueryInterface(mChannel, &rv);
+  NS_ENSURE_SUCCESS(rv, rv);
   nsCString method = ConvertMethod(request.method());
   rv = httpChannel->SetRequestMethod(method);
   NS_ENSURE_SUCCESS(rv, rv);
@@ -145,7 +146,7 @@ nsresult ViaductRequest::LaunchRequest(
     const std::string& body = request.body();
     nsCOMPtr<nsIStringInputStream> stream(
         do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID));
-    rv = stream->SetData(body.data(), body.size());
+    rv = stream->CopyData(body.data(), body.size());
     NS_ENSURE_SUCCESS(rv, rv);
     nsCOMPtr<nsIUploadChannel2> uploadChannel = do_QueryInterface(mChannel);
     uploadChannel->ExplicitSetUploadStream(stream, VoidCString(), -1, method,

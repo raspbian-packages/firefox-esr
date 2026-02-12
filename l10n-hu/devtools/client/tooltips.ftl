@@ -10,14 +10,6 @@ learn-more = <span data-l10n-name="link">További tudnivalók</span>
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain why
 ## the property is not applied.
-## Variables:
-##   $property (string) - A CSS property name e.g. "color".
-##   $display (string) - A CSS display value e.g. "inline-block".
-
-
-## In the Rule View when a CSS property cannot be successfully applied we display
-## an icon. When this icon is hovered this message is displayed to explain why
-## the property is not applied.
 ## The variables are all passed from the same place, in `InactiveCssTooltipHelper#getTemplate`
 ## (devtools/client/shared/widgets/tooltip/inactive-css-tooltip-helper.js#95)
 ## Variables:
@@ -42,6 +34,8 @@ inactive-css-not-display-block-on-floated = A <strong>display</strong> értéket
 inactive-css-not-display-block-on-floated-2 = A <strong>display</strong> értéket <strong>{ $display }</strong> értékre változtatta a motor, mert az elem <strong>lebegő</strong>.
 inactive-css-only-non-grid-or-flex-item = A(z) <strong>{ $property }</strong> hatástalan, mert rács- vagy flexibilis elemekre nem használható.
 inactive-css-not-block = A(z) <strong>{ $property }</strong> nincs hatással erre az elemre, mert csak a blokkszintű elemekre vonatkozik.
+inactive-css-not-block-container = A(z) <strong>{ $property }</strong> nincs hatással erre az elemre, mert csak a blokkszintű tárolóelemekre vonatkozik.
+inactive-css-not-block-flex-grid-container = A(z) <strong>{ $property }</strong> nincs hatással erre az elemre, mert csak a blokkszintű, flex és rácsos tárolóelemekre vonatkozik.
 inactive-css-not-floated = A(z) <strong>{ $property }</strong> hatástalan, mert csak a lebegő elemekre vonatkozik.
 inactive-css-property-is-impossible-to-override-in-visited = A(z) <strong>{ $property }</strong> felülbírálása a <strong>:visited</strong> korlátozás miatt lehetetlen.
 inactive-css-position-property-on-unpositioned-box = A(z) <strong>{ $property }</strong> nincs hatással erre az elemre, mivel nem pozicionált elem.
@@ -78,6 +72,7 @@ inactive-css-text-wrap-balance-lines-exceeded =
     }
 inactive-css-text-wrap-balance-fragmented = A(z) <strong>{ $property }</strong> nem befolyásolja ezt az elemet, mert tördelve van, tehát a tartalma több oszlopra vagy oldalra van felosztva.
 inactive-css-no-width-height = A(z) <strong>{ $property }</strong> nem befolyásolja ezt az elemet, mivel a szélessége és magassága nem adható meg.
+inactive-css-no-principal-box = A(z) <strong>{ $property }</strong> nincs hatással erre az elemre, mivel nem hoz létre főmezőt.
 
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain how
@@ -100,6 +95,8 @@ inactive-css-non-replaced-inline-or-table-column-or-column-group-fix = Próbálj
 inactive-css-not-display-block-on-floated-fix = Próbálja meg eltávolítani a <strong>float</strong> tulajdonságot, vagy hozzáadni a <strong>display:block</strong> tulajdonságot. { learn-more }
 inactive-css-only-non-grid-or-flex-item-fix = Próbálja meg módosítani az elem tárolójának <strong>display</strong> tulajdonságát a <strong>flex</strong>, a <strong>grid</strong>, az <strong>inline-flex</strong>, vagy az <strong>inline-grid</strong> értéktől eltérőre, vagy távolítsa el a <strong>float</strong> attribútumot. { learn-more }
 inactive-css-not-block-fix = Próbálja meg ezeket a tulajdonságokat hozzáadni: <strong>display:block</strong> vagy <strong>float:left</strong>. { learn-more }
+inactive-css-not-block-container-fix = Próbálja meg ezeket hozzáadni: <strong>display:block</strong>, <strong>display:inline-block</strong> vagy <strong>display:flow-root</strong>. { learn-more }
+inactive-css-not-block-flex-grid-container-fix = Próbálja meg ezek egyikét hozzáadni: <strong>display:block</strong>, <strong>display:inline-block</strong>, <strong>display:flex</strong>, <strong>display:inline-flex</strong>, <strong>display:grid</strong>, <strong>display:inline-grid</strong> vagy <strong>display:flow-root</strong>. { learn-more }
 inactive-css-not-floated-fix = Próbálja meg a <strong>float</strong> tulajdonságot  a <strong>none</strong> értéktől eltérőre változtatni. { learn-more }
 inactive-css-position-property-on-unpositioned-box-fix = Próbálja meg a <strong>position</strong> tulajdonságot <strong>static</strong> helyett valami másra beállítani. { learn-more }
 inactive-css-only-replaced-elements-fix = Győződjön meg róla, hogy a tulajdonságot egy lecserélt elemhez adta. { learn-more }
@@ -116,6 +113,7 @@ inactive-css-resize-fix = Próbálja meg az <strong>overflow</strong> tulajdons�
 inactive-css-ruby-element-fix = Próbálja módosítani a rubi szöveg <strong>betűméretét</strong>. { learn-more }
 inactive-css-text-wrap-balance-lines-exceeded-fix = Próbálja meg csökkenteni a sorok számát. { learn-more }
 inactive-css-text-wrap-balance-fragmented-fix = Kerülje az elem tartalmának felosztását, például az oszlopok eltávolításával, vagy a <strong>page-break-inside:avoid</strong> használatával. { learn-more }
+inactive-css-no-principal-box-fix = Próbáljon meg hozzáadni egy olyan <strong>display</strong> értéket, amely főmezőt hoz létre, például <strong>block</strong>, <strong>inline-block</strong>, <strong>flex</strong> vagy <strong>grid</strong>. { learn-more }
 
 ## In the Rule View when a CSS property may have compatibility issues with other browsers
 ## we display an icon. When this icon is hovered this message is displayed to explain why

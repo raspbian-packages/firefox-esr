@@ -28,7 +28,3 @@ webext-perms-description-tabs = విహారిణి ట్యాబుల�
 webext-perms-description-tabHide = విహారిణి ట్యాబులను దాచడం చూపించడం
 webext-perms-description-topSites = విహరణ చరిత్రను చూడటం
 webext-perms-description-webNavigation = నావిగేషన్ సమయంలో విహారిణి కార్యకలాపాన్ని చూడటం
-
-## The userScripts permission includes an additional explanation that is
-## displayed prominently near the usual permission description.
-

@@ -107,9 +107,35 @@ fp-cert-error-code = Код ошибки: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } не доверяет { $hostname }, потому что он не смог подтвердить, что он соответствует требованиям прозрачности публичных сертификатов.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Вероятно, ничего, так как, вероятно, возникла проблема с самим сайтом.
 fp-learn-more-about-secure-connection-failures = Подробнее об ошибках защищённого соединения
 fp-learn-more-about-cert-issues = Подробнее о подобных проблемах с сертификатами
 fp-learn-more-about-time-related-errors = Узнайте больше об устранении ошибок, связанных со временем
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } заблокировал ваше посещение этого сайта, так как сертификат, выданный для { $hostname }, был отозван и к нему больше нет доверия.
+cert-error-bad-signature = { -brand-short-name } заблокировал ваш вход на этот сайт, так как подпись на сертификате, предоставленном { $hostname }, недействительна.
+cert-error-key-pinning-failure = { -brand-short-name } заблокировал ваш доступ к этому сайту, так как сертификат, предоставленный для { $hostname }, использует открытый ключ, отличный от ожидаемого.
+cert-error-bad-der = { -brand-short-name } заблокировал ваш вход на этот сайт, так как сертификат, предоставленный { $hostname }, не зашифрован должным образом.
+cert-error-cert-not-in-name-space = { -brand-short-name } заблокировал ваш вход на этот сайт, так как сертификат, выданный для { $hostname }, не соответствует ограничениям на имя выдавшего его сертификата.
+cert-error-inadequate-cert-type = { -brand-short-name } заблокировал ваш вход на этот сайт, так как веб-сервер не может использовать сертификат, выданный для { $hostname }.
+cert-error-path-len-constraint-invalid = { -brand-short-name } заблокировал ваш вход на этот сайт, так как сертификат, выданный для { $hostname }, имеет слишком много промежуточных сертификатов на пути к корневому сертификату.
+cert-error-invalid-key = { -brand-short-name } заблокировал доступ к этому сайту, так как сертификат, выданный для { $hostname }, имеет недействительный ключ. Скорее всего, он слишком короткий для обеспечения безопасности.
+cert-error-unknown-critical-extension = { -brand-short-name } заблокировал доступ к этому сайту, так как сертификат, предоставленный { $hostname }, содержит неподдерживаемое критическое расширение.
+cert-error-extension-value-invalid = { -brand-short-name } заблокировал вход на этот сайт, так как сертификат, предоставленный { $hostname }, содержит некорректное расширение.
+cert-error-untrusted-issuer = { -brand-short-name } заблокировал вход на этот сайт, так как сертификат, предоставленный для { $hostname }, был выдан центром сертификации, к которому больше нет доверия.
+cert-error-untrusted-cert = { -brand-short-name } заблокировал вход на этот сайт, так как сертификат, предоставленный для { $hostname }, помечен как недоверенный.
+cert-error-invalid-integer-encoding = { -brand-short-name } заблокировал вход на этот сайт, так как сертификат, выданный { $hostname }, содержит некорректное целое число. Типичными причинами этого являются отрицательные серийные номера, отрицательные RSA moduli и кодировки, которые длиннее, чем это необходимо.
+cert-error-unsupported-keyalg = { -brand-short-name } заблокировал вход на этот сайт, так как сертификат, выданный для { $hostname }, имеет неподдерживаемый тип ключа.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } заблокировал вход на этот сайт, так как к центру сертификации, выдавшему сертификат для { $hostname }, больше нет доверия.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } заблокировал вход на этот сайт, так как алгоритм подписи сертификата, предоставленного для { $hostname }, не соответствует его полю алгоритма подписи.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Обращение к данному адресу за�
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Хмм. Нам не удаётся найти этот сайт.
+internet-connection-offline-title = Похоже, возникла проблема с вашим интернет-соединением.
 dns-not-found-trr-only-title2 = Возможная угроза безопасности при поиске этого домена
 dns-not-found-native-fallback-title2 = Возможная угроза безопасности при поиске этого домена
 fileNotFound-title = Файл не найден
@@ -134,6 +161,7 @@ contentEncodingError-title = Ошибка в типе содержимого
 unsafeContentType-title = Небезопасный тип файла
 netReset-title = Соединение было сброшено
 netTimeout-title = Время ожидания соединения истекло
+httpErrorPage-title = Похоже, на этом сайте есть проблема
 serverError-title = Похоже, на этом сайте есть проблема
 unknownProtocolFound-title = Неизвестный тип адреса
 proxyConnectFailure-title = Прокси-сервер отказывается принимать соединения
@@ -142,6 +170,7 @@ redirectLoop-title = Циклическое перенаправление на 
 unknownSocketType-title = Неизвестный/неопознанный ответ сервера
 nssFailure2-title = Ошибка при установлении защищённого соединения
 csp-xfo-error-title = { -brand-short-name } не может открыть эту страницу
+corruptedContentErrorv2-title = Ошибка искажения содержимого
 corruptedContentError-title = Ошибка искажения содержимого
 sslv3Used-title = Установка защищённого соединения не удалась
 inadequateSecurityError-title = Ваше соединение не защищено
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Скрыть подробности
 fp-certerror-override-exception-button = Перейти на { $hostname } (рискованно)
 fp-certerror-intro = { -brand-short-name } обнаружил потенциально значимую проблему с безопасностью <strong>{ $hostname }</strong>. Кто-то, выдающий себя за сайт, может попытаться украсть такие данные, как данные банковской карты, пароли или адреса электронной почты.
 fp-certerror-expired-into = { -brand-short-name } обнаружил проблему с безопасностью на <strong>{ $hostname }</strong>. Либо сайт не настроен правильно, либо на часах вашего устройства установлена неверная дата и время.
+fp-certerror-transparency-intro = Кто-то, выдающий себя за <strong>{ $hostname }</strong>, может попытаться украсть такие данные, как данные банковской карты, пароли или электронные письма.

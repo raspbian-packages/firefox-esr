@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Запазване на препратката в { -pocket-brand-name }
     .accesskey = п
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Копиране на електронния адрес
@@ -162,16 +160,14 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Копиране на препратка
     .accesskey = к
+main-context-menu-preview-link =
+    .label = Връзка за преглед
+    .accesskey = п
 # "Copy Clean Link" means that Firefox will remove things from the link you
 # copied, like items that identify you for advertising purposes, and other items
 # sites add into URLs to help them deliver a certain browsing experience.
 main-context-menu-copy-clean-link =
     .label = Копиране на препратка без проследяване
-    .accesskey = п
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Копиране на препратката без проследяване
     .accesskey = п
 
 ## Media (video/audio) controls
@@ -274,6 +270,11 @@ main-context-menu-image-info =
 main-context-menu-image-desc =
     .label = Преглед на описание
     .accesskey = о
+# Variables
+#   $engine (String) - Name of the search engine that will perform the search.
+main-context-menu-visual-search-2 =
+    .label = Търсене на изображения чрез { $engine }
+    .accesskey = р
 main-context-menu-video-save-as =
     .label = Запазване на видео като…
     .accesskey = в
@@ -323,6 +324,9 @@ main-context-menu-manage-passwords =
 main-context-menu-keyword =
     .label = Добавяне на ключова дума за търсене…
     .accesskey = к
+main-context-menu-add-engine =
+    .label = Добавяне на търсеща машина
+    .accesskey = Д
 main-context-menu-link-send-to-device =
     .label = Изпращане на препратка до устройство
     .accesskey = у
@@ -393,3 +397,5 @@ main-context-menu-open-link-in-container-tab =
 main-context-menu-reveal-password =
     .label = Показване на паролата
     .accesskey = П
+# The label of a badge shown in menu items to call out new features.
+main-context-menu-new-feature-badge = Нова

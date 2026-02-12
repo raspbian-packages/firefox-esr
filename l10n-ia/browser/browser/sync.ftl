@@ -20,6 +20,16 @@ fxa-menu-connect-another-device =
     .label = Connecter un altere apparato…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] Inviar a apparato
+            [one] Inviar un scheda a apparato
+           *[other] Inviar { $tabCount } schedas a apparato
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label =
         { $tabCount ->
@@ -33,8 +43,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Invia un scheda instantaneemente a qualcunque apparato in que tu ha aperite session.
 fxa-menu-sign-out =
     .label = Clauder session…
-fxa-menu-sync-title = Sync
 fxa-menu-sync-description = Accede tu web ubique
+fxa-avatar-sign-in = Aperir session
+fxa-avatar-sign-up = Inscriber se
+fxa-avatar-tooltip =
+    .tooltiptext = Accede a tu conto
 sync-setup-verify-continue = Continuar
 sync-setup-verify-title = Notification de fusion
 sync-setup-verify-heading = Desira tu vermente connecter te pro synchronisar?

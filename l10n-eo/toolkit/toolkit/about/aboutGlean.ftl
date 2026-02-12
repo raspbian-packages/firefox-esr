@@ -21,6 +21,7 @@ about-glean-category-manual-testing = Neaŭtomataj testoj
 about-glean-category-adhoc-testing = Specifaj "ad hoc" testoj
 about-glean-category-profiler = Kiel uzi la rulanalizilon
 about-glean-category-about-data = Pri datumoj
+about-glean-category-metrics-table = Tabelo de statistikoj
 about-glean-upload-enabled = Alŝuto de datumoj aktiva.
 about-glean-upload-disabled = Alŝuto de datumoj malaktiva.
 about-glean-upload-enabled-local = Alŝuto de datumoj aktiva, nur por lokaj serviloj.
@@ -96,4 +97,72 @@ about-glean-about-data-list-item-dictionary = Por esplori la liston de datumoj k
 about-glean-about-data-list-item-about-telemetry = Por esplori la datumojn kolektitaj de antaŭaj telemezuroj, bonvolu konsulti <a data-l10n-name="about-telemetry-link">about:telemetry</a>.
 about-glean-about-data-list-item-debug-ping-viewer = Por esplori senerarigajn etikedojn, vidi tutajn "pings", vidi elsendfluojn de nunaj eventoj aŭ vidi mezurojn, bonvolu konsulti <a data-l10n-name="glean-debug-ping-viewer">{ glean-debug-ping-viewer-brand-name }</a>.
 about-glean-about-data-list-item-firefox-profiler = Por registri efikecan profilon kaj vidi ĉiujn registritajn mezurojn, bonvolu uzi <a data-l10n-name="about-glean-firefox-profiler">{ -profiler-brand-name }</a>.
+about-glean-metrics-table-header = Ĉiuj statistikoj
+# This message refers to the category in which a given metric is recorded.
+about-glean-metrics-table-header-category = Kategorio
+# This message refers to the name of a given metric.
+about-glean-metrics-table-header-name = Nomo
+# This message refers to a given metric's metric type.
+about-glean-metrics-table-header-type = Tipo
+# This message refers to the underlying value of a given metric.
+about-glean-metrics-table-header-value = Valoro
+# This message refers to the UI action buttons for a given metric.
+about-glean-metrics-table-header-actions = Agoj
+about-glean-metrics-table-settings-button = Agordoj
+# Settings for the metrics table and its visualizations in about:glean
+about-glean-metrics-table-settings-title = Agordoj de la tabelo de statistikoj
+about-glean-metrics-table-settings-category-general = Ĝenerala
+about-glean-metrics-table-settings-hide-empty-value-rows = Kaŝi vicojn sen valoroj
+about-glean-metrics-table-settings-category-visualizations = Montroj
+# This is a heading that is immediately followed by an example data visualization
+about-glean-metrics-table-settings-visualization-example = Ekzemplo
+about-glean-metrics-table-settings-category-visualizations-histogram = Frekvenca grafikaĵo
+about-glean-metrics-table-settings-histograms-chart-max = Maksimuma alto de grafikaĵo
+# The maximum height after to which the y-values on the chart will be scaled
+about-glean-metrics-table-settings-histograms-scaled-max = Skalita maksimuma alto
+about-glean-metrics-table-settings-histograms-box-padding = Marĝeno de la skatolo
+about-glean-metrics-table-settings-histograms-chart-padding = Marĝeno de la grafikaĵo
+about-glean-metrics-table-settings-histograms-left-padding = Aldona maldekstra marĝeno
+about-glean-metrics-table-settings-category-visualizations-timeline = Kronologio
+about-glean-metrics-table-settings-timelines-height = Alto
+about-glean-metrics-table-settings-timelines-width = Larĝo
+about-glean-metrics-table-settings-timelines-chart-padding = Marĝeno de la grafikaĵo
+# The radius of each circle denoting individual events recorded for an event metric
+about-glean-metrics-table-settings-timelines-circle-radius = Radiuso de cirklo
+# The offset on the x-axis from the end of the horizontal line for the y-axis line
+about-glean-metrics-table-settings-timelines-vertical-line-x-offset = Loko de la akso Y sur la akso X
+# The offset on the y-axis from the x-axis for the y-axis line
+about-glean-metrics-table-settings-timelines-vertical-line-y-offset = Loko de la akso X sur la akso Y
+# Label displayed near an input field that can be used to filter metrics
+about-glean-label-for-filter-metrics = Filtri
+# This message sits alongside an input field, further describing its purpose.
+# Category refers to the category in which a given metric is recorded.
+# Name refers to the name of a given metric.
+# Type refers to a given metric's metric type.
+# Value refers to the underlying value of a given metric.
+# "Simple type" refers to a value type that does not have deeply-nested data, such as a boolean, number, string, or list of strings.
+about-glean-description-for-filter-metrics = Tio ĉi filtros la malsupran tabelon surbase de kategorio, nomo, tipo kaj valoro (se la valoro estas de simpla tipo)
+about-glean-button-load-all = Ŝargi ĉiujn valorojn
+about-glean-button-load-value = Ŝargi
+# "Docs" is shorthand for "documentation"
+about-glean-button-dictionary-link = Dokumentaro
+about-glean-button-watch = Observi
+# Meaning "to stop watching"
+about-glean-button-unwatch = Ne plu observi
+about-glean-no-data-to-display = Neniu datumo montrebla.
+# Do not translate strings between <code> </code> tags.
+about-glean-labeled-metric-warning = Etikeditaj statistikoj ne estas ankoraŭ subtenataj en la vido de <code>about:glean</code>.
+about-glean-unknown-metric-type-warning = Nekonata tipo de statistiko.
+about-glean-enable-new-features-promo =
+    .message = Ni pretas aldoni novajn trajtojn! Ili estas ankoraŭ aktive programataj, sed vi povas aktivigi ilin per alklako sur la butono se vi ŝatus.
+    .heading = Novaj trajtoj alvenas!
+about-glean-enable-new-features-button = Aktivigi novajn trajtojn
+about-glean-disable-new-features-button = Malaktivigi novajn trajtojn
 about-glean-about-data-explanation = Por vidi la liston de kolektitaj datumoj, bonvolu konsulti la <a data-l10n-name="glean-dictionary-link">vortaron de { -glean-brand-name }</a>.
+
+## These labels are displayed to organize the different ping types within the dropdown.
+
+about-glean-ping-list-optgroup-built-in =
+    .label = Integritaj "pings"
+about-glean-ping-list-optgroup-custom =
+    .label = Personecigitaj "pings"

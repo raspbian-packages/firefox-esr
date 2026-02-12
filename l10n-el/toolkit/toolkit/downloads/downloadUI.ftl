@@ -19,8 +19,8 @@ download-ui-confirm-quit-cancel-downloads-mac =
     }
 download-ui-dont-quit-button =
     { PLATFORM() ->
-        [mac] Να μη γίνει τερματισμός
-       *[other] Να μη γίνει έξοδος
+        [mac] Να μην γίνει τερματισμός
+       *[other] Να μην γίνει έξοδος
     }
 download-ui-confirm-offline-cancel-downloads =
     { $downloadsCount ->
@@ -45,4 +45,4 @@ download-ui-cancel-downloads-ok =
 download-ui-file-executable-security-warning-title = Άνοιγμα εκτελέσιμου αρχείου;
 # Variables:
 #   $executable (String): The executable file to be opened.
-download-ui-file-executable-security-warning = Το “{ $executable }” είναι ένα εκτελέσιμο αρχείο. Τα εκτελέσιμα αρχεία ενδέχεται να περιέχουν ιούς ή άλλο κακόβουλο κώδικα που μπορεί να βλάψει τον υπολογιστή σας. Ανοίξτε με προσοχή αυτό το αρχείο. Θέλετε σίγουρα να εκκινήσετε το “{ $executable }”;
+download-ui-file-executable-security-warning = Το «{ $executable }» είναι εκτελέσιμο αρχείο. Τα εκτελέσιμα αρχεία ενδέχεται να περιέχουν ιούς ή άλλο κακόβουλο κώδικα που μπορεί να βλάψει τον υπολογιστή σας. Ανοίξτε με προσοχή αυτό το αρχείο. Θέλετε σίγουρα να εκκινήσετε το «{ $executable }»;

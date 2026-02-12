@@ -5,11 +5,6 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = Yn ychwanegu'r sgwrsfot rydych wedi'i ddewis i'r bar ochr, er mwyn cael mynediad cyflym iddo wrth i chi bori. <a data-l10n-name="connect">Rhannu adborth</a>
-genai-settings-chat-choose = Dewiswch sgwrsfot
-genai-settings-chat-choose-one-menuitem =
-    .label = Dewiswch un
-genai-settings-chat-links = Pan fyddwch chi'n dewis sgwrsfot, rydych yn cytuno i delerau defnydd a pholisi preifatrwydd y darparwr.
 genai-settings-chat-chatgpt-links = Drwy ddewis ChatGPT, rydych yn cytuno i'r <a data-l10n-name="link1">Telerau Defnydd</a> a <a data-l10n-name="link2">Pholisi Preifatrwydd</a> OpenAI.
 genai-settings-chat-claude-links = Trwy ddewis Anthropic Claude, rydych yn cytuno i'w <a data-l10n-name="link1">Telerau Gwasanaeth Defnyddwyr</a>, <a data-l10n-name="link2">Polisi Defnydd</a>, a'u <a data-l10n-name="link3">Polisi Preifatrwydd</a>.
 genai-settings-chat-copilot-links = Drwy ddewis Copilot, rydych yn cytuno i'w <a data-l10n-name="link1">Telerau Profiadau Copilot AI</a> ac i <a data-l10n-name="link2">Ddatganiad Preifatrwydd Microsoft</a>.
@@ -17,9 +12,6 @@ genai-settings-chat-gemini-links = Trwy ddewis Google Gemini, rydych yn cytuno i
 genai-settings-chat-huggingchat-links = Trwy ddewis HuggingChat, rydych yn cytuno i'r <a data-l10n-name="link1">Hysbysiad Preifatrwydd HuggingChat</a> a <a data-l10n-name="link2">Pholisi Preifatrwydd Hugging Face</a>.
 genai-settings-chat-lechat-links = Trwy ddewis Le Chat Mistral, rydych yn cytuno i <a data-l10n-name="link1">Delerau Gwasanaeth</a> a <a data-l10n-name="link2">Pholisi Preifatrwydd</a> Mistral AI .
 genai-settings-chat-localhost-links = Defnyddiwch eich sgwrsfot lleol preifat eich hun, megis <a data-l10n-name="link1">llamafile</a> { -vendor-short-name }, grŵp Innovation.
-genai-settings-chat-shortcuts =
-    .description = Yn dangos llwybr byr i anogwyr pan fyddwch chi'n dewis testun. Mae { -brand-short-name } yn anfon y testun, teitl y dudalen, a'r anogwr i'r sgwrsfot.
-    .label = Dangos anogwr wrth ddewis testun
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -59,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = Gofyn i { $provider }
+genai-menu-open-generic =
+    .label = Agor Sgwrsfot AI
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Agor { $provider }
+genai-menu-remove-generic =
+    .label = Tynnu'r sgwrsfot AI
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Tynnu { $provider }
+genai-menu-remove-sidebar =
+    .label = Tynnu o'r Bar Ochr
+genai-menu-new-badge = Newydd
+genai-menu-summarize-page = Crynhoi Tudalen
 genai-input-ask-generic =
     .placeholder = Gofyn i'r sgwrsfot AI…
 # $provider (string) - name of the provider
@@ -93,20 +99,32 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = Cuddio llwybr byr sgwrsfot
+genai-menu-choose-chatbot =
+    .label = Dewis Sgwrsfot
+genai-menu-ask-generic-2 =
+    .label = Gofynnwch i'r Sgwrsfot AI
+    .accesskey = G
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = Gofynnwch i { $provider }
+    .accesskey = G
+genai-menu-no-provider-2 =
+    .label = Gofynnwch i Sgwrsfot AI
+    .accesskey = G
 
 ## Chatbot header
 
 genai-chatbot-title = Sgwrsfot AI
 genai-header-provider-menu =
     .title = Dewiswch sgwrsfot
+genai-header-settings-button =
+    .title = Gosodiadau Sgwrsfot AI
 genai-header-options-button =
     .title = Agor dewislen
 genai-header-close-button =
     .title = Cau
 genai-provider-view-details =
     .label = Gweld manylion y sgwrsfot
-genai-provider-about-chatbots =
-    .label = Ynghylch y sgyrsfotiau hyn
 genai-options-reload-generic =
     .label = Ail-lwytho'r sgwrsfot AI
 # $provider (string) - name of the provider
@@ -119,11 +137,23 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = Ynghylch y sgyrsfotiau AI yn { -brand-short-name }
 
+## Chatbot message
+
+genai-page-warning =
+    .message = Gan fod y dudalen yn hir, mae hwn yn grynodeb rhannol.
+
+## Chatbot footer
+
+genai-page-button-summarize = Crynhoi Tudalen
+
 ## Chatbot onboarding
 
 genai-onboarding-header = Crynhoi, trafod syniadau, a mwy wrth i chi bori
+genai-onboarding-choose-header = Dewiswch sgwrsfot AI i'w ddefnyddio ym mar ochr { -brand-short-name }
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = Dewiswch sgwrsfot AI i'w ddefnyddio ym mar ochr { -brand-short-name }. Byddwn yn dangos manylion pob sgwrsfot pan fyddwch chi'n ei ddewis. Newidiwch nhw unrhyw bryd. <a data-l10n-name="learn-more">Rhagor</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Newidiwch unrhyw bryd. I gael help i ddewis, <a data-l10n-name="learn-more">darllenwch ragor am bob sgwrsfot</a>.
 genai-onboarding-primary = Parhau
 genai-onboarding-secondary = Cau
 genai-onboarding-claude-tooltip =
@@ -147,6 +177,18 @@ genai-onboarding-lechat-learn = Rhagor am Le Chat
 genai-onboarding-select-header = Dewiswch destun i weld awgrymiadau
 genai-onboarding-select-description = Pan fyddwch yn dewis testun, byddwn yn cynnig awgrymiadau y gallwch eu hanfon at y sgwrsfot. Gallwch hefyd ysgrifennu eich awgrymiadau eich hun.
 genai-onboarding-select-primary = Dechrau sgwrsio
+genai-chatbot-contextual-title = Defnyddiwch sgwrsfot AI heb newid tabiau
+genai-chatbot-contextual-subtitle = Sgwrsio a phori ochr yn ochr pan fyddwch chi'n ychwanegu sgwrsfot AI ym mar ochr { -brand-short-name }.
+genai-chatbot-contextual-button = Dewiswch sgwrsfot
+genai-chatbot-summarize-title = Newydd! Crynhoi tudalennau gydag un clic
+genai-chatbot-summarize-button = Crynhoi tudalen
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = De-glicio ar eich sgwrsfot AI yn y bar ochr a dewis “Crynhoi Tudalen”.
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = De-glicio ar y botwm pefriog yn y bar ochr a dewis “Crynhoi Tudalen”. Y tro cyntaf, byddwch hefyd yn dewis sgwrsfot AI.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = Agor eich sgwrsfot AI yn y bar ochr a dewis “Crynhoi Tudalen” ar y gwaelod.
+genai-chatbot-summarize-footer-generic-subtitle = Ychwanegu sgwrsfot AI at y bar ochr { -brand-short-name } i grynhoi tudalennau'n gyflym.
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -168,3 +210,76 @@ genai-onboarding-huggingchat-switch = Newid rhwng set amrywiol o fodelau agored
 genai-onboarding-huggingchat-price-2 = Am ddim; mae angen cyfrif ar ôl nifer penodol o geisiadau
 genai-onboarding-lechat-generate = Cynhyrchu testun a chod
 genai-onboarding-lechat-price = Rhad ac am ddim; bydd angen cyfrif
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Parhau
+genai-model-optin-optout =
+    .label = Diddymu
+genai-model-optin-cancel =
+    .label = Diddymu
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [zero] { $range } munudau o amser darllen
+        [one] { $range } munud o amser darllen
+        [two] { $range } funud o amser darllen
+        [few] { $range } munud o amser darllen
+        [many] { $range } munud o amser darllen
+       *[other] { $range } munud o amser darllen
+    }
+# Error message displayed when a link preview cannot be generated
+link-preview-error-message = Dydyn ni ddim yn gallu rhagweld y ddolen hon
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = Ewch i'r ddolen
+# Error message when we can't generate key points (summary highlights or main ideas of page content) for a page
+link-preview-generation-error-missing-data = Dydyn ni ddim yn gallu cynhyrchu pwyntiau allweddol ar gyfer y dudalen we hon.
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Aeth rhywbeth o'i le.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Ceisiwch eto
+# Button that opens the Link Preview settings
+link-preview-settings-button =
+    .title = Gosodiadau Rhagolwg Dolen
+link-preview-settings-enable =
+    .label = Galluogi rhagolygon dolenni
+    .description = Gweld teitl y dudalen, disgrifiad a rhagor pan fyddwch chi'n defnyddio llwybr byr neu roi clic de i ddolen.
+link-preview-settings-key-points =
+    .label = Caniatáu i AI ddarllen dechrau'r dudalen a chynhyrchu pwyntiau allweddol
+link-preview-settings-long-press =
+    .label = Llwybr byr: Cliciwch a dal y ddolen am 1 eiliad (pwyso'n hir)
+# Title that appears when user is shown the opt-in flow for link previews
+link-preview-optin-title = Gweld rhagor gydag AI?
+# Message that appears when user is shown the opt-in flow for link previews
+link-preview-optin-message = Mae { -brand-short-name } yn defnyddio AI i ddarllen dechrau'r dudalen a chynhyrchu ychydig o bwyntiau allweddol. Er mwyn blaenoriaethu eich preifatrwydd, mae hyn yn digwydd ar eich dyfais.
+# Onboarding card title for long press
+link-preview-onboarding-title-long-press = Newydd: Cliciwch a dal unrhyw ddolen i gael rhagolwg
+# Onboarding card description for long press
+link-preview-onboarding-description-long-press = Cewch weld disgrifiad byr, yr amser darllen, a rhagor i benderfynu a yw'r ddolen yn werth ei hagor. Ar gael hefyd wrth roi clic de.
+# Header for the key points section
+link-preview-key-points-header = Prif bwyntiau
+# Disclaimer for AI-generated key points
+link-preview-key-points-disclaimer = Mae'r prif bwyntiau'n cael eu cynhyrchu gan AI ac efallai bod nhw'n cynnwys camgymeriadau.
+# Progress message for the first-time setup
+# $progress (number) - The percentage value 1-100 indicating the progress of the setup.
+link-preview-setup = Gosodiadau'r tro cyntaf • <strong>{ $progress }%</strong>
+# Message indicating faster performance after initial setup
+link-preview-setup-faster-next-time = Byddwch yn gweld y prif bwyntiau'n gyflymach y tro nesaf.
+# Onboarding card See a preview button
+link-preview-onboarding-button = Gweld rhagolwg
+# Onboarding card Close button
+link-preview-onboarding-close = Cau
+# Title for the first-time setup modal
+link-preview-first-time-setup-title = Gosod am y tro cyntaf
+# Message for the first-time setup modal
+link-preview-first-time-setup-message = Gall hyn gymryd ychydig eiliadau. Byddwch yn gweld y pwyntiau allweddol yn gyflymach y tro nesaf.

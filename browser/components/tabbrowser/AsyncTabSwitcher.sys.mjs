@@ -269,7 +269,7 @@ export class AsyncTabSwitcher {
     this.setTabStateNoAction(tab, state);
 
     let browser = tab.linkedBrowser;
-    let { remoteTab } = browser.frameLoader;
+    let remoteTab = browser.frameLoader?.remoteTab;
     if (state == this.STATE_LOADING) {
       this.assert(!this.windowHidden);
 
@@ -651,7 +651,19 @@ export class AsyncTabSwitcher {
     let numPending = 0;
     let numWarming = 0;
     for (let [tab, state] of this.tabState) {
-      if (!this.shouldDeactivateDocShell(tab.linkedBrowser)) {
+      // In certain cases, tabs that are backgrounded should stay in the
+      // STATE_LOADED state, as some mechanisms rely on background rendering.
+      // See shouldDeactivateDocShell for the specific cases being handled.
+      //
+      // This means that if a tab is in STATE_LOADED and we're not going to
+      // deactivate it, we shouldn't count it towards numPending. If, however,
+      // it's in some other state (say, STATE_LOADING), then we _do_ want to
+      // count it as numPending, since we're still waiting on it to be
+      // composited.
+      if (
+        state == this.STATE_LOADED &&
+        !this.shouldDeactivateDocShell(tab.linkedBrowser)
+      ) {
         continue;
       }
 
@@ -916,8 +928,8 @@ export class AsyncTabSwitcher {
   }
 
   /**
-   * Check if the browser should be deactivated. If the browser is a print preivew or
-   * PiP browser then we won't deactive it.
+   * Check if the browser should be deactivated. If the browser is a print preview or
+   * PiP browser then we won't deactivate it.
    * @param browser The browser to check if it should be deactivated
    * @returns false if a print preview or PiP browser else true
    */
@@ -1040,7 +1052,6 @@ export class AsyncTabSwitcher {
     }
 
     let tabState = this.getTabState(tab);
-    this.noteTabRequested(tab, tabState);
 
     this.logState("requestTab " + this.tinfo(tab));
     this.startTabSwitch();
@@ -1050,6 +1061,15 @@ export class AsyncTabSwitcher {
     this.requestedTab = tab;
     if (tabState == this.STATE_LOADED) {
       this.maybeVisibleTabs.clear();
+      // We're switching to a tab that is still loaded.
+      // Make sure its priority is correct as it may
+      // have been deprioritized when it was switched
+      // away from (bug 1927609)
+      let browser = tab.linkedBrowser;
+      let remoteTab = browser.frameLoader?.remoteTab;
+      if (remoteTab) {
+        remoteTab.priorityHint = true;
+      }
     }
 
     tab.linkedBrowser.setAttribute("primary", "true");
@@ -1382,18 +1402,18 @@ export class AsyncTabSwitcher {
     // the parent process might not even get MozAfterPaint delivered for it), so just
     // give up measuring this for now. :(
     Glean.performanceInteraction.tabSwitchComposite.cancel(
-      this._tabswitchTimerId
+      this._tabswitchCompositeTimerId
     );
-    this._tabswitchTimerId = null;
+    this._tabswitchCompositeTimerId = null;
   }
 
   notePaint(event) {
     if (this.switchPaintId != -1 && event.transactionId >= this.switchPaintId) {
-      if (this._tabswitchTimerId) {
+      if (this._tabswitchCompositeTimerId) {
         Glean.performanceInteraction.tabSwitchComposite.stopAndAccumulate(
-          this._tabswitchTimerId
+          this._tabswitchCompositeTimerId
         );
-        this._tabswitchTimerId = null;
+        this._tabswitchCompositeTimerId = null;
       }
       let { innerWindowId } = this.window.windowGlobalChild;
       ChromeUtils.addProfilerMarker("AsyncTabSwitch:Composited", {
@@ -1403,44 +1423,18 @@ export class AsyncTabSwitcher {
     }
   }
 
-  noteTabRequested(tab, tabState) {
-    if (lazy.gTabWarmingEnabled) {
-      let warmingState = "disqualified";
-
-      if (this.canWarmTab(tab)) {
-        if (tabState == this.STATE_LOADING) {
-          warmingState = "stillLoading";
-        } else if (tabState == this.STATE_LOADED) {
-          warmingState = "loaded";
-        } else if (
-          tabState == this.STATE_UNLOADING ||
-          tabState == this.STATE_UNLOADED
-        ) {
-          // At this point, if the tab's browser was being inserted
-          // lazily, we never had a chance to warm it up, and unfortunately
-          // there's no great way to detect that case. Those cases will
-          // end up in the "notWarmed" bucket, along with legitimate cases
-          // where tabs could have been warmed but weren't.
-          warmingState = "notWarmed";
-        }
-      }
-
-      Services.telemetry
-        .getHistogramById("FX_TAB_SWITCH_REQUEST_TAB_WARMING_STATE")
-        .add(warmingState);
-    }
-  }
-
   noteStartTabSwitch() {
-    TelemetryStopwatch.cancel("FX_TAB_SWITCH_TOTAL_E10S_MS", this.window);
-    TelemetryStopwatch.start("FX_TAB_SWITCH_TOTAL_E10S_MS", this.window);
+    if (this._tabswitchTotalTimerId) {
+      Glean.browserTabswitch.total.cancel(this._tabswitchTotalTimerId);
+    }
+    this._tabswitchTotalTimerId = Glean.browserTabswitch.total.start();
 
-    if (this._tabswitchTimerId) {
+    if (this._tabswitchCompositeTimerId) {
       Glean.performanceInteraction.tabSwitchComposite.cancel(
-        this._tabswitchTimerId
+        this._tabswitchCompositeTimerId
       );
     }
-    this._tabswitchTimerId =
+    this._tabswitchCompositeTimerId =
       Glean.performanceInteraction.tabSwitchComposite.start();
     let { innerWindowId } = this.window.windowGlobalChild;
     ChromeUtils.addProfilerMarker("AsyncTabSwitch:Start", { innerWindowId });
@@ -1449,13 +1443,11 @@ export class AsyncTabSwitcher {
   noteFinishTabSwitch() {
     // After this point the tab has switched from the content thread's point of view.
     // The changes will be visible after the next refresh driver tick + composite.
-    let time = TelemetryStopwatch.timeElapsed(
-      "FX_TAB_SWITCH_TOTAL_E10S_MS",
-      this.window
-    );
-    if (time != -1) {
-      TelemetryStopwatch.finish("FX_TAB_SWITCH_TOTAL_E10S_MS", this.window);
-      this.log("DEBUG: tab switch time = " + time);
+    if (this._tabswitchTotalTimerId) {
+      Glean.browserTabswitch.total.stopAndAccumulate(
+        this._tabswitchTotalTimerId
+      );
+      this._tabswitchTotalTimerId = null;
       let { innerWindowId } = this.window.windowGlobalChild;
       ChromeUtils.addProfilerMarker("AsyncTabSwitch:Finish", { innerWindowId });
     }
@@ -1465,20 +1457,15 @@ export class AsyncTabSwitcher {
     this.assert(!this.spinnerTab);
     let browser = this.requestedTab.linkedBrowser;
     this.assert(browser.isRemoteBrowser);
-    TelemetryStopwatch.start("FX_TAB_SWITCH_SPINNER_VISIBLE_MS", this.window);
-    // We have a second, similar probe for capturing recordings of
-    // when the spinner is displayed for very long periods.
-    TelemetryStopwatch.start(
-      "FX_TAB_SWITCH_SPINNER_VISIBLE_LONG_MS",
-      this.window
-    );
+    this._tabswitchSpinnerTimerId =
+      Glean.browserTabswitch.spinnerVisible.start();
     let { innerWindowId } = this.window.windowGlobalChild;
     ChromeUtils.addProfilerMarker("AsyncTabSwitch:SpinnerShown", {
       innerWindowId,
     });
-    Services.telemetry
-      .getHistogramById("FX_TAB_SWITCH_SPINNER_VISIBLE_TRIGGER")
-      .add(this._loadTimerClearedBy);
+    Glean.browserTabswitch.spinnerVisibleTrigger[this._loadTimerClearedBy].add(
+      1
+    );
     if (AppConstants.NIGHTLY_BUILD) {
       Services.obs.notifyObservers(null, "tabswitch-spinner");
     }
@@ -1486,18 +1473,11 @@ export class AsyncTabSwitcher {
 
   noteSpinnerHidden() {
     this.assert(this.spinnerTab);
-    this.log(
-      "DEBUG: spinner time = " +
-        TelemetryStopwatch.timeElapsed(
-          "FX_TAB_SWITCH_SPINNER_VISIBLE_MS",
-          this.window
-        )
+    this.log("DEBUG: spinner hidden");
+    Glean.browserTabswitch.spinnerVisible.stopAndAccumulate(
+      this._tabswitchSpinnerTimerId
     );
-    TelemetryStopwatch.finish("FX_TAB_SWITCH_SPINNER_VISIBLE_MS", this.window);
-    TelemetryStopwatch.finish(
-      "FX_TAB_SWITCH_SPINNER_VISIBLE_LONG_MS",
-      this.window
-    );
+    this._tabswitchSpinnerTimerId = null;
     let { innerWindowId } = this.window.windowGlobalChild;
     ChromeUtils.addProfilerMarker("AsyncTabSwitch:SpinnerHidden", {
       innerWindowId,

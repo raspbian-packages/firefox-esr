@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Prijavite se v omrežje
 neterror-dns-not-found-title = Strežnika ni mogoče najti
 neterror-malformed-uri-page-title = Neveljaven URL
 general-body-title = Previdno. Nekaj ni videti v redu.
+problem-with-this-site-title = Na tem spletnem mestu se je pojavila težava
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = Če ne uspete naložiti nobene strani, preverit
 neterror-load-error-firewall = Če uporabljate posrednika ali požarni zid, se prepričajte, da ima { -brand-short-name } dovoljenja za dostop do spleta.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Če poskušate naložiti stran lokalnega omrežja, preverite, ali ima { -brand-short-name } v nastavitvah zasebnosti in varnosti sistema macOS dovoljenja za lokalno omrežje.
+neterror-http-error-page = Preverite, ali ste naslov spletnega mesta vnesli pravilno.
 neterror-captive-portal = Za dostop do interneta se morate prijaviti v to omrežje.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Če je vneseni naslov pravi, lahko:
 neterror-dns-not-found-hint-try-again = poskusite znova pozneje
 neterror-dns-not-found-hint-check-network = preverite povezavo z omrežjem
 neterror-dns-not-found-hint-firewall = preverite, da ima { -brand-short-name } dovoljenje za dostop do spleta (morda ste povezani, vendar za požarnim zidom)
+neterror-dns-not-found-offline-hint-header = <strong>Kaj lahko storite v zvezi s tem?</strong>
+neterror-dns-not-found-offline-hint-different-device = Poskusite se povezati z druge naprave.
+neterror-dns-not-found-offline-hint-modem = Preverite modem ali usmerjevalnik.
+neterror-dns-not-found-offline-hint-reconnect = Odklopite se od omrežja Wi-Fi in se ponovno povežite z njim.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Nepričakovana težava.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } ne more zavarovati vašega zahtevka za naslov tega spletnega mesta prek našega zaupanja vrednega razreševalnika DNS. Razlog:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } ne more zavarovati vašega zahtevka za naslov tega spletnega mesta prek našega varnega ponudnika DNS. Razlog:
 neterror-dns-not-found-native-fallback-heuristic = DNS prek HTTPS je v vašem omrežju onemogočen.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } se ni mogel povezati s spletnim mestom { $trrDomain }.
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = Preverite nastavitve posrednika in se 
 neterror-proxy-connect-failure-contact-admin = Pri skrbniku svojega omrežja preverite, da posrednik deluje.
 neterror-content-encoding-error = O napaki obvestite lastnike spletnega mesta.
 neterror-unsafe-content-type = O napaki obvestite lastnike spletnega mesta.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } ne zaupa spletnemu mestu { $hostname }, ker povezava ni zavarovana. Poskusite začetek spletnega naslova spremeniti v HTTPS.
 neterror-nss-failure-not-verified = Strani, ki si jo želite ogledati, ni mogoče prikazati, ker ni mogoče preveriti pristnosti sprejetih podatkov.
 neterror-nss-failure-contact-website = O napaki obvestite lastnike spletnega mesta.
 # Variables:
@@ -159,3 +167,13 @@ certerror-coep-learn-more = Več o pravilnikih vdelave navzkrižnih izvorov (COE
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Koda napake: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } ne more vzpostaviti varne povezave s strežnikom na { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Videti je, da to spletno mesto uporablja staro programsko opremo, ki ima znane varnostne težave.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Prepričajte se, da uporabljate najnovejšo različico { -brand-short-name(sklon: "rodilnik") }: v meniju izberite Pomoč > O { -brand-short-name(sklon: "mestnik") }. Če uporabljate najnovejši { -brand-short-name(sklon: "tozilnik") }, je težava najverjetneje v samem spletnem mestu.

@@ -4,10 +4,6 @@
 
 pictureinpicture-player-title = תמונה בתוך תמונה
 
-## Variables:
-##   $shortcut (String) - Keyboard shortcut to execute the command.
-
-
 ## Note that this uses .tooltip rather than the standard '.title'
 ## or '.tooltiptext' -  but it has the same effect. Code in the
 ## picture-in-picture window will read and copy this to an in-document
@@ -24,10 +20,10 @@ pictureinpicture-play-btn =
     .tooltip = ניגון (מקש הרווח)
 pictureinpicture-mute-btn =
     .aria-label = השתקה
-    .tooltip = השתקה ({ $shortcut })
+    .tooltip = השתקה ‎({ $shortcut })
 pictureinpicture-unmute-btn =
     .aria-label = ביטול השתקה
-    .tooltip = ביטול השתקה ({ $shortcut })
+    .tooltip = ביטול השתקה ‎({ $shortcut })
 pictureinpicture-unpip-btn =
     .aria-label = חזרה ללשונית
     .tooltip = חזרה ללשונית

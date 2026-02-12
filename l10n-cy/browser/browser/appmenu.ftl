@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Llwythi i lawr
 appmenuitem-passwords =
     .label = Cyfrineiriau
+appmenuitem-extensions-and-themes =
+    .label = Estyniadau a Themâu
+appmenuitem-extensions =
+    .label = Estyniadau
 appmenuitem-addons-and-themes =
     .label = Ychwanegion a Themâu
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Agor panel y proffiliwr
+    .tooltiptext = Agor panel y proffiliwr
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Y rhagosodiad ar gyfer ymchwilio i wallau sain a fideo yn { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Cyfrwng
+profiler-popup-presets-ml-description = Ei ragosod ar gyfer ymchwilio i wallau dysgu peirianyddol yn { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Dysgu Peirianyddol
 profiler-popup-presets-networking-description = Y rhagosodiad ar gyfer ymchwilio i wallau graffeg yn { -brand-shorter-name }
 profiler-popup-presets-networking-label =
     .label = Rhwydweithio
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Agor dangosfwrdd e-bost enwarall
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Diogelwch eich preifatrwydd ar-lein
 appmenu-services-header = Gwasanaethau
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Rhowch gynnig ar offer diogelu eraill gan Mozilla:
 appmenu-other-protection-header = Rhowch gynnig ar offer diogelu eraill gan { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Proffiliau
 appmenu-other-profiles = Proffiliau eraill
 appmenu-manage-profiles =
     .label = Rheoli proffiliau
+appmenu-copy-profile =
+    .label = Copïwch y proffil hwn
 appmenu-create-profile =
     .label = Proffil newydd
 appmenu-edit-profile =
     .aria-label = Golygu proffil
+appmenu-profiles-2 =
+    .label = Proffiliau

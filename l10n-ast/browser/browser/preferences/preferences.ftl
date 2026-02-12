@@ -96,6 +96,10 @@ startup-header = Aniciu
 always-check-default =
     .label = Comprobar siempres si { -brand-short-name } ye'l restolador predetermináu
     .accesskey = i
+is-default-browser =
+    .message = Anguaño { -brand-short-name } ye'l restolador web predetermináu
+is-not-default-browser =
+    .message = Anguaño { -brand-short-name } nun ye'l restolador web predetermináu
 is-default = Anguaño { -brand-short-name } ye'l restolador web predetermináu
 is-not-default = Anguaño { -brand-short-name } nun ye'l restolador web predetermináu
 set-as-my-default-browser =
@@ -210,6 +214,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Ficheros y aplicaciones
+downloads-header-2 =
+    .label = Descargues
+download-save-where-2 =
+    .label = Guardar los ficheros en
+    .accesskey = d
 download-header = Descargues
 download-save-where = Guardar los ficheros en
     .accesskey = d
@@ -407,7 +416,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Ventanes y llingüetes nueves
 home-new-windows-tabs-description2 = Escueyi lo que ves cuando abres la páxina d'aniciu, ventanes nueves y llingüetes nueves.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Páxina d'aniciu y ventanes nueves
 home-newtabs-mode-label = Llingüetes nueves
@@ -539,6 +548,8 @@ search-keyword-warning-bookmark = Escoyesti una pallabra clave qu'anguaño yá u
 ## Containers Section
 
 containers-header = Contenedores de llingüetes
+containers-section-header =
+    .heading = Contenedores de llingüetes
 containers-add-button =
     .label = Amestar un contenedor nuevu
     .accesskey = A
@@ -664,6 +675,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = Nome del preséu
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Nome del preséu
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Camudar el nome del preséu
+    .accesskey = m
 sync-device-name-change =
     .label = Camudar el nome del preséu…
     .accesskey = m
@@ -741,9 +760,6 @@ primary-password-os-auth-dialog-message-win = Pa crear una contraseña primaria,
 primary-password-os-auth-dialog-message-macosx = crear una contraseña primaria
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Historial
@@ -764,6 +780,10 @@ history-remember-option-never =
     .label = Dexar de recordar l'historial
 history-remember-option-custom =
     .label = Usar unos axustes personalizaos pal historial
+history-remember-description2 =
+    .description = { -brand-short-name } va recordar los historiales de restolar, descargues, formularios y busques.
+history-dontremember-description2 =
+    .description = { -brand-short-name } va usar los mesmos axustes del restolar en privao y nun va recordar nengún historial mentanto restoles la web.
 history-remember-description = { -brand-short-name } va recordar los historiales de restolar, descargues, formularios y busques.
 history-dontremember-description = { -brand-short-name } va usar los mesmos axustes del restolar en privao y nun va recordar nengún historial mentanto restoles la web.
 history-private-browsing-permanent =
@@ -823,12 +843,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Xestionar les esceiciones…
     .accesskey = X
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -960,6 +974,8 @@ permissions-notification-link = Lleer más
 permissions-notification-pause =
     .label = Posar los avisos hasta reaniciar { -brand-short-name }
     .accesskey = v
+permissions-autoplay2 =
+    .label = Reproducción automática
 permissions-autoplay = Reproducción automática
 permissions-autoplay-settings =
     .label = Axustes...
@@ -979,6 +995,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Esceiciones…
     .accesskey = E
+permissions-location2 =
+    .label = Allugamientu
+permissions-xr2 =
+    .label = Realidá virtual
+permissions-camera2 =
+    .label = Cámara
+permissions-microphone2 =
+    .label = Micrófonu
+permissions-notification2 =
+    .label = Avisos
 
 ## Privacy Section - Data Collection
 
@@ -1002,11 +1028,6 @@ addon-recommendations-link = Lleer más
 collection-health-report-disabled = L'informe de datos ta desactiváu na configuración d'esta compilación
 collection-backlogged-crash-reports-with-link = Permtir a { -brand-short-name } qu'unvie por ti los informes de casques acumulaos <a data-l10n-name="crash-reports-link">Llleer más</a>
     .accesskey = c
-collection-backlogged-crash-reports = Permtir a { -brand-short-name } qu'unvie por ti los informes de casques acumulaos
-    .accesskey = c
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -1050,9 +1071,6 @@ httpsonly-radio-enabled-pbm =
     .label = Activar el mou de namás HTTPS únicamente nes ventanes privaes
 httpsonly-radio-disabled =
     .label = Nun activar el mou de namás HTTPS
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

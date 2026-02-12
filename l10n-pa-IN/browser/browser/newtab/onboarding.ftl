@@ -25,6 +25,8 @@ return-to-amo-subtitle = ਬੱਲੇ, ਤੁਸੀਂ { -brand-short-name } ਪ
 return-to-amo-addon-title = ਆਓ ਫਿਰ ਹੁਣ <img data-l10n-name="icon"/> <b>{ $addon-name }</b> ਵੇਖੀਏ।
 return-to-amo-add-extension-label = ਇਕਸਟੈਨਸ਼ਨ ਜੋੜੋ
 return-to-amo-add-theme-label = ਥੀਮ ਜੋੜੋ
+return-to-amo-theme-install-complete-label = ਥੀਮ ਇੰਸਟਾਲ ਕੀਤਾ
+return-to-amo-extension-install-complete-label = ਇਕਸਟੈਨਸ਼ਨ ਇੰਸਟਾਲ ਕੀਤੀ
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous } ਤੋਂ
 mr1-onboarding-theme-header = ਇਸ ਨੂੰ ਆਪਣਾ ਬਣਾਓ
 mr1-onboarding-theme-subtitle = ਥੀਮ ਨਾਲ { -brand-short-name } ਨੂੰ ਸ਼ਿੰਗਾਰੋ
 mr1-onboarding-theme-secondary-button-label = ਹੁਣੇ ਨਹੀਂ
-newtab-wallpaper-onboarding-title = ਰੰਗ ਪਾ ਕੇ ਵੇਖੋ
-newtab-wallpaper-onboarding-subtitle = ਆਪਣੀ ਟੈਬ ਨੂੰ ਤਾਜ਼ਾ ਦਿੱਖ ਦੇਣ ਲਈ ਵਾਲਪੇਪਰ ਦੀ ਚੋਣ ਕਰੋ।
-newtab-wallpaper-onboarding-primary-button-label = ਵਾਲਪੇਪਰ ਲਾਓ
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = ਸਿਸਟਮ ਥੀਮ
 mr1-onboarding-theme-label-light = ਹਲਕਾ
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = ਸਾਈਨ ਅੱਪ ਕਰੋ ਜਾਂ ਆਪ
 
 tab-groups-onboarding-feature-callout-title = ਘੱਟ ਗਾਹ ਅਤੇ ਵੱਧ ਫੋਕਸ ਵਾਸਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਅਜ਼ਮਾ ਕੇ ਵੇਖੋ
 tab-groups-onboarding-feature-callout-subtitle = ਸੁਚੱਜੇ ਢੰਗ ਨਾਲ ਇੰਤਜ਼ਾਮ ਵਾਸਤੇ ਇੱਕ ਟੈਬ ਨੂੰ ਦੂਜੀ ਟੈਬ ਉੱਤੇ ਰੱਖ ਕੇ ਆਪਣਾ ਪਹਿਲਾਂ ਗਰੁੱਪ ਬਣਾਓ।
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = ਸਭ ਟੈਬਾਂ ਦੀ ਸੂਚੀ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਲੱਭੋ।
+tab-groups-onboarding-create-group-title-2 = ਕਿਸੇ ਵੀ ਸਮੇਂ ਆਪਣੇ ਟੈਬਾਂ ਦੇ ਗਰੁੱਪ ਨੂੰ ਲੱਭੋ।
+tab-groups-onboarding-create-group-no-alltabs-button-title = ਸਿਰਨਾਵਾਂ ਪੱਟੀ ਵਿੱਚ ਆਪਣੇ ਗਰੁੱਪਾਂ ਨੂੰ ਖੋਜ ਕੇ ਲੱਭੋ।
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = ਜਦੋਂ ਤੁਸੀਂ ਕਿਸੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਕਰਦੇ ਹੋ ਤਾਂ ਸਭ ਟੈਬਾਂ ਦੀ ਸੂਚੀ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਇਸ ਨੂੰ ਫੇਰ ਖੋਲ੍ਹੋ।
+tab-groups-onboarding-saved-groups-title-2 = ਜਦੋਂ ਤੁਸੀਂ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਕਰਦੇ ਹੋ ਤਾਂ ਤੁਸੀਂ ਇਸ ਨੂੰ ਕਿਵੇਂ ਵੀ ਵੇਲੇ ਇੱਥੋਂ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ।
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = ਸਿਰਨਾਵਾਂ ਪੱਟੀ ਵਿੱਚ ਆਪਣੇ ਬੰਦ ਕੀਤੇ ਗਰੁੱਪਾਂ ਨੂੰ ਖੋਜ ਕੇ ਲੱਭੋ।
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = ਸਭ ਟੈਬਾਂ ਦੀ ਸੂਚੀ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਫੇਰ ਖੋਲ੍ਹੋ।
+tab-groups-onboarding-session-restore-title = ਕਿਸੇ ਵੀ ਸਮੇਂ ਆਪਣੇ ਟੈਬਾਂ ਦੇ ਗਰੁੱਪ ਨੂੰ ਵਾਪਸ ਖੋਲ੍ਹੋ।
+tab-groups-onboarding-dismiss = ਠੀਕ ਹੈ
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,101 @@ multi-profile-spotlight-cta = ਪਰੋਫਾਈਲ ਬਣਾਓ
 multi-profile-callout-title = ਕੰਮ ਅਤੇ ਮੌਜ ਮਸਤੀ ਲਈ ਅਲਹਿਦਾ ਪਰੋਫ਼ਾਈਲ ਬਣਾਓ
 multi-profile-callout-subtitle = ਪਰੋਫ਼ਾਈਲ ਤੁਹਾਡੀ ਬਰਾਊਜ਼ਰ ਜਾਣਕਾਰੀ, ਜਿਸ ਵਿੱਚ ਖੋਜ ਅਤੀਤ ਅਤੇ ਪਾਸਵਰਡ ਹੁੰਦੇ ਹਨ, ਨੂੰ ਬਿਲਕੁਲ ਵੱਖੋ-ਵੱਖਰਾ ਰੱਖਦੇ ਹਨ।
 multi-profile-callout-cta = ਪਰੋਫਾਈਲ ਬਣਾਓ
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = ਡਾਊਨਲੋਡ, ਸਿੰਕ ਕਰੋ ਅਤੇ ਤਿਆਰ!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = ਮੋਬਾਈਲ ਉੱਤੇ { -brand-product-name } ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰੋ। ਇੱਕ ਵਾਰ ਇੰਸਟਾਲ ਹੋਣ ਦੇ ਬਾਅਦ ਆਪਣੇ ਪਾਸਵਰਡਾਂ, ਬੁੱਕਮਾਰਕਾਂ ਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਲੈਣ ਲਈ “ਮੋਬਾਈਲ ਨਾਲ ਸਿੰਕ ਕਰੋ” ਨੂੰ ਚੁਣੋ।
+dismiss-button-label = ਖ਼ਾਰਜ ਕਰੋ
+sync-to-mobile-button-label = ਮੋਬਾਈਲ ਨਾਲ ਸਿੰਕ ਕਰੋ
+desktop-to-mobile-qr-code-alt =
+    .aria-label = ਮੋਬਾਈਲ ਵਾਸਤੇ { -brand-product-name } ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ QR ਕੋਡ
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title = Windows 11 ਲਈ ਅੱਪਗਰੇਡ ਕਰ ਰਹੇ ਹੋ? ਆਓ ਫੇਰ ਤੁਹਾਡੇ { -brand-product-name } ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈ ਲਈਏ।
+create-backup-screen-1-subtitle = ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਬੁੱਕਮਾਰਕਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ 1–2 ਮਿੰਟ ਵਿੱਚ ਆਪਣੇ-ਆਪ ਸੁਰੱਖਿਤ ਕਰਦਾ ਹੈ।
+create-backup-screen-1-flair = ਸਿਫ਼ਾਰਸ਼ੀ
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">ਹੋਰ ਜਾਣੋ</a>
+create-backup-screen-1-sync-label = { -brand-product-name } ਨਾਲ ਸਿੰਕ ਕਰੋ
+create-backup-screen-1-sync-body = ਸਾਰੇ ਸਾਈਨ ਇਨ ਕੀਤੇ ਡਿਵਾਈਸਾਂ ਦਾ ਬੈਕਅੱਪ
+create-backup-screen-1-backup-label = ਪੀਸੀ ਉੱਤੇ ਬੈਕਅੱਪ
+create-backup-screen-1-backup-body = ਆਪਣੇ ਡਿਵਾਈਸ ਜਾਂ OneDrive ਉੱਤੇ ਸੰਭਾਲਦਾ ਹੈ
+create-backup-select-tile-button-label = ਚੁਣੋ
+create-backup-back-button-label = ਪਿੱਛੇ
+create-backup-show-fewer =
+    .label = ਇਸ ਵਾਂਗ ਘੱਟ ਵੇਖਾਓ
+create-backup-screen-2-title = ਬੈਕਅੱਪ ਲਈ { -brand-product-name } ਡਾਟੇ ਨੂੰ ਚੁਣੋ
+create-backup-screen-2-subtitle = ਮਿੰਟ ਕੁ ਹੀ ਲੱਗੇਗਾ। ਦਿਨ ਵਿੱਚ ਇੱਕ ਵਾਰ ਤੁਹਾਡੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਜਾਂਦਾ ਹੈ।
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = ਸੌਖਾ ਸੈਟਅੱਪ
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = ਬੁੱਕਮਾਰਕ, ਅਤੀਤ, ਸੈਟਿੰਗਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = ਪਾਸਵਰਡ ਅਤੇ ਭੁਗਤਾਨ ਨੂੰ ਸ਼ਾਮਲ ਨਾ ਕਰੋ
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = ਇੰਕ੍ਰਿਪਟ ਨਹੀਂ ਹੈ
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = ਸਾਰਾ ਡਾਟਾ
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = ਪਾਸਵਰਡ ਅਤੇ ਭੁਗਤਾਨ ਜਾਣਕਾਰੀ ਦੇ ਸਮੇਤ
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = ਪਾਸਵਰਡ ਨਾਲ ਇੰਕ੍ਰਿਪਟ ਕੀਤਾ
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = ਆਪਣੇ ਬੈਕਅੱਪ ਨੂੰ ਤੁਸੀਂ ਕਿੱਥੇ ਸੰਭਾਲਣਾ ਚਾਹੁੰਦੇ ਹੋ?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = ਕੋਈ ਬੈਕਅੱਪ ਫ਼ਾਇਲ ਪਾਸਵਰਡ ਬਣਾਓ
+create-backup-screen-3-subtitle = ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਇੰਕ੍ਰਿਪਟ ਕਰਨ ਲਈ ਚਾਹੀਦਾ ਹੈ। ਇਸ ਨੂੰ ਅਜਿਹੀ ਥਾਂ ਉੱਤੇ ਰੱਖੋ, ਜੋ ਤੁਹਾਨੂੰ ਯਾਦ ਰਹੇ।
+fx-backup-opt-in-header = ਫ਼ਾਇਲ ਦਾ ਟਿਕਾਣਾ ਚੁਣੋ
+fx-backup-opt-in-create-password-label = ਪਾਸਵਰਡ ਦਿਓ
+fx-backup-opt-in-confirm-btn-label = ਜਾਰੀ ਰੱਖੋ
+fx-backup-opt-in-cancel-btn-label = ਪਿੱਛੇ
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = ਤੁਹਾਡੇ ਬੈਕਅੱਪ ਲਈ ਸਮਾਂ ਤੈਅ ਕੀਤਾ ਗਿਆ ਹੈ
+fx-backup-confirmation-screen-close-button = ਬੰਦ ਕਰੋ
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = ਸਾਰੇ ਬਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਵਿੱਚ ਸ਼ਾਮਲ ਹਨ
+fx-backup-confirmation-screen-all-data-item-text-2 = ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਉੱਤੇ ਸੰਭਾਲਿਆ
+fx-backup-confirmation-screen-all-data-item-text-3 = ਇੰਕ੍ਰਿਪਟ ਕੀਤਾ ਅਤੇ ਪਾਸਵਰਡ ਨਾਲ ਸੁਰੱਖਿਅਤ ਬਣਾਇਆ
+fx-backup-confirmation-screen-easy-setup-item-text-1 = ਬੁੱਕਮਾਰਕ, ਅਤੀਤ, ਸੈਟਿੰਗਾਂ ਅਤੇ ਹੋਰ ਡਾਟੇ ਦੇ ਸਮੇਤ
+fx-backup-confirmation-screen-easy-setup-item-text-2 = ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਉੱਤੇ ਸੰਭਾਲਿਆ
+fx-backup-confirmation-screen-easy-setup-item-text-3 = ਪਾਸਵਰਡ ਅਤੇ ਭੁਗਤਾਨ ਦੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਨਹੀਂ ਹੈ
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਵਾਸਤੇ <a data-l10n-name="settings">ਸੈਟਿੰਗਾਂ</a> ਉੱਤੇ ਜਾਓ।
+fx-backup-confirmation-screen-item-subtext-2 = ਜੇ ਤੁਹਾਨੂੰ ਮੁੜ-ਇੰਸਟਾਲ ਕਰਨ ਦੀ ਲੋੜ ਹੋਈ ਤਾਂ { -brand-short-name } ਤੁਹਾਡੇ ਬੈਕਅੱਪ ਨੂੰ ਲੱਭੇਗਾ।
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = ਬੈਕਅੱਪ ਤੋਂ ਬਹਾਲ ਕਰੋ
+restore-from-backup-title = { -brand-short-name } ਦਾ ਬੈਕਅੱਪ ਜਿਵੇਂ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ, ਉਵੇਂ ਲੈ ਲਈਏ
+restore-from-backup-subtitle = ਵਾਪਸ ਬਰਾਊਜ਼ ਕਰਨ ਲਈ ਆਪਣੇ ਸਾਰੇ ਬੁੱਕਮਾਰਕਾਂ, ਅਤੀਤ ਅਤੇ ਹੋਰ ਡਾਟੇ ਨੂੰ ਬਹਾਲ ਕਰੋ।
+restore-from-backup-secondary-button = ਬਹਾਲ ਨਾ ਕਰੋ
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = ਅਸੀਂ ਆ ਗਏ ਹਾਂ! ਤੁਹਾਡੇ { -brand-short-name } ਡਾਟੇ ਨੂੰ ਬਹਾਲ ਕੀਤਾ ਜਾ ਚੁੱਕਾ ਹੈ।
+restored-from-backup-success-with-checklist-subtitle = ਆਪਣੇ ਮਨਪਸੰਦ ਪਰਦੇਦਾਰੀ ਨੂੰ ਪਹਿਲ ਦੇਣ ਵਾਲੇ ਬਰਾਊਜ਼ਰ ਨੂੰ ਆਪਣੇ ਹੱਥ ਹੇਠ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?
+restored-from-backup-success-no-checklist-subtitle = ਤੁਸੀਂ <a data-l10n-name="settings">ਸੈਟਿੰਗਾਂ</a> ਵਿੱਚ ਇਸ ਡਿਵਾਈਸ ਲਈ ਬੈਕਅੱਪ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।
+restored-from-backup-success-with-checklist-primary-button = ਸੰਭਾਲੋ ਅਤੇ ਜਾਰੀ ਰੱਖੋ
+restored-from-backup-success-with-checklist-secondary-button = ਇਹ ਪੜਾਅ ਛੱਡੋ
+restored-from-backup-success-no-checklist-primary-button = ਜਾਰੀ ਰੱਖੋ
+restored-from-backup-error-title = ਓਹ ਹੋ, ਤੁਹਾਡੀ ਬੈਕਅੱਪ ਫ਼ਾਇਲ ਨਾਲ ਸਮੱਸਿਆ ਆਈ ਸੀ।
+restored-from-backup-error-primary-button = ਬੰਦ ਕਰੋ
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = ਆਪਣੇ { -brand-short-name } ਤਜਰਬੇ ਨੂੰ ਪਸੰਦ ਮੁਤਾਬਕ ਢਾਲੋ
+onboarding-personalization-use-case-title = { -brand-short-name } ਨੂੰ ਤੁਸੀਂ ਕੰਮ ਲਈ ਵਰਤੋਗੇ?
+onboarding-personalization-use-case-personal-option = ਨਿੱਜੀ
+onboarding-personalization-use-case-school-option = ਸਕੂਲ
+onboarding-personalization-use-case-work-option = ਕੰਮ
+onboarding-personalization-motivation-title = { -brand-short-name } ਦਾ ਕਿਹੜਾ ਫ਼ੀਚਰ ਤੁਹਾਡੇ ਲਈ ਸਭ ਤੋਂ ਜ਼ਰੂਰੀ ਹੈ?
+onboarding-personalization-motivation-privacy-option = ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ
+onboarding-personalization-motivation-productivity-option = ਉਤਪਾਦਨ
+onboarding-personalization-motivation-other-option = ਹੋਰ

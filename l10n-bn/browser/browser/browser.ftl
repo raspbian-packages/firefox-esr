@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -51,6 +48,78 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } ব্যক্তিগত ব্রাউজিং
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } ব্যক্তিগত ব্রাউজিং
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } ব্যক্তিগত ব্রাউজিং
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } ব্যক্তিগত ব্রাউজিং
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — { -brand-full-name } ব্যক্তিগত ব্রাউজিং
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — ব্যক্তিগত ব্রাউজিং
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } ব্যক্তিগত ব্রাউজিং
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — ব্যক্তিগত ব্রাউজিং
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — ব্যক্তিগত ব্রাউজিং
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
+browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — ব্যক্তিগত ব্রাউজিং
+       *[other] { -brand-full-name } ব্যক্তিগত ব্রাউজিং
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = ব্যক্তিগত ব্রাউজিং
 
 ##
 
@@ -77,6 +146,10 @@ urlbar-default-notification-anchor =
     .tooltiptext = বার্তা প্যানেল খুলুন
 urlbar-geolocation-notification-anchor =
     .tooltiptext = অবস্থান অনুরোধ প্যানেল খুলুন
+urlbar-localhost-notification-anchor =
+    .tooltiptext = এই সাইটের জন্য লোকাল ডিভাইস অ্যাক্সেস পরিচালনা করুন
+urlbar-local-network-notification-anchor =
+    .tooltiptext = এই সাইটের সাথে আপনার লোকাল নেটওয়ার্ক অ্যাক্সেস শেয়ারিং পরিচালনা করুন
 urlbar-xr-notification-anchor =
     .tooltiptext = ভার্চুয়াল রিয়েলিটি অনুমোদন প্যানেলে যান
 urlbar-storage-access-anchor =
@@ -123,6 +196,32 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = সাহায্য নিন
     .accesskey = h
+urlbar-result-menu-dismiss-suggestion =
+    .label = এই পরামর্শটি বাতিল করুন
+    .accesskey = D
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = { -firefox-suggest-brand-name } সম্পর্কে আরও জানুন
+    .accesskey = L
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = ভুল লোকেশন রিপোর্ট করুন
+urlbar-result-menu-show-less-frequently =
+    .label = কম ঘন ঘন দেখান
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = আবহাওয়ার পরামর্শ দেখাবেন না
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = মেনু খুলুন
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = আপনার মতামতের জন্য ধন্যবাদ
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = আপনার প্রতিক্রিয়ার জন্য ধন্যবাদ। এখন থেকে আপনি আর আবহাওয়ার সুপারিশ দেখতে পাবেন না।
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -148,6 +247,10 @@ urlbar-search-mode-actions = অ্যাকশন
 
 urlbar-geolocation-blocked =
     .tooltiptext = আপনি এই ওয়েবসাইটের জন্য অবস্থানগত তথ্য ব্লক করেছেন
+urlbar-localhost-blocked =
+    .tooltiptext = আপনি এই ওয়েবসাইটের জন্য লোকাল ডিভাইস সংযোগ বন্ধ করেছেন।
+urlbar-local-network-blocked =
+    .tooltiptext = আপনি এই ওয়েবসাইটের জন্য লোকাল নেটওয়ার্ক সংযোগ বন্ধ করেছেন।
 urlbar-xr-blocked =
     .tooltiptext = আপনি এই ওয়েবসাইটের জন্য ভার্চুয়াল রিয়েলিটি ডিভাইস এক্সেস ব্লক করেছেন।
 urlbar-web-notifications-blocked =
@@ -259,6 +362,9 @@ quickactions-cmd-addons2 = অ্যাড-অন
 quickactions-bookmarks2 = বুকমার্ক পরিচালনা করুন
 quickactions-cmd-bookmarks = বুকমার্ক
 # Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = সাম্প্রতিক ইতিহাস মুছে ফেলুন
+quickactions-cmd-clearrecenthistory = সাম্প্রতিক ইতিহাস মুছুন, ইতিহাস
+# Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = ইতিহাস সাফ করুন
 quickactions-cmd-clearhistory = ইতিহাস পরিষ্কার করুন
 # Opens about:downloads page
@@ -267,6 +373,10 @@ quickactions-cmd-downloads = ডাউনলোড
 # Opens about:addons page in the extensions section
 quickactions-extensions = এক্সটেনশন পরিচালনা করুন
 quickactions-cmd-extensions = এক্সটেনশন
+# Opens Firefox View
+quickactions-firefoxview = খুলুন { -firefoxview-brand-name }
+# Opens SUMO home page
+quickactions-help = { -brand-product-name } সাহায্য
 # Opens the devtools web inspector
 quickactions-inspector2 = বিকাশকারী সরঞ্জাম খুলুন
 quickactions-cmd-inspector = পরিদর্শক, devtools
@@ -281,7 +391,6 @@ quickactions-print2 = প্রিন্ট পৃষ্ঠা
 quickactions-cmd-print = মুদ্রণ
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = পৃষ্ঠা পিডিএফ হিসাবে সংরক্ষণ করুন
-quickactions-cmd-savepdf = পিডিএফ
 # Opens a new private browsing window
 quickactions-private2 = ব্যক্তিগত উইন্ডো খুলুন
 quickactions-cmd-private = ব্যক্তিগত ব্রাউজিং
@@ -293,6 +402,7 @@ quickactions-restart = পুনরায় চালু করুন { -brand-
 quickactions-cmd-restart = রিস্টার্ট করুন
 # Opens the screenshot tool
 quickactions-screenshot3 = একটি স্ক্রিনশট নিন
+quickactions-cmd-screenshot2 = স্ক্রিনশট, একটি স্ক্রিনশট তুলুন
 quickactions-cmd-screenshot = স্ক্রিনশট
 # Opens about:preferences
 quickactions-settings2 = সেটিংস পরিচালনা করুন
@@ -309,6 +419,10 @@ quickactions-cmd-viewsource = উৎস দেখুন, উৎস
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = দ্রুত ক্রিয়া সম্পর্কে আরও জানুন
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = নির্বাচন করতে ট্যাব চাপুন:
 
 ## Bookmark Panel
 
@@ -497,6 +611,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = অনুসন্ধান করুন বা ঠিকানা দিন
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = ঠিকানা লিখুন
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -576,6 +694,8 @@ urlbar-result-action-visit = পরিদর্শন করুন
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = ট্যাবে স্যুইচ করুন · <span>{ $container }</span>৷
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = নামহীন গ্রুপ
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = ক্লিপবোর্ড থেকে দেখুন
 # Directs a user to press the Tab key to perform a search with the specified
@@ -594,18 +714,92 @@ urlbar-result-action-before-tabtosearch-other = { $engine } অনুসন্�
 #  $engine (String): the name of a search engine that searches the entire Web
 #  (e.g. Google).
 urlbar-result-action-tabtosearch-web = ঠিকানাদণ্ড থেকে সরাসরি { $engine } দ্বারা অনুসন্ধান করুন।
+# Action text for copying to clipboard.
+urlbar-result-action-copy-to-clipboard = কপি
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = অনির্ধারিত
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } · স্পন্সরকৃত
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = আপনার সার্চ বারেই শেয়ার বাজারের তথ্য পান
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = পরামর্শ দেখান
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = এখন নয়
+urlbar-result-realtime-opt-in-dismiss = বাতিল
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = এই পরামর্শগুলি দেখাবেন না
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = মার্কেটের পরামর্শগুলি দেখাবেন না
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = আপনার প্রতিক্রিয়ার জন্য ধন্যবাদ। এখন থেকে আপনি আর মার্কেটের পরামর্শগুলি দেখবেন না।
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = আপনার প্রতিক্রিয়ার জন্য ধন্যবাদ। এখন থেকে আপনি আর এই পরামর্শগুলি দেখবেন না।
 
 ## Strings used for buttons in the urlbar
 
+urlbar-searchmode-dropmarker =
+    .tooltiptext = একটি সার্চ ইঞ্জিন বাছুন
+urlbar-searchmode-bookmarks =
+    .label = বুকমার্ক
+urlbar-searchmode-tabs =
+    .label = ট্যাব
+urlbar-searchmode-history =
+    .label = ইতিহাস
+urlbar-searchmode-actions =
+    .label = অ্যাকশন
+urlbar-searchmode-exit-button =
+    .tooltiptext = বন্ধ
+urlbar-searchmode-default =
+    .tooltiptext = ডিফল্ট সার্চ ইঞ্জিন
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = অনুসন্ধান সেটিংস
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = নতুন
+urlbar-searchmode-button-no-engine =
+    .label = কোনো শর্টকাট নির্বাচন করা হয়নি, একটি শর্টকাট বাছুন
+    .tooltiptext = কোনো শর্টকাট নির্বাচন করা হয়নি, একটি শর্টকাট বাছুন
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
 ## In these actions "Search" is a verb, followed by where the search is performed.
 
 urlbar-result-action-search-bookmarks = বুকমার্ক অনুসন্ধান করুন
+urlbar-result-action-search-history = অনুসন্ধান ইতিহাস
+urlbar-result-action-search-tabs = অনুসন্ধান ট্যাব
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = খুলুন { $group }
 
 ## Labels shown above groups of urlbar results
 
+# A label shown above the search suggestions group in the urlbar results. It
+# should use sentence case.
+# Variables
+#  $engine (String): the name of the search engine providing the suggestions
+urlbar-group-search-suggestions =
+    .label = { $engine } সুপারিশসমূহ
+# A label shown above Quick Actions in the urlbar results.
+urlbar-group-quickactions =
+    .label = দ্রুত পদক্ষেপ
+# A label shown above the recent searches group in the urlbar results.
+# Variables
+#  $engine (String): the name of the search engine used to search.
+urlbar-group-recent-searches =
+    .label = সাম্প্রতিক অনুসন্ধান
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = স্পন্সরকৃত
 
 ## Reader View toolbar buttons
 
@@ -810,10 +1004,6 @@ picture-in-picture-hide-toggle =
     .label = পিকচার-ইন-পিকচার টগল লুকান
     .accesskey = H
 
-## Since the default position for PiP controls does not change for RTL layout,
-## right-to-left languages should use "Left" and "Right" as in the English strings,
-
-
 ##
 
 
@@ -826,6 +1016,8 @@ navbar-accessible =
     .aria-label = ন্যাভিগেশন
 navbar-downloads =
     .label = ডাউনলোড
+navbar-overflow-2 =
+    .tooltiptext = আরও টুলস
 navbar-overflow =
     .tooltiptext = আরও সরঞ্জাম…
 # Variables:
@@ -852,13 +1044,19 @@ tabs-toolbar-list-all-tabs =
     .label = সব ট্যাবের তালিকা
     .tooltiptext = সব ট্যাবের তালিকা
 
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = পিন করতে এখানে ট্যাবটি ড্রপ করুন
+
 ## Infobar shown at startup to suggest session-restore
 
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
 restore-session-startup-suggestion-message = <strong>পূর্ববর্তী ট্যাবগুলি খুলবেন?</strong> আপনি { -brand-short-name } অ্যাপ্লিকেশন মেনুতে গিয়ে <img data-l10n-name="icon"/>, ইতিহাস থেকে আপনার আগের সেশন পুনরুদ্ধার করতে পারেন।
+restore-session-startup-suggestion-button = আমাকে দেখান কিভাবে
 
 ## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
 
+filepicker-blocked-infobar = আপনার সংস্থা এই কম্পিউটারে লোকাল ফাইলগুলিতে অ্যাক্সেস ব্লক করেছে
 
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
@@ -866,24 +1064,18 @@ data-reporting-notification-message = { -brand-short-name } স্বয়ং�
 data-reporting-notification-button =
     .label = আমি কি শেয়ার করি তা নির্বাচন করুন
     .accesskey = C
-
-## Unified extensions (toolbar) button
-
-
-## Unified extensions button when permission(s) are needed.
-## Note that the new line is intentionally part of the tooltip.
-
-
-## Unified extensions button when some extensions are quarantined.
-## Note that the new line is intentionally part of the tooltip.
-
-
-## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
-## Note that the new line is intentionally part of the tooltip.
-
+# Label for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-label = ব্যক্তিগত ব্রাউজিং
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = ব্যক্তিগত ব্রাউজিং
+content-analysis-panel-title = তথ্য সুরক্ষা
 
 ## Private browsing reset button
 
+reset-pbm-panel-heading = আপনার প্রাইভেট সেশন শেষ করবেন?
+reset-pbm-panel-description = সব প্রাইভেট ট্যাব বন্ধ করুন এবং হিস্টরি, কুকি এবং অন্যান্য সকল সাইট ডেটা মুছে ফেলুন।
+reset-pbm-panel-complete = ব্যক্তিগত সেশনের তথ্য মুছে ফেলা হয়েছে
 
 ## Autorefresh blocker
 
@@ -895,12 +1087,14 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
+firefox-relay-offer-why-to-use-relay = আমাদের নিরাপদ ও সহজে ব্যবহারযোগ্য মাস্কগুলি আপনার পরিচয় সুরক্ষিত রাখে এবং আপনার ইমেইল ঠিকানা লুকিয়ে স্প্যাম প্রতিরোধ করে ।
 
 ## Add-on Pop-up Notifications
 
 popup-notification-addon-install-unsigned =
     .value = (অপরিক্ষীত)
 popup-notification-xpinstall-prompt-learn-more = নিরাপদে অ্যাড-অন ইনস্টল করা সম্পর্কে আরও জানুন
+popup-notification-xpinstall-prompt-block-url = বিস্তারিত দেখুন
 
 ## Pop-up warning
 
@@ -933,6 +1127,7 @@ popup-show-popup-menuitem =
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
+file-picker-failed-open = Windows ফাইল-ডায়লগ খোলা যায়নি। কোনও ফাইল বা ফোল্ডার নির্বাচন করা যায়নি।
 
 # Button used with file-picker-crashed-save-default. Opens the folder in Windows
 # Explorer, with the saved file selected and in focus.
@@ -940,3 +1135,28 @@ popup-show-popup-menuitem =
 # The wording here should be consistent with the Windows variant of
 # `downloads-cmd-show-menuitem-2` and similar messages.
 
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = সেটআপ শেষ করুন
+
+## The urlbar trust icon & panel
+
+trustpanel-connection-label-secure = সংযোগ সুরক্ষিত
+trustpanel-connection-label-insecure = সংযোগ নিরাপদ নয়
+trustpanel-header-disabled = আপনি সুরক্ষা বন্ধ করে দিয়েছেন
+trustpanel-clear-cookies-button = কুকি ও সাইট ডেটা মুছে ফেলুন
+trustpanel-privacy-link = প্রাইভেসি সেটিংস
+trustpanel-clear-cookies-subview-button-cancel = বাতিল
+trustpanel-siteinformation-morelink = আরও সাইটের তথ্য
+trustpanel-blocker-see-all = সব দেখুন
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-insecure-section-header = আপনার সংযোগ নিরাপদ নয়
+trustpanel-insecure-description = আপনি এই সাইটে যে ডেটা পাঠাচ্ছেন তা এনক্রিপ্ট করা নেই। এটি দেখা, চুরি বা পরিবর্তন করা যেতে পারে।
+trustpanel-list-label-tracking-content = ট্র্যাকিং কন্টেন্ট
+trustpanel-tracking-content-tab-list-header = এই সাইটগুলি আপনাকে ট্র্যাক করার চেষ্টা করছে:
+trustpanel-fingerprinter-list-header = এই সাইটগুলো আপনার ফিঙ্গারপ্রিন্ট নেওয়ার চেষ্টা করছে:
+trustpanel-cryptominer-tab-list-header = এই সাইটগুলো ক্রিপ্টো মাইনিং করার চেষ্টা করছে:

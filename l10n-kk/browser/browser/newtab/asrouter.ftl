@@ -57,7 +57,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } пайдаланушы
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Бетбелгілерді барлық жерде синхрондаңыз.
 cfr-doorhanger-bookmark-fxa-body = Тамаша табу! Енді мобильді құрылғыларыңызда бұл бетбелгісіз қалмаңыз. { -fxaccount-brand-name } қызметімен жұмысты бастаңыз.
@@ -66,6 +66,7 @@ cfr-doorhanger-bookmark-fxa-link-text = Бетбелгілерді қазір с
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Жабу батырмасы
     .title = Жабу
+fxa-adoption-primary-button-label = Тіркелу
 
 ## Protections panel
 
@@ -298,6 +299,7 @@ root-certificate-succession-infobar-secondary-button =
 ## Root Certificate Succession Windows Background Notification
 
 root-certificate-windows-background-notification-title = { -brand-short-name } өнімінің маңызды жаңартуын өткізіп алдыңыз
+root-certificate-windows-background-notification-subtitle = Браузерді жаңартпасаңыз, оның кейбір бөліктері жақында жұмысын тоқтатады. Қазір — ең жаңа қорғаныс пен мүмкіндіктерді алу үшін таптырмас уақыт.
 root-certificate-windows-background-notification-learn-more-button = Көбірек білу
 root-certificate-windows-background-notification-update-button = { -brand-short-name } жаңарту
 
@@ -307,6 +309,8 @@ fxa-menu-message-close-button =
     .title = Жабу
     .aria-label = Жабу
 fxa-menu-message-sign-up-button = Тіркелу
+fxa-menu-message-sign-in-button = Кіру
+fxa-menu-message-sync-button = Синхрондауды бастау
 fxa-menu-message-sync-devices-primary-text = Барлық құрылғыларыңызды синхрондау
 fxa-menu-message-sync-devices-secondary-text = { -brand-short-name } қолданатын барлық жерде бетбелгілер мен парольдер сияқты ақпаратыңызды дереу алыңыз.
 fxa-menu-message-sync-devices-collapsed-text = Барлық құрылғыларыңызды синхрондау
@@ -339,3 +343,43 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Жекелікке бағытталған таңдаулы браузеріңізді қасыңызда ұстауға болатынын еске саламыз. { -brand-short-name } сілтемелерді ашатын негізгі браузер қылыңыз және тапсырмалар панеліне бекітіңіз.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Жекелікке бағытталған таңдаулы браузеріңізді қасыңызда ұстауға болатынын еске саламыз. { -brand-short-name } сілтемелерді ашатын негізгі браузер қылыңыз және тапсырмалар панелі мен Бастау мәзіріне бекітіңіз.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-primary-label = { -brand-short-name } қор көшірмесін жасау
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Windows 11 жүйесіне өтудесіз бе? Бетбелгілер мен парольдерді жоғалтпаңыз.
+windows-10-eos-sync-toast-primary-label = Бастау
+windows-10-eos-sync-toast-secondary-label = Кейінірек еске салу
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-sync-primary-button = { -brand-shorter-name } сақтық көшірмесін жасау
+windows-10-eos-challenger-pin-primary-button = { -brand-shorter-name } бекіту
+windows-10-eos-sync-callout-privacy-info-button = Ненің бұғатталғанын қарау
+windows-10-eos-callout-addons-title = Қосымшаларды қолданып көріңіз: қарапайым жаңарту, үлкен әсер
+windows-10-eos-callout-addons-subtitle = Бұл кеңейтулер сіздің өнімділігіңізді арттырып, қорғалған әрі алаңдаушылықсыз болуыңызға көмектесу үшін таңдалды.
+windows-10-eos-callout-addons-primary-button = Біздің таңдауларымызды қараңыз
+windows-10-eos-sync-callout-addons-title = Windows 10 жүйесінен жаңартылған кезде қосымшаларыңызды жоғалтпаңыз.
+windows-10-eos-sync-callout-next-button = Келесі
+windows-10-eos-sync-callout-get-started-button = Бастау
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-whats-new-button = Жаңалықтарын білу
+windows-10-eos-feature-toast-dismiss-button = Елемеу
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-learn-more = Көбірек білу
+etp-strict-exceptions-infobar-button = Түзетулерді іске асыру
+    .accesskey = а
+etp-strict-exceptions-infobar-not-now = Қазір емес
+    .accesskey = м

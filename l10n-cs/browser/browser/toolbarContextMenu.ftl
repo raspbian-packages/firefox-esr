@@ -31,6 +31,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Obnovit zavřené panely
         }
     .accesskey = b
+toolbar-context-turn-on-vertical-tabs =
+    .label = Zapnout svislé panely
+toolbar-context-turn-off-vertical-tabs =
+    .label = Vypnout svislé panely
+toolbar-context-customize-sidebar =
+    .label = Přizpůsobit postranní lištu
 toolbar-context-menu-manage-extension =
     .label = Nastavení tohoto rozšíření
     .accesskey = e
@@ -55,6 +61,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Zobrazit podrobnosti při zahájení stahování
     .accesskey = s
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Vždy zobrazovat na liště
+    .accesskey = V
 toolbar-context-menu-remove-from-toolbar =
     .label = Odebrat z lišty
     .accesskey = d

@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = Blokeatutako orria
 neterror-captive-portal-page-title = Hasi saioa sarean
 neterror-dns-not-found-title = Ez da zerbitzaria aurkitu
 neterror-malformed-uri-page-title = URL baliogabea
+general-body-title = Kontuz. Badirudi zerbait oker dagoela.
+problem-with-this-site-title = Badirudi arazo bat dagoela gune honekin
 
 ## Error page actions
 
@@ -43,6 +45,7 @@ neterror-load-error-connection = Beste inolako orririk ezin baduzu kargatu, egia
 neterror-load-error-firewall = Ordenagailua edo sarea suebaki edo proxy baten bidez babestuta badaude, egiaztatu { -brand-short-name }(e)k webera sartzeko baimena daukala.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Sare lokaleko orri bat kargatzen saiatzen ari bazara, egiaztatu { -brand-short-name }(e)k sare lokalerako baimena duela macOS-en pribatutasun- eta segurtasun-ezarpenetan.
+neterror-http-error-page = Ziurtatu webgunearen helbidea ondo idatzi duzula.
 neterror-captive-portal = Internetera sartu ahal izateko saioa hasi behar duzu sare honetan.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -51,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Helbide zuzena sartu baduzu, ondore
 neterror-dns-not-found-hint-try-again = Saiatu berriro geroago
 neterror-dns-not-found-hint-check-network = Egiaztatu zure Interneterako konexioa
 neterror-dns-not-found-hint-firewall = Egiaztatu { -brand-short-name }(e)k webera sartzeko baimenak dituela (konektatuta egon zaitezke baina suebaki baten atzean)
+neterror-dns-not-found-offline-hint-header = <strong>Zer egin dezakezu?</strong>
+neterror-dns-not-found-offline-hint-different-device = Saiatu beste gailu batean konektatzen.
+neterror-dns-not-found-offline-hint-modem = Egiaztatu zure modem edo routerra.
+neterror-dns-not-found-offline-hint-reconnect = Deskonektatu eta birkonektatu Wi-Fi sarera.
 
 ## TRR-only specific messages
 ## Variables:
@@ -74,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Ustekabeko arazoa.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name }(e)k ezin du gune honen helbiderako zure eskaera babestu gure konfiantzazko DNS ebazlearen bidez. Hona hemen zergatik:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name }(e)k ezin du gune honen helbiderako zure eskaera babestu gure DNS ebazle seguruaren bidez. Hona hemen zergatik:
 neterror-dns-not-found-native-fallback-heuristic = HTTPS againeko DNSa desgaitu egin da zure sarean.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name }(e) ezin izan du { $trrDomain } ostalarira konektatu.
 
@@ -98,6 +104,11 @@ neterror-proxy-connect-failure-settings = Egiaztatu proxy-aren konexioaren ezarp
 neterror-proxy-connect-failure-contact-admin = Jarri harremanetan sarearen kudeatzailearekin proxy-zerbitzaria martxan dagoela ziurtatzeko.
 neterror-content-encoding-error = Jarri harremanetan webgunearen jabeekin arazo honen berri emateko.
 neterror-unsafe-content-type = Jarri harremanetan webgunearen jabeekin arazo honen berri emateko.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth =
+    { -brand-short-name } ez da { $hostname } ostalariaz fidatzen
+    konexioa ez delako segurua. Saiatu URLa HTTPSra aldatzen.
 neterror-nss-failure-not-verified = Ikusten saiatzen ari zaren orria ezin da erakutsi jasotako datuen egiazkotasuna ezin delako egiaztatu.
 neterror-nss-failure-contact-website = Mesedez jarri harremanetan webgunearen jabeekin arazoaren berri emateko.
 # Variables:
@@ -151,7 +162,20 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Ez bazaizu <b>{ $mitm }</b>
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> guneak HTTP Strict Transport Security (HSTS) izeneko segurtasun-politika dauka eta { -brand-short-name } modu seguruan konekta daiteke soilik. Ezin duzu gunea bisitatzeko salbuespenik gehitu.
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = Ziurrenik ezer ez, litekeena baita gunearekin berarekin arazo bat dagoela.
+certerror-blocked-by-corp-headers-description = Batzuetan beraientzat eta zu bezalako jendearentzat babesak ezartzen dituzte webguneek, beste guneekin nahi ez diren interakzioetatik kanpo mantentzeko.
+certerror-coop-learn-more = Cross Origin Opener Policies (COOP) politikari buruzko argibide gehiago
+certerror-coep-learn-more = Cross Origin Embedder Policies (COEP) politikari buruzko argibide gehiago
 # Variables:
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Errore-kodea: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name }(e)k ezin du sortu konexio segurua { $hostname } helbideko zerbitzariarekin.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Badirudi gune honek segurtasun-arazo ezagunak dituen software zaharra darabilela.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Ziurtatu { -brand-short-name }(e)n azken bertsioa darabilzula. Zoaz Laguntza > { -brand-short-name }(r)i buruz menu-aukerara. Dagoeneko { -brand-short-name }(e)n azken bertsioa badarabilzu, litekeena da arazoa guneak berak izatea.

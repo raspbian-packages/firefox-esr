@@ -36,6 +36,9 @@ certificate-viewer-key-size = Андозаи калид
 certificate-viewer-inc-locality = Нишонии ҳуқуқӣ
 certificate-viewer-locality = Нишонӣ
 certificate-viewer-location = Ҷойгиршавӣ
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = Номи сабт
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = Рақами мушаххаси сабт
 certificate-viewer-method = Усул
 certificate-viewer-modulus = Модул
@@ -110,6 +113,8 @@ certificate-viewer-export = Содир кардан
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = (номаълум)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = гувоҳнома
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

@@ -12,9 +12,6 @@ about-webrtc-document-title = WebRTC Internals
 # translated. This string is used as a title for a file save dialog box.
 about-webrtc-save-page-dialog-title = spremi about:webrtc kao
 
-## These labels are for a disclosure which contains the information for closed PeerConnection sections
-
-
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
 about-webrtc-aec-logging-msg-label = AEC zapisnik
@@ -24,7 +21,7 @@ about-webrtc-aec-logging-on-state-msg = AEC zapisnik aktivan (razgovaraj s poziv
 about-webrtc-aec-logging-toggled-on-state-msg = AEC zapisnik aktivan (razgovaraj s pozivateljem par minuta i zatim zaustavi snimanje)
 # Variables:
 #  $path (String) - The path to which the aec log file is saved.
-about-webrtc-aec-logging-toggled-off-state-msg = Snimljene log datoteke je moguće pronaći u: { $path }
+about-webrtc-aec-logging-toggled-off-state-msg = Snimljene datoteke zapisnika se mogu pronaći u: { $path }
 
 ##
 
@@ -91,7 +88,7 @@ about-webrtc-debug-mode-off-state-label = Pokreni modus za otklanjanja grešaka
 about-webrtc-debug-mode-on-state-label = Prekini modus za otklanjanja grešaka
 about-webrtc-stats-heading = Statistika sesije
 about-webrtc-stats-clear = Izbriši povijest
-about-webrtc-log-heading = Zapisnik veze
+about-webrtc-log-heading = Zapisnik povezivanja
 about-webrtc-log-clear = Izbriši zapisnik
 about-webrtc-log-show-msg = prikaži zapisnik
     .title = klikni za rasklapanje ovog odjeljka
@@ -149,9 +146,6 @@ about-webrtc-time-elapsed = Proteklo vrijeme (s)
 about-webrtc-estimated-framerate = Procijenjena brzina okvira
 about-webrtc-rotation-degrees = Okretanje (u stupnjevima)
 
-## SSRCs are identifiers that represent endpoints in an RTP stream
-
-
 ## These are displayed on the button that shows or hides the
 ## PeerConnection configuration disclosure
 
@@ -180,9 +174,9 @@ about-webrtc-round-trip-time-ms = RTT ms
 ##
 
 about-webrtc-save-page-msg = stranica spremljena u: { $path }
-about-webrtc-debug-mode-off-state-msg = trace zapisnik je moguće pronaći na: { $path }
-about-webrtc-debug-mode-on-state-msg = modus za otklanjanja grešaka aktivan, staza zapisnika: { $path }
-about-webrtc-aec-logging-off-state-msg = snimljene log datoteke je moguće pronaći u: { $path }
+about-webrtc-debug-mode-off-state-msg = detaljni zapisnik se može pronaći u: { $path }
+about-webrtc-debug-mode-on-state-msg = modus za otklanjanja grešaka aktivan, detaljni zapisnik u: { $path }
+about-webrtc-aec-logging-off-state-msg = snimljene datoteke zapisnika se mogu pronaći u: { $path }
 # This path is used for saving the about:webrtc page so it can be attached to
 # bug reports.
 # Variables:
@@ -230,10 +224,6 @@ about-webrtc-sent-label =
 #   $jitter (Number) - The jitter.
 about-webrtc-jitter-label = Jitter { $jitter }
 
-## "SDP" is an abbreviation for Session Description Protocol, an IETF standard.
-## See http://wikipedia.org/wiki/Session_Description_Protocol
-
-
 ## These are displayed on the button that shows or hides the SDP information disclosure
 
 about-webrtc-show-msg-sdp = Prikaži SDP
@@ -246,6 +236,3 @@ about-webrtc-hide-msg-sdp = Sakrij SDP
 about-webrtc-media-context-show-msg = Prikaži kontekst medija
 about-webrtc-media-context-hide-msg = Sakrij kontekst medija
 about-webrtc-media-context-heading = Kontekst medija
-
-##
-

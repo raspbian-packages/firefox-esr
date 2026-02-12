@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = 新しいタブ
     .accesskey = w
@@ -58,10 +62,10 @@ unpin-selected-tabs =
     .label = タブのピン留めを外す
     .accesskey = p
 bookmark-selected-tabs =
-    .label = タブをブックマーク...
+    .label = 選択したタブをブックマークに追加...
     .accesskey = B
 tab-context-bookmark-tab =
-    .label = タブをブックマーク...
+    .label = タブをブックマークに追加...
     .accesskey = B
 tab-context-open-in-new-container-tab =
     .label = 新しいコンテナータブで開く
@@ -118,3 +122,10 @@ tab-context-send-tabs-to-device =
            *[other] { $tabCount } 個のタブを端末へ送信
         }
     .accesskey = n
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] タブを解放
+           *[other] { $tabCount } 個のタブを解放
+        }
+    .accesskey = U

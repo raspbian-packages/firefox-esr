@@ -39,17 +39,6 @@ neterror-load-error-connection = Kui sa ei saa avada ühtegi lehte, siis kontrol
 neterror-load-error-firewall = Kui sinu arvuti või võrk on kaitstud tulemüüri või puhverserveri poolt, siis tee kindlaks, et { -brand-short-name }il on lubatud internetti pääseda.
 neterror-captive-portal = Internetti pääsemiseks pead sellesse võrku sisse logima.
 
-## TRR-only specific messages
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
-
-
-## Native fallback specific messages
-## Variables:
-##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
-
-
 ##
 
 neterror-file-not-found-filename = Kontrolli faili nimes olevaid suurtähti või muid sisestusvigu.
@@ -59,8 +48,8 @@ neterror-unknown-protocol = Selle aadressi avamiseks peaksid võib-olla paigalda
 neterror-redirect-loop = Probleemi võib mõnikord põhjustada küpsistest keeldumine või nende üldine keelamine.
 neterror-unknown-socket-type-psm-installed = Kontrolli, et sinu süsteemi on paigaldatud personaalne turvalisuse haldur.
 neterror-unknown-socket-type-server-config = See võib olla põhjustatud ebastandardsest serveri konfiguratsioonist.
-neterror-not-cached-intro = Nõutud dokument pole brauseri vahemälus saadaval.
-neterror-not-cached-sensitive = Turvalisuse ettevaatusabinõuna ei laadi brauser tundliku infoga dokumente automaatselt uuesti.
+neterror-not-cached-intro = Nõutud dokument pole { -brand-short-name }i vahemälus saadaval.
+neterror-not-cached-sensitive = Turvalisuse huvides ei päri { -brand-short-name } automaatselt tundlikke dokumente uuesti.
 neterror-not-cached-try-again = Klõpsa Proovi uuesti, et hankida dokumendi sisu veebilehelt uuesti.
 neterror-net-offline = Vajuta “Proovi uuesti", et lülituda võrgurežiimi ning laadida leht uuesti.
 neterror-proxy-resolve-failure-settings = Kontrolli puhverserveri sätteid, et teha kindlaks, kas need on õiged.

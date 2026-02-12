@@ -36,6 +36,9 @@ certificate-viewer-key-size = 키 크기
 certificate-viewer-inc-locality = 법인 구/군/시
 certificate-viewer-locality = 구/군/시
 certificate-viewer-location = 위치
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = 로그 이름
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = 로그 ID
 certificate-viewer-method = 메소드
 certificate-viewer-modulus = 계수
@@ -110,6 +113,8 @@ certificate-viewer-export = 내보내기
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = (알 수 없음)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = 인증서
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

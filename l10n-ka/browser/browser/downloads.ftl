@@ -98,8 +98,8 @@ downloads-cmd-copy-download-link =
     .label = ჩამოტვირთვის ბმულის ასლი
     .accesskey = ბ
 downloads-cmd-remove-from-history =
-    .label = ისტორიიდან წაშლა
-    .accesskey = წ
+    .label = მოცილება ისტორიიდან
+    .accesskey = ც
 downloads-cmd-clear-list =
     .label = დასრულებული ჩამოტვირთვების მოცილება
     .accesskey = დ
@@ -182,6 +182,18 @@ downloads-history =
 # that we are showing the details of a single download.
 downloads-details =
     .title = ჩამოტვირთვის აღწერილობა
+
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = ფაილები რჩება თქვენს მოწყობილობაზე
+downloads-private-browsing-message = ამ მოწყობილობით ნებისმიერ მოსარგებლეს შეუძლია ჩამოტვირთვების ნახვა, ყველა პირადი ფანჯრის დახურვის შემდეგაც.
+downloads-private-browsing-delete-button =
+    .label = ფაილების თავისთავად წაშლა
+    .accesskey = წ
+downloads-private-browsing-accept-button =
+    .label = გასაგებია
+    .accesskey = გ
 
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:

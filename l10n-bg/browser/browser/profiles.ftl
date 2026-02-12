@@ -2,7 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-profile-window-title = { -brand-short-name } – Избор на потребителски профил
 profile-window-heading = Изберете профил на { -brand-short-name }
 profile-window-create-profile = Създаване на профил
 profile-card-edit-button =
@@ -19,9 +18,19 @@ profile-card =
 # Variables
 #   $number (number) - The number of the profile
 default-profile-name = Профил { $number }
+edit-profile-page-delete-button =
+    .label = Изтриване
+new-profile-page-learn-more = Научете повече
 
 ## Delete profile dialogue that allows users to review what they will lose if they choose to delete their profile. Each item (open windows, etc.) is displayed in a table, followed by a column with the number of items.
 
+# Variables
+#   $profilename (String) - The name of the profile.
+delete-profile-page-title = Изтриване на потребителския профил на { $profilename }
+# Variables
+#   $profilename (String) - The name of the profile.
+delete-profile-header = Да се изтрие ли потребителския профил на { $profilename }?
+delete-profile-description = { -brand-short-name } ще изтрие необратимо следните данни от устройството:
 delete-profile-logins = Пароли
 
 ##
@@ -33,23 +42,18 @@ delete-profile-confirm = Премахване
 
 ## These strings are color themes available to select from the profile selection screen. Theme names should be localized.
 
-# This light theme features sunny colors such as goldenrod and pale yellow. Its name evokes the color of a marigold flower. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-marigold-theme = Невен
-# This light theme features various shades of soft, muted purples. Its name evokes the color of a lavender flower. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-lavender-theme = Лавандула
-# This light theme features very pale green tones. Its name evokes the color of pale green lichen from the forest. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-lichen-theme = Лишей
-# This light theme features various shades of pink ranging from pale to bold. Its name evokes the color of a pink magnolia flower. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-magnolia-theme = Магнолия
-# Ocean is a dark theme that features very dark blues and black. Its name evokes the color of the deep ocean water. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-ocean-theme = Океан
-# This dark theme features warm oranges, dark mahogany browns, and earthy red/brown colors. The name evokes the earthy colors of terracotta tile. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-terracotta-theme = Теракота
-# This dark theme features forest green, dusky green with a gray undertone, and a muted sage green. Its name evokes the rich color of green moss in the forest. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-moss-theme = Мъх
 # The default light theme
 profiles-light-theme = Светла
 # The default dark theme
 profiles-dark-theme = Тъмна
 # The default system theme
 profiles-system-theme = Системна
+
+## Alternative text for default profile icons
+
+shopping-avatar-alt =
+    .alt = Количка за пазаруване
+
+## Tooltips for default avatar icons
+
+shopping-avatar = Количка за пазаруване

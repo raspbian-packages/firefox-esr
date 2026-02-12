@@ -15,7 +15,25 @@ webext-perms-header-with-perms = Adder { $extension }? Iste extension habera le 
 webext-perms-header-unsigned = Adder { $extension }? Iste extension non ha essite verificate. Extensiones malevolente pote robar tu informationes personal o compromitter tu computator. Solmente installa iste extension si tu confide in su origine.
 webext-perms-header-unsigned-with-perms = Adder { $extension }? Iste extension non ha essite verificate. Extensiones malevolente pote robar tu informationes personal o compromitter tu computator. Solmente installa iste extension si tu confide in su origine. Iste extension habera le permission de:
 webext-perms-sideload-header = { $extension } addite
+webext-perms-optional-perms-header2 = { $extension } require permissiones additional
 webext-perms-optional-perms-header = { $extension } require altere permissiones.
+webext-perms-header2 = Adder { $extension }
+webext-perms-list-intro-unsigned = Iste extension non verificate poterea poner tu confidentialitate a risco o compromitter tu apparato. Solo adde lo si tu te fide del fonte.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Permissiones necessari:
+webext-perms-header-optional-settings = Parametros optional:
+webext-perms-header-update-required-perms = Nove permissiones necessari:
+webext-perms-header-optional-required-perms = Nove permissiones:
+webext-perms-header-data-collection-perms = Collection de datos necessari:
+webext-perms-header-data-collection-is-none = Collection de datos:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Nove collection de datos necessari:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Nove collection de datos:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Cancellar
     .accesskey = C
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = { $extension } ha essite actualisate. Tu debe approbar nove permissiones pro poter installar le version actualisate. Eliger “Cancellar” mantenera tu version actual del extension.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = { $extension } ha essite actualisate. Tu debe approbar le nove permissiones ante que le nove version es installate. Seliger “Cancellar” mantenera le version actual de tu extension. Iste extension habera le permission de:
@@ -85,6 +106,29 @@ webext-perms-host-description-multiple-domains =
        *[other] Accede tu datos pro sitos in { $domainCount } dominios
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Le disveloppator dice que iste extension non require collection de datos.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Le disveloppator dice que iste extension collige: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Le disveloppator dice que le extension colligera: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = Le disveloppator dice que le extension vole colliger: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = { $extension } require nove parametros pro le actualisation
+webext-perms-update-list-intro-with-data-collection = Cancella pro mantener tu version e parametros actual, o actualisa pro obtener le nove version e approbar le cambiamentos.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } requesta parametros additional
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } requesta collection de datos additional
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -118,3 +162,8 @@ webext-site-perms-header-unsigned-with-perms = Adder { $extension }? Iste extens
 
 webext-site-perms-midi = Acceder al apparatos MIDI
 webext-site-perms-midi-sysex = Acceder al apparatos MIDI que supporta SysEx
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Tu thema de combination de colores ha essite removite.</b> { -brand-shorter-name } ha actualisate su collection de combinationes de colores. Tu pote cercar le ultime versiones sur le sito del additivos.
+webext-colorway-theme-migration-notification-button = Obtener combinationes de colores actualisate

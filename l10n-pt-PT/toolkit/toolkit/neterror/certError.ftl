@@ -111,6 +111,26 @@ fp-learn-more-about-secure-connection-failures = Saber mais sobre falhas de liga
 fp-learn-more-about-cert-issues = Saber mais sobre este tipo de problemas com certificados
 fp-learn-more-about-time-related-errors = Saber mais sobre a resolução de problemas de erros relacionados com a data e hora
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } foi revogado e já não é confiável.
+cert-error-bad-signature = O { -brand-short-name } bloqueou a sua visita a este site porque a assinatura no certificado fornecido para { $hostname } não é válida.
+cert-error-key-pinning-failure = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } utiliza uma chave pública diferente do esperado.
+cert-error-bad-der = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } não está corretamente codificado.
+cert-error-cert-not-in-name-space = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } não segue as restrições de nome do certificado que o emitiu.
+cert-error-inadequate-cert-type = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } não pode ser utilizado por um servidor de Internet.
+cert-error-path-len-constraint-invalid = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } tem demasiados certificados intermédios no caminho para o certificado de raiz.
+cert-error-invalid-key = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } tem uma chave que é inválida. Provavelmente, é demasiado pequena para ser segura.
+cert-error-unknown-critical-extension = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } contém uma extensão crítica que não é suportada.
+cert-error-extension-value-invalid = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } contém uma extensão inválida.
+cert-error-untrusted-issuer = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } foi emitido por uma autoridade certificadora que já não é de confiança.
+cert-error-untrusted-cert = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } está marcado como não sendo de confiança.
+cert-error-invalid-integer-encoding = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } contém uma codificação de um inteiro inválida. As causas mais frequentes incluem números de série negativos, módulos RSA negativos e codificações que são mais longas do que o necessário.
+cert-error-unsupported-keyalg = O { -brand-short-name } bloqueou a sua visita a este site porque o certificado fornecido para { $hostname } tem um tipo de chave não suportado.
+cert-error-issuer-no-longer-trusted = O { -brand-short-name } bloqueou a sua visita a este site porque a autoridade certificadora que emitiu o certificado fornecido para { $hostname } já não é confiável.
+cert-error-signature-algorithm-mismatch = O { -brand-short-name } bloqueou a sua visita a este site porque o algoritmo da assinatura do certificado fornecido para { $hostname } não corresponde ao respetivo campo do algoritmo da assinatura.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = Ligação não estabelecida
@@ -118,6 +138,7 @@ deniedPortAccess-title = Este endereço é restrito
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hum. Estamos a ter problemas em encontrar esse site.
+internet-connection-offline-title = Parece que há um problema com a sua ligação à Internet.
 dns-not-found-trr-only-title2 = Possível risco de segurança ao verificar este domínio
 dns-not-found-native-fallback-title2 = Possível risco de segurança ao verificar este domínio
 fileNotFound-title = Ficheiro não encontrado
@@ -134,6 +155,7 @@ contentEncodingError-title = Erro de codificação de conteúdo
 unsafeContentType-title = Tipo de ficheiro inseguro
 netReset-title = A ligação foi reposta
 netTimeout-title = A ligação expirou
+httpErrorPage-title = Parece que existe um problema com este site
 serverError-title = Parece que existe um problema com este site
 unknownProtocolFound-title = O endereço não foi compreendido
 proxyConnectFailure-title = O servidor proxy está a recusar ligações

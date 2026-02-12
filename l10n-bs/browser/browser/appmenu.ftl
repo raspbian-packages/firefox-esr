@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Preuzimanja
 appmenuitem-passwords =
     .label = Lozinke
+appmenuitem-extensions-and-themes =
+    .label = Ekstenzije i teme
+appmenuitem-extensions =
+    .label = Ekstenzije
 appmenuitem-addons-and-themes =
     .label = Add-oni i teme
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Otvori panel profilera
+    .tooltiptext = Otvori panel profilera
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Unaprijed postavljen za istraživanje audio i video grešaka u { -brand-shorter-name }u.
 profiler-popup-presets-media-label =
     .label = Mediji
+profiler-popup-presets-ml-description = Unaprijed postavljeno za istraživanje grešaka u mašinskom učenju u { -brand-shorter-name }u.
+profiler-popup-presets-ml-label =
+    .label = Mašinsko učenje
 profiler-popup-presets-networking-description = Unaprijed postavljen za istraživanje grešaka u mreži u { -brand-shorter-name }u.
 profiler-popup-presets-networking-label =
     .label = Umrežavanje
@@ -280,12 +290,14 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Primajte upozorenja o curenju podataka
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Maskirajte svoj pravi e-mail i telefon
+appmenuitem-services-relay-description = Pokreni kontrolnu ploču za email maske
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Zaštitite svoju aktivnost na mreži
+appmenu-services-header = Moje usluge
+appmenu-other-protection-header = Isprobajte druge alate za zaštitu od { -vendor-short-name }a:
 
 ## Profiles panel
 
-appmenu-profiles = Profili
 appmenu-other-profiles = Ostali profili
 appmenu-manage-profiles =
     .label = Upravljaj profilima
@@ -293,3 +305,5 @@ appmenu-create-profile =
     .label = Novi profil
 appmenu-edit-profile =
     .aria-label = Uredi profil
+appmenu-profiles-2 =
+    .label = Profili

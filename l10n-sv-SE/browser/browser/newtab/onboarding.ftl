@@ -25,6 +25,8 @@ return-to-amo-subtitle = Toppen, du har { -brand-short-name }
 return-to-amo-addon-title = Låt oss nu hämta <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Lägg till tillägget
 return-to-amo-add-theme-label = Lägg till temat
+return-to-amo-theme-install-complete-label = Tema installerat
+return-to-amo-extension-install-complete-label = Tillägget installerat
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Importera från { $prev
 mr1-onboarding-theme-header = Gör den till din egen
 mr1-onboarding-theme-subtitle = Anpassa { -brand-short-name } med ett tema.
 mr1-onboarding-theme-secondary-button-label = Inte nu
-newtab-wallpaper-onboarding-title = Prova en skvätt färg
-newtab-wallpaper-onboarding-subtitle = Välj en bakgrundsbild för att ge din Nya flik ett fräscht utseende.
-newtab-wallpaper-onboarding-primary-button-label = Välj bakgrundsbild
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systemtema
 mr1-onboarding-theme-label-light = Ljust
@@ -445,6 +444,18 @@ onboarding-checklist-sign-up = Registrera dig eller logga in på ditt konto
 
 tab-groups-onboarding-feature-callout-title = Testa flikgrupper för mindre röra, mer fokus
 tab-groups-onboarding-feature-callout-subtitle = Bli organiserad genom att dra en flik ovanpå en annan för att skapa din första grupp.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Hitta dina flikgrupper i menyn Lista alla flikar när som helst.
+tab-groups-onboarding-create-group-title-2 = Hitta dina flikgrupper här när som helst.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Hitta dina grupper genom att söka efter dem i adressfältet.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = När du stänger en flikgrupp, öppna den igen från menyn Lista alla flikar när som helst.
+tab-groups-onboarding-saved-groups-title-2 = När du stänger en flikgrupp kan du öppna den här igen när som helst.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Hitta dina stängda grupper genom att söka efter dem i adressfältet.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Återöppna dina flikgrupper från menyn Lista alla flikar när som helst.
+tab-groups-onboarding-session-restore-title = Återöppna dina flikgrupper här när som helst.
+tab-groups-onboarding-dismiss = Ok
 
 ## Multi Profiles feature onboarding messages
 
@@ -454,3 +465,105 @@ multi-profile-spotlight-cta = Skapa en profil
 multi-profile-callout-title = Skapa olika profiler för arbete och underhållning
 multi-profile-callout-subtitle = Profiler låter dig hålla din webbinformation, som sökhistorik och lösenord, helt åtskilda.
 multi-profile-callout-cta = Skapa en profil
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Ladda ner, synkronisera och kör!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Skanna QR-koden för att ladda ner { -brand-product-name } för mobil. När du har installerat den, välj "Synkronisera till mobil" för att komma åt dina lösenord, bokmärken och mer när du är på språng.
+dismiss-button-label = Ignorera
+sync-to-mobile-button-label = Synka till mobil
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-kod för att ladda ner { -brand-product-name } för mobil
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title = Uppgradera till Windows 11? Låt oss säkerhetskopiera din data i { -brand-product-name }.
+create-backup-screen-1-subtitle = Skydda automatiskt dina lösenord, bokmärken och mer på 1–2 minuter.
+create-backup-screen-1-flair = Rekommenderas
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Läs mer</a>
+create-backup-screen-1-sync-label = Synka med { -brand-product-name }
+create-backup-screen-1-sync-body = Säkerhetskopierar alla inloggade enheter
+create-backup-screen-1-backup-label = Säkerhetskopiera till PC
+create-backup-screen-1-backup-body = Sparar till din enhet eller OneDrive
+create-backup-select-tile-button-label = Välj
+create-backup-back-button-label = Tillbaka
+create-backup-show-fewer =
+    .label = Visa färre som detta
+create-backup-screen-2-title = Välj data i { -brand-product-name } att säkerhetskopiera
+create-backup-screen-2-subtitle = Det tar bara en minut. Din data säkerhetskopieras en gång om dagen.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Enkel installation
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Bokmärken, historik, inställningar och mer
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Inkluderar inte lösenord och betalningar
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Ej krypterad
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = All data
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Inkluderar lösenord och betalningar
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Krypterad med ett lösenord
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Var vill du spara din säkerhetskopia?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Skapa ett lösenord för säkerhetskopian
+create-backup-screen-3-subtitle = Krävs för att kryptera din data. Förvara den på en plats du kommer ihåg.
+fx-backup-opt-in-header = Välj filplats
+fx-backup-opt-in-filepath-label = Välj en plats som du planerar att överföra till en ny enhet, som OneDrive.
+fx-backup-opt-in-create-password-label = Ange lösenord
+fx-backup-opt-in-confirm-btn-label = Fortsätt
+fx-backup-opt-in-cancel-btn-label = Tillbaka
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Din säkerhetskopiering är schemalagd
+fx-backup-confirmation-screen-close-button = Stäng
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = All webbläsardata ingår
+fx-backup-confirmation-screen-all-data-item-text-2 = Sparad till din enhet
+fx-backup-confirmation-screen-all-data-item-text-3 = Krypterat och lösenordsskyddat
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Bokmärken, historik, inställningar och annan data ingår
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Sparad till din enhet
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Lösenord och betalningar ingår ej
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Gå till <a data-l10n-name="settings">Inställningar</a> för att inkludera känslig information.
+fx-backup-confirmation-screen-item-subtext-1 = Din säkerhetskopiering startar om några minuter och kommer att köras en gång om dagen. Du kan kontrollera förloppet i <a data-l10n-name="settings">Inställningar</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } letar efter din säkerhetskopia om du behöver installera om.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Återställ från säkerhetskopia
+restore-from-backup-title = Låt oss få tillbaka { -brand-short-name } som du gillar den
+restore-from-backup-subtitle = Återställ alla dina bokmärken, din historik och annan data för att kunna surfa igen.
+restore-from-backup-secondary-button = Återställ inte
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Vi är tillbaka! Din data för { -brand-short-name } har återställts.
+restored-from-backup-success-with-checklist-subtitle = Vill du behålla din favoritwebbläsare med fokus på integritet, med bara ett klick?
+restored-from-backup-success-no-checklist-subtitle = Du kan aktivera säkerhetskopiering för den här enheten i <a data-l10n-name="settings">Inställningar</a>.
+restored-from-backup-success-with-checklist-primary-button = Spara och fortsätt
+restored-from-backup-success-with-checklist-secondary-button = Hoppa över det här steget
+restored-from-backup-success-no-checklist-primary-button = Fortsätt
+restored-from-backup-error-title = Hmm, det uppstod ett problem med din säkerhetskopia.
+restored-from-backup-error-subtitle = Om du har en annan { -brand-short-name } säkerhetskopia, prova att återställa från den. <a data-l10n-name="restore-problems">Har du fortfarande problem?</a>
+restored-from-backup-error-primary-button = Stäng
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Anpassa din upplevelse av { -brand-short-name }
+onboarding-personalization-subtitle = Svara på några frågor så rekommenderar vi funktioner och tillägg för att förbättra din användning av { -brand-short-name }.
+onboarding-personalization-use-case-title = Vad ska du använda { -brand-short-name } till?
+onboarding-personalization-use-case-personal-option = Privat
+onboarding-personalization-use-case-school-option = Skola
+onboarding-personalization-use-case-work-option = Arbete
+onboarding-personalization-motivation-title = Vilka funktioner i { -brand-short-name } är de viktigaste för dig?
+onboarding-personalization-motivation-privacy-option = Sekretess och säkerhet
+onboarding-personalization-motivation-productivity-option = Produktivitet
+onboarding-personalization-motivation-other-option = Annat

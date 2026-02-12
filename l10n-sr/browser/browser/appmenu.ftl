@@ -7,11 +7,11 @@
 
 appmenuitem-banner-update-downloading =
     .label =
-        Преузимање ажурирања { -brand-shorter-name.gender ->
-            [masculine] { -brand-shorter-name(case: "gen") }
-            [feminine] { -brand-shorter-name(case: "gen") }
-            [neuter] { -brand-shorter-name(case: "gen") }
-           *[other] програма { -brand-shorter-name }
+        { -brand-shorter-name.gender ->
+            [masculine] Преузимање ажурирања { -brand-shorter-name(case: "gen") }
+            [feminine] Преузимање ажурирања { -brand-shorter-name(case: "gen") }
+            [neuter] Преузимање ажурирања { -brand-shorter-name(case: "gen") }
+           *[other] Преузимање ажурирања програма { -brand-shorter-name }
         }
 appmenuitem-banner-update-available =
     .label = Доступно је ажурирање – преузмите га
@@ -33,6 +33,10 @@ appmenuitem-downloads =
     .label = Преузимања
 appmenuitem-passwords =
     .label = Лозинке
+appmenuitem-extensions-and-themes =
+    .label = Додаци и теме
+appmenuitem-extensions =
+    .label = Додаци
 appmenuitem-addons-and-themes =
     .label = Додаци и теме
 appmenuitem-print =
@@ -42,7 +46,7 @@ appmenuitem-find-in-page =
 appmenuitem-translate =
     .label = Преведи страницу…
 appmenuitem-zoom =
-    .value = Зумирање
+    .value = Увећај
 appmenuitem-more-tools =
     .label = Више алатки
 appmenuitem-help =
@@ -194,6 +198,8 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Препоручена подешавања за решавање { -brand-shorter-name } аудио и видео грешака.
 profiler-popup-presets-media-label =
     .label = Медији
+profiler-popup-presets-ml-label =
+    .label = Машинско учење
 profiler-popup-presets-networking-description = Препоручена подешавања за решавање { -brand-shorter-name } мрежних грешака.
 profiler-popup-presets-networking-label =
     .label = Мрежа
@@ -228,19 +234,19 @@ appmenu-search-history =
 
 appmenu-help-header =
     .title =
-        Помоћ за { -brand-shorter-name.gender ->
-            [masculine] { -brand-shorter-name(case: "acc") }
-            [feminine] { -brand-shorter-name(case: "acc") }
-            [neuter] { -brand-shorter-name(case: "acc") }
-           *[other] програм { -brand-shorter-name }
+        { -brand-shorter-name.gender ->
+            [masculine] Помоћ за { -brand-shorter-name(case: "acc") }
+            [feminine] Помоћ за { -brand-shorter-name(case: "acc") }
+            [neuter] Помоћ за { -brand-shorter-name(case: "acc") }
+           *[other] Помоћ за програм { -brand-shorter-name }
         }
 appmenu-about =
     .label =
-        О { -brand-shorter-name.gender ->
-            [masculine] { -brand-shorter-name(case: "loc") }
-            [feminine] { -brand-shorter-name(case: "loc") }
-            [neuter] { -brand-shorter-name(case: "loc") }
-           *[other] програму { -brand-shorter-name }
+        { -brand-shorter-name.gender ->
+            [masculine] О { -brand-shorter-name(case: "loc") }
+            [feminine] О { -brand-shorter-name(case: "loc") }
+            [neuter] О { -brand-shorter-name(case: "loc") }
+           *[other] О програму { -brand-shorter-name }
         }
     .accesskey = О
 appmenu-get-help =
@@ -299,7 +305,6 @@ appmenuitem-vpn-description = Заштитите ваше радње на мре
 
 ## Profiles panel
 
-appmenu-profiles = Профили
 appmenu-other-profiles = Други профили
 appmenu-manage-profiles =
     .label = Управљај профилима
@@ -307,3 +312,5 @@ appmenu-create-profile =
     .label = Нови профил
 appmenu-edit-profile =
     .aria-label = Измени профил
+appmenu-profiles-2 =
+    .label = Профили

@@ -1,6 +1,3 @@
-fixes/Bug-1855960-MIPS64-Make-some-assembler-routines-retu.patch
-fixes/Bug-1855960-MIPS64-Implement-SummarizeTrapInstructio.patch
-fixes/Apply-wasm2c-upstream-fix-for-clang-targetting-mips.patch
 debian-hacks/Avoid-wrong-sessionstore-data-to-keep-windows-out-of.patch
 debian-hacks/Add-another-preferences-directory-for-applications-p.patch
 debian-hacks/Add-a-2-minutes-timeout-on-xpcshell-tests.patch
@@ -18,6 +15,7 @@ debian-hacks/Set-DPI-to-system-settings.patch
 debian-hacks/Don-t-auto-disable-extensions-in-system-directories.patch
 debian-hacks/Work-around-GCC-ICE-on-ppc64el.patch
 debian-hacks/Adjust-our-gfx-skia-moz.build-patch-to-upstream-chan.patch
+debian-hacks/Disable-format-security-warning-when-disabling-forma.patch
 raspbian-rust-triplet-hack.patch
 try-to-disable-neon.patch
 try-harder-to-disable-neon.patch

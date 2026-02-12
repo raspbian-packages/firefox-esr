@@ -111,6 +111,26 @@ fp-learn-more-about-secure-connection-failures = Pli da informo pri malsukceso d
 fp-learn-more-about-cert-issues = Pli da informo pri ĉi tiaj atestilaj problemoj
 fp-learn-more-about-time-related-errors = Pli da informo pri solvo de problemoj rilatitaj kun la dato kaj horo
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } estis revokita kaj do ne plu fidinda.
+cert-error-bad-signature = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la subskribo en la atestilo provizita por { $hostname } ne estas valida.
+cert-error-key-pinning-failure = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } uzas publikan ŝlosilon, kiu ne kongruas kun la atendita.
+cert-error-bad-der = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } ne estas korekte kodita.
+cert-error-cert-not-in-name-space = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } ne plenumas la limigojn nomajn de la eldoninta atestilo.
+cert-error-inadequate-cert-type = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } ne rajtas esti uzata de retejo (teksaĵa servilo).
+cert-error-path-len-constraint-invalid = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } havas tro multe da interaj atestiloj en la vojo al la radika atestilo.
+cert-error-invalid-key = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } havas nevalidan ŝlosilon. Tre verŝajne ĝi estas tro eta por esti sekura.
+cert-error-unknown-critical-extension = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } enhavas nesubtenatan nepran etendaĵon.
+cert-error-extension-value-invalid = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } enhavas nevalidan etendaĵon.
+cert-error-untrusted-issuer = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } estis eldonita de atestila aŭtoritato, kiu ne plu estas fidata.
+cert-error-untrusted-cert = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } estas markita kiel nefidata.
+cert-error-invalid-integer-encoding = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } enhavas nevalidan enkodigon de nombro. Oftaj kialoj estas negativaj seriaj nombroj, negativaj moduloj RSA kaj enkodigoj, kiuj estas nenecese longaj.
+cert-error-unsupported-keyalg = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestilo provizita por { $hostname } havas nesubtenatan tipon de ŝlosilo.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la atestila aŭtoritato kiu eldonis la atestilon provizitan por { $hostname } ne plu estas fidata.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } blokis vian viziton al tiu ĉi retejo ĉar la subskriba algoritmo de la atestilo provizita por { $hostname } ne kongruas kun la kampo pri subskriba algoritmo.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = Ne eblas konektiĝi
@@ -118,6 +138,7 @@ deniedPortAccess-title = Aliro al tiu ĉi adreso estas limigata
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm, ni ne sukcesas trovi tiun retejon.
+internet-connection-offline-title = Ŝajne estas problemo kun via retaliro.
 dns-not-found-trr-only-title2 = Ebla sekureca risko dum serĉo de tiu ĉi nomregno
 dns-not-found-native-fallback-title2 = Ebla sekureca risko dum serĉo de tiu ĉi nomregno
 fileNotFound-title = Dosiero ne trovita
@@ -134,6 +155,7 @@ contentEncodingError-title = Eraro de enkodigo de enhavo
 unsafeContentType-title = Nesekura tipo de dosiero
 netReset-title = La konekto estis haltigita
 netTimeout-title = Limtempo por konekto atingita
+httpErrorPage-title = Ŝajne estas problemo kun tiu ĉi retejo
 serverError-title = Ŝajne estas problemo kun tiu ĉi retejo
 unknownProtocolFound-title = La adreso ne estis komprenita
 proxyConnectFailure-title = La retperanto rifuzas konektojn
@@ -142,6 +164,7 @@ redirectLoop-title = La paĝo ne redirektiĝas bone
 unknownSocketType-title = Neatendita respondo el servilo
 nssFailure2-title = Malsukcesa sekura konekto
 csp-xfo-error-title = { -brand-short-name } ne povas malfermi tiun ĉi paĝon
+corruptedContentErrorv2-title = Eraro pro difektita enhavo
 corruptedContentError-title = Eraro pro difektita enhavo
 sslv3Used-title = Ne eblas sekure konektiĝi
 inadequateSecurityError-title = Via konekto ne estas sekura

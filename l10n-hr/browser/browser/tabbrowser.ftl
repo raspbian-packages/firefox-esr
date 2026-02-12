@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Zatvori karticu
 tabbrowser-menuitem-close =
     .label = Zatvori
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } – { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -161,13 +174,11 @@ tabbrowser-confirm-open-multiple-tabs-checkbox = Upozori me pri otvaranju više 
 ## Confirmation dialog for enabling caret browsing
 
 tabbrowser-confirm-caretbrowsing-title = Pregledavanje kursorom
-tabbrowser-confirm-caretbrowsing-message = Pritiskom na F7 uključuje se ili isključuje pregledavanje kursorom. Ova funkcija postavlja pomični kursor na web-stranice, što omogućuje biranje teksta tipkovnicom. Želiš li uključiti pregledavanje pomoću kursora?
+tabbrowser-confirm-caretbrowsing-message = Pritiskom na F7 uključuje se ili isključuje pregledavanje kursorom. Ova funkcija postavlja pomični kursor na web stranice, što omogućuje biranje teksta tipkovnicom. Želiš li uključiti pregledavanje pomoću kursora?
 tabbrowser-confirm-caretbrowsing-checkbox = Ne prikazuj više ovaj dijaloški okvir.
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Upozorenje!
-tabbrowser-confirm-close-duplicate-tabs-text = Zadnju aktivnu karticu zadržat ćemo otvorenom
 tabbrowser-confirm-close-all-duplicate-tabs-title = Zatvoriti duple kartice?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Zatvorit ćemo duple kartice u ovom prozoru. Zadnja aktivna
@@ -214,6 +225,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Isključi zvuk kartice
@@ -221,8 +235,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Uključi zvuk kartice
 tabbrowser-manager-close-tab =
     .tooltiptext = Zatvori karticu
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Zatvoreno
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Trenutačni prozor
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Stvori grupu kartica
 tab-group-editor-title-edit = Upravljanj grupom kartica
@@ -234,22 +256,30 @@ tab-group-editor-cancel =
     .accesskey = O
 tab-group-editor-color-selector =
     .aria-label = Boja grupe kartica
-tab-group-editor-color-selector-blue = Plava
-tab-group-editor-color-selector-purple = Ljubičasta
-tab-group-editor-color-selector-cyan = Cijan
-tab-group-editor-color-selector-orange = Narančasta
-tab-group-editor-color-selector-yellow = Žuta
-tab-group-editor-color-selector-pink = Ružičasta
-tab-group-editor-color-selector-green = Zelena
-tab-group-editor-color-selector-gray = Siva
-tab-group-editor-color-selector-red = Crvena
-tab-group-menu-header = Grupe kartica
+tab-group-editor-color-selector2-blue = Plava
+    .title = Plava
+tab-group-editor-color-selector2-purple = Ljubičasta
+    .title = Ljubičasta
+tab-group-editor-color-selector2-cyan = Cijan
+    .title = Cijan
+tab-group-editor-color-selector2-orange = Narančasta
+    .title = Narančasta
+tab-group-editor-color-selector2-yellow = Žuta
+    .title = Žuta
+tab-group-editor-color-selector2-pink = Ružičasta
+    .title = Ružičasta
+tab-group-editor-color-selector2-green = Zelena
+    .title = Zelena
+tab-group-editor-color-selector2-gray = Siva
+    .title = Siva
+tab-group-editor-color-selector2-red = Crvena
+    .title = Crvena
+tab-group-description = { $tabGroupName } – Grupa kartica
 tab-context-unnamed-group =
     .label = Neimenovana grupa
 tab-group-name-default = Neimenovana grupa
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -269,6 +299,8 @@ tab-context-move-tab-to-group =
            *[other] Dodaj kartice u grupu
         }
     .accesskey = k
+tab-context-move-tab-to-group-saved-groups =
+    .label = Zatvorene grupe
 tab-group-editor-action-new-tab =
     .label = Nova kartica u grupi
 tab-group-editor-action-new-window =

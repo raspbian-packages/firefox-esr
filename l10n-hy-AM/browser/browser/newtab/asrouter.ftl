@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } օգտվող
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Համաժամեցրեք ձեր էջանիշերը ամեն տեղ:
 cfr-doorhanger-bookmark-fxa-body = Մեծ գտածո: Այժմ մի մնացեք առանց այս էջանիշի ձեր բջջային սարքերում: Խորհուրդ ենք տալիս սկսել { -fxaccount-brand-name }-ի հետ։
@@ -67,6 +67,8 @@ cfr-doorhanger-bookmark-fxa-link-text = Համաժամեցնել էջանիշե�
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Փակելու կոճակ
     .title = Փակել
+fxa-adoption-credit-cards-backup-title = Եկեք պահուստավորենք ձեր վճարման եղանակները
+fxa-adoption-primary-button-label = Գրանցվել
 
 ## Protections panel
 
@@ -112,7 +114,7 @@ cfr-doorhanger-doh-secondary-button = Անջատել
 
 cfr-doorhanger-video-support-body = { -brand-short-name }-ի այս տարբերակում տեսանյութերը կարող են ճիշտ չնվագարկվել: Տեսանյութի լրիվ աջակցման համար թարմացրեք { -brand-short-name }-ը հիմա:
 cfr-doorhanger-video-support-header = Թարմացրեք { -brand-short-name }-ը՝ տեսանյութը նվագարկելու համար
-cfr-doorhanger-video-support-primary-button = Թարմացնել Հիմա
+cfr-doorhanger-video-support-primary-button = Արդիացնել
     .accesskey = U
 
 ## VPN promotion dialog for public Wi-Fi users
@@ -131,6 +133,12 @@ spotlight-public-wifi-vpn-link = Ոչ հիմա
 ## Emotive Continuous Onboarding
 
 spotlight-better-internet-header = Լավ համացանցը սկսվում է Ձեզանից
+spotlight-peace-mind-header = Մենք ձեզ համար ամեն ինչ ունենք
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Պահել Dock-ում
+       *[other] Ամրացնել խնդրագոտուն
+    }
 spotlight-pin-secondary-button = Ոչ հիմա
 
 ## MR2022 Background Update Windows native toast notification strings.
@@ -150,7 +158,7 @@ spotlight-pin-secondary-button = Ոչ հիմա
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
-mr2022-background-update-toast-primary-button-label = Բացել { -brand-shorter-name }-ը
+mr2022-background-update-toast-primary-button-label = Բացել { -brand-shorter-name }-ը հիմա
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -172,9 +180,6 @@ firefoxview-spotlight-promo-subtitle = Ցանկանո՞ւմ եք բացել նե
 firefoxview-spotlight-promo-primarybutton = Տեսեք, թե ինչպես է այն աշխատում
 firefoxview-spotlight-promo-secondarybutton = Բաց թողնել
 
-## Colorways expiry reminder CFR
-
-
 ## Cookie Banner Handling CFR
 
 cfr-cbh-header = Թույլատրե՞լ { -brand-short-name }-ին մերժել թխուկների պաստառները:
@@ -193,6 +198,13 @@ fox-doodle-pin-secondary = Ոչ հիմա
 
 set-default-pdf-handler-headline = <strong>Ձեր PDF-ները բացվում են { -brand-short-name }-ում:</strong> Խմբագրեք կամ ստորագրեք ձևաթղթերը անմիջապես Ձեր դիտարկիչում: Սա փոխելու համար՝ որոնեք «PDF»-ը կարգավորումներում:
 set-default-pdf-handler-primary = Հասկացա
+
+## PDF Annotations strings
+
+annotations-make-default-pdf-primary-cta =
+    .label = Կայել որպես սկզբնադիր
+annotations-make-default-pdf-next =
+    .label = Հաջորդը
 
 ## FxA sync CFR
 
@@ -244,9 +256,10 @@ tail-fox-spotlight-secondary-button = Ոչ հիմա
 
 ## Root Certificate Succession Infobar
 
+root-certificate-succession-infobar-march-message = <strong>Մինչև 2025 թ. մարտի 14-ն արդիացրեք { -brand-short-name }-ը, որպեսզի կարողանաք այն օգտագործել:</strong>
 root-certificate-succession-infobar-link = Ինչո՞ւ է պետք արդիացնել:
 root-certificate-succession-infobar-primary-button =
-    .label = Արդիացնել հիմա
+    .label = Արդիացնել
     .accesskey = U
 root-certificate-succession-infobar-secondary-button =
     .label = Ավելի ուշ
@@ -264,6 +277,8 @@ fxa-menu-message-close-button =
     .title = Փակել
     .aria-label = Փակել
 fxa-menu-message-sign-up-button = Գրանցվել
+fxa-menu-message-sign-in-button = Մուտք գործել
+fxa-menu-message-sync-button = Սկսել համաժամեցումը
 fxa-menu-message-sync-devices-primary-text = Համաժամացրեք ձեր բոլոր սարքերը
 fxa-menu-message-sync-devices-collapsed-text = Համաժամացրեք ձեր բոլոր սարքերը
 fxa-menu-message-backup-data-collapsed-text = Պահուստավորել դիտարկիչի տվյալները
@@ -277,4 +292,47 @@ fxa-menu-message-mobile-collapsed-text = Համաժամեցեք ձեր հեռա�
 multi-cta-fox-doodle-title = Բարի վերադարձ
 multi-cta-fox-doodle-set-default-checkbox = Կայել { -brand-short-name }-ը որպես սկզբնադիր
 multi-cta-fox-doodle-pin-startmenu-checkbox = Ամրացրեք { -brand-short-name }-ը Մեկնարկ ցանկին
+multi-cta-fox-doodle-pin-checkbox =
+    { PLATFORM() ->
+        [macos] Պահել { -brand-short-name }-ը Dock-ում
+       *[other] Ամրացրել { -brand-short-name }-ը խնդրագոտուն
+    }
 multi-cta-fox-doodle-start-browsing-primary-button-label = Սկսել դիտարկումը
+multi-cta-fox-doodle-main-browser-primary-button-label = Դարձնել { -brand-short-name }-ը իմ հիմնական դիտարկիչը
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Շուտով Windows 10-ից ե՞ք թարմացնելու։
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-primary-label = Սկսել
+windows-10-eos-sync-toast-secondary-label = Հիշեցնել ավելի ուշ
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-pin-primary-button = Ամրացնել { -brand-shorter-name }-ը
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name }-ն արգելափակում է կրիպտոմայներները, սոցիալական ցանցերի հետագծիչները և մատնահետքերը։
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Հետագծողները չեն կարող նույնականացնել ձեր սարքը կամ հետևել ձեզ համացանցում, քանի որ մենք դա նրանց թույլ չենք տալիս։
+windows-10-eos-sync-callout-privacy-info-button = Տեսեք, թե ինչն է արգելափակված
+windows-10-eos-callout-addons-primary-button = Տեսեք մեր ընտրությունները
+windows-10-eos-sync-callout-next-button = Հաջորդը
+windows-10-eos-sync-callout-get-started-button = Սկսել
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-whats-new-button = Ինչն է նոր
+windows-10-eos-feature-toast-dismiss-button = Բաց թողնել
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-learn-more = Իմանալ ավելին
+etp-strict-exceptions-infobar-button = Գործադրել ուղղումները
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Ոչ հիմա
+    .accesskey = N

@@ -4,9 +4,6 @@
 
 do-not-track-description = Inviar al sitos web un signal “Non traciar” indicante que tu non vole esser traciate
 do-not-track-removal = Le signal “Non me traciar” non es plus supportate
-do-not-track-description2 =
-    .label = Inviar requesta de “Non tracia" a sitos web
-    .accesskey = N
 do-not-track-learn-more = Saper plus
 do-not-track-option-default-content-blocking-known =
     .label = Solmente quando { -brand-short-name } es adjustate pro blocar traciatores cognoscite.
@@ -16,6 +13,8 @@ global-privacy-control-description =
     .label = Demandar al sitos web de non vender ni compartir mi datos
     .accesskey = v
 non-technical-privacy-header = Preferentias de confidentialitate del sito
+non-technical-privacy-label =
+    .aria-label = { non-technical-privacy-header }
 # Do not translate.
 # "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
 # included to facilitate power-user search of the about:preferences page.
@@ -61,6 +60,7 @@ pane-experimental-description2 = Cambiar parametros de configuration avantiate p
 settings-pane-labs-title = { -firefoxlabs-brand-name }
 settings-category-labs =
     .tooltiptext = { -firefoxlabs-brand-name }
+pane-experimental-description4 = Essaya nostre functiones experimental! Illos es in disveloppamento e in evolution, lo que pote haber impacto sur como functiona { -brand-short-name }. Nos solo recipe datos re tu uso de iste functiones si tu ha activate le <a data-l10n-name="data-collection">datos technic e de interaction</a>.
 pane-experimental-description3 = Essaya nostre functiones experimental! Illos es in disveloppamento e in evolution, lo que pote haber impacto sur como functiona { -brand-short-name }.
 pane-experimental-reset =
     .label = Restaurar predefinitiones
@@ -71,6 +71,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = Clauder
+do-not-track-removal2 =
+    .label = Le signal “Non traciar me” non es plus supportate
 
 ## Browser Restart Dialog
 
@@ -112,6 +114,10 @@ extension-controlling-proxy-config = Le <img data-l10n-name ="icon"/> <strong>{ 
 # <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
 # <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
 extension-controlled-enable = Pro activar le extension elige le additiones <img data-l10n-name="addons-icon"/> in le menu <img data-l10n-name="menu-icon"/>.
+extension-controlled-enable-2 = Pro re-activar iste extension visita <a data-l10n-name="addons-link">Extensiones e themas</a>.
+# This string is shown to notify the user that their home page or new tab preferences
+# are being controlled by an extension.
+extension-controlling-homepage = { $name } controla alcun parametros de tu pagina initial.
 
 ## Preferences UI Search Results
 
@@ -126,6 +132,10 @@ startup-header = Al initio
 always-check-default =
     .label = Sempre verificar si { -brand-short-name } es tu navigator predefinite
     .accesskey = S
+is-default-browser =
+    .message = { -brand-short-name } es actualmente tu navigator predefinite
+is-not-default-browser =
+    .message = { -brand-short-name } non es tu navigator predefinite
 is-default = { -brand-short-name } es actualmente tu navigator predefinite
 is-not-default = { -brand-short-name } non es tu navigator predefinite
 set-as-my-default-browser =
@@ -134,6 +144,8 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = Aperir le previe fenestras e schedas
     .accesskey = s
+startup-windows-launch-on-login-profile-disabled =
+    .message = Activa iste preferentia verificante “{ profile-manager-use-selected.label }” in le fenestra “Seliger profilo de usator”.
 windows-launch-on-login =
     .label = Aperir { -brand-short-name } automaticamente quando on accende tu computator
     .accesskey = A
@@ -148,6 +160,11 @@ preferences-data-migration-description = Importar datos de marcapaginas, contras
 preferences-data-migration-button =
     .label = Importar datos
     .accesskey = m
+preferences-profiles-header = Profilos
+preferences-manage-profiles-description = Cata profilo ha datos de navigation e parametros separate, includite chronologia, contrasignos, e plus.
+preferences-manage-profiles-learn-more = Pro saper plus
+preferences-manage-profiles-button =
+    .label = Gerer profilos
 tabs-group-header = Schedas
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab percurre le schedas in le ordine usate recentemente
@@ -155,6 +172,8 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Aperir ligamines in schedas in vice de nove fenestras
     .accesskey = s
+open-external-link-next-to-active-tab =
+    .label = Aperir ligamines ab le applicationes proxime a tu scheda active
 ask-on-close-multiple-tabs =
     .label = Demandar ante clauder plure schedas
     .accesskey = p
@@ -225,12 +244,33 @@ containers-remove-cancel-button = Non remover iste contentor
 settings-tabs-show-image-in-preview =
     .label = Monstrar un vista preliminar del imagine quando tu passa le mus sur un scheda
     .accessKey = n
+browser-layout-header = Disposition del navigator
+browser-layout-horizontal-tabs =
+    .label = Schedas horizontal
+browser-layout-horizontal-tabs-desc = Monstrar al summitate del navigator
+browser-layout-vertical-tabs =
+    .label = Schedas vertical
+browser-layout-vertical-tabs-desc = Monstrar al latere, in le barra lateral
+browser-layout-show-sidebar =
+    .label = Monstrar barra lateral
+browser-layout-show-sidebar-desc = Rapidemente accede marcapaginas, schedas de tu telephono, robots confabulator IA, e altero sin exir de tu vista principal.
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Lingua e apparentia
 preferences-web-appearance-header = Apparentia del sito web
 preferences-web-appearance-description = Alcun sitos web adapta lor schema de colores a base de tu preferentias. Elige le schema de colores que tu vole usar pro ille sitos.
+preferences-web-appearance-choice-auto2 =
+    .label = Automatic
+    .title = Cambiar automaticamente fundos e contento del sito web in base a tu parametros de systema e al thema de { -brand-short-name }.
+preferences-web-appearance-choice-light2 =
+    .label = Clar
+    .title = Usa un apparentia clar pro fundos e contento del sito web.
+preferences-web-appearance-choice-dark2 =
+    .label = Obscur
+    .title = Usa un apparentia obscur pro fundos e contento del sito web.
+web-appearance-group =
+    .aria-label = Apparentia del sito web
 preferences-web-appearance-choice-auto = Automatic
 preferences-web-appearance-choice-light = Clar
 preferences-web-appearance-choice-dark = Obscur
@@ -248,14 +288,27 @@ preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning = Tu selectiones color supplanta le apparentia del sito web.<a data-l10n-name="colors-link">Gere le colores</a>
+preferences-web-appearance-override-warning3 =
+    .message = Tu parametros de controlo de contrasto substitue le apparentia de sitos web.
+preferences-web-appearance-link =
+    .label = Gere le themas de { -brand-short-name } in Extensiones e themas
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Tu selectiones color supplanta le apparentia del sito web.
+preferences-web-appearance-override-warning = Tu selectiones color supplanta le apparentia del sito web.<a data-l10n-name="colors-link">Gere le colores</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gere le themas de { -brand-short-name } in <a data-l10n-name="themes-link">Extensiones e themas</a>
+preferences-contrast-control-header = Controlo de contrasto
+preferences-contrast-control-description = Le sitos web ha plure colores de prime plano e de fundo. Configura { -brand-short-name } pro usar le mesme colores a transverso sitos web pro legibilitate meliorate.
+preferences-contrast-control-use-platform-settings =
+    .label = Automatic (usar le parametros del systema)
+    .accesskey = A
+preferences-contrast-control-off =
+    .label = Disactivar
+    .accesskey = D
+preferences-contrast-control-custom =
+    .label = Personalisar
+    .accesskey = P
 preferences-colors-header = Colores
 preferences-colors-description = Supplanta le colores predefinite de { -brand-short-name } pro texto, fundos e ligamines de sito web.
 preferences-colors-manage-button =
@@ -314,6 +367,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Files e applicationes
+downloads-header-2 =
+    .label = Discargamentos
+download-save-where-2 =
+    .label = Salvar le files in
+    .accesskey = S
 download-header = Discargamentos
 download-save-where = Salvar le files in
     .accesskey = S
@@ -331,6 +389,9 @@ download-choose-folder =
 download-always-ask-where =
     .label = Sempre questionar ubi salvar le files
     .accesskey = q
+download-private-browsing-delete =
+    .label = Deler files discargate in navigation private quando tote le fenestras private es claudite
+    .accesskey = D
 applications-header = Applicationes
 applications-description = Elige como { -brand-short-name } manipula le files que tu discarga ab le web o le applicationes que tu usa durante que tu naviga.
 applications-filter =
@@ -485,6 +546,8 @@ performance-default-content-process-count =
 ## General Section - Browsing
 
 browsing-title = Navigation
+browsing-group-label =
+    .aria-label = Navigation
 browsing-use-autoscroll =
     .label = Usar le rolamento automatic
     .accesskey = a
@@ -539,9 +602,10 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Nove fenestras e schedas
 home-new-windows-tabs-description2 = Elige lo que tu vide quando tu aperi tu pagina initial, nove fenestras e nove schedas.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Pagina principal e nove fenestras
+home-homepage-mode-label2 = Nove fenestras
 home-newtabs-mode-label = Nove schedas
 home-restore-defaults =
     .label = Restaurar le predefinitiones
@@ -554,6 +618,11 @@ home-mode-choice-blank =
     .label = Pagina vacue
 home-homepage-custom-url =
     .placeholder = Colla un URL...
+# This button is shown when the homepage is managed by an extension and is placed below extension-controlling-homepage.
+home-homepage-manage-extension-button =
+    .label = Gerer extension
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-url = Eliger un sito specific
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -568,18 +637,45 @@ use-current-pages =
 choose-bookmark =
     .label = Usar marcapagina…
     .accesskey = m
+home-homepage-header = Pagina initial
+
+## Custom Homepage subpage
+
+home-custom-homepage-header = Pagina initial personalisate
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-subheader = Adresse(s) de sito web
+home-custom-homepage-address =
+    .placeholder = Insere adresse
+home-custom-homepage-address-button =
+    .label = Adder adresse
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-websites-yet = Necun sito web ancora addite
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with = Substituer con
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-current-pages-button =
+    .label = Paginas actualmente aperte
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-bookmarks-button =
+    .label = Marcapaginas…
 
 ## Home Section - Firefox Home Content Customization
 
 home-prefs-content-header2 = Contentos de { -firefox-home-brand-name }
+home-prefs-content-header3 = { -firefox-home-brand-name }
 home-prefs-content-description2 = Elige qual contento tu vole sur tu schermo { -firefox-home-brand-name }.
 home-prefs-search-header =
     .label = Recerca del Web
+home-prefs-search-header2 =
+    .label = Cercar
 home-prefs-shortcuts-header =
     .label = Accessos directe
 home-prefs-shortcuts-description = Sitos que tu salva o visita
 home-prefs-shortcuts-by-option-sponsored =
     .label = Accessos directe sponsorisate
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
 
 ## Home Section - Firefox Home Content Customization
 
@@ -589,6 +685,12 @@ home-prefs-recommended-by-description-new = Contento exceptional a cura de { $pr
 home-prefs-recommended-by-header-generic =
     .label = Historias recommendate
 home-prefs-recommended-by-description-generic = Contento exceptional curate per le familia de { -brand-product-name }
+home-prefs-stories-header =
+    .label = Historias
+home-prefs-stories-description = Historias personalisate basate sur tu activitate
+home-prefs-stories-header2 =
+    .label = Historias
+    .description = Contento exceptional curate per le familia de { -brand-product-name }
 
 ##
 
@@ -619,6 +721,26 @@ home-prefs-weather-header =
     .label = Meteo
 home-prefs-weather-description = Prevision hodierne a un colpo de oculos
 home-prefs-weather-learn-more-link = Pro saper plus
+home-prefs-widgets-header =
+    .label = Widgets
+home-prefs-trending-search-header =
+    .label = Recercas popular
+home-prefs-trending-search-description = Themas popular e frequentemente cercate
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = Listas
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = Temporisator
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = Supporta { -brand-product-name }
+home-prefs-mission-message = Nostre patrocinatores supporta nostre mission pro construer un web melior
+home-prefs-mission-message-learn-more-link = Discoperi como
+home-prefs-mission-message2 =
+    .message = Nostre patrocinatores supporta nostre mission pro construer un web melior.
+home-prefs-manage-topics-link = Gerer topicos
+home-prefs-choose-wallpaper-link = Eliger un fundo de schermo
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -687,6 +809,9 @@ search-remove-engine =
 search-add-engine =
     .label = Adder
     .accesskey = A
+search-edit-engine =
+    .label = Modificar
+    .accesskey = M
 search-find-more-link = Adder plus motores de recerca
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
@@ -695,12 +820,21 @@ search-keyword-warning-title = Parola clave duplicate
 #   $name (string) - Name of a search engine.
 search-keyword-warning-engine = Tu ha eligite un parola clave que es actualmente usate per “{ $name }”. Per favor selige un altere.
 search-keyword-warning-bookmark = Tu ha eligite un parola clave que es actualmente usate per un marcapagina. Per favor selige un altere.
+# This warning is displayed when the chosen name is already in use.
+# Variables:
+#   $name (string) - Name of a search engine.
+edit-engine-name-warning-duplicate = Existe ja un motor de recerca con le nomine “{ $name }”. Elige un altere nomine.
+remove-engine-confirmation = Desira tu vermente remover iste motor de recerca?
+remove-engine-remove = Remover
+remove-addon-engine-alert = Pro remover iste motor de recerca, remove le additivo associate.
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = Retornar al configuration
 containers-header = Schedas contentor
+containers-section-header =
+    .heading = Schedas contentor
 containers-add-button =
     .label = Adder un nove contentor
     .accesskey = A
@@ -865,6 +999,14 @@ sync-choose-what-to-sync-dialog4 =
 ## The device name controls.
 
 sync-device-name-header = Nomine del apparato
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Nomine del apparato
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Cambiar le nomine del apparato
+    .accesskey = C
 sync-device-name-change =
     .label = Cambiar le nomine del apparato…
     .accesskey = C
@@ -924,9 +1066,9 @@ forms-breach-alerts =
     .accesskey = v
 forms-breach-alerts-learn-more-link = Saper plus
 preferences-relay-integration-checkbox =
-    .label = Suggerer mascas email { -relay-brand-name } pro proteger tu adresse email
+    .label = Suggerer mascas de e-mail de { -relay-brand-name } pro proteger tu adresse de e-mail
 preferences-relay-integration-checkbox2 =
-    .label = Suggerer mascas de email { -relay-brand-name } pro proteger tu adresse email
+    .label = Suggerer mascas de e-mail de { -relay-brand-name } pro proteger tu adresse de e-mail
     .accesskey = S
 relay-integration-learn-more-link = Pro saper plus
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
@@ -938,7 +1080,7 @@ forms-saved-logins =
     .accesskey = L
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-usernames-and-passwords =
-    .label = Compilar nomines de usator e contrasignos automaticamente
+    .label = Completar automaticamente le nomines de usator e le contrasignos
     .accesskey = C
 forms-saved-passwords =
     .label = Contrasignos salvate
@@ -948,7 +1090,7 @@ forms-primary-pw-use =
     .accesskey = U
 # This operation requires the user to authenticate with the operating system (device sign-in)
 forms-os-reauth =
-    .label = Requirer accesso al apparato pro compilar e gerer le contrasignos
+    .label = Requirer apertura de session sur le apparato pro completar e gerer contrasignos
 forms-primary-pw-learn-more-link = Saper plus
 # This string uses the former name of the Primary Password feature
 # ("Master Password" in English) so that the preferences can be found
@@ -991,20 +1133,42 @@ autofill-creditcard-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy section - Autofill
 
-pane-privacy-autofill-header = Compilar automaticamente
-autofill-addresses-checkbox = Salvar e compilar automaticamente adresses
+pane-privacy-autofill-header = Completamento automatic
+autofill-addresses-checkbox = Salvar e completar adresses
     .accesskey = a
 autofill-saved-addresses-button = Adresses salvate
     .accesskey = s
-autofill-payment-methods-checkbox-message = Salvar e compilar methodos de pagamento automaticamente
+autofill-payment-methods-checkbox-message = Salvar e completar methodos de pagamento
     .accesskey = S
 autofill-payment-methods-checkbox-submessage = Include cartas de credito e debito
     .accesskey = i
 autofill-saved-payment-methods-button = Methodos de pagamento salvate
     .accesskey = v
 # This operation requires the user to authenticate with the operating system (device sign-in)
-autofill-reauth-payment-methods-checkbox = Requirer accesso al apparato pro compilar e gerer methodos de pagamento
+autofill-reauth-payment-methods-checkbox = Requirer apertura de session sur le apparato pro completar e gerer methodos de pagamento
     .accesskey = o
+autofill-payment-methods-title = Methodos de pagamento
+autofill-payment-methods-header =
+    .aria-label = Methodos de pagamento
+autofill-payment-methods-checkbox-message-2 =
+    .label = Salvar e compilar informationes de pagamento automaticamente
+    .accesskey = p
+autofill-payment-methods-manage-payments-button =
+    .label = Gerer methodos de pagamento
+    .accesskey = m
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox-2 =
+    .label = Requirer apertura de session sur le apparato pro completar automaticamente e gerer methodos de pagamento
+    .accesskey = o
+autofill-addresses-title = Adresses e plus
+autofill-addresses-header =
+    .aria-label = Adresses e plus
+autofill-addresses-checkbox-message =
+    .label = Salvar e completar automaticamente le adresses
+    .accesskey = S
+autofill-addresses-manage-addresses-button =
+    .label = Gerer adresses e plus
+    .accesskey = G
 
 ## Privacy Section - History
 
@@ -1026,6 +1190,12 @@ history-remember-option-never =
     .label = Non memorisar jammais le chronologia
 history-remember-option-custom =
     .label = Usar parametros personalisate pro le chronologia
+history-remember-description2 =
+    .description = { -brand-short-name } recordara tu chronologia de navigation, discargamentos, formularios e recerca.
+history-dontremember-description2 =
+    .description = { -brand-short-name } usara le mesme parametros que pro le navigation private e non memorisara le chronologia durante que tu naviga le Web.
+history-custom-description =
+    .description = { -brand-short-name } usara parametros personalisate pro tu chronologia de navigation, discargamentos, formularios e recerca.
 history-remember-description = { -brand-short-name } recordara tu chronologia de navigation, discargamentos, formularios e recerca.
 history-dontremember-description = { -brand-short-name } usara le mesme parametros que pro le navigation private e non memorisara le chronologia durante que tu naviga le Web.
 history-private-browsing-permanent =
@@ -1050,7 +1220,13 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookies e datos de sitos
+sitedata-label =
+    .aria-label = { sitedata-header }
 sitedata-total-size-calculating = Calculo del dimension de datos de sito e de cache…
+# Variables:
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size2 = Tu cookies, chronologia, datos de sito e cache occupa actualmente <strong>{ $value } { $unit } </strong> de spatio de disco.
 # Variables:
 #   $value (number) - Value of the unit (for example: 4.6, 500)
 #   $unit (string) - Name of the unit (for example: "bytes", "KB")
@@ -1059,6 +1235,8 @@ sitedata-learn-more = Saper plus
 sitedata-delete-on-close =
     .label = Deler datos de cookies e sitos quando { -brand-short-name } es claudite
     .accesskey = D
+sitedata-delete-on-close-private-browsing3 =
+    .message = Secundo tu parametros de chronologia, { -brand-short-name } elimina le cookies e le datos de sito de tu session quando tu claude le navigator.
 sitedata-delete-on-close-private-browsing = Durante le modo de navigation private permanente, le cookies e le datos del sito sera sempre cancellate al clausura de { -brand-short-name }.
 sitedata-delete-on-close-private-browsing2 = In base al parametros del chronologia, le cookies e le datos del sitos web sera eliminate quando tu claudera { -brand-short-name }.
 sitedata-allow-cookies-option =
@@ -1075,6 +1253,8 @@ sitedata-option-block-cross-site-trackers =
     .label = Traciatores inter sitos
 sitedata-option-block-cross-site-tracking-cookies =
     .label = Cookies de traciamento inter sitos
+sitedata-option-block-cross-site-cookies2 =
+    .label = Isolar le cookies inter sitos
 sitedata-option-block-cross-site-cookies =
     .label = Cookies de traciamento inter sitos, e isolar los altere cookies inter sitos
 sitedata-option-block-unvisited =
@@ -1083,6 +1263,12 @@ sitedata-option-block-all-cross-site-cookies =
     .label = Tote le cookies inter-sitos (pote causar que le sitos web collabe)
 sitedata-option-block-all =
     .label = Tote le cookies (impedira alcun sitos web de functionar)
+sitedata-clear2 =
+    .label = Vacuar datos de navigation
+    .accesskey = i
+sitedata-settings2 =
+    .label = Gerer datos de navigation
+    .accesskey = G
 sitedata-clear =
     .label = Eliminar datos...
     .accesskey = l
@@ -1092,6 +1278,10 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Gerer exceptiones…
     .accesskey = G
+sitedata-cookies-exceptions2 =
+    .label = Gerer exceptiones
+    .accesskey = x
+    .description = Tu pote specificar que sitos web es sempre o jammais permittite usar  cookies e datos del sito.
 
 ## Privacy Section - Cookie Banner Handling
 
@@ -1111,7 +1301,19 @@ cookie-banner-blocker-checkbox-label =
 ## Privacy Section - Address Bar
 
 addressbar-header = Barra de adresse
+addressbar-suggest-1 = Elige qual suggestiones monstrar in tu barra de adresse
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest-1 = { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest-1 = Suggestiones de { -brand-short-name } e nostre socios in tu barra de adresse.
 addressbar-suggest = Durante que tu usa le barra de adresse, suggerer
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = Barra de adresse — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest = Elige le typo de suggestiones que appare in le barra de adresse.
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = Pro saper plus
 addressbar-locbar-history-option =
     .label = Chronologia de navigation
     .accesskey = H
@@ -1131,6 +1333,9 @@ addressbar-locbar-shortcuts-option =
 addressbar-locbar-topsites-option =
     .label = Sitos popular
     .accesskey = p
+addressbar-locbar-engines-option-1 =
+    .label = Suggerer motores de recerca a usar
+    .accesskey = a
 addressbar-locbar-engines-option =
     .label = Motores de recerca
     .accesskey = o
@@ -1144,7 +1349,30 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = Monstrar suggestiones de recercas popular
     .accesskey = p
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = Suggestiones de { -brand-short-name }
+addressbar-locbar-suggest-all-option-desc = Recipe le suggestiones del web relative a tu recerca.
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = Suggestiones de { -brand-short-name }
+addressbar-locbar-suggest-nonsponsored-desc = Recipe le suggestiones del web relative a tu recerca.
+addressbar-locbar-suggest-sponsored-option =
+    .label = Suggestiones de sponsores
+addressbar-locbar-suggest-sponsored-desc = Supporta { -brand-short-name } con suggestiones sponsorisate occasional.
+# This string is used for a checkbox in the settings UI that opts the
+# user into "online" Firefox Suggest, allowing them to receive suggestions from
+# Mozilla's Merino server.
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since the online suggest is created and maintained
+# by Mozilla.
+addressbar-firefox-suggest-online =
+    .label = Obtener suggestiones de Mozilla durante que tu digita
 addressbar-quickactions-learn-more = Pro saper plus
+addressbar-dismissed-suggestions-label = Suggestiones rejectate
+addressbar-restore-dismissed-suggestions-description = Restaurar suggestiones rejectate de sponsores e { -brand-short-name }.
+addressbar-restore-dismissed-suggestions-button =
+    .label = Restaurar
 
 ## Privacy Section - Content Blocking
 
@@ -1181,6 +1409,7 @@ content-blocking-private-windows = Contento de traciamento in fenestras private
 content-blocking-cross-site-cookies-in-all-windows2 = Cookies inter-sitos in tote le fenestras
 content-blocking-cross-site-tracking-cookies = Cookies de traciamento inter sitos
 content-blocking-all-cross-site-cookies-private-windows = Cookies inter sitos in fenestras private
+content-blocking-isolate-cross-site-cookies = Isolar le cookies inter sitos
 content-blocking-cross-site-tracking-cookies-plus-isolate = Cookies de traciamento inter sitos, e isolar le cookies restante
 content-blocking-social-media-trackers = Traciatores de retes social
 content-blocking-all-cookies = Tote le cookies
@@ -1201,8 +1430,23 @@ content-blocking-etp-standard-tcp-rollout-description = Le protection total cont
 content-blocking-etp-standard-tcp-rollout-learn-more = Pro saper plus
 content-blocking-etp-standard-tcp-title = Include Protection total del cookies, nostre plus potente functionalitate de confidentialitate de unquam
 content-blocking-warning-title = Attention!
+content-blocking-warning-title-2 = Alcun sitos pote non functionar con le protection stricte contra le traciamento
+content-blocking-warning-title-custom = Alcun sitos pote corrumper se con le protection personalisate contra le traciamento
+# “Fix site issues” references the string content-blocking-exceptions-subheader
+content-blocking-and-isolating-etp-warning-description-4 = { -brand-short-name } recommenda usar le configurationes “Reparar problemas de sito” pro reducer functiones e contento de sito corrupte. Si un sito pare corrupte, tenta disactivar le protection de traciamento pro ille sito pro cargar tote le contento.
 content-blocking-and-isolating-etp-warning-description-2 = Iste parametro pote causar alcun sitos web a non monstrar contento o non pote functionar correctemente. Si un sito pare corrupte, prova disactivar protection de traciamento pro ille sito pote cargar tote le contento.
 content-blocking-warning-learn-how = Apprende como
+content-blocking-baseline-exceptions-3 =
+    .label = Resolver problemas major de sitos (recommendate)
+    .description = Adjuta cargar sitos e functiones disblocante solo elementos essential que pote continer traciatores. Coperi le major parte del problemas commun.
+# This option to fix minor site issues must be used with the option to fix major site issues (string content-blocking-baseline-exceptions-3)
+content-blocking-convenience-exceptions-3 =
+    .label = Resolver problemas minor de sitos
+    .description = Restaura cosas como videos in un articulo o commenta sectiones disblocante elementos que pote continer traciatores. Isto pote reducer le problemas de sito, ma offere minus protection. Debe esser usate con le correctiones pro le problemas major.
+content-blocking-baseline-uncheck-warning-dialog-title = Desira tu vermente disactivar le correctiones?
+content-blocking-baseline-uncheck-warning-dialog-body = Iste parametro adjuta a reparar le plus commun problemas de sito. Si tu lo disactiva, alcun sitos pote non functionar, e { -brand-short-name } non potera adjutar solver ille problemas.
+content-blocking-baseline-uncheck-warning-dialog-ok-button = Disactivar correctiones
+content-blocking-baseline-uncheck-warning-dialog-cancel-button = Mantener correctiones
 content-blocking-reload-description = Tu debera recargar tu schedas pro applicar iste cambios.
 content-blocking-reload-tabs-button =
     .label = Recargar tote le schedas
@@ -1257,6 +1501,14 @@ permissions-location = Geolocalisation
 permissions-location-settings =
     .label = Parametros…
     .accesskey = t
+permissions-localhost = Applicationes e servicios de apparato
+permissions-localhost-settings =
+    .label = Parametros…
+    .accesskey = t
+permissions-local-network = Apparatos de rete local
+permissions-local-network-settings =
+    .label = Parametros…
+    .accesskey = t
 permissions-xr = Realitate virtual
 permissions-xr-settings =
     .label = Parametros…
@@ -1282,10 +1534,27 @@ permissions-notification-link = Saper plus
 permissions-notification-pause =
     .label = Pausar le notificationes usque { -brand-short-name } reinitia
     .accesskey = n
+permissions-autoplay2 =
+    .label = Autoreproduction
 permissions-autoplay = Autoreproduction
 permissions-autoplay-settings =
     .label = Parametros…
     .accesskey = r
+permissions-block-popups2 =
+    .label = Blocar quadros resaltante e re-directiones de tertie-partes
+    .accesskey = B
+# "popup" is a misspelling that is more popular than the correct spelling of
+# "pop-up" so it's included as a search keyword, not displayed in the UI.
+permissions-block-popups-exceptions-button2 =
+    .label = Gere le exceptiones de quadros resaltante e de redirection de tertie partes
+    .accesskey = e
+    .searchkeywords = quadros resaltante
+permissions-addon-install-warning2 =
+    .label = Adverter quando sitos web tenta installar extensiones
+    .accesskey = A
+permissions-addon-exceptions2 =
+    .label = Eliger que sitos web pote installar extensiones
+    .accesskey = E
 permissions-block-popups =
     .label = Blocar le fenestras emergente
     .accesskey = B
@@ -1301,12 +1570,36 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Exceptiones…
     .accesskey = E
+permissions-header2 =
+    .label = Permissos
+    .description = Permissos que tu da a sitos web que tu naviga.
+permissions-location2 =
+    .label = Geolocalisation
+permissions-localhost2 =
+    .label = Applicationes e servicios de apparato
+permissions-local-network2 =
+    .label = Apparatos de rete local
+permissions-xr2 =
+    .label = Realitate virtual
+permissions-camera2 =
+    .label = Camera
+permissions-microphone2 =
+    .label = Microphono
+# Privacy permission for sound output devices.
+permissions-speaker2 =
+    .label = Altoparlatores
+permissions-notification2 =
+    .label = Notificationes
 
 ## Privacy Section - Data Collection
 
 collection-header = Collecta e uso de datos per { -brand-short-name }
 collection-header2 = Collecta e uso de datos per { -brand-short-name }
     .searchkeywords = telemetria
+preferences-collection-description = Nos nos effortia fornir te selectiones e colliger solo le minime datos necessari pro meliorar { -brand-product-name } pro totes.
+preferences-collection-privacy-notice = Vider le aviso de confidentialitate
+preferences-across-profiles = Iste parametros se applica a cata profilo de { -brand-product-name } sur iste apparato.
+preferences-view-profiles = Vider tote le profilos
 collection-description = Nos nos effortia pro lassar te in le commando e colliger solmente lo que nos ha necessitate pro provider e meliorar { -brand-short-name } a totes. Nos sempre demanda permission ante reciper informationes personal.
 collection-privacy-notice = Aviso de confidentialitate
 collection-health-report-telemetry-disabled = Tu non plus permitte que { -vendor-short-name } captura datos technic e de interaction. Tote le datos jam capturate essera delite intra 30 dies.
@@ -1334,7 +1627,7 @@ addon-recommendations2 =
 addon-recommendations-description = Reciper recommendationes sur le extensiones pro meliorar tu experientia de navigation.
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
-collection-health-report-disabled2 = Le reporto de datos es inactive pro iste configuration de compilation.
+collection-health-report-disabled2 = Le reportage de datos es disactivate pro iste configuration de compilation.
 collection-backlogged-crash-reports2 =
     .label = Automaticamente inviar reportos de crash
     .accesskey = c
@@ -1344,10 +1637,8 @@ addon-recommendations =
 addon-recommendations-link = Saper plus
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
-collection-health-report-disabled = Le reporto de datos es inactive pro iste configuration de compilation
+collection-health-report-disabled = Le reportage de datos es disactivate pro iste configuration de compilation
 collection-backlogged-crash-reports-with-link = Permitter que { -brand-short-name } invia in tu nomine le reportos accumulate de crash <a data-l10n-name="crash-reports-link">saper plus</a>
-    .accesskey = P
-collection-backlogged-crash-reports = Permitter que { -brand-short-name } invia in tu nomine le reportos accumulate de crash
     .accesskey = P
 privacy-segmentation-section-header = Nove functiones que meliora tu navigation
 privacy-segmentation-section-description = Quando nos offere functiones que usa tu datos pro dar te un experientia plus personal:
@@ -1397,30 +1688,35 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = Permitte que { -brand-short-name } fide automaticamente in le certificatos radice de tertie partes que se installa
     .accesskey = t
+certs-devices-enable-fips = Activar FIPS
 space-alert-over-5gb-settings-button =
     .label = Aperir le parametros
     .accesskey = A
 space-alert-over-5gb-message2 = <strong>Le spatio de disco disponibile a { -brand-short-name } es quasi exhaurite.</strong> Le contento de sitos web pote non monstrar se correctemente. Tu pote eliminar datos immagazinate in Parametros > Confidentialitate & Securitate > Cookies e Datos de sito.
 space-alert-under-5gb-message2 = <strong>Le spatio de disco disponibile a { -brand-short-name } es quasi exhaurite.</strong> Le contento de sitos web pote non monstrar se correctemente. Visita “Apprender plus” pro optimisar le uso de tu disco pro un melior experientia de navigation.
+certs-description2 =
+    .label = Certificatos
+    .description = Configurar le certificatos que { -brand-short-name } usa pro authentication.
 
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = Modo solo HTTPS
+httpsonly-label =
+    .aria-label = { httpsonly-header }
+    .description = Solo permitte connexiones secur a sitos web. { -brand-short-name } demandara ante connecter in maniera non secur.
+httpsonly-description3 = Solo permitte connexiones secur a sitos web. { -brand-short-name } demandara ante connecter in maniera non secur.
+httpsonly-learn-more2 = Como functiona Solo-HTTPS
 httpsonly-description = HTTPS offere un connexion secur e cryptate inter { -brand-short-name } e le sitos web que tu visita. Le major parte del sitos web supporta le HTTPS, e si es activate Modo HTTPS-solo, alora { -brand-short-name } promovera tote le connexiones a HTTPS.
-httpsonly-description2 = { -brand-short-name } crea connexiones secur e cryptate al sitos que tu visita. Quando le modalitate sol HTTPS ex active, { -brand-short-name } ti avisara si un connexion non es secur.
 httpsonly-learn-more = Saper plus
 httpsonly-radio-enabled =
     .label = Activar le Modo solo HTTPS in tote le fenestras
-httpsonly-radio-enabled2 =
-    .label = Usar solo HTTPS in tote le fenestras
 httpsonly-radio-enabled-pbm =
     .label = Activar le Modo solo HTTPS in le fenestras private solmente
-httpsonly-radio-enabled-pbm2 =
-    .label = Usar solo HTTPS in fenestras private
+httpsonly-radio-disabled3 =
+    .label = Non activar le modo Solo-HTTPS
+    .description = { -brand-short-name } pote ancora promover alcun connexiones
 httpsonly-radio-disabled =
     .label = Non activar le Modo solo HTTPS
-httpsonly-radio-disabled2 =
-    .label = Prova primo HTTPS, ma consenti connexiones non secur
 
 ## DoH Section
 

@@ -74,17 +74,22 @@ about-reader-customtheme-tab = Таңдауыңызша
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Мәтін
-    .title = Түсті түзету
-about-reader-custom-colors-background = Фон
-    .title = Түсті түзету
-about-reader-custom-colors-unvisited-links = Ашылмаған сілтемелер
-    .title = Түсті түзету
-about-reader-custom-colors-visited-links = Ашылған сілтемелер
-    .title = Түсті түзету
-about-reader-custom-colors-selection-highlight = Дауыстап оқуға арналған ерекшелегіш
-    .title = Түсті түзету
 about-reader-reset-button = Бастапқы түріне қайтару
+about-reader-custom-colors-foreground2 =
+    .label = Мәтін
+    .title = Түсті түзету
+about-reader-custom-colors-background2 =
+    .label = Фон
+    .title = Түсті түзету
+about-reader-custom-colors-unvisited-links2 =
+    .label = Ашылмаған сілтемелер
+    .title = Түсті түзету
+about-reader-custom-colors-visited-links2 =
+    .label = Ашылған сілтемелер
+    .title = Түсті түзету
+about-reader-custom-colors-selection-highlight2 =
+    .label = Дауыстап оқуға арналған ерекшелегіш
+    .title = Түсті түзету
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = Мәтінді ортасымен туралау
 about-reader-text-alignment-right =
     .title = Мәтінді оңға туралау
+about-reader-text-alignment-justify =
+    .title = Мәтінді енімен туралау

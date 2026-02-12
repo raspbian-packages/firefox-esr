@@ -18,6 +18,10 @@ support-addons-type = Lloj
 support-addons-enabled = E aktivizuar
 support-addons-version = Version
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Vendndodhje
 legacy-user-stylesheets-title = Fletëstile Përdoruesi të Dikurshme
 legacy-user-stylesheets-enabled = Aktive
 legacy-user-stylesheets-stylesheet-types = Fletëstile
@@ -297,7 +301,7 @@ gpu-device-id = ID Pajisjeje
 gpu-subsys-id = ID Subsys-i
 gpu-drivers = Përudhës
 gpu-ram = RAM
-gpu-driver-vendor = Shitës Përudhësi
+gpu-driver-vendor = Tregtues Përudhësi
 gpu-driver-version = Version Përudhësi
 gpu-driver-date = Datë Përudhësi
 gpu-active = Aktiv

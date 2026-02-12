@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Nova langeto
     .accesskey = l
@@ -29,7 +33,7 @@ close-tabs-to-the-start =
     .label = Fermi langetojn maldekstren
     .accesskey = d
 close-tabs-to-the-start-vertical =
-    .label = Femi suprajn langetojn
+    .label = Fermi suprajn langetojn
     .accesskey = s
 # The following string is displayed on a menuitem that will close the tabs from the end of the tabstrip to the currently targeted tab (excluding the currently targeted and any other selected tabs).
 # In left-to-right languages this should use "Right" and in right-to-left languages this should use "Left".
@@ -129,3 +133,10 @@ tab-context-send-tabs-to-device =
            *[other] Sendi { $tabCount } langetojn al aparato
         }
     .accesskey = S
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] Liberigi langeton
+           *[other] Unload { $tabCount } Tabs
+        }
+    .accesskey = L

@@ -70,7 +70,7 @@ cert-error-details-cert-chain-label = Cadeia de certificados:
 open-in-new-window-for-csp-or-xfo-error = Abrir site em nova janela
 # Variables:
 #   $hostname (string) - Hostname of the website blocked by csp or xfo error.
-csp-xfo-blocked-long-desc = Para proteger sua segurança, { $hostname } não permite que o { -brand-short-name } exiba a página se outro site o tiver incorporado. Para ver esta página, você precisa abrir em uma nova janela.
+csp-xfo-blocked-long-desc = Para proteger sua segurança, { $hostname } não permite que o { -brand-short-name } exiba a página se outro site a tiver incorporado. Para ver esta página, você precisa abrir em uma nova janela.
 fp-certerror-view-certificate-link = Ver o certificado do site
 fp-certerror-return-to-previous-page-recommended-button = Voltar (recomendado)
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
@@ -107,17 +107,44 @@ fp-cert-error-code = Código de erro: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = O { -brand-short-name } não confia em { $hostname } porque este não conseguiu comprovar que atende aos requisitos de transparência de certificados públicos.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Provavelmente nada, pois é provável que se trate de um problema no próprio site.
 fp-learn-more-about-secure-connection-failures = Saiba mais sobre falhas de conexão segura
 fp-learn-more-about-cert-issues = Saiba mais sobre esses tipos de problemas de certificado
 fp-learn-more-about-time-related-errors = Saiba mais sobre como solucionar erros relativos a data e hora
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } foi revogado e não é mais confiável.
+cert-error-bad-signature = O { -brand-short-name } bloqueou sua visita a este site porque a assinatura no certificado fornecido por { $hostname } não é válida.
+cert-error-key-pinning-failure = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } usa uma chave pública diferente da esperada.
+cert-error-bad-der = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } não está codificado corretamente.
+cert-error-cert-not-in-name-space = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } não segue as restrições de nome de um certificado que o emitiu.
+cert-error-inadequate-cert-type = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } não pode ser usado por um servidor web.
+cert-error-path-len-constraint-invalid = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } tem certificados intermediários demais no caminho para o certificado raiz.
+cert-error-invalid-key = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } tem uma chave inválida. Provavelmente é pequeno demais para ser seguro.
+cert-error-unknown-critical-extension = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } contém uma extensão crítica não suportada.
+cert-error-extension-value-invalid = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } contém uma extensão inválida.
+cert-error-untrusted-issuer = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } foi emitido por uma autoridade certificadora que não é mais confiável.
+cert-error-untrusted-cert = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } está marcado como não confiável.
+cert-error-invalid-integer-encoding = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } contém uma codificação inválida de um inteiro. Causas comuns incluem números de série negativos, módulos RSA negativos e codificações maiores do que o necessário.
+cert-error-unsupported-keyalg = O { -brand-short-name } bloqueou sua visita a este site porque o certificado fornecido por { $hostname } tem um tipo de chave não suportado.
+cert-error-issuer-no-longer-trusted = O { -brand-short-name } bloqueou sua visita a este site porque a autoridade certificadora que expediu o certificado fornecido por { $hostname } não é mais confiável.
+cert-error-signature-algorithm-mismatch = O { -brand-short-name } bloqueou sua visita a este site porque o algoritmo de assinatura do certificado fornecido por { $hostname } não corresponde ao seu campo de algoritmo de assinatura.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = Não foi possível conectar
-deniedPortAccess-title = Endereço restrito
+deniedPortAccess-title = Esse endereço tem restrição
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Este site não foi encontrado.
+internet-connection-offline-title = Parece que há um problema na sua conexão com a internet.
 dns-not-found-trr-only-title2 = Possível risco de segurança ao resolver este domínio
 dns-not-found-native-fallback-title2 = Possível risco de segurança ao resolver este domínio
 fileNotFound-title = Arquivo não encontrado
@@ -134,6 +161,7 @@ contentEncodingError-title = Erro de codificação de conteúdo
 unsafeContentType-title = Tipo de arquivo não seguro
 netReset-title = A conexão foi reiniciada
 netTimeout-title = A conexão expirou
+httpErrorPage-title = Parece que há um problema neste site
 serverError-title = Parece que há um problema neste site
 unknownProtocolFound-title = O endereço não foi compreendido
 proxyConnectFailure-title = O servidor proxy está recusando conexões
@@ -142,6 +170,7 @@ redirectLoop-title = A página não está sendo redirecionada corretamente
 unknownSocketType-title = Resposta não esperada do servidor
 nssFailure2-title = Falha na conexão segura
 csp-xfo-error-title = O { -brand-short-name } não pode abrir esta página
+corruptedContentErrorv2-title = Erro de conteúdo corrompido
 corruptedContentError-title = Erro de conteúdo corrompido
 sslv3Used-title = Não foi possível conectar com segurança
 inadequateSecurityError-title = Sua conexão não é segura
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Ocultar informações avançadas
 fp-certerror-override-exception-button = Prosseguir para { $hostname } (arriscado)
 fp-certerror-intro = O { -brand-short-name } identificou um problema de segurança potencialmente grave em <strong>{ $hostname }</strong>. Alguém se fazendo passar pelo site pode tentar furtar itens como informações de cartões de crédito, senhas ou emails.
 fp-certerror-expired-into = O { -brand-short-name } identificou um problema de segurança em <strong>{ $hostname }</strong>. O site não está configurado corretamente, ou o relógio do seu dispositivo está com data/hora errada.
+fp-certerror-transparency-intro = Alguém fingindo ser <strong>{ $hostname }</strong> pode tentar roubar coisas como informações de cartões de crédito, senhas ou emails.

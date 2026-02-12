@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Тэрмін дзеяння / Max-Age
 storage-table-headers-cookies-size = Памер
 storage-table-headers-cookies-last-accessed = Апошні доступ
 storage-table-headers-cookies-creation-time = Створана
+storage-table-headers-cookies-update-time = Абноўлена
 storage-table-headers-cache-status = Статус
 storage-table-headers-extension-storage-area = Абсяг сховішча
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = База дадзеных “{ $dbName }” буд�
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = База дадзеных“{ $dbName }” не можа быць выдаленая.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = Не ўдалося стварыць кукі: “{ $errorString }”.
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = Не ўдалося абнавіць кукі: “{ $errorString }”.

@@ -49,8 +49,6 @@ signing_description_schema = Schema(
         Optional("shipping-phase"): task_description_schema["shipping-phase"],
         Optional("shipping-product"): task_description_schema["shipping-product"],
         Required("dependencies"): task_description_schema["dependencies"],
-        # Optional control for how long a task may run (aka maxRunTime)
-        Optional("max-run-time"): int,
         Optional("extra"): {str: object},
         # Max number of partner repacks per chunk
         Optional("repacks-per-chunk"): int,
@@ -182,7 +180,6 @@ def make_task_description(config, jobs):
             "worker": {
                 "implementation": "scriptworker-signing",
                 "upstream-artifacts": job["upstream-artifacts"],
-                "max-run-time": job.get("max-run-time", 3600),
             },
             "scopes": [signing_cert_scope] + signing_format_scopes,
             "dependencies": job["dependencies"],
@@ -201,12 +198,12 @@ def make_task_description(config, jobs):
             task["scopes"] = [
                 add_scope_prefix(config, "signing:cert:release-apple-notarization")
             ]
-            task[
-                "description"
-            ] = "Notarization of '{}' locales for build '{}/{}'".format(
-                get_locales_description(attributes, "en-US"),
-                build_platform,
-                attributes.get("build_type"),
+            task["description"] = (
+                "Notarization of '{}' locales for build '{}/{}'".format(
+                    get_locales_description(attributes, "en-US"),
+                    build_platform,
+                    attributes.get("build_type"),
+                )
             )
             task["retries"] = 0
         elif "macosx" in build_platform:
@@ -220,7 +217,7 @@ def make_task_description(config, jobs):
             assert worker_type_alias in worker_type_alias_map, (
                 "Make sure to adjust the below worker_type_alias logic for "
                 "mac if you change the signing workerType aliases!"
-                " ({} not found in mapping)".format(worker_type_alias)
+                f" ({worker_type_alias} not found in mapping)"
             )
             worker_type_alias = worker_type_alias_map[worker_type_alias]
             for attr in ("entitlements-url", "requirements-plist-url"):

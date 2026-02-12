@@ -31,7 +31,3 @@ webext-perms-description-tabs = ᱵᱽᱨᱟᱣᱩᱡᱚᱨ ᱴᱮᱵᱽ ᱟᱹ�
 webext-perms-description-tabHide = ᱵᱽᱨᱟᱣᱩᱡᱚᱨ ᱴᱮᱵᱽ ᱠᱚ ᱩᱠᱩ ᱟᱨ ᱩᱫᱩᱜ ᱢᱮ
 webext-perms-description-topSites = ᱵᱽᱨᱟᱣᱩᱡᱤᱝ ᱦᱤᱛᱟᱹᱞ ᱟᱹᱛᱩᱨ ᱢᱮ
 webext-perms-description-webNavigation = ᱵᱽᱨᱟᱣᱩᱡᱟᱹᱨ ᱨᱮᱭᱟᱜ ᱠᱟᱹᱢᱤ ᱟᱹᱛᱩᱨ ᱢᱮ ᱯᱟᱱᱛᱮ ᱜᱷᱚᱰᱤ
-
-## The userScripts permission includes an additional explanation that is
-## displayed prominently near the usual permission description.
-

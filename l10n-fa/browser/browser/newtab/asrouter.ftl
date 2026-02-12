@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } کاربر
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = نشانک‌های خود را در هر جایی همگام کنید.
 cfr-doorhanger-bookmark-fxa-body = یک یافته فوق العاده! اکنون بدون این نشانک در دستگاه‌های تلفن همراه خود نماند. با یک { -fxaccount-brand-name } شروع کنید.
@@ -145,53 +145,36 @@ spotlight-pin-secondary-button = اکنون نه
 ## The button labels are fitted into narrow fixed-width buttons by
 ## Windows and therefore must be as narrow as possible.
 
-
-## Firefox View CFR
-
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = زمانی دیگر یادآوری کن
 
 ## Firefox View Spotlight
 
+firefoxview-spotlight-promo-primarybutton = ببینید چگونه کار می‌کند
 firefoxview-spotlight-promo-secondarybutton = پرش
-
-## Colorways expiry reminder CFR
-
-
-## Cookie Banner Handling CFR
-
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
-
-## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
-
+fox-doodle-pin-headline = خوش برگشتید
+fox-doodle-pin-secondary = اکنون نه
 
 ## FxA sync CFR
 
+fxa-sync-cfr-header = دستگاه تازه‌ای در آینده؟
 fxa-sync-cfr-primary = بیشتر بدانید
     .accesskey = ب
 
 ## Device Migration FxA Spotlight
 
-
-## Set as Default PDF Reader Infobar
-
+device-migration-fxa-spotlight-heavy-user-primary-button = شروع کنید
+device-migration-fxa-spotlight-sync-primary-button = شروع کنید
 
 ## Launch on login infobar notification
 
 launch-on-login-learnmore = بیشتر بدانید
-
-## These string variants are used when the “launch on login” infobar
-## notification is displayed for a second time.
-
-
-## Tail Fox Set Default Spotlight
-
-
-## Root Certificate Succession Infobar
-
-
-## Root Certificate Succession Windows Background Notification
-
 
 ## FxA Menu Message variants
 
@@ -199,6 +182,3 @@ fxa-menu-message-close-button =
     .title = بستن
     .aria-label = بستن
 fxa-menu-message-sign-up-button = نام نویسی
-
-## Multi-CTA Fox Doodle Spotlight
-

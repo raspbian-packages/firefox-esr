@@ -15,7 +15,25 @@ webext-perms-header-with-perms = { $extension } eklensin mi? Bu uzantı şu izin
 webext-perms-header-unsigned = { $extension } eklensin mi? Bu uzantı doğrulanmamış. Kötü amaçlı uzantılar kişisel bilgilerinizi çalabilir veya bilgisayarınızı tehlikeye atabilir. Yalnızca kaynağına güveniyorsanız bu uzantıyı ekleyin.
 webext-perms-header-unsigned-with-perms = { $extension } eklensin mi? Bu uzantı doğrulanmamış. Kötü amaçlı uzantılar kişisel bilgilerinizi çalabilir veya bilgisayarınızı tehlikeye atabilir. Yalnızca kaynağına güveniyorsanız bu uzantıyı ekleyin. Bu uzantı şu izinlere sahip olacak:
 webext-perms-sideload-header = { $extension } eklendi
+webext-perms-optional-perms-header2 = { $extension } ek izinler istiyor
 webext-perms-optional-perms-header = { $extension } ek izinler istiyor.
+webext-perms-header2 = { $extension } uzantısını ekle
+webext-perms-list-intro-unsigned = Bu doğrulanmamış uzantı gizliliğinizi riske atabilir veya cihazınızın güvenliğini tehlikeye sokabilir. Yalnızca kaynağa güveniyorsanız ekleyin.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Gerekli izinler:
+webext-perms-header-optional-settings = İsteğe bağlı ayarlar:
+webext-perms-header-update-required-perms = Gerekli yeni izinler:
+webext-perms-header-optional-required-perms = Yeni izinler:
+webext-perms-header-data-collection-perms = Gerekli veri toplama:
+webext-perms-header-data-collection-is-none = Veri toplama:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Gerekli yeni veri toplama:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Yeni veri toplama:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = İptal
     .accesskey = a
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = { $extension } güncellendi. Güncellenen sürüm yüklenmeden önce yeni izinleri onaylamanız gerekiyor. “İptal”i seçerseniz mevcut uzantı sürümünüz korunacaktır.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = { $extension } güncellendi. Güncellenen sürümü yüklemek için yeni izinleri onaylamanız gerekiyor. “Vazgeç”i seçerseniz mevcut sürümünüz korunacaktır. Güncellerseniz bu uzantı şu izinlere sahip olacaktır:
@@ -85,6 +106,29 @@ webext-perms-host-description-multiple-domains =
        *[other] { $domainCount } alan adındaki sitelere ait verilerinize erişme
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Geliştirici, bu uzantının veri toplamaya gerek duymadığını söylüyor.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Geliştirici, uzantının aşağıdakileri topladığını söylüyor: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Geliştirici, uzantının aşağıdakileri toplayacağını söylüyor: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = Geliştirici, uzantının aşağıdakileri toplamak istediğini söylüyor: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = { $extension } uzantısının güncellenmesi için yeni ayarlar gerekiyor
+webext-perms-update-list-intro-with-data-collection = Mevcut sürümünüzü ve ayarlarınızı korumak isterseniz vazgeçin, yeni sürümü yükleyerek değişiklikleri onaylamak isterseniz güncelleyin.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } ek ayarlar istiyor
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } ek veriler toplamak istiyor
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -118,3 +162,8 @@ webext-site-perms-header-unsigned-with-perms = { $extension } eklensin mi? Bu uz
 
 webext-site-perms-midi = MIDI cihazlarına erişebilir
 webext-site-perms-midi-sysex = SysEx destekli MIDI cihazlarına erişebilir
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Renk kuşağı temanız kaldırıldı.</b> { -brand-shorter-name } renk kuşakları koleksiyonu güncellendi. En son sürümleri eklenti sitesinde bulabilirsiniz.
+webext-colorway-theme-migration-notification-button = Güncellenen renk kuşaklarını indirin

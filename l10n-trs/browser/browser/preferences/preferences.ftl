@@ -68,6 +68,10 @@ startup-header = Gayi'ì
 always-check-default =
     .label = Natsi' si { -brand-short-name } huin raj sun' da' gaché nu'.
     .accesskey = o
+is-default-browser =
+    .message = { -brand-short-name } huin sa rajsun' da' gaché nu'
+is-not-default-browser =
+    .message = { -brand-short-name } sè sa rajsùn yitin' da' gaché nu' huin ma
 is-default = { -brand-short-name } huin sa rajsun' da' gaché nu'
 is-not-default = { -brand-short-name } sè sa rajsùn yitin' da' gaché nu' huin ma
 set-as-my-default-browser =
@@ -164,6 +168,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Archivo ni aplikasion
+downloads-header-2 =
+    .label = Nadunínj
+download-save-where-2 =
+    .label = Na'ninj so' archivo riña
+    .accesskey = a
 download-header = Nadunínj
 download-save-where = Na'ninj so' archivo riña
     .accesskey = a
@@ -341,7 +350,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Ventâna ni rakïj ñanj
 home-new-windows-tabs-description2 = Ganin ruhua ahuin' si gini'iaj 'ngà gana'nit pajina riña ayi'ij ni rakïj ñanj nakàa.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Pajina ayi'ij nī ventana nakàa
 home-newtabs-mode-label = Rakïj ñanj nakàa
@@ -461,6 +470,8 @@ search-keyword-warning-bookmark = Nuguan' na nī 'ngà rajsun 'ngo markador. Gan
 ## Containers Section
 
 containers-header = Rakïj ñanj mā ma
+containers-section-header =
+    .heading = Rakïj ñanj mā ma
 containers-add-button =
     .label = Nuto' sa nakàa
     .accesskey = A
@@ -578,6 +589,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = Si yugui aga'a
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Si yugui aga'a
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Naduno' si yugui aga'a
+    .accesskey = h
 sync-device-name-change =
     .label = Naduno' si yugui aga'a...
     .accesskey = h
@@ -640,12 +659,6 @@ forms-master-pw-change =
     .accesskey = N
 forms-master-pw-fips-desc = Nu ga’ue nādunaj Da’nga’ Huìi
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Daran sa gahuin
@@ -666,6 +679,10 @@ history-remember-option-never =
     .label = Si gani'ij ma riña gaché nut
 history-remember-option-custom =
     .label = Nagi'io' daj anin ruhuot riña gaché nut
+history-remember-description2 =
+    .description = { -brand-short-name } gataj na'anj ma dane' gaché nut, nuin si naduninj nī nej sa nana'uit.
+history-dontremember-description2 =
+    .description = { -brand-short-name } garusunj ru'ua riña gaché nu hui' se si na'ninj sa'aj riña gaché nut.
 history-remember-description = { -brand-short-name } gataj na'anj ma dane' gaché nut, nuin si naduninj nī nej sa nana'uit.
 history-dontremember-description = { -brand-short-name } garusunj ru'ua riña gaché nu hui' se si na'ninj sa'aj riña gaché nut.
 history-private-browsing-permanent =
@@ -722,12 +739,6 @@ sitedata-clear =
 sitedata-settings =
     .label = Dugumi' datos
     .accesskey = M
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -840,6 +851,8 @@ permissions-notification-link = Gahuin chrun doj
 permissions-notification-pause =
     .label = Duyichi' akuan't nej sa ataj na'an dâ { -brand-short-name } nayi'ì ñu
     .accesskey = n
+permissions-autoplay2 =
+    .label = Duyinga' man'an man nanèe
 permissions-autoplay = Duyinga' man'an man nanèe
 permissions-autoplay-settings =
     .label = Nagi'iô'...
@@ -853,6 +866,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Sa ga'ue
     .accesskey = E
+permissions-location2 =
+    .label = Dane' huin
+permissions-camera2 =
+    .label = Kamara
+permissions-microphone2 =
+    .label = Aga' uxun nanèe
+permissions-notification2 =
+    .label = Sa ataj na'anj
 
 ## Privacy Section - Data Collection
 
@@ -872,9 +893,6 @@ addon-recommendations-link = Gahuin chrūn doj
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Nej sa ataj na'anj nej datos nitaj si 'iaj sun 'ngà nej kopilacion
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -906,12 +924,7 @@ certs-view =
 certs-devices =
     .label = Nej sa dugumi...
     .accesskey = N
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = Nachrun FIPS
 
 ## The following strings are used in the Download section of settings
 

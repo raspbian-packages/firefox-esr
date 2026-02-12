@@ -30,10 +30,28 @@ options-context-inspector = Inspector
 options-show-user-agent-styles-label = Afișează stilurile browserului
 options-show-user-agent-styles-tooltip =
     .title = Pornirea acestei opțiuni va afișa stilurile implicite care sunt încărcate de browser.
+# The label for the checkbox option to show all anonymous content
+options-show-user-agent-shadow-dom-label = Afișează Browser Shadow DOM
+options-show-user-agent-shadow-dom-tooltip =
+    .title = Activarea acestei opțiuni va afișa elementele Shadow DOM gestionate de browser.
 # The label for the checkbox option to enable collapse attributes
 options-collapse-attrs-label = Trunchiază atributele DOM
 options-collapse-attrs-tooltip =
     .title = Trunchiază atributele lungi în inspector
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Dă clic și trage pentru editarea valorilor dimensiunii
+options-inspector-draggable-properties-tooltip =
+    .title = Dă clic și trage pentru editarea valorilor de dimensiune în vizualizarea regulilor inspectorului.
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Folosește evidențiatoare mai simple cu prefers-reduced-motion
+options-inspector-simplified-highlighters-tooltip =
+    .title = Activează evidențiatoarele simplificate când este activată „prefers-reduced-motion”. Desenează linii în loc de dreptunghiuri pline în jurul elementelor evidențiate pentru evitarea efectelor de sclipire.
+# The label for the checkbox option to make the Enter key move the focus to the next input
+# when editing a property name or value in the Inspector rules view
+options-inspector-rules-focus-next-on-enter-label = Focalizează următoarea intrare pe <kbd>Enter</kbd>
+options-inspector-rules-focus-next-on-enter-tooltip =
+    .title = Când este activată, apăsarea tastei Enter la editarea unui selector, a numelui unei proprietăți sau a unei valori va muta focalizarea pe următoarea intrare.
 
 ## "Default Color Unit" options for the Inspector
 
@@ -42,10 +60,17 @@ options-default-color-unit-authored = Ca la creare
 options-default-color-unit-hex = Hexazecimal
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Nume de culori
 
 ## Web Console section
 
+# The heading
+options-webconsole-label = Consolă web
+# The label for the checkbox that toggle whether the Split console is enabled
+options-webconsole-split-console-label = Activează consola divizată
+options-webconsole-split-console-tooltip =
+    .title = Deschide consola divizată cu tasta Escape
 
 ## Style Editor section
 
@@ -60,6 +85,10 @@ options-stylesheet-autocompletion-tooltip =
 
 # The heading
 options-screenshot-label = Comportamentul capturilor de ecran
+# Label for the checkbox that toggles screenshot to clipboard feature
+options-screenshot-clipboard-only-label = Captură de ecran doar în clipboard
+options-screenshot-clipboard-tooltip2 =
+    .title = Salvează captura de ecran direct în clipboard
 # Label for the checkbox that toggles the camera shutter audio for screenshot tool
 options-screenshot-audio-label = Redă sunetul obturatorului de cameră
 options-screenshot-audio-tooltip =
@@ -91,6 +120,8 @@ options-disable-http-cache-label = Dezactivează cache-ul HTTP (când este desch
 options-disable-http-cache-tooltip =
     .title = Pornirea acestei opțiuni va dezactiva cache-ul HTTP pentru toate filele care au deschisă caseta de instrumente. Scripturile service worker nu sunt afectate.
 # The label for checkbox that toggles JavaScript on or off
+options-disable-javascript-label-2 = Dezactivează JavaScript
+# The label for checkbox that toggles JavaScript on or off
 options-disable-javascript-label = Dezactivează JavaScript *
 options-disable-javascript-tooltip =
     .title = Pornirea acestei opțiuni va dezactiva JavaScript pentru fila actuală. Setarea va fi uitată la închiderea filei sau a casetei de instrumente.
@@ -102,13 +133,27 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Activează depanarea la distanță
 options-enable-remote-tooltip2 =
     .title = Pornirea acestei opțiuni va permite depanarea la distanță a acestei instanțe a browserului
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Folosește tasta F12 ca să deschizi sau să închizi instrumentele de dezvoltare
+options-enable-f12-tooltip =
+    .title = Activarea acestei opțiuni va asocia tasta F12 pentru deschiderea sau închiderea trusei de instrumente de dezvoltare.
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Activează formatoare personalizate
+options-enable-custom-formatters-tooltip =
+    .title = Activarea acestei opțiuni va permite site-urilor să definească formatoare personalizate pentru obiecte DOM
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Activează scripturile Service Worker prin HTTP (când este deschisă caseta de instrumente)
 options-enable-service-workers-http-tooltip =
     .title = Pornirea acestei opțiuni va permite trecerea scripturilor service worker prin HTTP pentru toate filele care au caseta de instrumente deschisă.
 # The label for the checkbox that toggles source maps in all tools.
-options-source-maps-label = Activează hărțile pentru surse
+options-source-maps-label = Activează hărțile de cod-sursă
 options-source-maps-tooltip =
-    .title = Dacă activezi opțiunea, sursele vor fi cartate în unelte.
-# The message shown for settings that trigger page reload
+    .title = Dacă activezi această opțiune, sursele vor fi mapate în instrumente.
+# The message shown for settings that trigger page reload and will only apply to the current session
+# This appears underneath the applicable options (e.g. options-disable-javascript-label-2).
+options-context-triggers-page-refresh-temporary = (doar sesiunea actuală, reîncarcă pagina)
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * Doar sesiunea actuală, reîncarcă pagina
+# The message shown for settings that trigger page reload
+# This appears underneath the applicable options (e.g. options-show-user-agent-shadow-dom-label).
+options-context-triggers-page-refresh-persists = (reîncarcă pagina)

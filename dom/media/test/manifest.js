@@ -79,6 +79,20 @@ var gSmallTests = [
   },
   { name: "flac-s24.flac", type: "audio/flac", duration: 4.04 },
   { name: "bogus.duh", type: "bogus/duh" },
+  {
+    name: "avc-2bytes-nalu.mp4",
+    type: "video/mp4",
+    width: 560,
+    height: 320,
+    duration: 0.27,
+  },
+  {
+    name: "1967133.mp4",
+    type: "video/mp4",
+    width: 1080,
+    height: 1080,
+    duration: 0.512,
+  },
 ];
 
 var gFrameCountTests = [
@@ -586,7 +600,7 @@ var gInvalidPlayTests = [
 
 // Files to check different cases of ogg skeleton information.
 // multiple-bos-more-header-fields.ogg
-// - Skeleton v3, w/ Content-Type,Role,Name,Language,Title for both theora/vorbis
+// - Skeleton v3, w/ Content-Type,Role,Name,Language,Title for vorbis
 // audio-gaps-short.ogg
 // - No skeleton, but vorbis
 var gMultitrackInfoOggPlayList = [

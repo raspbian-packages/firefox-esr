@@ -17,6 +17,7 @@ $(call lazy,DEB_BUILD_GNU_TYPE,$$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE))
 $(call lazy,DEB_BUILD_ARCH_BITS,$$(shell dpkg-architecture -qDEB_BUILD_ARCH_BITS))
 $(call lazy,DEB_BUILD_ARCH,$$(shell dpkg-architecture -qDEB_BUILD_ARCH))
 $(call lazy,DEB_HOST_ARCH,$$(shell dpkg-architecture -qDEB_HOST_ARCH))
+$(call lazy,DEB_HOST_ARCH_ENDIAN,$$(shell dpkg-architecture -qDEB_HOST_ARCH_ENDIAN))
 
 PYTHON := PYTHONDONTWRITEBYTECODE=y python3
 
@@ -28,7 +29,7 @@ SYSTEM_LIBS = zlib ffi libevent
 ifeq (,$(filter bullseye,$(DIST)))
 SYSTEM_LIBS += nspr vpx
 endif
-ifeq (,$(filter bullseye bookworm,$(DIST)))
+ifeq (,$(filter bullseye bookworm trixie,$(DIST)))
 SYSTEM_LIBS += nss
 endif
 
@@ -114,6 +115,9 @@ endif
 ifneq (,$(filter armhf mips%,$(DEB_HOST_ARCH)))
 	CONFIGURE_FLAGS += --disable-webrtc
 endif
+ifneq (,$(filter ppc64,$(DEB_HOST_ARCH)))
+	CONFIGURE_FLAGS += --enable-linker=bfd
+endif
 
 ifeq (default,$(origin CC))
 ifneq (,$(filter-out bullseye bookworm,$(DIST)))
@@ -187,7 +191,7 @@ $(PREPROCESSED_FILES): stamps/mozbuild-state
 stamps/mozbuild-state::
 	MOZ_OBJDIR=debian/objdir MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE=none $(PYTHON) ./mach python --virtualenv build -c ""
 
-$(PREPROCESSED_FILES): VARS = GRE_VERSION PRODUCT_DOWNLOAD_NAME $(PRODUCT) $(call uc,$(PRODUCT)) $(Product) MOZ_APP_REMOTINGNAME $(SYSTEM_LIBS_VARS) SHORT_SOURCE_CHANNEL DIST MOZ_ENABLE_V4L2 CRASH_REPORTER DEB_HOST_ARCH
+$(PREPROCESSED_FILES): VARS = GRE_VERSION PRODUCT_DOWNLOAD_NAME $(PRODUCT) $(call uc,$(PRODUCT)) $(Product) MOZ_APP_REMOTINGNAME $(SYSTEM_LIBS_VARS) SHORT_SOURCE_CHANNEL DIST MOZ_ENABLE_V4L2 CRASH_REPORTER DEB_HOST_ARCH DEB_HOST_ARCH_ENDIAN
 debian/control: VARS += L10N_PACKAGES_DEPS PRODUCT LIBAVCODEC
 $(PREPROCESSED_FILES):
 	MOZ_OBJDIR=debian/objdir MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE=none $(PYTHON) ./mach python --virtualenv build python/mozbuild/mozbuild/preprocessor.py --marker % -Fsubstitution $(foreach var,$(VARS),-D$(var)="$($(var))" )$< -o $@
@@ -240,10 +244,13 @@ endif
 ifeq (armhf,$(DEB_BUILD_ARCH))
 export DEBIAN_RUST_LTO=-Clto=thin
 endif
+# Building with LTO times out on 390x
+ifeq (s390x,$(DEB_BUILD_ARCH))
+export DEBIAN_RUST_LTO=-Clto=off
+endif
 
 stamps/build-$(PRODUCT):: stamps/configure-check-$(PRODUCT)
-	+dh_auto_build --parallel --builddirectory=build-$(PRODUCT) -- \
-		_LEAKTEST_FILES=leaktest.py
+	+dh_auto_build --parallel --builddirectory=build-$(PRODUCT)
 
 L10N_BUILD_STAMPS = $(foreach lang,$(L10N_LANGS),stamps/build-l10n-$(lang))
 stamps/build-l10n::
@@ -317,9 +324,12 @@ stamps/dh_install:: debian/noinstall debian/$($(PRODUCT))-symbolic.svg
 override_dh_install-arch: stamps/dh_install
 override_dh_install-indep: stamps/dh_install-l10n
 
+# Avoid running dwz on platforms where we disable debug info.
 # dwz trips on libxul, after using a lot of memory.
 override_dh_dwz:
+ifeq (,$(filter --disable-debug-symbols,$(CONFIGURE_FLAGS)))
 	dh_dwz -X libxul -X libgkcodecs
+endif
 
 override_dh_strip:
 	dh_strip --dbgsym-migration='$($(PRODUCT))-dbg (<< 49.0-4~)'

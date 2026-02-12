@@ -5,11 +5,6 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = Tio aldonas la dialoganton, kiun vi elektis, al la flanka strio, tiel ke ĝi estos rapide alirebla dum retumo. <a data-l10n-name="connect">Komenti</a>
-genai-settings-chat-choose = Elekti dialoganton
-genai-settings-chat-choose-one-menuitem =
-    .label = Elekti unu
-genai-settings-chat-links = Kiam vi elektas dialoganton vi akceptas la kondiĉojn de uzo kaj la politikon pri privateco de ĝia provizanto.
 genai-settings-chat-chatgpt-links = Se vi elektas ChatGPT vi akceptas la <a data-l10n-name="link1">kondiĉojn de uzo</a> kaj <a data-l10n-name="link2">politikon pri privateco</a> de OpenAI.
 genai-settings-chat-claude-links = Se vi elektas Anthropic Claude vi akceptas la <a data-l10n-name="link1">kondiĉojn de uzo</a>, <a data-l10n-name="link2">politikon de uzo</a>, kaj <a data-l10n-name="link3">politikon pri privateco</a> de Anthropic.
 genai-settings-chat-copilot-links = Se vi elektas Copilot vi akceptas la <a data-l10n-name="link1">kondiĉojn de uzo de Copilot AI Experiences</a> kaj <a data-l10n-name="link2">deklaron pri privateco de Microsoft</a>.
@@ -17,9 +12,6 @@ genai-settings-chat-gemini-links = Se vi elektas Google Gemini vi akceptas la <a
 genai-settings-chat-huggingchat-links = Se vi elektas HuggingChat vi akceptas la <a data-l10n-name="link1">rimarkon pri privateco de HuggingChat</a> kaj <a data-l10n-name="link2">politikon pri privateco de Hugging Face</a>.
 genai-settings-chat-lechat-links = Se vi elektas Le Chat Mistral vi akceptas la <a data-l10n-name="link1">kondiĉojn de uzo</a> and <a data-l10n-name="link2">politikon pri privateco</a> de Mistral AI.
 genai-settings-chat-localhost-links = Uzu vian propran lokan dialoganton, ekzemple <a data-l10n-name="link1">llamafile</a> el la grupo Innovation de { -vendor-short-name }.
-genai-settings-chat-shortcuts =
-    .description = Tio ĉi montras ŝparvojon al indikojn kiam vi elektas tekston. { -brand-short-name } sendas la tekston, titolon de paĝo kaj indikilon al la dialoganto.
-    .label = Montri indikojn kiam oni elektas tekston
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -59,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = Demandi al { $provider }
+genai-menu-open-generic =
+    .label = Malfermi dialoganton A.I.
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Malfermi { $provider }
+genai-menu-remove-generic =
+    .label = Forigi dialoganton A.I.
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Forigi { $provider }
+genai-menu-remove-sidebar =
+    .label = Forigi el la flanka strio
+genai-menu-new-badge = Nova
+genai-menu-summarize-page = Resumi paĝon
 genai-input-ask-generic =
     .placeholder = Demandi al dialoganto A.I. …
 # $provider (string) - name of the provider
@@ -83,6 +89,18 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = Kaŝi ŝparvojon al dialoganto
+genai-menu-choose-chatbot =
+    .label = Elekti dialoganton A.I.
+genai-menu-ask-generic-2 =
+    .label = Demandi al dialoganto A.I.
+    .accesskey = D
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = Demandi al { $provider }
+    .accesskey = d
+genai-menu-no-provider-2 =
+    .label = Demandi al dialoganto A.I.
+    .accesskey = d
 
 ## Chatbot header
 
@@ -95,8 +113,6 @@ genai-header-close-button =
     .title = Fermi
 genai-provider-view-details =
     .label = Montri detalojn de la dialoganto
-genai-provider-about-chatbots =
-    .label = Informoj pri tiuj ĉi dialogantoj
 genai-options-reload-generic =
     .label = Reŝargi A.I. dialoganton
 # $provider (string) - name of the provider
@@ -109,11 +125,23 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = Informoj pri A.I. dialogantoj en { -brand-short-name }
 
+## Chatbot message
+
+genai-page-warning =
+    .message = Pro tio ke la paĝo estas longa, tiu ĉi estas parta resumo.
+
+## Chatbot footer
+
+genai-page-button-summarize = Resumi paĝon
+
 ## Chatbot onboarding
 
 genai-onboarding-header = Resumu, trovu ideojn kaj pli, dum vi retumas
+genai-onboarding-choose-header = Elektu A.I. dialoganton por uzi en la flanka strio de { -brand-short-name }
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = Elektu A.I. dialoganton por uzi en la flanka strio de { -brand-short-name }. Ni montros detalojn pri ĉiu dialoganto kiam vi elektas ĝin. Ŝanĝu la dialoganton iam ajn. <a data-l10n-name="learn-more">Pli da informo</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Ŝanĝu iam ajn. Jen <a data-l10n-name="learn-more">pli da informo</a> por helpi vin elekti.
 genai-onboarding-primary = Daŭrigi
 genai-onboarding-secondary = Fermi
 genai-onboarding-claude-tooltip =
@@ -137,6 +165,18 @@ genai-onboarding-lechat-learn = Pli da informo pri Le Chat
 genai-onboarding-select-header = Elektu tekston por vidi sugestojn
 genai-onboarding-select-description = Kiam vi elektas tekston, ni sugestos mesaĝojn, kiujn vi povos sendi al la dialoganto. Vi povas ankaŭ skribi viajn proprajn mesaĝojn.
 genai-onboarding-select-primary = Komenci dialogi
+genai-chatbot-contextual-title = Uzi A.I. dialoganton sen ŝanĝi langeton
+genai-chatbot-contextual-subtitle = Dialogu kaj retumu, unu apud la alia, per aldono de A.I. dialoganto en la flanka strio de { -brand-short-name }.
+genai-chatbot-contextual-button = Elekti dialoganton
+genai-chatbot-summarize-title = Nova! Resumi paĝojn per unu alklako
+genai-chatbot-summarize-button = Resumi paĝon
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = Alkalku per la dekstra butono sur via dialoganto A.I. en la flanka strio kaj elektu “Resumi paĝon”.
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = Alkalku per la dekstra butono la steligitan butonon en la flanka strio kaj kaj elektu “Resumi paĝon”. Se vi faras tion unuafoje vi ankaŭ devos elekti dialoganton A.I.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = Malerfmu vian dialoganton A.I. en la flanka strio kaj elektu “Resumi paĝon” ĉe la malsupra parto.
+genai-chatbot-summarize-footer-generic-subtitle = Aldoni dialoganton A.I. al la flanka strion de { -brand-short-name } por rapide resumi paĝojn.
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -158,3 +198,68 @@ genai-onboarding-huggingchat-switch = Iri de unu modelo al alia inter diversa ar
 genai-onboarding-huggingchat-price-2 = Senpaga; konto postulata post iu nombro de petoj
 genai-onboarding-lechat-generate = Krei tekston kaj kodon
 genai-onboarding-lechat-price = Senpage; konto postulata
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Daŭrigi
+genai-model-optin-optout =
+    .label = Nuligi
+genai-model-optin-cancel =
+    .label = Nuligi
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] { $range } minuto de legado
+       *[other] { $range } minutoj de legado
+    }
+# Error message displayed when a link preview cannot be generated
+link-preview-error-message = Ni ne povas antaŭmontri tiun ĉi ligilon
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = Viziti ligilon
+# Error message when we can't generate key points (summary highlights or main ideas of page content) for a page
+link-preview-generation-error-missing-data = Ni ne povas eltiri ĉefajn punktojn el tiu ĉi retpaĝo.
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Io ne bone funkciis.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Provu denove
+# Button that opens the Link Preview settings
+link-preview-settings-button =
+    .title = Agordoj por antaŭmontrado de ligiloj
+link-preview-settings-enable =
+    .label = Aktivigi la antaŭmontradon de ligiloj
+    .description = Montri la titolon de la paĝo, priskribon, kaj pli da informo kiam vi uzas la ŝparvojon aŭ alklakas ligilon per la dekstra butono.
+link-preview-settings-key-points =
+    .label = Permesi al AI legi la komencon de la paĝo kaj eltiri ĉefajn punktojn
+link-preview-settings-long-press =
+    .label = Ŝparvojo: alklaku la ligilon dum unu sekundo (longa premo)
+# Title that appears when user is shown the opt-in flow for link previews
+link-preview-optin-title = Ĉu pli da informo pere de AI?
+# Message that appears when user is shown the opt-in flow for link previews
+link-preview-optin-message = { -brand-short-name } uzas AI por legi la komencon de la paĝo kaj eltiri kelkajn ĉefajn punktojn. Por protekti vian privatecon, tiuj agoj okazas surloke, en via aparato.
+# Onboarding card title for long press
+link-preview-onboarding-title-long-press = Nova: longe alklaku ligilon por havi antaŭvidon
+# Onboarding card description for long press
+link-preview-onboarding-description-long-press = Vidu mallonga priskribon, taksitan tempon de legado, kaj aliajn aferojn por decidi ĉu indas viziti la ligilon. Tio atingeblas ankaŭ per dekstra alklako.
+# Header for the key points section
+link-preview-key-points-header = Ĉefaj punktoj
+# Disclaimer for AI-generated key points
+link-preview-key-points-disclaimer = Ĉefaj punktoj estas eltiritaj de AI kaj povas enhavi erarojn.
+# Progress message for the first-time setup
+# $progress (number) - The percentage value 1-100 indicating the progress of the setup.
+link-preview-setup = Agordo antaŭ unua uzo • <strong>{ $progress }%</strong>
+# Message indicating faster performance after initial setup
+link-preview-setup-faster-next-time = Venontfoje vi vidos ĉefajn punktojn pli rapide.
+# Onboarding card See a preview button
+link-preview-onboarding-button = Montri antaŭvidon
+# Onboarding card Close button
+link-preview-onboarding-close = Fermi

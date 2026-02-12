@@ -25,6 +25,8 @@ return-to-amo-subtitle = Great, you’ve got { -brand-short-name }
 return-to-amo-addon-title = Now let’s get you <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Add the Extension
 return-to-amo-add-theme-label = Add the Theme
+return-to-amo-theme-install-complete-label = Theme installed
+return-to-amo-extension-install-complete-label = Extension installed
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Import from { $previous
 mr1-onboarding-theme-header = Make it your own
 mr1-onboarding-theme-subtitle = Personalize { -brand-short-name } with a theme.
 mr1-onboarding-theme-secondary-button-label = Not now
-newtab-wallpaper-onboarding-title = Try a splash of colour
-newtab-wallpaper-onboarding-subtitle = Choose a wallpaper to give your New Tab a fresh look.
-newtab-wallpaper-onboarding-primary-button-label = Set wallpaper
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = System theme
 mr1-onboarding-theme-label-light = Light
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Sign up or sign in to your account
 
 tab-groups-onboarding-feature-callout-title = Try tab groups for less clutter, more focus
 tab-groups-onboarding-feature-callout-subtitle = Get organized by dragging one tab on top of another to create your first group.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Find your tab groups in the List All Tabs menu anytime.
+tab-groups-onboarding-create-group-title-2 = Find your tab groups here anytime.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Find your groups by searching for them in the address bar.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = When you close a tab group, reopen it from the List All Tabs menu anytime.
+tab-groups-onboarding-saved-groups-title-2 = When you close a tab group, you can reopen it here anytime.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Find your closed groups by searching for them in the address bar.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Reopen your tab groups from the List All Tabs menu anytime.
+tab-groups-onboarding-session-restore-title = Reopen your tab groups here anytime.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,33 @@ multi-profile-spotlight-cta = Create a profile
 multi-profile-callout-title = Create different profiles for work and fun
 multi-profile-callout-subtitle = Profiles let you keep your browsing info, like search history and passwords, totally separate.
 multi-profile-callout-cta = Create a profile
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Download, sync, and go!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Scan the QR code to download { -brand-product-name } for mobile. Once installed, select “Sync to mobile” to access your passwords, bookmarks, and more on the go.
+dismiss-button-label = Dismiss
+sync-to-mobile-button-label = Sync to mobile
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR code to download { -brand-product-name } for mobile
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Restore from Backup
+restore-from-backup-title = Let’s get { -brand-short-name } back how you like it
+restore-from-backup-subtitle = Recover all your bookmarks, history, and other data to get back to browsing.
+restore-from-backup-secondary-button = Don’t restore
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = We’re back! Your { -brand-short-name } data has been restored.
+restored-from-backup-success-with-checklist-subtitle = Want to keep your favourite privacy-focused browser one click away?
+restored-from-backup-success-no-checklist-subtitle = You can turn backup on for this device in <a data-l10n-name="settings">Settings</a>.
+restored-from-backup-success-with-checklist-primary-button = Save and continue
+restored-from-backup-success-with-checklist-secondary-button = Skip this step
+restored-from-backup-success-no-checklist-primary-button = Continue
+restored-from-backup-error-title = Hmm, there was a problem with your backup file.
+restored-from-backup-error-subtitle = If you have another { -brand-short-name } backup file, try restoring from that one. <a data-l10n-name="restore-problems">Still having problems?</a>
+restored-from-backup-error-primary-button = Close

@@ -25,6 +25,8 @@ return-to-amo-subtitle = Выдатна, у вас ёсць { -brand-short-name 
 return-to-amo-addon-title = Цяпер давайце пяройдзем да <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Дадаць пашырэнне
 return-to-amo-add-theme-label = Дадаць тэму
+return-to-amo-theme-install-complete-label = Тэма ўсталявана
+return-to-amo-extension-install-complete-label = Пашырэнне ўсталявана
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Імпартаваць 
 mr1-onboarding-theme-header = Зрабіце яго сваім
 mr1-onboarding-theme-subtitle = Персаніфікуйце { -brand-short-name } з дапамогай тэмы.
 mr1-onboarding-theme-secondary-button-label = Не зараз
-newtab-wallpaper-onboarding-title = Паспрабуйце ўсплёск колеру
-newtab-wallpaper-onboarding-subtitle = Выберыце шпалеры, каб надаць новай картцы новы выгляд.
-newtab-wallpaper-onboarding-primary-button-label = Усталяваць шпалеры
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Сістэмная тэма
 mr1-onboarding-theme-label-light = Светлая
@@ -445,6 +444,18 @@ onboarding-checklist-sign-up = Зарэгіструйцеся або ўвайд�
 
 tab-groups-onboarding-feature-callout-title = Паспрабуйце групы картак — менш мітусні, больш увагі
 tab-groups-onboarding-feature-callout-subtitle = Навядзіце парадак, перацягнуўшы адну картку на другую, каб стварыць сваю першую групу.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Знайдзіце свае групы картак у меню «Пералічыць усе карткі» у любы час.
+tab-groups-onboarding-create-group-title-2 = Знаходзьце свае групы картак тут у любы час.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Знайдзіце свае групы, пашакаўшы іх у адрасным радку.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Пасля закрыцця групы картак яе можна зноў адкрыць у любы час з меню «Пералічыць усе карткі».
+tab-groups-onboarding-saved-groups-title-2 = Калі вы закрываеце групу картак, вы можаце зноў адкрыць яе тут у любы час.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Знайдзіце свае закрытыя групы, пашакаўшы іх у адрасным радку.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Вы можаце ў любы час зноў адкрыць групы картак з меню «Пералічыць усе карткі».
+tab-groups-onboarding-session-restore-title = Паўторна адкрывайце свае групы картак тут у любы час.
+tab-groups-onboarding-dismiss = Добра
 
 ## Multi Profiles feature onboarding messages
 
@@ -454,3 +465,107 @@ multi-profile-spotlight-cta = Стварыць профіль
 multi-profile-callout-title = Стварыце розныя профілі для працы і забавы
 multi-profile-callout-subtitle = Профілі дазваляюць захоўваць вашу інфармацыю аб агляданні, напрыклад гісторыю пошуку і паролі, цалкам асобна.
 multi-profile-callout-cta = Стварыць профіль
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Сцягніце, сінхранізуйце і наперад!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Адскануйце QR-код, каб сцягнуць { -brand-product-name } для мабільнага апарата. Пасля ўсталявання абярыце «Сінхранізаваць з мабільным», каб атрымаць доступ да сваіх пароляў, закладак і іншага ў дарозе.
+dismiss-button-label = Адхіліць
+sync-to-mobile-button-label = Сінхранізаваць з мабільным
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-код для сцягвання { -brand-product-name } для мабільных прылад
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Абнаўляецеся да Windows 11?
+    Давайце зробім рэзервовую копію вашых дадзеных { -brand-product-name }.
+create-backup-screen-1-subtitle = Аўтаматычна абараніце свае паролі, закладкі і іншае за 1-2 хвіліны.
+create-backup-screen-1-flair = Рэкамендаваныя
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Даведацца больш</a>
+create-backup-screen-1-sync-label = Сінхранізаваць з { -brand-product-name }
+create-backup-screen-1-sync-body = Стварае рэзервовыя копіі з усіх прылад, дзе зроблены ўваход
+create-backup-screen-1-backup-label = Рэзервовая копія на ПК
+create-backup-screen-1-backup-body = Захоўвае на вашай прыладзе або ў OneDrive
+create-backup-select-tile-button-label = Выбраць
+create-backup-back-button-label = Назад
+create-backup-show-fewer =
+    .label = Паказваць менш падобных
+create-backup-screen-2-title = Выберыце дадзеныя { -brand-product-name } для рэзервовага капіявання
+create-backup-screen-2-subtitle = Гэта зойме ўсяго хвіліну. Рэзервовыя копіі вашых дадзеных ствараюцца адзін раз у дзень.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Простая ўстаноўка
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Закладкі, гісторыя, налады і іншае
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Не ўключае паролі і плацяжы
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Не зашыфравана
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Усе дадзеныя
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Уключае паролі і плацяжы
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Зашыфравана паролем
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Куды вы хочаце захаваць рэзервовую копію?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Стварыць пароль для файла рэзервовай копіі
+create-backup-screen-3-subtitle = Патрабуецца для шыфравання вашых дадзеных. Захоўвайце іх у месцы, якое вы запомніце.
+fx-backup-opt-in-header = Выбраць месцазнаходжанне файла
+fx-backup-opt-in-filepath-label = Выберыце месца, куды вы плануеце перанесці дадзеныя на новую прыладу, напрыклад, OneDrive.
+fx-backup-opt-in-create-password-label = Увядзіце пароль
+fx-backup-opt-in-confirm-btn-label = Працягнуць
+fx-backup-opt-in-cancel-btn-label = Назад
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Ваша рэзервовая копія запланавана
+fx-backup-confirmation-screen-close-button = Закрыць
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Усе дадзеныя аглядання ўключаны
+fx-backup-confirmation-screen-all-data-item-text-2 = Захавана на вашай прыладзе
+fx-backup-confirmation-screen-all-data-item-text-3 = Зашыфравана і абаронена паролем
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Закладкі, гісторыя, налады і іншыя дадзеныя ўключаны
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Захавана на вашай прыладзе
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Паролі і плацяжы не ўключаны
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Каб дадаць канфідэнцыяльныя дадзеныя, перайдзіце ў <a data-l10n-name="settings">Налады</a>.
+fx-backup-confirmation-screen-item-subtext-1 = Рэзервовае капіяванне пачнецца праз некалькі хвілін і будзе выконвацца адзін раз у дзень. Вы можаце праверыць прагрэс у <a data-l10n-name="settings">Наладах</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } будзе шукаць рэзервовую копію, калі вам спатрэбіцца пераўсталяванне.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Аднавіць з рэзервовай копіі
+restore-from-backup-title = Давайце вернем { -brand-short-name } так, як вам падабаецца
+restore-from-backup-subtitle = Аднавіце ўсе свае закладкі, гісторыю і іншыя дадзеныя, каб вярнуцца да аглядання.
+restore-from-backup-secondary-button = Не аднаўляць
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Мы вярнуліся! Вашы дадзеныя { -brand-short-name } адноўлены.
+restored-from-backup-success-with-checklist-subtitle = Хочаце мець свой любімы браўзер, арыентаваны на прыватнасць, на адлегласці ўсяго ў адзін націск?
+restored-from-backup-success-no-checklist-subtitle = Вы можаце ўключыць рэзервовае капіраванне для гэтай прылады ў <a data-l10n-name="settings">Наладах</a>.
+restored-from-backup-success-with-checklist-primary-button = Захаваць і працягнуць
+restored-from-backup-success-with-checklist-secondary-button = Прапусціць гэты крок
+restored-from-backup-success-no-checklist-primary-button = Працягнуць
+restored-from-backup-error-title = Гм, узнікла праблема з вашым рэзервовым файлам.
+restored-from-backup-error-subtitle = Калі ў вас ёсць іншы файл рэзервовай копіі { -brand-short-name }, паспрабуйце аднавіць з яго. <a data-l10n-name="restore-problems">Усё яшчэ ёсць праблемы?</a>
+restored-from-backup-error-primary-button = Закрыць
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Уладкуйце свой досвед { -brand-short-name }
+onboarding-personalization-subtitle = Адкажыце на некалькі пытанняў, і мы парэкамендуем функцыі і пашырэнні, каб палепшыць ваша выкарыстанне { -brand-short-name }.
+onboarding-personalization-use-case-title = Для чаго вы будзеце выкарыстоўваць { -brand-short-name }?
+onboarding-personalization-use-case-personal-option = Асабістае выкарыстанне
+onboarding-personalization-use-case-school-option = Школа
+onboarding-personalization-use-case-work-option = Праца
+onboarding-personalization-motivation-title = Якія асаблівасці { -brand-short-name } найбольш важныя для вас?
+onboarding-personalization-motivation-privacy-option = Прыватнасць і бяспека
+onboarding-personalization-motivation-productivity-option = Прадукцыйнасць
+onboarding-personalization-motivation-other-option = Іншае

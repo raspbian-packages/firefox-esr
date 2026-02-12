@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Clauder
     .secondarybuttonaccesskey = C
 appmenu-update-restart-message2 = Obtene le ultime version de { -brand-shorter-name }. Le schedas e fenestras aperte essera restaurate.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Disfacer
+    .secondarybuttonaccesskey = D
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } non pote automaticamente actualisar se al ultime version.
     .buttonlabel = Actualisar { -brand-shorter-name } totevia
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = OK
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = Gere tu additivos e themas con le menu del application.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Actualisa permissiones e preferentias de datos quandocunque in le <a data-l10n-name="settings-link">parametros del extension</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Fixar extension al barra de instrumentos
+    .accesskey = F
 appmenu-addon-post-install-incognito-checkbox =
     .label = Permitter que iste extension se executa in fenestras private
     .accesskey = P

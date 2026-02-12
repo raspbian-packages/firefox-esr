@@ -9,18 +9,16 @@
 #include "mozilla/Encoding.h"
 #include "mozilla/intl/Locale.h"
 #include "mozilla/intl/OSPreferences.h"
+#include "MainThreadUtils.h"
 #include "nsGkAtoms.h"
 #include "nsUConvPropertySearch.h"
 #include "nsUnicharUtils.h"
+#include "MainThreadUtils.h"
 
 #include <mutex>  // for call_once
 
 using namespace mozilla;
 using mozilla::intl::OSPreferences;
-
-static constexpr nsUConvProp encodingsGroups[] = {
-#include "encodingsgroups.properties.h"
-};
 
 // List of mozilla internal x-* tags that map to themselves (see bug 256257)
 static constexpr nsStaticAtom* kLangGroups[] = {
@@ -108,18 +106,6 @@ nsStaticAtom* nsLanguageAtomService::LookupLanguage(
   return GetLanguageGroup(lang);
 }
 
-already_AddRefed<nsAtom> nsLanguageAtomService::LookupCharSet(
-    NotNull<const Encoding*> aEncoding) {
-  nsAutoCString charset;
-  aEncoding->Name(charset);
-  nsAutoCString group;
-  if (NS_FAILED(nsUConvPropertySearch::SearchPropertyValue(
-          encodingsGroups, ArrayLength(encodingsGroups), charset, group))) {
-    return RefPtr<nsAtom>(nsGkAtoms::Unicode).forget();
-  }
-  return NS_Atomize(group);
-}
-
 nsAtom* nsLanguageAtomService::GetLocaleLanguage() {
   {
     AutoReadLock lock(mLock);
@@ -153,15 +139,12 @@ nsAtom* nsLanguageAtomService::GetLocaleLanguage() {
   return mLocaleLanguage;
 }
 
-nsStaticAtom* nsLanguageAtomService::GetLanguageGroup(nsAtom* aLanguage,
-                                                      bool* aNeedsToCache) {
-  if (aNeedsToCache) {
+nsStaticAtom* nsLanguageAtomService::GetLanguageGroup(nsAtom* aLanguage) {
+  {
     AutoReadLock lock(mLock);
     if (nsStaticAtom* atom = mLangToGroup.Get(aLanguage)) {
       return atom;
     }
-    *aNeedsToCache = true;
-    return nullptr;
   }
 
   AutoWriteLock lock(mLock);
@@ -238,7 +221,7 @@ nsStaticAtom* nsLanguageAtomService::GetUncachedLanguageGroup(
       Span<const char> scriptAsSpan = loc.Script().Span();
       nsDependentCSubstring script(scriptAsSpan.data(), scriptAsSpan.size());
       if (BinarySearchIf(
-              kScriptLangGroup, 0, ArrayLength(kScriptLangGroup),
+              kScriptLangGroup, 0, std::size(kScriptLangGroup),
               [script](const auto& entry) -> int {
                 return Compare(script, nsDependentCString(entry.mTag));
               },

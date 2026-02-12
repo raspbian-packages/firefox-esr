@@ -7,7 +7,7 @@
 ### the remote profiling panel. There are additional profiler strings in the appmenu.ftl
 ### file that are used for the profiler popup.
 
-perftools-intro-title = การตั้งค่า Profiler
+perftools-intro-title = การตั้งค่าตัวสร้างโปรไฟล์
 perftools-intro-description =
     การอัดบันทึกจะเปิด profiler.firefox.com ในแท็บใหม่ ข้อมูลทั้งหมดจะถูกเก็บ
     ในเครื่อง แต่คุณสามารถเลือกที่จะอัปโหลดเพื่อแบ่งปันได้
@@ -68,6 +68,14 @@ perftools-button-restart = เริ่มการทำงานใหม่
 perftools-button-add-directory = เพิ่มไดเร็กทอรี
 perftools-button-remove-directory = เอาที่เลือกออก
 perftools-button-edit-settings = แก้ไขการตั้งค่า…
+
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = การกระทำเพิ่มเติม
+perftools-menu-more-actions-restart-with-profiling = เริ่ม { -brand-shorter-name } ใหม่พร้อมเปิดใช้งานการทำโปรไฟล์ตอนเริ่มโปรแกรม
+perftools-menu-more-actions-copy-for-startup = คัดลอกตัวแปรสภาพแวดล้อมสำหรับการทำโปรไฟล์ตอนเริ่มโปรแกรม
+perftools-menu-more-actions-copy-for-perf-tests = คัดลอกพารามิเตอร์สำหรับการทดสอบประสิทธิภาพ
 
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
@@ -141,6 +149,8 @@ perftools-presets-graphics-label = กราฟิก
 perftools-presets-graphics-description = ค่าที่ตั้งล่วงหน้าสำหรับการตรวจสอบบั๊กเกี่ยวกับกราฟิกใน { -brand-shorter-name }
 perftools-presets-media-label = สื่อ
 perftools-presets-media-description2 = ค่าที่ตั้งล่วงหน้าสำหรับการตรวจสอบบั๊กเกี่ยวกับเสียงและวิดีโอใน { -brand-shorter-name }
+perftools-presets-ml-label = การเรียนรู้ของเครื่อง
+perftools-presets-ml-description2 = ค่าที่ตั้งล่วงหน้าสำหรับการตรวจสอบบั๊กเกี่ยวกับการเรียนรู้ของเครื่องใน { -brand-shorter-name }
 perftools-presets-networking-label = ระบบเครือข่าย
 perftools-presets-networking-description = ค่าที่ตั้งล่วงหน้าสำหรับการตรวจสอบบั๊กเกี่ยวกับระบบเครือข่ายใน { -brand-shorter-name }
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -149,6 +159,3 @@ perftools-presets-power-description = ค่าที่ตั้งล่วง
 perftools-presets-debug-label = ดีบั๊ก
 perftools-presets-debug-description = พรีเซ็ตสำหรับการดีบั๊กใน { -brand-shorter-name }  มีโอเวอร์เฮดสูง อย่าใช้เพื่องานด้านประสิทธิภาพ แต่ให้ใช้เพื่อทำความเข้าใจพฤติกรรมการทำงานของเบราว์เซอร์
 perftools-presets-custom-label = กำหนดเอง
-
-##
-

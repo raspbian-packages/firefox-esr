@@ -86,10 +86,3 @@ networkProtocolError-title = பிணைய நெறிமுறை பிழ�
 nssBadCert-title = எச்சரிக்கை: சாத்தியமான பாதுகாப்பு ஆபத்து முன்னால்
 nssBadCert-sts-title = இணைக்க முடியவில்லை, பாதுகாப்புக் காரணங்கள் காரணமாக இருக்கலாம்.
 certerror-mitm-title = { -brand-short-name } இத்தளத்திற்குப் பாதுகாப்பாக இணைப்பதிலிருந்து மென்பொருள் தடுக்கிறது
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

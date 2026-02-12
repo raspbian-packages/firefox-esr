@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = İndirilenler
 appmenuitem-passwords =
     .label = Parolalar
+appmenuitem-extensions-and-themes =
+    .label = Uzantılar ve temalar
+appmenuitem-extensions =
+    .label = Uzantılar
 appmenuitem-addons-and-themes =
     .label = Eklentiler ve temalar
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Profilleyici panelini aç
+    .tooltiptext = Profilleyici panelini aç
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = { -brand-shorter-name } tarayıcısında ses ve video hatalarını araştırma ayarı.
 profiler-popup-presets-media-label =
     .label = Ortam
+profiler-popup-presets-ml-description = { -brand-shorter-name } tarayıcısında makine öğrenimi hatalarını araştırma ayarı.
+profiler-popup-presets-ml-label =
+    .label = Makine öğrenimi
 profiler-popup-presets-networking-description = { -brand-shorter-name } tarayıcısında ağ hatalarını araştırma ayarı.
 profiler-popup-presets-networking-label =
     .label = Ağ
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = E-posta maskeleri panosunu aç
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Çevrimiçi etkinliklerinizi koruyun
 appmenu-services-header = Servislerim
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Mozilla’nın diğer koruma araçlarını deneyin:
 appmenu-other-protection-header = Diğer { -vendor-short-name } koruma araçlarını deneyin:
 
 ## Profiles panel
 
-appmenu-profiles = Profiller
 appmenu-other-profiles = Diğer profiller
 appmenu-manage-profiles =
     .label = Profilleri yönet
+appmenu-copy-profile =
+    .label = Bu profili kopyala
 appmenu-create-profile =
     .label = Yeni profil
 appmenu-edit-profile =
     .aria-label = Profili düzenle
+appmenu-profiles-2 =
+    .label = Profiller

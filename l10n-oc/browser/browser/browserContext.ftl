@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Enregistrar lo ligam dins { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Copiar l'adreça electronica
@@ -166,12 +164,7 @@ main-context-menu-copy-link-simple =
 # copied, like items that identify you for advertising purposes, and other items
 # sites add into URLs to help them deliver a certain browsing experience.
 main-context-menu-copy-clean-link =
-    .label = Copiar lo ligam netejar
-    .accesskey = o
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Copiar lo ligam sens traçador
+    .label = Copiar lo ligam netejat
     .accesskey = o
 
 ## Media (video/audio) controls

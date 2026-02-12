@@ -8,6 +8,9 @@
 # Variables
 #   $host (String) - Hostname for which the password is saved for.
 password-manager-save-password-message = Պահե՞լ գաղտնաբառը { $host }-ի համար:
+password-manager-save-password-button-deny =
+    .label = Ոչ հիմա
+    .accesskey = N
 password-manager-save-password-button-allow =
     .label = Պահպանել
     .accesskey = Պ
@@ -25,8 +28,5 @@ password-manager-update-password-button-deny =
     .accesskey = Չ
 # This is displayed in place of the username when it is missing.
 password-manager-no-username-placeholder = Չկա օգտվողի անուն
-password-manager-toggle-password =
-    .label = Ցուցադրել գաղտնաբառերը
-    .accesskey = h
 password-manager-confirm-password-change = Հաստատեք գաղտնաբառի փոփոխությունը
 password-manager-select-username = Ընտրեք, թե որ մուտքագրումը թարմացնել՝

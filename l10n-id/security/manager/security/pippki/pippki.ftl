@@ -48,9 +48,6 @@ download-cert-view-cert =
     .label = Tampilkan
 download-cert-view-text = Periksa sertifikat CA
 
-## Client Authorization Ask dialog
-
-
 ## Client Authentication Ask dialog
 
 client-auth-window =
@@ -85,8 +82,13 @@ client-auth-cert-details-issued-by = Diterbitkan oleh: { $issuedBy }
 # Variables:
 # $storedOn (String) - The name of the token holding the certificate (for example, "OS Client Cert Token (Modern)")
 client-auth-cert-details-stored-on = Disimpan di: { $storedOn }
-client-auth-cert-remember-box =
-    .label = Ingat pilihan ini
+client-auth-cert-remember-label = Ingat pilihan ini:
+client-auth-cert-remember-never =
+    .label = Sekali
+client-auth-cert-remember-always =
+    .label = Secara permanen
+client-auth-cert-remember-temporarily =
+    .label = Untuk sesi ini
 
 ## Set password (p12) dialog
 

@@ -11,11 +11,29 @@
 ##   $extension (String): replaced with the localized name of the extension.
 
 webext-perms-header = Додати { $extension }?
-webext-perms-header-with-perms = Додати { $extension }? Це розширення матиме дозвіл:
+webext-perms-header-with-perms = Додати { $extension }? Це розширення матиме такі дозволи:
 webext-perms-header-unsigned = Додати { $extension }? Це розширення неперевірене. Зловмисні розширення можуть викрадати вашу особисту інформацію, або компрометувати ваш комп'ютер. Додавайте його лише якщо ви впевнені в надійності джерела.
 webext-perms-header-unsigned-with-perms = Додати { $extension }? Це розширення неперевірене. Зловмисні розширення можуть викрадати вашу особисту інформацію, або компрометувати ваш комп'ютер. Додавайте його лише якщо ви впевнені в надійності джерела. Це розширення матиме дозвіл:
 webext-perms-sideload-header = { $extension } додано
+webext-perms-optional-perms-header2 = { $extension } запитує додаткові дозволи
 webext-perms-optional-perms-header = { $extension } запитує додаткові дозволи.
+webext-perms-header2 = Додати { $extension }
+webext-perms-list-intro-unsigned = Це неперевірене розширення може поставити під загрозу вашу приватність або скомпрометувати ваш пристрій. Додавайте його, лише якщо довіряєте походженню.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Необхідні дозволи:
+webext-perms-header-optional-settings = Додаткові налаштування:
+webext-perms-header-update-required-perms = Нові необхідні дозволи:
+webext-perms-header-optional-required-perms = Нові дозволи:
+webext-perms-header-data-collection-perms = Обов'язковий збір даних:
+webext-perms-header-data-collection-is-none = Збір даних:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Новий обов'язковий збір даних:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Новий збір даних:
 
 ##
 
@@ -35,7 +53,10 @@ webext-perms-sideload-cancel =
     .accesskey = С
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
-webext-perms-update-text = { $extension } було оновлено. Ви повинні схвалити нові дозволи перед встановленням оновленої версії. Вибравши “Скасувати”, розширення не оновиться і ви продовжите користуватися поточною версією. Це розширення матиме дозвіл:
+webext-perms-update-text2 = Розширення { $extension } оновлено. Ви повинні схвалити нові дозволи, перш ніж буде встановлено оновлену версію. Якщо вибрати "Скасувати", збережеться ваша поточна версія розширення.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text = { $extension } було оновлено. Ви повинні схвалити нові дозволи перед встановленням оновленої версії. Вибравши “Скасувати”, розширення не оновиться і ви продовжите користуватися поточною версією. Це розширення матиме такі дозволи:
 webext-perms-update-accept =
     .label = Оновити
     .accesskey = н
@@ -46,7 +67,7 @@ webext-perms-optional-perms-allow =
 webext-perms-optional-perms-deny =
     .label = Заборонити
     .accesskey = б
-webext-perms-host-description-all-urls = Доступ до ваших даних для всіх вебсайтів
+webext-perms-host-description-all-urls = Доступ до ваших даних на всіх вебсайтах
 # Variables:
 #   $domain (String): will be replaced by the DNS domain for which a webextension is requesting access (e.g., mozilla.org)
 webext-perms-host-description-wildcard = Доступ до ваших даних для сайтів у домені { $domain }
@@ -88,6 +109,29 @@ webext-perms-host-description-multiple-domains =
        *[many] Доступ до ваших даних для сайтів у { $domainCount } доменах
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Розробник стверджує, що це розширення не потребує збору даних.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Розробник стверджує, що це розширення збирає: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Розробник стверджує, що розширення збиратиме: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = Розробник стверджує, що розширення хоче збирати: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = { $extension } потребує оновлення налаштувань
+webext-perms-update-list-intro-with-data-collection = Скасуйте, щоб зберегти поточну версію та налаштування, або схваліть зміни, щоб встановити нову версію.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } запитує додаткові налаштування
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } запитує додатковий збір даних
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -121,3 +165,8 @@ webext-site-perms-header-unsigned-with-perms = Додати { $extension }? Це
 
 webext-site-perms-midi = Доступ до пристроїв MIDI
 webext-site-perms-midi-sysex = Доступ до пристроїв MIDI з підтримкою SysEx
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Вашу тему забарвлення вилучено.</b> Колекцію забарвлень для { -brand-shorter-name } оновлено. Знайдіть найновіші версії на сайті додатків.
+webext-colorway-theme-migration-notification-button = Отримайте оновлені забарвлення

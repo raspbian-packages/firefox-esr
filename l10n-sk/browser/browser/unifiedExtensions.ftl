@@ -11,6 +11,15 @@
 unified-extensions-header-title = Rozšírenia
 unified-extensions-manage-extensions =
     .label = Spravovať rozšírenia
+unified-extensions-discover-extensions =
+    .label = Objavte rozšírenia
+unified-extensions-empty-reason-private-browsing-not-allowed = Máte nainštalované rozšírenia, ale nie sú povolené v súkromných oknách
+unified-extensions-empty-reason-extension-not-enabled = Máte nainštalované rozšírenia, ale nie sú povolené
+# In this headline, “Level up” means to enhance your browsing experience.
+unified-extensions-empty-reason-zero-extensions-onboarding = Posuňte svoje prehliadanie na vyššiu úroveň pomocou rozšírení
+unified-extensions-empty-content-explain-enable2 = Povolíte ich v nastaveniach výberom možnosti “{ unified-extensions-manage-extensions.label }”.
+unified-extensions-empty-content-explain-manage2 = Spravovať ich môžete v nastaveniach výberom možnosti “{ unified-extensions-manage-extensions.label }”.
+unified-extensions-empty-content-explain-extensions-onboarding = Prispôsobte si { -brand-short-name(case: "acc") } zmenou vzhľadu a fungovania alebo zvýšením súkromia a bezpečnosti.
 
 ## An extension in the main list
 
@@ -87,3 +96,5 @@ unified-extensions-mb-blocklist-error-multiple =
            *[other] { $extensionsCount } rozšírení je zakázaných
         }
     .message = Niektoré z vašich rozšírení boli zakázané pre porušenie pravidiel Mozilly.
+unified-extensions-notice-safe-mode =
+    .message = Všetky rozšírenia boli deaktivované režimom riešenia problémov.

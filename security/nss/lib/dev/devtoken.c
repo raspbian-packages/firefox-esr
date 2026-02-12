@@ -827,8 +827,7 @@ nssToken_FindCertificateByIssuerAndSerialNumber(
     }
 
     /*
-     * NSS used to incorrectly store serial numbers in their decoded form.
-     * because of this old tokens have decoded serial numbers.
+     * Some smart cards incorrectly store serial numbers in their decoded form.
      */
     if (!objects) {
         NSSItem serialDecode;

@@ -68,6 +68,14 @@ perftools-button-add-directory = Zapis přidać
 perftools-button-remove-directory = Wubrane wotstronić
 perftools-button-edit-settings = Nastajenja wobdźěłać…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = Dalše akcije
+perftools-menu-more-actions-restart-with-profiling = { -brand-shorter-name } ze zmóžnjenym startowym profilowanjom znowa startować
+perftools-menu-more-actions-copy-for-startup = Wokolinowe wariable za startowe profilowanje kopěrować
+perftools-menu-more-actions-copy-for-perf-tests = Parametry za wukonowe testy kopěrować
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -140,6 +148,8 @@ perftools-presets-graphics-label = Grafika
 perftools-presets-graphics-description = Přednastajenje za wuslědźenje zmylkow grafiki w { -brand-shorter-name }.
 perftools-presets-media-label = Medije
 perftools-presets-media-description2 = Přednastajenje za wuslědźenje zmylkow awdio a widejo w { -brand-shorter-name }.
+perftools-presets-ml-label = Mašinelne wuknjenje
+perftools-presets-ml-description2 = Přednastajenje za wuslědźenje zmylkow mašinelneho wuknjenja w { -brand-shorter-name }.
 perftools-presets-networking-label = Syć
 perftools-presets-networking-description = Přednastajenje za wuslědźenje syćowych zmylkow w { -brand-shorter-name }.
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -148,6 +158,3 @@ perftools-presets-power-description = Přednastajenje za wuslědźenje zmylkow w
 perftools-presets-debug-label = Za zmylkami pytać
 perftools-presets-debug-description = Přednastajenje za pytanje zmylkow w { -brand-shorter-name }. Wysoka přidatna ćeža, njewužiwajće jo za wukonowe dźěło, ale wužiwajće jo, zo byšće so na rozumjenje zadźerženja wobhladowaka fokusěrował.
 perftools-presets-custom-label = Swójski
-
-##
-

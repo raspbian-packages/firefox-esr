@@ -23,6 +23,7 @@ namespace gfx {
 class SourceSurface;
 }
 }  // namespace mozilla
+
 class DragData final {
  public:
   NS_INLINE_DECL_REFCOUNTING(DragData)
@@ -111,6 +112,8 @@ class nsDragSession : public nsBaseDragSession, public nsIObserver {
   // accepts/denies D&D operation and uses stored
   // mTargetDragContextForRemote context.
   NS_IMETHOD UpdateDragEffect() override;
+
+  nsAutoCString GetDebugTag() const;
 
   MOZ_CAN_RUN_SCRIPT nsresult
   EndDragSessionImpl(bool aDoneDrag, uint32_t aKeyModifiers) override;
@@ -309,9 +312,9 @@ class nsDragSession : public nsBaseDragSession, public nsIObserver {
   bool SourceDataGetText(nsITransferable* aItem, const nsACString& aMIMEType,
                          bool aNeedToDoConversionToPlainText,
                          GtkSelectionData* aSelectionData);
-  void SourceDataGetImage(nsITransferable* aItem,
+  bool SourceDataGetImage(nsITransferable* aItem,
                           GtkSelectionData* aSelectionData);
-  void SourceDataGetXDND(nsITransferable* aItem, GdkDragContext* aContext,
+  bool SourceDataGetXDND(nsITransferable* aItem, GdkDragContext* aContext,
                          GtkSelectionData* aSelectionData);
   void SourceDataGetUriList(GdkDragContext* aContext,
                             GtkSelectionData* aSelectionData,
@@ -324,6 +327,9 @@ class nsDragSession : public nsBaseDragSession, public nsIObserver {
 
   // set the drag icon during drag-begin
   void SetDragIcon(GdkDragContext* aContext);
+
+  void MarkAsActive() { mActive = true; }
+  bool IsActive() const { return mActive; }
 
  protected:
   virtual ~nsDragSession();
@@ -344,7 +350,8 @@ class nsDragSession : public nsBaseDragSession, public nsIObserver {
 
   mozilla::LayoutDeviceIntPoint mTargetWindowPoint;
 
-  int mWaitingForDragDataRequests = 0;
+  // Track gtk_drag_get_data() requests here.
+  RefPtr<GdkDragContext> mWaitingForDragDataContext;
 
   bool IsDragFlavorAvailable(GdkAtom aRequestedFlavor);
 
@@ -356,6 +363,9 @@ class nsDragSession : public nsBaseDragSession, public nsIObserver {
 
   // the source of our drags
   GtkWidget* mHiddenWidget;
+  // Workaround for Bug 1979719. We consider D&D session running only after
+  // first "move" event on Wayland.
+  bool mActive = false;
 
   // get a list of the sources in gtk's format
   GtkTargetList* GetSourceList(void);

@@ -25,10 +25,13 @@ return-to-amo-subtitle = هذا رائع، لديك الآن { -brand-short-name
 return-to-amo-addon-title = هيا نثبّت لك <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = أضِف الامتداد
 return-to-amo-add-theme-label = أضِف السمة
+return-to-amo-theme-install-complete-label = ثُبتت السمة
+return-to-amo-extension-install-complete-label = ثُبتت الامتداد
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
 mr1-return-to-amo-subtitle = رحّب بـ{ -brand-short-name }
+mr1-return-to-amo-add-extension-label = أضف { $addon-name }
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -38,6 +41,8 @@ mr1-return-to-amo-subtitle = رحّب بـ{ -brand-short-name }
 #   $current (Int) - Number of the current page
 #   $total (Int) - Total number of pages
 
+onboarding-welcome-steps-indicator-label =
+    .aria-label = التقدم: الخطوة { $current } من { $total }
 # This button will open system settings to turn on prefers-reduced-motion
 mr1-onboarding-reduce-motion-button-label = عطّل الرسوم المتحركة
 # String for the Firefox Accounts button
@@ -49,8 +54,6 @@ mr1-onboarding-import-primary-button-label-attribution = استورِد من { $
 mr1-onboarding-theme-header = طوّعه كما ترغب
 mr1-onboarding-theme-subtitle = خصّص { -brand-short-name } باستعمال سمة.
 mr1-onboarding-theme-secondary-button-label = ليس الآن
-newtab-wallpaper-onboarding-title = جرب دفقة من الألوان
-newtab-wallpaper-onboarding-primary-button-label = عيّن خلفية
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = سمة النظام
 mr1-onboarding-theme-label-light = فاتحة
@@ -135,6 +138,17 @@ onboarding-live-language-skip-button-label = تخطَّ
 
 ## Firefox 100 Thank You screens
 
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    شكرًا
+    <span data-l10n-name="zap">لكم</span>
 fx100-thank-you-subtitle = هذا الإصدار رقم 100! شكرا لمساعدتنا في بناء إنترنت أفضل وأكثر صحة.
 fx100-upgrade-thanks-header = 100 شكرا لكم
 # Message shown with a start-browsing button. Emphasis <em> should be for "you"
@@ -148,9 +162,18 @@ mr2022-onboarding-secondary-skip-button-label = تجاوز هذه الخُطوة
 
 # Primary button string used on new user onboarding first screen showing multiple actions such as Set Default, Import from previous browser.
 mr2022-onboarding-easy-setup-primary-button-label = احفظ و واصِل
+# Import action checkbox label used on new user onboarding first screen
+mr2022-onboarding-easy-setup-import-checkbox-label = استورِدها من المتصفّح السابق
 
 ## MR2022 New User Pin Firefox screen strings
 
+# Title used on about:welcome for new users when Firefox is not pinned.
+# In this context, open up is synonymous with "Discover".
+# The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
+# If this translation does not make sense in your language, feel free to use the word "discover."
+mr2022-onboarding-welcome-pin-header = افتح شبكة إنترنت مذهلة
+# Subtitle is used on onboarding page for new users page when Firefox is not pinned
+mr2022-onboarding-welcome-pin-subtitle = شغّل { -brand-short-name } من أي مكان بنقرة واحدة. في كل مرة تفعل ذلك، فإنك تختار شبكة وب أكثر انفتاحًا واستقلالية.
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -205,6 +228,7 @@ mr2022-onboarding-colorway-label-default = الافتراضي
 mr2022-onboarding-colorway-tooltip-default2 =
     .title = ألوان { -brand-short-name } الحالية
 mr2022-onboarding-colorway-description-default = <b>أستخدم ألوان { -brand-short-name } الحالية.</b>
+mr2022-onboarding-colorway-label-expressionist = تعبيري
 mr2022-onboarding-colorway-label-activist = ناشط
 mr2022-onboarding-colorway-tooltip-activist2 =
     .title = ناشط (أزرق)
@@ -269,35 +293,100 @@ mr2022-onboarding-default-image-alt =
 
 onboarding-device-migration-title = مرحبا بعودتك!
 onboarding-device-migration-subtitle = لِج إلى { -fxaccount-brand-name(capitalization: "sentence") } لتجلب علاماتك وكلمات السر والتأريخ معك على جهازك الجديد.
+onboarding-device-migration-subtitle2 = لِج إلى حسابك لجلب العلامات وكلمات السر وسجلك معك إلى جهازك الجديد.
 onboarding-device-migration-primary-button-label = لِج
 
 ## Add-ons Picker screen
 
+amo-picker-title = خصّص { -brand-short-name }
+amo-picker-subtitle = تُعتبر الامتدادات بمثابة تطبيقات لمتصفحك، وهي تتيح لك حماية كلمات السر، وتنزيل مقاطع الفيديو، والعثور على العروض، وحظر الإعلانات المزعجة، وتغيير مظهر متصفحك، وغير ذلك الكثير.
 amo-picker-install-button-label = أضِف إلى { -brand-short-name }
 amo-picker-install-complete-label = مُثبت
+amo-picker-collection-link = استكشف المزيد من الإضافات
 
 ## The following screens have been updated to use security and privacy focused strings:
 
+# Easy setup screen
+onboarding-easy-setup-security-and-privacy-title = نحن نحب إبقاءك آمنًا
+onboarding-easy-setup-security-and-privacy-subtitle = يساعدك متصفحنا الذي تدعمه مؤسستنا غير الربحية على منع الشركات من متابعتك سراً عبر الوِب.
+onboarding-mobile-download-security-and-privacy-subtitle = عند مزامنة بياناتك، يقوم { -brand-short-name } بتعمية كلمات سرك وعلاماتك والمزيد. كما يمكنك الوصول إلى اﻷلسنة من أجهزتك الأخرى.
+# Gratitude screen
+onboarding-gratitude-security-and-privacy-title = { -brand-short-name } يدعمك
+onboarding-sign-up-description = سجّل للحصول على حساب وسيتم تخزين جميع معلوماتك المهمة - كلمات السر والعلامات والمزيد - بشكل آمن وستكون متاحة عند ولوجك إلى أي جهاز.
+onboarding-sign-up-button = سجل حسابًا أو لج
+onboarding-sign-up-secondary-button = ابدأ التصفح
 
 ## New user time and familiarity survey strings
 
+onboarding-new-user-time-based-survey-title = منذ متى تستخدم { -brand-short-name }؟
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = التالي
 # When translating "brand new" it means completely new.
 onboarding-new-user-survey-time-based-option-1 = أنا جديد تمامًا
+onboarding-new-user-survey-time-based-option-2 = أقل من شهر
+onboarding-new-user-survey-time-based-option-3 = أكثر من شهر، بانتظام
+onboarding-new-user-survey-time-based-option-4 = أكثر من شهر، في بعض الأحيان
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = أنا جديد تمامًا
+onboarding-new-user-survey-familiarity-based-option-2 = لقد استخدمته بعض الشيء
+onboarding-new-user-survey-familiarity-based-option-3 = أنا على دراية به للغاية
+onboarding-new-user-survey-familiarity-based-option-4 = لقد استخدمته في الماضي، ولكن مر وقت طويل
 
 ## UI strings for the sidebar and vertical tabs
 
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = غيّرها متى شئت من إعدادات الشريط الجانبي.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = ألسنتك، بأسلوبك
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = هل تُبقي الكثير من الألسنة مفتوحة؟ جرّب وضع الألسنة على الجانب لعرض أكثر انسيابية. أو اجعلها كلاسيكية بوضع الألسنة في الأعلى. غيّرها في أي وقت.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = اختر تخطيط لسانك
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = الألسنة على الجانب
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = الألسنة في الأعلى
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = الألسنة العمودية موجودة هنا
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = مقدمة عن الألسنة العمودية
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = جرّب الألسنة الجانبية. غيّرها متى شئت من إعدادات الشريط الجانبي.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = جرّب الألسنة العمودية
 onboarding-flair-text = جديد!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = حافظ على الألسنة الأفقية
+onboarding-genai-sidebar-primary-button = اختر روبوت المحادثة
 onboarding-genai-sidebar-secondary-button = ابدأ التصفح
 
 ## New user onboarding checklist
 
+onboarding-checklist-subtitle = أكمل هذه الخطوات للحصول على أقصى استفادة من تجربة تصفحك.
 onboarding-checklist-set-default = اضبط { -brand-short-name } ليكون متصفّحي المبدئي
+onboarding-checklist-pin = ثبّت { -brand-short-name } في شريط المهام
+onboarding-checklist-import = استورِدها من المتصفّح السابق
 onboarding-checklist-extension = أضِف امتدادة
 
 ## Tab Groups feature onboarding strings
 
+tab-groups-onboarding-create-group-no-alltabs-button-title = ابحث عن مجموعاتك من خلال البحث عنها في شريط العناوين.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = ابحث عن مجموعاتك المغلقة عن طريق البحث عنها في شريط العناوين.
+tab-groups-onboarding-dismiss = حسنا
 
 ## Multi Profiles feature onboarding messages
 
+multi-profile-spotlight-body = تنقل بسهولة بين التصفح للعمل والترفيه. تُبقي الملفات الشخصية معلومات تصفحك، بما في ذلك تأريخ البحث وكلمات السر، منفصلة تمامًا لتبقى منظمًا.
 multi-profile-spotlight-cta = أنشئ ملفًا شخصيًا
+multi-profile-callout-title = أنشئ ملفات شخصية مختلفة للعمل والمتعة
+multi-profile-callout-subtitle = تتيح لك الملفات الشخصية الاحتفاظ بمعلومات تصفحك، مثل تأريخ البحث وكلمات السر، منفصلة تمامًا.
 multi-profile-callout-cta = أنشئ ملفًا شخصيًا
+
+## Desktop to Mobile Adoption feature callout strings
+
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = امسح رمز QR لتنزيل تطبيق { -brand-product-name } للجوّال. بعد التثبيت، اختر "زامن مع الجوّال" للوصول إلى كلمات سرك وعلاماتك والمزيد أينما كنت.
+dismiss-button-label = أهمِل
+sync-to-mobile-button-label = زامن مع الجوّال
+desktop-to-mobile-qr-code-alt =
+    .aria-label = رمز QR لتنزيل { -brand-product-name } للجوال

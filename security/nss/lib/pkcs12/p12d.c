@@ -826,6 +826,7 @@ sec_pkcs12_decoder_asafes_notify(void *arg, PRBool before, void *dest,
                 safeContentsCtx->safeContentsA1Dcx = NULL;
             }
             cinfo = SEC_PKCS7DecoderFinish(p12dcx->currentASafeP7Dcx);
+            SEC_ASN1DecoderClearFilterProc(p12dcx->aSafeA1Dcx);
             p12dcx->currentASafeP7Dcx = NULL;
             if (!cinfo) {
                 p12dcx->errorValue = PORT_GetError();
@@ -1918,7 +1919,7 @@ sec_pkcs12_set_nickname_for_cert(sec_PKCS12SafeBag *cert,
 static SECItem *
 sec_pkcs12_get_der_cert(sec_PKCS12SafeBag *cert)
 {
-    if (!cert) {
+    if (!cert || !cert->safeBagContent.certBag) {
         PORT_SetError(SEC_ERROR_INVALID_ARGS);
         return NULL;
     }
@@ -3179,6 +3180,12 @@ SEC_PKCS12DecoderIterateNext(SEC_PKCS12DecoderContext *p12dcx,
                 p12dcx->decitem.der = sec_pkcs12_get_der_cert(bag);
                 p12dcx->decitem.friendlyName = sec_pkcs12_get_friendlyName(bag);
                 p12dcx->decitem.hasKey = sec_pkcs12_bagHasKey(p12dcx, bag);
+                /* if we don't understand the cert, or it's not parsable, skip it */
+                /* as per the comment above, friendlyName may be null legitimately */
+                if (!p12dcx->decitem.der) {
+                    p12dcx->decitem.type = 0; /* clear out the type we are ignoring */
+                    continue;
+                }
                 break;
             case SEC_OID_PKCS12_V1_PKCS8_SHROUDED_KEY_BAG_ID:
                 p12dcx->decitem.shroudAlg = PORT_ZNew(SECAlgorithmID);
@@ -3195,6 +3202,7 @@ SEC_PKCS12DecoderIterateNext(SEC_PKCS12DecoderContext *p12dcx,
                 break;
             case SEC_OID_UNKNOWN:
                 /* ignore these */
+                p12dcx->decitem.type = 0; /* clear out the type we are ignoring */
                 continue;
         }
         *ipp = &p12dcx->decitem;

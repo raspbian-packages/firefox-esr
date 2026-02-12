@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Պահպանել հղումը { -pocket-brand-name }-ում
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Պատճենել Էլ. փոստի հասցեն
@@ -162,10 +160,14 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Պատճենել հղումը
     .accesskey = L
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Պատճենել առանց կայքի հետագծման
+main-context-menu-preview-link =
+    .label = Նախադիտման հղում
+    .accesskey = r
+# "Copy Clean Link" means that Firefox will remove things from the link you
+# copied, like items that identify you for advertising purposes, and other items
+# sites add into URLs to help them deliver a certain browsing experience.
+main-context-menu-copy-clean-link =
+    .label = Պատճենել մաքուր հղումը
     .accesskey = u
 
 ## Media (video/audio) controls
@@ -187,8 +189,8 @@ main-context-menu-media-mute =
     .label = Անձայն
     .accesskey = Ա
 main-context-menu-media-unmute =
-    .label = Ձայնով
-    .accesskey = ա
+    .label = Միացնել ձայնը
+    .accesskey = ձ
 main-context-menu-media-play-speed-2 =
     .label = Արագություն
     .accesskey = d
@@ -317,6 +319,9 @@ main-context-menu-manage-passwords =
 main-context-menu-keyword =
     .label = Ավելացնել հիմնաբառ այս որոնման համար…
     .accesskey = Բ
+main-context-menu-add-engine =
+    .label = Ավելացնել որոնիչ
+    .accesskey = ո
 main-context-menu-link-send-to-device =
     .label = Ուղարկել հղումը սարքին
     .accesskey = ս
@@ -363,7 +368,7 @@ main-context-menu-take-frame-screenshot =
     .label = Ստանալ էկրանի հանույթը
     .accesskey = o
 main-context-menu-view-page-source =
-    .label = Դիտել Էջի Կոդը
+    .label = Դիտել էջի աղբյուրը
     .accesskey = Դ
 main-context-menu-bidi-switch-text =
     .label = Փոխարկել տեքստի ուղղությունը
@@ -387,3 +392,5 @@ main-context-menu-open-link-in-container-tab =
 main-context-menu-reveal-password =
     .label = Բացահայտել գաղտնաբառը
     .accesskey = v
+# The label of a badge shown in menu items to call out new features.
+main-context-menu-new-feature-badge = Նոր

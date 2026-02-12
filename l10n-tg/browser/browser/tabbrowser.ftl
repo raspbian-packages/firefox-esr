@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Пӯшидани варақа
 tabbrowser-menuitem-close =
     .label = Пӯшидан
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -149,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ин равзанаи гуфтугӯ
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Диққат
-tabbrowser-confirm-close-duplicate-tabs-text = Мо варақаи фаъоли охиринро кушода нигоҳ медорем
 tabbrowser-confirm-close-all-duplicate-tabs-title = Варақаҳои такрориро мепӯшед?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Мо дар ин равзана варақаҳои такрориро мепӯшем.
@@ -192,6 +203,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Рӯйхати пурра бо { $tabCount } варақа
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Хомӯш кардани садо дар варақа
@@ -199,8 +213,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Фаъол кардани садо дар варақа
 tabbrowser-manager-close-tab =
     .tooltiptext = Пӯшидани варақа
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Пӯшида шуд
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Равзанаи ҷорӣ
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Эҷод кардани гурӯҳи варақаҳо
 tab-group-editor-title-edit = Идора кардани гурӯҳи варақаҳо
@@ -211,23 +233,33 @@ tab-group-editor-cancel =
     .label = Бекор кардан
     .accesskey = Б
 tab-group-editor-color-selector =
-    .aria-label = Ранги гурӯҳи варақа
-tab-group-editor-color-selector-blue = Кабуд
-tab-group-editor-color-selector-purple = Лоҷувард
-tab-group-editor-color-selector-cyan = Осмонӣ
-tab-group-editor-color-selector-orange = Норинҷӣ
-tab-group-editor-color-selector-yellow = Зард
-tab-group-editor-color-selector-pink = Гулобӣ
-tab-group-editor-color-selector-green = Сабз
-tab-group-editor-color-selector-gray = Хокистарӣ
-tab-group-editor-color-selector-red = Сурх
-tab-group-menu-header = Гурӯҳҳои варақаҳо
+    .aria-label = Ранги гурӯҳи варақаҳо
+tab-group-editor-color-selector2-blue = Кабуд
+    .title = Кабуд
+tab-group-editor-color-selector2-purple = Лоҷувард
+    .title = Лоҷувард
+tab-group-editor-color-selector2-cyan = Осмонӣ
+    .title = Осмонӣ
+tab-group-editor-color-selector2-orange = Норинҷӣ
+    .title = Норинҷӣ
+tab-group-editor-color-selector2-yellow = Зард
+    .title = Зард
+tab-group-editor-color-selector2-pink = Гулобӣ
+    .title = Гулобӣ
+tab-group-editor-color-selector2-green = Сабз
+    .title = Сабз
+tab-group-editor-color-selector2-gray = Хокистарӣ
+    .title = Хокистарӣ
+tab-group-editor-color-selector2-red = Сурх
+    .title = Сурх
+tab-group-description = { $tabGroupName } — Гурӯҳи варақаҳо
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Печондашуда
+tab-group-label-tooltip-expanded = { $tabGroupName } — Баркушода
 tab-context-unnamed-group =
     .label = Гурӯҳи беном
 tab-group-name-default = Гурӯҳи беном
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -243,6 +275,8 @@ tab-context-move-tab-to-group =
            *[other] Илова кардани варақаҳо ба гурӯҳ
         }
     .accesskey = Г
+tab-context-move-tab-to-group-saved-groups =
+    .label = Гурӯҳҳои пӯшида
 tab-group-editor-action-new-tab =
     .label = Варақаи нав дар гурӯҳ
 tab-group-editor-action-new-window =
@@ -267,6 +301,16 @@ tab-context-ungroup-tab =
            *[other] Тоза кардан аз гурӯҳ
         }
     .accesskey = Т
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } варақаи дигар
+       *[other] { $tabCount } варақаи дигар
+    }
 
 ## Open/saved tab group context menu
 
@@ -292,3 +336,7 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Кушодани гурӯҳ дар равзанаи нав
+
+## Split View
+
+tab-context-badge-new = Нав

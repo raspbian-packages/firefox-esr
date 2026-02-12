@@ -69,12 +69,24 @@ login-list-filtered-count =
 #   $count (number) - Number of logins
 login-list-count2 =
     { $count ->
-        [zero] ولا كلمة مرور
-        [one] كلمة مرور واحدة
-        [two] كلمتا مرور
-        [few] { $count } كلمات مرور
-        [many] { $count } كلمة مرور
-       *[other] { $count } كلمة مرور
+        [zero] ولا كلمة سر
+        [one] كلمة سر واحدة
+        [two] كلمتا سر
+        [few] { $count } كلمات سر
+        [many] { $count } كلمة سر
+       *[other] { $count } كلمة سر
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count2 =
+    { $total ->
+        [zero] { $count } من أصل { $total } كلمات السر
+        [one] كلمة واحدة من أصل { $total } كلمات السر
+        [two] كلمتان من أصل { $total } كلمات السر
+        [few] { $count } من أصل { $total } كلمات السر
+        [many] { $count } من أصل { $total } كلمة السر
+       *[other] { $count } من أصل { $total } كلمة السر
     }
 login-list-sort-label-text = افرز حسب:
 login-list-name-option = الاسم (ا-ي)
@@ -85,7 +97,7 @@ about-logins-login-list-alerts-option = التنبيهات
 login-list-last-changed-option = آخر تعديل
 login-list-last-used-option = آخر استخدام
 login-list-intro-title = لا جلسات ولوج
-login-list-intro-title2 = لم يتم حفظ كلمات مرور
+login-list-intro-title2 = لم يتم حفظ كلمات سر
 login-list-intro-description = متى ما حفظت كلمة سر في { -brand-product-name } ستظهر هنا.
 about-logins-login-list-empty-search-title = لا جلسات ولوج
 about-logins-login-list-empty-search-title2 = لم يُعثر على كلمات السر
@@ -111,13 +123,14 @@ about-logins-login-intro-heading-logged-out2 = أتبحث عن جلسات ولو
 about-logins-login-intro-heading-logged-in = لم نجد أيّ جلسة ولوج متزامنة.
 login-intro-description = إن حفظت جلسات ولوجك في { -brand-product-name } على جهاز آخر، فهكذا يمكنك أن تزامنها هنا:
 login-intro-instructions-fxa = أنشِئ أو لِج إلى { -fxaccount-brand-name } على الأجهزة التي لديك عليها جلسات ولوج محفوظة
-about-logins-login-intro-heading-message = احفظ كلمات مرورك في مكان آمن
-login-intro-description2 = جميع كلمات المرور التي تحفظها في { -brand-product-name } مشفرة. بالإضافة إلى ذلك، إننا نراقب الانتهاكات وننبهك إذا تأثرت بها. <a data-l10n-name="breach-alert-link">معرفة المزيد</a>
+about-logins-login-intro-heading-message = احفظ كلمات سرك في مكان آمن
+login-intro-description2 = جميع كلمات السر التي تحفظها في { -brand-product-name } مُعمَّاة. بالإضافة إلى ذلك، إننا نراقب الانتهاكات وننبهك إذا تأثرت بها. <a data-l10n-name="breach-alert-link">معرفة المزيد</a>
 login-intro-instructions-fxa2 = أنشئ أو لج إلى حسابك على الأجهزة التي لديك عليها جلسات ولوج محفوظة.
 login-intro-instructions-fxa-settings = انتقل إلى ”الإعدادات > المزامنة > فعّل المزامنة…“ وضَع علامة على ”جلسات الولوج وكلمات السر“.
 login-intro-instructions-fxa-passwords-help = زُر <a data-l10n-name="passwords-help-link">دعم كلمات السر</a> لمزيد من المساعدة.
 about-logins-intro-browser-only-import = لو كانت جلسات ولوجك محفوظة في متصفّح آخر فيمكنك <a data-l10n-name="import-link">استيرادها إلى { -brand-product-name }</a>
 about-logins-intro-import2 = إن حفظت جلسات الولوج خارج { -brand-product-name } فيمكنك <a data-l10n-name="import-browser-link">استيرادها من متصفّح آخر</a> أو <a data-l10n-name="import-file-link">من ملف</a>
+about-logins-intro-import3 = اختر زر علامة الزائد أعلى هذا النص لاضافة كلمة سر الآن. يمكنك أيضًا <a data-l10n-name="import-browser-link">استيراد كلمات السر من متصفح آخر</a> أو <a data-l10n-name="import-file-link">من ملف</a>.
 
 ## Login
 
@@ -176,11 +189,18 @@ about-logins-edit-login-os-auth-dialog-message-win = أدخِل معلومات �
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message-macosx = تحرير جلسة الولوج المحفوظة
+# The macOS strings are preceded by the operating system with "Firefox is trying to ".
+# This message can be seen when attempting to disable osauth in about:preferences.
+about-logins-os-auth-dialog-message =
+    { PLATFORM() ->
+        [macos] تغيير إعدادات كلمات السر
+       *[other] يحاول { -brand-short-name } تغيير إعدادات كلمات السر. استخدم الولوج لجهازك للسماح بذلك.
+    }
 # This message can be seen when attempting to edit a login in about:logins on Windows.
 about-logins-edit-login-os-auth-dialog-message2-win = لتحرير كلمة سرك، أدخل بيانات ولوجك بنظام ويندوز. يساعد هذا في حماية أمان حساباتك.
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
-about-logins-edit-login-os-auth-dialog-message2-macosx = تحرير كلمة المرور المحفوظة
+about-logins-edit-login-os-auth-dialog-message2-macosx = حرّر كلمة السر المحفوظة
 # This message can be seen when attempting to reveal a password in about:logins on Windows.
 about-logins-reveal-password-os-auth-dialog-message-win = أدخِل معلومات ولوج وِندوز لتعرض كلمة السر. يساعد هذا الأمر على حماية أمن حساباتك.
 # This message can be seen when attempting to reveal a password in about:logins
@@ -282,6 +302,48 @@ about-logins-confirm-remove-all-sync-dialog-message =
         [few] بهذا تحذف جلسات الولوج المحفوظة في { -brand-short-name } من كلّ الأجهزة المتزامنة مع { -fxaccount-brand-name } لديك. كما سيُزيل أيّ تحذيرات أخرى تظهر هنا عن تسريبات البيانات. لا يمكنك العودة عن هذا الإجراء.
         [many] بهذا تحذف جلسات الولوج المحفوظة في { -brand-short-name } من كلّ الأجهزة المتزامنة مع { -fxaccount-brand-name } لديك. كما سيُزيل أيّ تحذيرات أخرى تظهر هنا عن تسريبات البيانات. لا يمكنك العودة عن هذا الإجراء.
        *[other] بهذا تحذف جلسات الولوج المحفوظة في { -brand-short-name } من كلّ الأجهزة المتزامنة مع { -fxaccount-brand-name } لديك. كما سيُزيل أيّ تحذيرات أخرى تظهر هنا عن تسريبات البيانات. لا يمكنك العودة عن هذا الإجراء.
+    }
+# Checkbox for modal to confirm the removal of saved passwords
+about-logins-confirm-remove-all-dialog-checkbox-label2 =
+    { $count ->
+        [1] نعم، أزل كلمة السر
+        [zero] نعم، أزل كلمات السر
+        [one] نعم، أزل كلمة السر
+        [two] نعم، أزل كلمتي السر
+        [few] نعم، أزل كلمات السر
+        [many] نعم، أزل كلمات السر
+       *[other] نعم، أزل كلمات السر
+    }
+# Title for modal to confirm the removal of all saved passwords when user is NOT synced
+about-logins-confirm-remove-all-dialog-title2 =
+    { $count ->
+        [zero] أتريد إزالة { $count } كلمة سر؟
+        [one] أتريد إزالة كلمة السر؟
+        [two] أتريد إزالة كلمتي السر؟
+        [few] أتريد إزالة { $count } كلمات سر؟
+        [many] أتريد إزالة { $count } كلمة سر؟
+       *[other] أتريد إزالة { $count } كلمة سر؟
+    }
+# Message for modal to confirm the removal of saved passwords when user is NOT synced
+about-logins-confirm-remove-all-dialog-message2 =
+    { $count ->
+        [1] سيؤدي هذا إلى إزالة كلمة السر المحفوظة في { -brand-short-name } وأي تنبيهات بشأن تسريب البيانات. لا يمكنك التراجع عن هذا الإجراء.
+        [zero] سيؤدي هذا إلى إزالة كلمات السر المحفوظة في { -brand-short-name } وأي تنبيهات بشأن تسريب البيانات. لا يمكنك التراجع عن هذا الإجراء.
+        [one] سيؤدي هذا إلى إزالة كلمات السر المحفوظة في { -brand-short-name } وأي تنبيهات بشأن تسريب البيانات. لا يمكنك التراجع عن هذا الإجراء.
+        [two] سيؤدي هذا إلى إزالة كلمات السر المحفوظة في { -brand-short-name } وأي تنبيهات بشأن تسريب البيانات. لا يمكنك التراجع عن هذا الإجراء.
+        [few] سيؤدي هذا إلى إزالة كلمات السر المحفوظة في { -brand-short-name } وأي تنبيهات بشأن تسريب البيانات. لا يمكنك التراجع عن هذا الإجراء.
+        [many] سيؤدي هذا إلى إزالة كلمات السر المحفوظة في { -brand-short-name } وأي تنبيهات بشأن تسريب البيانات. لا يمكنك التراجع عن هذا الإجراء.
+       *[other] سيؤدي هذا إلى إزالة كلمات السر المحفوظة في { -brand-short-name } وأي تنبيهات بشأن تسريب البيانات. لا يمكنك التراجع عن هذا الإجراء.
+    }
+# Title for modal to confirm the removal of all saved passwords when user IS SYNCED
+about-logins-confirm-remove-all-sync-dialog-title2 =
+    { $count ->
+        [zero] أتريد إزالة { $count } كلمة السر من كل الأجهزة؟
+        [one] أتريد إزالة { $count } كلمات السر من كل الأجهزة؟
+        [two] أتريد إزالة { $count } كلمات السر من كل الأجهزة؟
+        [few] أتريد إزالة { $count } كلمات السر من كل الأجهزة؟
+        [many] أتريد إزالة { $count } كلمات السر من كل الأجهزة؟
+       *[other] أتريد إزالة { $count } كلمات السر من كل الأجهزة؟
     }
 
 ##
@@ -438,6 +500,7 @@ about-logins-import-report-row-description-modified = حُدّثت جلسة ال
 about-logins-import-report-row-description-added = أُضيفت جلسة ولوج جديدة
 about-logins-import-report-row-description-no-change2 = متكرّر: مطابقة تامة للولوج الحالي
 about-logins-import-report-row-description-modified2 = حُدّثت الولوج الموجودة
+about-logins-import-report-row-description-added2 = أُضيفت كلمة سر جديدة
 about-logins-import-report-row-description-error = خطأ: حقل مفقود
 
 ##

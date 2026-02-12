@@ -67,6 +67,10 @@ startup-header = Iniçio
 always-check-default =
     .label = Contròlla de longo se { -brand-short-name } o l'é o navegatô predefinio
     .accesskey = t
+is-default-browser =
+    .message = { -brand-short-name } o l'é o navegatô predefinio
+is-not-default-browser =
+    .message = { -brand-short-name } o no l'é o navegatô predefinio
 is-default = { -brand-short-name } o l'é o navegatô predefinio
 is-not-default = { -brand-short-name } o no l'é o navegatô predefinio
 set-as-my-default-browser =
@@ -163,6 +167,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Schedai e aplicaçioin
+downloads-header-2 =
+    .label = Descaregamenti
+download-save-where-2 =
+    .label = Sarva schedai in
+    .accesskey = v
 download-header = Descaregamenti
 download-save-where = Sarva schedai in
     .accesskey = v
@@ -326,7 +335,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Neuvi Barcoin e feuggi
 home-new-windows-tabs-description2 = Çerni cöse ti veu vedde quande ti arvi a pagina prinçipâ, neuvi barcoin e neuvi feuggi.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Pagina prinçipâ e neuvi barcoin
 home-newtabs-mode-label = Neuvi feuggi
@@ -437,6 +446,8 @@ search-keyword-warning-bookmark = Ti æ çernuo 'na paròlla ciave che a l'é uz
 ## Containers Section
 
 containers-header = Contegnitô di feuggi
+containers-section-header =
+    .heading = Contegnitô di feuggi
 containers-add-button =
     .label = Azonzi neuvo contegnitô
     .accesskey = A
@@ -485,12 +496,6 @@ sync-sign-in =
     .label = Intra
     .accesskey = t
 
-## Sync section - enabling or disabling sync.
-
-
-## The list of things currently syncing.
-
-
 ## The "Choose what to sync" dialog.
 
 sync-engine-bookmarks =
@@ -519,6 +524,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = Nomme dispoxitivo
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Nomme dispoxitivo
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Cangia nomme dispoxitivo
+    .accesskey = n
 sync-device-name-change =
     .label = Cangia nomme dispoxitivo…
     .accesskey = n
@@ -570,12 +583,6 @@ forms-master-pw-change =
     .accesskey = C
 forms-master-pw-fips-desc = Cangio de paròlla segreta no riescio
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Stöia
@@ -596,6 +603,10 @@ history-remember-option-never =
     .label = no se aregordiâ mai a stöia
 history-remember-option-custom =
     .label = Deuvia inpostaçioin personalizæ pe-a stöia
+history-remember-description2 =
+    .description = { -brand-short-name } o s'aregòrda de teu navegaçioin, descaregamenti e stöia de riçerche.
+history-dontremember-description2 =
+    .description = { -brand-short-name } o deuvia e mæxime preferense da-a navegaçion privâ, e o no se aregòrda da stöia de teu navegaçioin.
 history-remember-description = { -brand-short-name } o s'aregòrda de teu navegaçioin, descaregamenti e stöia de riçerche.
 history-dontremember-description = { -brand-short-name } o deuvia e mæxime preferense da-a navegaçion privâ, e o no se aregòrda da stöia de teu navegaçioin.
 history-private-browsing-permanent =
@@ -646,12 +657,6 @@ sitedata-clear =
 sitedata-settings =
     .label = Gestisci dæti…
     .accesskey = G
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -760,6 +765,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Eceçioin…
     .accesskey = E
+permissions-location2 =
+    .label = Indirisso
+permissions-camera2 =
+    .label = Fòtocamera
+permissions-microphone2 =
+    .label = Micròfono
+permissions-notification2 =
+    .label = Notifiche
 
 ## Privacy Section - Data Collection
 
@@ -777,9 +790,6 @@ addon-recommendations-link = Atre informaçioin
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = O report di dæti o l'é dizabilitou pe sta configuraçion
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -811,12 +821,7 @@ certs-view =
 certs-devices =
     .label = Aparati de Seguessa…
     .accesskey = S
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = Abilita FIPS
 
 ## The following strings are used in the Download section of settings
 

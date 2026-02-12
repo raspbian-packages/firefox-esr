@@ -166,6 +166,14 @@ main-context-menu-translate-selection =
     .label = Treiñ an diuzad…
     .accesskey = n
 # Text displayed in the right-click context menu for translating
+# selected text to a target language.
+#
+# Variables:
+#   $language (string) - The localized display name of the target language
+main-context-menu-translate-selection-to-language =
+    .label = Treiñ an diuzad e { $language }
+    .accesskey = i
+# Text displayed in the right-click context menu for translating
 # the text of a hyperlink to a yet-to-be-determined language.
 main-context-menu-translate-link-text =
     .label = Treiñ testenn al lec'hienn…
@@ -196,6 +204,8 @@ select-translations-panel-translate-button =
     .label = Treiñ
 select-translations-panel-try-again-button =
     .label = Klask en-dro
+# Text displayed as a placeholder when the panel is idle.
+select-translations-panel-idle-placeholder-text = Diskouezet e vo an destenn troet amañ.
 # Text displayed as a placeholder when the panel is actively translating.
 select-translations-panel-translating-placeholder-text = O treiñ…
 # Text displayed when the translation fails to complete.

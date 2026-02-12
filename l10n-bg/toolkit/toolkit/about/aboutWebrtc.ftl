@@ -12,9 +12,6 @@ about-webrtc-document-title = WebRTC
 # translated. This string is used as a title for a file save dialog box.
 about-webrtc-save-page-dialog-title = запазване на about:webrtc като
 
-## These labels are for a disclosure which contains the information for closed PeerConnection sections
-
-
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
 about-webrtc-aec-logging-msg-label = Журнал на AEC
@@ -110,11 +107,6 @@ about-webrtc-log-section-hide-msg = Скриване на журнал
 about-webrtc-connection-open = [ { $browser-id } | { $id } ] { $url } { $now }
 about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (затворена) { $now }
 
-## These are used to indicate what direction media is flowing.
-## Variables:
-##  $codecs - a list of media codecs
-
-
 ##
 
 about-webrtc-local-candidate = Локален кандидат
@@ -139,6 +131,7 @@ about-webrtc-fold-default-show-msg = Подробности
     .title = Щракнете, за да разширите раздела
 about-webrtc-fold-default-hide-msg = Без подробности
     .title = Щракнете, за да свиете раздела
+about-webrtc-discarded-packets-label = Отхвърлени пакети:
 about-webrtc-decoder-label = Декодер
 about-webrtc-encoder-label = Кодер
 
@@ -146,20 +139,6 @@ about-webrtc-encoder-label = Кодер
 
 # This is an SSRC on the remote side of the connection that is sending RTP
 about-webrtc-remote-send-ssrc = Отдалечено изпращане на SSRC
-
-## These are displayed on the button that shows or hides the
-## PeerConnection configuration disclosure
-
-
-##
-
-
-## These are displayed on the button that shows or hides the
-## user modified configuration disclosure
-
-
-##
-
 
 ##
 
@@ -209,14 +188,8 @@ about-webrtc-trickle-caption-msg = Забавилите се кандидати 
 ## "SDP" is an abbreviation for Session Description Protocol, an IETF standard.
 ## See http://wikipedia.org/wiki/Session_Description_Protocol
 
-
-## These are displayed on the button that shows or hides the SDP information disclosure
-
-
-## These are displayed on the button that shows or hides the Media Context information disclosure.
-## The Media Context is the set of preferences and detected capabilities that informs
-## the negotiated CODEC settings.
-
-
-##
-
+# This is used as a header for an SDP section contained in two columns allowing for side-by-side comparisons.
+# Variables:
+#  $timestamp (Number) - The Unix Epoch time at which the SDP was set.
+#  $relative-timestamp (Number) - The timestamp relative to the timestamp of the earliest received SDP.
+about-webrtc-sdp-set-timestamp = Времеви маркер { NUMBER($timestamp, useGrouping: "false") } (+ { $relative-timestamp } ms)

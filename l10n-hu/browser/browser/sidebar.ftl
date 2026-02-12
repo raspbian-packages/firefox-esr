@@ -4,8 +4,8 @@
 
 menu-view-genai-chat =
     .label = MI csevegőbot
-menu-view-review-checker =
-    .label = Értékelés-ellenőrző
+menu-view-contextual-password-manager =
+    .label = Jelszavak
 sidebar-options-menu-button =
     .title = Menü megnyitása
 
@@ -21,14 +21,24 @@ sidebar-history-date-this-month =
     .heading = { DATETIME($date, dateStyle: "full") }
 sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+sidebar-history-site-localhost =
+    .heading = (helyi fájlok)
 sidebar-history-delete =
     .title = Törlés az előzményekből
-sidebar-history-sort-by-date =
-    .label = Rendezés dátum szerint
-sidebar-history-sort-by-site =
-    .label = Rendezés webhely szerint
 sidebar-history-clear =
     .label = Előzmények törlése
+sidebar-history-sort-by-heading = Rendezés szempontja:
+sidebar-history-sort-option-date =
+    .label = Dátum
+sidebar-history-sort-option-site =
+    .label = Webhely
+sidebar-history-sort-option-date-and-site =
+    .label = Dátum és idő
+sidebar-history-sort-option-last-visited =
+    .label = Utoljára látogatva
 
 ## Labels for sidebar search
 
@@ -44,24 +54,21 @@ sidebar-customize-extensions-header = Oldalsáv-kiegészítők
 sidebar-customize-firefox-tools-header =
     .label = { -brand-product-name } eszközök
 sidebar-customize-firefox-settings = A { -brand-short-name } beállításainak kezelése
-sidebar-position-left =
-    .label = Megjelenítés a bal oldalon
-sidebar-position-right =
-    .label = Megjelenítés a jobb oldalon
 sidebar-vertical-tabs =
     .label = Függőleges lapok
-sidebar-horizontal-tabs =
-    .label = Vízszintes lapok
-sidebar-customize-tabs-header =
-    .label = Lapbeállítások
-sidebar-customize-button-header =
-    .label = Oldalsávgomb
-sidebar-customize-position-header =
-    .label = Oldalsáv-pozíció
-sidebar-visibility-setting-always-show =
-    .label = Oldalsáv kibontása és összecsukása
-sidebar-visibility-setting-hide-sidebar =
-    .label = Oldalsáv megjelenítése és elrejtése
+sidebar-settings =
+    .label = Oldalsáv-beállítások
+sidebar-hide-tabs-and-sidebar =
+    .label = Lapok és oldalsáv elrejtése
+sidebar-show-on-the-right =
+    .label = Oldalsáv áthelyezése jobbra
+sidebar-show-on-the-left =
+    .label = Oldalsáv áthelyezése balra
+# Option to automatically expand the collapsed sidebar when the mouse pointer
+# hovers over it.
+expand-sidebar-on-hover =
+    .label = Oldalsáv kibontása rámutatáskor
+sidebar-manage-extensions = Kiegészítők kezelése
 
 ## Labels for sidebar context menu items
 
@@ -71,23 +78,43 @@ sidebar-context-menu-remove-extension =
     .label = Kiegészítő eltávolítása
 sidebar-context-menu-report-extension =
     .label = Kiegészítő jelentése
+sidebar-context-menu-open-in-tab =
+    .label = Megnyitás új lapon
+sidebar-context-menu-open-in-container-tab =
+    .label = Megnyitás új konténerlapban
 sidebar-context-menu-open-in-window =
     .label = Megnyitás új ablakban
 sidebar-context-menu-open-in-private-window =
     .label = Megnyitás új privát ablakban
+sidebar-context-menu-forget-site =
+    .label = Webhely összes adatának törlése…
 sidebar-context-menu-bookmark-tab =
     .label = Lap könyvjelzőzése…
 sidebar-context-menu-copy-link =
     .label = Hivatkozás másolása
+sidebar-context-menu-hide-sidebar =
+    .label = Oldalsáv elrejtése
+sidebar-context-menu-enable-vertical-tabs =
+    .label = Függőleges lapok bekapcsolása
+sidebar-context-menu-customize-sidebar =
+    .label = Oldalsáv testreszabása
 # Variables:
 #   $deviceName (String) - The name of the device the user is closing a tab for
 sidebar-context-menu-close-remote-tab =
     .label = Lap bezárása itt: { $deviceName }
+sidebar-context-menu-remove-extension2 =
+    .label = Eltávolítás a { -brand-short-name }ból
+sidebar-context-menu-unpin-extension =
+    .label = Eltávolítás az oldalsávról
 
 ## Labels for sidebar history context menu items
 
-sidebar-history-context-menu-delete-page =
-    .label = Törlés az előzményekből
+sidebar-history-context-menu-delete-page-2 =
+    .label = Oldal törlése az előzményekből
+sidebar-history-context-menu-bookmark-page =
+    .label = Lap könyvjelzőzése…
+sidebar-history-context-menu-delete-pages =
+    .label = Oldalak törlése az előzményekből
 
 ## Labels for sidebar menu items.
 
@@ -101,8 +128,10 @@ sidebar-menu-bookmarks-label =
     .label = Könyvjelzők
 sidebar-menu-customize-label =
     .label = Oldalsáv testreszabása
-sidebar-menu-review-checker-label =
-    .label = Értékelés-ellenőrző
+sidebar-menu-contextual-password-manager-label =
+    .label = Jelszavak
+sidebar-menu-more-tools-label =
+    .label = További eszközök
 
 ## Tooltips for sidebar menu items.
 
@@ -122,8 +151,16 @@ sidebar-menu-open-bookmarks-tooltip = Könyvjelzők megnyitása ({ $shortcut })
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Könyvjelzők bezárása ({ $shortcut })
-sidebar-menu-open-ai-chatbot-tooltip = MI csevegőbot megnyitása
-sidebar-menu-close-ai-chatbot-tooltip = MI csevegőbot bezárása
+
+## Tooltips displayed over the AI chatbot icon.
+## Variables:
+##   $shortcut (String) - The OS specific keyboard shortcut.
+##   $provider (String) - The name of the AI chatbot provider (if available).
+
+sidebar-menu-open-ai-chatbot-tooltip-generic = MI csevegőbot megnyitása ({ $shortcut })
+sidebar-menu-open-ai-chatbot-provider-tooltip = { $provider } megnyitása ({ $shortcut })
+sidebar-menu-close-ai-chatbot-tooltip-generic = MI csevegőbot bezárása ({ $shortcut })
+sidebar-menu-close-ai-chatbot-provider-tooltip = A(z) { $provider } bezárása ({ $shortcut })
 
 ## Headings for sidebar menu panels.
 
@@ -133,6 +170,8 @@ sidebar-menu-history-header =
     .heading = Előzmények
 sidebar-menu-syncedtabs-header =
     .heading = Lapok más eszközökről
+sidebar-menu-cpm-header =
+    .heading = Jelszavak
 sidebar-panel-header-close-button =
     .tooltiptext = Bezárás
 
@@ -156,18 +195,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Oldalsáv kibontása
-    .label = Oldalsávok
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Oldalsáv összecsukása
-    .label = Oldalsávok
-sidebar-widget-show-sidebar =
-    .tooltiptext = Oldalsáv megjelenítése
-    .label = Oldalsávok
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Oldalsáv elrejtése
-    .label = Oldalsávok
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =
@@ -188,3 +215,7 @@ sidebar-widget-show-sidebar2 =
 sidebar-widget-hide-sidebar2 =
     .tooltiptext = Oldalsáv elrejtése ({ $shortcut })
     .label = Oldalsávok
+# Promotional message displayed in the expanded sidebar state for Vertical Tabs
+# users who do not have any pinned tabs. Indicates that they can drop tabs in
+# this area to pin them.
+sidebar-pins-promo-text = Húzza ide a fontos lapokat, hogy kéznél legyenek

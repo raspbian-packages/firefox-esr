@@ -74,17 +74,22 @@ about-reader-customtheme-tab = მორგებული
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = ნაწერი
-    .title = ფერის შეცვლა
-about-reader-custom-colors-background = ფონი
-    .title = ფერის შეცვლა
-about-reader-custom-colors-unvisited-links = მოუნახულებელი ბმულები
-    .title = ფერის შეცვლა
-about-reader-custom-colors-visited-links = მონახულებული ბმულები
-    .title = ფერის შეცვლა
-about-reader-custom-colors-selection-highlight = გამორჩევა ხმოვანი კითხვისას
-    .title = ფერის შეცვლა
 about-reader-reset-button = ნაგულისხმევზე დაბრუნება
+about-reader-custom-colors-foreground2 =
+    .label = ნაწერი
+    .title = ფერის შეცვლა
+about-reader-custom-colors-background2 =
+    .label = ფონი
+    .title = ფერის შეცვლა
+about-reader-custom-colors-unvisited-links2 =
+    .label = მოუნახულებელი ბმულები
+    .title = ფერის შეცვლა
+about-reader-custom-colors-visited-links2 =
+    .label = მონახულებული ბმულები
+    .title = ფერის შეცვლა
+about-reader-custom-colors-selection-highlight2 =
+    .label = გამორჩევა ხმოვანი კითხვისას
+    .title = ფერის შეცვლა
 
 ## Reader View text and layout menu
 
@@ -92,7 +97,7 @@ about-reader-text-header = ნაწერი
 about-reader-text-size-label = ნაწერის ზომა
 about-reader-font-type-selector-label = შრიფტი
 about-reader-font-weight-selector-label = შრიფტის სისქე
-about-reader-font-weight-light = თხელი
+about-reader-font-weight-light = წვრილი
 about-reader-font-weight-regular = საშუალო
 about-reader-font-weight-bold = მსხვილი
 about-reader-layout-header = განლაგება
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = შუაში გასწორება
 about-reader-text-alignment-right =
     .title = მარჯვნივ გასწორება
+about-reader-text-alignment-justify =
+    .title = ტექსტის არეების გათანაბრება

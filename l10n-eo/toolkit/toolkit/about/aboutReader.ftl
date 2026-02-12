@@ -74,17 +74,22 @@ about-reader-customtheme-tab = Personecigita
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Teksto
-    .title = Modifi koloron
-about-reader-custom-colors-background = Fono
-    .title = Modifi koloron
-about-reader-custom-colors-unvisited-links = Nevizititaj ligiloj
-    .title = Modifi koloron
-about-reader-custom-colors-visited-links = Vizititaj ligiloj
-    .title = Modifi koloron
-about-reader-custom-colors-selection-highlight = Elstarigilo por laŭtlegado
-    .title = Modifi koloron
 about-reader-reset-button = Remeti normajn valorojn
+about-reader-custom-colors-foreground2 =
+    .label = Teksto
+    .title = Modifi koloron
+about-reader-custom-colors-background2 =
+    .label = Fono
+    .title = Modifi koloron
+about-reader-custom-colors-unvisited-links2 =
+    .label = Nevizititaj ligiloj
+    .title = Modifi koloron
+about-reader-custom-colors-visited-links2 =
+    .label = Vizititaj ligiloj
+    .title = Modifi koloron
+about-reader-custom-colors-selection-highlight2 =
+    .label = Elstarigilo por laŭtlegado
+    .title = Modifi koloron
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = Liniigi tekston centre
 about-reader-text-alignment-right =
     .title = Liniigi tekston dekstre
+about-reader-text-alignment-justify =
+    .title = Ĝisrandigi tekston

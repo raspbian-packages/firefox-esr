@@ -275,6 +275,16 @@ function promiseStartLegacyDownload(aSourceUrl, aOptions) {
     mimeInfo.preferredApplicationHandler = localHandlerApp;
     mimeInfo.preferredAction = Ci.nsIMIMEInfo.useHelperApp;
   }
+  if (aOptions && aOptions.launcherId) {
+    Assert.ok(mimeInfo != null);
+
+    let gioHandlerApp = Cc["@mozilla.org/gio-service;1"]
+      .getService(Ci.nsIGIOService)
+      .createHandlerAppFromAppId(aOptions.launcherId);
+
+    mimeInfo.preferredApplicationHandler = gioHandlerApp;
+    mimeInfo.preferredAction = Ci.nsIMIMEInfo.useHelperApp;
+  }
 
   if (aOptions && aOptions.launchWhenSucceeded) {
     Assert.ok(mimeInfo != null);
@@ -687,12 +697,12 @@ async function promisePartFileReady(aDownload) {
       await promiseTimeout(50);
     } while (!(await IOUtils.exists(aDownload.target.partFilePath)));
   } catch (ex) {
-    if (!(ex instanceof IOUtils.Error)) {
+    if (!DOMException.isInstance(ex)) {
       throw ex;
     }
     // This indicates that the file has been created and cannot be accessed.
     // The specific error might vary with the platform.
-    info("Expected exception while checking existence: " + ex.toString());
+    info("IOUtils exception while checking existence: " + ex.name);
     // Wait some more time to allow the write to complete.
     await promiseTimeout(100);
   }
@@ -706,7 +716,8 @@ async function promisePartFileReady(aDownload) {
  *           keepPartialData: bool,
  *           keepBlockedData: bool,
  *           useLegacySaver: bool,
- *           verdict: string indicating the detailed reason for the block,
+ *           verdict: nsIApplicationReputationService value indicating the reason for the block,
+ *           expectedError: Downloads.Error value indicating the expected error,
  *        }
  * @return {Promise}
  * @resolves The reputation blocked download.
@@ -716,7 +727,8 @@ async function promiseBlockedDownload({
   keepPartialData,
   keepBlockedData,
   useLegacySaver,
-  verdict = Downloads.Error.BLOCK_VERDICT_UNCOMMON,
+  verdict = Ci.nsIApplicationReputationService.VERDICT_UNCOMMON,
+  expectedError = Downloads.Error.BLOCK_VERDICT_UNCOMMON,
 } = {}) {
   let blockFn = () => ({
     shouldBlockForReputationCheck: () =>
@@ -756,9 +768,9 @@ async function promiseBlockedDownload({
       throw ex;
     }
     Assert.ok(ex.becauseBlockedByReputationCheck);
-    Assert.equal(ex.reputationCheckVerdict, verdict);
+    Assert.equal(ex.reputationCheckVerdict, expectedError);
     Assert.ok(download.error.becauseBlockedByReputationCheck);
-    Assert.equal(download.error.reputationCheckVerdict, verdict);
+    Assert.equal(download.error.reputationCheckVerdict, expectedError);
   }
 
   Assert.ok(download.stopped);
@@ -1128,7 +1140,7 @@ add_setup(function test_common_initialize() {
       shouldBlockForReputationCheck: () =>
         Promise.resolve({
           shouldBlock: false,
-          verdict: "",
+          verdict: Ci.nsIApplicationReputationService.VERDICT_SAFE,
         }),
       confirmLaunchExecutable: () => Promise.resolve(),
       launchFile: () => Promise.resolve(),

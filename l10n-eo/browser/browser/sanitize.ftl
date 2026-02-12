@@ -59,11 +59,7 @@ history-section-label = Historio
 item-history-and-downloads =
     .label = Retuma kaj elŝuta historio
     .accesskey = e
-item-history-and-downloads-description = Viŝi serĉan, retejan kaj elŝutan historion
-item-history-form-data-downloads =
-    .label = Historio
-    .accesskey = H
-item-history-form-data-downloads-description = Viŝi retejan kaj elŝutan historion, konservitajn formularajn informojn kaj serĉojn
+item-history-and-downloads-description2 = Viŝi serĉan kaj elŝutan historion
 item-cookies =
     .label = Kuketoj
     .accesskey = K
@@ -81,8 +77,8 @@ item-active-logins =
     .label = Aktivaj akreditadoj
     .accesskey = A
 item-cache =
-    .label = Staplo
-    .accesskey = A
+    .label = Stokejo
+    .accesskey = S
 # Variables:
 #   $amount (Number) - Amount of cached data
 #   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"

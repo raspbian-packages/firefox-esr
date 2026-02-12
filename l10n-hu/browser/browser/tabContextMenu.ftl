@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Új lap
     .accesskey = j
@@ -75,6 +79,10 @@ move-to-end =
 move-to-new-window =
     .label = Áthelyezés új ablakba
     .accesskey = t
+# Variables
+#  $profileName (string): The name of the profile to move tab to
+move-to-new-profile =
+    .label = Áthelyezés ide: { $profileName }
 tab-context-close-multiple-tabs =
     .label = Több lap bezárása
     .accesskey = T
@@ -130,3 +138,11 @@ tab-context-send-tabs-to-device =
            *[other] { $tabCount } lap küldése az eszközre
         }
     .accesskey = k
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] Lap kiürítése
+            [one] Lap kiürítése
+           *[other] { $tabCount } lap kiürítése
+        }
+    .accesskey = r

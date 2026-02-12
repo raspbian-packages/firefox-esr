@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } erabiltzaile
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Sinkronizatu laster-markak edonon.
 cfr-doorhanger-bookmark-fxa-body = Ondo ikusia! Orain ez galdu laster-marka hau zure gailu mugikorretan. Hasi { -fxaccount-brand-name } erabiltzen.
@@ -304,6 +304,9 @@ fxa-menu-message-close-button =
 fxa-menu-message-sign-up-button = Eman izena
 fxa-menu-message-sync-devices-primary-text = Sinkronizatu zure gailu guztiak
 fxa-menu-message-sync-devices-collapsed-text = Sinkronizatu zure gailu guztiak
+fxa-menu-message-backup-data-collapsed-text = Egin nabigatzaile-datuen babeskopia
+fxa-menu-message-backup-sync-primary-text = Mantendu zure datuak seguru eta sinkronizatuta
+fxa-menu-message-backup-sync-collapsed-text = Sinkronizatu eta gorde datuak
 fxa-menu-message-mobile-primary-text = Bidali fitxak zure telefonora
 fxa-menu-message-mobile-collapsed-text = Sinkronizatu zure telefonoarekin
 
@@ -326,3 +329,26 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Mantendu pribatutasunari zuzendutako zure nabigatzaile gogokoena klik bakarrera. Egizu { -brand-short-name } loturak irekitzeko zure nabigatzaile lehenetsia eta manten ezazu ataza-barran.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Mantendu pribatutasunari zuzendutako zure nabigatzaile gogokoena klik bakarrera. Egizu { -brand-short-name } loturak irekitzeko zure nabigatzaile lehenetsia eta manten ezazu ataza-barran eta Hasi menuan.
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-sync-callout-next-button = Hurrengoa
+windows-10-eos-sync-callout-get-started-button = Hasi erabiltzen
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-whats-new-button = Ikusi nobedadeak
+windows-10-eos-feature-toast-dismiss-button = Baztertu
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-learn-more = Argibide gehiago
+etp-strict-exceptions-infobar-button = Aplikatu konponketak
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Une honetan ez
+    .accesskey = n

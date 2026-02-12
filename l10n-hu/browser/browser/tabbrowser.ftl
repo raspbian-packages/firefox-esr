@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Lap bezárása
 tabbrowser-menuitem-close =
     .label = Bezárás
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } – { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -74,6 +87,13 @@ tabbrowser-unblock-tab-audio-tooltip =
 
 ## Tooltips for tab audio control
 
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Lap visszahangosítása
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Lap némítása
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Lap lejátszása
 
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
@@ -114,11 +134,11 @@ tabbrowser-confirm-close-tabs-with-key-checkbox = Megerősítés a { $quitKey }b
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
 ## and browser.warnOnQuitShortcut is true.
 
-tabbrowser-confirm-close-warn-shortcut-title = Kilép a { -brand-short-name(case: "elative") } vagy bezárja a jelenlegi lapot?
+tabbrowser-confirm-close-warn-shortcut-title = Kilép a { -brand-short-name }ból vagy bezárja a jelenlegi lapot?
 tabbrowser-confirm-close-windows-warn-shortcut-button =
     { PLATFORM() ->
-        [windows] Kilépés a { -brand-short-name(case: "elative") }
-       *[other] Kilépés a { -brand-short-name(case: "elative") }
+        [windows] Kilépés a { -brand-short-name }ból
+       *[other] Kilépés a { -brand-short-name }ból
     }
 tabbrowser-confirm-close-tab-only-button = Jelenlegi lap bezárása
 
@@ -142,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ne jelenjen meg többet ez a párbes
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Figyelem!
-tabbrowser-confirm-close-duplicate-tabs-text = Az utolsó aktív lap nyitva marad
 tabbrowser-confirm-close-all-duplicate-tabs-title = Bezárja az ismétlődő lapokat?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Az ebben az ablakban ismétlődő lapok bezárásra kerülnek.
@@ -182,9 +200,12 @@ tabbrowser-tab-audio-playing-description = Hang lejátszása
 # Variables:
 #   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
 tabbrowser-ctrl-tab-list-all-tabs =
-    .label = Minden lap ({ $tabCount }) felsorolása
+    .label = Összes lap ({ $tabCount }) felsorolása
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Lap némítása
@@ -192,8 +213,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Lap visszahangosítása
 tabbrowser-manager-close-tab =
     .tooltiptext = Lap bezárása
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Bezárva
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Jelenlegi ablak
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Lapcsoport létrehozása
 tab-group-editor-title-edit = Lapcsoport kezelése
@@ -203,13 +232,42 @@ tab-group-editor-name-field =
 tab-group-editor-cancel =
     .label = Mégse
     .accesskey = M
-tab-group-menu-header = Lapcsoportok
+tab-group-editor-color-selector =
+    .aria-label = Lapcsoport színe
+tab-group-editor-color-selector2-blue = Kék
+    .title = Kék
+tab-group-editor-color-selector2-purple = Lila
+    .title = Lila
+tab-group-editor-color-selector2-cyan = Cián
+    .title = Cián
+tab-group-editor-color-selector2-orange = Narancs
+    .title = Narancs
+tab-group-editor-color-selector2-yellow = Sárga
+    .title = Sárga
+tab-group-editor-color-selector2-pink = Rózsaszín
+    .title = Rózsaszín
+tab-group-editor-color-selector2-green = Zöld
+    .title = Zöld
+tab-group-editor-color-selector2-gray = Szürke
+    .title = Szürke
+tab-group-editor-color-selector2-red = Vörös
+    .title = Vörös
+tab-group-description = { $tabGroupName } – lapcsoport
+tab-group-label-tooltip-collapsed = { $tabGroupName } – összecsukva
+tab-group-label-tooltip-expanded = { $tabGroupName } – kibontva
+tab-group-preview-name =
+    .aria-label = Lapok egy összecsukott csoportban
 tab-context-unnamed-group =
     .label = Névtelen csoport
 tab-group-name-default = Névtelen csoport
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Laplista megnyitva
+tab-group-preview-closed-description = Laplista bezárva
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -227,6 +285,8 @@ tab-context-move-tab-to-group =
            *[other] Lapok hozzáadása csoporthoz
         }
     .accesskey = c
+tab-context-move-tab-to-group-saved-groups =
+    .label = Bezárt csoportok
 tab-group-editor-action-new-tab =
     .label = Új lap a csoportban
 tab-group-editor-action-new-window =
@@ -252,6 +312,16 @@ tab-context-ungroup-tab =
            *[other] Eltávolítás a csoportokból
         }
     .accesskey = E
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } további lap
+       *[other] { $tabCount } további lap
+    }
 
 ## Open/saved tab group context menu
 
@@ -277,3 +347,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Csoport megnyitása új ablakban
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Osztott nézet
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Osztott nézet hozzáadása
+    .accesskey = O
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Megnyitás osztott nézetben
+    .accesskey = M
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Külön osztott nézet
+    .accesskey = K
+tab-context-badge-new = Új

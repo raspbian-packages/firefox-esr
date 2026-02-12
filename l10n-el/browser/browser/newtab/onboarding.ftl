@@ -25,6 +25,8 @@ return-to-amo-subtitle = Τέλεια, αποκτήσατε το { -brand-short-
 return-to-amo-addon-title = Τώρα, προτείνουμε το <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Προσθήκη επέκτασης
 return-to-amo-add-theme-label = Προσθήκη θέματος
+return-to-amo-theme-install-complete-label = Το θέμα εγκαταστάθηκε
+return-to-amo-extension-install-complete-label = Η επέκταση εγκαταστάθηκε
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Εισαγωγή από
 mr1-onboarding-theme-header = Κάντε το δικό σας
 mr1-onboarding-theme-subtitle = Εξατομικεύστε το { -brand-short-name } με ένα θέμα.
 mr1-onboarding-theme-secondary-button-label = Όχι τώρα
-newtab-wallpaper-onboarding-title = Δοκιμάστε μια πινελιά χρώματος
-newtab-wallpaper-onboarding-subtitle = Επιλέξτε μια ταπετσαρία για να δώσετε μια νέα εμφάνιση στη νέα σας καρτέλα.
-newtab-wallpaper-onboarding-primary-button-label = Ορισμός ταπετσαρίας
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Θέμα συστήματος
 mr1-onboarding-theme-label-light = Ανοιχτόχρωμο
@@ -282,7 +281,7 @@ mr2022-onboarding-no-mobile-download-cta-text = Σαρώστε τον κωδικ
 ## Pin private window screen shown only for users who don't have Firefox private pinned
 
 mr2022-upgrade-onboarding-pin-private-window-header = Η ελευθερία της ιδιωτικής περιήγησης, με ένα κλικ
-mr2022-upgrade-onboarding-pin-private-window-subtitle = Χωρίς αποθήκευση cookie ή ιστορικού, απευθείας από την επιφάνεια εργασίας σας. Περιηγηθείτε σαν να μη σας παρακολουθεί κανείς.
+mr2022-upgrade-onboarding-pin-private-window-subtitle = Χωρίς αποθήκευση cookie ή ιστορικού, απευθείας από την επιφάνεια εργασίας σας. Περιηγηθείτε σαν να μην σας παρακολουθεί κανείς.
 mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
     { PLATFORM() ->
         [macos] Διατήρηση της ιδιωτικής περιήγησης του { -brand-short-name } στο Dock
@@ -328,7 +327,7 @@ mr2022-onboarding-privacy-segmentation-image-alt =
 mr2022-onboarding-gratitude-image-alt =
     .aria-label = Άποψη ενός ηλιοβασιλέματος μέσα από ένα παράθυρο με μια αλεπού και ένα φυτό σε περβάζι
 mr2022-onboarding-colorways-image-alt =
-    .aria-label = Ένα χέρι ζωγραφίζει με σπρέι ένα πολύχρωμο κολάζ με ένα πράσινο μάτι, ένα πορτοκαλί παπούτσι, μια κόκκινη μπάλα μπάσκετ, μωβ ακουστικά, μια μπλε καρδιά και ένα κίτρινο στέμμα
+    .aria-label = Ένα χέρι ζωγραφίζει με σπρέι ένα πολύχρωμο κολάζ με ένα πράσινο μάτι, ένα πορτοκαλί παπούτσι, μια κόκκινη μπάλα μπάσκετ, μοβ ακουστικά, μια μπλε καρδιά και ένα κίτρινο στέμμα
 
 ## Device migration onboarding
 
@@ -374,9 +373,9 @@ onboarding-new-user-survey-next-button-label = Επόμενο
 onboarding-new-user-survey-legal-link-label = Επιλέγοντας «{ onboarding-new-user-survey-next-button-label }», συμφωνείτε με τη <a data-l10n-name="privacy_notice">Σημείωση απορρήτου</a> του { -brand-product-name }
 # When translating "brand new" it means completely new.
 onboarding-new-user-survey-time-based-option-1 = Είμαι αρχάριος
-onboarding-new-user-survey-time-based-option-2 = Λιγότερο από ένα μήνα
-onboarding-new-user-survey-time-based-option-3 = Περισσότερο από ένα μήνα, τακτικά
-onboarding-new-user-survey-time-based-option-4 = Περισσότερο από ένα μήνα, περιστασιακά
+onboarding-new-user-survey-time-based-option-2 = Λιγότερο από έναν μήνα
+onboarding-new-user-survey-time-based-option-3 = Περισσότερο από έναν μήνα, τακτικά
+onboarding-new-user-survey-time-based-option-4 = Περισσότερο από έναν μήνα, περιστασιακά
 # When translating "brand new" it means completely new.
 onboarding-new-user-survey-familiarity-based-option-1 = Είμαι αρχάριος
 onboarding-new-user-survey-familiarity-based-option-2 = Το έχω χρησιμοποιήσει λίγο
@@ -391,8 +390,12 @@ onboarding-new-tabs-title = Πείτε μας πού θα θέλετε τις κ
 onboarding-new-tabs-subtitle = Αλλάξτε την επιλογή ανά πάσα στιγμή από τις ρυθμίσεις της πλαϊνής γραμμής.
 # Setup screen for vertical tabs - too many tabs variation
 onboarding-many-tabs-title = Οι καρτέλες σας, με τον δικό σας τρόπο
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Έχετε πολλές ανοικτές καρτέλες; Δοκιμάστε να τις τοποθετήσετε στο πλάι για μια πιο απλοποιημένη προβολή. Ή διατηρήστε τον κλασικό τρόπο εμφάνισης με τις καρτέλες στο πάνω μέρος. Κάντε εναλλαγή ανά πάσα στιγμή.
 # Setup screen for vertical tabs - focused variation
 onboarding-focused-tabs-title = Επιλέξτε τη διάταξη καρτελών σας
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Για μια πιο απλοποιημένη προβολή που μπορεί να σας βοηθήσει να παραμείνετε συγκεντρωμένοι, δοκιμάστε τις καρτέλες σας στο πλάι. Ή διατηρήστε την κλασική προβολή με τις καρτέλες στο πάνω μέρος. Μπορείτε να κάνετε εναλλαγή ανά πάσα στιγμή.
 # Text underneath an image used for selecting browser tabs to appear on the side of the browser.
 onboarding-new-vertical-tabs-label = Καρτέλες στο πλάι
 # Text underneath an image used for selecting browser tabs to appear at the top of the browser.
@@ -421,7 +424,7 @@ onboarding-horizontal-tabs-tooltip =
 onboarding-horizontal-tabs-description =
     .aria-description = Ένα παράθυρο του προγράμματος περιήγησης που εμφανίζει τις καρτέλες στο πάνω μέρος.
 # Additional setup card for setting up aichatbot in the sidebar
-onboarding-genai-sidebar-title = Δοκιμάστε ένα AI chatbot στην πλαϊνή γραμμή
+onboarding-genai-sidebar-title = Δοκιμάστε ένα chatbot ΤΝ στην πλαϊνή γραμμή
 # Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
 onboarding-genai-sidebar-subtitle = Συνοψίστε διαδικτυακό περιεχόμενο, βρείτε νέες ιδέες, δημιουργήστε προσχέδια μηνυμάτων — όλα αυτά κατά την περιήγησή σας. Επιλέξτε ανάμεσα σε πολλαπλούς παρόχους. Αλλάξτε την επιλογή σας ανά πάσα στιγμή. <a data-l10n-name="learn-more">Μάθετε περισσότερα</a>
 onboarding-genai-sidebar-primary-button = Επιλογή chatbot
@@ -440,10 +443,129 @@ onboarding-checklist-sign-up = Εγγραφή ή σύνδεση σε λογαρ�
 ## Tab Groups feature onboarding strings
 
 tab-groups-onboarding-feature-callout-title = Δοκιμάστε τις ομάδες καρτελών για λιγότερη ακαταστασία, περισσότερη συγκέντρωση
+tab-groups-onboarding-feature-callout-subtitle = Οργανωθείτε σύροντας μια καρτέλα πάνω σε κάποια άλλη για να δημιουργήσετε την πρώτη σας ομάδα.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Βρείτε τις ομάδες καρτελών σας στο μενού «Παράθεση όλων των καρτελών» ανά πάσα στιγμή.
+tab-groups-onboarding-create-group-title-2 = Βρείτε τις ομάδες καρτελών σας εδώ, ανά πάσα στιγμή.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Βρείτε τις ομάδες σας αναζητώντας τες στη γραμμή διευθύνσεων.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Όταν κλείσετε μια ομάδα καρτελών, ανοίξτε την ξανά από το μενού «Παράθεση όλων των καρτελών» ανά πάσα στιγμή.
+tab-groups-onboarding-saved-groups-title-2 = Όταν κλείσετε μια ομάδα καρτελών, μπορείτε να την ανοίξετε ξανά εδώ, ανά πάσα στιγμή.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Βρείτε τις ομάδες που κλείσατε αναζητώντας τες στη γραμμή διευθύνσεων.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Ανοίξτε ξανά τις ομάδες καρτελών σας από το μενού «Παράθεση όλων των καρτελών» ανά πάσα στιγμή.
+tab-groups-onboarding-session-restore-title = Ανοίξτε ξανά τις ομάδες καρτελών σας εδώ, ανά πάσα στιγμή.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
 multi-profile-spotlight-title = Πείτε «γεια» στα προφίλ του { -brand-product-name }
+multi-profile-spotlight-body = Κάντε εύκολα εναλλαγή μεταξύ περιήγησης για εργασία και για διασκέδαση. Τα προφίλ διαχωρίζουν τα δεδομένα σας, όπως το ιστορικό αναζήτησης και τους κωδικούς πρόσβασης, ώστε να παραμείνετε οργανωμένοι.
 multi-profile-spotlight-cta = Δημιουργία προφίλ
 multi-profile-callout-title = Δημιουργήστε διαφορετικά προφίλ για εργασία και διασκέδαση
+multi-profile-callout-subtitle = Τα προφίλ σάς επιτρέπουν να διαχωρίζετε τις πληροφορίες περιήγησής σας, όπως το ιστορικό αναζήτησης και τους κωδικούς πρόσβασής σας.
 multi-profile-callout-cta = Δημιουργία προφίλ
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Λήψη, συγχρονισμός και φύγαμε!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Σαρώστε τον κωδικό QR για να κάνετε λήψη του { -brand-product-name } για κινητές συσκευές. Μόλις ολοκληρωθεί η εγκατάσταση, επιλέξτε «Συγχρονισμός με κινητή συσκευή» για να αποκτήσετε πρόσβαση σε κωδικούς πρόσβασης, σελιδοδείκτες και πολλά άλλα, εν κινήσει.
+dismiss-button-label = Απόρριψη
+sync-to-mobile-button-label = Συγχρονισμός με κινητή συσκευή
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Κωδικός QR για τη λήψη του { -brand-product-name } για κινητές συσκευές
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Αναβαθμίζετε σε Windows 11;
+    Ας δημιουργήσουμε αντίγραφα ασφαλείας των δεδομένων του { -brand-product-name } σας.
+create-backup-screen-1-subtitle = Προστατέψτε αυτόματα τους κωδικούς πρόσβασης, τους σελιδοδείκτες σας και πολλά άλλα σε 1–2 λεπτά.
+create-backup-screen-1-flair = Προτείνεται
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Μάθετε περισσότερα</a>
+create-backup-screen-1-sync-label = Συγχρονισμός με το { -brand-product-name }
+create-backup-screen-1-sync-body = Δημιουργεί αντίγραφα ασφαλείας για όλες τις συνδεδεμένες συσκευές
+create-backup-screen-1-backup-label = Δημιουργία αντιγράφου ασφαλείας στον υπολογιστή
+create-backup-screen-1-backup-body = Αποθήκευση στη συσκευή ή στο OneDrive σας
+create-backup-select-tile-button-label = Επιλογή
+create-backup-back-button-label = Πίσω
+create-backup-show-fewer =
+    .label = Εμφάνιση λιγότερων σαν κι αυτό
+create-backup-screen-2-title = Επιλέξτε τα δεδομένα του { -brand-product-name } για δημιουργία αντιγράφου ασφαλείας
+create-backup-screen-2-subtitle = Χρειάζεται μόνο ένα λεπτό. Δημιουργούνται αντίγραφα ασφαλείας των δεδομένων σας μία φορά την ημέρα.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Εύκολη ρύθμιση
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Σελιδοδείκτες, ιστορικό, ρυθμίσεις και πολλά άλλα
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Δεν συμπεριλαμβάνονται κωδικοί πρόσβασης και στοιχεία πληρωμής
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Μη κρυπτογραφημένο
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Όλα τα δεδομένα
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Συμπεριλαμβάνει κωδικούς πρόσβασης και στοιχεία πληρωμής
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Κρυπτογράφηση με κωδικό πρόσβασης
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Πού θέλετε να αποθηκευτεί το αντίγραφο ασφαλείας σας;
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Δημιουργία κωδικού πρόσβασης αντιγράφου ασφαλείας
+create-backup-screen-3-subtitle = Απαιτείται για την κρυπτογράφηση των δεδομένων σας. Αποθηκεύστε τον σε ένα μέρος που θα θυμάστε.
+fx-backup-opt-in-header = Επιλογή τοποθεσίας αρχείου
+fx-backup-opt-in-filepath-label = Επιλέξτε ένα μέρος που σκοπεύετε να μεταφέρετε σε μια νέα συσκευή, όπως το OneDrive.
+fx-backup-opt-in-create-password-label = Εισαγωγή κωδικού πρόσβασης
+fx-backup-opt-in-confirm-btn-label = Συνέχεια
+fx-backup-opt-in-cancel-btn-label = Πίσω
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Η δημιουργία αντιγράφου ασφαλείας έχει προγραμματιστεί
+fx-backup-confirmation-screen-close-button = Κλείσιμο
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Περιλαμβάνονται όλα τα δεδομένα περιήγησης
+fx-backup-confirmation-screen-all-data-item-text-2 = Αποθηκεύτηκε στη συσκευή σας
+fx-backup-confirmation-screen-all-data-item-text-3 = Κρυπτογραφημένο και προστατευμένο με κωδικό πρόσβασης
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Περιλαμβάνονται σελιδοδείκτες, ιστορικό, ρυθμίσεις και άλλα δεδομένα
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Αποθηκεύτηκε στη συσκευή σας
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Δεν περιλαμβάνονται οι κωδικοί πρόσβασης και τα στοιχεία πληρωμών
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Μεταβείτε στις <a data-l10n-name="settings">Ρυθμίσεις</a> για να συμπεριλάβετε ευαίσθητα δεδομένα.
+fx-backup-confirmation-screen-item-subtext-1 = Η δημιουργία των αντιγράφων ασφαλείας θα ξεκινήσει σε λίγα λεπτά και θα εκτελείται μία φορά την ημέρα. Μπορείτε να ελέγξετε την πρόοδο στις <a data-l10n-name="settings">Ρυθμίσεις</a>.
+fx-backup-confirmation-screen-item-subtext-2 = Το { -brand-short-name } θα αναζητήσει το αντίγραφο ασφαλείας σας αν χρειαστεί να κάνετε εκ νέου εγκατάστασή του.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Επαναφορά από αντίγραφο ασφαλείας
+restore-from-backup-title = Ας επαναφέρουμε το { -brand-short-name } όπως σας αρέσει
+restore-from-backup-subtitle = Ανακτήστε όλους τους σελιδοδείκτες, το ιστορικό και άλλα δεδομένα σας για να συνεχίσετε την περιήγηση.
+restore-from-backup-secondary-button = Να μην γίνει επαναφορά
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Επιστρέψαμε! Έγινε επαναφορά των δεδομένων σας στο { -brand-short-name }.
+restored-from-backup-success-with-checklist-subtitle = Θέλετε να κρατήσετε το αγαπημένο σας πρόγραμμα περιήγησης με ένα κλικ μακριά;
+restored-from-backup-success-no-checklist-subtitle = Μπορείτε να ενεργοποιήσετε τη δημιουργία αντιγράφων ασφαλείας σε αυτήν τη συσκευή στις <a data-l10n-name="settings">Ρυθμίσεις</a>.
+restored-from-backup-success-with-checklist-primary-button = Αποθήκευση και συνέχεια
+restored-from-backup-success-with-checklist-secondary-button = Παράβλεψη βήματος
+restored-from-backup-success-no-checklist-primary-button = Συνέχεια
+restored-from-backup-error-title = Παρουσιάστηκε πρόβλημα με το αντίγραφο ασφαλείας σας.
+restored-from-backup-error-subtitle = Αν έχετε κάποιο άλλο αντίγραφο ασφαλείας του αρχείου { -brand-short-name }, δοκιμάστε να κάνετε επαναφορά από αυτό. <a data-l10n-name="restore-problems">Ακόμα έχετε προβλήματα;</a>
+restored-from-backup-error-primary-button = Κλείσιμο
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Προσαρμόστε την εμπειρία σας στο { -brand-short-name }
+onboarding-personalization-subtitle = Απαντήστε σε μερικές ερωτήσεις και θα σας προτείνουμε λειτουργίες και επεκτάσεις για να βελτιώσετε τη χρήση του { -brand-short-name }.
+onboarding-personalization-use-case-title = Για ποιο σκοπό θα χρησιμοποιήσετε το { -brand-short-name };
+onboarding-personalization-use-case-personal-option = Προσωπικό
+onboarding-personalization-use-case-school-option = Σχολείο
+onboarding-personalization-use-case-work-option = Εργασία
+onboarding-personalization-motivation-title = Ποιες λειτουργίες του { -brand-short-name } είναι πιο σημαντικές για εσάς;
+onboarding-personalization-motivation-privacy-option = Απόρρητο και ασφάλεια
+onboarding-personalization-motivation-productivity-option = Παραγωγικότητα
+onboarding-personalization-motivation-other-option = Άλλο

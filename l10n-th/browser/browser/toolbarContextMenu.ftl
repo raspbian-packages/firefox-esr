@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] เปิดแท็บที่ปิดใหม่
         }
     .accesskey = เ
+toolbar-context-turn-on-vertical-tabs =
+    .label = เปิดใช้งานแท็บแนวตั้ง
+toolbar-context-turn-off-vertical-tabs =
+    .label = ปิดใช้งานแท็บแนวตั้ง
+toolbar-context-customize-sidebar =
+    .label = ปรับแต่งแถบข้าง
 toolbar-context-menu-manage-extension =
     .label = จัดการส่วนขยาย
     .accesskey = จ
@@ -52,6 +58,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
     .accesskey = ซ
 toolbar-context-menu-always-open-downloads-panel =
     .label = แสดงแผงเมื่อเริ่มดาวน์โหลด
+    .accesskey = ส
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = แสดงในแถบเครื่องมือเสมอ
     .accesskey = ส
 toolbar-context-menu-remove-from-toolbar =
     .label = เอาออกจากแถบเครื่องมือ

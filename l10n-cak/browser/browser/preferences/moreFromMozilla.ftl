@@ -19,6 +19,3 @@ more-from-moz-learn-more-link = Tetamäx ch'aqa' chik
 
 more-from-moz-firefox-relay-title = { -relay-brand-name }
 more-from-moz-firefox-relay-button = Tik'ul { -relay-brand-short-name }
-
-## These strings are for the Mozilla Monitor card in about:preferences moreFromMozilla page
-

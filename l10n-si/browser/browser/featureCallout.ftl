@@ -45,14 +45,14 @@ fx-view-discoverability-secondary-button-label = ඉවතලන්න
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = මෙම නිර්දේශය නැවත පෙන්වන්න එපා
+split-dismiss-button-dont-show-option =
+    .label = මෙම නිර්දේශය නැවත පෙන්වන්න එපා
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = නිර්දේශ අඩුවෙන් පෙන්වන්න
+split-dismiss-button-show-fewer-option =
+    .label = නිර්දේශ අඩුවෙන් පෙන්වන්න
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = සැකසුම් කළමනාකරණය
-
-## Sidebar Strings
-
+split-dismiss-button-manage-settings-option =
+    .label = සැකසුම් කළමනාකරණය
 
 ## Sidebar Callout Survey Strings
 

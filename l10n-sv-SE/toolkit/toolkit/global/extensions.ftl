@@ -15,7 +15,25 @@ webext-perms-header-with-perms = Lägg till { $extension }? Det här tillägget 
 webext-perms-header-unsigned = Lägg till { $extension }? Det här tillägget är inte verifierat. Skadliga tillägg kan stjäla din privata information eller äventyra din dator. Lägg bara till det om du litar på källan.
 webext-perms-header-unsigned-with-perms = Lägg till { $extension }? Det här tillägget är inte verifierat. Skadliga tillägg kan stjäla din privata information eller äventyra din dator. Lägg bara till det om du litar på källan. Det här tillägget har tillstånd att:
 webext-perms-sideload-header = { $extension } har lagts till
+webext-perms-optional-perms-header2 = { $extension } begär ytterligare behörigheter
 webext-perms-optional-perms-header = { $extension } begär ytterligare behörigheter.
+webext-perms-header2 = Lägg till { $extension }
+webext-perms-list-intro-unsigned = Detta overifierade tillägg kan äventyra din integritet eller äventyra din enhet. Lägg bara till det om du litar på källan.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Nödvändiga behörigheter:
+webext-perms-header-optional-settings = Valfria inställningar:
+webext-perms-header-update-required-perms = Nya nödvändiga behörigheter:
+webext-perms-header-optional-required-perms = Nya behörigheter:
+webext-perms-header-data-collection-perms = Obligatorisk datainsamling:
+webext-perms-header-data-collection-is-none = Datainsamling:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Ny obligatorisk datainsamling:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Ny datainsamling:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Avbryt
     .accesskey = A
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = { $extension } har uppdaterats. Du måste godkänna nya behörigheter innan den uppdaterade versionen installeras. Om du väljer "Avbryt" behålls din nuvarande tilläggsversion.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = { $extension } har uppdaterats. Du måste godkänna nya behörigheter innan den uppdaterade versionen installeras. Om du väljer "Avbryt" behålls din nuvarande tilläggsversion. Det här tillägget har tillstånd att:
@@ -84,6 +105,29 @@ webext-perms-host-description-multiple-domains =
        *[other] Åtkomst till din data för webbplatser i { $domainCount } domäner
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Utvecklaren säger att detta tillägg inte kräver datainsamling.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Utvecklaren säger att detta tillägg samlar in: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Utvecklaren säger att tillägget kommer att samla in: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = Utvecklaren säger att tillägget vill samla in: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = { $extension } kräver nya inställningar för att uppdateras
+webext-perms-update-list-intro-with-data-collection = Avbryt för att behålla din nuvarande version och inställningar, eller uppdatera för att hämta den nya versionen och godkänna ändringarna.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } begär ytterligare inställningar
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } begär ytterligare datainsamling
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -117,3 +161,8 @@ webext-site-perms-header-unsigned-with-perms = Vill du lägga till { $extension 
 
 webext-site-perms-midi = Åtkomst till MIDI-enheter
 webext-site-perms-midi-sysex = Åtkomst till MIDI-enheter med SysEx-stöd
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Ditt colorway-tema togs bort.</b> { -brand-shorter-name } uppdaterade sin colorways-kollektion. Du kan hitta de senaste versionerna på webbplatsen för tillägg.
+webext-colorway-theme-migration-notification-button = Få uppdaterade colorways

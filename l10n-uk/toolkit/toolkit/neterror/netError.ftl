@@ -6,13 +6,14 @@
 ## Error page titles
 
 neterror-page-title = Проблема під час завантаження сторінки
-certerror-page-title = Обережно: Попереду ймовірна загроза безпеки
-certerror-sts-page-title = З'єднання не встановлено: Ймовірна загроза безпеки
+certerror-page-title = Обережно: попереду ймовірна загроза безпеці
+certerror-sts-page-title = З'єднання не встановлено: ймовірна загроза безпеці
 neterror-blocked-by-policy-page-title = Заблокована сторінка
-neterror-captive-portal-page-title = Вхід в мережу
+neterror-captive-portal-page-title = Вхід у мережу
 neterror-dns-not-found-title = Сервер не знайдено
 neterror-malformed-uri-page-title = Недійсна URL-адреса
 general-body-title = Будьте обережні. Тут щось не так.
+problem-with-this-site-title = Схоже, на цьому сайті виникла проблема
 
 ## Error page actions
 
@@ -23,7 +24,7 @@ neterror-open-portal-login-page-button = Відкрити сторінку вх�
 neterror-override-exception-button = Погодитись на ризик і продовжити
 neterror-pref-reset-button = Відновити типові налаштування
 neterror-return-to-previous-page-button = Назад
-neterror-return-to-previous-page-recommended-button = Назад (Рекомендовано)
+neterror-return-to-previous-page-recommended-button = Назад (рекомендовано)
 neterror-try-again-button = Спробувати знову
 neterror-add-exception-button = Завжди продовжувати для цього сайту
 neterror-settings-button = Змінити налаштування DNS
@@ -44,14 +45,19 @@ neterror-load-error-connection = Якщо жодна сторінка не за�
 neterror-load-error-firewall = Якщо ваш комп'ютер або мережа захищені мережевим екраном чи проксі-сервером, переконайтеся, що для { -brand-short-name } дозволено доступ до інтернету.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Якщо ви намагаєтеся завантажити сторінку локальної мережі, обов'язково надайте дозволи локальної мережі для { -brand-short-name } в параметрах приватності та безпеки macOS.
-neterror-captive-portal = Перш ніж отримати доступ до Інтернету, ви повинні увійти в цю мережу.
+neterror-http-error-page = Переконайтеся, що ви правильно ввели адресу вебсайту.
+neterror-captive-portal = Перш ніж отримати доступ до інтернету, ви маєте ввійти в цю мережу.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
 neterror-dns-not-found-with-suggestion = Ви хотіли відвідати <a data-l10n-name="website">{ $hostAndPath }</a>?
-neterror-dns-not-found-hint-header = <strong>Якщо ви ввели правильну адресу, можна:</strong>
-neterror-dns-not-found-hint-try-again = Спробувати знову пізніше
-neterror-dns-not-found-hint-check-network = Перевірити мережеве з'єднання
-neterror-dns-not-found-hint-firewall = Перевірити чи { -brand-short-name } має дозвіл на доступ до інтернету (мережевий екран може блокувати з'єднання)
+neterror-dns-not-found-hint-header = <strong>Якщо ви ввели правильну адресу:</strong>
+neterror-dns-not-found-hint-try-again = Повторіть спробу пізніше
+neterror-dns-not-found-hint-check-network = Перевірте мережеве з'єднання
+neterror-dns-not-found-hint-firewall = Перевірте чи { -brand-short-name } має дозвіл на доступ до інтернету (мережевий екран може блокувати з'єднання)
+neterror-dns-not-found-offline-hint-header = <strong>Що ви можете зробити?</strong>
+neterror-dns-not-found-offline-hint-different-device = Спробуйте встановити з'єднання на іншому пристрої.
+neterror-dns-not-found-offline-hint-modem = Перевірте свій модем або маршрутизатор.
+neterror-dns-not-found-offline-hint-reconnect = Повторно під'єднайтеся до Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Неочікувана пробле
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } не може захистити ваш запит для адреси цього сайту через нашу довірену службу DNS. Ось чому:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } не може захистити ваш запит на адресу цього сайту через нашого провайдера захищеної DNS. Ось чому:
 neterror-dns-not-found-native-fallback-heuristic = DNS через HTTPS було вимкнено у вашій мережі.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } не зміг встановити з'єднання з { $trrDomain }.
 
@@ -92,13 +97,16 @@ neterror-not-cached-intro = Вказаний документ більше не�
 neterror-not-cached-sensitive = З міркувань безпеки, { -brand-short-name } не здійснює автоматичний повторний запит вразливих документів.
 neterror-not-cached-try-again = Клацніть "Спробувати знову", щоб перезавантажити документ з вебсайту.
 neterror-net-offline = Натисніть "Спробувати знову" щоб перемкнутись в онлайновий режим і перезавантажити сторінку.
-neterror-proxy-resolve-failure-settings = Перевірте правильність встановлених налаштувань проксі-сервера.
+neterror-proxy-resolve-failure-settings = Перевірте правильність налаштувань проксі-сервера.
 neterror-proxy-resolve-failure-connection = Перевірте з'єднання вашого комп'ютера з мережею.
 neterror-proxy-resolve-failure-firewall = Якщо ваш комп'ютер або мережа захищені мережевим екраном чи проксі-сервером, переконайтеся, що для { -brand-short-name } дозволено доступ до інтернету.
-neterror-proxy-connect-failure-settings = Перевірте налаштування проксі-сервера і переконайтеся, що вони правильні.
+neterror-proxy-connect-failure-settings = Перевірте правильність налаштувань проксі-сервера.
 neterror-proxy-connect-failure-contact-admin = Зв'яжіться з вашим системним адміністратором і переконайтеся, що проксі-сервер працює.
 neterror-content-encoding-error = Будь ласка, зв'яжіться з власниками вебсайту і повідомте їх про цю проблему.
 neterror-unsafe-content-type = Будь ласка, зв'яжіться з власниками вебсайту і повідомте їх про цю проблему.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } не довіряє { $hostname }, оскільки з’єднання незахищене. Спробуйте змінити URL-адресу на HTTPS.
 neterror-nss-failure-not-verified = Неможливо відобразити сторінку, яку ви намагаєтесь переглянути, оскільки неможливо перевірити справжність отриманих даних.
 neterror-nss-failure-contact-website = Будь ласка, зв'яжіться з власниками вебсайту і повідомте їх про цю проблему.
 # Variables:
@@ -128,7 +136,7 @@ neterror-inadequate-security-code = Код помилки: NS_ERROR_NET_INADEQUA
 # $now (Date) - The current datetime, to be formatted as a date
 neterror-clock-skew-error = Ваш комп'ютер вважає, що це { DATETIME($now, dateStyle: "medium") }, тому { -brand-short-name } не може встановити захищене з'єднання. Для відвідання <b>{ $hostname }</b>, оновіть системні налаштування дати, часу та часового поясу, після чого оновіть <b>{ $hostname }</b>.
 neterror-network-protocol-error-intro = Неможливо відобразити сторінку, яку ви намагаєтесь переглянути, тому що виявлено помилку мережевого протоколу.
-neterror-network-protocol-error-contact-website = Зв'яжіться з власниками вебсайту, щоб повідомити їх про цю проблему.
+neterror-network-protocol-error-contact-website = Будь ласка, зв'яжіться з власниками вебсайту і повідомте їх про цю проблему.
 certerror-expired-cert-second-para = Схоже, що термін дії сертифіката вебсайту завершився, що не дозволяє { -brand-short-name } встановити безпечне з'єднання. Якщо ви відвідаєте цей сайт, зловмисники можуть викрасти інформацію, наприклад, паролі, адреси електронної пошти чи дані кредитних карток.
 certerror-expired-cert-sts-second-para = Схоже, що термін дії сертифіката вебсайту завершився, що не дозволяє { -brand-short-name } встановити безпечне з'єднання.
 certerror-what-can-you-do-about-it-title = Як ви можете це виправити?

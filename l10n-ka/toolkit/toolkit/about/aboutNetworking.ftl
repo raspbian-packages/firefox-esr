@@ -39,6 +39,7 @@ about-networking-dns-lookup = DNS-მოძიება
 about-networking-dns-lookup-button = მოთხოვნა
 about-networking-dns-domain = დომენი:
 about-networking-dns-lookup-table-column = IPs
+about-networking-dns-https-rrs-lookup-table-column = HTTPS RR (ჩანაწერები)
 about-networking-dns-https-rr-lookup-table-column = HTTP RRs
 about-networking-rcwn = RCWN-სტატისტიკა
 about-networking-rcwn-status = RCWN-მდგომარეობა
@@ -64,6 +65,3 @@ about-networking-moved-about-logging = გვერდის ახალი მ
 
 about-networking-networkid-is-up = ქსელის მაკავშირებელი გამართულია
 about-networking-networkid-status-known = ქსელის მაკავშირებლის მდგომარეობა უცნობია
-
-##
-

@@ -133,12 +133,6 @@ downloads-history =
 downloads-details =
     .title = Detalles d'as descargas
 
-## Displayed when a site attempts to automatically download many files.
-## Variables:
-##   $num (number) - Number of blocked downloads.
-##   $url (string) - The url of the suspicious site, stripped of http, https and www prefix.
-
-
 ##
 
 downloads-clear-downloads-button =

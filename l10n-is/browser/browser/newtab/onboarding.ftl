@@ -25,6 +25,8 @@ return-to-amo-subtitle = Frábært, þú ert með { -brand-short-name }
 return-to-amo-addon-title = Nú skulum við ná í handa þér <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Bæta inn forritsaukanum
 return-to-amo-add-theme-label = Bæta við þemanu
+return-to-amo-theme-install-complete-label = Þema sett upp
+return-to-amo-extension-install-complete-label = Forritsauki settur upp
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Flytja inn úr { $previ
 mr1-onboarding-theme-header = Gerðu það að þínu eigin
 mr1-onboarding-theme-subtitle = Sérsníddu { -brand-short-name } með þema.
 mr1-onboarding-theme-secondary-button-label = Ekki núna
-newtab-wallpaper-onboarding-title = Prófaðu skvettu af lit
-newtab-wallpaper-onboarding-subtitle = Veldu bakgrunn til að gefa nýja flipanum þínum ferskt útlit.
-newtab-wallpaper-onboarding-primary-button-label = Stilla bakgrunn
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Kerfisþema
 mr1-onboarding-theme-label-light = Ljóst
@@ -446,6 +445,12 @@ onboarding-checklist-sign-up = Nýskráðu þig eða skráðu þig inn á reikni
 
 tab-groups-onboarding-feature-callout-title = Prófaðu flipahópa fyrir minni þrengsli og meiri einbeitingu
 tab-groups-onboarding-feature-callout-subtitle = Skipulegðu þig með því að draga einn flipa ofan á annan til að búa til fyrsta hópinn þinn.
+tab-groups-onboarding-create-group-title-2 = Finndu flipahópana þína hér hvenær sem er.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Finndu hópana þína með því að leita að þeim í veffangastikunni.
+tab-groups-onboarding-saved-groups-title-2 = Ef þú lokar flipahópi geturðu opnað hann aftur hér hvenær sem er.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Finndu hópana sem þú hefur lokað með því að leita að þeim í veffangastikunni.
+tab-groups-onboarding-session-restore-title = Opnaðu flipahópana þína aftur hér.
+tab-groups-onboarding-dismiss = Í lagi
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +460,14 @@ multi-profile-spotlight-cta = Búðu til notkunarsnið
 multi-profile-callout-title = Búðu til mismunandi snið fyrir vinnu og skemmtun
 multi-profile-callout-subtitle = Notkunarsnið gera þér kleift að halda vafurupplýsingunum þínum, eins og leitarferli og lykilorðum, algjörlega aðskildum.
 multi-profile-callout-cta = Búðu til notkunarsnið
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Sæktu, samstilltu og flakkaðu!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Skannaðu QR-kóðann til að sækja { -brand-product-name } fyrir farsíma. Þegar uppsetningu er lokið skaltu velja „Samstilla við farsíma“ til að fá aðgang að lykilorðunum þínum, bókamerkjum og fleiru þegar þú ert á ferðinni.
+dismiss-button-label = Afgreiða
+sync-to-mobile-button-label = Samstilla við farsíma
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-kóði til að sækja { -brand-product-name } fyrir farsíma

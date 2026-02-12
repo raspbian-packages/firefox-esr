@@ -30,12 +30,10 @@ async function loadAndCheck(file, displayInline, downloadFile = null) {
   await BrowserTestUtils.withNewTab(
     `${httpsTestRoot}/${file}`,
     async browser => {
-      // Do this check using waitForCondition, as on ESR, we temporarily create
-      // an extra subdocument which should be quickly removed.
-      await TestUtils.waitForCondition(
-        () =>
-          browser.browsingContext.children.length == (displayInline ? 1 : 0),
-        `Should ${displayInline ? "" : "not "}have a child frame`
+      is(
+        browser.browsingContext.children.length,
+        displayInline ? 1 : 0,
+        `Should ${displayInline ? "not " : ""}have a child frame`
       );
 
       await SpecialPowers.spawn(
@@ -48,9 +46,7 @@ async function loadAndCheck(file, displayInline, downloadFile = null) {
             displayInline
               ? Ci.nsIObjectLoadingContent.TYPE_DOCUMENT
               : Ci.nsIObjectLoadingContent.TYPE_FALLBACK,
-            `should be displaying TYPE_${
-              displayInline ? "DOCUMENT" : "FALLBACK"
-            }`
+            `should be displaying TYPE_${displayInline ? "DOCUMENT" : "FALLBACK"}`
           );
         }
       );

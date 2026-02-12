@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Chiudi
     .secondarybuttonaccesskey = C
 appmenu-update-restart-message2 = Scarica la versione più recente di { -brand-shorter-name }. Le schede e le finestre aperte verranno ripristinate.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Annulla
+    .secondarybuttonaccesskey = A
 appmenu-update-other-instance =
     .label = Impossibile aggiornare automaticamente { -brand-shorter-name } all’ultima versione.
     .buttonlabel = Aggiorna comunque { -brand-shorter-name }
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = OK
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = Gestisci estensioni e temi nel menu applicazione.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Aggiorna i permessi e le preferenze relative ai dati in qualsiasi momento nelle <a data-l10n-name="settings-link">impostazioni dell’estensione</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Fissa estensione alla barra degli strumenti
+    .accesskey = F
 appmenu-addon-post-install-incognito-checkbox =
     .label = Consenti il funzionamento di questa estensione in finestre anonime
     .accesskey = C

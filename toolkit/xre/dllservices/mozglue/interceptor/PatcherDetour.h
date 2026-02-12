@@ -665,7 +665,7 @@ class WindowsDllDetourPatcher final
   }
 
 #  if defined(_M_X64)
-  enum class JumpType{Je, Jne, Jae, Jmp, Call};
+  enum class JumpType { Je, Jne, Jae, Jmp, Call };
 
   static bool GenerateJump(Trampoline<MMPolicyT>& aTramp,
                            uintptr_t aAbsTargetAddress, const JumpType aType) {
@@ -710,9 +710,13 @@ class WindowsDllDetourPatcher final
   }
 #  endif
 
-  enum ePrefixGroupBits{eNoPrefixes = 0, ePrefixGroup1 = (1 << 0),
-                        ePrefixGroup2 = (1 << 1), ePrefixGroup3 = (1 << 2),
-                        ePrefixGroup4 = (1 << 3)};
+  enum ePrefixGroupBits {
+    eNoPrefixes = 0,
+    ePrefixGroup1 = (1 << 0),
+    ePrefixGroup2 = (1 << 1),
+    ePrefixGroup3 = (1 << 2),
+    ePrefixGroup4 = (1 << 3)
+  };
 
   int CountPrefixBytes(const ReadOnlyTargetFunction<MMPolicyT>& aBytes,
                        unsigned char* aOutGroupBits) {
@@ -808,19 +812,24 @@ class WindowsDllDetourPatcher final
         return false;
       }
 
+      // Set aOutTramp now so that the new target won't race if accessing this
+      // value. Bug 1838286 did not fix this path, resulting in bug 1950847.
+      *aOutTramp = reinterpret_cast<void*>(originalTarget);
+
       // Write the new JMP target address.
       target.WritePointer(aDest);
       if (!target.Commit()) {
+        *aOutTramp = nullptr;
         return false;
       }
 
       // Store the old target address so we can restore it when we're cleared
       aTramp.WritePointer(originalTarget);
       if (!aTramp) {
+        *aOutTramp = nullptr;
         return false;
       }
 
-      *aOutTramp = reinterpret_cast<void*>(originalTarget);
       return true;
     }
 #endif  // defined(_M_X64)
@@ -959,7 +968,7 @@ class WindowsDllDetourPatcher final
           DetourResultCode::DETOUR_PATCHER_CREATE_TRAMPOLINE_ERROR);
       DetourError& lastError = *this->mVMPolicy.mLastError;
       size_t bytesToCapture = std::min(
-          ArrayLength(lastError.mOrigBytes),
+          std::size(lastError.mOrigBytes),
           static_cast<size_t>(PrimitiveT::GetWorstCaseRequiredBytesToPatch()));
 #  if defined(_M_ARM64)
       size_t numInstructionsToCapture = bytesToCapture / sizeof(uint32_t);

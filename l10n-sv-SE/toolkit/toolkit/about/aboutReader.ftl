@@ -74,17 +74,22 @@ about-reader-customtheme-tab = Anpassad
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Text
-    .title = Redigera färg
-about-reader-custom-colors-background = Bakgrund
-    .title = Redigera färg
-about-reader-custom-colors-unvisited-links = Obesökta länkar
-    .title = Redigera färg
-about-reader-custom-colors-visited-links = Besökta länkar
-    .title = Redigera färg
-about-reader-custom-colors-selection-highlight = Markering för högläsning
-    .title = Redigera färg
 about-reader-reset-button = Återställ standardvärdena
+about-reader-custom-colors-foreground2 =
+    .label = Text
+    .title = Redigera färg
+about-reader-custom-colors-background2 =
+    .label = Bakgrund
+    .title = Redigera färg
+about-reader-custom-colors-unvisited-links2 =
+    .label = Obesökta länkar
+    .title = Redigera färg
+about-reader-custom-colors-visited-links2 =
+    .label = Besökta länkar
+    .title = Redigera färg
+about-reader-custom-colors-selection-highlight2 =
+    .label = Markering för högläsning
+    .title = Redigera färg
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = Centrera texten
 about-reader-text-alignment-right =
     .title = Högerställ texten
+about-reader-text-alignment-justify =
+    .title = Justera text

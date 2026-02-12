@@ -24,7 +24,7 @@ certificate-viewer-inc-country = Երկրի գրանցում
 certificate-viewer-country = Երկիր
 certificate-viewer-curve = Կոր
 certificate-viewer-distribution-point = Բաշխման կետ
-certificate-viewer-dns-name = DNS Անուն
+certificate-viewer-dns-name = DNS անուն
 certificate-viewer-ip-address = IP հասցե
 certificate-viewer-other-name = Այլ անուն
 certificate-viewer-exponent = Աստիճանացույց
@@ -36,6 +36,7 @@ certificate-viewer-key-size = Ստեղնի չափը
 certificate-viewer-inc-locality = Inc. տեղադրությունը
 certificate-viewer-locality = Տեղադրություն
 certificate-viewer-location = Տեղադրություն
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = Գրանցման ID
 certificate-viewer-method = Եղանակ
 certificate-viewer-modulus = Մոդուլներ
@@ -108,9 +109,6 @@ certificate-viewer-critical-extension =
     .title = Այս ընդլայնումը նշվել է որպես կրիտիկական, ինչը նշանակում է, որ հաճախորդները պետք է մերժեն վկայագիրը, եթե նրանք չեն հասկանում դա:
 certificate-viewer-export = Արտահանել
     .download = { $fileName }.pem
-
-##
-
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

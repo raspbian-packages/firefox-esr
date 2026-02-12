@@ -15,7 +15,25 @@ webext-perms-header-with-perms = Hozzáadja a(z) { $extension } kiegészítőt? 
 webext-perms-header-unsigned = Hozzáadja a(z) { $extension } kiegészítőt? A kiegészítő nem ellenőrzött. A kártékony kiegészítők ellophatják a személyes adatait, vagy veszélyeztethetik a számítógépét. Csak akkor adja hozzá ezt a kiegészítőt, ha megbízik a forrásban.
 webext-perms-header-unsigned-with-perms = Hozzáadja a(z) { $extension } kiegészítőt? A kiegészítő nem ellenőrzött. A kártékony kiegészítők ellophatják a személyes adatait, vagy veszélyeztethetik a számítógépét. Csak akkor adja hozzá ezt a kiegészítőt, ha megbízik a forrásban. A kiegészítőnek a következőkhöz lesz engedélye:
 webext-perms-sideload-header = { $extension } hozzáadva
+webext-perms-optional-perms-header2 = A(z) { $extension } további engedélyeket igényel
 webext-perms-optional-perms-header = A(z) { $extension } további engedélyeket igényel.
+webext-perms-header2 = { $extension } hozzáadása
+webext-perms-list-intro-unsigned = Ez az ellenőrizetlen kiegészítő veszélyeztetheti az adatvédelmét, vagy kompromittálhatja az eszközét. Csak akkor adja hozzá, ha bízik a forrásban.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Szükséges engedélyek:
+webext-perms-header-optional-settings = Nem kötelező beállítások:
+webext-perms-header-update-required-perms = Új szükséges engedélyek:
+webext-perms-header-optional-required-perms = Új engedélyek
+webext-perms-header-data-collection-perms = Szükséges adatgyűjtés:
+webext-perms-header-data-collection-is-none = Adatgyűjtés:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Új szükséges adatgyűjtés:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Új adatgyűjtés:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Mégse
     .accesskey = M
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = A(z) { $extension } frissítésre került. Jóvá kell hagynia az új engedélyeket, mielőtt a frissített verzió települ. A „Mégse” megtartja a kiegészítő jelenlegi verzióját.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = A(z) { $extension } frissítésre került. Jóvá kell hagynia az új engedélyeket, mielőtt a frissített verzió települ. A „Mégse” megtartja a kiegészítő jelenlegi verzióját. A kiegészítőnek a következőkhöz lesz engedélye:
@@ -85,6 +106,29 @@ webext-perms-host-description-multiple-domains =
        *[other] Az adatai elérése ebben a(z) { $domainCount } tartományban lévő lapokhoz
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = A fejlesztő szerint ez a kiegészítő nem igényel adatgyűjtést.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = A fejlesztő szerint ez a kiegészítő a következőket gyűjti: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = A fejlesztő szerint a kiegészítő ezeket gyűjti: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = A fejlesztő szerint a kiegészítő ezeket szeretné gyűjteni: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = A(z) { $extension } új beállításokat igényel a frissítéshez
+webext-perms-update-list-intro-with-data-collection = Szakítsa meg, hogy megtartsa a jelenlegi verziót és a beállításokat, vagy frissítsen, hogy az új verziót kapja meg, és jóváhagyja a változásokat.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = A(z) { $extension } további beállításokat igényel
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = A(z) { $extension } további adatgyűjtést igényel
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -118,3 +162,8 @@ webext-site-perms-header-unsigned-with-perms = Hozzáadja a(z) { $extension } ki
 
 webext-site-perms-midi = MIDI eszközök elérése
 webext-site-perms-midi-sysex = MIDI eszközök elérése SysEx támogatással
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>A színvilágtémája el lett távolítva.</b> A { -brand-shorter-name } frissítette a színvilággyűjteményét. A legújabb verziókat a kiegészítők oldalán találja.
+webext-colorway-theme-migration-notification-button = Frissített színvilágok beszerzése

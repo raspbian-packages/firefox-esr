@@ -4,9 +4,6 @@
 
 do-not-track-description = Web sitelerine izlenmek istemediğimi bildiren “Do Not Track” sinyalini gönder
 do-not-track-removal = Artık “Do Not Track” sinyalini desteklemiyoruz
-do-not-track-description2 =
-    .label = Web sitelerine “Do Not Track” isteği gönder
-    .accesskey = d
 do-not-track-learn-more = Daha fazla bilgi al
 do-not-track-option-default-content-blocking-known =
     .label = Yalnızca { -brand-short-name } bilinen takip kodlarını engellemeye ayarlandığında
@@ -16,6 +13,8 @@ global-privacy-control-description =
     .label = Web sitelerine verilerimi satmamalarını ve paylaşmamalarını söyle
     .accesskey = W
 non-technical-privacy-header = Web sitesi gizlilik tercihleri
+non-technical-privacy-label =
+    .aria-label = { non-technical-privacy-header }
 # Do not translate.
 # "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
 # included to facilitate power-user search of the about:preferences page.
@@ -71,6 +70,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = Kapat
+do-not-track-removal2 =
+    .label = Artık “Do Not Track” sinyalini desteklemiyoruz
 
 ## Browser Restart Dialog
 
@@ -112,6 +113,10 @@ extension-controlling-proxy-config = <img data-l10n-name ="icon"/> { -brand-shor
 # <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
 # <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
 extension-controlled-enable = Uzantıyı etkinleştirmek için <img data-l10n-name="menu-icon"/> menüdeki <img data-l10n-name="addons-icon"/> Eklentiler bölümüne gidin.
+extension-controlled-enable-2 = Bu uzantıyı yeniden etkinleştirmek için <a data-l10n-name="addons-link">Uzantılar ve temalar</a> sayfasına gidin.
+# This string is shown to notify the user that their home page or new tab preferences
+# are being controlled by an extension.
+extension-controlling-homepage = Bazı giriş sayfası ayarlarınızı { $name } yönetiyor.
 
 ## Preferences UI Search Results
 
@@ -126,6 +131,10 @@ startup-header = Başlangıç
 always-check-default =
     .label = Varsayılan tarayıcımın { -brand-short-name } olup olmadığını her zaman denetle
     .accesskey = H
+is-default-browser =
+    .message = { -brand-short-name } şu anda varsayılan tarayıcınız
+is-not-default-browser =
+    .message = { -brand-short-name } varsayılan tarayıcınız değil
 is-default = { -brand-short-name } şu anda varsayılan tarayıcınız
 is-not-default = { -brand-short-name } varsayılan tarayıcınız değil
 set-as-my-default-browser =
@@ -134,6 +143,8 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = Önceki pencereleri ve sekmeleri aç
     .accesskey = Ö
+startup-windows-launch-on-login-profile-disabled =
+    .message = “Kullanıcı profilini seçin” penceresindeki “{ profile-manager-use-selected.label }” seçeneğini işaretleyerek bu tercihi etkinleştirin.
 windows-launch-on-login =
     .label = Bilgisayarım açıldığında { -brand-short-name } tarayıcısını otomatik olarak aç
     .accesskey = B
@@ -148,6 +159,11 @@ preferences-data-migration-description = Yer imlerini, parolaları, gezinti geç
 preferences-data-migration-button =
     .label = Verileri içe aktar
     .accesskey = V
+preferences-profiles-header = Profiller
+preferences-manage-profiles-description = Her profilin gezinti verileri ve ayarları, geçmişi, parolaları ve diğer bilgileri birbirinden ayrıdır.
+preferences-manage-profiles-learn-more = Daha fazla bilgi al
+preferences-manage-profiles-button =
+    .label = Profilleri yönet
 tabs-group-header = Sekmeler
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab, sekmeler arasında son kullanıldıkları sırayla atlasın
@@ -155,6 +171,8 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Bağlantıları yeni pencere yerine yeni sekmede aç
     .accesskey = B
+open-external-link-next-to-active-tab =
+    .label = Uygulamalardan gelen bağlantıları etkin sekmenin yanında aç
 ask-on-close-multiple-tabs =
     .label = Birden fazla sekmeyi kapatırken bana sor
     .accesskey = i
@@ -225,12 +243,33 @@ containers-remove-cancel-button = Kapsayıcıyı silme
 settings-tabs-show-image-in-preview =
     .label = Bir sekmenin üzerine geldiğimde sekme ön izlemesini göster
     .accessKey = ö
+browser-layout-header = Tarayıcı düzeni
+browser-layout-horizontal-tabs =
+    .label = Yatay sekmeler
+browser-layout-horizontal-tabs-desc = Tarayıcının tepesinde göster
+browser-layout-vertical-tabs =
+    .label = Dikey sekmeler
+browser-layout-vertical-tabs-desc = Yanda, kenar çubuğunda göster
+browser-layout-show-sidebar =
+    .label = Kenar çubuğunu göster
+browser-layout-show-sidebar-desc = Ana görünümünüzden ayrılmadan yer imlerine, telefonunuzdaki sekmelere ve YZ sohbet botlarına hızlıca erişin.
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Dil ve görünüm
 preferences-web-appearance-header = Web sitesi görünümü
 preferences-web-appearance-description = Bazı web siteleri renk şemalarını tercihlerinize göre uyarlar. Bu sitelerde kullanmak istediğiniz renk şemasını seçin.
+preferences-web-appearance-choice-auto2 =
+    .label = Otomatik
+    .title = Web sitesi arka planlarını ve içeriğini sistem ayarlarıma ve { -brand-short-name } temama göre otomatik olarak değiştir.
+preferences-web-appearance-choice-light2 =
+    .label = Açık
+    .title = Web sitesi arka planları ve içeriğinde açık bir görünüm kullan.
+preferences-web-appearance-choice-dark2 =
+    .label = Koyu
+    .title = Web sitesi arka planları ve içeriğinde koyu bir görünüm kullan.
+web-appearance-group =
+    .aria-label = Web sitesi görünümü
 preferences-web-appearance-choice-auto = Otomatik
 preferences-web-appearance-choice-light = Açık
 preferences-web-appearance-choice-dark = Koyu
@@ -248,14 +287,27 @@ preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning = Renk seçimleriniz web sitesi görünümünü geçersiz kılıyor. <a data-l10n-name="colors-link">Renkleri yönet</a>
+preferences-web-appearance-override-warning3 =
+    .message = Kontrast denetimi ayarlarınız web sitesi görünümünü geçersiz kılıyor.
+preferences-web-appearance-link =
+    .label = { -brand-short-name } temalarını Uzantılar ve Temalar sayfasından yönetebilirsiniz.
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Renk seçimleriniz web sitesi görünümünü geçersiz kılıyor.
+preferences-web-appearance-override-warning = Renk seçimleriniz web sitesi görünümünü geçersiz kılıyor. <a data-l10n-name="colors-link">Renkleri yönet</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = { -brand-short-name } temalarını <a data-l10n-name="themes-link">Uzantılar ve Temalar</a> sayfasından yönetebilirsiniz.
+preferences-contrast-control-header = Kontrast denetimi
+preferences-contrast-control-description = Web sitelerinin çeşitli ön plan ve arka plan renkleri vardır. Okunabilirliği artırmak için { -brand-short-name } tarayıcısını tüm sitelerde aynı renkleri kullanacak şekilde yapılandırabilirsiniz.
+preferences-contrast-control-use-platform-settings =
+    .label = Otomatik (Sistem ayarlarını kullan)
+    .accesskey = O
+preferences-contrast-control-off =
+    .label = Kapalı
+    .accesskey = K
+preferences-contrast-control-custom =
+    .label = Özel
+    .accesskey = Ö
 preferences-colors-header = Renkler
 preferences-colors-description = { -brand-short-name } tarayıcınızın varsayılan metin, site arka planı ve bağlantı renklerini geçersiz kılın.
 preferences-colors-manage-button =
@@ -314,6 +366,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Dosyalar ve uygulamalar
+downloads-header-2 =
+    .label = İndirme
+download-save-where-2 =
+    .label = Dosya kayıt yeri
+    .accesskey = a
 download-header = İndirme
 download-save-where = Dosya kayıt yeri
     .accesskey = a
@@ -321,7 +378,7 @@ download-choose-folder =
     .label =
         { PLATFORM() ->
             [macos] Seç…
-           *[other] Gözat…
+           *[other] Göz at…
         }
     .accesskey =
         { PLATFORM() ->
@@ -331,8 +388,11 @@ download-choose-folder =
 download-always-ask-where =
     .label = Dosyaların nereye kaydedileceğini her zaman sor
     .accesskey = o
+download-private-browsing-delete =
+    .label = Tüm gizli pencereler kapatıldığında gizli gezintide indirilen dosyaları sil
+    .accesskey = T
 applications-header = Uygulamalar
-applications-description = { -brand-short-name } tarayıcısının Web’den indirdiğiniz dosyaları veya Web’de gezinirken kullandığınız uygulamaları nasıl ele alacağını seçin.
+applications-description = { -brand-short-name } tarayıcısının web’den indirdiğiniz dosyaları veya web’de gezinirken kullandığınız uygulamaları nasıl ele alacağını seçin.
 applications-filter =
     .placeholder = Dosya türlerinde ve uygulamalarda ara
 applications-type-column =
@@ -485,6 +545,8 @@ performance-default-content-process-count =
 ## General Section - Browsing
 
 browsing-title = Gezinti
+browsing-group-label =
+    .aria-label = Gezinti
 browsing-use-autoscroll =
     .label = Otomatik kaydırmayı kullan
     .accesskey = a
@@ -495,8 +557,8 @@ browsing-gtk-use-non-overlay-scrollbars =
     .label = Kaydırma çubuklarını her zaman göster
     .accesskey = u
 browsing-always-underline-links =
-    .label = Her zaman bağlantıların altını çiz
-    .accesskey = b
+    .label = Bağlantıların altını her zaman çiz
+    .accesskey = B
 browsing-use-onscreen-keyboard =
     .label = Gerektiğinde dokunmatik klavyeyi göster
     .accesskey = k
@@ -539,9 +601,10 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Yeni pencere ve sekmeler
 home-new-windows-tabs-description2 = Giriş sayfanızı, yeni pencereleri ve yeni sekmeleri açtığınızda ne görmek istediğinizi seçin.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Giriş sayfası ve yeni pencereler
+home-homepage-mode-label2 = Yeni pencereler
 home-newtabs-mode-label = Yeni sekmeler
 home-restore-defaults =
     .label = Varsayılanları geri yükle
@@ -554,6 +617,11 @@ home-mode-choice-blank =
     .label = Boş sayfa
 home-homepage-custom-url =
     .placeholder = Adres yapıştır…
+# This button is shown when the homepage is managed by an extension and is placed below extension-controlling-homepage.
+home-homepage-manage-extension-button =
+    .label = Uzantıyı yönet
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-url = Belirli bir site seç
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -568,18 +636,45 @@ use-current-pages =
 choose-bookmark =
     .label = Yer imi kullan…
     .accesskey = m
+home-homepage-header = Giriş sayfası
+
+## Custom Homepage subpage
+
+home-custom-homepage-header = Özel giriş sayfası
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-subheader = Web sitesi adres(ler)i
+home-custom-homepage-address =
+    .placeholder = Adres yazın
+home-custom-homepage-address-button =
+    .label = Adres ekle
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-websites-yet = Henüz hiç site eklenmedi.
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with = Bununla değiştir:
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-current-pages-button =
+    .label = Şu anda açık olan sayfalar
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-bookmarks-button =
+    .label = Yer imleri…
 
 ## Home Section - Firefox Home Content Customization
 
 home-prefs-content-header2 = { -firefox-home-brand-name } içerikleri
+home-prefs-content-header3 = { -firefox-home-brand-name }
 home-prefs-content-description2 = { -firefox-home-brand-name } ekranınızda görmek istediğiniz içerikleri seçin.
 home-prefs-search-header =
     .label = Web araması
+home-prefs-search-header2 =
+    .label = Arama
 home-prefs-shortcuts-header =
     .label = Kısayollar
 home-prefs-shortcuts-description = Kaydettiğiniz veya ziyaret ettiğiniz siteler
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponsorlu kısayollar
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
 
 ## Home Section - Firefox Home Content Customization
 
@@ -589,6 +684,12 @@ home-prefs-recommended-by-description-new = { -brand-product-name } ailesinin bi
 home-prefs-recommended-by-header-generic =
     .label = Önerilen makaleler
 home-prefs-recommended-by-description-generic = { -brand-product-name } ailesinin seçtiği harika içerikler
+home-prefs-stories-header =
+    .label = Haberler
+home-prefs-stories-description = Etkinliğinize göre kişiselleştirilmiş haberler
+home-prefs-stories-header2 =
+    .label = Haberler
+    .description = { -brand-product-name } ailesinin seçtiği harika içerikler
 
 ##
 
@@ -619,6 +720,24 @@ home-prefs-weather-header =
     .label = Hava durumu
 home-prefs-weather-description = Bugünkü hava durumu tahmini
 home-prefs-weather-learn-more-link = Daha fazla bilgi al
+home-prefs-trending-search-header =
+    .label = Gündemdeki aramalar
+home-prefs-trending-search-description = Popüler ve sıkça aranan konular
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = Listeler
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = Sayaç
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = { -brand-product-name } tarayıcısını destekleyin
+home-prefs-mission-message = Sponsorlarımız daha iyi bir web inşa etme misyonumuzu destekliyor
+home-prefs-mission-message-learn-more-link = Nasıl mı?
+home-prefs-mission-message2 =
+    .message = Sponsorlarımız daha iyi bir web inşa etme misyonumuzu destekliyor.
+home-prefs-manage-topics-link = Konuları yönet
+home-prefs-choose-wallpaper-link = Duvar kâğıdı seç
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -655,7 +774,7 @@ search-show-suggestions-url-bar-option =
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar.
 search-show-search-term-option-2 =
-    .label = Sonuç sayfalarında adres çubuğunda arama terimlerini göster
+    .label = Sonuç sayfalarındayken adres çubuğunda arama terimlerini göster
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -687,6 +806,9 @@ search-remove-engine =
 search-add-engine =
     .label = Ekle
     .accesskey = E
+search-edit-engine =
+    .label = Düzenle
+    .accesskey = D
 search-find-more-link = Daha fazla arama motoru bul
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
@@ -695,12 +817,21 @@ search-keyword-warning-title = Tekrarlanan Anahtar Kelime
 #   $name (string) - Name of a search engine.
 search-keyword-warning-engine = Şu anda “{ $name }” tarafından kullanılan bir anahtar kelime seçtiniz. Lütfen başka bir şey seçin.
 search-keyword-warning-bookmark = Şu anda bir yer imi tarafından kullanılan bir anahtar kelime seçtiniz. Lütfen başka bir şey seçin.
+# This warning is displayed when the chosen name is already in use.
+# Variables:
+#   $name (string) - Name of a search engine.
+edit-engine-name-warning-duplicate = “{ $name }” adında bir arama motoru zaten var. Lütfen başka bir ad seçin.
+remove-engine-confirmation = Bu arama motorunu silmek istediğinizden emin misiniz?
+remove-engine-remove = Sil
+remove-addon-engine-alert = Bu arama motorunu silebilmek için ilgili eklentiyi kaldırın.
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = Ayarlara dön
 containers-header = Kapsayıcı sekmeler
+containers-section-header =
+    .heading = Kapsayıcı sekmeler
 containers-add-button =
     .label = Yeni kapsayıcı ekle
     .accesskey = e
@@ -865,6 +996,14 @@ sync-choose-what-to-sync-dialog4 =
 ## The device name controls.
 
 sync-device-name-header = Cihaz adı
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Cihaz adı
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Cihaz adını değiştir
+    .accesskey = C
 sync-device-name-change =
     .label = Cihaz adını değiştir…
     .accesskey = C
@@ -888,7 +1027,7 @@ sync-verification-not-sent-body = Şu anda doğrulama e-postası gönderemedik. 
 
 ## Privacy Section
 
-privacy-header = Tarayıcı Gizliliği
+privacy-header = Tarayıcı gizliliği
 
 ## Privacy Section - Logins and Passwords
 
@@ -1005,6 +1144,28 @@ autofill-saved-payment-methods-button = Kayıtlı ödeme yöntemleri
 # This operation requires the user to authenticate with the operating system (device sign-in)
 autofill-reauth-payment-methods-checkbox = Ödeme yöntemlerini doldurmak ve yönetmek için cihazdan giriş yapmayı zorunlu tut
     .accesskey = Ö
+autofill-payment-methods-title = Ödeme yöntemleri
+autofill-payment-methods-header =
+    .aria-label = Ödeme yöntemleri
+autofill-payment-methods-checkbox-message-2 =
+    .label = Ödeme bilgilerini kaydet ve otomatik doldur
+    .accesskey = Ö
+autofill-payment-methods-manage-payments-button =
+    .label = Ödeme yöntemlerini yönet
+    .accesskey = m
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox-2 =
+    .label = Ödeme yöntemlerini otomatik doldurmak ve yönetmek için cihazdan giriş yapmayı zorunlu tut
+    .accesskey = Ö
+autofill-addresses-title = Adresler ve daha fazlası
+autofill-addresses-header =
+    .aria-label = Adresler ve daha fazlası
+autofill-addresses-checkbox-message =
+    .label = Adresleri kaydedip otomatik doldur
+    .accesskey = A
+autofill-addresses-manage-addresses-button =
+    .label = Adresleri ve daha fazlasını yönet
+    .accesskey = d
 
 ## Privacy Section - History
 
@@ -1026,6 +1187,10 @@ history-remember-option-never =
     .label = geçmişi asla hatırlamasın
 history-remember-option-custom =
     .label = geçmiş için özel ayarları kullansın
+history-remember-description2 =
+    .description = { -brand-short-name } gezinti, indirme, form ve arama geçmişlerinizi hatırlayacak.
+history-dontremember-description2 =
+    .description = { -brand-short-name } Gizli Gezinti ile aynı ayarları kullanacak ve siz internette gezerken geçmişle ilgili hiçbir şeyi hatırlamayacak.
 history-remember-description = { -brand-short-name } gezinti, indirme, form ve arama geçmişlerinizi hatırlayacak.
 history-dontremember-description = { -brand-short-name } Gizli Gezinti ile aynı ayarları kullanacak ve siz internette gezerken geçmişle ilgili hiçbir şeyi hatırlamayacak.
 history-private-browsing-permanent =
@@ -1050,7 +1215,13 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Çerezler ve site verileri
+sitedata-label =
+    .aria-label = { sitedata-header }
 sitedata-total-size-calculating = Site verilerinin ve önbelleğin boyutu hesaplanıyor…
+# Variables:
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size2 = Depolanmış çerezleriniz, geçmişiniz, site verileriniz ve önbelleğiniz şu anda <strong>{ $value } { $unit }</strong> disk alanı kullanıyor.
 # Variables:
 #   $value (number) - Value of the unit (for example: 4.6, 500)
 #   $unit (string) - Name of the unit (for example: "bytes", "KB")
@@ -1059,6 +1230,8 @@ sitedata-learn-more = Daha fazla bilgi al
 sitedata-delete-on-close =
     .label = { -brand-short-name } kapatıldığında çerezleri ve site verilerini sil
     .accesskey = k
+sitedata-delete-on-close-private-browsing3 =
+    .message = { -brand-short-name }, geçmiş ayarlarınıza bağlı olarak, tarayıcıyı kapattığınızda oturumunuzdaki çerezleri ve site verilerini siler.
 sitedata-delete-on-close-private-browsing = Kalıcı gizli gezinti modunda, { -brand-short-name } kapatıldığında çerezler ve site verileri her zaman silinir.
 sitedata-delete-on-close-private-browsing2 = { -brand-short-name }, geçmiş ayarlarınıza bağlı olarak, tarayıcıyı kapattığınızda oturumunuzdaki çerezleri ve site verilerini siler.
 sitedata-allow-cookies-option =
@@ -1075,6 +1248,8 @@ sitedata-option-block-cross-site-trackers =
     .label = Siteler arası takip kodları
 sitedata-option-block-cross-site-tracking-cookies =
     .label = Siteler arası takip çerezleri
+sitedata-option-block-cross-site-cookies2 =
+    .label = Siteler arası çerezleri izole et
 sitedata-option-block-cross-site-cookies =
     .label = Siteler arası takip çerezlerini engelle, diğer çerezleri izole et
 sitedata-option-block-unvisited =
@@ -1083,6 +1258,12 @@ sitedata-option-block-all-cross-site-cookies =
     .label = Tüm siteler arası çerezler (Bazı siteler düzgün çalışmayabilir)
 sitedata-option-block-all =
     .label = Tüm çerezler (Birçok site düzgün çalışmayabilir)
+sitedata-clear2 =
+    .label = Gezinti verilerini temizle
+    .accesskey = G
+sitedata-settings2 =
+    .label = Gezinti verilerini yönet
+    .accesskey = z
 sitedata-clear =
     .label = Verileri temizle…
     .accesskey = l
@@ -1092,6 +1273,10 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = İstisnaları yönet…
     .accesskey = İ
+sitedata-cookies-exceptions2 =
+    .label = İstisnaları yönet
+    .accesskey = s
+    .description = Hangi sitelerin çerezleri ve site verilerini her zaman kullanabileceğini veya hiçbir zaman kullanamayacağını belirleyebilirsiniz.
 
 ## Privacy Section - Cookie Banner Handling
 
@@ -1111,7 +1296,19 @@ cookie-banner-blocker-checkbox-label =
 ## Privacy Section - Address Bar
 
 addressbar-header = Adres çubuğu
+addressbar-suggest-1 = Adres çubuğunuzda hangi önerilerin gösterileceğini seçin
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest-1 = { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest-1 = { -brand-short-name } ve iş ortaklarımızdan gelen öneriler adres çubuğunuzda görünür.
 addressbar-suggest = Adres çubuğunu kullanırken şunları öner:
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = Adres çubuğu — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest = Adres çubuğunda görünecek öneri türlerini seçin.
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = Daha fazla bilgi al
 addressbar-locbar-history-option =
     .label = Gezinti geçmişi
     .accesskey = G
@@ -1131,6 +1328,9 @@ addressbar-locbar-shortcuts-option =
 addressbar-locbar-topsites-option =
     .label = Sık kullanılanlar
     .accesskey = S
+addressbar-locbar-engines-option-1 =
+    .label = Kullanabileceğim arama motorlarını öner
+    .accesskey = u
 addressbar-locbar-engines-option =
     .label = Arama motorları
     .accesskey = m
@@ -1144,7 +1344,30 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = Arama trendi önerilerini göster
     .accesskey = t
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = { -brand-short-name } önerileri
+addressbar-locbar-suggest-all-option-desc = Aramanızla ilgili web sitesi önerileri alın.
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = { -brand-short-name } önerileri
+addressbar-locbar-suggest-nonsponsored-desc = Aramanızla ilgili web sitesi önerileri alın.
+addressbar-locbar-suggest-sponsored-option =
+    .label = Sponsorlardan öneriler
+addressbar-locbar-suggest-sponsored-desc = Ara sıra görünecek sponsorlu önerilerle { -brand-short-name } tarayıcınızı destekleyin.
+# This string is used for a checkbox in the settings UI that opts the
+# user into "online" Firefox Suggest, allowing them to receive suggestions from
+# Mozilla's Merino server.
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since the online suggest is created and maintained
+# by Mozilla.
+addressbar-firefox-suggest-online =
+    .label = Yazarken Mozilla’dan öneriler al
 addressbar-quickactions-learn-more = Daha fazla bilgi al
+addressbar-dismissed-suggestions-label = Kapatılan öneriler
+addressbar-restore-dismissed-suggestions-description = Sponsorlardan ve { -brand-short-name } tarayıcısından gelen kapatılmış önerileri geri getir.
+addressbar-restore-dismissed-suggestions-button =
+    .label = Geri getir
 
 ## Privacy Section - Content Blocking
 
@@ -1181,6 +1404,7 @@ content-blocking-private-windows = Gizli pencerelerde takip amaçlı içerikler
 content-blocking-cross-site-cookies-in-all-windows2 = Tüm pencerelerde siteler arası çerezler
 content-blocking-cross-site-tracking-cookies = Siteler arası takip çerezleri
 content-blocking-all-cross-site-cookies-private-windows = Gizli pencerelerde siteler arası çerezler
+content-blocking-isolate-cross-site-cookies = Siteler arası çerezleri izole et
 content-blocking-cross-site-tracking-cookies-plus-isolate = Siteler arası takip kodları ve takip çerezleri, kalan çerezleri izole et
 content-blocking-social-media-trackers = Sosyal medya takip kodları
 content-blocking-all-cookies = Tüm çerezler
@@ -1201,8 +1425,23 @@ content-blocking-etp-standard-tcp-rollout-description = Komple çerez koruması,
 content-blocking-etp-standard-tcp-rollout-learn-more = Daha fazla bilgi al
 content-blocking-etp-standard-tcp-title = Şimdiye kadarki en güçlü gizlilik özelliğimiz olan komple çerez korumasını içerir
 content-blocking-warning-title = Dikkat!
+content-blocking-warning-title-2 = Sıkı izlenme koruması bazı siteleri bozabilir
+content-blocking-warning-title-custom = Özel izlenme koruması bazı siteleri bozabilir
+# “Fix site issues” references the string content-blocking-exceptions-subheader
+content-blocking-and-isolating-etp-warning-description-4 = { -brand-short-name }, site özelliklerinin ve içeriklerinin bozulma ihtimalini azaltmak için “Site sorunlarını düzelt” ayarlarını kullanmanızı önerir. Bir site bozuk görünüyorsa o sitenin tüm içeriğini yüklemek için izlenme korumasını kapatmayı deneyin.
 content-blocking-and-isolating-etp-warning-description-2 = Bu ayar, bazı web sitelerinin içeriğinin görünmemesine veya düzgün çalışmamasına neden olabilir. Site bozuk görünüyorsa o sitenin tüm içeriğinin yüklemesi için izlenme korumasını kapatabilirsiniz.
 content-blocking-warning-learn-how = Nasıl yapılacağını öğrenin
+content-blocking-baseline-exceptions-3 =
+    .label = Önemli site sorunlarını düzelt (önerilir)
+    .description = Yalnızca takip kodu içerebilecek temel öğelerin engelini kaldırarak sitelerin ve özelliklerin yüklenmesine yardımcı olur. En yaygın sorunları kapsar.
+# This option to fix minor site issues must be used with the option to fix major site issues (string content-blocking-baseline-exceptions-3)
+content-blocking-convenience-exceptions-3 =
+    .label = Küçük site sorunlarını düzelt
+    .description = Takip kodu içerebilecek öğelerin engelini kaldırarak, makalelerdeki veya yorum bölümlerindeki videolar gibi öğeleri geri yükler. Bu işlem site sorunlarını azaltabilir ama daha az koruma sağlar. Büyük sorunlara yönelik düzeltmelerle birlikte kullanılmalıdır.
+content-blocking-baseline-uncheck-warning-dialog-title = Düzeltmeleri kapatmak istediğinizden emin misiniz?
+content-blocking-baseline-uncheck-warning-dialog-body = Bu ayar en yaygın site sorunlarını giderir. Bu ayarı kapatırsanız bazı siteler çalışmayabilir ve { -brand-short-name } bu sorunları gidermenize yardımcı olamaz.
+content-blocking-baseline-uncheck-warning-dialog-ok-button = Düzeltmeleri kapat
+content-blocking-baseline-uncheck-warning-dialog-cancel-button = Düzeltmeleri açık tut
 content-blocking-reload-description = Bu değişiklikleri uygulamak için sekmelerinizi tazelemeniz gerekiyor.
 content-blocking-reload-tabs-button =
     .label = Sekmeleri tazele
@@ -1257,6 +1496,14 @@ permissions-location = Konum
 permissions-location-settings =
     .label = Ayarlar…
     .accesskey = r
+permissions-localhost = Cihaz uygulamaları ve hizmetleri
+permissions-localhost-settings =
+    .label = Ayarlar…
+    .accesskey = A
+permissions-local-network = Yerel ağ cihazları
+permissions-local-network-settings =
+    .label = Ayarlar…
+    .accesskey = r
 permissions-xr = Sanal gerçeklik
 permissions-xr-settings =
     .label = Ayarlar…
@@ -1282,10 +1529,15 @@ permissions-notification-link = Daha fazla bilgi al
 permissions-notification-pause =
     .label = { -brand-short-name } yeniden başlatılana dek bildirimleri duraklat
     .accesskey = b
+permissions-autoplay2 =
+    .label = Otomatik oynatma
 permissions-autoplay = Otomatik oynatma
 permissions-autoplay-settings =
     .label = Ayarlar…
     .accesskey = r
+permissions-block-popups2 =
+    .label = Açılır pencereleri ve üçüncü taraf yönlendirmelerini engelle
+    .accesskey = A
 permissions-block-popups =
     .label = Açılır pencereleri engelle
     .accesskey = n
@@ -1301,12 +1553,36 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = İstisnalar…
     .accesskey = n
+permissions-header2 =
+    .label = İzinler
+    .description = Gezdiğiniz web sitelerine verdiğiniz izinler.
+permissions-location2 =
+    .label = Konum
+permissions-localhost2 =
+    .label = Cihaz uygulamaları ve hizmetleri
+permissions-local-network2 =
+    .label = Yerel ağ cihazları
+permissions-xr2 =
+    .label = Sanal gerçeklik
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Mikrofon
+# Privacy permission for sound output devices.
+permissions-speaker2 =
+    .label = Hoparlör
+permissions-notification2 =
+    .label = Bildirimler
 
 ## Privacy Section - Data Collection
 
 collection-header = { -brand-short-name } Veri Toplama ve Kullanma İzinleri
 collection-header2 = { -brand-short-name } veri toplama ve kullanma izinleri
     .searchkeywords = telemetri
+preferences-collection-description = Size tercih hakkı sunmaya ve { -brand-product-name } tarayıcısını tüm kullanıcılarımız için iyileştirmemizi sağlayacak minimum miktarda veri toplamaya özen gösteriyoruz.
+preferences-collection-privacy-notice = Gizlilik bildirimini görüntüle
+preferences-across-profiles = Bu ayarlar bu cihazdaki tüm { -brand-product-name } profilleri için geçerlidir.
+preferences-view-profiles = Tüm profilleri göster
 collection-description = Yalnızca { -brand-short-name } tarayıcınızı geliştirmemize yarayacak verileri topluyoruz ve istemezseniz onları da toplamıyoruz. Kişisel verilerinizi sunucularımıza göndermeden önce mutlaka izninizi istiyoruz.
 collection-privacy-notice = Gizlilik bildirimi
 collection-health-report-telemetry-disabled = Artık { -vendor-short-name }’nın teknik veri ve etkileşim verisi toplamasına izin vermiyorsunuz. Eski verilerinizin hepsi 30 gün içinde silinecektir.
@@ -1332,6 +1608,9 @@ collection-studies-link = { -brand-short-name } araştırmalarını göster
 addon-recommendations2 =
     .label = Kişiselleştirilmiş uzantı önerilerine izin ver
 addon-recommendations-description = Gezinti deneyiminizi geliştirmek için uzantı önerileri alın.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Bu sürümün yapılandırmasında veri raporlama devre dışı bırakılmış.
 collection-backlogged-crash-reports2 =
     .label = Çökme raporlarını otomatik olarak gönder
     .accesskey = m
@@ -1343,8 +1622,6 @@ addon-recommendations-link = Daha fazla bilgi al
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Bu yapılandırma için veri raporlama devre dışı bırakılmış
 collection-backlogged-crash-reports-with-link = { -brand-short-name } geriye dönük çökme raporlarını benim adıma gönderebilir <a data-l10n-name="crash-reports-link">Daha fazla bilgi al</a>
-    .accesskey = d
-collection-backlogged-crash-reports = { -brand-short-name } geriye dönük çökme raporlarını benim adıma gönderebilir
     .accesskey = d
 privacy-segmentation-section-header = Gezintinizi iyileştiren yeni özellikler
 privacy-segmentation-section-description = Size daha kişisel bir deneyim sunmak için verilerinizi kullanan özellikler sunduğumuzda:
@@ -1394,34 +1671,39 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = { -brand-short-name } yüklediğim üçüncü taraf kök sertifikalarına otomatik olarak güvenebilsin
     .accesskey = t
+certs-devices-enable-fips = FIPS’i etkinleştir
 space-alert-over-5gb-settings-button =
     .label = Ayarları aç
     .accesskey = A
 space-alert-over-5gb-message2 = <strong>{ -brand-short-name } tarafından kulllanılabilen disk alanı azaldı.</strong> Site içerikleri düzgün görüntülenemeyebilir. Depolanan verileri Ayarlar > Gizlilik ve Güvenlik > Çerezler ve site verileri kısmından temizleyebilirsiniz.
 space-alert-under-5gb-message2 = <strong>{ -brand-short-name } tarafından kulllanılabilen disk alanı azaldı.</strong> Site içerikleri düzgün görüntülenemeyebilir. Daha iyi bir gezinti deneyimi içi disk kullanımınızı iyileştirmek isterseniz “Daha fazla bilgi al” sayfasını ziyaret edin.
+certs-description2 =
+    .label = Sertifikalar
+    .description = { -brand-short-name } tarayıcısının kimlik doğrulama için kullandığı sertifikaları yapılandırın.
 
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = Yalnızca HTTPS modu
+httpsonly-label =
+    .aria-label = { httpsonly-header }
+    .description = Web sitelerine yalnızca güvenli bağlantı kurulmasına izin verir. { -brand-short-name } güvensiz bir bağlantı kurmadan önce size sorar.
+httpsonly-description3 = Web sitelerine yalnızca güvenli bağlantı kurulmasına izin verir. { -brand-short-name } güvensiz bir bağlantı kurmadan önce size sorar.
+httpsonly-learn-more2 = Yalnızca HTTPS modu nasıl çalışır?
 httpsonly-description = HTTPS, ziyaret ettiğiniz sitelerle { -brand-short-name } arasında güvenli ve şifrelenmiş bağlantı sağlar. Çoğu site HTTPS desteği sunar. “Yalnızca HTTPS” modunu açarsanız { -brand-short-name } tüm bağlantılarda HTTPS kullanmaya çalışır.
-httpsonly-description2 = { -brand-short-name }, ziyaret ettiğiniz sitelerle sizin aranızda güvenli ve şifrelenmiş bağlantılar kurar. Yalnızca HTTPS modu açıkken bir bağlantı güvenli değilse { -brand-short-name } sizi uyarır.
 httpsonly-learn-more = Daha fazla bilgi al
 httpsonly-radio-enabled =
     .label = Yalnızca HTTPS modunu tüm pencerelerde etkinleştir
-httpsonly-radio-enabled2 =
-    .label = Tüm pencerelerde yalnızca HTTPS kullan
 httpsonly-radio-enabled-pbm =
     .label = Yalnızca HTTPS modunu yalnızca gizli pencerelerde etkinleştir
-httpsonly-radio-enabled-pbm2 =
-    .label = Gizli pencerelerde yalnızca HTTPS kullan
+httpsonly-radio-disabled3 =
+    .label = Yalnızca HTTPS modunu etkinleştirme
+    .description = { -brand-short-name } yine de bazı bağlantıları HTTPS’e yükseltebilir
 httpsonly-radio-disabled =
     .label = Yalnızca HTTPS modunu etkinleştirme
-httpsonly-radio-disabled2 =
-    .label = Önce HTTPS’i dene ama güvenli olmayan bağlantılara da izin ver
 
 ## DoH Section
 
-preferences-doh-header = HTTPS Üzerinden DNS
+preferences-doh-header = HTTPS üzerinden DNS
 preferences-doh-description = HTTPS Üzerinden Alan Adı Sistemi (DNS), alan adı isteklerinizi şifreli bir bağlantı üzerinden göndererek güvenli bir DNS oluşturur. Böylece hangi web sitelerine eriştiğinizi başkalarının görmesi zorlaştır.
 preferences-doh-description2 = HTTPS Üzerinden Alan Adı Sistemi (DNS), alan adı isteklerinizi şifreli bir bağlantı üzerinden göndererek güvenli bir DNS sağlar. Böylece hangi web sitelerine eriştiğinizi başkalarının görmesi zorlaştır.
 # Variables:

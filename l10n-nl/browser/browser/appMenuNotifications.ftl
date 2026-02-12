@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Afwijzen
     .secondarybuttonaccesskey = A
 appmenu-update-restart-message2 = Download de nieuwste versie van { -brand-shorter-name }. Open tabbladen en vensters worden hersteld.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Ongedaan maken
+    .secondarybuttonaccesskey = O
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } kan niet automatisch naar de nieuwste versie bijwerken.
     .buttonlabel = { -brand-shorter-name } toch bijwerken
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = Oké
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = Beheer uw add-ons en thema’s via het toepassingsmenu.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Werk toestemmingen en gegevensvoorkeuren bij in de <a data-l10n-name="settings-link">extensie-instellingen</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Extensie aan werkbalk vastzetten
+    .accesskey = v
 appmenu-addon-post-install-incognito-checkbox =
     .label = Deze extensie in privévensters laten uitvoeren
     .accesskey = D

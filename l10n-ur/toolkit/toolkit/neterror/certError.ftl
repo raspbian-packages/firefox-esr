@@ -101,10 +101,3 @@ networkProtocolError-title = نیٹ ورک پروٹوکول ایرر
 nssBadCert-title = انتباہ: اآگے ممکنہ سیکیورٹی کا خطرہ ہو سکتا ہے
 nssBadCert-sts-title = رابطہ قائم نہیں ھوا: امکانی حفاظتی مسئلہ
 certerror-mitm-title = سافٹ ویئر { -brand-short-name } کو سائٹ  سے منسلک ہونے سے محفوظ طریقے سے روک رہا ہے
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = ᱰᱟᱣᱱᱞᱚᱰ ᱠᱚ
 appmenuitem-passwords =
     .label = ᱫᱟᱱᱟᱝ ᱥᱟᱵᱟᱫᱽ ᱠᱚ
+appmenuitem-extensions-and-themes =
+    .label = ᱯᱟᱥᱱᱟᱣ ᱟᱨ ᱛᱷᱤᱢ ᱠᱚ
+appmenuitem-extensions =
+    .label = ᱯᱟᱥᱱᱟᱣ ᱠᱚ
 appmenuitem-addons-and-themes =
     .label = ᱮᱰᱚᱱᱥ ᱟᱨ ᱛᱷᱮᱢᱥ
 appmenuitem-print =
@@ -280,12 +284,14 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = ᱰᱟᱴᱟ ᱠᱩᱢᱵᱽᱲᱩ ᱴᱟᱴᱠᱟ ᱠᱷᱚᱵᱚᱨ ᱧᱟᱢ ᱢᱮ
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = ᱟᱢᱟᱜ ᱴᱷᱤᱠ ᱤᱢᱮᱞ ᱟᱨ ᱯᱷᱚᱱ ᱩᱠᱩᱭ ᱢᱮ
+appmenuitem-services-relay-description = ᱤᱢᱮᱞ ᱢᱟᱥᱠ ᱰᱮᱥᱵᱚᱨᱰ ᱯᱟᱨᱥᱟᱞ ᱢᱮ
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = ᱟᱢᱟᱜ ᱚᱱᱞᱟᱭᱤᱱ ᱠᱟᱹᱢᱤᱦᱚᱨᱟ ᱨᱩᱠᱷᱤᱭᱟᱹᱭᱢᱮ
+appmenu-services-header = ᱤᱧᱟᱜ ᱥᱮᱵᱟ ᱠᱚ
+appmenu-other-protection-header = { -vendor-short-name } ᱠᱷᱚᱱ ᱮᱴᱟᱜ ᱨᱩᱠᱷᱤᱭᱟᱹ ᱥᱟᱯᱟᱵ ᱠᱚ ᱪᱮᱥᱴᱟᱭ ᱢᱮ :
 
 ## Profiles panel
 
-appmenu-profiles = ᱢᱮᱫᱦᱟᱸᱠᱚ
 appmenu-other-profiles = ᱮᱴᱟᱜ ᱯᱨᱚᱯᱷᱟᱭᱤᱞᱠᱚ
 appmenu-manage-profiles =
     .label = ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱠᱚ ᱢᱮᱱᱮᱡᱽ ᱢᱮ
@@ -293,3 +299,5 @@ appmenu-create-profile =
     .label = ᱱᱟᱶᱟ ᱯᱨᱚᱯᱷᱟᱭᱤᱞ
 appmenu-edit-profile =
     .aria-label = ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱥᱟᱯᱲᱟᱣ ᱢᱮ
+appmenu-profiles-2 =
+    .label = ᱢᱮᱫᱦᱟᱸᱠᱚ

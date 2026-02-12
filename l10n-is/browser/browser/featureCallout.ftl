@@ -54,16 +54,97 @@ fx-view-discoverability-secondary-button-label = Afgreiða
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = Ekki birta þessi meðmæli aftur
+split-dismiss-button-dont-show-option =
+    .label = Ekki birta þessi meðmæli aftur
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = Birta færri meðmæli
+split-dismiss-button-show-fewer-option =
+    .label = Birta færri meðmæli
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = Sýsla með stillingar
+split-dismiss-button-manage-settings-option =
+    .label = Sýsla með stillingar
+# Accessibility label for dropdown menu button
+split-dismiss-button-default-label =
+    .title = Fleiri valkostir
+
+## Login Status Advisory Callout (points to the account icon)
+
+# The 'account icon' is the toolbar button with a 'profile' icon of a human
+# head/shoulders. It's for dealing with your Mozilla account. When hovering the
+# icon, the tooltip says 'Account'.
+login-status-advisory-title = Þú hefur skráð þig út. Smelltu á reikningstáknið til að skrá þig inn.
+
+## Bookmarks toolbar callout strings
+
+bookmarks-toolbar-callout-1-title = Bæta þessu vefsvæði við bókamerkjastikuna þína?
+bookmarks-toolbar-callout-1-primary-button-label = Bæta við bókamerki
+bookmarks-toolbar-callout-1-secondary-button-label = Nei takk
+# Visible if user adds a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2a-title = Bættu auðveldlega við fleiri bókamerkjum
+bookmarks-toolbar-callout-2a-primary-button-label = Náði því
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2a-secondary-button-label = Fela verkfærastiku
+# Visible if user declines to add a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2b-title = Halda bókamerkjastikunni þinni opinni?
+bookmarks-toolbar-callout-2b-primary-button-label = Halda opnu
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2b-secondary-button-label = Nei takk
+
+## Perplexity callout strings
+
+perplexity-callout-primary-label = Spyrja Perplexity
+perplexity-callout-secondary-label-1 = Afgreiða
+perplexity-callout-secondary-label-2 = Náði því
+
+## Account Adoption Passwords callout strings
+
+# Suggestion to backup passwords by signing up for Mozilla account and using sync
+fxa-adoption-passwords-title = Lykilorð vistað. Við skulum þá taka afrit af því.
+# Opens Mozilla accounts sign-up page
+fxa-adoption-passwords-primary-button-label = Nýskrá
+
+## Windows 10 EoS Sync messages group 1 callouts
+
+windows-10-eos-sync-new-device-primary-label = Samstilla núna
+windows-10-eos-sync-tour-title-1 = Of margir flipar? Taktu til með aðstoð flipahópa.
+windows-10-eos-sync-tour-title-2 = Skipuleggðu þig fyrir komu Windows 11.
+windows-10-eos-sync-tour-subtitle-2 = Samstilltu bókamerki, lykilorð og stillingar til að taka afrit af þeim áður en þú skiptir.
 
 ## Sidebar Strings
 
 sidebar-button-callout-title = Sýndu titla flipa í hliðarstikunni
 sidebar-button-callout-subtitle = Notaðu hliðarstikuhnappinn til að stækka hliðarstikuna, svo þú getir séð titlana á flipunum.
+sidebar-button-callout-vertical-tabs = Til að sýna flipana þína skaltu velja hliðarstikuhnappinn á verkfærastikunni.
+
+## Sidebar Vertical Tabs Strings
+
+vertical-tabs-callout-1-title = Er of mikið af flipum?
+vertical-tabs-callout-1-subtitle = Prófaðu nýju lóðréttu flipauppsetninguna okkar til að geta skoðað listann þinn yfir flipa á einfaldan máta. Prófunaraðilar segja að þetta bæti skipulagið hjá þeim. Skiptu svo hvenær sem er á milli uppsetninga.
+vertical-tabs-callout-1-cta-button = Prófa lóðrétta flipa
+vertical-tabs-callout-2-cta-button = Prófa núna
+vertical-tabs-callout-2-title = Ertu með marga opna flipa? Prófaðu lóðrétta flipa.
+
+## Sidebar Vertical Tabs Pinning Strings
+
+sidebar-pins-callout-title = Ertu að missa yfirsýn yfir mikilvæga flipa?
+sidebar-pins-callout-cta-button = Festa flipa
+
+## Pinning Tabs Strings
+
+pin-tabs-callout-1-title = Hafðu mikilvæga flipa innan seilingar
+pin-tabs-callout-cta-1-button = Festa þennan flipa
+pin-tabs-callout-2-title = Festu flipana sem þú heimsækir oftast
+pin-tabs-callout-2-subtitle = Til að festa flipa skaltu draga hann að upphafi fliparandarinnar. Eða hægrismella og velja að festa flipa.
+pin-tabs-callout-cta-2-button = Festa þennan flipa
+pin-tabs-callout-3-title = Hafðu mikilvæga vefi innan seilingar
+pin-tabs-callout-4-title = Festu vefsvæði sem þú heimsækir oftast
+
+## Sidebar Onboarding Strings
+
+sidebar-customization-callout-1-title = Hliðarstikan: staðurinn þinn fyrir verkfæri og flipa
+sidebar-customization-callout-1-subtitle = { -brand-product-name } hliðarstikan veitir þér skjótan aðgang að vafurferlinum þínum, flipum úr öðrum tækjum og gervigreindar-spjallkerfi - allt án þess að fara af aðalskjánum.
+sidebar-customization-callout-callout-button = Sérsníða hliðarstiku
+sidebar-customization-callout-dismiss-button = Fela hliðarstiku
+sidebar-customization-callout-2-title = Lagaðu { -brand-product-name } hliðarstikuna að þínm smekk
 
 ## Sidebar Callout Survey Strings
 
@@ -94,3 +175,19 @@ sidebar-genai-survey-satisfaction-question = Hversu ánægð/ur ertu með að ha
 sidebar-genai-survey-productive-question =
     Að hve miklu leyti ertu sammála eða ósammála þessari fullyrðingu:<br/>
     „Gervigreindar-spjallkerfið í hliðarstikunni hjálpar mér að vera afkastameiri“?
+unified-search-callout-title = Skiptu á milli leitarvéla
+unified-search-callout-subtitle = Veldu það sem virkar best fyrir tiltekna leit.
+unified-search-callout-primary-label = Næsta
+unified-search-callout-secondary-label = Afgreiða
+unified-search-engines-callout-title = Leitaðu með flýtileið
+unified-search-engines-callout-subtitle = Skrifaðu „@“ og síðan lykilorð til að leita í ferlinum þínum, bókamerkjum, flipum eða með annarri leitarvél.
+unified-search-engines-callout-primary-label = Náði því
+actions-callout-title = Ljúktu við algeng verk eða opnaðu grunnstillingar
+# The user can type "print" and "clear" and a button will appear in the
+# search bar (e.g. Print page) the user can click to initiate the action.
+# These example text inputs correlate to the the following strings
+# (either matching the whole string, or the first word of the string).
+# "print" - quickactions-cmd-print
+# "clear" - quickactions-cmd-clearrecenthistory
+# When localizing, ensure the translations match to ensure the action button appears as expected.
+actions-callout-subtitle = Prófaðu að skrifa inn aðgerð eins og „print“ til að prenta síðu eða „clear“ til að hreinsa ferilinn þinn.

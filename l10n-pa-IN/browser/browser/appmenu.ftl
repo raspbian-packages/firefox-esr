@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = ਡਾਊਨਲੋਡ
 appmenuitem-passwords =
     .label = ਪਾਸਵਰਡ
+appmenuitem-extensions-and-themes =
+    .label = ਇਕਸਟੈਨਸ਼ਨਾਂ ਅਤੇ ਥੀਮ
+appmenuitem-extensions =
+    .label = ਇਕਸਟੈਨਸ਼ਨਾਂ
 appmenuitem-addons-and-themes =
     .label = ਐਡ-ਆਨ ਅਤੇ ਥੀਮ
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = ਪਰੋਫ਼ਾਇਲਰ ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
+    .tooltiptext = ਪਰੋਫ਼ਾਇਲਰ ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = { -brand-shorter-name } ਵਿੱਚ ਆਡੀਓ ਤੇ ਵੀਡੀਓ ਬੱਗਾਂ ਦੀ ਜਾਂਚ ਲਈ ਪਹਿਲਾਂ ਨਿਯਤ ਸਮੂਹ।
 profiler-popup-presets-media-label =
     .label = ਮੀਡਿਆ
+profiler-popup-presets-ml-description = { -brand-shorter-name } ਵਿੱਚ ਮਸ਼ੀਨੀ ਸਿਖਲਾਈ ਬੱਗ ਦੀ ਜਾਂਚ ਲਈ ਪ੍ਰੀਸੈੱਟ ਹੈ।
+profiler-popup-presets-ml-label =
+    .label = ਮਸ਼ੀਨ ਸਿਖਲਾਈ
 profiler-popup-presets-networking-description = { -brand-shorter-name } ਵਿੱਚ ਨੈੱਟਵਰਕਿੰਗ ਬੱਗਾਂ ਦੀ ਜਾਂਚ ਲਈ ਪਹਿਲਾਂ ਨਿਯਤ ਸਮੂਹ।
 profiler-popup-presets-networking-label =
     .label = ਨੈੱਟਵਰਕਿੰਗ
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = ਈਮੇਲ ਮਾਸਕ ਡੈਸ਼�
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = ਆਪਣੀ ਆਨਲਾਈਨ ਸਰਗਰਮੀ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੋ
 appmenu-services-header = ਮੇਰੀਆਂ ਸੇਵਾਵਾਂ
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Mozilla ਦੇ ਹੋਰ ਸੁਰੱਖਿਆ ਟੂਲਾਂ ਨੂੰ ਅਜ਼ਮਾਓ:
 appmenu-other-protection-header = { -vendor-short-name } ਵਲੋਂ ਹੋਰ ਸੁਰੱਖਿਆ ਦੇਣ ਵਾਲੇ ਟੂਲਾਂ ਨੂੰ ਅਜ਼ਮਾਓ:
 
 ## Profiles panel
 
-appmenu-profiles = ਪਰੋਫਾਇਲ
 appmenu-other-profiles = ਹੋਰ ਪਰੋਫਾਇਲ
 appmenu-manage-profiles =
     .label = ਪਰੋਫਾਇਲਾਂ ਦਾ ਬੰਦੋਬਸਤ ਕਰੋ
+appmenu-copy-profile =
+    .label = ਇਸ ਪਰੋਫ਼ਾਈਲ ਨੂੰ ਕਾਪੀ ਕਰੋ
 appmenu-create-profile =
     .label = ਨਵਾਂ ਪਰੋਫਾਇਲ
 appmenu-edit-profile =
     .aria-label = ਪਰੋਫਾਇਲ ਨੂੰ ਸੋਧੋ
+appmenu-profiles-2 =
+    .label = ਪਰੋਫਾਇਲ

@@ -4,7 +4,7 @@
 
 
 ## Error messages for failed HTTP web requests.
-## https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+## https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
@@ -20,9 +20,12 @@ firefox-relay-get-unlimited-masks =
     .accesskey = М
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
 firefox-relay-opt-in-title-1 = Электрондық пошта адресіңізді қорғаңыз:
+firefox-relay-opt-in-title-2 = Тегін эл. пошта маскасын алыңыз
 # This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
 # ends with a colon. You might need to adapt the capitalization of this string.
 firefox-relay-opt-in-subtitle-1 = { -relay-brand-name } эл. пошта маскасын қолдану
+firefox-relay-use-mask-title-1 = Эл. пошта маскасын қолдану
+firefox-relay-opt-in-subtitle-2 = Кіріс бумаңызды спамнан қорғаңыз
 firefox-relay-use-mask-title = { -relay-brand-name } эл. пошта маскасын қолдану
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-a
 firefox-relay-opt-in-title-a = Тегін эл. пошта маскасы арқылы спамның алдын алыңыз
@@ -70,6 +73,7 @@ firefox-relay-and-fxa-opt-in-confirmation-enable-button-basic-info =
 ## The "with-domain" variation of the Relay offer popup
 
 firefox-relay-and-fxa-popup-notification-header-with-domain = Тегін эл. пошта маскасын алыңыз
+firefox-relay-and-fxa-popup-notification-second-sentence-with-domain = Эл. пошта маскасын пайдалану үшін алдымен тіркеліңіз немесе тіркелгіңізге кіріңіз
 firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain =
     .label = Тіркелгіні жасау
     .accesskey = Т

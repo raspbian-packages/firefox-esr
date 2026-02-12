@@ -88,7 +88,7 @@ fp-certerror-unknown-issuer-what-can-you-do-body = 사이트 자체에 문제가
 fp-certerror-self-signed-why-dangerous-body = 사이트의 인증서에 문제가 있기 때문입니다. 사이트는 인증 기관에서 발급한 인증서를 사용하여 신원을 증명합니다. 이 사이트의 인증서는 자체 서명되어 있습니다. 인정된 인증 기관에서 발급한 것이 아닙니다. 그래서 저희는 이를 기본적으로 신뢰하지 않습니다.
 # This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
 fp-certerror-self-signed-what-can-you-do-body = 많지 않습니다. 사이트 자체에 문제가 있을 수 있습니다.
-fp-certerror-self-signed-important-note = 중요 사항: 만약 여러분이 회사 인트라넷에서 이 사이트에 접속하려고 한다면, 여러분의 IT 직원이 자체 서명된 인증서를 사용할 수 있습니다. 그들은 사용자가 그들의 진위를 확인하는데 도움을 줄 수 있습니다.
+fp-certerror-self-signed-important-note = 중요 사항: 만약 여러분이 회사 인트라넷에서 이 사이트에 접속하려고 한다면, 여러분의 IT 직원이 자체 서명된 인증서를 사용할 수 있습니다. 그들은 사용자가 그들의 진위를 확인하는 데 도움을 줄 수 있습니다.
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
 # Variables:
 #   $date (Date) - Certificate expiration date.
@@ -107,9 +107,35 @@ fp-cert-error-code = 오류 코드: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name }는 { $hostname } 사이트가 공공 인증서 투명성 요구사항을 충족한다는 것을 증명할 수 없기 때문에 신뢰하지 않습니다.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = 사이트 자체에 문제가 있을 수 있기 때문에 별것 아닙니다.
 fp-learn-more-about-secure-connection-failures = 보안 연결 실패에 대해 더 알아보기
 fp-learn-more-about-cert-issues = 이러한 종류의 인증서 문제에 대해 더 알아보기
 fp-learn-more-about-time-related-errors = 시간 관련 오류 해결에 대해 더 알아보기
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { $hostname }에 대해 제공한 인증서가 폐기되어 더 이상 신뢰되지 않기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-bad-signature = { $hostname }에 대해 제공한 인증서의 서명이 유효하지 않기 때문에 { -brand-short-name }에서 이 사이트 방문을 차단했습니다.
+cert-error-key-pinning-failure = { $hostname }에 대해 제공된 인증서가 예상과 다른 공개 키를 사용하고 있기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-bad-der = { $hostname }에 대해 제공한 인증서가 제대로 인코딩되지 않았기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-cert-not-in-name-space = { $hostname }에 대해 제공된 인증서가 이를 발급한 인증서의 이름 제약을 따르지 않기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-inadequate-cert-type = { $hostname }에 제공된 인증서를 웹 서버에서 사용하도록 허용하지 않았기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-path-len-constraint-invalid = { $hostname }에 대해 제공된 인증서가 루트 인증서 경로에 있는 중간 인증서가 너무 많아 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-invalid-key = { $hostname }에 대해 제공된 인증서가 유효하지 않은 키를 포함하고 있기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다. 대부분 너무 작아서 안전하지 않습니다.
+cert-error-unknown-critical-extension = { $hostname }에 대해 제공된 인증서가 지원하지 않는 중요한 확장을 포함하고 있기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-extension-value-invalid = { $hostname }에 대해 제공된 인증서가 유효하지 않은 확장을 포함하고 있기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-untrusted-issuer = { $hostname }에 대해 제공한 인증서가 더 이상 신뢰할 수 없는 인증 기관에서 발급했기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-untrusted-cert = { $hostname }에 대해 제공한 인증서가 신뢰되지 않음으로 표시되어 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-invalid-integer-encoding = { $hostname }에 대해 제공된 인증서가 유효하지 않은 정수 인코딩을 포함하고 있기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다. 일반적인 원인은 음수 일련 번호, 음수 RSA moduli 및 필요 이상으로 긴 인코딩입니다.
+cert-error-unsupported-keyalg = { $hostname }에 대해 제공된 인증서가 지원하지 않는 키 유형을 포함하고 있기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
+cert-error-issuer-no-longer-trusted = { $hostname }에 대해 제공된 인증서를 발급한 인증 기관이 더 이상 신뢰되지 않기 때문에 { -brand-short-name }에서 이 사이트 방문을 차단했습니다.
+cert-error-signature-algorithm-mismatch = { $hostname }에 대해 제공된 인증서의 서명 알고리즘이 서명 알고리즘 필드와 일치하지 않기 때문에 { -brand-short-name }가 이 사이트 방문을 차단했습니다.
 
 ## Messages used for certificate error titles
 
@@ -117,7 +143,8 @@ connectionFailure-title = 연결할 수 없음
 deniedPortAccess-title = 이 주소는 제한되어 있음
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
-dnsNotFound-title = 해당 사이트를 찾는데 문제가 발생했습니다.
+dnsNotFound-title = 해당 사이트를 찾는 데 문제가 발생했습니다.
+internet-connection-offline-title = 인터넷 연결에 문제가 있는 것 같습니다.
 dns-not-found-trr-only-title2 = 이 도메인을 찾는 가능한 보안 위험
 dns-not-found-native-fallback-title2 = 이 도메인을 찾는 가능한 보안 위험
 fileNotFound-title = 파일을 찾을 수 없음
@@ -134,6 +161,7 @@ contentEncodingError-title = 콘텐츠 인코딩 오류
 unsafeContentType-title = 안전하지 않은 파일 형식
 netReset-title = 연결 초기화
 netTimeout-title = 연결 시간 초과
+httpErrorPage-title = 이 사이트에 문제가 있는 것 같음
 serverError-title = 이 사이트에 문제가 있는 것 같음
 unknownProtocolFound-title = 인식할 수 없는 주소
 proxyConnectFailure-title = 프록시 서버가 연결을 거부함
@@ -142,6 +170,7 @@ redirectLoop-title = 페이지가 제대로 리디렉션되지 않음
 unknownSocketType-title = 서버에서 예기치 않은 응답
 nssFailure2-title = 보안 연결 실패
 csp-xfo-error-title = { -brand-short-name }가 이 페이지를 열 수 없음
+corruptedContentErrorv2-title = 손상된 콘텐츠 오류
 corruptedContentError-title = 손상된 콘텐츠 오류
 sslv3Used-title = 보안 연결을 할 수 없음
 inadequateSecurityError-title = 연결이 안전하지 않음
@@ -157,7 +186,7 @@ certerror-mitm-title = { -brand-short-name }가 이 사이트에 안전하게 �
 fp-certerror-page-title = 경고: 보안 위험
 fp-certerror-body-title = 조심하세요. 뭔가 문제가 있습니다.
 fp-certerror-why-site-dangerous = 사이트가 위험해 보이는 이유는 무엇인가요?
-fp-certerror-what-can-you-do = 사용자가 무엇을 할 수 있습니까?
+fp-certerror-what-can-you-do = 사용자가 무엇을 할 수 있나요?
 fp-certerror-advanced-title = 고급
 fp-certerror-advanced-button = 고급
 fp-certerror-hide-advanced-button = 고급 숨기기
@@ -166,5 +195,6 @@ fp-certerror-hide-advanced-button = 고급 숨기기
 ##   $hostname (String) - Hostname of the website to which the user was trying to connect.
 
 fp-certerror-override-exception-button = { $hostname } 사이트로 진행 (위험)
-fp-certerror-intro = { -brand-short-name }가 <strong>{ $hostname }</strong>에서 심각한 보안 문제를 발견했습니다. 사이트를 사칭하는 누군가가 신용카드 정보, 비밀번호, 이메일 등을 탈취할 수 있습니다.
+fp-certerror-intro = { -brand-short-name }가 <strong>{ $hostname }</strong>에서 심각한 보안 문제를 발견했습니다. 사이트를 사칭하는 누군가가 신용 카드 정보, 비밀번호, 이메일 등을 탈취할 수 있습니다.
 fp-certerror-expired-into = { -brand-short-name }가 <strong>{ $hostname }</strong>에서 보안 문제를 발견했습니다. 사이트 설정이 올바르지 않거나 기기의 시계가 잘못된 날짜/시간으로 설정되어 있습니다.
+fp-certerror-transparency-intro = 누군가 <strong>{ $hostname }</strong> 사칭을 하여 신용 카드 정보나 비밀번호, 이메일 등을 탈취할 수 있습니다.

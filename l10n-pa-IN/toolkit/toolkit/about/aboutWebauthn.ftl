@@ -105,6 +105,8 @@ about-webauthn-auth-info-algorithms = ਐਲਗੋਰਿਥਮ
 about-webauthn-auth-info-transports = ਟਰਾਂਸਪੋਰਟ
 about-webauthn-auth-info-pin-protocols = ਪਿੰਨ ਪਰੋਟੋਕਾਲ
 about-webauthn-auth-info-max-msg-size = ਵੱਧ ਤੋਂ ਵੱਧ ਸੁਨੇਹਾ ਆਕਾਰ
+# AAGUID should not be translated.
+about-webauthn-auth-info-aaguid = AAGUID
 about-webauthn-auth-info-extensions = ਇਕਸਟੈਨਸ਼ਨਾਂ
 about-webauthn-auth-info-versions = ਵਰਜ਼ਨ
 # Shows when boolean value for an info field is True. True should not be translated.
@@ -112,12 +114,6 @@ about-webauthn-auth-info-true = ਸੱਚ
 # Shows when boolean value for an info field is False. False should not be translated.
 about-webauthn-auth-info-false = ਗਲਤ
 about-webauthn-auth-info-null = ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ
-
-## Bio enrollment sample feedbacks
-
-
-## Scan (e.g. of fingerprint) was off-center (e.g. too high, too left, etc.).
-
 
 ##
 

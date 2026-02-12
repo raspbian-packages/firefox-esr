@@ -33,17 +33,6 @@ should-restart-ok = Herbegin { -brand-short-name } nou
 cancel-no-restart-button = Kanselleer
 restart-later = Herbegin later
 
-## Extension Control Notifications
-##
-## These strings are used to inform the user
-## about changes made by extensions to browser settings.
-##
-## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
-##
-## Variables:
-##   $name (string) - Name of the extension
-
-
 ## Preferences UI Search Results
 
 search-results-header = Soekresultate
@@ -54,6 +43,10 @@ startup-header = Begin
 always-check-default =
     .label = Kontroleer altyd of { -brand-short-name } die verstekblaaier is
     .accesskey = K
+is-default-browser =
+    .message = { -brand-short-name } is tans die verstekblaaier
+is-not-default-browser =
+    .message = { -brand-short-name } is nie die verstekblaaier nie
 is-default = { -brand-short-name } is tans die verstekblaaier
 is-not-default = { -brand-short-name } is nie die verstekblaaier nie
 set-as-my-default-browser =
@@ -151,6 +144,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Lêers en Toepassings
+downloads-header-2 =
+    .label = Aflaaie
+download-save-where-2 =
+    .label = Stoor lêers na
+    .accesskey = o
 download-header = Aflaaie
 download-save-where = Stoor lêers na
     .accesskey = o
@@ -287,7 +285,7 @@ network-proxy-connection-settings =
 
 home-new-windows-tabs-header = Nuwe Vensters en Oortjies
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Tuisblad en nuwe vensters
 home-newtabs-mode-label = Nuwe oortjies
@@ -358,6 +356,8 @@ search-keyword-warning-bookmark = U het 'n sleutelwoord gekies wat tans deur 'n 
 ## Containers Section
 
 containers-header = Konteksoortjies
+containers-section-header =
+    .heading = Konteksoortjies
 containers-add-button =
     .label = Voeg nuwe konteks by
     .accesskey = V
@@ -403,9 +403,6 @@ sync-sign-in =
     .label = Meld aan
     .accesskey = M
 
-## Sync section - enabling or disabling sync.
-
-
 ## The list of things currently syncing.
 
 sync-currently-syncing-bookmarks = Boekmerke
@@ -431,6 +428,14 @@ sync-engine-history =
 ## The device name controls.
 
 sync-device-name-header = Toestelnaam
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Toestelnaam
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Verander toestelnaam
+    .accesskey = V
 sync-device-name-change =
     .label = Verander toestelnaam…
     .accesskey = V
@@ -485,12 +490,6 @@ forms-master-pw-change =
     .accesskey = m
 forms-master-pw-fips-desc = Kon nie wagwoord verander nie
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Geskiedenis
@@ -511,6 +510,8 @@ history-remember-option-never =
     .label = nooit geskiedenis onthou nie
 history-remember-option-custom =
     .label = eie instellings vir geskiedenis gebruik
+history-dontremember-description2 =
+    .description = { -brand-short-name } gebruik dieselfde instellings as private blaaiery en sal nie enige geskiedenis onthou wanneer u die web besoek nie.
 history-dontremember-description = { -brand-short-name } gebruik dieselfde instellings as private blaaiery en sal nie enige geskiedenis onthou wanneer u die web besoek nie.
 history-private-browsing-permanent =
     .label = Gebruik altyd privaatblaai-modus
@@ -530,12 +531,6 @@ history-clear-on-close-settings =
 sitedata-header = Koekies en webwerf-data
 sitedata-learn-more = Meer inligting
 
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
-
 ## Privacy Section - Address Bar
 
 addressbar-locbar-history-option =
@@ -553,10 +548,6 @@ addressbar-suggestions-settings = &Verander voorkeure vir voorstelle vanaf soeke
 
 content-blocking-enhanced-tracking-protection = Gevorderde beskerming van spoorsnyers
 content-blocking-learn-more = Meer inligting
-
-## These strings are used to define the different levels of
-## Enhanced Tracking Protection.
-
 
 ##
 
@@ -607,13 +598,18 @@ permissions-block-popups =
 permissions-addon-exceptions =
     .label = Uitsonderings…
     .accesskey = U
+permissions-location2 =
+    .label = Ligging
+permissions-xr2 =
+    .label = Virtuele Realiteit
+permissions-microphone2 =
+    .label = Mikrofoon
+permissions-notification2 =
+    .label = Kennisgewings
 
 ## Privacy Section - Data Collection
 
 collection-health-report-link = Meer inligting
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -637,12 +633,7 @@ certs-header = Sertifikate
 certs-enable-ocsp =
     .label = Bevestig huidige geldigheid van sertifikate deur OCSP-bedieners te vra
     .accesskey = B
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = Aktiveer FIPS
 
 ## The following strings are used in the Download section of settings
 

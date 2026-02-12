@@ -107,9 +107,35 @@ fp-cert-error-code = Errore-kodea: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } ez da { $hostname } ostalariaz fidatzen ezin duelako frogatu ziurtagiri publikoen gardentasun-eskakizunak betetzen dituela.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Ziurrenik ezer ez, litekeena baita gunearekin berarekin arazo bat dagoela.
 fp-learn-more-about-secure-connection-failures = Konexio seguruen hutsegiteei buruzko argibide gehiago
 fp-learn-more-about-cert-issues = Honelako ziurtagiri-arazoei buruzko argibide gehiago
 fp-learn-more-about-time-related-errors = Denborarekin erlazionatutako erroreen arazo-konponketari buruzko argibide gehiago
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiria baliogabetu egin delako eta ez delako gehiago fidatzeko modukoa.
+cert-error-bad-signature = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriak hornitzen duen sinadura ez delako baliozkoa.
+cert-error-key-pinning-failure = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriak esperotakoa ez den gako publikoa darabilelako.
+cert-error-bad-der = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiria ez dagoelako ondo kodetuta.
+cert-error-cert-not-in-name-space = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriak ez dituelako jaulkitzailearen izenen murriztapenak jarraitzen.
+cert-error-inadequate-cert-type = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiria ez delako onartzen web zerbitzari batean erabiltzeko.
+cert-error-path-len-constraint-invalid = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriak erro ziurtagirirako bidean tarteko ziurtagiri gehiegi dituelako.
+cert-error-invalid-key = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriak baliozkoa ez den gako bat duelako. Ziurrenik txikiegia da segurua izateko.
+cert-error-unknown-critical-extension = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriak onartzen ez den hedapen kritiko bat duelako.
+cert-error-extension-value-invalid = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriak hedapen baliogabe bat duelako.
+cert-error-untrusted-issuer = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiria gehiago fidatzekoa ez den ziurtagiri-autoritate batek jaulki duelako.
+cert-error-untrusted-cert = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiria ez fidatzeko gisa markatuta dagoelako.
+cert-error-invalid-integer-encoding = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriak osoko zenbaki baten kodetze baliogabea duelako. Ohiko arrazoien barne daude serie-zenbaki negatiboak, RSA modulu negatiboak eta gehiago behar ez diren kodeketak.
+cert-error-unsupported-keyalg = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriak onartzen ez den gako mota bat duelako.
+cert-error-issuer-no-longer-trusted = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiria jaulki duen ziurtagiri-autoritatea ez delako fidatzeko modukoa.
+cert-error-signature-algorithm-mismatch = { -brand-short-name }(e)k gune hau bisitatzea blokeatu du { $hostname } ostalariko ziurtagiriaren sinadura-algoritmoa ez datorrelako bat bere sinadura-algoritmoaren eremuarekin.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Helbide hau murriztuta dago
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hara. Arazoak izaten ari gara gune hori aurkitzen.
+internet-connection-offline-title = Badirudi zure Interneterako konexioak arazoren bat duela.
 dns-not-found-trr-only-title2 = Balizko segurtasun arriskua domeinu hau bilatzean
 dns-not-found-native-fallback-title2 = Balizko segurtasun arriskua domeinu hau bilatzean
 fileNotFound-title = Fitxategia ez da aurkitu
@@ -134,6 +161,7 @@ contentEncodingError-title = Edukien kodeketa-errorea
 unsafeContentType-title = Fitxategi mota EZ-segurua
 netReset-title = Konexioa berrezarri egin da
 netTimeout-title = Konexioaren denbora-muga gainditu da
+httpErrorPage-title = Badirudi arazo bat dagoela gune honekin
 serverError-title = Badirudi arazo bat dagoela gune honekin
 unknownProtocolFound-title = Ez da helbidea ulertu
 proxyConnectFailure-title = Proxy-zerbitzaria konexioak ukatzen ari da
@@ -142,6 +170,7 @@ redirectLoop-title = Orriak ez du birbideraketa ondo egiten
 unknownSocketType-title = Zerbitzariaren erantzuna ez zen espero
 nssFailure2-title = Konexio seguruak huts egin du
 csp-xfo-error-title = { -brand-short-name }(e)k ezin du orri hau ireki
+corruptedContentErrorv2-title = Hondatutako edukien errorea
 corruptedContentError-title = Hondatutako edukien errorea
 sslv3Used-title = Ezin da modu seguruan konektatu
 inadequateSecurityError-title = Zure konexioa ez da segurua
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Ezkutatu aurreratua
 fp-certerror-override-exception-button = Jarraitu { $hostname } gunera (arriskutsua)
 fp-certerror-intro = { -brand-short-name }(e)k benetakoa izateko itxura duen segurtasun-arazo bat aurkitu du <strong>{ $hostname }</strong> ostalarian. Gunearen itxurak egiten dituen norbait saia liteke lapurtzen kreditu-txartelen informazioa, pasahitzak edo posta elektronikoko mezuak.
 fp-certerror-expired-into = { -brand-short-name }(e)k segurtasun-arazo bat aurkitu du <strong>{ $hostname }</strong> ostalarian. Gunea ez dago ondo konfiguratuta edo zure gailuaren erlojua data eta ordu okerrean dago ezarrita.
+fp-certerror-transparency-intro = <strong>{ $hostname }</strong> gunea izateko itxurak egiten dabilen norbait informazioa lapurtzen saia liteke, hala nola kreditu-txartelen informazioa, pasahitzak edo posta elektronikoa.

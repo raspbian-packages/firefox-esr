@@ -114,7 +114,3 @@ certerror-mitm-title = سافٹ ویئر { -brand-short-name } کوں سائٹ  
 
 fp-certerror-advanced-title = ودھایا
 fp-certerror-advanced-button = ودھایا
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

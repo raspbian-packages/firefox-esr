@@ -285,7 +285,6 @@ appmenuitem-vpn-description = আপনার অনলাইন কার্য
 
 ## Profiles panel
 
-appmenu-profiles = প্রোফাইল
 appmenu-other-profiles = অন্যান্য প্রোফাইল
 appmenu-manage-profiles =
     .label = প্রোফাইল ব্যবস্থাপনা করুন
@@ -293,3 +292,5 @@ appmenu-create-profile =
     .label = নতুন প্রোফাইল
 appmenu-edit-profile =
     .aria-label = প্রোফাইল সম্পাদনা করুন
+appmenu-profiles-2 =
+    .label = প্রোফাইল

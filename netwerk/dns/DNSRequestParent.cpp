@@ -106,6 +106,7 @@ DNSRequestHandler::OnLookupComplete(nsICancelable* request,
       byTypeRec->GetResults(&result.mData);
       if (nsCOMPtr<nsIDNSHTTPSSVCRecord> rec = do_QueryInterface(aRecord)) {
         rec->GetTtl(&result.mTTL);
+        rec->IsTRR(&result.mIsTRR);
       }
       SendLookupCompletedHelper(mIPCActor, DNSRequestResponse(result));
       return NS_OK;
@@ -114,7 +115,7 @@ DNSRequestHandler::OnLookupComplete(nsICancelable* request,
     nsCOMPtr<nsIDNSAddrRecord> rec = do_QueryInterface(aRecord);
     MOZ_ASSERT(rec);
     nsAutoCString cname;
-    if (mFlags & nsHostResolver::RES_CANON_NAME) {
+    if (mFlags & nsIDNSService::RESOLVE_CANONICAL_NAME) {
       rec->GetCanonicalName(cname);
     }
 
@@ -140,10 +141,14 @@ DNSRequestHandler::OnLookupComplete(nsICancelable* request,
     uint32_t ttl = 0;
     rec->GetTtl(&ttl);
 
+    TimeStamp lastUpdate;
+    rec->GetLastUpdate(&lastUpdate);
+
     SendLookupCompletedHelper(
-        mIPCActor, DNSRequestResponse(DNSRecord(cname, array, trrFetchDuration,
-                                                trrFetchDurationNetworkOnly,
-                                                isTRR, effectiveTRRMode, ttl)));
+        mIPCActor,
+        DNSRequestResponse(DNSRecord(cname, array, trrFetchDuration,
+                                     trrFetchDurationNetworkOnly, isTRR,
+                                     effectiveTRRMode, ttl, lastUpdate)));
   } else {
     SendLookupCompletedHelper(mIPCActor, DNSRequestResponse(status));
   }

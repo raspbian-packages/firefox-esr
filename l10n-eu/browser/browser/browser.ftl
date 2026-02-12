@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = { -brand-shortcut-name } nabigatze pribatua
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,19 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } — Nabigatze Pribatua
     .data-content-title-default-with-profile = { $content-title } — { $profile-name }
     .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Nabigatze Pribatua
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — Nabigatze Pribatua
+       *[other] { -brand-full-name } Nabigatze Pribatua
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = Nabigatze pribatua
 
 ##
 
@@ -181,6 +192,28 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = Lortu laguntza
     .accesskey = L
+urlbar-result-menu-dismiss-suggestion =
+    .label = Baztertu gomendio hau
+    .accesskey = B
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = { -firefox-suggest-brand-name }(r)i buruzko argibide gehiago
+    .accesskey = a
+urlbar-result-menu-manage-firefox-suggest =
+    .label = Kudeatu { -firefox-suggest-brand-name }
+    .accesskey = K
+urlbar-result-menu-show-less-frequently =
+    .label = Erakutsi maiztasun txikiagoarekin
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = Ez erakutsi eguraldi gomendiorik
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = Ireki menua
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = Eskerrik asko zure iritziagatik!
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = Eskerrik asko zure iritziagatik. Hemendik aurrera ez duzu eguraldi gomendiorik ikusiko.
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -312,10 +345,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Ikusi gehigarriak
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = hedapenak, itxurak, gehigarriak
 quickactions-cmd-addons2 = gehigarriak
 # Opens the bookmarks library window
 quickactions-bookmarks2 = Kudeatu laster-markak
 quickactions-cmd-bookmarks = laster-markak
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = Garbitu azken historia
+quickactions-cmd-clearrecenthistory = garbitu azken historia, historia
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Garbitu historia
 quickactions-cmd-clearhistory = garbitu historia
@@ -324,9 +364,20 @@ quickactions-downloads2 = Ikusi deskargak
 quickactions-cmd-downloads = deskargak
 # Opens about:addons page in the extensions section
 quickactions-extensions = Kudeatu hedapenak
+quickactions-cmd-extensions2 = hedapenak, gehigarriak
 quickactions-cmd-extensions = hedapenak
+# Opens Firefox View
+quickactions-firefoxview = Ireki { -firefoxview-brand-name }
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = ireki { -firefoxview-brand-name }, { -firefoxview-brand-name }, ireki ikuspegia, ikuspegia
+# Opens SUMO home page
+quickactions-help = { -brand-product-name } laguntza
+quickactions-cmd-help = laguntza, euskarria
 # Opens the devtools web inspector
 quickactions-inspector2 = Ireki garatzaile-tresnak
+quickactions-cmd-inspector2 = ikuskatzailea, garatzaile-tresnak
 quickactions-cmd-inspector = ikuskatzailea, garatzaile-tresnak
 # Opens about:logins
 quickactions-logins2 = Kudeatu pasahitzak
@@ -339,7 +390,7 @@ quickactions-print2 = Inprimatu orria
 quickactions-cmd-print = inprimatu
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Gorde orria PDF gisa
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, gorde orria
 # Opens a new private browsing window
 quickactions-private2 = Ireki leiho pribatua
 quickactions-cmd-private = nabigatze pribatua
@@ -351,22 +402,34 @@ quickactions-restart = Berrabiarazi { -brand-short-name }
 quickactions-cmd-restart = berrabiarazi
 # Opens the screenshot tool
 quickactions-screenshot3 = Hartu pantaila-argazkia
+quickactions-cmd-screenshot2 = pantaila-argazkia, egin pantaila-argazkia
 quickactions-cmd-screenshot = pantaila-argazkia
 # Opens about:preferences
 quickactions-settings2 = Kudeatu ezarpenak
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = ezarpenak, hobespenak, aukerak, kudeatu
 quickactions-cmd-settings = ezarpenak, hobespenak, aukerak
 # Opens about:addons page in the themes section
 quickactions-themes = Kudeatu itxurak
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = itxurak, gehigarriak
 quickactions-cmd-themes = itxurak
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = Eguneratu { -brand-short-name }
 quickactions-cmd-update = eguneratu
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = Ikusi orriaren iturburua
+quickactions-cmd-viewsource2 = ikusi iturburua, iturburua, orriaren iturburua
 quickactions-cmd-viewsource = ikusi iturburua, iturburua
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Ekintza bizkorrei buruzko argibide gehiago
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Sakatu tabuladorea ondorengoa hautatzeko:
 
 ## Bookmark Panel
 
@@ -553,6 +616,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = Idatzi bilaketa edo helbidea
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = Idatzi helbidea
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -632,6 +699,8 @@ urlbar-result-action-visit = Bisitatu
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = Aldatu fitxara · <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = Multzo izengabea
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Bisitatu arbeletik
 # Directs a user to press the Tab key to perform a search with the specified
@@ -661,6 +730,57 @@ urlbar-result-action-copy-to-clipboard = Kopiatu
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = zehaztugabea
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = Erakutsi gomendioak
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = Une honetan ez
+urlbar-result-realtime-opt-in-dismiss = Baztertu
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = Ez erakutsi gomendio hauek
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = Ez erakutsi merkatuko gomendiorik
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = Eskerrik asko zure iritziagatik. Hemendik aurrera ez duzu merkatuko gomendiorik ikusiko.
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = Eskerrik asko zure iritziagatik. Hemendik aurrera ez duzu horrelako gomendiorik ikusiko.
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · Gaur
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · Gaur amaitzen da
 
 ## Strings used for buttons in the urlbar
 
@@ -688,8 +808,15 @@ urlbar-searchmode-actions =
     .label = Ekintzak
 urlbar-searchmode-exit-button =
     .tooltiptext = Itxi
+urlbar-searchmode-default =
+    .tooltiptext = Bilaketa-motor lehenetsia
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Oraingoan, bilatu honekin:
-urlbar-searchmode-popup-search-settings = Bilaketa-ezarpenak
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Bilaketa-ezarpenak
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = Berria
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -740,6 +867,9 @@ urlbar-group-recent-searches =
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
     .label = { $engine } bilatzaileko joerak
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = Babesleak hornituta
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = Ez erakutsi bilaketa-joerak
@@ -936,6 +1066,9 @@ panel-save-update-password = Pasahitza
 # "More" item in macOS share menu
 menu-share-more =
     .label = Gehiago…
+menu-share-copy-link =
+    .label = Kopiatu lotura
+    .accesskey = K
 ui-tour-info-panel-close =
     .tooltiptext = Itxi
 
@@ -983,6 +1116,8 @@ navbar-accessible =
     .aria-label = Nabigazioa
 navbar-downloads =
     .label = Deskargak
+navbar-overflow-2 =
+    .tooltiptext = Tresna gehiago
 navbar-overflow =
     .tooltiptext = Tresna gehiago…
 # Variables:
@@ -1008,6 +1143,10 @@ tabs-toolbar-new-tab =
 tabs-toolbar-list-all-tabs =
     .label = Zerrendatu fitxa guztiak
     .tooltiptext = Zerrendatu fitxa guztiak
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = Jaregin fitxa hemen ainguratzeko
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1113,10 +1252,10 @@ popup-notification-addon-install-unsigned =
     .value = (Egiaztatu gabea)
 popup-notification-xpinstall-prompt-learn-more = Gehigarriak modu seguruan instalatzeko argibide gehiago
 popup-notification-xpinstall-prompt-block-url = Ikusi xehetasunak
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = Exekutatu leiho pribatuetan
-    .accesskey = b
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = Baimendu hedapen honi leiho pribatuetan exekutatzea
+    .accesskey = d
 
 ## Pop-up warning
 
@@ -1167,3 +1306,70 @@ file-picker-crashed-save-nowhere = Windowsen fitxategien elkarrizketa-koadroak h
 file-picker-crashed-show-in-folder =
     .label = Erakutsi karpetan
     .accessKey = k
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = Amaitu konfigurazioa
+onboarding-aw-finish-setup-button =
+    .label = Amaitu konfigurazioa
+    .tooltiptext = Amaitu { -brand-short-name } konfiguratzen
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = Jarraipenaren babes hobetua aktibatuta dago
+trustpanel-etp-label-disabled = Jarraipenaren babes hobetua desaktibatuta dago
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = Jarraipenaren babes hobetua: aktibatuta { $host } ostalarirako
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = Jarraipenaren babes hobetua: desaktibatuta { $host } ostalarirako
+trustpanel-etp-description-enabled = Zerbaitek apurtuta badirudi gune honetan, saiatu babesak desaktibatzen.
+trustpanel-connection-label-secure = Konexio segurua
+trustpanel-connection-label-insecure = Konexio ez-segurua
+trustpanel-header-enabled = { -brand-product-name } guardian dago
+trustpanel-header-enabled-insecure = Argi ibili gune honetan
+trustpanel-header-disabled = Babesak desgaitu dituzu
+trustpanel-description-disabled = { -brand-product-name } ez dago guardian. Babesak berriro ere aktibatzea gomendatzen dugu.
+trustpanel-clear-cookies-button = Garbitu cookieak eta guneetako datuak
+trustpanel-privacy-link = Pribatutasun-ezarpenak
+trustpanel-clear-cookies-subview-button-clear = Garbitu
+trustpanel-clear-cookies-subview-button-cancel = Utzi
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = Konexioaren babesak { $host } ostalarirako
+trustpanel-siteinformation-morelink = Gunearen informazio gehiago
+trustpanel-blocker-see-all = Ikusi guztiak
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = Jarraipenaren babesak { $host } ostalarirako
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-insecure-section-header = Zure konexioa ez da segurua
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [one] Guneen arteko cookie jarraipen-egileak: { $count }
+       *[other] Guneen arteko cookie jarraipen-egileak: { $count }
+    }
+trustpanel-list-label-tracking-content = Edukiaren jarraipena
+trustpanel-list-label-fingerprinter =
+    { $count ->
+        [one] Hatz-marka bidezko jarraipen-elementuak: { $count }
+       *[other] Hatz-marka bidezko jarraipen-elementuak: { $count }
+    }
+trustpanel-list-label-social-tracking =
+    { $count ->
+        [one] Sare sozialetako jarraipen-elementuak: { $count }
+       *[other] Sare sozialetako jarraipen-elementuak: { $count }
+    }
+trustpanel-list-label-cryptominer =
+    { $count ->
+        [one] Kriptomeatzariak: { $count }
+       *[other] Kriptomeatzariak: { $count }
+    }

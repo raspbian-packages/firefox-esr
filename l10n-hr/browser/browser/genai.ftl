@@ -5,21 +5,13 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = Dodaje željeni chatbot u bočnu traku za brzi pristup dok pregledavaš. <a data-l10n-name="connect">Pošalji povratne informacije</a>
-genai-settings-chat-choose = Odaberi chatbot
-genai-settings-chat-choose-one-menuitem =
-    .label = Odaberi
-genai-settings-chat-links = Kada odabereš chatbot, prihvaćaš uvjete korištenja i politiku privatnosti usluge.
-genai-settings-chat-chatgpt-links = Odabirom ChatGPT-a pristajete na OpenAI <a data-l10n-name="link1">Uvjete korištenja</a> i <a data-l10n-name="link2">Pravila privatnosti</a>.
-genai-settings-chat-claude-links = Odabirom Anthropic Claude pristajete na Anthropic <a data-l10n-name="link1">Uvjete pružanja usluge za potrošače</a>, <a data-l10n-name="link2">Pravila korištenja</a> i <a data-l10n-name="link3">Pravila privatnosti</a>.
+genai-settings-chat-chatgpt-links = Odabirom ChatGPT-a prihvaćaš <a data-l10n-name="link1">uvjete korištenja</a> i <a data-l10n-name="link2">politiku privatnosti</a> tvrtke OpenAI.
+genai-settings-chat-claude-links = Odabirom Anthropic Claude prihvaćaš <a data-l10n-name="link1">uvjete pružanja usluge za potrošače</a>, <a data-l10n-name="link2">pravila korištenja</a> i <a data-l10n-name="link3">politiku privatnosti</a> tvrtke Anthropic.
 genai-settings-chat-copilot-links = Odabirom Copilota pristajete na <a data-l10n-name="link1">Uvjete Copilot AI Experiences</a> i <a data-l10n-name="link2">Microsoftovu izjavu o privatnosti</a>.
-genai-settings-chat-gemini-links = Odabirom Google Gemini pristajete na <a data-l10n-name="link1">Googleove uvjete pružanja usluge</a>, <a data-l10n-name="link2">pravila o zabranjenoj upotrebi generativne umjetne inteligencije</a> i <a data-l10n-name="link3">Obavijest o privatnosti Gemini Apps</a>.
-genai-settings-chat-huggingchat-links = Odabirom HuggingChat pristajete na <a data-l10n-name="link1">Obavijest o privatnosti za HuggingChat</a> i <a data-l10n-name="link2">Pravila privatnosti za Hugging Face</a>.
-genai-settings-chat-lechat-links = Odabirom Le Chat Mistral, pristajete na Mistral AI <a data-l10n-name="link1">Uvjete usluge</a> i <a data-l10n-name="link2">Pravila privatnosti</a>.
-genai-settings-chat-localhost-links = Donesi vlastiti privatni lokalni chatbot kao što je <a data-l10n-name="link1">llamafile</a> iz grupe inovacija od { -vendor-short-name }.
-genai-settings-chat-shortcuts =
-    .description = Prikazuje prečac za upite kada odabereš tekst. { -brand-short-name } šalje tekst, naslov stranice i upit chatbotu.
-    .label = Prikaži upite pri odabiru teksta
+genai-settings-chat-gemini-links = Odabirom Google Gemini prihvaćaš <a data-l10n-name="link1">Googleove uvjete pružanja usluge</a>, <a data-l10n-name="link2">pravila o zabranjenoj upotrebi generativne umjetne inteligencije</a> i <a data-l10n-name="link3">Gemini Apps-ovu napomenu o privatnosti</a>.
+genai-settings-chat-huggingchat-links = Odabirom HuggingChat-a prihvaćaš <a data-l10n-name="link1">HuggingChat napomenu o privatnosti </a> i <a data-l10n-name="link2">Hugging Face politiku privatnosti</a>.
+genai-settings-chat-lechat-links = Odabirom Le Chat Mistrala prihvaćaš <a data-l10n-name="link1">uvjete usluge</a> i <a data-l10n-name="link2">politiku privatnosti</a> tvrtke Mistral AI .
+genai-settings-chat-localhost-links = Donesi vlastiti privatni lokalni chatbot kao što je <a data-l10n-name="link1">llamafile</a> iz grupe inovacija proizvođača { -vendor-short-name }.
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -59,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = Pitaj { $provider }
+genai-menu-open-generic =
+    .label = Otvori UI chatbot
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Otvori { $provider }
+genai-menu-remove-generic =
+    .label = Ukloni UI chatbot
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Ukloni { $provider }
+genai-menu-remove-sidebar =
+    .label = Ukloni iz bočne trake
+genai-menu-new-badge = Novi
+genai-menu-summarize-page = Sažmi stranicu
 genai-input-ask-generic =
     .placeholder = Pitaj UI chatbota …
 # $provider (string) - name of the provider
@@ -87,6 +93,8 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = Sakrij prečac chatbota
+genai-menu-choose-chatbot =
+    .label = Odaberi UI chatbot
 
 ## Chatbot header
 
@@ -99,8 +107,6 @@ genai-header-close-button =
     .title = Zatvori
 genai-provider-view-details =
     .label = Pogledaj detalje chatbota
-genai-provider-about-chatbots =
-    .label = O ovim chatbotovima
 genai-options-reload-generic =
     .label = Ponovo učitaj UI chatbot
 # $provider (string) - name of the provider
@@ -113,11 +119,18 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = O UI chatbotovima u { -brand-short-name(case: "loc") }
 
+## Chatbot footer
+
+genai-page-button-summarize = Sažmi stranicu
+
 ## Chatbot onboarding
 
 genai-onboarding-header = Sažimaj, skupljaj ideje i još mnogo toga dok pregledavaš
+genai-onboarding-choose-header = Odaberi UI chatbot koji želiš koristiti u bočnoj traci { -brand-short-name }a
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = Odaberi UI chatbot u bočnoj traci { -brand-short-name(case: "gen") }. Prikazat ćemo detalje o svakom chatbotu kada ga odabereš. Promijeni bilo kada. <a data-l10n-name="learn-more">Saznaj više</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Promijeni bilo kada. Za pomoć pri odabiru, <a data-l10n-name="learn-more">saznaj više o svakom chatbotu</a>.
 genai-onboarding-primary = Nastavi
 genai-onboarding-secondary = Zatvori
 genai-onboarding-claude-tooltip =
@@ -141,6 +154,18 @@ genai-onboarding-lechat-learn = Saznaj više o Le Chat
 genai-onboarding-select-header = Odaberi tekst za prikaz prijedloga
 genai-onboarding-select-description = Kada odabereš tekst, predložit ćemo upite koje možeš poslati chatbotu. Ako želiš, možeš upisati i vlastite upite.
 genai-onboarding-select-primary = Započni chat
+genai-chatbot-contextual-title = Koristi UI chatbot bez mijenjanja kartica
+genai-chatbot-contextual-subtitle = Razgovaraj i pregledavaj istovremeno kada dodaš UI chatbot u bočnu traku { -brand-short-name }a.
+genai-chatbot-contextual-button = Odaberi chatbot
+genai-chatbot-summarize-title = Novo! Sažmi stranice jednim klikom
+genai-chatbot-summarize-button = Sažmi stranicu
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = Desnom tipkom miša klikni na svoj UI chatbot u bočnoj traci i odaberi „Sažmi stranicu”.
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = Desnom tipkom miša klikni svjetlucajući gumb u bočnoj traci i odaberi „Sažmi stranicu”. Prvi put ćeš također odabrati UI chatbot.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = Odaberi svoj UI chatbot u bočnoj traci i na dnu odaberi „Sažmi stranicu”.
+genai-chatbot-summarize-footer-generic-subtitle = Dodaj UI chatbot u bočnu traku { -brand-short-name } za brzo sažimanje stranica.
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -162,3 +187,28 @@ genai-onboarding-huggingchat-switch = Biraj između raznolikog skupa otvorenih m
 genai-onboarding-huggingchat-price-2 = Besplatno; račun je potreban nakon određenog broja zahtjeva
 genai-onboarding-lechat-generate = Generiraj tekst i kod
 genai-onboarding-lechat-price = Besplatno; potreban je račun
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Nastavi
+genai-model-optin-optout =
+    .label = Odustani
+genai-model-optin-cancel =
+    .label = Odustani
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] Vrijeme čitanja: { $range } min
+        [few] Vrijeme čitanja: { $range } min
+       *[other] Vrijeme čitanja: { $range } min
+    }

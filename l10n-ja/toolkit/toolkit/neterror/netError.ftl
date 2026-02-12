@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = ブロックしたページ
 neterror-captive-portal-page-title = ネットワークにログイン
 neterror-dns-not-found-title = サーバーが見つかりませんでした
 neterror-malformed-uri-page-title = 不正な URL
+general-body-title = 注意してください。何かがいつもと違います。
+problem-with-this-site-title = このサイトに問題があるようです
 
 ## Error page actions
 
@@ -43,6 +45,7 @@ neterror-load-error-connection = 他のサイトも表示できない場合、�
 neterror-load-error-firewall = ファイアウォールやプロキシーでネットワークが保護されている場合、{ -brand-short-name } によるウェブアクセスが許可されているか確認してください。
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = ローカルネットワークのページを読み込もうとしている場合、macOS の [プライバシーとセキュリティ] 設定で { -brand-short-name } にローカルネットワークの権限が許可されているか確認してください。
+neterror-http-error-page = ウェブサイトのアドレスが正しく入力されているか確認してください。
 neterror-captive-portal = インターネットへ接続するには、このネットワークにログインする必要があります。
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -51,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>アドレスが正しい場合は�
 neterror-dns-not-found-hint-try-again = 後でもう一度試してください。
 neterror-dns-not-found-hint-check-network = ネットワーク接続を確認してください。
 neterror-dns-not-found-hint-firewall = ファイアウォール越しに接続している場合は、{ -brand-short-name } がウェブへの接続を許可されているか確認してください。
+neterror-dns-not-found-offline-hint-header = <strong>この問題に対処するには？</strong>
+neterror-dns-not-found-offline-hint-different-device = 別の端末で接続してみてください。
+neterror-dns-not-found-offline-hint-modem = モデムやルーター機器を確認してください。
+neterror-dns-not-found-offline-hint-reconnect = Wi-Fi を一旦切断し、接続し直してください。
 
 ## TRR-only specific messages
 ## Variables:
@@ -74,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = 予期しない問題が発生し�
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } は信頼された DNS リゾルバーを通じてこのサイトのアドレスに対する要求を保護することができません。理由:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } は安全な DNS リゾルバーを通じてこのサイトのアドレスに対する要求を保護することができません。理由:
 neterror-dns-not-found-native-fallback-heuristic = ご利用のネットワークでは DNS over HTTPS が無効化されています。
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } が { $trrDomain } に接続できませんでした。
 
@@ -98,6 +104,9 @@ neterror-proxy-connect-failure-settings = プロキシー設定が正しいか�
 neterror-proxy-connect-failure-contact-admin = プロキシーサーバーが正常に動作しているかネットワーク管理者に問い合わせてください。
 neterror-content-encoding-error = この問題をウェブサイトの管理者に報告してください。
 neterror-unsafe-content-type = この問題をウェブサイトの管理者に報告してください。
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = 接続が安全でないため { -brand-short-name } は { $hostname } を信頼しません。URL を HTTPS に変更してみてください。
 neterror-nss-failure-not-verified = 受信したデータの真正性を検証できなかったため、このページは表示できませんでした。
 neterror-nss-failure-contact-website = この問題をウェブサイトの管理者に連絡してください。
 # Variables:
@@ -151,7 +160,20 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = <b>{ $mitm }</b> に心当�
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> は HTTP Strict Transport Security (HSTS) と呼ばれるセキュリティポリシーが設定されており、{ -brand-short-name } は安全な接続でしか通信できません。そのため、このサイトを例外に追加することはできません。
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = おそらくウェブサイトに問題があるため、あなたにできることはないでしょう。
+certerror-blocked-by-corp-headers-description = ウェブサイトの設定により、ユーザーを望ましくない別のサイトとの通信から保護している場合があります。
+certerror-coop-learn-more = Cross Origin Opener Policies (COOP) についての詳細
+certerror-coep-learn-more = Cross Origin Embedder Policies (COEP) についての詳細
 # Variables:
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = エラーコード: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } が { $hostname } のサーバーへの安全な接続を確立できません。
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = このサイトは既知のセキュリティの問題が修正されていない古いソフトウェアを使用しているようです。
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = メニューから [ヘルプ] > [{ -brand-short-name } について] を開き、最新バージョンの { -brand-short-name } を使用していることを確認してください。最新の { -brand-short-name } を使用している場合、おそらくサイト自体に問題があります。

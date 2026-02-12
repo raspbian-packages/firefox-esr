@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = { -brand-shortcut-name } 隐私浏览
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,25 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } — 隐私浏览
     .data-content-title-default-with-profile = { $content-title } — { $profile-name }
     .data-content-title-private-with-profile = { $content-title } — { $profile-name } — 隐私浏览
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — 隐私浏览
+       *[other] { -brand-full-name } 隐私浏览
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = 隐私浏览
+popups-infobar-dont-show-message2 =
+    .label = 弹出式窗口或第三方重定向被拦截时不再显示此消息
+    .accesskey = D
+edit-popup-settings2 =
+    .label = 管理弹出式窗口和第三方重定向设置…
+    .accesskey = M
 
 ##
 
@@ -135,6 +152,10 @@ urlbar-default-notification-anchor =
     .tooltiptext = 打开消息面板
 urlbar-geolocation-notification-anchor =
     .tooltiptext = 打开位置请求面板
+urlbar-localhost-notification-anchor =
+    .tooltiptext = 管理此网站的本地设备访问权限
+urlbar-local-network-notification-anchor =
+    .tooltiptext = 管理是否与此网站共享本地网络访问
 urlbar-xr-notification-anchor =
     .tooltiptext = 打开虚拟现实权限面板
 urlbar-storage-access-anchor =
@@ -181,6 +202,35 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = 获取帮助
     .accesskey = h
+urlbar-result-menu-dismiss-suggestion =
+    .label = 忽略此建议
+    .accesskey = D
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = 详细了解 { -firefox-suggest-brand-name }
+    .accesskey = L
+urlbar-result-menu-manage-firefox-suggest =
+    .label = 管理 { -firefox-suggest-brand-name }
+    .accesskey = M
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = 报告位置不准确
+urlbar-result-menu-show-less-frequently =
+    .label = 减少显示
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = 不再显示天气建议
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = 打开菜单
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = 感谢反馈
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = 感谢反馈，天气建议将不再显示。
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -206,6 +256,10 @@ urlbar-search-mode-actions = 操作
 
 urlbar-geolocation-blocked =
     .tooltiptext = 您已阻止此网站获取位置信息。
+urlbar-localhost-blocked =
+    .tooltiptext = 您已阻止此网站连接本地设备。
+urlbar-local-network-blocked =
+    .tooltiptext = 您已阻止此网站连接本地网络。
 urlbar-xr-blocked =
     .tooltiptext = 您已阻止此网站使用虚拟现实设备。
 urlbar-web-notifications-blocked =
@@ -218,6 +272,8 @@ urlbar-screen-blocked =
     .tooltiptext = 您已阻止此网站共享您的屏幕。
 urlbar-persistent-storage-blocked =
     .tooltiptext = 您已阻止此网站使用持久存储。
+urlbar-popup-blocked2 =
+    .tooltiptext = 您已拦截此网站的弹出式窗口和第三方重定向。
 urlbar-popup-blocked =
     .tooltiptext = 您已拦截此网站的弹出窗口。
 urlbar-autoplay-media-blocked =
@@ -235,7 +291,7 @@ urlbar-star-edit-bookmark =
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
 urlbar-star-add-bookmark =
-    .tooltiptext = 将此页面加入书签 ({ $shortcut })
+    .tooltiptext = 为此页面添加书签 ({ $shortcut })
 
 ## Page Action Context Menu
 
@@ -312,10 +368,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = 查看附加组件
-quickactions-cmd-addons2 = 附加组件
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = 扩展, 主题, 附加组件, extensions, themes, addons, add-ons
+quickactions-cmd-addons2 = 附加组件, add-ons
 # Opens the bookmarks library window
 quickactions-bookmarks2 = 管理书签
 quickactions-cmd-bookmarks = 书签, bookmarks
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = 清除最近的历史记录
+quickactions-cmd-clearrecenthistory = 清除, 清除最近的历史记录, 历史记录, 历史, clear recent history, history
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = 清除历史
 quickactions-cmd-clearhistory = 清除历史, clear history
@@ -324,22 +387,33 @@ quickactions-downloads2 = 查看下载
 quickactions-cmd-downloads = 下载, downloads
 # Opens about:addons page in the extensions section
 quickactions-extensions = 管理扩展
-quickactions-cmd-extensions = 扩展
+quickactions-cmd-extensions2 = 扩展, 附加组件, 附加组件, extensions, addons, add-ons
+quickactions-cmd-extensions = 扩展, extensions
+# Opens Firefox View
+quickactions-firefoxview = 打开 { -firefoxview-brand-name }
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = 打开 { -firefoxview-brand-name }, { -firefoxview-brand-name }, 打开 view, view
+# Opens SUMO home page
+quickactions-help = { -brand-product-name } 帮助
+quickactions-cmd-help = 帮助, 支持, help, support
 # Opens the devtools web inspector
 quickactions-inspector2 = 打开开发者工具
+quickactions-cmd-inspector2 = 检查器, 开发者工具, inspector, devtools, dev tools
 quickactions-cmd-inspector = 查看器, 开发工具, inspector, devtools
 # Opens about:logins
 quickactions-logins2 = 管理密码
 quickactions-cmd-logins = 登录信息, 密码, logins, passwords
 # Opens about:addons page in the plugins section
 quickactions-plugins = 管理插件
-quickactions-cmd-plugins = 插件
+quickactions-cmd-plugins = 插件, plugins
 # Opens the print dialog
 quickactions-print2 = 打印页面
 quickactions-cmd-print = 打印, print
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = 另存页面为 PDF
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, 保存页面, save page
 # Opens a new private browsing window
 quickactions-private2 = 打开隐私窗口
 quickactions-cmd-private = 隐私浏览, private browsing
@@ -351,19 +425,27 @@ quickactions-restart = 重启 { -brand-short-name }
 quickactions-cmd-restart = 重新启动, 重启, restart
 # Opens the screenshot tool
 quickactions-screenshot3 = 截图
+quickactions-cmd-screenshot2 = 截图, 截屏, 屏幕截图, screenshot, take a screenshot
 quickactions-cmd-screenshot = 截图, screenshot
 # Opens about:preferences
 quickactions-settings2 = 管理设置
-quickactions-cmd-settings = 设置, 偏好设置, 选项, settings, preferences, options
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = 设置, 首选项, 偏好设置, 偏好, 选项, 管理, settings, preferences, options, manage
+quickactions-cmd-settings = 设置, 首选项, 偏好设置, 偏好, 选项, settings, preferences, options
 # Opens about:addons page in the themes section
 quickactions-themes = 管理主题
-quickactions-cmd-themes = 主题
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = 主题, 附加组件, 附加组件, themes, add-ons, addons
+quickactions-cmd-themes = 主题, themes
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = 更新 { -brand-short-name }
 quickactions-cmd-update = 更新, update
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = 查看页面源代码
-quickactions-cmd-viewsource = 查看源代码, 源代码, view source, source
+quickactions-cmd-viewsource2 = 查看源代码, 源代码, 页面源代码, 查看源码, 源码, 页面源码, view source, source, page source
+quickactions-cmd-viewsource = 查看源代码, 查看源码, 源代码, 源码, view source, source
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = 详细了解“快捷操作”
@@ -553,6 +635,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = 搜索或输入网址
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = 输入地址
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -595,7 +681,7 @@ urlbar-placeholder-with-name =
 urlbar-remote-control-notification-anchor2 =
     .tooltiptext = 浏览器受到远程控制（原因：{ $component }）
 urlbar-permissions-granted =
-    .tooltiptext = 您已授予此站点更多权限。
+    .tooltiptext = 您已授予此网站更多权限。
 urlbar-switch-to-tab =
     .value = 切换到标签页：
 # Used to indicate that a selected autocomplete entry is provided by an extension.
@@ -632,6 +718,8 @@ urlbar-result-action-visit = 访问
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = 切换到标签页 · <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = 未命名群组
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = 访问剪贴板中的网址
 # Directs a user to press the Tab key to perform a search with the specified
@@ -661,6 +749,119 @@ urlbar-result-action-copy-to-clipboard = 复制
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = 未定义
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong> — { $region } { $city }
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature }°{ $unit }</strong> — { $country } { $region } { $city }
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong> — { $city }
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } · 赞助
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = 直接通过搜索栏掌握股市数据
+# This string is shown as description when Market suggestion are disabled.
+urlbar-result-market-opt-in-description = 与 { -vendor-short-name } 共享您的搜索查询数据，获取由我们的合作伙伴提供的市场资讯等信息。<a data-l10n-name="learn-more-link">详细了解</a>
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = 显示建议
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = 暂时不要
+urlbar-result-realtime-opt-in-dismiss = 知道了
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = 不再显示此类建议
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = 不再显示市场建议
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = 感谢反馈，市场建议将不再显示。
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = 感谢反馈，此类建议将不再显示。
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown = { $name } · { $daysUntilStart } 天后
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range = { $name } · { $daysUntilStart } 天后开始
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing = { $name } · { $daysUntilEnd } 天后结束
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · 今天
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · 今天结束
 
 ## Strings used for buttons in the urlbar
 
@@ -688,8 +889,15 @@ urlbar-searchmode-actions =
     .label = 操作
 urlbar-searchmode-exit-button =
     .tooltiptext = 关闭
+urlbar-searchmode-default =
+    .tooltiptext = 默认搜索引擎
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = 本次搜索使用：
-urlbar-searchmode-popup-search-settings = 搜索设置
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = 搜索设置
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = 新
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -740,6 +948,9 @@ urlbar-group-recent-searches =
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
     .label = { $engine } 热门搜索
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = 赞助推广
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = 不再显示热门搜索
@@ -749,7 +960,7 @@ urlbar-result-menu-trending-why =
     .accesskey = W
 # A message that replaces a result when the user dismisses all suggestions of a
 # particular type.
-urlbar-trending-dismissal-acknowledgment = 感谢反馈，您将不会再看到热门搜索。
+urlbar-trending-dismissal-acknowledgment = 感谢反馈，热门搜索将不再显示。
 
 ## Reader View toolbar buttons
 
@@ -858,7 +1069,7 @@ bookmarks-toolbar-placeholder-button =
     .label = 书签工具栏项目
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
-    .label = 将当前标签页加入书签…
+    .label = 为当前标签页添加书签…
 
 ## Library Panel items
 
@@ -936,6 +1147,9 @@ panel-save-update-password = 密码
 # "More" item in macOS share menu
 menu-share-more =
     .label = 更多…
+menu-share-copy-link =
+    .label = 复制链接
+    .accesskey = L
 ui-tour-info-panel-close =
     .tooltiptext = 关闭
 
@@ -947,6 +1161,9 @@ popups-infobar-allow =
     .accesskey = p
 popups-infobar-block =
     .label = 阻止 { $uriHost } 弹出窗口
+    .accesskey = p
+popups-infobar-allow2 =
+    .label = 允许 { $uriHost } 的弹出式窗口和第三方重定向
     .accesskey = p
 
 ##
@@ -983,6 +1200,8 @@ navbar-accessible =
     .aria-label = 导航
 navbar-downloads =
     .label = 下载
+navbar-overflow-2 =
+    .tooltiptext = 更多工具
 navbar-overflow =
     .tooltiptext = 更多工具…
 # Variables:
@@ -1006,8 +1225,12 @@ tabs-toolbar =
 tabs-toolbar-new-tab =
     .label = 新建标签页
 tabs-toolbar-list-all-tabs =
-    .label = 列出全部标签页
-    .tooltiptext = 列出全部标签页
+    .label = 列出所有标签页
+    .tooltiptext = 列出所有标签页
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = 将标签页拖到此处以固定
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1104,6 +1327,7 @@ firefox-relay-offer-why-to-use-relay = 我们安全易用的马甲邮箱可隐�
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = 发送到马甲邮箱的所有电子邮件都将转发到 <strong>{ $useremail }</strong>（除非您选择拦截）。
 firefox-relay-offer-legal-notice = 点击“使用马甲邮箱”，即表示您同意<label data-l10n-name="tos-url">服务条款</label>和<label data-l10n-name="privacy-url">隐私声明</label>。
+firefox-relay-offer-legal-notice-1 = 注册和创建马甲邮箱，即表示您同意我们的<label data-l10n-name="tos-url">服务条款</label>和<label data-l10n-name="privacy-url">隐私声明</label>。
 
 ## Add-on Pop-up Notifications
 
@@ -1111,20 +1335,36 @@ popup-notification-addon-install-unsigned =
     .value = （未验证）
 popup-notification-xpinstall-prompt-learn-more = 详细了解如何安全地安装附加组件
 popup-notification-xpinstall-prompt-block-url = 查阅详情
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = 在隐私窗口中运行
-    .accesskey = P
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = 允许扩展在隐私窗口中运行
+    .accesskey = p
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = 与扩展开发者分享技术和交互数据
+    .accesskey = S
 
 ## Pop-up warning
 
 # Variables:
 #   $popupCount (Number): the number of pop-ups blocked.
 popup-warning-message = { -brand-short-name } 阻止了此网站的 { $popupCount } 个弹窗。
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] { -brand-short-name } 已阻止此网站重定向。
+        [1] { -brand-short-name } 已阻止此网站打开弹出式窗口和重定向。
+       *[other] { -brand-short-name } 已阻止此网站打开 { $popupCount } 个弹出式窗口和重定向。
+    }
 # The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
 # Variables:
 #   $popupCount (Number): the number of pop-ups blocked.
 popup-warning-exceeded-message = { -brand-short-name } 阻止了此网站打开超过 { $popupCount } 个弹出式窗口。
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-with-redirect-message = { -brand-short-name } 已阻止此网站打开超过 { $popupCount } 个弹出式窗口和重定向。
 popup-warning-button =
     .label =
         { PLATFORM() ->
@@ -1140,6 +1380,10 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = 显示“{ $popupURI }”
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = 显示“{ $redirectURI }”
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
@@ -1161,3 +1405,88 @@ file-picker-crashed-save-nowhere = Windows 文件对话框发生崩溃，且找�
 file-picker-crashed-show-in-folder =
     .label = 在文件夹中显示
     .accessKey = F
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = 完成设置
+onboarding-aw-finish-setup-button =
+    .label = 完成设置
+    .tooltiptext = 完成对 { -brand-short-name } 的设置
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = 增强型跟踪保护已开启
+trustpanel-etp-label-disabled = 增强型跟踪保护已关闭
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = 增强型跟踪保护：已对 { $host } 开启
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = 增强型跟踪保护：已对 { $host } 关闭
+trustpanel-etp-description-enabled = 若网站功能异常，请尝试关闭保护。
+trustpanel-etp-description-disabled = { -brand-product-name } 认为大公司应该减少对您的跟踪。开启保护功能后，我们将尽可能拦截跟踪器。
+trustpanel-connection-label-secure = 连接安全
+trustpanel-connection-label-insecure = 连接不安全
+trustpanel-header-enabled = { -brand-product-name } 正在防护
+trustpanel-description-enabled2 = 您已受保护，我们会在发现异常情况时告知您。
+trustpanel-header-enabled-insecure = 请谨慎浏览此网站
+trustpanel-description-enabled-insecure = { -brand-product-name } 发现可疑情况。
+trustpanel-header-disabled = 您已关闭保护
+trustpanel-description-disabled = { -brand-product-name } 已暂停保护，建议重新启用。
+trustpanel-clear-cookies-button = 清除 Cookie 和网站数据
+trustpanel-privacy-link = 隐私设置
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = 清除 { $host } 的 Cookie 和网站数据
+trustpanel-clear-cookies-description = 移除 Cookie 和网站数据可能会导致网站退出登录或清空购物车。
+trustpanel-clear-cookies-subview-button-clear = 清除
+trustpanel-clear-cookies-subview-button-cancel = 取消
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = 连接保护：{ $host }
+trustpanel-siteinformation-morelink = 更多网站信息
+trustpanel-blocker-see-all = 查看全部
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = 跟踪保护：{ $host }
+
+## The urlbar trust icon & panel
+
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = 不安全
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header = 已在此网站上拦截 <span>{ $count }</span> 个跟踪器
+trustpanel-blocker-description = { -brand-product-name } 认为大公司应该减少对您的跟踪，所以我们会尽可能拦截跟踪项。
+trustpanel-blocked-header = { -brand-product-name } 为您拦截了以下项目：
+trustpanel-tracking-header = 为使网站正常运作，{ -brand-product-name } 已允许以下项目：
+trustpanel-tracking-description = 拦截跟踪器可能会使某些按钮、表单、登录信息栏无法正常工作。
+trustpanel-insecure-section-header = 您的连接不安全
+trustpanel-insecure-description = 您发送到此网站的数据未加密，其可被查看、窃取、改动。
+trustpanel-list-label-tracking-cookies = { $count } 个跨站跟踪性 Cookie
+trustpanel-list-label-tracking-content = 跟踪性内容
+trustpanel-list-label-fingerprinter = { $count } 个数字指纹跟踪程序
+trustpanel-list-label-social-tracking = { $count } 个社交媒体跟踪器
+trustpanel-list-label-cryptominer = { $count } 个加密货币挖矿程序
+trustpanel-social-tracking-blocking-tab-header = { -brand-product-name } 已拦截 { $count } 个社交媒体跟踪器
+trustpanel-social-tracking-not-blocking-tab-header = { -brand-product-name } 已允许 { $count } 个社交媒体跟踪器
+trustpanel-tracking-cookies-blocking-tab-header = { -brand-product-name } 已拦截 { $count } 个跨站跟踪性 Cookie
+trustpanel-tracking-cookies-not-blocking-tab-header = { -brand-product-name } 已允许 { $count } 个跨站跟踪性 Cookie
+trustpanel-tracking-content-blocking-tab-header = { -brand-product-name } 已拦截 { $count } 个跟踪器
+trustpanel-tracking-content-not-blocking-tab-header = { -brand-product-name } 已允许 { $count } 个跟踪器
+trustpanel-tracking-content-tab-list-header = 这些网站正试图跟踪您：
+trustpanel-fingerprinter-blocking-tab-header = { -brand-product-name } 已拦截 { $count } 个数字指纹跟踪程序
+trustpanel-fingerprinter-not-blocking-tab-header = { -brand-product-name } 已允许 { $count } 个数字指纹跟踪程序
+trustpanel-fingerprinter-list-header = 这些网站正试图跟踪您的数字指纹：
+trustpanel-cryptominer-blocking-tab-header = { -brand-product-name } 已拦截 { $count } 个加密货币挖矿程序
+trustpanel-cryptominer-not-blocking-tab-header = { -brand-product-name } 已允许 { $count } 个加密货币挖矿程序
+trustpanel-cryptominer-tab-list-header = 这些网站正试图挖掘加密货币：

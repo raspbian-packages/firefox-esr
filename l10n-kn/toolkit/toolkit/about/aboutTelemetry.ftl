@@ -16,19 +16,19 @@ about-telemetry-page-title = ಟೆಲಿಮೆಟ್ರಿ ದತ್ತಾಂ�
 about-telemetry-more-information = ಮತ್ತಷ್ಟು ಮಾಹಿತಿಗಾಗಿ ಹುಡುಕುತ್ತಿರುವಿರಾ?
 about-telemetry-show-in-Firefox-json-viewer = JSON ವೀಕ್ಷಕದಲ್ಲಿ ತೆರೆಯಿರಿ
 about-telemetry-home-section = ನೆಲೆ
-about-telemetry-general-data-section =   ಸಾಮಾನ್ಯ ದತ್ತಾಂಶ
+about-telemetry-general-data-section = ಸಾಮಾನ್ಯ ದತ್ತಾಂಶ
 about-telemetry-environment-data-section = ಪರಿಸರ ದತ್ತಾಂಶ
 about-telemetry-session-info-section = ಅಧಿವೇಶನದ ಮಾಹಿತಿ
 about-telemetry-scalar-section = ಸ್ಕಾಲಾರ್‍‍ಗಳು
 about-telemetry-histograms-section = ಹಿಸ್ಟೊಗ್ರಾಮ್‌ಗಳು
-about-telemetry-keyed-histogram-section =   ಟೈಪಿಸಿದ ಹಿಸ್ಟೋಗ್ರಾಮ್‌ಗಳು
+about-telemetry-keyed-histogram-section = ಟೈಪಿಸಿದ ಹಿಸ್ಟೋಗ್ರಾಮ್‌ಗಳು
 about-telemetry-events-section = ಕಾರ್ಯಕ್ರಮಗಳು
 about-telemetry-simple-measurements-section = ಸರಳವಾದ ಅಳತೆಗಳು
 about-telemetry-slow-sql-section = ನಿಧಾನವಾದ SQL ಹೇಳಿಕೆಗಳು
-about-telemetry-addon-details-section =   ಆಡ್-ಆನ್ ವಿವರಗಳು
+about-telemetry-addon-details-section = ಆಡ್-ಆನ್ ವಿವರಗಳು
 about-telemetry-late-writes-section = ತಡವಾಗಿ ಬರೆಯುವಿಕೆ
 about-telemetry-raw = ಸಂಸ್ಕರಿಸದ JSON
-about-telemetry-full-sql-warning =   NOTE ನಿಧಾನಗತಿ SQL ದೋಷನಿದಾನವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಸಂಪೂರ್ಣ SQL ವಾಕ್ಯಾಂಶಗಳನ್ನು ಈ ಕೆಳಗೆ ತೋರಿಸಲಾಗುವ ಸಾಧ್ಯತೆ ಇದೆ ಆದರೆ ಅವುಗಳನ್ನು ಟೆಲಿಮೆಟ್ರಿಗೆ ಸಲ್ಲಿಸಲಾಗುವುದಿಲ್ಲ.
+about-telemetry-full-sql-warning = NOTE ನಿಧಾನಗತಿ SQL ದೋಷನಿದಾನವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಸಂಪೂರ್ಣ SQL ವಾಕ್ಯಾಂಶಗಳನ್ನು ಈ ಕೆಳಗೆ ತೋರಿಸಲಾಗುವ ಸಾಧ್ಯತೆ ಇದೆ ಆದರೆ ಅವುಗಳನ್ನು ಟೆಲಿಮೆಟ್ರಿಗೆ ಸಲ್ಲಿಸಲಾಗುವುದಿಲ್ಲ.
 # Selects the correct upload string
 # Variables:
 #   $uploadcase (string) - Represents a corresponding upload string

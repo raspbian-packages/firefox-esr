@@ -32,7 +32,6 @@ searchbar-icon =
 
 remove-search-engine-button = ठीक है
 
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
+## The following strings are used as input labels.
 
+add-engine-name = खोज इंजन का नाम

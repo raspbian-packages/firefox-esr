@@ -16,7 +16,7 @@ policy-AllowFileSelectionDialogs = Tillat dialogvindauge for val av filer.
 policy-AppAutoUpdate = Slå på eller slå av automatiske programoppdateringar.
 policy-AppUpdatePin = Hindre { -brand-short-name } i å oppdatere utover den spesifiserte versjonen.
 policy-AppUpdateURL = Spesifiser eigendefinert programoppdateringsadresse.
-policy-Authentication = Konfigurer integrert godkjenning for nettsider som støttar det.
+policy-Authentication = Konfigurer integrert autentisering for nettstadar som støttar det.
 policy-AutofillAddressEnabled = Aktiver autofyll for adresser.
 policy-AutofillCreditCardEnabled = Aktiver autofyll for betalingsmåtar.
 policy-AutoLaunchProtocolsFromOrigins = Definer ei liste over eksterne protokollar som kan brukast frå spesifiserte kjelder uan å spørje brukaren.
@@ -79,6 +79,7 @@ policy-ExtensionSettings = Handsam alle aspekt av utvidingsinstallasjonen.
 policy-ExtensionUpdate = Slå på eller slå av automatisk utvidingsoppdateringar.
 policy-FirefoxHome2 = Konfigurer { -firefox-home-brand-name }.
 policy-FirefoxSuggest = Konfigurer { -firefox-suggest-brand-name }.
+policy-GenerativeAI = Konfigurer generative AI-funksjonar.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Tving direkte navigering på intranettet i staden for å søkje når du skriv inn enkeltord i adressefeltet.
 policy-Handlers = Konfigurer standard applikasjonshandsamar.
 policy-HardwareAcceleration = Om inaktiv, slå av maskinvareakselerasjon.
@@ -97,6 +98,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Gå tilbake til foreld
 ##
 
 policy-LocalFileLinks = Tillat at bestemte nettstadar koplar til lokale filer.
+policy-LocalNetworkAccess = Slå på eller slå av kontrollar for lokal nettverkstilgang.
 policy-ManagedBookmarks = Konfigurerer ei liste over bokmerke som vert administrert av ein administrator og som ikkje kan endrast av brukaren.
 policy-ManualAppUpdateOnly = Tillat berre manuelle oppdateringar og gi ikkje brukaren varsel om oppdateringar.
 policy-PrimaryPassword = Krev eller hindre bruk av eit hovudpassord.
@@ -130,6 +132,8 @@ policy-SearchSuggestEnabled = Slå på eller av søkjeforslag.
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Legg til eller slett PKCS #11-modular.
 policy-ShowHomeButton = Vis heimknappen på verktøylinja.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Ikkje vis vilkåra for bruk og personvernfråsegna ved oppstart. Du stadfestar at du aksepterer og har fullmakt til å godta vilkåra for bruk på vegner av alle personar som du gir tilgang til denne nettlesaren.
 policy-SSLVersionMax = Still inn den maksimale SSL-versjonen.
 policy-SSLVersionMin = Still inn den minimale SSL-versjonen.
 policy-StartDownloadsInTempDirectory = Tving nedlastinger til å starte på ei lokal, mellombels plassering i staden for standard nedlastingskatalog.

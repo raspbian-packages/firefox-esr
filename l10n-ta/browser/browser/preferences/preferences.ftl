@@ -64,6 +64,10 @@ startup-header = துவக்கம்
 always-check-default =
     .label = துவக்கத்தில் { -brand-short-name } முன்னிருப்பு உலாவியாக இருக்கிறதா என்று எப்போதும் சரி பார்
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } தற்போது உங்களுடைய இயல்புநிலை உலாவியாக உள்ளது
+is-not-default-browser =
+    .message = { -brand-short-name } உங்களுடைய முன்னிருப்பு உலாவியாக இல்லை
 is-default = { -brand-short-name } தற்போது உங்களுடைய இயல்புநிலை உலாவியாக உள்ளது
 is-not-default = { -brand-short-name } உங்களுடைய முன்னிருப்பு உலாவியாக இல்லை
 set-as-my-default-browser =
@@ -156,6 +160,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = கோப்புகள் மற்றும் செயலிகள்
+downloads-header-2 =
+    .label = பதிவிறக்கங்கள்
+download-save-where-2 =
+    .label = கோப்புகளை இங்கு சேமி
+    .accesskey = v
 download-header = பதிவிறக்கங்கள்
 download-save-where = கோப்புகளை இங்கு சேமி
     .accesskey = v
@@ -317,7 +326,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = புதிய சாளரங்களும் கீற்றுகளும்
 home-new-windows-tabs-description2 = முகப்புப்பக்கம், புதிய சாளங்கள், கீற்றுகளைத் திறக்கும்போது எவற்றைப் பார்க்கிறீர்கள் என்று  தேர்ந்தெடுங்கள்.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = முகப்புப்பக்கம் மற்றும் புதிய சாளரங்கள்
 home-newtabs-mode-label = புதிய கீற்றுகள்
@@ -426,6 +435,8 @@ search-keyword-warning-bookmark = நீங்கள் தேர்ந்தெ
 ## Containers Section
 
 containers-header = கலன் கீற்றுகள்
+containers-section-header =
+    .heading = கலன் கீற்றுகள்
 containers-add-button =
     .label = புதிய கலன்களைச் சேர்
     .accesskey = A
@@ -474,12 +485,6 @@ sync-sign-in =
     .label = புகுபதிகை
     .accesskey = g
 
-## Sync section - enabling or disabling sync.
-
-
-## The list of things currently syncing.
-
-
 ## The "Choose what to sync" dialog.
 
 sync-engine-bookmarks =
@@ -508,6 +513,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = கருவியின் பெயர்
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = கருவியின் பெயர்
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = கருவியின் பெயரை மாற்றவும்
+    .accesskey = h
 sync-device-name-change =
     .label = கருவியின் பெயரை மாற்றவும்…
     .accesskey = h
@@ -555,12 +568,6 @@ forms-master-pw-change =
     .accesskey = M
 forms-master-pw-fips-desc = கடவுச்சொல்லை மாற்ற முடியவில்லை
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = வரலாறு
@@ -581,6 +588,10 @@ history-remember-option-never =
     .label = வரலாற்றை நினைவில் வைக்காது
 history-remember-option-custom =
     .label = வரலாறுக்கான விருப்பமை அமைவுகளைப் பாவிக்கும்
+history-remember-description2 =
+    .description = { -brand-short-name } உங்கள் உலாவல், பதிவிறக்கம், படிவம் மற்றும் தேடல் வரலாற்றை நினைவிற்கொள்ளும்.
+history-dontremember-description2 =
+    .description = { -brand-short-name } தனி உலாவல் அமைப்புகளையே பயன்படுத்தும் , மற்றும் நீங்கள் இணையத்தை உலாவும் போது எந்த வரலாற்றையும் நினைவில் கொள்ளாது.
 history-remember-description = { -brand-short-name } உங்கள் உலாவல், பதிவிறக்கம், படிவம் மற்றும் தேடல் வரலாற்றை நினைவிற்கொள்ளும்.
 history-dontremember-description = { -brand-short-name } தனி உலாவல் அமைப்புகளையே பயன்படுத்தும் , மற்றும் நீங்கள் இணையத்தை உலாவும் போது எந்த வரலாற்றையும் நினைவில் கொள்ளாது.
 history-private-browsing-permanent =
@@ -622,12 +633,6 @@ sitedata-settings =
     .label = தரவை நிர்வகி
     .accesskey = M
 
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
-
 ## Privacy Section - Address Bar
 
 addressbar-header = முகவரி பட்டை
@@ -661,15 +666,6 @@ enhanced-tracking-protection-setting-custom =
     .label = தனிப்பயன்
     .accesskey = C
 
-##
-
-
-# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
-
-
-## Privacy Section - Tracking
-
-
 ## Privacy Section - Permissions
 
 permissions-header = அனுமதிகள்
@@ -702,6 +698,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = விதிவிலக்குகள்…
     .accesskey = E
+permissions-location2 =
+    .label = இடம்
+permissions-camera2 =
+    .label = படக்கருவி
+permissions-microphone2 =
+    .label = ஒலிவாங்கி
+permissions-notification2 =
+    .label = அறிவிப்புகள்
 
 ## Privacy Section - Data Collection
 
@@ -719,9 +723,6 @@ addon-recommendations-link = மேலும் அறிக
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = இந்தக் கட்டமைப்பிற்கு தரவு அறிக்கை முடக்கப்பட்டுள்ளது
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -753,12 +754,7 @@ certs-view =
 certs-devices =
     .label = பாதுகாப்பு சாதனங்கள்…
     .accesskey = D
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPSஐ செயல்படுத்து
 
 ## The following strings are used in the Download section of settings
 

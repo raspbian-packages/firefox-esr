@@ -19,7 +19,7 @@
 
 #include "ASpdySession.h"
 #include "mozilla/StaticPrefs_network.h"
-#include "mozilla/Telemetry.h"
+#include "mozilla/glean/NetwerkMetrics.h"
 #include "HttpConnectionUDP.h"
 #include "nsHttpHandler.h"
 #include "Http3Session.h"
@@ -88,6 +88,22 @@ nsresult HttpConnectionUDP::Init(nsHttpConnectionInfo* info,
     return rv;
   }
 
+  // We are disabling 0.0.0.0 for non-test purposes.
+  // See https://github.com/whatwg/fetch/pull/1763 for context.
+  if (peerAddr.IsIPAddrAny()) {
+    if (StaticPrefs::network_socket_ip_addr_any_disabled()) {
+      mozilla::glean::networking::http_ip_addr_any_count
+          .Get("blocked_requests"_ns)
+          .Add(1);
+      LOG(("Connection refused because of 0.0.0.0 IP address\n"));
+      return NS_ERROR_CONNECTION_REFUSED;
+    }
+
+    mozilla::glean::networking::http_ip_addr_any_count
+        .Get("not_blocked_requests"_ns)
+        .Add(1);
+  }
+
   mSocket = do_CreateInstance("@mozilla.org/network/udp-socket;1", &rv);
   if (NS_FAILED(rv)) {
     return rv;
@@ -96,7 +112,6 @@ nsresult HttpConnectionUDP::Init(nsHttpConnectionInfo* info,
   // We need an address here so that we can convey the IP version of the
   // socket.
   NetAddr local;
-  memset(&local, 0, sizeof(local));
   local.raw.family = peerAddr.raw.family;
   rv = mSocket->InitWithAddress(&local, nullptr, false, 1);
   if (NS_FAILED(rv)) {
@@ -155,7 +170,7 @@ nsresult HttpConnectionUDP::Init(nsHttpConnectionInfo* info,
   mPeerAddr = new nsNetAddr(&peerAddr);
   mHttp3Session = new Http3Session();
   rv = mHttp3Session->Init(mConnInfo, mSelfAddr, mPeerAddr, this, providerFlags,
-                           callbacks);
+                           callbacks, mSocket);
   if (NS_FAILED(rv)) {
     LOG(
         ("HttpConnectionUDP::Init mHttp3Session->Init failed "
@@ -267,6 +282,12 @@ void HttpConnectionUDP::Close(nsresult reason, bool aIsShutdown) {
     mSocket->Close();
     mSocket = nullptr;
   }
+
+  if (mHttp3Session) {
+    mHttp3Session->SetCleanShutdown(true);
+    mHttp3Session->Close(reason);
+    mHttp3Session = nullptr;
+  }
 }
 
 void HttpConnectionUDP::DontReuse() {
@@ -352,7 +373,7 @@ nsresult HttpConnectionUDP::OnHeadersAvailable(nsAHttpTransaction* trans,
     // response headers so that it will be ready to receive the new response.
     if (mIsReused &&
         ((PR_IntervalNow() - mHttp3Session->LastWriteTime()) < k1000ms)) {
-      Close(NS_ERROR_NET_RESET);
+      CloseTransaction(mHttp3Session, NS_ERROR_NET_RESET);
       *reset = true;
       return NS_OK;
     }
@@ -682,7 +703,9 @@ NS_IMETHODIMP HttpConnectionUDP::OnPacketReceived(nsIUDPSocket* aSocket) {
 
 NS_IMETHODIMP HttpConnectionUDP::OnStopListening(nsIUDPSocket* aSocket,
                                                  nsresult aStatus) {
-  CloseTransaction(mHttp3Session, aStatus);
+  // At this point, the UDP socket has already been closed. Set aIsShutdown to
+  // true to ensure that mHttp3Session is also closed.
+  CloseTransaction(mHttp3Session, aStatus, true);
   return NS_OK;
 }
 
@@ -707,6 +730,13 @@ nsIRequest::TRRMode HttpConnectionUDP::EffectiveTRRMode() {
 }
 
 TRRSkippedReason HttpConnectionUDP::TRRSkipReason() { return mTRRSkipReason; }
+
+Http3Stats HttpConnectionUDP::GetStats() {
+  if (!mHttp3Session) {
+    return Http3Stats();
+  }
+  return mHttp3Session->GetStats();
+}
 
 }  // namespace net
 }  // namespace mozilla

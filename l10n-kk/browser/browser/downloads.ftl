@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Жүктеме қасиеттері
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Файлдар сіздің құрылғыңызда қалады
+downloads-private-browsing-message = Бұл құрылғыны пайдаланатын кез келген адам жүктеп алынған файлдарды көре алады, жеке терезелердің барлығын жапқан жағдайда да.
+downloads-private-browsing-delete-button =
+    .label = Файлдарды автоматты түрде өшіру
+    .accesskey = ш
+downloads-private-browsing-accept-button =
+    .label = Түсіндім
+    .accesskey = Т
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

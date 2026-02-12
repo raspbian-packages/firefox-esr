@@ -4,9 +4,6 @@
 
 do-not-track-description = 傳送「Do Not Track」訊號，告訴網站您不想被追蹤
 do-not-track-removal = 我們不再支援「Do Not Track」訊號
-do-not-track-description2 =
-    .label = 告訴網站「不要追蹤我」
-    .accesskey = d
 do-not-track-learn-more = 了解更多
 do-not-track-option-default-content-blocking-known =
     .label = 僅在 { -brand-short-name } 設定為封鎖已知追蹤器時
@@ -16,6 +13,8 @@ global-privacy-control-description =
     .label = 告訴網站不要銷售或分享我的資料
     .accesskey = s
 non-technical-privacy-header = 網站隱私權偏好設定
+non-technical-privacy-label =
+    .aria-label = { non-technical-privacy-header }
 # Do not translate.
 # "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
 # included to facilitate power-user search of the about:preferences page.
@@ -61,6 +60,7 @@ pane-experimental-description2 = 調整進階設定，可能會影響 { -brand-s
 settings-pane-labs-title = { -firefoxlabs-brand-name }
 settings-category-labs =
     .tooltiptext = { -firefoxlabs-brand-name }
+pane-experimental-description4 = 請試用看看我們實驗中的功能！這些功能仍在開發進化中，可能會影響 { -brand-short-name } 的運作。若您開啟捕捉<a data-l10n-name="data-collection">技術與互動資料</a>，我們則會接收您對這些功能的使用方式資料。
 pane-experimental-description3 = 試試看我們的實驗性功能！這些功能還在開發與進化中，可能會影響 { -brand-short-name } 運作方式。
 pane-experimental-reset =
     .label = 回復為預設值
@@ -71,6 +71,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = 關閉
+do-not-track-removal2 =
+    .label = 我們不再支援「Do Not Track」訊號
 
 ## Browser Restart Dialog
 
@@ -112,6 +114,10 @@ extension-controlling-proxy-config = <img data-l10n-name="icon"/> <strong>{ $nam
 # <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
 # <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
 extension-controlled-enable = 要啟用這套擴充套件，請到 <img data-l10n-name="menu-icon"/> 選單中的 <img data-l10n-name="addons-icon"/> 附加元件。
+extension-controlled-enable-2 = 請到<a data-l10n-name="addons-link">擴充套件與佈景主題</a>重新啟用此擴充套件。
+# This string is shown to notify the user that their home page or new tab preferences
+# are being controlled by an extension.
+extension-controlling-homepage = { $name } 會控制您的部分首頁設定。
 
 ## Preferences UI Search Results
 
@@ -126,6 +132,10 @@ startup-header = 啟動
 always-check-default =
     .label = 總是檢查 { -brand-short-name } 是否為您的預設瀏覽器
     .accesskey = w
+is-default-browser =
+    .message = { -brand-short-name } 是您目前的預設瀏覽器
+is-not-default-browser =
+    .message = { -brand-short-name } 不是您的預設瀏覽器
 is-default = { -brand-short-name } 是您目前的預設瀏覽器
 is-not-default = { -brand-short-name } 不是您的預設瀏覽器
 set-as-my-default-browser =
@@ -134,6 +144,8 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = 開啟先前的視窗與分頁
     .accesskey = s
+startup-windows-launch-on-login-profile-disabled =
+    .message = 勾選「選擇使用者設定檔」視窗中的「{ profile-manager-use-selected.label }」開啟此設定。
 windows-launch-on-login =
     .label = 電腦開機時自動開啟 { -brand-short-name }
     .accesskey = O
@@ -148,6 +160,11 @@ preferences-data-migration-description = 將書籤、密碼、瀏覽紀錄與網
 preferences-data-migration-button =
     .label = 匯入資料
     .accesskey = m
+preferences-profiles-header = 設定檔
+preferences-manage-profiles-description = 每套設定檔的上網資料與設定（包含瀏覽紀錄、網頁密碼等等）各自獨立，不互相影響。
+preferences-manage-profiles-learn-more = 更多資訊
+preferences-manage-profiles-button =
+    .label = 管理設定檔
 tabs-group-header = 分頁
 ctrl-tab-recently-used-order =
     .label = 按下 Ctrl+Tab 時，依照最近使用分頁的順序切換分頁標籤
@@ -155,6 +172,8 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = 以分頁開啟鏈結，而不使用新視窗
     .accesskey = w
+open-external-link-next-to-active-tab =
+    .label = 將應用程式開啟的分頁，開啟於目前瀏覽分頁旁
 ask-on-close-multiple-tabs =
     .label = 關閉多個分頁前先問我
     .accesskey = m
@@ -213,12 +232,33 @@ containers-remove-cancel-button = 不要移除此容器
 settings-tabs-show-image-in-preview =
     .label = 當滑鼠移動到分頁標籤上時，顯示分頁預覽
     .accessKey = h
+browser-layout-header = 瀏覽器版面
+browser-layout-horizontal-tabs =
+    .label = 水平分頁標籤
+browser-layout-horizontal-tabs-desc = 於瀏覽器頂端顯示
+browser-layout-vertical-tabs =
+    .label = 垂直分頁標籤
+browser-layout-vertical-tabs-desc = 於旁邊的側邊欄顯示
+browser-layout-show-sidebar =
+    .label = 顯示側邊欄
+browser-layout-show-sidebar-desc = 不用離開主畫面就能快速開啟書籤、手機上的分頁、AI 聊天機器人等功能。
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = 語言與外觀
 preferences-web-appearance-header = 網站外觀
 preferences-web-appearance-description = 某些網站可依照您的偏好來調整顯示配色，可在此決定要針對這些網站使用哪種配色模式。
+preferences-web-appearance-choice-auto2 =
+    .label = 自動
+    .title = 依照系統設定與 { -brand-short-name } 佈景主題設定，自動更改網頁與背景與內容。
+preferences-web-appearance-choice-light2 =
+    .label = 亮色
+    .title = 在網站背景與內容使用亮色外觀。
+preferences-web-appearance-choice-dark2 =
+    .label = 暗色
+    .title = 在網站背景與內容使用暗色外觀。
+web-appearance-group =
+    .aria-label = 網站外觀
 preferences-web-appearance-choice-auto = 自動
 preferences-web-appearance-choice-light = 亮色
 preferences-web-appearance-choice-dark = 暗色
@@ -236,14 +276,27 @@ preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning = 您選擇的配色會蓋過網站外觀的配色。<a data-l10n-name="colors-link">管理色彩</a>。
+preferences-web-appearance-override-warning3 =
+    .message = 您選擇的對比設定會蓋過網站外觀的配色。
+preferences-web-appearance-link =
+    .label = 到擴充套件與佈景主題管理 { -brand-short-name } 的佈景主題
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning2 =
-    .message = 您選擇的配色會蓋過網站外觀的配色。。
+preferences-web-appearance-override-warning = 您選擇的配色會蓋過網站外觀的配色。<a data-l10n-name="colors-link">管理色彩</a>。
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = 到<a data-l10n-name="themes-link">擴充套件與佈景主題</a>管理 { -brand-short-name } 的佈景主題
+preferences-contrast-control-header = 對比控制
+preferences-contrast-control-description = 網站會使用不同的前景與背景色。可設定 { -brand-short-name } 在不同網站間使用相同色彩，以改進可讀性。
+preferences-contrast-control-use-platform-settings =
+    .label = 自動（使用系統設定）
+    .accesskey = A
+preferences-contrast-control-off =
+    .label = 關閉
+    .accesskey = O
+preferences-contrast-control-custom =
+    .label = 自訂
+    .accesskey = C
 preferences-colors-header = 色彩
 preferences-colors-description = 覆蓋 { -brand-short-name } 的預設文字、網站背景、鏈結色彩。
 preferences-colors-manage-button =
@@ -302,6 +355,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = 檔案與應用程式
+downloads-header-2 =
+    .label = 下載
+download-save-where-2 =
+    .label = 儲存檔案到
+    .accesskey = v
 download-header = 下載
 download-save-where = 儲存檔案到
     .accesskey = v
@@ -319,6 +377,9 @@ download-choose-folder =
 download-always-ask-where =
     .label = 每次都問您要存到何處
     .accesskey = A
+download-private-browsing-delete =
+    .label = 關閉所有隱私瀏覽視窗時，刪除於隱私瀏覽模式中下載的檔案
+    .accesskey = D
 applications-header = 應用程式
 applications-description = 選擇 { -brand-short-name } 要如何處理您上網時下載的檔案。
 applications-filter =
@@ -473,6 +534,8 @@ performance-default-content-process-count =
 ## General Section - Browsing
 
 browsing-title = 瀏覽
+browsing-group-label =
+    .aria-label = 瀏覽
 browsing-use-autoscroll =
     .label = 使用自動捲動
     .accesskey = a
@@ -527,9 +590,10 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = 新視窗與分頁
 home-new-windows-tabs-description2 = 選擇開啟首頁、新視窗和新分頁時要看到的內容。
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = 首頁與新視窗
+home-homepage-mode-label2 = 新視窗
 home-newtabs-mode-label = 新分頁
 home-restore-defaults =
     .label = 回復為預設值
@@ -542,6 +606,11 @@ home-mode-choice-blank =
     .label = 空白頁
 home-homepage-custom-url =
     .placeholder = 貼上網址…
+# This button is shown when the homepage is managed by an extension and is placed below extension-controlling-homepage.
+home-homepage-manage-extension-button =
+    .label = 管理擴充套件
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-url = 選擇特定網站
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -556,18 +625,45 @@ use-current-pages =
 choose-bookmark =
     .label = 使用書籤…
     .accesskey = B
+home-homepage-header = 首頁
+
+## Custom Homepage subpage
+
+home-custom-homepage-header = 自訂首頁
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-subheader = 網站網址
+home-custom-homepage-address =
+    .placeholder = 請輸入網址
+home-custom-homepage-address-button =
+    .label = 新增網址
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-websites-yet = 尚未加入任何網站。
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with = 取代為
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-current-pages-button =
+    .label = 目前開啟的頁面
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-bookmarks-button =
+    .label = 書籤…
 
 ## Home Section - Firefox Home Content Customization
 
 home-prefs-content-header2 = { -firefox-home-brand-name }內容
+home-prefs-content-header3 = { -firefox-home-brand-name }
 home-prefs-content-description2 = 選擇要在您的 { -firefox-home-brand-name }畫面顯示哪些內容。
 home-prefs-search-header =
     .label = 網頁搜尋
+home-prefs-search-header2 =
+    .label = 搜尋
 home-prefs-shortcuts-header =
     .label = 捷徑
 home-prefs-shortcuts-description = 您儲存或造訪過的網站
 home-prefs-shortcuts-by-option-sponsored =
     .label = 贊助捷徑
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
 
 ## Home Section - Firefox Home Content Customization
 
@@ -577,6 +673,12 @@ home-prefs-recommended-by-description-new = 由 { -brand-product-name } 的姊�
 home-prefs-recommended-by-header-generic =
     .label = 推薦的文章
 home-prefs-recommended-by-description-generic = 由 { -brand-product-name } 產品家族精選的內容文章
+home-prefs-stories-header =
+    .label = 文章
+home-prefs-stories-description = 依照您的上網行為，提供個人化文章推薦
+home-prefs-stories-header2 =
+    .label = 文章
+    .description = 由 { -brand-product-name } 產品家族精選的內容文章
 
 ##
 
@@ -607,6 +709,26 @@ home-prefs-weather-header =
     .label = 天氣
 home-prefs-weather-description = 讓您一目了然今天的天氣預報
 home-prefs-weather-learn-more-link = 更多資訊
+home-prefs-widgets-header =
+    .label = 小工具
+home-prefs-trending-search-header =
+    .label = 熱門搜尋
+home-prefs-trending-search-description = 熱門與常見搜尋主題
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = 清單
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = 計時器
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = 支持 { -brand-product-name }
+home-prefs-mission-message = 贊助商支持我們打造出一個更好的網路環境的使命
+home-prefs-mission-message-learn-more-link = 看看是如何達成的
+home-prefs-mission-message2 =
+    .message = 贊助商支持我們打造出一個更好的網路環境的使命。
+home-prefs-manage-topics-link = 管理主題
+home-prefs-choose-wallpaper-link = 挑選一張背景圖
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -675,6 +797,9 @@ search-remove-engine =
 search-add-engine =
     .label = 新增
     .accesskey = A
+search-edit-engine =
+    .label = 編輯
+    .accesskey = E
 search-find-more-link = 尋找更多搜尋引擎
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
@@ -683,12 +808,21 @@ search-keyword-warning-title = 關鍵字重複
 #   $name (string) - Name of a search engine.
 search-keyword-warning-engine = 您選用的關鍵字目前正被「{ $name }」所使用，請另選一個。
 search-keyword-warning-bookmark = 您選用的關鍵字目前正被書籤項目所使用，請另選一個。
+# This warning is displayed when the chosen name is already in use.
+# Variables:
+#   $name (string) - Name of a search engine.
+edit-engine-name-warning-duplicate = 已有名稱為「{ $name }」的搜尋引擎，請改用其他名稱。
+remove-engine-confirmation = 您確定要刪除此搜尋引擎嗎？
+remove-engine-remove = 移除
+remove-addon-engine-alert = 若要移除此搜尋引擎，請先移除相關的附加元件。
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = 回到選項頁面
 containers-header = 容器分頁
+containers-section-header =
+    .heading = 容器分頁
 containers-add-button =
     .label = 新增容器
     .accesskey = A
@@ -853,6 +987,14 @@ sync-choose-what-to-sync-dialog4 =
 ## The device name controls.
 
 sync-device-name-header = 裝置名稱
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = 裝置名稱
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = 更改裝置名稱
+    .accesskey = h
 sync-device-name-change =
     .label = 更改裝置名稱…
     .accesskey = h
@@ -936,7 +1078,7 @@ forms-primary-pw-use =
     .accesskey = U
 # This operation requires the user to authenticate with the operating system (device sign-in)
 forms-os-reauth =
-    .label = 需要裝置登入才能填寫與管理密碼
+    .label = 填寫與管理密碼時需進行裝置登入驗證
 forms-primary-pw-learn-more-link = 了解更多
 # This string uses the former name of the Primary Password feature
 # ("Master Password" in English) so that the preferences can be found
@@ -972,8 +1114,8 @@ master-password-os-auth-dialog-caption = { -brand-full-name }
 # The macOS string is preceded by the operating system with "Firefox is trying to ".
 autofill-creditcard-os-dialog-message =
     { PLATFORM() ->
-        [macos] 更改付款方式的選項
-       *[other] { -brand-short-name } 正嘗試更改付款方式的選項，請使用您的裝置登入後允許此動作。
+        [macos] 更改付款方式設定
+       *[other] { -brand-short-name } 正嘗試更改付款方式設定，請進行裝置登入驗證。
     }
 autofill-creditcard-os-auth-dialog-caption = { -brand-full-name }
 
@@ -991,8 +1133,30 @@ autofill-payment-methods-checkbox-submessage = 包含信用卡與 Debit Card
 autofill-saved-payment-methods-button = 儲存的付款方式
     .accesskey = v
 # This operation requires the user to authenticate with the operating system (device sign-in)
-autofill-reauth-payment-methods-checkbox = 需要裝置登入才能填寫與管理付款資訊
+autofill-reauth-payment-methods-checkbox = 填寫與管理付款資訊時需進行裝置登入驗證
     .accesskey = o
+autofill-payment-methods-title = 付款方式
+autofill-payment-methods-header =
+    .aria-label = 付款方式
+autofill-payment-methods-checkbox-message-2 =
+    .label = 儲存並自動填寫付款資訊
+    .accesskey = p
+autofill-payment-methods-manage-payments-button =
+    .label = 管理付款方式
+    .accesskey = m
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox-2 =
+    .label = 自動填寫與管理付款資訊時，需進行裝置登入驗證
+    .accesskey = o
+autofill-addresses-title = 地址與更多資訊
+autofill-addresses-header =
+    .aria-label = 地址與更多資訊
+autofill-addresses-checkbox-message =
+    .label = 儲存並自動填寫地址
+    .accesskey = S
+autofill-addresses-manage-addresses-button =
+    .label = 管理地址與更多資訊
+    .accesskey = M
 
 ## Privacy Section - History
 
@@ -1014,6 +1178,12 @@ history-remember-option-never =
     .label = 不保留歷史記錄
 history-remember-option-custom =
     .label = 使用自訂的設定
+history-remember-description2 =
+    .description = { -brand-short-name } 將記住您的瀏覽、下載、表單填寫與搜尋紀錄。
+history-dontremember-description2 =
+    .description = { -brand-short-name } 不會儲存任何瀏覽記錄，如同在隱私瀏覽狀態下執行。
+history-custom-description =
+    .description = { -brand-short-name } 會針對您的瀏覽、下載、表單填寫與搜尋紀錄使用您自訂的選項。
 history-remember-description = { -brand-short-name } 將記住您的瀏覽、下載、表單填寫與搜尋紀錄。
 history-dontremember-description = { -brand-short-name } 不會儲存任何瀏覽記錄，如同在隱私瀏覽狀態下執行。
 history-private-browsing-permanent =
@@ -1038,7 +1208,13 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookie 與網站資料
+sitedata-label =
+    .aria-label = { sitedata-header }
 sitedata-total-size-calculating = 正在計算網站資料與快取大小…
+# Variables:
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size2 = 您儲存的 Cookie、歷史、網站資料與快取目前使用了 <strong>{ $value } { $unit }</strong> 磁碟空間。
 # Variables:
 #   $value (number) - Value of the unit (for example: 4.6, 500)
 #   $unit (string) - Name of the unit (for example: "bytes", "KB")
@@ -1047,6 +1223,8 @@ sitedata-learn-more = 了解更多
 sitedata-delete-on-close =
     .label = 關閉 { -brand-short-name } 時清除 Cookie 與網站資料
     .accesskey = C
+sitedata-delete-on-close-private-browsing3 =
+    .message = 依照您的瀏覽紀錄設定，當您關閉瀏覽器後，{ -brand-short-name } 會自動刪除瀏覽階段中產生的 Cookie 與網站資料。
 sitedata-delete-on-close-private-browsing = 在永久隱私瀏覽模式下，每次關閉 { -brand-short-name } 時就會清除 Cookie 與網站資料。
 sitedata-delete-on-close-private-browsing2 = 依照您的瀏覽紀錄設定，當您關閉瀏覽器後，{ -brand-short-name } 會自動刪除瀏覽階段中產生的 Cookie 與網站資料。
 sitedata-allow-cookies-option =
@@ -1063,6 +1241,8 @@ sitedata-option-block-cross-site-trackers =
     .label = 跨網站追蹤器
 sitedata-option-block-cross-site-tracking-cookies =
     .label = 跨網站追蹤 Cookie
+sitedata-option-block-cross-site-cookies2 =
+    .label = 隔離跨網站 Cookie
 sitedata-option-block-cross-site-cookies =
     .label = 跨網站追蹤 Cookie，並隔離其餘跨網站 Cookie
 sitedata-option-block-unvisited =
@@ -1071,6 +1251,12 @@ sitedata-option-block-all-cross-site-cookies =
     .label = 所有跨網站 Cookie（可能會造成網站運作不正常）
 sitedata-option-block-all =
     .label = 所有 Cookie（會造成網站不正常）
+sitedata-clear2 =
+    .label = 清除瀏覽資料
+    .accesskey = l
+sitedata-settings2 =
+    .label = 管理瀏覽資料
+    .accesskey = M
 sitedata-clear =
     .label = 清除資料…
     .accesskey = l
@@ -1080,6 +1266,10 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = 管理例外網站…
     .accesskey = X
+sitedata-cookies-exceptions2 =
+    .label = 管理例外網站
+    .accesskey = x
+    .description = 您可以指定哪些網站總是可以，或永遠不可儲存 Cookie 與網站資料。
 
 ## Privacy Section - Cookie Banner Handling
 
@@ -1099,7 +1289,19 @@ cookie-banner-blocker-checkbox-label =
 ## Privacy Section - Address Bar
 
 addressbar-header = 網址列
+addressbar-suggest-1 = 選擇要在網址列顯示哪些建議
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest-1 = { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest-1 = 將在網址列顯示來自 { -brand-short-name } 與我們的夥伴所提供的建議。
 addressbar-suggest = 在使用網址列時提供建議
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = 網址列 — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest = 選擇要在網址列看到的建議類型。
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = 更多資訊
 addressbar-locbar-history-option =
     .label = 瀏覽紀錄
     .accesskey = H
@@ -1119,6 +1321,9 @@ addressbar-locbar-shortcuts-option =
 addressbar-locbar-topsites-option =
     .label = 熱門網站
     .accesskey = T
+addressbar-locbar-engines-option-1 =
+    .label = 建議要使用的搜尋引擎
+    .accesskey = a
 addressbar-locbar-engines-option =
     .label = 搜尋引擎
     .accesskey = a
@@ -1132,7 +1337,30 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = 顯示熱門搜尋建議
     .accesskey = t
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = 來自 { -brand-short-name } 的建議
+addressbar-locbar-suggest-all-option-desc = 取得您搜尋內容的相關建議。
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = 來自 { -brand-short-name } 的建議
+addressbar-locbar-suggest-nonsponsored-desc = 取得您搜尋內容的相關建議。
+addressbar-locbar-suggest-sponsored-option =
+    .label = 來自贊助商的建議
+addressbar-locbar-suggest-sponsored-desc = 讓贊助商偶爾顯示廣告，支持 { -brand-short-name } 的發展。
+# This string is used for a checkbox in the settings UI that opts the
+# user into "online" Firefox Suggest, allowing them to receive suggestions from
+# Mozilla's Merino server.
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since the online suggest is created and maintained
+# by Mozilla.
+addressbar-firefox-suggest-online =
+    .label = 一邊打字，一邊從 Mozilla 取得建議
 addressbar-quickactions-learn-more = 了解更多
+addressbar-dismissed-suggestions-label = 忽略的建議
+addressbar-restore-dismissed-suggestions-description = 還原顯示被忽略的贊助商與 { -brand-short-name } 建議。
+addressbar-restore-dismissed-suggestions-button =
+    .label = 還原
 
 ## Privacy Section - Content Blocking
 
@@ -1169,6 +1397,7 @@ content-blocking-private-windows = 隱私視窗中的追蹤內容
 content-blocking-cross-site-cookies-in-all-windows2 = 所有視窗中的跨網站 Cookie
 content-blocking-cross-site-tracking-cookies = 跨網站追蹤 Cookie
 content-blocking-all-cross-site-cookies-private-windows = 隱私視窗中的跨網站 Cookie
+content-blocking-isolate-cross-site-cookies = 隔離跨網站 Cookie
 content-blocking-cross-site-tracking-cookies-plus-isolate = 跨網站追蹤 Cookie，並隔離剩餘的 Cookie
 content-blocking-social-media-trackers = 社交媒體追蹤器
 content-blocking-all-cookies = 所有 Cookie
@@ -1189,8 +1418,23 @@ content-blocking-etp-standard-tcp-rollout-description = 全方位 Cookie 保護�
 content-blocking-etp-standard-tcp-rollout-learn-more = 了解更多
 content-blocking-etp-standard-tcp-title = 包含我們有史以來最強大的隱私保護功能 — 全方位 Cookie 保護
 content-blocking-warning-title = 注意！
+content-blocking-warning-title-2 = 使用嚴格的追蹤保護功能時，某些網站可能會故障
+content-blocking-warning-title-custom = 自訂追蹤保護功能時，某些網站可能會故障
+# “Fix site issues” references the string content-blocking-exceptions-subheader
+content-blocking-and-isolating-etp-warning-description-4 = { -brand-short-name } 建議使用「修正網站問題」選項，減少發生網站功能或內容故障的可能。若網站看來故障了，也可以針對該網站關閉追蹤保護，以載入所有內容。
 content-blocking-and-isolating-etp-warning-description-2 = 此設定可能會造成某些網站無法顯示內容或正常運作。若網站運作不正常，您可能會想要對該網站關掉追蹤保護功能，載入完整內容。
 content-blocking-warning-learn-how = 了解要怎麼做
+content-blocking-baseline-exceptions-3 =
+    .label = 修正網站的主要問題（建議）
+    .description = 不封鎖可能包含追蹤器的重要功能，以幫助載入網站內容與功能。能解決大多數常見問題。
+# This option to fix minor site issues must be used with the option to fix major site issues (string content-blocking-baseline-exceptions-3)
+content-blocking-convenience-exceptions-3 =
+    .label = 修正網站的小問題
+    .description = 不封鎖可能包含追蹤器的網頁元素，以恢復文章中的影片，或是留言區塊等功能。這個選項可更加減少網站問題，但同時也較無保護。必須用於修正網站的主要問題。
+content-blocking-baseline-uncheck-warning-dialog-title = 您確定要關閉修正功能嗎？
+content-blocking-baseline-uncheck-warning-dialog-body = 此選項可幫助修正大部分常見的網站問題。若您關閉此選項，某些網站可能會無法正常運作，{ -brand-short-name } 也無法幫助排解這類問題。
+content-blocking-baseline-uncheck-warning-dialog-ok-button = 關閉修正
+content-blocking-baseline-uncheck-warning-dialog-cancel-button = 保持修正
 content-blocking-reload-description = 需要重新載入分頁才能套用變更。
 content-blocking-reload-tabs-button =
     .label = 重新載入所有分頁
@@ -1245,6 +1489,14 @@ permissions-location = 位置
 permissions-location-settings =
     .label = 設定…
     .accesskey = l
+permissions-localhost = 裝置應用程式與服務
+permissions-localhost-settings =
+    .label = 設定…
+    .accesskey = t
+permissions-local-network = 區域網路裝置
+permissions-local-network-settings =
+    .label = 設定…
+    .accesskey = t
 permissions-xr = 虛擬實境
 permissions-xr-settings =
     .label = 設定…
@@ -1270,10 +1522,27 @@ permissions-notification-link = 了解更多
 permissions-notification-pause =
     .label = 暫停通知到 { -brand-short-name } 重新啟動後
     .accesskey = n
+permissions-autoplay2 =
+    .label = 自動播放
 permissions-autoplay = 自動播放
 permissions-autoplay-settings =
     .label = 設定…
     .accesskey = t
+permissions-block-popups2 =
+    .label = 封鎖彈出型視窗與第三方重新導向
+    .accesskey = B
+# "popup" is a misspelling that is more popular than the correct spelling of
+# "pop-up" so it's included as a search keyword, not displayed in the UI.
+permissions-block-popups-exceptions-button2 =
+    .label = 管理彈出型視窗與第三方重新導向例外
+    .accesskey = E
+    .searchkeywords = popups 彈出 視窗
+permissions-addon-install-warning2 =
+    .label = 網站嘗試安裝擴充套件時警告
+    .accesskey = W
+permissions-addon-exceptions2 =
+    .label = 選擇可以安裝擴充套件的網站
+    .accesskey = E
 permissions-block-popups =
     .label = 封鎖彈出型視窗
     .accesskey = B
@@ -1289,12 +1558,36 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = 例外網站…
     .accesskey = E
+permissions-header2 =
+    .label = 權限
+    .description = 您上網時，授予網站的權限。
+permissions-location2 =
+    .label = 位置
+permissions-localhost2 =
+    .label = 裝置應用程式與服務
+permissions-local-network2 =
+    .label = 區域網路裝置
+permissions-xr2 =
+    .label = 虛擬實境
+permissions-camera2 =
+    .label = 攝影機
+permissions-microphone2 =
+    .label = 麥克風
+# Privacy permission for sound output devices.
+permissions-speaker2 =
+    .label = 喇叭
+permissions-notification2 =
+    .label = 通知
 
 ## Privacy Section - Data Collection
 
 collection-header = { -brand-short-name } 資料收集與使用
 collection-header2 = { -brand-short-name } 資料收集與使用
     .searchkeywords = telemetry
+preferences-collection-description = 我們盡力提供您不同選擇，也只會收集最少而必須的資料，以用於為所有人改善 { -brand-product-name }。
+preferences-collection-privacy-notice = 檢視隱私權公告
+preferences-across-profiles = 此設定將套用到此裝置中的所有 { -brand-product-name } 設定檔。
+preferences-view-profiles = 檢視所有設定檔
 collection-description = 我們致力於提供您選擇，也只會收集我們在提供與改善 { -brand-short-name } 時所必需的資料。我們也一定會經過您的同意才收集您的個人資訊。
 collection-privacy-notice = 隱私權公告
 collection-health-report-telemetry-disabled = 將不再允許 { -vendor-short-name } 捕捉技術與互動資料，之前收集的資料將於 30 天內刪除。
@@ -1334,8 +1627,6 @@ addon-recommendations-link = 了解更多
 # or builds with no Telemetry support available.
 collection-health-report-disabled = 進行編譯設定時，已停用了資料回報功能
 collection-backlogged-crash-reports-with-link = 允許 { -brand-short-name } 以您的身分自動回報錯誤報告<a data-l10n-name="crash-reports-link">了解更多資訊</a>
-    .accesskey = c
-collection-backlogged-crash-reports = 允許 { -brand-short-name } 以您的身分自動回報錯誤報告
     .accesskey = c
 privacy-segmentation-section-header = 能加強您上網體驗的新功能
 privacy-segmentation-section-description = 當我們推出會使用您的資料來提供更個人化的上網體驗的新功能時：
@@ -1385,30 +1676,35 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = 允許 { -brand-short-name } 自動信任您安裝的第三方根憑證
     .accesskey = t
+certs-devices-enable-fips = 啟用 FIPS
 space-alert-over-5gb-settings-button =
     .label = 開啟選項
     .accesskey = O
 space-alert-over-5gb-message2 = <strong>{ -brand-short-name } 的磁碟空間不足。</strong>網站內容可能無法正確顯示。您可以到「選項 > 隱私權與安全性 > Cookie 與網站資料」清除目前儲存的網站資料。
 space-alert-under-5gb-message2 = <strong>{ -brand-short-name } 的磁碟空間不足。</strong>網站內容可能無法正確顯示。請點擊「瞭解更多」清理磁碟空間，讓您有更好的瀏覽體驗。
+certs-description2 =
+    .label = 憑證
+    .description = 設定 { -brand-short-name } 要用來驗證身分的憑證。
 
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = 純 HTTPS 模式
+httpsonly-label =
+    .aria-label = { httpsonly-header }
+    .description = 僅允許對網站使用安全連線。{ -brand-short-name } 會在進行不安全連線前先詢問。
+httpsonly-description3 = 僅允許對網站使用安全連線。{ -brand-short-name } 會在進行不安全連線前先詢問。
+httpsonly-learn-more2 = 純 HTTPS 模式的運作原理是什麼？
 httpsonly-description = HTTPS 讓您與要造訪的網站間，能夠有安全而加密過的連線。大部分的網站都支援 HTTPS，開啟純 HTTPS 模式後，{ -brand-short-name } 就會將所有的連線都升級為 HTTPS 連線。
-httpsonly-description2 = { -brand-short-name } 會與您造訪的網站建立安全、加密過的連線。開啟 HTTPS-Only 後，若遇到不安全的連線，{ -brand-short-name } 會警告您。
 httpsonly-learn-more = 了解更多
 httpsonly-radio-enabled =
     .label = 在所有視窗都開啟純 HTTPS 模式
-httpsonly-radio-enabled2 =
-    .label = 在所有視窗都只使用 HTTPS 連線
 httpsonly-radio-enabled-pbm =
     .label = 僅在隱私瀏覽視窗開啟純 HTTPS 模式
-httpsonly-radio-enabled-pbm2 =
-    .label = 在隱私視窗僅使用 HTTPS 連線
+httpsonly-radio-disabled3 =
+    .label = 不要開啟純 HTTPS 模式
+    .description = { -brand-short-name } 可能還是會將某些連線升級為 HTTPS 連線
 httpsonly-radio-disabled =
     .label = 不開啟純 HTTPS 模式
-httpsonly-radio-disabled2 =
-    .label = 優先使用 HTTPS 連線，但也允許不安全的連線
 
 ## DoH Section
 

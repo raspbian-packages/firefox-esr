@@ -20,7 +20,7 @@ cfr-doorhanger-extension-manage-settings-button = Sýsla með ábendingastilling
     .accesskey = s
 cfr-doorhanger-extension-never-show-recommendation = Ekki sýna mér þessar tillögur
     .accesskey = E
-cfr-doorhanger-extension-learn-more-link = Fræðast meira
+cfr-doorhanger-extension-learn-more-link = Kanna nánar
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } notendur
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Samstilltu bókamerkin þín allsstaðar.
 cfr-doorhanger-bookmark-fxa-body = Frábær fundur! Vertu ekki án þessa bókamerkis á farsímum þínum. Byrjaðu á { -fxaccount-brand-name }.
@@ -68,6 +68,7 @@ cfr-doorhanger-bookmark-fxa-link-text = Samstilla bókamerki núna ...
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Loka hnappur
     .title = Loka
+fxa-adoption-primary-button-label = Nýskrá
 
 ## Protections panel
 
@@ -207,7 +208,7 @@ cfr-cbh-dismiss-button = Ekki núna
     .accesskey = n
 cookie-banner-blocker-onboarding-header = { -brand-short-name } var að loka á vefkökuborða fyrir þig
 cookie-banner-blocker-onboarding-body = Minni truflanir, færri vefkökur sem rekja ferðir þínar á þessu vefsvæði.
-cookie-banner-blocker-onboarding-learn-more = Fræðast meira
+cookie-banner-blocker-onboarding-learn-more = Kanna nánar
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -302,7 +303,7 @@ root-certificate-succession-infobar-secondary-button =
 
 root-certificate-windows-background-notification-title = Þú misstir af mikilvægri uppfærslu á { -brand-short-name }
 root-certificate-windows-background-notification-subtitle = Hlutar vafrans hætta fljótlega að virka ef þú uppfærir ekki. Núna er réttur tími til að fá bestu varnirnar okkar og nýjustu eiginleikana.
-root-certificate-windows-background-notification-learn-more-button = Fræðast meira
+root-certificate-windows-background-notification-learn-more-button = Kanna nánar
 root-certificate-windows-background-notification-update-button = Uppfæra { -brand-short-name }
 
 ## FxA Menu Message variants
@@ -311,6 +312,8 @@ fxa-menu-message-close-button =
     .title = Loka
     .aria-label = Loka
 fxa-menu-message-sign-up-button = Skráðu þig
+fxa-menu-message-sign-in-button = Innskráning
+fxa-menu-message-sync-button = Hefja samstillingu
 fxa-menu-message-sync-devices-primary-text = Samstilltu öll tækin þín
 fxa-menu-message-sync-devices-secondary-text = Náðu í upplýsingarnar þínar samstundis – eins og bókamerki og lykilorð – alls staðar sem þú notar { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Samstilltu öll tækin þín
@@ -343,3 +346,31 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Hafðu eftirlætisvafrann þinn innan seilingar. Stilltu { -brand-short-name } sem sjálfgefinn vafra til að opna tengla og festu hann við verkefnastikuna þína og í ræsivalmyndina.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Hafðu eftirlætisvafrann þinn innan seilingar. Stilltu { -brand-short-name } sem sjálfgefinn vafra til að opna tengla og festu hann við verkefnastikuna þína og í ræsivalmyndina.
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-primary-label = Hefjast handa
+windows-10-eos-sync-toast-secondary-label = Minna mig á síðar
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-sync-primary-button = Afritaðu { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Festu { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } lokar á rafmyntagrafara, samfélagsmiðlarekjara og fingrafarasöfnun.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Rekjarar geta ekki borið kennsl á tækið þitt eða fylgt þér á netinu - því við leyfum þeim það ekki.
+windows-10-eos-sync-callout-next-button = Næsta
+windows-10-eos-sync-callout-get-started-button = Hefjast handa
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-whats-new-button = Sjáðu hvað er nýtt á seyði
+windows-10-eos-feature-toast-dismiss-button = Afgreiða
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-learn-more = Fræðast meira

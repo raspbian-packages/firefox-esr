@@ -16,6 +16,8 @@ process-type-privilegedmozilla = Konten Mozilla yang Diistimewakan
 process-type-extension = Ekstensi
 # process used to open file:// URLs
 process-type-file = Berkas Lokal
+# process used to instantiate new child processes
+process-type-forkserver = Fork Server
 # process used to isolate a webpage from other web pages
 # to improve security
 process-type-webisolated = Konten Web Terisolasi
@@ -37,8 +39,17 @@ process-type-gpu = GPU
 process-type-socket = Soket
 # process used to decode media
 process-type-rdd = RDD
+# process used to run inference
+process-type-inference = Penalaran
 # process used to run some IPC actor in their own sandbox
 process-type-utility = Aktor IPC dalam Kotak Pasir
+process-type-utility-actor-audio-decoder-generic = Dekoder Audio Generik Utilitas
+process-type-utility-actor-audio-decoder-applemedia = Utilitas AppleMedia
+process-type-utility-actor-audio-decoder-wmf = Utilitas Windows Media Foundation
+process-type-utility-actor-mf-media-engine = Utilitas Media Foundation Engine
+process-type-utility-actor-js-oracle = Utilitas JavaScript Oracle
+process-type-utility-actor-windows-utils = Utilitas Windows Utils
+process-type-utility-actor-windows-file-dialog = Dialog Berkas Utilitas Windows
 
 ##
 ## Other

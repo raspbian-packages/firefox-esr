@@ -59,7 +59,7 @@ about-reader-font-type-monospace = Моноширинний
 
 ## Reader View toolbar buttons
 
-about-reader-toolbar-close = Закрити режим читача
+about-reader-toolbar-close = Закрити режим читання
 about-reader-toolbar-type-controls = Налаштування шрифтів
 about-reader-toolbar-text-layout-controls = Текст і макет
 about-reader-toolbar-theme-controls = Тема
@@ -75,17 +75,22 @@ about-reader-customtheme-tab = Власна
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Текст
-    .title = Редагувати колір
-about-reader-custom-colors-background = Тло
-    .title = Редагувати колір
-about-reader-custom-colors-unvisited-links = Невідвідані посилання
-    .title = Редагувати колір
-about-reader-custom-colors-visited-links = Відвідані посилання
-    .title = Редагувати колір
-about-reader-custom-colors-selection-highlight = Маркер для читання вголос
-    .title = Редагувати колір
 about-reader-reset-button = Відновити типові
+about-reader-custom-colors-foreground2 =
+    .label = Текст
+    .title = Редагувати колір
+about-reader-custom-colors-background2 =
+    .label = Тло
+    .title = Редагувати колір
+about-reader-custom-colors-unvisited-links2 =
+    .label = Невідвідані посилання
+    .title = Редагувати колір
+about-reader-custom-colors-visited-links2 =
+    .label = Відвідані посилання
+    .title = Редагувати колір
+about-reader-custom-colors-selection-highlight2 =
+    .label = Маркер для читання вголос
+    .title = Редагувати колір
 
 ## Reader View text and layout menu
 
@@ -115,3 +120,5 @@ about-reader-text-alignment-center =
     .title = Вирівняти текст по центру
 about-reader-text-alignment-right =
     .title = Вирівняти текст по правому краю
+about-reader-text-alignment-justify =
+    .title = Вирівняти текст

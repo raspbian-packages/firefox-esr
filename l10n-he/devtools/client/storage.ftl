@@ -38,7 +38,7 @@ storage-add-button =
     .title = הוספת פריט
 # Refresh button title
 storage-refresh-button =
-    .title = רענון פריטים
+    .title = ריענון פריטים
 # Context menu action to delete all storage items
 storage-context-menu-delete-all =
     .label = מחיקת הכל
@@ -69,8 +69,9 @@ storage-table-headers-cookies-name = שם
 storage-table-headers-cookies-value = ערך
 storage-table-headers-cookies-expires = תאריך תפוגה / גיל מירבי
 storage-table-headers-cookies-size = גודל
-storage-table-headers-cookies-last-accessed = תאריך גישה אחרון
-storage-table-headers-cookies-creation-time = תאריך יצירה
+storage-table-headers-cookies-last-accessed = זמן גישה אחרון
+storage-table-headers-cookies-creation-time = זמן יצירה
+storage-table-headers-cookies-update-time = זמן עדכון
 storage-table-headers-cache-status = מצב
 storage-table-headers-extension-storage-area = אזור אחסון
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = מסד הנתונים “{ $dbName }” יימחק 
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = לא ניתן למחוק את מסד הנתונים “{ $dbName }”.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = לא ניתן ליצור את העוגיה: ״{ $errorString }״.
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = לא ניתן לעדכן את העוגיה: ״{ $errorString }״.

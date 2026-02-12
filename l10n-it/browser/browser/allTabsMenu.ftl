@@ -12,9 +12,17 @@ all-tabs-menu-hidden-tabs =
 all-tabs-menu-manage-user-context =
     .label = Gestisci contenitori
     .accesskey = G
-all-tabs-menu-close-duplicate-tabs =
-    .label = Chiudi schede duplicate
 all-tabs-menu-close-all-duplicate-tabs =
     .label = Chiudi tutte le schede duplicate
 all-tabs-menu-synced-tabs =
     .label = Schede da altri dispositivi
+# "Recent" refers to tab groups being sorted in recently used order. We show up
+# to five of these in this section.
+all-tabs-menu-recent-tab-groups-header = Gruppi di schede recenti
+all-tabs-menu-current-window-header = Finestra corrente
+# This opens the sub view listing _all_ open and saved tab groups.
+all-tabs-menu-tab-groups-show-all =
+    .label = Mostra tutto
+# This is header for the sub view listing _all_ open and saved tab groups.
+all-tabs-menu-tab-groups-sub-view =
+    .title = Gruppi di schede

@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Detalhes da transferência
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Os ficheiros permanecem no seu dispositivo
+downloads-private-browsing-message = Qualquer pessoa que utilize este dispositivo pode ver as transferências, mesmo quando fecha todas as janelas privadas.
+downloads-private-browsing-delete-button =
+    .label = Eliminar ficheiros automaticamente
+    .accesskey = l
+downloads-private-browsing-accept-button =
+    .label = Percebi
+    .accesskey = P
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

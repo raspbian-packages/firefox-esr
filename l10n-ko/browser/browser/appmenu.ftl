@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = 다운로드
 appmenuitem-passwords =
     .label = 비밀번호
+appmenuitem-extensions-and-themes =
+    .label = 확장 기능 및 테마
+appmenuitem-extensions =
+    .label = 확장 기능
 appmenuitem-addons-and-themes =
     .label = 부가 기능 및 테마
 appmenuitem-print =
@@ -153,7 +157,7 @@ profiler-popup-recording-screen = 기록 중…
 profiler-popup-start-recording-button =
     .label = 기록 시작
 profiler-popup-discard-button =
-    .label = 취소
+    .label = 버리기
 profiler-popup-capture-button =
     .label = 캡처
 profiler-popup-start-shortcut =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = 프로파일러 패널 열기
+    .tooltiptext = 프로파일러 패널 열기
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = { -brand-shorter-name }의 오디오 및 비디오 버그를 조사하기 위한 프리셋입니다.
 profiler-popup-presets-media-label =
     .label = 미디어
+profiler-popup-presets-ml-description = { -brand-shorter-name }의 기계 학습 버그를 조사하기 위한 프리셋입니다.
+profiler-popup-presets-ml-label =
+    .label = 기계 학습
 profiler-popup-presets-networking-description = { -brand-shorter-name }의 네트워킹 버그를 조사하기 위한 프리셋입니다.
 profiler-popup-presets-networking-label =
     .label = 네트워킹
@@ -202,6 +212,9 @@ profiler-popup-presets-power-label =
 profiler-popup-presets-debug-description = { -brand-shorter-name }에서 디버깅을 위한 프리셋입니다. 오버헤드가 높으므로 성능 작업에 사용하지 말고 브라우저 동작을 이해하는 데 중점을 두는 데 사용하세요.
 profiler-popup-presets-debug-label =
     .label = 디버그
+profiler-popup-presets-web-compat-description = 웹 사이트에서 성능 추적보다 웹 호환성 문제를 디버깅하는 데 권장되는 프리셋입니다.
+profiler-popup-presets-web-compat-label =
+    .label = 웹 호환성
 profiler-popup-presets-custom-label =
     .label = 사용자 지정
 
@@ -233,12 +246,12 @@ appmenu-get-help =
     .label = 도움 받기
     .accesskey = H
 appmenu-help-more-troubleshooting-info =
-    .label = 추가 문제 해결 정보
+    .label = 문제 해결 정보
     .accesskey = T
 appmenu-help-report-site-issue =
     .label = 사이트 문제 보고…
 appmenu-help-share-ideas =
-    .label = 아이디어 공유 및 의견 보내기…
+    .label = 아이디어 및 의견 공유…
     .accesskey = S
 appmenu-help-switch-device =
     .label = 새 기기로 전환
@@ -284,15 +297,22 @@ appmenuitem-services-relay-description = 이메일 가리기 대시보드 실행
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = 온라인 활동을 보호하세요
 appmenu-services-header = 내 서비스
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Mozilla의 다른 보호 도구를 사용해 보세요:
 appmenu-other-protection-header = { -vendor-short-name }의 다른 보호 도구를 사용해 보세요:
 
 ## Profiles panel
 
-appmenu-profiles = 프로필
 appmenu-other-profiles = 다른 프로필
 appmenu-manage-profiles =
     .label = 프로필 관리
+appmenu-copy-profile =
+    .label = 이 프로필 복사
 appmenu-create-profile =
     .label = 새 프로필
 appmenu-edit-profile =
     .aria-label = 프로필 편집
+appmenu-profiles-2 =
+    .label = 프로필

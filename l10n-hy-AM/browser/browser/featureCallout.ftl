@@ -52,16 +52,103 @@ fx-view-discoverability-secondary-button-label = Բաց թողնել
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = Այլևս չցուցադրել այս երաշխավորությունը
+split-dismiss-button-dont-show-option =
+    .label = Այլևս չցուցադրել այս երաշխավորությունը
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = Ցուցադրել ավելի քիչ երաշխավորություններ
+split-dismiss-button-show-fewer-option =
+    .label = Ցուցադրել ավելի քիչ երաշխավորություններ
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = Կառավարել կարգավորումները
+split-dismiss-button-manage-settings-option =
+    .label = Կառավարել կարգավորումները
+# Accessibility label for dropdown menu button
+split-dismiss-button-default-label =
+    .title = Լրացուցիչ ընտրանքներ
+
+## Bookmarks toolbar callout strings
+
+bookmarks-toolbar-callout-1-title = Ավելացնե՞լ այս կայքը Ձեր էջանիշների գործիքագոտուն։
+bookmarks-toolbar-callout-1-subtitle = Ձեր էջանիշը կպահվի հասցեագոտու տակ՝ արագ հասանելիության համար։
+bookmarks-toolbar-callout-1-primary-button-label = Ավելացնել Էջանիշ
+bookmarks-toolbar-callout-1-secondary-button-label = Ոչ, շնորհակալ եմ
+# Visible if user adds a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2a-title = Հեշտությամբ ավելացրեք ավելի շատ էջանիշներ
+bookmarks-toolbar-callout-2a-primary-button-label = Հասկացա
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2a-secondary-button-label = Թաքցնել գործիքաշերտը
+# Visible if user declines to add a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2b-title = Բաց պահե՞լ էջանիշների գործիքագոտին:
+bookmarks-toolbar-callout-2b-primary-button-label = Բաց պահել
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2b-secondary-button-label = Ոչ, շնորհակալ եմ
+
+## Perplexity callout strings
+
+perplexity-callout-theme-1-title = Անմիջապես ճիշտ պատասխանն է պետք՞։
+perplexity-callout-primary-label = Հարցրեք շփոթվածությանը
+perplexity-callout-secondary-label-1 = Բաց թողնել
+perplexity-callout-secondary-label-2 = Հասկացա
+
+## Account Adoption Passwords callout strings
+
+# Opens Mozilla accounts sign-up page
+fxa-adoption-passwords-primary-button-label = Գրանցվել
+
+## Taskbar Tabs callout strings
+
+taskbar-tabs-social-callout-title = Պահեք ձեր ընտրյալ սնուցիչները  խնդրագոտում
+taskbar-tabs-social-callout-subtitle = Գործարկեք ձեր սոցիալական կայքերը հավելվածի նման՝ { -brand-short-name }-ով պաշտպանված, հարմարեցված պատուհանում։
+taskbar-tabs-email-callout-title = Պահեք ձեր էլ. փոստը ձեր առաջադրանքների տողում
+taskbar-tabs-value-prop-callout-title = Ավելացրել այս կայքը Ձեր խնդրագոտուն
+
+## Windows 10 EoS Sync messages group 1 callouts
+
+windows-10-eos-sync-new-device-title-1 = Մի՛ ռիսկի դիմեք՝ նորից սկսելով ձեր հաջորդ սարքը։
+windows-10-eos-sync-new-device-primary-label = Համաժամեցնել
+windows-10-eos-sync-tour-title-1 = Շատ ներդիրներ ունե՞ք։ Կարգավորեք իրավիճակը ներդիրների խմբերի միջոցով։
+windows-10-eos-sync-tour-title-2 = Կազմակերպվեք Windows 11-ի համար։
+windows-10-eos-sync-split-dismiss-button-show-fewer-option =
+    .label = Ցուցադրել ավելի քիչ երաշխավորություններ
+windows-10-eos-sync-dismiss-button-label = Բաց թողնել
+windows-10-eos-sync-callout-primary-advance-button-label = Հաջորդը
+
+## Link Preview Onboarding message callout strings
+
+link-preview-onboarding-callout-title = Նոր. Սեղմեք և պահեք՝ հղումները նախադիտելու համար
 
 ## Sidebar Strings
 
-sidebar-button-callout-title = Ցուցադրել ներդիրների վերնագրերը կողային գոտում
+sidebar-button-callout-title = Ցուցադրել ներդիրների վերնագրերը կողագոտիում
 sidebar-button-callout-subtitle = Օգտագործեք կողագոտի կոճակը՝ կողագոտին ընդլայնելու համար, որպեսզի կարողանաք տեսնել ներդիրների վերնագրերը:
+sidebar-button-callout-vertical-tabs = Ձեր ներդիրները ցուցադրելու համար ընտրեք կողագոտու կոճակը գործիքագոտիում:
+
+## Sidebar Vertical Tabs Strings
+
+vertical-tabs-callout-1-title = Ծանրաբեռնվա՞ծ եք չափազանց շատ ներդիրներով։
+vertical-tabs-callout-1-subtitle = Փորձեք մեր նոր ուղղահայաց ներդիրների դասավորությունը՝ ձեր ներդիրների ցանկը արագ սկանավորելու համար: Վաղ փորձարկողները հայտնում են, որ այս դասավորությունը օգնում է նրանց ավելի կազմակերպված զգալ: Անցեք ցանկացած ժամանակ:
+vertical-tabs-callout-1-cta-button = Փորձեք ուղղահայաց ներդիրները
+vertical-tabs-callout-2-cta-button = Փորձել հիմա
+vertical-tabs-callout-2-title = Շատ ներդիրներ բաց պահե՞լ։ Փորձեք ուղղահայաց ներդիրները։
+
+## Sidebar Vertical Tabs Pinning Strings
+
+sidebar-pins-callout-cta-button = Ամրացնել ներդիրը
+
+## Pinning Tabs Strings
+
+pin-tabs-callout-1-title = Կարևոր գրառումները պահեք հասանելիության սահմաններում
+pin-tabs-callout-cta-1-button = Ամրացնել այս ներդիրը
+pin-tabs-callout-2-title = Ամրացրեք ամենաշատ այցելվող ներդիրները
+pin-tabs-callout-cta-2-button = Ամրացնել այս ներդիրը
+pin-tabs-callout-3-title = Կարևոր կայքերը պահեք հասանելիության սահմաններում
+pin-tabs-callout-4-title = Նշեք ամենաշատ այցելվող կայքերը
+
+## Sidebar Onboarding Strings
+
+sidebar-customization-callout-1-title = Կողագոտի. գործիքների և ներդիրների ձեր տարածքը
+sidebar-customization-callout-1-subtitle = { -brand-product-name }-ի կողագոտին հնարավորություն է տալիս արագորեն մատչել դիտարկումների պատմությանը, ներդիրներին այլ սարքերից և ԱԲ չաթբոտին՝ առանց հիմնական ցանկը լքելու:
+sidebar-customization-callout-callout-button = Հարմարեցնել կողագոտին
+sidebar-customization-callout-dismiss-button = Թաքցնել կողագոտին
+sidebar-customization-callout-2-subtitle = Ավելացրեք և հեռացրեք գործիքներ: Ձեր ներդիրները դրեք կողագոտիում: Փորձեք ԱԲ չաթբոտը: Հարմարեցրեք կողագոտին ըստ ձեր ցանկության:
 
 ## Sidebar Callout Survey Strings
 
@@ -83,4 +170,11 @@ sidebar-callout-survey-saved-websites-2 = Արագ մուտք  ձեր էջանի
 sidebar-callout-survey-none-of-above = Վերը նշվածներից ոչ մեկը
 sidebar-callout-survey-submit = Ուղարկել
 sidebar-callout-survey-thank-you = Շնորհակալությո՜ւն Ձեր արձագանքի համար:
-sidebar-genai-survey-satisfaction-question = Որքա՞ն գոհ եք կողային տողում AI chatbot-ի հասանելիությունից:
+sidebar-genai-survey-satisfaction-question = Որքա՞ն գոհ եք կողագոտու ԱԲ չաթբոտի հասանելիությունից:
+unified-search-callout-title = Փոխարկել որոնիչների միջև
+unified-search-callout-subtitle = Ընտրեք, թե ինչն է լավ ձեր հատկորոշած որոնման համար:
+unified-search-callout-primary-label = Հաջորդը
+unified-search-callout-secondary-label = Բաց թողնել
+unified-search-engines-callout-title = Որոնել դյուրանցումով
+unified-search-engines-callout-subtitle = “@”-ից հետո մուտքագրեք հիմնաբառը՝ պատմությունում, էջանիշերում, ներդիրներում կամ այլ որոնիչով որոնելու համար:
+unified-search-engines-callout-primary-label = Հասկացա

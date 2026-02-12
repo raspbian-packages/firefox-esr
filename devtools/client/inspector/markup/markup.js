@@ -12,9 +12,9 @@ const { LocalizationHelper } = require("resource://devtools/shared/l10n.js");
 const { PluralForm } = require("resource://devtools/shared/plural-form.js");
 const AutocompletePopup = require("resource://devtools/client/shared/autocomplete-popup.js");
 const KeyShortcuts = require("resource://devtools/client/shared/key-shortcuts.js");
-const {
-  scrollIntoViewIfNeeded,
-} = require("resource://devtools/client/shared/scroll.js");
+const { scrollIntoViewIfNeeded } = ChromeUtils.importESModule(
+  "resource://devtools/client/shared/scroll.mjs"
+);
 const { PrefObserver } = require("resource://devtools/client/shared/prefs.js");
 const MarkupElementContainer = require("resource://devtools/client/inspector/markup/views/element-container.js");
 const MarkupReadOnlyContainer = require("resource://devtools/client/inspector/markup/views/read-only-container.js");
@@ -307,6 +307,7 @@ function MarkupView(inspector, frame, controllerWindow) {
   this._onToolboxPickerCanceled = this._onToolboxPickerCanceled.bind(this);
   this._onToolboxPickerHover = this._onToolboxPickerHover.bind(this);
   this._onDomMutation = this._onDomMutation.bind(this);
+  this._onToolboxSelect = this._onToolboxSelect.bind(this);
 
   // Listening to various events.
   this._elt.addEventListener("blur", this._onBlur, true);
@@ -346,8 +347,9 @@ function MarkupView(inspector, frame, controllerWindow) {
     "highlighter-hidden",
     this.onHighlighterHidden
   );
+  this.inspector.toolbox.once("select", this._onToolboxSelect);
 
-  this._onNewSelection();
+  this._onNewSelection(this.inspector.selection.nodeFront);
   if (this.inspector.selection.nodeFront) {
     this.expandNode(this.inspector.selection.nodeFront);
   }
@@ -496,6 +498,9 @@ MarkupView.prototype = {
   },
 
   _enableImagePreviewTooltip() {
+    if (!this.imagePreviewTooltip) {
+      return;
+    }
     this.imagePreviewTooltip.startTogglingOnHover(
       this._elt,
       this._isImagePreviewTarget
@@ -522,6 +527,20 @@ MarkupView.prototype = {
   _onToolboxPickerCanceled() {
     if (this._selectedContainer) {
       scrollIntoViewIfNeeded(this._selectedContainer.editor.elt);
+    }
+  },
+
+  _onToolboxSelect(id) {
+    if (id !== "inspector") {
+      return;
+    }
+
+    // If the inspector was opened from the "Inspect" context menu, the node gets selected
+    // in the MarkupView constructor, but the Toolbox focuses the Inspector iframe once
+    // the tool is loaded (and the iframe is actually visible), so we need to focus
+    // the selected node after the inspector was properly selected and focused (See Bug 1979591).
+    if (this.inspector.selection?.reason === "browser-context-menu") {
+      this.maybeNavigateToNewSelection();
     }
   },
 
@@ -1013,6 +1032,11 @@ MarkupView.prototype = {
    * React to new-node-front selection events.
    * Highlights the node if needed, and make sure it is shown and selected in
    * the view.
+   * Note that this might be called when the panel is initialized to properly setup
+   * all the listeners.
+   *
+   * @param {NodeFront|undefined} nodeFront
+   * @param {String|undefined} reason
    */
   _onNewSelection(nodeFront, reason) {
     const selection = this.inspector.selection;
@@ -1418,11 +1442,13 @@ MarkupView.prototype = {
    * Scroll the node into view.
    */
   scrollNodeIntoView() {
-    if (!this.inspector.selection.isNode()) {
+    if (!this.inspector.selection.supportsScrollIntoView()) {
       return;
     }
 
-    this.inspector.selection.nodeFront.scrollIntoView();
+    this.inspector.selection.nodeFront
+      .scrollIntoView()
+      .then(() => this.emitForTests("node-scrolled-into-view"));
   },
 
   async toggleMutationBreakpoint(name) {
@@ -2338,6 +2364,8 @@ MarkupView.prototype = {
 
         const fragment = this.doc.createDocumentFragment();
 
+        // Store the focused element before moving elements to the document fragment
+        const previouslyActiveElement = this.doc.activeElement;
         for (const child of children.nodes) {
           const slotted = !isShadowHost && child.isDirectShadowHostChild;
           const childContainer = this.importNode(child, flash, slotted);
@@ -2358,6 +2386,15 @@ MarkupView.prototype = {
         }
 
         container.children.appendChild(fragment);
+        // If previouslyActiveElement was moved to `fragment`, the focus was moved elsewhere,
+        // so here we set it back (see Bug 1955040)
+        if (container.children.contains(previouslyActiveElement)) {
+          previouslyActiveElement.focus({
+            // don't scroll the item into view, the user might have scrolled away and we
+            // don't want to disturb them.
+            preventScroll: true,
+          });
+        }
         return container;
       })
       .catch(this._handleRejectionIfNotDestroyed);
@@ -2412,9 +2449,8 @@ MarkupView.prototype = {
 
     // We have to use node's walker and not a top level walker
     // as for fission frames, we are going to have multiple walkers
-    const inspectorFront = await container.node.targetFront.getFront(
-      "inspector"
-    );
+    const inspectorFront =
+      await container.node.targetFront.getFront("inspector");
     return inspectorFront.walker.children(container.node, {
       maxNodes: maxChildren,
       center: centered,
@@ -2527,6 +2563,7 @@ MarkupView.prototype = {
       "highlighter-hidden",
       this.onHighlighterHidden
     );
+    this.inspector.toolbox.off("select", this._onToolboxSelect);
     this.win.removeEventListener("copy", this._onCopy);
     this.win.removeEventListener("mouseup", this._onMouseUp);
 

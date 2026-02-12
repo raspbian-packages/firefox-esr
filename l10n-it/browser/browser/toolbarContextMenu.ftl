@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Riapri schede chiuse
         }
     .accesskey = a
+toolbar-context-turn-on-vertical-tabs =
+    .label = Attiva schede verticali
+toolbar-context-turn-off-vertical-tabs =
+    .label = Disattiva schede verticali
+toolbar-context-customize-sidebar =
+    .label = Personalizza barra laterale
 toolbar-context-menu-manage-extension =
     .label = Gestisci estensione
     .accesskey = G
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Mostra pannello quando si avvia un download
     .accesskey = M
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Mostra sempre nella barra degli strumenti
+    .accesskey = s
 toolbar-context-menu-remove-from-toolbar =
     .label = Rimuovi dalla barra degli strumenti
     .accesskey = b

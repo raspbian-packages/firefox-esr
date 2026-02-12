@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = ჩანართის დახურვა
 tabbrowser-menuitem-close =
     .label = დახურვა
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -149,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = აღარ გამოჩნდ�
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = ყურადღება!
-tabbrowser-confirm-close-duplicate-tabs-text = გახსნილი დარჩება ბოლოს მოქმედი ჩანართი
 tabbrowser-confirm-close-all-duplicate-tabs-title = დაიხუროს გამეორებული ჩანართები?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     ამ ფანჯარაში დაიხურება გაორებული ჩანართები. ბოლო მოქმედი
@@ -192,6 +203,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = ყველა ({ $tabCount }) ჩანართი
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = ჩანართის დადუმება
@@ -199,8 +213,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = ჩანართის ახმოვანება
 tabbrowser-manager-close-tab =
     .tooltiptext = ჩანართის დახურვა
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — დაიხურა
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — მიმდინარე ფანჯარა
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = ჩანართების ჯგუფის შექმნა
 tab-group-editor-title-edit = ჩანართების ჯგუფის მართვა
@@ -212,22 +234,40 @@ tab-group-editor-cancel =
     .accesskey = ქ
 tab-group-editor-color-selector =
     .aria-label = ჩანართის ჯგუფის ფერი
-tab-group-editor-color-selector-blue = ლურჯი
-tab-group-editor-color-selector-purple = იისფერი
-tab-group-editor-color-selector-cyan = მოცისფრო
-tab-group-editor-color-selector-orange = ნარინჯისფერი
-tab-group-editor-color-selector-yellow = ყვითელი
-tab-group-editor-color-selector-pink = ვარდისფერი
-tab-group-editor-color-selector-green = მწვანე
-tab-group-editor-color-selector-gray = რუხი
-tab-group-editor-color-selector-red = წითელი
-tab-group-menu-header = ჩანართის ჯგუფები
+tab-group-editor-color-selector2-blue = ლურჯი
+    .title = ლურჯი
+tab-group-editor-color-selector2-purple = იისფერი
+    .title = იისფერი
+tab-group-editor-color-selector2-cyan = მოცისფრო
+    .title = მოცისფრო
+tab-group-editor-color-selector2-orange = ნარინჯისფერი
+    .title = ნარინჯისფერი
+tab-group-editor-color-selector2-yellow = ყვითელი
+    .title = ყვითელი
+tab-group-editor-color-selector2-pink = ვარდისფერი
+    .title = ვარდისფერი
+tab-group-editor-color-selector2-green = მწვანე
+    .title = მწვანე
+tab-group-editor-color-selector2-gray = რუხი
+    .title = რუხი
+tab-group-editor-color-selector2-red = წითელი
+    .title = წითელი
+tab-group-description = { $tabGroupName } — ჩანართების ჯგუფი
+tab-group-label-tooltip-collapsed = { $tabGroupName } — ჩაკეცილი
+tab-group-label-tooltip-expanded = { $tabGroupName } — გაშლილი
+tab-group-preview-name =
+    .aria-label = ჩანართები ჩაკეცილ ჯგუფში
 tab-context-unnamed-group =
     .label = უსახელო ჯგუფი
 tab-group-name-default = უსახელო ჯგუფი
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = ჩანართების სია გახსნილია
+tab-group-preview-closed-description = ჩანართების სია დახურულია
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -243,6 +283,8 @@ tab-context-move-tab-to-group =
            *[other] ჩანართების დამატება ჯგუფში
         }
     .accesskey = ჯ
+tab-context-move-tab-to-group-saved-groups =
+    .label = დახურული ჯგუფები
 tab-group-editor-action-new-tab =
     .label = ახალი ჩანართი ჯგუფში
 tab-group-editor-action-new-window =
@@ -263,10 +305,20 @@ tab-context-reopen-tab-group =
 tab-context-ungroup-tab =
     .label =
         { $groupCount ->
-            [one] ჯგუფიდან მოცილება
-           *[other] ჯგუფებიდან მოცილება
+            [one] მოცილება ჯგუფიდან
+           *[other] მოცილება ჯგუფებიდან
         }
     .accesskey = ც
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } ჩანართი კიდევ
+       *[other] { $tabCount } ჩანართი კიდევ
+    }
 
 ## Open/saved tab group context menu
 
@@ -292,3 +344,33 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = ჯგუფის გახსნა ახალ ფანჯარაში
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = გაყოფილი ხედი
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = გაყოფილი ხედის დამატება
+    .accesskey = ყ
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = გახსნა გაყოფილი ხედით
+    .accesskey = ყ
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = ცალკე გაყოფილი ხედი
+    .accesskey = ყ
+tab-context-badge-new = სიახლე
+
+## Manage Split View (icon in the address bar & three-dot menu in the footer)
+
+# "Separate" is a verb, as in "separate the split view tabs and display them normally".
+split-view-menuitem-separate-tabs =
+    .label = ჩანართების განცალკევება
+# "Reverse" is a verb, as in "reverse the order of split view tabs".
+split-view-menuitem-reverse-tabs =
+    .label = ჩანართების შებრუნება
+split-view-menuitem-close-both-tabs =
+    .label = ორივე ჩანართის დახურვა

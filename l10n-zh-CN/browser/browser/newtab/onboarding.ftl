@@ -25,6 +25,8 @@ return-to-amo-subtitle = 恭喜，您已经安装好 { -brand-short-name }
 return-to-amo-addon-title = 现在来安装 <img data-l10n-name="icon"/><b>{ $addon-name }</b> 吧。
 return-to-amo-add-extension-label = 添加扩展
 return-to-amo-add-theme-label = 安装主题
+return-to-amo-theme-install-complete-label = 主题已安装
+return-to-amo-extension-install-complete-label = 扩展已安装
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = 从 { $previous } 导�
 mr1-onboarding-theme-header = 我有我的范儿
 mr1-onboarding-theme-subtitle = 换上主题，让 { -brand-short-name } 有您的个性。
 mr1-onboarding-theme-secondary-button-label = 暂时不要
-newtab-wallpaper-onboarding-title = 试用新色彩
-newtab-wallpaper-onboarding-subtitle = 选张壁纸，给新标签页加点新鲜感。
-newtab-wallpaper-onboarding-primary-button-label = 设置壁纸
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = 系统主题
 mr1-onboarding-theme-label-light = 明亮
@@ -427,8 +426,20 @@ onboarding-checklist-sign-up = 注册或登录账户
 
 ## Tab Groups feature onboarding strings
 
-tab-groups-onboarding-feature-callout-title = 标签页群组助您摆脱繁乱，专注浏览
+tab-groups-onboarding-feature-callout-title = 用标签页群组摆脱繁乱，专注浏览
 tab-groups-onboarding-feature-callout-subtitle = 将标签页拖放到另一个标签页之上，即可创建首个群组，让标签页井井有条。
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = 随时可在“列出所有标签页”菜单找到标签页群组。
+tab-groups-onboarding-create-group-title-2 = 可随时在此找到您的标签页群组。
+tab-groups-onboarding-create-group-no-alltabs-button-title = 在地址栏搜索即可找到您的群组。
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = 关闭标签页群组后，可随时从“列出所有标签页”菜单重新打开。
+tab-groups-onboarding-saved-groups-title-2 = 关闭的标签页群组可随时在此处重新打开。
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = 在地址栏中搜索即可查找已关闭的群组。
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = 随时可从“列出所有标签页”菜单重新打开标签页群组。
+tab-groups-onboarding-session-restore-title = 可随时在此重新打开您的标签页群组。
+tab-groups-onboarding-dismiss = 确定
 
 ## Multi Profiles feature onboarding messages
 
@@ -438,3 +449,107 @@ multi-profile-spotlight-cta = 创建配置文件
 multi-profile-callout-title = 为工作和娱乐各自创建配置文件
 multi-profile-callout-subtitle = 配置文件可全面分隔浏览信息，例如搜索记录和密码。
 multi-profile-callout-cta = 创建配置文件
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = 下载，同步——走起！
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = 扫码下载移动版 { -brand-product-name }。安装后选择“同步到移动设备”，即可将密码、书签等数据随身带着走。
+dismiss-button-label = 知道了
+sync-to-mobile-button-label = 同步到移动设备
+desktop-to-mobile-qr-code-alt =
+    .aria-label = 用于下载移动版 { -brand-product-name } 的二维码
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    准备升级到 Windows 11？
+    一起来备份 { -brand-product-name } 数据。
+create-backup-screen-1-subtitle = 只需 1–2 分钟，即可自动保护您的密码、书签等数据。
+create-backup-screen-1-flair = 推荐
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">详细了解</a>
+create-backup-screen-1-sync-label = 与 { -brand-product-name } 同步
+create-backup-screen-1-sync-body = 备份所有已登录设备
+create-backup-screen-1-backup-label = 备份到电脑
+create-backup-screen-1-backup-body = 保存到您的设备或 OneDrive
+create-backup-select-tile-button-label = 选择
+create-backup-back-button-label = 返回
+create-backup-show-fewer =
+    .label = 减少显示此类内容
+create-backup-screen-2-title = 选择要备份的 { -brand-product-name } 数据
+create-backup-screen-2-subtitle = 只需一分钟即可完成。您的数据每天都将备份一次。
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = 简易设置
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = 书签、历史记录、设置等
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = 不包含密码和付款信息
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = 不受加密保护
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = 所有数据
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = 包含密码和付款信息
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = 由密码加密保护
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = 选择备份文件的保存位置
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = 创建备份文件的密码
+create-backup-screen-3-subtitle = 加密数据所需。请将其保存在您不会遗忘的地方。
+fx-backup-opt-in-header = 选择文件位置
+fx-backup-opt-in-filepath-label = 选择一个位置（例如 OneDrive），数据将由该位置转移到新设备。
+fx-backup-opt-in-create-password-label = 请输入密码
+fx-backup-opt-in-confirm-btn-label = 继续
+fx-backup-opt-in-cancel-btn-label = 返回
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = 已安排备份
+fx-backup-confirmation-screen-close-button = 关闭
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = 包含所有浏览数据
+fx-backup-confirmation-screen-all-data-item-text-2 = 保存到您的设备
+fx-backup-confirmation-screen-all-data-item-text-3 = 加密并受密码保护
+fx-backup-confirmation-screen-easy-setup-item-text-1 = 包含书签、历史记录、设置等数据
+fx-backup-confirmation-screen-easy-setup-item-text-2 = 保存到您的设备
+fx-backup-confirmation-screen-easy-setup-item-text-3 = 不包含密码和付款信息
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = 可前往<a data-l10n-name="settings">设置</a>将敏感数据纳入备份。
+fx-backup-confirmation-screen-item-subtext-1 = 备份将在几分钟后开始，并将每天进行一次。您可以在<a data-l10n-name="settings">设置</a>中检查进度。
+fx-backup-confirmation-screen-item-subtext-2 = 需要重新安装时，{ -brand-short-name } 将查找您的备份。
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = 从备份恢复
+restore-from-backup-title = 按您需要，取回熟悉的 { -brand-short-name } 体验
+restore-from-backup-subtitle = 恢复您的所有书签、历史记录和其他数据，立即接续浏览。
+restore-from-backup-secondary-button = 不恢复
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = 都回来了！您的 { -brand-short-name } 数据已恢复。
+restored-from-backup-success-with-checklist-subtitle = 想一键打开您最爱的隐私为先浏览器吗？
+restored-from-backup-success-no-checklist-subtitle = 您可以在<a data-l10n-name="settings">设置</a>中为此设备开启备份。
+restored-from-backup-success-with-checklist-primary-button = 保存并继续
+restored-from-backup-success-with-checklist-secondary-button = 跳过此步骤
+restored-from-backup-success-no-checklist-primary-button = 继续
+restored-from-backup-error-title = 嗯… 您的备份文件似乎存在问题。
+restored-from-backup-error-subtitle = 若您还有其他 { -brand-short-name } 备份文件，请尝试从那份文件恢复。<a data-l10n-name="restore-problems">仍有问题？</a>
+restored-from-backup-error-primary-button = 关闭
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = 定制您的 { -brand-short-name } 使用体验
+onboarding-personalization-subtitle = 回答几个问题，我们将为您推荐能优化 { -brand-short-name } 使用体验的功能和扩展。
+onboarding-personalization-use-case-title = 您会将 { -brand-short-name } 用于什么情景？
+onboarding-personalization-use-case-personal-option = 个人
+onboarding-personalization-use-case-school-option = 学习
+onboarding-personalization-use-case-work-option = 工作
+onboarding-personalization-motivation-title = 您最看重 { -brand-short-name } 的哪些特色？
+onboarding-personalization-motivation-privacy-option = 隐私和安全
+onboarding-personalization-motivation-productivity-option = 效率
+onboarding-personalization-motivation-other-option = 其他

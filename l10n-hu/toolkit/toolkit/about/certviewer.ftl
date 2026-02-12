@@ -36,6 +36,9 @@ certificate-viewer-key-size = Kulcsméret
 certificate-viewer-inc-locality = Bejegyzés helyszíne
 certificate-viewer-locality = Helység
 certificate-viewer-location = Hely
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = Naplónév
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = Naplóazonosító
 certificate-viewer-method = Módszer
 certificate-viewer-modulus = Modulus
@@ -110,6 +113,8 @@ certificate-viewer-export = Exportálás
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = (ismeretlen)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = tanúsítvány
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

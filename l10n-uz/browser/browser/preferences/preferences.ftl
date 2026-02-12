@@ -44,17 +44,6 @@ should-restart-ok = { -brand-short-name }ni hozir qayta ishga tushirish
 cancel-no-restart-button = Bekor qilish
 restart-later = Keyinroq qayta ishga tushirish
 
-## Extension Control Notifications
-##
-## These strings are used to inform the user
-## about changes made by extensions to browser settings.
-##
-## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
-##
-## Variables:
-##   $name (string) - Name of the extension
-
-
 ## Preferences UI Search Results
 
 search-results-header = Qidiruv natijalari
@@ -66,6 +55,10 @@ startup-header = Ishga tushirish
 always-check-default =
     .label = Agar { -brand-short-name } standart brauzeringiz bo‘lsa, doimo tekshirilsin
     .accesskey = t
+is-default-browser =
+    .message = { -brand-short-name } - hozircha standart brauzeringiz
+is-not-default-browser =
+    .message = { -brand-short-name } - standart brauzeringiz emas
 is-default = { -brand-short-name } - hozircha standart brauzeringiz
 is-not-default = { -brand-short-name } - standart brauzeringiz emas
 set-as-my-default-browser =
@@ -180,6 +173,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Fayl va ilovalar
+downloads-header-2 =
+    .label = Yuklab olishlar
+download-save-where-2 =
+    .label = Fayllarni saqlash manzili:
+    .accesskey = s
 download-header = Yuklab olishlar
 download-save-where = Fayllarni saqlash manzili:
     .accesskey = s
@@ -348,7 +346,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Yangi oyna va varaqlar
 home-new-windows-tabs-description2 = Bosh sahifa, yangi oyna va varaqlarni ochganda nima koʻrinishi kerakligini tanlang.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Bosh sahifa va yangi oynalar
 home-newtabs-mode-label = Yangi varaqlar
@@ -468,6 +466,8 @@ search-keyword-warning-bookmark = Xatcho‘pda foydalaniladigan kalit so‘zni t
 ## Containers Section
 
 containers-header = Konteynerdagi varaqlar
+containers-section-header =
+    .heading = Konteynerdagi varaqlar
 containers-add-button =
     .label = Yangi konteyner qo‘shish
     .accesskey = q
@@ -598,6 +598,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Qurilma nomi
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Qurilma nomi
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Qurilma nomini o‘zgartirish
+    .accesskey = h
 sync-device-name-change =
     .label = Qurilma nomini o‘zgartirish…
     .accesskey = h
@@ -646,12 +654,6 @@ forms-master-pw-change =
     .accesskey = u
 forms-master-pw-fips-desc = Maxfiy soʻzni oʻzgartirib boʻlmadi
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Tarix
@@ -672,6 +674,10 @@ history-remember-option-never =
     .label = Tarix hech qachon eslab qolinmasin
 history-remember-option-custom =
     .label = Tarix uchun boshqa sozlamalardan foydalanish
+history-remember-description2 =
+    .description = { -brand-short-name } kirilgan saytlar, yuklanmalar, anketalar va qidiruv tarixini eslab qoladi.
+history-dontremember-description2 =
+    .description = { -brand-short-name } xuddi shu moslamalardan shaxsiy ko‘rish sifatida foydalanadi va tarixni saqlab qolmaydi.
 history-remember-description = { -brand-short-name } kirilgan saytlar, yuklanmalar, anketalar va qidiruv tarixini eslab qoladi.
 history-dontremember-description = { -brand-short-name } xuddi shu moslamalardan shaxsiy ko‘rish sifatida foydalanadi va tarixni saqlab qolmaydi.
 history-private-browsing-permanent =
@@ -701,12 +707,6 @@ sitedata-settings =
     .label = Ma’lumotlarni boshqarish
     .accesskey = M
 
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
-
 ## Privacy Section - Address Bar
 
 addressbar-header = Manzil paneli
@@ -721,22 +721,6 @@ addressbar-locbar-openpage-option =
     .label = Varaqlarni ochish
     .accesskey = o
 addressbar-suggestions-settings = Qidiruv tizimi tavsiyalari uchun sozlamalarni o‘zgartirish
-
-## Privacy Section - Content Blocking
-
-
-## These strings are used to define the different levels of
-## Enhanced Tracking Protection.
-
-
-##
-
-
-# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
-
-
-## Privacy Section - Tracking
-
 
 ## Privacy Section - Permissions
 
@@ -770,6 +754,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Istisnolar
     .accesskey = I
+permissions-location2 =
+    .label = Manzili
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Mikrofon
+permissions-notification2 =
+    .label = Eslatmalar
 
 ## Privacy Section - Data Collection
 
@@ -785,9 +777,6 @@ addon-recommendations-link = Batafsil
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Ma’lumotlar hisoboti moslama uchun o‘chirib qo‘yilgan
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -818,12 +807,7 @@ certs-view =
 certs-devices =
     .label = Xavfsizlik qurilmalari
     .accesskey = X
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPS’ni yoqib qo‘yish
 
 ## The following strings are used in the Download section of settings
 

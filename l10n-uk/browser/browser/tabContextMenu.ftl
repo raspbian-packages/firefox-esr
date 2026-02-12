@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Нова вкладка
     .accesskey = Н
@@ -46,14 +50,14 @@ reload-tabs =
     .label = Оновити вкладки
     .accesskey = н
 pin-tab =
-    .label = Прикріпити вкладку
-    .accesskey = П
+    .label = Закріпити вкладку
+    .accesskey = З
 unpin-tab =
     .label = Відкріпити вкладку
     .accesskey = В
 pin-selected-tabs =
-    .label = Прикріпити вкладки
-    .accesskey = П
+    .label = Закріпити вкладки
+    .accesskey = З
 unpin-selected-tabs =
     .label = Відкріпити вкладки
     .accesskey = В
@@ -61,7 +65,7 @@ bookmark-selected-tabs =
     .label = Додати закладки вкладок…
     .accesskey = к
 tab-context-bookmark-tab =
-    .label = Додати вкладку до закладок
+    .label = Додати вкладку до закладок…
     .accesskey = и
 tab-context-open-in-new-container-tab =
     .label = Відкрити в новій вкладці контейнера
@@ -130,3 +134,11 @@ tab-context-send-tabs-to-device =
            *[many] Надіслати { $tabCount } вкладок на пристрій
         }
     .accesskey = с
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [one] Вивантажити вкладку
+            [few] Вивантажити { $tabCount } вкладки
+           *[many] Вивантажити { $tabCount } вкладок
+        }
+    .accesskey = В

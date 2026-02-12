@@ -18,21 +18,12 @@ sidebar-history-delete =
 sidebar-history-clear =
     .label = Skarzhañ ar roll istor
 
-## Labels for sidebar search
-
-
 ## Labels for sidebar customize panel
 
 sidebar-customize-firefox-tools-header =
     .label = Ostilhoù { -brand-product-name }
 sidebar-vertical-tabs =
     .label = Ivinelloù a-serzh
-sidebar-horizontal-tabs =
-    .label = Ivinelloù a-blaen
-sidebar-customize-tabs-header =
-    .label = Arventennoù an ivinelloù
-sidebar-customize-position-header =
-    .label = Lec’hiadur ar varrenn gostez
 
 ## Labels for sidebar context menu items
 
@@ -54,11 +45,10 @@ sidebar-context-menu-copy-link =
 #   $deviceName (String) - The name of the device the user is closing a tab for
 sidebar-context-menu-close-remote-tab =
     .label = Serriñ an ivinell war { $deviceName }
-
-## Labels for sidebar history context menu items
-
-sidebar-history-context-menu-delete-page =
-    .label = Dilemel eus ar roll istor
+sidebar-context-menu-remove-extension2 =
+    .label = Lemel diouzh { -brand-short-name }
+sidebar-context-menu-unpin-extension =
+    .label = Lemel diouzh ar varrenn gostez
 
 ## Labels for sidebar menu items.
 
@@ -70,11 +60,6 @@ sidebar-menu-bookmarks-label =
     .label = Sinedoù
 sidebar-menu-customize-label =
     .label = Personelaat ar varrenn gostez
-sidebar-menu-review-checker-label =
-    .label = Gwirier alioù
-
-## Tooltips for sidebar menu items.
-
 
 ## Headings for sidebar menu panels.
 
@@ -107,18 +92,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Dispakañ ar varrenn gostez
-    .label = Barrennoù kostez
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Serriñ ar varrenn gostez
-    .label = Barrennoù kostez
-sidebar-widget-show-sidebar =
-    .tooltiptext = Diskouez ar varrenn gostez
-    .label = Barrennoù kostez
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Kuzhat ar varrenn gostez
-    .label = Barrennoù kostez
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =

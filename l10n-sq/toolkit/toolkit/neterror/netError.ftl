@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = Faqe e Bllokuar
 neterror-captive-portal-page-title = Hyni në rrjet
 neterror-dns-not-found-title = S’u Gjet Shërbyes
 neterror-malformed-uri-page-title = URL e pavlefshme
+general-body-title = Hapni sytë. Diçka s’duket siç duhet.
+problem-with-this-site-title = Duket se ka një problem me këtë sajt
 
 ## Error page actions
 
@@ -43,6 +45,7 @@ neterror-load-error-connection = Nëse nuk arrini të ngarkoni qoftë edhe një 
 neterror-load-error-firewall = Nëse kompjuteri apo rrjeti juaj mbrohet nga një “firewall”, ose ndërmjetës, sigurohuni që { -brand-short-name }-it i është lejuar hyrja në Web.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Nëse po provoni të ngarkoni një faqe rrjeti vendor, ju lutemi, shihni nëse i janë akorduar{ -brand-short-name }-it leje mbi Rrjetin Vendor, te rregullimet për Privatësi & Siguri të macOS-it.
+neterror-http-error-page = Kontrolloni nëse e keni shkruar saktë adresën e sajtit.
 neterror-captive-portal = Duhet të bëni hyrjen në këtë rrjet, përpara se të përdorni Internetin.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -51,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Nëse dhatë adresën e saktë, mun
 neterror-dns-not-found-hint-try-again = Riprovoni më vonë
 neterror-dns-not-found-hint-check-network = Kontrolloni lidhjen tuaj në rrjet
 neterror-dns-not-found-hint-firewall = Kontrolloni nëse ka { -brand-short-name }-i leje të hyjë në web (mund të jeni i lidhur, por të gjendeni pas një firewall-i)
+neterror-dns-not-found-offline-hint-header = <strong>Ç’mund të bëni për këtë?</strong>
+neterror-dns-not-found-offline-hint-different-device = Provoni të lidheni që nga një pajisje tjetër.
+neterror-dns-not-found-offline-hint-modem = Kontrolloni modemin ose rrugëzuesin tuaj.
+neterror-dns-not-found-offline-hint-reconnect = Shkëputuni dhe rilidhuni me Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -74,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Problem i papritur.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name }-i s’mund ta mbrojë kërkesën tuaj për këtë adresë sajti përmes ftilluesit tonë të besuar për DNS. Ja pse:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name }-i s’mund ta mbrojë kërkesën tuaj për këtë adresë sajti përmes ftilluesit tonë të siguruar për DNS. Ja pse:
 neterror-dns-not-found-native-fallback-heuristic = DNS përmes HTTPS është çaktivizuar në rrjetin tuaj.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name }-i s’qe në gjendje të lidhet me { $trrDomain }.
 
@@ -98,6 +104,9 @@ neterror-proxy-connect-failure-settings = Kontrolloni rregullimet për ndërmjet
 neterror-proxy-connect-failure-contact-admin = Lidhuni me përgjegjësin e rrjetit tuaj, për t'u siguruar që shërbyesi ndërmjetës po punon.
 neterror-content-encoding-error = Ju lutemi, lidhuni me të zotët e sajtit, për t’u bërë të ditur këtë problem.
 neterror-unsafe-content-type = Ju lutemi, lidhuni me të zotët e sajtit, për t’u bërë të ditur këtë problem.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name }-i s’i zë besë { $hostname }, ngaqë lidhja s’është e siguruar. Provoni të ndryshoni URL-në si HTTPS.
 neterror-nss-failure-not-verified = Faqja që po provoni të shihni, s’shfaqet dot, ngaqë mirëfilltësia e të dhënave të marra s’u vërtetua dot.
 neterror-nss-failure-contact-website = Ju lutemi, lidhuni me të zotët e sajtit, për t’u bërë të ditur këtë problem.
 # Variables:
@@ -151,7 +160,20 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Nëse nuk jeni i familjariz
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> përmban një rregull sigurie të quajtur HTTP Strict Transport Security (HSTS), që do të thotë se { -brand-short-name }-i mund të lidhet me të vetëm nën mënyrë të siguruar. S’shtoni dot një përjashtim për vizitimin e këtij sajti.
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = Ka shumë mundësi asgjë, ngaqë gjasat janë se pati një problem me vetë sajtin.
+certerror-blocked-by-corp-headers-description = Ndonjëherë, sajtet ujdisin mbrojtje për veten dhe persona si ju, kundër ndërveprimesh të padëshiruara me sajte të tjerë.
+certerror-coop-learn-more = Mësoni më tepër mbi “Cross Origin Opener Policies” (COOP)
+certerror-coep-learn-more = Mësoni më tepër mbi “Cross Origin Embedder Policies” (COEP)
 # Variables:
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Kod gabimi: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name }-i s’mund të krijojë një lidhje të siguruar me shërbyesin te { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Duket se ky sajt përdor “software” të vjetër, me probleme të ditura sigurie.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Sigurohuni të përdorni versionin më të ri të { -brand-short-name }-it. Kaloni te Ndihmë > Mbi { -brand-short-name }-in, te menuja. Nëse po përdorni { -brand-short-name }-in më të ri, gjasat janë që problemi të jetë me vetë sajtin.

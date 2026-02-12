@@ -9,7 +9,7 @@ urlbar-translations-button =
 # not be translated, as it is a reflection of the un-localized BETA icon that is in the
 # panel.
 urlbar-translations-button2 =
-    .tooltiptext = תרגום עמוד זה - Beta
+    .tooltiptext = תרגום דף זה - Beta
 # Note that here "Beta" should not be translated, as it is a reflection of the
 # un-localized BETA icon that is in the panel.
 urlbar-translations-button-intro =
@@ -172,7 +172,7 @@ translations-settings-close-dialog =
 # Text displayed in the right-click context menu for translating
 # selected text to a yet-to-be-determined language.
 main-context-menu-translate-selection =
-    .label = תרגום החלק הנבחר…
+    .label = תרגום הקטע הנבחר…
     .accesskey = ת
 # Text displayed in the right-click context menu for translating
 # selected text to a target language.
@@ -180,7 +180,7 @@ main-context-menu-translate-selection =
 # Variables:
 #   $language (string) - The localized display name of the target language
 main-context-menu-translate-selection-to-language =
-    .label = תרגום החלק הנבחר ל{ $language }
+    .label = תרגום הקטע הנבחר ל{ $language }
     .accesskey = ת
 # Text displayed in the right-click context menu for translating
 # the text of a hyperlink to a yet-to-be-determined language.
@@ -214,7 +214,7 @@ select-translations-panel-copy-button-copied =
 select-translations-panel-done-button =
     .label = סיום
 select-translations-panel-translate-full-page-button =
-    .label = תרגום כל העמוד
+    .label = תרגום כל הדף
 select-translations-panel-translate-button =
     .label = תרגום
 select-translations-panel-try-again-button =

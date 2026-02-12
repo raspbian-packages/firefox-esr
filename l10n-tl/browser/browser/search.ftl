@@ -32,7 +32,10 @@ searchbar-icon =
 
 remove-search-engine-button = OK
 
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
+## The following strings are used as input labels.
 
+add-engine-window =
+    .title = Magdagdag ng Search Engine
+    .style = min-width: 32em;
+add-engine-button = Magdagdag ng Custom Engine
+add-engine-name = Maghanap ng engine name

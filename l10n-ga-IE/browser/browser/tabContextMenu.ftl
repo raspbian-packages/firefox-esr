@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 reload-tab =
     .label = Athlódáil an Cluaisín
     .accesskey = A
@@ -25,7 +29,3 @@ unpin-tab =
 move-to-new-window =
     .label = Bog go Fuinneog Nua
     .accesskey = N
-
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
-

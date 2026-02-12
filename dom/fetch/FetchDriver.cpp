@@ -58,6 +58,7 @@
 #include "mozilla/Unused.h"
 
 #include "Fetch.h"
+#include "FetchLog.h"
 #include "FetchUtil.h"
 #include "InternalRequest.h"
 #include "InternalResponse.h"
@@ -261,6 +262,8 @@ AlternativeDataStreamListener::OnDataAvailable(nsIRequest* aRequest,
                                                nsIInputStream* aInputStream,
                                                uint64_t aOffset,
                                                uint32_t aCount) {
+  FETCH_LOG(
+      ("FetchDriver::OnDataAvailable this=%p, request=%p", this, aRequest));
   if (mStatus == AlternativeDataStreamListener::LOADING) {
     MOZ_ASSERT(mPipeAlternativeOutputStream);
     uint32_t read = 0;
@@ -348,6 +351,7 @@ FetchDriver::FetchDriver(SafeRefPtr<InternalRequest> aRequest,
       mPerformanceStorage(aPerformanceStorage),
       mNeedToObserveOnDataAvailable(false),
       mIsTrackingFetch(aIsTrackingFetch),
+      mIsOn3PCBExceptionList(false),
       mOnStopRequestCalled(false)
 #ifdef DEBUG
       ,
@@ -639,11 +643,22 @@ nsresult FetchDriver::HttpFetch(
                        nullptr, /* aCallbacks */
                        loadFlags, ios);
   } else {
-    rv =
-        NS_NewChannel(getter_AddRefs(chan), uri, mPrincipal, secFlags,
-                      mRequest->ContentPolicyType(), mCookieJarSettings,
-                      mPerformanceStorage, mLoadGroup, nullptr, /* aCallbacks */
-                      loadFlags, ios);
+    nsCOMPtr<nsIPrincipal> principal = mPrincipal;
+    if (principal->IsSystemPrincipal() &&
+        mRequest->GetTriggeringPrincipalOverride()) {
+      rv = NS_NewChannelWithTriggeringPrincipal(
+          getter_AddRefs(chan), uri, mPrincipal,
+          mRequest->GetTriggeringPrincipalOverride(), secFlags,
+          mRequest->ContentPolicyType(), mCookieJarSettings,
+          mPerformanceStorage, mLoadGroup, nullptr, /* aCallbacks */
+          loadFlags, ios);
+    } else {
+      rv = NS_NewChannel(getter_AddRefs(chan), uri, mPrincipal, secFlags,
+                         mRequest->ContentPolicyType(), mCookieJarSettings,
+                         mPerformanceStorage, mLoadGroup,
+                         nullptr, /* aCallbacks */
+                         loadFlags, ios);
+    }
   }
   NS_ENSURE_SUCCESS(rv, rv);
 
@@ -666,14 +681,20 @@ nsresult FetchDriver::HttpFetch(
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
-  if (mIsThirdPartyWorker.isSome()) {
+  if (mIsThirdPartyContext.isSome()) {
     nsCOMPtr<nsILoadInfo> loadInfo = chan->LoadInfo();
-    rv = loadInfo->SetIsInThirdPartyContext(mIsThirdPartyWorker.ref());
+    rv = loadInfo->SetIsInThirdPartyContext(mIsThirdPartyContext.ref());
+    NS_ENSURE_SUCCESS(rv, rv);
+  }
+
+  if (mIsOn3PCBExceptionList) {
+    nsCOMPtr<nsILoadInfo> loadInfo = chan->LoadInfo();
+    rv = loadInfo->SetIsOn3PCBExceptionList(mIsOn3PCBExceptionList);
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
   // If the fetch is created by FetchEvent.request or NavigationPreload request,
-  // corresponding InterceptedHttpChannel information need to propagte to the
+  // corresponding InterceptedHttpChannel information need to propagate to the
   // channel of the fetch.
   if (mRequest->GetInterceptionTriggeringPrincipalInfo()) {
     auto principalOrErr = mozilla::ipc::PrincipalInfoToPrincipal(
@@ -755,7 +776,7 @@ nsresult FetchDriver::HttpFetch(
     // then set request’s referrer policy to the user-set default policy.
     if (mRequest->ReferrerPolicy_() == ReferrerPolicy::_empty) {
       nsCOMPtr<nsILoadInfo> loadInfo = httpChan->LoadInfo();
-      bool isPrivate = loadInfo->GetOriginAttributes().mPrivateBrowsingId > 0;
+      bool isPrivate = loadInfo->GetOriginAttributes().IsPrivateBrowsing();
       referrerPolicy =
           ReferrerInfo::GetDefaultReferrerPolicy(httpChan, uri, isPrivate);
       mRequest->SetReferrerPolicy(referrerPolicy);
@@ -847,19 +868,61 @@ nsresult FetchDriver::HttpFetch(
                        nsIClassOfService::Tail);
   }
 
+  const auto fetchPriority = ToFetchPriority(mRequest->GetPriorityMode());
+  if (cos) {
+    cos->SetFetchPriorityDOM(fetchPriority);
+  }
+
   if (nsCOMPtr<nsISupportsPriority> p = do_QueryInterface(chan)) {
     if (mIsTrackingFetch &&
         StaticPrefs::privacy_trackingprotection_lower_network_priority()) {
       p->SetPriority(nsISupportsPriority::PRIORITY_LOWEST);
     } else if (StaticPrefs::network_fetchpriority_enabled()) {
-      // TODO: Bug 1881040 - we need to take into account of destination for the
-      // fetchpriority mapping.
-      const auto fetchPriority = ToFetchPriority(mRequest->GetPriorityMode());
-      // The spec defines the priority to be set in an implementation defined
-      // manner (<https://fetch.spec.whatwg.org/#concept-fetch>, step 15.
+      // According to step 15 of https://fetch.spec.whatwg.org/#concept-fetch
+      // request’s priority, initiator, destination, and render-blocking are
+      // used in an implementation-defined manner to set the internal priority.
       // See corresponding preferences in StaticPrefList.yaml for more context.
-      const int32_t supportsPriorityDelta =
-          FETCH_PRIORITY_ADJUSTMENT_FOR(global_fetch_api, fetchPriority);
+      const int32_t supportsPriorityDelta = [this, &fetchPriority]() {
+        auto destination = mRequest->GetInterceptionTriggeringPrincipalInfo()
+                               ? mRequest->InterceptionDestination()
+                               : mRequest->Destination();
+        switch (destination) {
+          case RequestDestination::Font:
+            return FETCH_PRIORITY_ADJUSTMENT_FOR(link_preload_font,
+                                                 fetchPriority);
+          case RequestDestination::Style:
+            return FETCH_PRIORITY_ADJUSTMENT_FOR(link_preload_style,
+                                                 fetchPriority);
+          case RequestDestination::Script:
+          case RequestDestination::Audioworklet:
+          case RequestDestination::Paintworklet:
+          case RequestDestination::Sharedworker:
+          case RequestDestination::Worker:
+          case RequestDestination::Xslt:
+          case RequestDestination::Json:
+            return FETCH_PRIORITY_ADJUSTMENT_FOR(link_preload_script,
+                                                 fetchPriority);
+          case RequestDestination::Image:
+            return FETCH_PRIORITY_ADJUSTMENT_FOR(images, fetchPriority);
+          case RequestDestination::Audio:
+          case RequestDestination::Track:
+          case RequestDestination::Video:
+            return FETCH_PRIORITY_ADJUSTMENT_FOR(media, fetchPriority);
+          case RequestDestination::Document:
+          case RequestDestination::Embed:
+          case RequestDestination::Frame:
+          case RequestDestination::Iframe:
+          case RequestDestination::Manifest:
+          case RequestDestination::Object:
+          case RequestDestination::Report:
+          case RequestDestination::_empty:
+            return FETCH_PRIORITY_ADJUSTMENT_FOR(global_fetch_api,
+                                                 fetchPriority);
+        };
+        MOZ_ASSERT_UNREACHABLE("Unknown destination");
+        return 0;
+      }();
+      p->SetPriority(mRequest->InternalPriority());
       p->AdjustPriority(supportsPriorityDelta);
     }
   }
@@ -903,12 +966,12 @@ nsresult FetchDriver::HttpFetch(
   } else {
     // Integrity check cannot be done on alt-data yet.
     if (mRequest->GetIntegrity().IsEmpty()) {
-      MOZ_ASSERT(!FetchUtil::WasmAltDataType.IsEmpty());
       nsCOMPtr<nsICacheInfoChannel> cic = do_QueryInterface(chan);
       if (cic && StaticPrefs::javascript_options_wasm_caching() &&
           !mRequest->SkipWasmCaching()) {
         cic->PreferAlternativeDataType(
-            FetchUtil::WasmAltDataType, nsLiteralCString(WASM_CONTENT_TYPE),
+            FetchUtil::GetWasmAltDataType(),
+            nsLiteralCString(WASM_CONTENT_TYPE),
             nsICacheInfoChannel::PreferredAlternativeDataDeliveryType::
                 SERIALIZE);
       }
@@ -998,6 +1061,8 @@ void FetchDriver::FailWithNetworkError(nsresult rv) {
 
 NS_IMETHODIMP
 FetchDriver::OnStartRequest(nsIRequest* aRequest) {
+  FETCH_LOG(
+      ("FetchDriver::OnStartRequest this=%p, request=%p", this, aRequest));
   AssertIsOnMainThread();
 
   // Note, this can be called multiple times if we are doing an opaqueredirect.
@@ -1196,7 +1261,7 @@ FetchDriver::OnStartRequest(nsIRequest* aRequest) {
     } else if (!cic->PreferredAlternativeDataTypes().IsEmpty()) {
       MOZ_ASSERT(cic->PreferredAlternativeDataTypes().Length() == 1);
       MOZ_ASSERT(cic->PreferredAlternativeDataTypes()[0].type().Equals(
-          FetchUtil::WasmAltDataType));
+          FetchUtil::GetWasmAltDataType()));
       MOZ_ASSERT(
           cic->PreferredAlternativeDataTypes()[0].contentType().EqualsLiteral(
               WASM_CONTENT_TYPE));
@@ -1296,10 +1361,23 @@ FetchDriver::OnStartRequest(nsIRequest* aRequest) {
     SRICheck::IntegrityMetadata(mRequest->GetIntegrity(), sourceUri, reporter,
                                 &mSRIMetadata);
     mSRIDataVerifier =
-        MakeUnique<SRICheckDataVerifier>(mSRIMetadata, sourceUri, reporter);
+        MakeUnique<SRICheckDataVerifier>(mSRIMetadata, channel, reporter);
 
     // Do not retarget off main thread when using SRI API.
     return NS_OK;
+  }
+
+  // Only retarget if not already retargeted
+  nsCOMPtr<nsISerialEventTarget> target;
+  nsCOMPtr<nsIThreadRetargetableRequest> req = do_QueryInterface(aRequest);
+  if (req) {
+    rv = req->GetDeliveryTarget(getter_AddRefs(target));
+    if (NS_SUCCEEDED(rv) && target && !target->IsOnCurrentThread()) {
+      FETCH_LOG(
+          ("FetchDriver::OnStartRequest this=%p, request=%p already retargeted",
+           this, aRequest));
+      return NS_OK;
+    }
   }
 
   nsCOMPtr<nsIEventTarget> sts =
@@ -1310,6 +1388,7 @@ FetchDriver::OnStartRequest(nsIRequest* aRequest) {
     return rv;
   }
 
+  FETCH_LOG(("FetchDriver retargeting: request %p", aRequest));
   // Try to retarget off main thread.
   if (nsCOMPtr<nsIThreadRetargetableRequest> rr = do_QueryInterface(aRequest)) {
     RefPtr<TaskQueue> queue =
@@ -1462,6 +1541,7 @@ FetchDriver::OnDataAvailable(nsIRequest* aRequest, nsIInputStream* aInputStream,
 
 NS_IMETHODIMP
 FetchDriver::OnStopRequest(nsIRequest* aRequest, nsresult aStatusCode) {
+  FETCH_LOG(("FetchDriver::OnStopRequest this=%p, request=%p", this, aRequest));
   AssertIsOnMainThread();
 
   MOZ_DIAGNOSTIC_ASSERT(!mOnStopRequestCalled);
@@ -1508,14 +1588,7 @@ FetchDriver::OnStopRequest(nsIRequest* aRequest, nsresult aStatusCode) {
         reporter = mObserver->GetReporter();
       }
 
-      nsAutoCString sourceUri;
-      if (mDocument && mDocument->GetDocumentURI()) {
-        mDocument->GetDocumentURI()->GetAsciiSpec(sourceUri);
-      } else if (!mWorkerScript.IsEmpty()) {
-        sourceUri.Assign(mWorkerScript);
-      }
-      nsresult rv =
-          mSRIDataVerifier->Verify(mSRIMetadata, channel, sourceUri, reporter);
+      nsresult rv = mSRIDataVerifier->Verify(mSRIMetadata, channel, reporter);
       if (NS_FAILED(rv)) {
         if (altDataListener) {
           altDataListener->Cancel();

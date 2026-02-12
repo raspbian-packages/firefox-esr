@@ -20,6 +20,18 @@ fxa-menu-connect-another-device =
     .label = Drugi rěd zwězaś…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] Na rěd pósłaś
+            [one] { $tabCount } rejtarik na rěd pósłaś
+            [two] { $tabCount } rejtarika na rěd pósłaś
+            [few] { $tabCount } rejtariki na rěd pósłaś
+           *[other] { $tabCount } rejtarikow na rěd pósłaś
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label =
         { $tabCount ->
@@ -35,8 +47,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Sćelśo rejtarik ned na rěd, pla kótaregož sćo pśizjawjony.
 fxa-menu-sign-out =
     .label = Wótzjawiś…
-fxa-menu-sync-title = Synchronizěrowaś
 fxa-menu-sync-description = Mějśo pśistup k internetoju wót wšuźi
+fxa-avatar-sign-in = Pśizjawiś
+fxa-avatar-sign-up = Registrěrowaś
+fxa-avatar-tooltip =
+    .tooltiptext = Pśizjawśo se pla swójogo konta
 sync-setup-verify-continue = Dalej
 sync-setup-verify-title = Zjadnośeńske warnowanje
 sync-setup-verify-heading = Cośo se napšawdu w sync registrěrowaś?

@@ -61,7 +61,7 @@ cfr-doorhanger-extension-total-users =
        *[many] { $total } користувачів
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Синхронізуйте свої закладки всюди.
 cfr-doorhanger-bookmark-fxa-body = Гарна знахідка! Тепер синхронізуйте цю закладку зі своїми мобільними пристроями. Почніть роботу з { -fxaccount-brand-name(case: "abl") }.
@@ -70,11 +70,16 @@ cfr-doorhanger-bookmark-fxa-link-text = Синхронізувати закла�
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Кнопка закриття
     .title = Закрити
+fxa-adoption-addresses-backup-title = Резервне копіювання збережених адрес
+fxa-adoption-addresses-backup-subtitle = Захистіть свої збережені адреси, синхронізувавши їх з іншими пристроями за допомогою шифрування.
+fxa-adoption-credit-cards-backup-title = Резервне копіювання способів оплати
+fxa-adoption-credit-cards-backup-subtitle = Захистіть свої способи оплати, синхронізувавши їх з іншими пристроями за допомогою шифрування.
+fxa-adoption-primary-button-label = Зареєструватись
 
 ## Protections panel
 
 cfr-protections-panel-header = Переглядайте без стеження
-cfr-protections-panel-body = Зберігайте свої дані при собі. { -brand-short-name } захищає вас від численних найпоширеніших елементів стеження, що переслідують вас в мережі.
+cfr-protections-panel-body = Збережіть приватність своїх даних. { -brand-short-name } захищає вас від численних найпоширеніших елементів стеження, що переслідують вас в інтернеті.
 cfr-protections-panel-link-text = Докладніше
 
 ## What's New toolbar button and panel
@@ -256,7 +261,7 @@ device-migration-fxa-spotlight-sync-primary-button = Розпочати
 ## Set as Default PDF Reader Infobar
 
 # The question portion of the following message should have the <strong> and </strong> tags surrounding it.
-pdf-default-notification-message = <strong>Зробити { -brand-short-name } типовою  програмою читання PDF?</strong> Використовуйте { -brand-short-name }, щоб читати та редагувати PDF-файли, збережені на вашому комп’ютері.
+pdf-default-notification-message = <strong>Зробити { -brand-short-name } типовою програмою читання PDF?</strong> Використовуйте { -brand-short-name }, щоб читати й редагувати PDF-файли, збережені на вашому комп'ютері.
 pdf-default-notification-set-default-button =
     .label = Установити типовим
 pdf-default-notification-decline-button =
@@ -312,10 +317,13 @@ root-certificate-windows-background-notification-update-button = Оновити 
 
 fxa-menu-message-close-button =
     .title = Закрити
-    .aria-label = З
+    .aria-label = Закрити
 fxa-menu-message-sign-up-button = Зареєструватись
+fxa-menu-message-sign-in-button = Увійти
+fxa-menu-message-sync-button = Почати синхронізацію
 fxa-menu-message-sync-devices-primary-text = Синхронізуйте всі свої пристрої
 fxa-menu-message-sync-devices-secondary-text = Миттєво отримуйте свої дані, як-от закладки та паролі, всюди, де ви використовуєте { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Миттєво отримуйте свої закладки, паролі та інші дані на всіх пристроях, де ви ввійшли в { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Синхронізуйте всі свої пристрої
 fxa-menu-message-backup-data-primary-text = Створіть резервну копію даних браузера
 fxa-menu-message-backup-data-secondary-text = Автоматично захищайте закладки, паролі та інші дані на всіх своїх пристроях.
@@ -346,3 +354,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Тримайте улюблений, орієнтований на приватність браузер на відстані одного натискання. Встановіть { -brand-short-name } типовим браузером для відкриття посилань і закріпіть його на панель завдань.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Тримайте улюблений, орієнтований на приватність браузер на відстані одного натискання. Встановіть { -brand-short-name } типовим браузером для відкриття посилань і закріпіть його на панель завдань і в меню Пуск.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Збираєтесь оновитися з Windows 10?
+windows-10-eos-sync-spotlight-subtitle = Зробіть резервну копію своїх паролів і закладок, щоб бути готовими до переходу на будь-який пристрій.
+windows-10-eos-sync-spotlight-primary-label = Зробіть резервну копію свого { -brand-short-name }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Оновлюєтеся до Windows 11? Не втрачайте закладки та паролі.
+windows-10-eos-sync-toast-subtitle = Зробіть резервну копію своїх даних, щоб { -brand-short-name } був готовий до використання будь-коли, як на цьому, так і на іншому ПК.
+windows-10-eos-sync-toast-primary-label = Розпочати
+windows-10-eos-sync-toast-secondary-label = Нагадати пізніше
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } не завантажується заздалегідь, як інші браузери великих технологічних компаній. У цьому й сенс.
+windows-10-eos-challenger-sync-callout-subtitle = Створивши резервну копію закладок і паролів { -brand-product-name }, вам буде легше перенести улюблений браузер на інший пристрій.
+windows-10-eos-challenger-pin-callout-subtitle = Закріпіть { -brand-shorter-name } на панелі завдань, щоб ваш браузер завжди був під рукою, коли він вам потрібен.
+windows-10-eos-challenger-sync-primary-button = Зробити резервну копію { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Закріпити { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } блокує криптомайнери, стеження соціальних мереж і зчитування цифрового відбитка.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Елементи стеження не можуть ідентифікувати ваш пристрій або переслідувати вас в Інтернеті, бо ми їм цього не дозволяємо.
+windows-10-eos-sync-callout-privacy-screen-2-title = Захистіть свої паролі та закладки для наступного пристрою.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Резервне копіювання { -brand-shorter-name } дає змогу легко переносити ваші дані та налаштування приватності.
+windows-10-eos-sync-callout-privacy-info-button = Переглянути, що заблоковано
+windows-10-eos-callout-addons-title = Спробуйте додатки: прості вдосконалення, що мають значний вплив
+windows-10-eos-callout-addons-subtitle = Ці розширення відібрано, щоб допомогти вам бути продуктивними, захищеними та зосередженими.
+windows-10-eos-callout-addons-primary-button = Перегляньте наші збірки
+windows-10-eos-sync-callout-addons-title = Не втрачайте свої додатки під час оновлення з Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Синхронізуйте зараз, щоб ваші додатки { -brand-product-name } завжди були доступні, навіть після зміни пристрою.
+windows-10-eos-sync-callout-next-button = Далі
+windows-10-eos-sync-callout-get-started-button = Розпочати
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Вертикальні вкладки та групи вкладок вже тут!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = У відповідь на численні прохання { -brand-product-name } додав нові функції, щоб зробити перегляд сайтів ще зручнішим і зосередженішим.
+windows-10-eos-feature-toast-whats-new-button = Перегляньте, що нового
+windows-10-eos-feature-toast-dismiss-button = Відхилити
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Надійний захист від відстеження може призвести до збоїв у роботі сайтів.</strong> Усуньте поширені проблеми, розблокувавши важливі елементи, які можуть містити стеження.
+etp-strict-exceptions-infobar-learn-more = Докладніше
+etp-strict-exceptions-infobar-button = Застосувати усунення проблем
+    .accesskey = З
+etp-strict-exceptions-infobar-not-now = Не зараз
+    .accesskey = е

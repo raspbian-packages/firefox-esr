@@ -21,6 +21,7 @@
 #include "mozilla/dom/ScriptSettings.h"
 #include "mozilla/IOInterposer.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/Unused.h"
 #include "mozilla/Utf8.h"  // mozilla::Utf8Unit
 #include "nsServiceManagerUtils.h"
 #include "nsComponentManagerUtils.h"
@@ -40,7 +41,7 @@
 #include "nsJSUtils.h"
 #include "xpcpublic.h"
 #include "xpcprivate.h"
-#include "BackstagePass.h"
+#include "SystemGlobal.h"
 #include "nsIScriptSecurityManager.h"
 #include "nsIPrincipal.h"
 #include "nsJSUtils.h"
@@ -58,7 +59,6 @@
 #ifdef XP_WIN
 #  include "mozilla/mscom/ProcessRuntime.h"
 #  include "mozilla/ScopeExit.h"
-#  include "mozilla/widget/AudioSession.h"
 #  include "mozilla/WinDllServices.h"
 #  include "mozilla/WindowsBCryptInitialization.h"
 #  include <windows.h>
@@ -90,8 +90,8 @@
 #ifdef FUZZING_INTERFACES
 #  include "xpcrtfuzzing/xpcrtfuzzing.h"
 #  include "XREShellData.h"
-static bool fuzzDoDebug = !!getenv("MOZ_FUZZ_DEBUG");
-static bool fuzzHaveModule = !!getenv("FUZZER");
+MOZ_RUNINIT static bool fuzzDoDebug = !!getenv("MOZ_FUZZ_DEBUG");
+MOZ_RUNINIT static bool fuzzHaveModule = !!getenv("FUZZER");
 #endif  // FUZZING_INTERFACES
 
 using namespace mozilla;
@@ -128,15 +128,6 @@ class XPCShellDirProvider : public nsIDirectoryServiceProvider2 {
   nsCOMPtr<nsIFile> mAppFile;
 };
 
-#ifdef XP_WIN
-class MOZ_STACK_CLASS AutoAudioSession {
- public:
-  AutoAudioSession() { widget::StartAudioSession(); }
-
-  ~AutoAudioSession() { widget::StopAudioSession(); }
-};
-#endif
-
 #define EXITCODE_RUNTIME_ERROR 3
 #define EXITCODE_FILE_NOT_FOUND 4
 
@@ -163,7 +154,7 @@ static bool GetLocationProperty(JSContext* cx, unsigned argc, Value* vp) {
   return false;
 #else
   JS::AutoFilename filename;
-  if (JS::DescribeScriptedCaller(cx, &filename) && filename.get()) {
+  if (JS::DescribeScriptedCaller(&filename, cx) && filename.get()) {
     NS_ConvertUTF8toUTF16 filenameString(filename.get());
 
 #  if defined(XP_WIN)
@@ -181,8 +172,7 @@ static bool GetLocationProperty(JSContext* cx, unsigned argc, Value* vp) {
 #  endif
 
     nsCOMPtr<nsIFile> location;
-    nsresult rv =
-        NS_NewLocalFile(filenameString, false, getter_AddRefs(location));
+    Unused << NS_NewLocalFile(filenameString, getter_AddRefs(location));
 
     if (!location && gWorkingDirectory) {
       // could be a relative path, try appending it to the cwd
@@ -190,7 +180,7 @@ static bool GetLocationProperty(JSContext* cx, unsigned argc, Value* vp) {
       nsAutoString absolutePath(*gWorkingDirectory);
       absolutePath.Append(filenameString);
 
-      rv = NS_NewLocalFile(absolutePath, false, getter_AddRefs(location));
+      Unused << NS_NewLocalFile(absolutePath, getter_AddRefs(location));
     }
 
     if (location) {
@@ -200,7 +190,7 @@ static bool GetLocationProperty(JSContext* cx, unsigned argc, Value* vp) {
         location->Normalize();
       RootedObject locationObj(cx);
       RootedObject scope(cx, JS::CurrentGlobalOrNull(cx));
-      rv = nsXPConnect::XPConnect()->WrapNative(
+      nsresult rv = nsXPConnect::XPConnect()->WrapNative(
           cx, scope, location, NS_GET_IID(nsIFile), locationObj.address());
       if (NS_SUCCEEDED(rv) && locationObj) {
         args.rval().setObject(*locationObj);
@@ -395,7 +385,7 @@ static bool Quit(JSContext* cx, unsigned argc, Value* vp) {
   }
 
   gQuitting = true;
-  //    exit(0);
+  JS::ReportUncatchableException(cx);
   return false;
 }
 
@@ -1063,14 +1053,16 @@ int XRE_XPCShellMain(int argc, char** argv, char** envp,
   PR_SetEnv("MOZ_DISABLE_ASAN_REPORTER=1");
 #endif
 
-  if (PR_GetEnv("MOZ_CHAOSMODE")) {
+  if (auto* featureStr = PR_GetEnv("MOZ_CHAOSMODE")) {
     ChaosFeature feature = ChaosFeature::Any;
-    long featureInt = strtol(PR_GetEnv("MOZ_CHAOSMODE"), nullptr, 16);
+    long featureInt = strtol(featureStr, nullptr, 16);
     if (featureInt) {
       // NOTE: MOZ_CHAOSMODE=0 or a non-hex value maps to Any feature.
       feature = static_cast<ChaosFeature>(featureInt);
     }
     ChaosMode::SetChaosFeature(feature);
+    ChaosMode::enterChaosMode();
+    MOZ_ASSERT(ChaosMode::isActive(ChaosFeature::Any));
   }
 
   if (ChaosMode::isActive(ChaosFeature::Any)) {
@@ -1152,7 +1144,7 @@ int XRE_XPCShellMain(int argc, char** argv, char** envp,
         printf("GetCurrentWorkingDirectory failed.\n");
         return 1;
       }
-      rv = NS_NewLocalFile(workingDir, true, getter_AddRefs(greDir));
+      rv = NS_NewLocalFile(workingDir, getter_AddRefs(greDir));
       if (NS_FAILED(rv)) {
         printf("NS_NewLocalFile failed.\n");
         return 1;
@@ -1198,7 +1190,22 @@ int XRE_XPCShellMain(int argc, char** argv, char** envp,
 
     const char* val = getenv("MOZ_CRASHREPORTER");
     if (val && *val && !CrashReporter::IsDummy()) {
-      rv = CrashReporter::SetExceptionHandler(greDir, true);
+      nsCOMPtr<nsIFile> greBinDir;
+      bool persistent = false;
+      rv = dirprovider.GetFile(NS_GRE_BIN_DIR, &persistent,
+                               getter_AddRefs(greBinDir));
+      if (NS_FAILED(rv)) {
+        printf("Could not get the GreBinD directory\n");
+        return 1;
+      }
+
+#if defined(MOZ_WIDGET_ANDROID)
+      CrashReporter::SetCrashHelperPipes(
+          aShellData->crashChildNotificationSocket,
+          aShellData->crashHelperSocket);
+#endif  // defined(MOZ_WIDGET_ANDROID)
+
+      rv = CrashReporter::SetExceptionHandler(greBinDir, true);
       if (NS_FAILED(rv)) {
         printf("CrashReporter::SetExceptionHandler failed!\n");
         return 1;
@@ -1219,6 +1226,11 @@ int XRE_XPCShellMain(int argc, char** argv, char** envp,
       printf("NS_InitXPCOM failed!\n");
       return 1;
     }
+
+    // Now that the profiler, directory services, and prefs have been
+    // initialized we can find the download directory, where the profiler can
+    // write profiles when user stops the profiler using POSIX signal handling.
+    profiler_lookup_async_signal_dump_directory();
 
     // xpc::ErrorReport::LogToConsoleWithStack needs this to print errors
     // to stderr.
@@ -1273,7 +1285,7 @@ int XRE_XPCShellMain(int argc, char** argv, char** envp,
     shellSecurityCallbacks = *scb;
     JS_SetSecurityCallbacks(cx, &shellSecurityCallbacks);
 
-    auto backstagePass = MakeRefPtr<BackstagePass>();
+    auto systemGlobal = MakeRefPtr<SystemGlobal>();
 
     // Make the default XPCShell global use a fresh zone (rather than the
     // System Zone) to improve cross-zone test coverage.
@@ -1288,7 +1300,7 @@ int XRE_XPCShellMain(int argc, char** argv, char** envp,
 
     JS::Rooted<JSObject*> glob(cx);
     rv = xpc::InitClassesWithNewWrappedGlobal(
-        cx, static_cast<nsIGlobalObject*>(backstagePass), systemprincipal, 0,
+        cx, static_cast<nsIGlobalObject*>(systemGlobal), systemprincipal, 0,
         options, &glob);
     if (NS_FAILED(rv)) {
       return 1;
@@ -1297,10 +1309,6 @@ int XRE_XPCShellMain(int argc, char** argv, char** envp,
     // Initialize e10s check on the main thread, if not already done
     BrowserTabsRemoteAutostart();
 #if defined(XP_WIN)
-    // Plugin may require audio session if installed plugin can initialize
-    // asynchronized.
-    AutoAudioSession audioSession;
-
     // Ensure that DLL Services are running
     RefPtr<DllServices> dllSvc(DllServices::Get());
     dllSvc->StartUntrustedModulesProcessor(true);
@@ -1340,7 +1348,7 @@ int XRE_XPCShellMain(int argc, char** argv, char** envp,
       }
       appStartup->DoneStartingUp();
 
-      backstagePass->SetGlobalObject(glob);
+      systemGlobal->SetGlobalObject(glob);
 
       JSAutoRealm ar(cx, glob);
 
@@ -1372,7 +1380,7 @@ int XRE_XPCShellMain(int argc, char** argv, char** envp,
 #endif
           // We are almost certainly going to run script here, so we need an
           // AutoEntryScript. This is Gecko-specific and not in any spec.
-          AutoEntryScript aes(backstagePass, "xpcshell argument processing");
+          AutoEntryScript aes(systemGlobal, "xpcshell argument processing");
 
           // If an exception is thrown, we'll set our return code
           // appropriately, and then let the AutoEntryScript destructor report

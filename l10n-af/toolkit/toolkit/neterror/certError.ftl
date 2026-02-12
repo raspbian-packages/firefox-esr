@@ -40,10 +40,3 @@ nssFailure2-title = Kon nie beveilig koppel nie
 corruptedContentError-title = Fout: inhoud korrup
 sslv3Used-title = Kan nie beveilig koppel nie
 inadequateSecurityError-title = Die verbinding is nie beveilig nie
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

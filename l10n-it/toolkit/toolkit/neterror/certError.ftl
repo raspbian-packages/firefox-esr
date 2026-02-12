@@ -79,15 +79,15 @@ fp-certerror-return-to-previous-page-recommended-button = Torna indietro (consig
 #   $validHosts (String) - Valid hostnames.
 fp-certerror-bad-domain-why-dangerous-body = Il sito è configurato per consentire solo connessioni sicure, ma si è verificato un problema con il certificato del sito. È possibile che un soggetto malintenzionato stia cercando di sostituirsi al sito. I siti utilizzano certificati emessi da un’autorità di certificazione per dimostrare di essere veramente chi dichiarano di essere. { -brand-short-name } non considera attendibile questo sito in quanto il suo certificato non è valido per { $hostname }. Il certificato è valido solo per: { $validHosts }.
 # This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
-fp-certerror-bad-domain-what-can-you-do-body = Probabilmente nulla, dal momento che è probabile che ci sia un problema con il sito stesso. I siti utilizzano certificati emessi da un’autorità di certificazione per dimostrare di essere veramente chi dichiarano di essere. Ma se sei collegato a una rete aziendale, il tuo team di supporto potrebbe avere maggiori informazioni. Se stai utilizzando un software antivirus, prova a cercare informazioni su potenziali conflitti o problemi noti.
+fp-certerror-bad-domain-what-can-you-do-body = Probabilmente nulla, dal momento che è probabile che il problema dipenda dal sito stesso. I siti utilizzano certificati emessi da un’autorità di certificazione per dimostrare di essere veramente chi dichiarano di essere. Ma se sei collegato a una rete aziendale, il tuo team di supporto potrebbe avere maggiori informazioni. Se stai utilizzando un software antivirus, prova a cercare informazioni su potenziali conflitti o problemi noti.
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
 fp-certerror-unknown-issuer-why-dangerous-body = Si è verificato un problema con il certificato del sito. È possibile che un soggetto malintenzionato stia cercando di sostituirsi al sito. I siti utilizzano certificati emessi da un’autorità di certificazione per dimostrare di essere veramente chi dichiarano di essere. { -brand-short-name } non considera questo sito attendibile in quanto non è possibile stabilire chi ha emesso il certificato, il certificato è autofirmato o il sito non sta inviando certificati intermedi attendibili.
 # This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
-fp-certerror-unknown-issuer-what-can-you-do-body = Probabilmente nulla, dal momento che è probabile che ci sia un problema con il sito stesso. Ma se sei collegato a una rete aziendale, il tuo team di supporto potrebbe avere maggiori informazioni. Se stai utilizzando un software antivirus, potrebbe essere necessario configurarlo per funzionare con { -brand-short-name }.
+fp-certerror-unknown-issuer-what-can-you-do-body = Probabilmente nulla, dal momento che è probabile che il problema dipenda dal sito stesso. Ma se sei collegato a una rete aziendale, il tuo team di supporto potrebbe avere maggiori informazioni. Se stai utilizzando un software antivirus, potrebbe essere necessario configurarlo per funzionare con { -brand-short-name }.
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
 fp-certerror-self-signed-why-dangerous-body = Perché si è verificato un problema con il certificato del sito. I siti utilizzano certificati emessi da un’autorità di certificazione per dimostrare di essere veramente chi dichiarano di essere. Il certificato di questo sito è autofirmato. Non è stato rilasciato da un’autorità di certificazione riconosciuta, quindi non è considerato attendibile per impostazione predefinita.
 # This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
-fp-certerror-self-signed-what-can-you-do-body = Non molto. È probabile che ci sia un problema con il sito stesso.
+fp-certerror-self-signed-what-can-you-do-body = Non molto. È probabile che il problema dipenda dal sito stesso.
 fp-certerror-self-signed-important-note = NOTA IMPORTANTE: se stai tentando di visitare questo sito su una intranet aziendale, il personale IT potrebbe utilizzare certificati autofirmati. Possono aiutarti a verificarne l’autenticità.
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
 # Variables:
@@ -100,16 +100,42 @@ fp-certerror-not-yet-valid-why-dangerous-body = I siti utilizzano certificati em
 # This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
 # Variables:
 #   $date (Date) - Clock date.
-fp-certerror-expired-what-can-you-do-body = L’orologio del dispositivo è impostato su { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }. Se questo è corretto, probabilmente il problema di sicurezza riguarda il sito stesso. Se è errato, puoi modificarlo nelle impostazioni di sistema del dispositivo.
+fp-certerror-expired-what-can-you-do-body = L’orologio del dispositivo è impostato su { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }. Se questo è corretto, probabilmente il problema di sicurezza dipende dal sito stesso. Se è errato, puoi modificarlo nelle impostazioni di sistema del dispositivo.
 # Variables:
 #   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 fp-cert-error-code = Codice di errore: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } non ritiene { $hostname } attendibile in quanto non è riuscito a dimostrare di soddisfare i requisiti di trasparenza per certificati pubblici.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Probabilmente nulla, poiché è probabile che il problema dipenda dal sito stesso.
 fp-learn-more-about-secure-connection-failures = Scopri di più sugli errori relativi alle connessioni sicure
 fp-learn-more-about-cert-issues = Scopri di più su questo tipo di problemi relativi ai certificati
 fp-learn-more-about-time-related-errors = Scopri di più sulla risoluzione dei problemi relativi a data e ora
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } è stato revocato e non è più attendibile.
+cert-error-bad-signature = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto la firma sul certificato fornito per { $hostname } non è valida.
+cert-error-key-pinning-failure = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } utilizza una chiave pubblica diversa da quella prevista.
+cert-error-bad-der = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } non è codificato correttamente.
+cert-error-cert-not-in-name-space = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } non rispetta i vincoli relativi al nome imposti da un certificato che lo ha emesso.
+cert-error-inadequate-cert-type = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } non può essere utilizzato da un server web.
+cert-error-path-len-constraint-invalid = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } contiene troppi certificati intermedi nel percorso al certificato radice.
+cert-error-invalid-key = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } contiene una chiave non valida. Molto probabilmente è troppo piccola per essere sicura.
+cert-error-unknown-critical-extension = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } contiene un’estensione critica non supportata.
+cert-error-extension-value-invalid = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } contiene un’estensione non valida.
+cert-error-untrusted-issuer = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } è stato emesso da un’autorità di certificazione non più attendibile.
+cert-error-untrusted-cert = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } è contrassegnato come non attendibile.
+cert-error-invalid-integer-encoding = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } contiene una codifica non valida di un numero intero. Le cause più comuni includono numeri di serie negativi, moduli RSA negativi e codifiche più lunghe del necessario.
+cert-error-unsupported-keyalg = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto il certificato fornito per { $hostname } ha un tipo di chiave non supportato.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto l’autorità di certificazione che ha emesso il certificato fornito per { $hostname } non è più attendibile.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } ha bloccato la tua visita a questo sito in quanto l’algoritmo di firma del certificato fornito per { $hostname } non corrisponde al campo del certificato relativo all’algoritmo di firma.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Questo indirizzo è bloccato
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Uhm… non riusciamo a trovare questo sito.
+internet-connection-offline-title = Sembra che ci sia un problema con la connessione a Internet.
 dns-not-found-trr-only-title2 = Potenziale rischio per la sicurezza durante la ricerca di questo dominio
 dns-not-found-native-fallback-title2 = Potenziale rischio per la sicurezza durante la ricerca di questo dominio
 fileNotFound-title = File non trovato
@@ -134,6 +161,7 @@ contentEncodingError-title = Errore di codifica del contenuto
 unsafeContentType-title = Tipo di file non sicuro
 netReset-title = La connessione è stata annullata
 netTimeout-title = Tempo per la connessione esaurito
+httpErrorPage-title = Sembra che ci sia un problema con questo sito
 serverError-title = Sembra che ci sia un problema con questo sito
 unknownProtocolFound-title = Indirizzo non interpretabile
 proxyConnectFailure-title = Connessione rifiutata dal server proxy
@@ -142,6 +170,7 @@ redirectLoop-title = Questa pagina non reindirizza in modo corretto
 unknownSocketType-title = Risposta imprevista del server
 nssFailure2-title = Connessione sicura non riuscita
 csp-xfo-error-title = Impossibile aprire questa pagina in { -brand-short-name }
+corruptedContentErrorv2-title = Errore: contenuto danneggiato
 corruptedContentError-title = Errore contenuto danneggiato
 sslv3Used-title = Impossibile stabilire una connessione sicura
 inadequateSecurityError-title = Connessione non sicura
@@ -166,5 +195,6 @@ fp-certerror-hide-advanced-button = Nascondi avanzate
 ##   $hostname (String) - Hostname of the website to which the user was trying to connect.
 
 fp-certerror-override-exception-button = Procedi su { $hostname } (rischioso)
-fp-certerror-intro = { -brand-short-name } ha rilevato un potenziale problema di sicurezza con <strong>{ $hostname }</strong>. Un soggetto che finge di essere il sito potrebbe tentare di rubare informazioni su carte di credito, password o email.
+fp-certerror-intro = { -brand-short-name } ha rilevato un potenziale problema di sicurezza con <strong>{ $hostname }</strong>. Un soggetto che finge di essere il sito potrebbe cercare di rubare informazioni su carte di credito, password o email.
 fp-certerror-expired-into = { -brand-short-name } ha rilevato un problema di sicurezza con <strong>{ $hostname }</strong>. Il sito non è configurato correttamente o l’orologio del dispositivo è impostato su una data/ora sbagliata.
+fp-certerror-transparency-intro = Un soggetto che finge di essere <strong>{ $hostname }</strong> potrebbe cercare di rubare dettagli come informazioni sulle carte di credito, password o email.

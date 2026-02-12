@@ -6,13 +6,13 @@ certificate-viewer-certificate-section-title = Πιστοποιητικό
 
 ## Error messages
 
-certificate-viewer-error-message = Δεν μπορέσαμε να βρούμε τις πληροφορίες του πιστοποιητικού, ή το πιστοποιητικό έχει καταστραφεί. Παρακαλούμε δοκιμάστε ξανά.
+certificate-viewer-error-message = Δεν μπορέσαμε να βρούμε τις πληροφορίες του πιστοποιητικού, ή το πιστοποιητικό έχει καταστραφεί. Δοκιμάστε ξανά.
 certificate-viewer-error-title = Κάτι πήγε στραβά.
 
 ## Certificate information labels
 
 certificate-viewer-algorithm = Αλγόριθμος
-certificate-viewer-certificate-authority = Αρχή πιστοποιητικού
+certificate-viewer-certificate-authority = Αρχή πιστοποίησης
 certificate-viewer-cipher-suite = Σουίτα κρυπτογράφησης
 certificate-viewer-common-name = Κοινό όνομα
 certificate-viewer-email-address = Διεύθυνση email
@@ -36,6 +36,9 @@ certificate-viewer-key-size = Μέγεθος κλειδιού
 certificate-viewer-inc-locality = Περιοχή εταιρείας
 certificate-viewer-locality = Περιοχή
 certificate-viewer-location = Τοποθεσία
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = Όνομα αρχείου καταγραφής
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = ID καταγραφής
 certificate-viewer-method = Μέθοδος
 certificate-viewer-modulus = Μέτρο
@@ -110,6 +113,8 @@ certificate-viewer-export = Εξαγωγή
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = (άγνωστο)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = certificate
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

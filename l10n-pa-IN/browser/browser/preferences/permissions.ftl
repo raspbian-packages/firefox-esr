@@ -93,6 +93,12 @@ permissions-exceptions-https-only-window2 =
 permissions-exceptions-https-only-desc = ਤੁਸੀਂ ਖਾਸ ਵੈੱਬਸਾਈਟਾਂ ਲਈ ਸਿਰਫ਼-HTTPS ਢੰਗ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। { -brand-short-name } ਉਹਨਾਂ ਸਾਈਟਾਂ ਲਈ ਸੁਰੱਖਿਅਤ HTTPS ਕਨੈਕਸ਼ਨ ਵਾਸਤੇ ਅੱਪਗਰੇਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਨਹੀਂ ਕਰੇਗਾ। ਛੋਟਾਂ ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋਆਂ ਉੱਤੇ ਲਾਗੂ ਨਹੀਂ ਹੁੰਦੀਆਂ ਹਨ।
 permissions-exceptions-https-only-desc2 = ਤੁਸੀਂ ਖਾਸ ਵੈੱਬਸਾਈਟਾਂ ਲਈ ਸਿਰਫ਼-HTTPS ਢੰਗ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। { -brand-short-name } ਉਹਨਾਂ ਵੈੱਬਸਾਈਟਾਂ ਲਈ ਕਨੈਕਸ਼ਨ ਨੂੰ ਸੁਰੱਖਿਅਤ HTTPS ਵਾਸਤੇ ਅੱਪਗਰੇਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਨਹੀਂ ਕਰੇਗਾ।
 
+## Exceptions - Pop-ups And Third-Party Redirects
+
+permissions-exceptions-popup-window3 =
+    .title = ਮਨਜ਼ੂਰ ਕੀਤੀਆਂ ਵੈੱਬਸਾਈਟਾਂ - ਪੌਪਅੱਪ ਅਤੇ ਤੀਜੀ ਧਿਰ ਰੀ-ਡਾਇਰੈਕਟ
+    .style = { permissions-window2.style }
+
 ## Exceptions - Pop-ups
 
 permissions-exceptions-popup-window2 =
@@ -167,6 +173,21 @@ permissions-site-camera-desc = ਹੇਠਲੀਆਂ ਵੈਬਸਾਈਟਾਂ
 permissions-site-camera-disable-label =
     .label = ਤੁਹਾਡੇ ਕੈਮਰੇ ਲਈ ਪਹੁੰਚ ਲਈ ਪੁੱਛਣ ਦੀਆਂ ਨਵੀਆਂ ਬੇਨਤੀਆਂ ਉੱਤੇ ਰੋਕ ਲਗਾਓ
 permissions-site-camera-disable-desc = ਇਹ ਉੱਤੇ ਸੂਚੀਬੱਧ ਨਾ ਹੋਣ ਵਾਲੀਆਂ ਕਿਸੇ ਵੀ ਵੈਬਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕਰਨ ਤੋਂ ਰੋਕੇਗਾ। ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਉਣ ਲਈ ਕੁਝ ਵੈਬਸਾਈਟ ਫੀਚਰ ਠੀਕ ਤਰ੍ਹਾਂ ਕੰਮ ਨਹੀਂ ਕਰ ਸਕਦੇ ਹਨ।
+
+## Site Permissions - Local host
+
+permissions-site-localhost-window =
+    .title = ਸੈਟਿੰਗਾਂ - ਡਿਵਾਈਸ ਐਪਾਂ ਅਤੇ ਸੇਵਾਵਾਂ
+    .style = { permissions-window2.style }
+permissions-site-localhost-desc = ਇਹਨਾਂ ਵੈੱਬਸਾਈਟਾਂ ਨੇ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਐਪਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਲਈ ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ। ਤੁਸੀਂ ਇਹ ਕਰਨ ਲਈ ਸਾਈਟਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇ ਜਾਂ ਪਾਬੰਦੀ ਲਗਾ ਸਕਦੇ ਹੋ।
+permissions-site-localhost-disable-label =
+    .label = ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਹੋਰ ਐਪਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਲਈ ਪਹੁੰਚ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਓ
+
+## Site Permissions - Local network
+
+permissions-site-local-network-window =
+    .title = ਸੈਟਿੰਗਾਂ - ਲੋਕਲ ਨੈੱਟਵਰਕ ਡਿਵਾਈਸ
+    .style = { permissions-window2.style }
 
 ## Site Permissions - Microphone
 

@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Ворид шудан ба шабака
 neterror-dns-not-found-title = Сервер ёфт нашуд
 neterror-malformed-uri-page-title = Нишонии URL беэътибор аст
 general-body-title = Эҳтиёт шавед. Чизе нодуруст ба назар мерасад.
+problem-with-this-site-title = Чунин ба назар мерасад, ки дар ин сомона мушкилӣ вуҷуд дорад
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = Агар шумо ягон саҳифаро б�
 neterror-load-error-firewall = Агар компютер ё шабакаи шумо тавассути девори оташ (firewall) ё прокси муҳофизат шуда бошад, мутмаин шавед, ки ба «{ -brand-short-name }» барои пайдо кардани дастрасӣ ба Интернет иҷозат дода шудааст.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Агар шумо кӯшиш кунед, ки саҳифаи шабакаи маҳаллиро бор кунед, лутфан, тафтиш кунед, ки ба «{ -brand-short-name }» дар танзимоти махфият ва амнияти «macOS» иҷозатҳои шабакаи маҳаллӣ ба таври мувофиқ таъмин шудаанд.
+neterror-http-error-page = Тафтиш кунед, ки шумо нишонии сомонаро ба таври дуруст ва бехато ворид кардед.
 neterror-captive-portal = Пеш аз пайдо кардани дастрасӣ ба Интернет, шумо бояд ба ин шабака ворид шавед.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Агар шумо нишонии д
 neterror-dns-not-found-hint-try-again = Баъдтар аз нав кӯшиш кунед
 neterror-dns-not-found-hint-check-network = Пайвастшавии шабакаи худро тафтиш кунед
 neterror-dns-not-found-hint-firewall = Тафтиш кунед, ки браузери «{ -brand-short-name }» барои пайдо кардани дастрасӣ ба Интернет иҷозат дорад (эҳтимол аст, ки шумо аз паси девори оташ (firewall) пайваст шуда бошед
+neterror-dns-not-found-offline-hint-header = <strong>Шумо дар ин масъала чӣ кор карда метавонед?</strong>
+neterror-dns-not-found-offline-hint-different-device = Кӯшиш кунед, ки дар дастгоҳи дигар пайваст шавед.
+neterror-dns-not-found-offline-hint-modem = Модем ё роутери худро тафтиш кунед.
+neterror-dns-not-found-offline-hint-reconnect = Пайвастро қатъ карда, ба «Wi-Fi» аз нав пайваст шавед.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Мушкилии ногаҳон.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = «{ -brand-short-name }» дархости шуморо барои ин нишонии сомона тавассути ҳалкунандаи боэътимоди DNS муҳофизат карда наметавонад. Сабаб:
-neterror-dns-not-found-native-fallback-reason2 = «{ -brand-short-name }» дархости шуморо барои ин нишонии сомона тавассути таъминкунандаи DNS-и бехатар муҳофизат карда наметавонад. Сабаб:
 neterror-dns-not-found-native-fallback-heuristic = DNS тавассути HTTPS дар шабакаи шумо хомӯш карда шудааст.
 neterror-dns-not-found-native-fallback-not-confirmed2 = «{ -brand-short-name }» ба { $trrDomain } пайваст нашуд.
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = Танзимоти сервери пр
 neterror-proxy-connect-failure-contact-admin = Бо маъмури сомона дар тамос шуда, мутмаин шавед, ки сервери прокси дар реҷаи корӣ мебошад.
 neterror-content-encoding-error = Лутфан, бо соҳибони сомона дар тамос шавед ва дар бораи ин мушкилӣ ба онҳо хабар диҳед.
 neterror-unsafe-content-type = Лутфан, бо соҳибони сомона дар тамос шавед ва дар бораи ин мушкилӣ ба онҳо хабар диҳед.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = «{ -brand-short-name }» ба { $hostname } эътимод надорад, зеро пайвастшавӣ бехатар нест. Кӯшиш кунед, ки нишонии URL-ро ба «HTTPS» иваз намоед.
 neterror-nss-failure-not-verified = Саҳифае, ки шумо дидан мехоҳед, нишон дода намешавад, зеро ки эътиборнокии маълумоти гирифташуда тасдиқ карда нашуд.
 neterror-nss-failure-contact-website = Лутфан, бо соҳибони сомона дар тамос шавед ва ба онҳо дар бораи ин мушкилӣ хабар диҳед.
 # Variables:

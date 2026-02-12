@@ -65,6 +65,10 @@ startup-header = Permulaan
 always-check-default =
     .label = Sentiasa semak samada { -brand-short-name } adalah pelayar piawai anda
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } kini adalah pelayar piawai anda
+is-not-default-browser =
+    .message = { -brand-short-name } bukan pelayar piawai anda
 is-default = { -brand-short-name } kini adalah pelayar piawai anda
 is-not-default = { -brand-short-name } bukan pelayar piawai anda
 set-as-my-default-browser =
@@ -147,6 +151,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Fail dan Aplikasi
+downloads-header-2 =
+    .label = Muat turun
+download-save-where-2 =
+    .label = Simpan fail ke
+    .accesskey = n
 download-header = Muat turun
 download-save-where = Simpan fail ke
     .accesskey = n
@@ -306,7 +315,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Tetingkap dan Tab Baru
 home-new-windows-tabs-description2 = Pilih apa yang anda mahu lihat apabila anda buka laman, tetingkap dan tab baru.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Laman dan tetingkap baru
 home-newtabs-mode-label = Tab baru
@@ -413,6 +422,8 @@ search-keyword-warning-bookmark = Anda telah memilih kata kunci yang sedang digu
 ## Containers Section
 
 containers-header = Tab Penyimpan
+containers-section-header =
+    .heading = Tab Penyimpan
 containers-add-button =
     .label = Tambah Penyimpan Baru
     .accesskey = A
@@ -461,12 +472,6 @@ sync-sign-in =
     .label = Daftar masuk
     .accesskey = d
 
-## Sync section - enabling or disabling sync.
-
-
-## The list of things currently syncing.
-
-
 ## The "Choose what to sync" dialog.
 
 sync-engine-bookmarks =
@@ -495,6 +500,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = Nama Peranti
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Nama Peranti
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Tukar Nama Peranti
+    .accesskey = u
 sync-device-name-change =
     .label = Tukar Nama Peranti…
     .accesskey = u
@@ -545,12 +558,6 @@ forms-master-pw-change =
     .accesskey = T
 forms-master-pw-fips-desc = Kata laluan Gagal Ditukar
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Sejarah
@@ -571,6 +578,10 @@ history-remember-option-never =
     .label = Jangan ingat sejarah
 history-remember-option-custom =
     .label = Guna tetapan penyesuaian untuk sejarah
+history-remember-description2 =
+    .description = { -brand-short-name } akan mengingati sejarah pelayaran, muat turun, borang dan carian.
+history-dontremember-description2 =
+    .description = { -brand-short-name } akan menggunakan tetapan yang sama untuk pelayaran peribadi dan tidak akan mengingati sejarah pelayaran semasa anda melayari Web.
 history-remember-description = { -brand-short-name } akan mengingati sejarah pelayaran, muat turun, borang dan carian.
 history-dontremember-description = { -brand-short-name } akan menggunakan tetapan yang sama untuk pelayaran peribadi dan tidak akan mengingati sejarah pelayaran semasa anda melayari Web.
 history-private-browsing-permanent =
@@ -620,12 +631,6 @@ sitedata-clear =
 sitedata-settings =
     .label = Urus Data…
     .accesskey = U
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -708,6 +713,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Pengecualian…
     .accesskey = E
+permissions-location2 =
+    .label = Lokasi
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Mikrofon
+permissions-notification2 =
+    .label = Notifikasi
 
 ## Privacy Section - Data Collection
 
@@ -724,9 +737,6 @@ collection-studies-link = Papar kajian { -brand-short-name }
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Laporan data dinyahdayakan bagi konfigurasi binaan ini
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -758,12 +768,7 @@ certs-view =
 certs-devices =
     .label = Peranti Keselamatan…
     .accesskey = P
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = Dayakan FIPS
 
 ## The following strings are used in the Download section of settings
 

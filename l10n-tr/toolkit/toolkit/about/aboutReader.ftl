@@ -4,9 +4,9 @@
 
 about-reader-loading = Yükleniyor…
 about-reader-load-error = Makale sayfadan yüklenemedi
-about-reader-color-scheme-light = Beyaz
+about-reader-color-scheme-light = Açık
     .title = Açık renk düzeni
-about-reader-color-scheme-dark = Siyah
+about-reader-color-scheme-dark = Koyu
     .title = Koyu renk düzeni
 about-reader-color-scheme-sepia = Sepya
     .title = Sepya renk düzeni
@@ -74,17 +74,22 @@ about-reader-customtheme-tab = Özel
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Metin
-    .title = Rengi düzenle
-about-reader-custom-colors-background = Arka plan
-    .title = Rengi düzenle
-about-reader-custom-colors-unvisited-links = Ziyaret edilmemiş bağlantılar
-    .title = Rengi düzenle
-about-reader-custom-colors-visited-links = Ziyaret edilmiş bağlantılar
-    .title = Rengi düzenle
-about-reader-custom-colors-selection-highlight = Sesli okuma için vurgulayıcı
-    .title = Rengi düzenle
 about-reader-reset-button = Varsayılanlara sıfırla
+about-reader-custom-colors-foreground2 =
+    .label = Metin
+    .title = Rengi düzenle
+about-reader-custom-colors-background2 =
+    .label = Arka plan
+    .title = Rengi düzenle
+about-reader-custom-colors-unvisited-links2 =
+    .label = Ziyaret edilmemiş bağlantılar
+    .title = Rengi düzenle
+about-reader-custom-colors-visited-links2 =
+    .label = Ziyaret edilmiş bağlantılar
+    .title = Rengi düzenle
+about-reader-custom-colors-selection-highlight2 =
+    .label = Sesli okuma için vurgulayıcı
+    .title = Rengi düzenle
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = Metni ortala
 about-reader-text-alignment-right =
     .title = Metni sağa hizala
+about-reader-text-alignment-justify =
+    .title = Metni iki yana yasla

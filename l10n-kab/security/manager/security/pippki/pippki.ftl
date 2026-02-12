@@ -48,9 +48,6 @@ download-cert-view-cert =
     .label = Timeẓri
 download-cert-view-text = Sekyed aselkin n udabu n selken
 
-## Client Authorization Ask dialog
-
-
 ## Client Authentication Ask dialog
 
 client-auth-window =
@@ -85,8 +82,13 @@ client-auth-cert-details-issued-by = Yessuffeɣ-it-id: { $issuedBy }
 # Variables:
 # $storedOn (String) - The name of the token holding the certificate (for example, "OS Client Cert Token (Modern)")
 client-auth-cert-details-stored-on = Yettwasekles di : { $storedOn }
-client-auth-cert-remember-box =
-    .label = Cfu ɣef ugemmen-agi
+client-auth-cert-remember-label = Cfu ɣef ugemmen-agi:
+client-auth-cert-remember-never =
+    .label = Yiwet n tikkelt
+client-auth-cert-remember-always =
+    .label = S wudem ameɣlal
+client-auth-cert-remember-temporarily =
+    .label = I tɣimit-a
 
 ## Set password (p12) dialog
 
@@ -98,6 +100,3 @@ set-password-backup-pw =
 set-password-repeat-backup-pw =
     .value = Awal uffir n usekles n uselkin (tikelt-nniḍen):
 set-password-reminder = Ɣuṛ-k: Ma yella tettuḍ awal uffir n uḥraz n uselkin-inek, ur tettizmireḍ ara ad d-terreḍ aḥraz-agi sya ɣer zdat.  Ma ulac aɣilif sekles-it deg adig aɣelsan.
-
-## Protected authentication alert
-

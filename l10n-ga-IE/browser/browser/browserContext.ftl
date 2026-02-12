@@ -72,11 +72,11 @@ toolbar-button-stop =
 toolbar-button-stop-reload =
     .title = { main-context-menu-reload.aria-label }
 
-## Firefox Account Button
-
-
 ## Account toolbar Button
 
+toolbar-button-account =
+    .label = Cuntas
+    .tooltiptext = Cuntas
 
 ## Save Page
 
@@ -108,13 +108,14 @@ main-context-menu-save-link-to-pocket =
     .label = Sábháil an Nasc i { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Cóipeáil an Seoladh Ríomhphoist
     .accesskey = e
+main-context-menu-copy-link-simple =
+    .label = Cóipeáil an Nasc
+    .accesskey = C
 
 ## Media (video/audio) controls
 ##
@@ -137,6 +138,19 @@ main-context-menu-media-mute =
 main-context-menu-media-unmute =
     .label = Le Fuaim
     .accesskey = m
+main-context-menu-media-play-speed-2 =
+    .label = Luas
+    .accesskey = L
+main-context-menu-media-play-speed-slow-2 =
+    .label = 0.5×
+main-context-menu-media-play-speed-normal-2 =
+    .label = 1.0×
+main-context-menu-media-play-speed-fast-2 =
+    .label = 1.25×
+main-context-menu-media-play-speed-faster-2 =
+    .label = 1.5×
+main-context-menu-media-play-speed-fastest-2 =
+    .label = 2×
 main-context-menu-media-loop =
     .label = Lúb
     .accesskey = L
@@ -198,9 +212,6 @@ main-context-menu-send-to-device =
 
 ##
 
-
-##
-
 main-context-menu-keyword =
     .label = Cuir lorgfhocal leis an gcuardach seo…
     .accesskey = l
@@ -251,3 +262,11 @@ main-context-menu-inspect-a11y-properties =
 main-context-menu-eme-learn-more =
     .label = Tuilleadh eolais faoi DRM...
     .accesskey = D
+# Variables
+#   $containerName (String): The name of the current container
+main-context-menu-open-link-in-container-tab =
+    .label = Oscail an Nasc i gCluaisín Nua { $containerName }
+    .accesskey = O
+main-context-menu-reveal-password =
+    .label = Taispeáin an focal faire
+    .accesskey = T

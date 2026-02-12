@@ -172,6 +172,8 @@ extensions-warning-update-security-button = Etkinleştir
 extensions-warning-imported-addons2 =
     .message = Lütfen { -brand-short-name } tarayıcınıza aktarılan uzantıların kurulumunu bitirin.
 extensions-warning-imported-addons-button = Uzantıları yükle
+extensions-warning-safe-mode3 =
+    .message = Sorun giderme modunda tüm eklentiler devre dışı bırakılmıştır.
 
 ## Strings connected to add-on updates
 
@@ -208,6 +210,10 @@ addon-updates-manual-updates-found = Yüklenebilir güncellemelere bak
 
 addon-install-from-file = Dosyadan eklenti kur...
     .accesskey = k
+# Like `addon-install-from-file` but used when the `extensions.webextensions.prefer-update-over-install-for-existing-addon`
+# pref is set.
+addon-install-or-update-from-file = Dosyadan eklenti kur veya güncelle...
+    .accesskey = o
 addon-install-from-file-dialog-title = Kurulacak eklentiyi seçin
 addon-install-from-file-filter-name = Eklentiler
 addon-open-about-debugging = Eklentilerde hata ayıkla
@@ -274,6 +280,16 @@ discopane-notice-recommendations2 =
         Bu önerilerden bazıları size özeldir. Önerilerimiz; yüklediğiniz
         diğer uzantıları, profil tercihlerinizi ve kullanım istatistiklerinizi temel alır.
 discopane-notice-learn-more = Daha fazla bilgi al
+# Notice for the colorway theme removal
+colorway-removal-notice-message =
+    .heading = Renk kuşağı temalarınız kaldırıldı.
+    .message = { -brand-product-name } renk kuşağı koleksiyonu güncellendi. “Kayıtlı temalar” listenizdeki eski sürümleri kaldırdık. Yeni sürümleri eklenti sitemizden indirebilirsiniz.
+colorway-removal-notice-learn-more = Daha fazla bilgi alın
+colorway-removal-notice-button = Güncellenen renk kuşağı temalarını indirin
+# Notice to make user aware that themes are not applied in forced colors mode.
+# This notice is only visible on Windows.
+forced-colors-theme-notice =
+    .message = Windows karşıtlık ayarlarınız { -brand-short-name } temalarını geçersiz kılıyor. { -brand-short-name } tarayıcınızda temaları kullanmak için bu ayarları kapatın.
 privacy-policy = Gizlilik İlkeleri
 # Refers to the author of an add-on, shown below the name of the add-on.
 # Variables:
@@ -296,7 +312,9 @@ addon-options-button =
     .aria-label = Diğer seçenekler
 # Explanatory introduction to the list of recommended add-ons. The action word
 # ("recommends") in the final sentence is a link to external documentation.
-discopane-intro2 = Uzantılar ve temalar { -brand-product-name } tarayıcınızı özelleştirmenizi sağlar. Gizliliğinizi artırabilir, veriminizi yükseltebilir, multimedya oynatmayı iyileştirebilir, { -brand-product-name } tarayıcısının görünümünü değiştirebilir ve çok daha fazlasını yapabilirler. Bu küçük yazılım programları genellikle üçüncü şahıslar tarafından geliştirilir. Mükemmel güvenlik, performans ve işlevsellik için { -brand-product-name } ekibinin <a data-l10n-name="learn-more-trigger">önerdiği</a> bazı uzantı ve temaları keşfedin.
+# We hard code "Firefox" because we do not want to imply that a Firefox fork is
+# making this recommendation.
+discopane-intro3 = Uzantılar ve temalar { -brand-product-name } tarayıcınızı özelleştirmenizi sağlar. Gizliliğinizi artırabilir, veriminizi yükseltebilir, multimedya oynatmayı iyileştirebilir, { -brand-product-name } tarayıcısının görünümünü değiştirebilir ve çok daha fazlasını yapabilirler. Bu küçük yazılım programları genellikle üçüncü şahıslar tarafından geliştirilir. Mükemmel güvenlik, performans ve işlevsellik için Firefox’un <a data-l10n-name="learn-more-trigger">önerdiği</a> bazı uzantı ve temaları keşfedin.
 
 ## Add-on actions
 
@@ -383,6 +401,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = Gizli pencerelerde izinli
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = Gizli pencerelerde izinli
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -422,6 +444,24 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = Bu uzantı incelendi, güvenlik ve performans standartlarımızı karşıladığı onaylandı
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = Resmi Mozilla uzantısı. Güvenlik ve performans standartlarını karşılar.
+# This string needs to work in the context of other forks that are not Firefox
+# or built by Mozilla. In particular, we do not want to imply that an
+# organisation other than Mozilla or the Firefox team are performing the
+# security or performance reviews. As such, we avoid personalising language
+# like the words "our" or "we".
+addon-badge-verified4 =
+    .title = Bu uzantı incelendi, güvenlik ve performans standartlarını karşıladığı onaylandı
+# This string needs to work in the context of other forks that are not Firefox
+# or built by Mozilla. In particular, we do not want to imply that an
+# organisation other than Mozilla or the Firefox team are making the
+# recommendation. As such, we hard code "Firefox" and avoid personalising
+# language like the words "our" or "we".
+addon-badge-recommended4 =
+    .title = Firefox yalnızca güvenlik ve performans standartlarını karşılayan uzantıları önerir
 
 ##
 
@@ -429,7 +469,10 @@ available-updates-heading = Mevcut güncellemeler
 recent-updates-heading = Son güncellenenler
 release-notes-loading = Yükleniyor…
 release-notes-error = Üzgünüz, sürüm notları yüklenirken bir hata meydana geldi.
+addon-permissions-heading = İzinler
 addon-permissions-empty2 = Bu uzantı herhangi bir izin gerektirmiyor.
+addon-permissions-required-label = Gerekli:
+addon-permissions-optional-label = İsteğe bağlı:
 addon-permissions-empty = Bu uzantı herhangi bir izin gerektirmiyor
 addon-permissions-required = Temel işlevler için gerekli izinler:
 addon-permissions-optional = Ek işlevler için isteğe bağlı izinler:
@@ -457,6 +500,9 @@ shortcuts-heading = Uzantı kısayollarını yönet
 default-heading-search-label = Daha fazla eklenti bul
 addons-heading-search-input =
     .placeholder = addons.mozilla.org’da ara
+addons-heading-search-button =
+    .title = addons.mozilla.org’da ara
+    .aria-label = addons.mozilla.org’da ara
 addon-page-options-button =
     .title = Tüm eklentiler için araçlar
 
@@ -485,9 +531,15 @@ details-notification-hard-blocked-other =
     .message = Bu eklenti Mozilla politikalarını ihlal ettiği için engellendi ve devre dışı bırakıldı.
 details-notification-unsigned-link = Daha fazla bilgi
 details-notification-blocked = { $name } güvenlik veya kararlılık gerekçesiyle devre dışı bırakıldı.
-details-notification-blocked2 =
-    .message = { $name } güvenlik veya kararlılık gerekçesiyle devre dışı bırakıldı.
 details-notification-blocked-link2 = Ayrıntıları göster
+details-notification-soft-blocked-extension-disabled2 =
+    .message = Bu uzantı kısıtlanmış olduğu için devre dışı bırakıldı. Uzantıyı etkinleştirebilirsiniz ama bu riskli olabilir.
+details-notification-soft-blocked-extension-enabled2 =
+    .message = Bu uzantı kısıtlanmıştır. Kullanımı riskli olabilir.
+details-notification-soft-blocked-other-disabled2 =
+    .message = Bu eklenti kısıtlanmış olduğu için devre dışı bırakıldı. Eklentiyi etkinleştirebilirsiniz ama bu riskli olabilir.
+details-notification-soft-blocked-other-enabled2 =
+    .message = Bu eklenti kısıtlanmıştır. Kullanımı riskli olabilir.
 details-notification-soft-blocked-extension-disabled =
     .message = Bu uzantı Mozilla’nın politikalarını ihlal ettiği için kısıtlandı ve devre dışı bırakıldı. Uzantıyı etkinleştirebilirsiniz ama bu riskli olabilir.
 details-notification-soft-blocked-extension-enabled =
@@ -499,8 +551,6 @@ details-notification-soft-blocked-other-enabled =
 details-notification-softblocked-link2 = Ayrıntıları göster
 details-notification-blocked-link = Daha fazla bilgi
 details-notification-softblocked = { $name } eklentisinin güvenlik veya kararlılık sorunlarına yol açtığı biliniyor.
-details-notification-softblocked2 =
-    .message = { $name } eklentisinin güvenlik veya kararlılık sorunlarına yol açtığı biliniyor.
 details-notification-softblocked-link = Daha fazla bilgi
 details-notification-gmp-pending = { $name } az sonra yüklenecektir.
 details-notification-gmp-pending2 =
@@ -514,3 +564,45 @@ plugins-openh264-name = OpenH264 Video Çözücü (sağlayan: Cisco Systems, Inc
 plugins-openh264-description = Bu yan uygulama, WebRTC şartnamesine uyum sağlamak ve H.264 video çözücüye ihtiyaç duyan cihazlarda WebRTC görüşmeleri yapabilmek amacıyla Mozilla tarafından otomatik yüklenir. Çözücünün kaynak kodlarını görmek ve daha fazla bilgi almak için http://www.openh264.org/ adresini ziyaret edin.
 plugins-widevine-name = Widevine İçerik Çözme Modülü (sağlayan: Google Inc.)
 plugins-widevine-description = Bu yan uygulama, Encrypted Media Extensions şartnamesine uygun olarak şifrelenmiş ortamların oynatılmasını sağlar. Şifrelenmiş ortamlar genellikle ücretli içeriklerin kopyalanmasını engellemek isteyen siteler tarafından kullanılır. Encrypted Media Extensions hakkında daha fazla bilgi için https://www.w3.org/TR/encrypted-media/ adresini ziyaret edebilirsiniz.
+
+## Headings for the Permissions tab in `about:addons` when the data collection
+## feature is enabled.
+
+addon-permissions-required-data-collection = Toplanması gereken veriler:
+addon-permissions-optional-data-collection = Toplanması isteğe bağlı veriler:
+# Name of the Permissions tab in `about:addons` when the data collection feature is enabled.
+permissions-data-addon-button = İzinler ve veriler
+# This is a description for extension that use this AI model
+# Variables:
+#   $extensionName (String) - Name of the extension
+mlmodel-extension-label = { $extensionName } uzantısı tarafından kullanılıyor
+addon-permissions-data-collection-heading = Veri toplama
+addon-permissions-data-collection-empty = Geliştirici, bu uzantının veri toplamaya gerek duymadığını söylüyor.
+addon-data-collection-provided = Bilgiler uzantı geliştiricisi tarafından sağlanır
+addon-data-collection-learnmore = Veri toplama hakkında daha fazla bilgi alın
+
+## Mapping Engine IDs from AI models to how that feature represented by the engine Id is described in the used by section in local model management
+
+mlmodel-about-inference = { -brand-short-name }, about:inference sayfasında bunu kullanır
+mlmodel-link-preview = { -brand-short-name }, bağlantıları ön izlediğinizde önemli noktaları oluşturmak için bunu kullanır
+mlmodel-pdfjs = { -brand-short-name }, PDF’lere eklediğiniz resimlere alternatif metin oluşturmak için bunu kullanır
+mlmodel-smart-tab-topic-engine = { -brand-short-name }, sekme gruplarınıza isim önermek için bunu kullanır
+mlmodel-smart-tab-embedding-engine = { -brand-short-name }, sekme gruplarınıza sekme önermek için bunu kullanır
+# AI Model will be downloaded on the users device and used locally
+addon-category-mlmodel = Yerel YZ
+addon-category-mlmodel-title =
+    .title = Yerel YZ
+mlmodel-heading = Cihazınızdaki yapay zekâ modellerini yönetin
+mlmodel-description = Bazı { -brand-short-name } özellikleri ve uzantıları, cihazınızda yerel olarak çalışan yapay zekâ modellerine dayanır. Bu yaklaşım hem gizliliğinizi korur hem de çoğu zaman performansı artırır. <a data-l10n-name="learn-more">Daha fazla bilgi alın</a>
+# Label for button that when clicked removed local model
+mlmodel-remove-addon-button =
+    .aria-label = Kaldır
+# Label for the aggregated value of all files for a model
+mlmodel-addon-detail-totalsize-label = Dosya boyutu
+mlmodel-addon-detail-last-used-label = Son kullanım
+# This is a section label to describe what extensions or features use a specific local AI model
+mlmodel-addon-detail-used-by-label = Kullanan
+# This is a section label to describe the link to the model card on the Hugging Face website
+mlmodel-addon-detail-model-card = Model kartı
+# This is a label for the Model Card link to Hugging face
+mlmodel-addon-detail-model-card-link-label = Hugging Face’te görüntüle

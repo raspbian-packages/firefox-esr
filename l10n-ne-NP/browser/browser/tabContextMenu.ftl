@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 reload-tab =
     .label = ट्याब पुनः लोड गर्नुहोस्
     .accesskey = R
@@ -28,7 +32,3 @@ unpin-tab =
 move-to-new-window =
     .label = नयाँ सञ्झ्यालमा सार्नुहोस्
     .accesskey = W
-
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
-

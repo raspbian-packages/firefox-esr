@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Letöltések
 appmenuitem-passwords =
     .label = Jelszavak
+appmenuitem-extensions-and-themes =
+    .label = Kiegészítők és témák
+appmenuitem-extensions =
+    .label = Kiegészítők
 appmenuitem-addons-and-themes =
     .label = Kiegészítők és témák
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = A profilozó panel megnyitása
+    .tooltiptext = A profilozó panel megnyitása
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Előbeállítás a { -brand-shorter-name } hang- és videóhibáinak kivizsgálásához.
 profiler-popup-presets-media-label =
     .label = Média
+profiler-popup-presets-ml-description = Előbeállítás a { -brand-shorter-name } gépi tanulási hibáinak kivizsgálásához.
+profiler-popup-presets-ml-label =
+    .label = Gépi tanulás
 profiler-popup-presets-networking-description = Előbeállítás a { -brand-shorter-name } hálózati hibák kivizsgálásához.
 profiler-popup-presets-networking-label =
     .label = Hálózat
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = E-mail-maszkok irányítópultjának el
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Védje meg az online tevékenységét
 appmenu-services-header = Saját szolgáltatások
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Próbálja ki a Mozilla más védelmi eszközeit:
 appmenu-other-protection-header = Próbálja ki a { -vendor-short-name } egyéb védelmi eszközeit:
 
 ## Profiles panel
 
-appmenu-profiles = Profilok
 appmenu-other-profiles = Egyéb profilok
 appmenu-manage-profiles =
     .label = Profilok kezelése
+appmenu-copy-profile =
+    .label = Profil másolása
 appmenu-create-profile =
     .label = Új profil
 appmenu-edit-profile =
     .aria-label = Profil szerkesztése
+appmenu-profiles-2 =
+    .label = Profilok

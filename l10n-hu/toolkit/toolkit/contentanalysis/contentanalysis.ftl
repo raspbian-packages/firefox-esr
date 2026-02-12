@@ -13,6 +13,15 @@ contentanalysis-slow-agent-dialog-header = Keresés folyamatban
 contentanalysis-slow-agent-dialog-body-file = A(z) { $agent } ellenőrzi, hogy a(z) „{ $filename }” ellentétes-e a szervezete adatházirendjeivel. Ez eltarthat egy darabig.
 # Variables:
 #   $agent - The name of the DLP agent doing the analysis
+#   $filename - Name of a file being analyzed, such as "aFile.txt"
+#   $count (number) - The number of additional items in the request for analysis
+contentanalysis-slow-agent-dialog-body-file-and-more =
+    { $count ->
+        [one] A(z) { $agent } ellenőrzi, hogy a(z) „{ $filename }” és további { $count } elem ellentétes-e a szervezete adatházirendjeivel. Ez eltarthat egy darabig.
+       *[other] A(z) { $agent } ellenőrzi, hogy a(z) „{ $filename }” és további { $count } elem ellentétes-e a szervezete adatházirendjeivel. Ez eltarthat egy darabig.
+    }
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
 contentanalysis-slow-agent-dialog-body-clipboard = A(z) { $agent } ellenőrzi, hogy amit beillesztett ellentétes-e a szervezete adatházirendjeivel. Ez eltarthat egy darabig.
 # Note that this is shown when the user drag and drops text into the browser.
 # Variables:
@@ -25,7 +34,9 @@ contentanalysis-operationtype-clipboard = vágólap
 contentanalysis-operationtype-dropped-text = fogd és vidd művelettel átdobott szöveg
 contentanalysis-operationtype-print = nyomtatás
 #   $filename - The filename associated with the request, such as "aFile.txt"
-contentanalysis-customdisplaystring-description = „{ $filename }” feltöltése
+contentanalysis-upload-description = „{ $filename }” feltöltése
+#   $filename - The filename associated with the request, such as "aFile.txt"
+contentanalysis-download-description = „{ $filename }” letöltése
 contentanalysis-warndialogtitle = Ez a tartalom lehet, hogy nem biztonságos
 # Variables:
 #   $content - Description of the content being warned about, such as "clipboard" or "aFile.txt"
@@ -58,10 +69,18 @@ contentanalysis-error-message-upload-file = A(z) „{ $filename }” feltöltés
 contentanalysis-error-message-dropped-text = A fogd és vidd művelet megtagadva.
 contentanalysis-error-message-clipboard = A beillesztés megtagadva.
 contentanalysis-error-message-print = A nyomtatás megtagadva.
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
+#   $contentName - Description of the content, such as "clipboard" or "aFile.txt"
+contentanalysis-timeout-block-error-message-content = A(z) { $agent } kapcsolódása túllépte az időkorlátot. A(z) { $contentName } letiltva.
 contentanalysis-block-dialog-title-upload-file = Ezt a fájlt nem töltheti fel
 # Variables:
 #   $filename - Name of the file that was blocked, such as "aFile.txt"
 contentanalysis-block-dialog-body-upload-file = A szervezete adatbiztonsági irányelvei értelmében nem töltheti fel a(z) „{ $filename }” fájlt. További információkért forduljon a rendszergazdához.
+contentanalysis-block-dialog-title-download-file = Ezt a fájlt nem töltheti le
+# Variables:
+#   $filename - Name of the file that was blocked, such as "aFile.txt"
+contentanalysis-block-dialog-body-download-file = A szervezete adatbiztonsági irányelvei értelmében nem töltheti le a(z) „{ $filename }” fájlt. További információkért forduljon a rendszergazdához.
 contentanalysis-block-dialog-title-clipboard = Ezt a tartalmat nem illesztheti be
 contentanalysis-block-dialog-body-clipboard = A szervezete adatbiztonsági irányelvei értelmében nem illesztheti be ezt a tartalmat. További információkért forduljon a rendszergazdához.
 contentanalysis-block-dialog-title-dropped-text = Ezt a tartalmat nem húzhatja ide

@@ -30,6 +30,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[many] Відновити { $tabCount } закритих вкладок
         }
     .accesskey = В
+toolbar-context-turn-on-vertical-tabs =
+    .label = Увімкнути вертикальні вкладки
+toolbar-context-turn-off-vertical-tabs =
+    .label = Вимкнути вертикальні вкладки
+toolbar-context-customize-sidebar =
+    .label = Налаштувати бічну панель
 toolbar-context-menu-manage-extension =
     .label = Керувати розширенням
     .accesskey = К
@@ -54,6 +60,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Показувати панель, коли починається завантаження
     .accesskey = П
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Завжди показувати на панелі інструментів
+    .accesskey = З
 toolbar-context-menu-remove-from-toolbar =
     .label = Вилучити з панелі
     .accesskey = В

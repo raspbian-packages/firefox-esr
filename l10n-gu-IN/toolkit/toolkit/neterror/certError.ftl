@@ -100,10 +100,3 @@ networkProtocolError-title = નેટવર્ક પ્રોટોકોલ �
 nssBadCert-title = ચેતવણી: આગળ સંભવિત સુરક્ષા જોખમ
 nssBadCert-sts-title = કનેક્ટ કર્યું નહોતું: સંભવિત સુરક્ષા સમસ્યા
 certerror-mitm-title = સૉફ્ટવેર રોકે છે { -brand-short-name } સલામત રીતે આ સાઇટથી કનેક્ટ થવાથી
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

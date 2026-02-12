@@ -97,7 +97,7 @@ modified-key-prefs-title = Preferèntzias importantes modificadas
 modified-prefs-name = Nòmine
 modified-prefs-value = Valore
 user-js-title = Preferèntzias de user.js
-user-js-description = Su profilu tuo cuntenet un'archìviu <a data-l10n-name="user-js-link">user.js</a>, chi includet preferèntzias non creadas dae { -brand-short-name }.
+user-js-description = Su profilu tuo cuntenet un’archìviu <a data-l10n-name="user-js-link">user.js</a>, chi includet preferèntzias non creadas dae { -brand-short-name }.
 locked-key-prefs-title = Preferèntzias importantes blocadas
 locked-prefs-name = Nòmine
 locked-prefs-value = Valore
@@ -174,14 +174,6 @@ media-capabilities-title = Capatzidades multimediales
 media-codec-support-info = Informatzione de suportu pro is codec
 # List all the entries of the database.
 media-capabilities-enumerate = Numeratzione de sa base de datos
-
-## Codec support table
-
-
-## Media Content Decryption Modules (CDM)
-## See EME Spec for more explanation for following technical terms
-## https://w3c.github.io/encrypted-media/
-
 
 ##
 
@@ -339,10 +331,6 @@ apz-none = nissunu
 keyboard-enabled = tecladu ativadu
 autoscroll-enabled = iscurrimentu automàticu ativadu
 
-## Variables
-## $preferenceKey (string) - String ID of preference
-
-
 ## Strings representing the status of the Enterprise Policies engine.
 
 policies-inactive = Disativadu
@@ -358,9 +346,6 @@ support-printing-modified-settings = Cunfiguratzione de imprenta modificada
 support-printing-prefs-name = Nòmine
 support-printing-prefs-value = Valore
 
-## Remote Settings sections
-
-
 ## Normandy sections
 
 support-remote-experiments-title = Esperimentos remotos
@@ -369,9 +354,3 @@ support-remote-experiments-branch = Ramu isperimentale
 support-remote-features-title = Funtzionalidades remotas
 support-remote-features-name = Nòmine
 support-remote-features-status = Istadu
-
-## Pointing devices
-
-
-## Content Analysis (DLP)
-

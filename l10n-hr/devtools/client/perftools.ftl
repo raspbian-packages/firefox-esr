@@ -7,7 +7,7 @@
 ### the remote profiling panel. There are additional profiler strings in the appmenu.ftl
 ### file that are used for the profiler popup.
 
-perftools-intro-title = Postavke profiliranja
+perftools-intro-title = Postavke profilera
 perftools-intro-description =
     Snimanja pokreću profiler.firefox.com u novoj kartici. Svi se podaci spremaju
     lokalno, ali ih možeš prenijeti za dijeljenje.
@@ -34,6 +34,8 @@ perftools-range-interval-milliseconds = { NUMBER($interval, maxFractionalUnits: 
 
 ##
 
+# The size of the memory buffer used to store things in the profiler.
+perftools-range-entries-label = Veličina međuspremnika:
 perftools-devtools-interval-label = Interval:
 perftools-devtools-settings-label = Postavke
 
@@ -56,7 +58,7 @@ perftools-button-save-settings = Spremi postavke i idi natrag
 perftools-button-restart = Pokreni ponovo
 perftools-button-add-directory = Dodaj mapu
 perftools-button-remove-directory = Ukloni odabrano
-perftools-button-edit-settings = Uredi postavke…
+perftools-button-edit-settings = Uredi postavke …
 
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
@@ -65,13 +67,10 @@ perftools-thread-compositor =
 perftools-thread-dom-worker =
     .title = Ovo upravlja web workerima i service workerima
 
-##
-
-
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## devtools.performance.new-panel-onboarding preference is true.
 
-perftools-onboarding-message = <b>Novo</b>: { -profiler-brand-name } je sada integriran u alate za programere. <a>Saznaj više</a> o ovom moćnom novom alatu.
+perftools-onboarding-message = <b>Novi</b>: { -profiler-brand-name } je sada integriran u alate za programere. <a>Saznaj više</a> o ovom moćnom novom alatu.
 
 ## Profiler presets
 
@@ -86,6 +85,7 @@ perftools-onboarding-message = <b>Novo</b>: { -profiler-brand-name } je sada int
 # The same labels and descriptions are also defined in appmenu.ftl.
 
 perftools-presets-web-developer-label = Web programer
+perftools-presets-web-developer-description = Preporučena unaprijed postavljena postavka za otklanjanje grešaka u većini web aplikacija, s niskom potrošnjom resursa.
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Preporučena zadana postavka za profiliranje { -brand-shorter-name(case: "gen") }.
 perftools-presets-graphics-label = Slike
@@ -95,11 +95,8 @@ perftools-presets-media-description2 = Zadana postavka za istraživanje audio i 
 perftools-presets-networking-label = Mrežno povezivanje
 perftools-presets-networking-description = Zadana postavka za istraživanje grešaka mrežnog povezivanja u { -brand-shorter-name(case: "loc") }.
 # "Power" is used in the sense of energy (electricity used by the computer).
-perftools-presets-power-label = Struja
+perftools-presets-power-label = Energija
 perftools-presets-power-description = Zadana postavka za istraživanje grešaka potrošnje energije u { -brand-shorter-name(case: "loc") }.
 perftools-presets-debug-label = Otklanjanje grešaka
 perftools-presets-debug-description = Preporučene postavke za otklanjanje grešaka u { -brand-shorter-name(case: "loc") }. Visoko opterećenje, nemoj koristiti za rad koji zahtijeva performanse, već za fokusiranje na razumijevanje ponašanja preglednika.
 perftools-presets-custom-label = Prilagođeno
-
-##
-

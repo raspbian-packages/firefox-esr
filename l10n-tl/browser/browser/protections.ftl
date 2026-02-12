@@ -30,7 +30,7 @@ protection-report-page-summary = Kayang protektahan ng { -brand-short-name } ang
 protection-report-page-summary-default = Pinoprotektahan ng { -brand-short-name } ang iyong privacy habang nagba-browse. Ito ang pasadyang buod ng mga proteksyong ito, na may kasamang mga kagamitan para makontrol mo ang iyong seguridad online.
 protection-report-settings-link = I-manage ang iyong mga privacy at security setting
 etp-card-title-always = Enhanced Tracking Protection: Laging Nakabukas
-etp-card-title-custom-not-blocking = Enhanced Tracking Protection: OFF
+etp-card-title-custom-not-blocking = Enhanced Tracking Protection: SARADO
 etp-card-content-description = Kusang pinipigil ng { -brand-short-name } ang mga kumpanya sa pagsunod sa iyo nang palihim sa web.
 protection-report-etp-card-content-custom-not-blocking = Lahat ng proteksyon ay kasalukyang naka-off. Piliin kung alin tracker ang i-blblock sa pamamagitan ng pamamahala ng iyong { -brand-short-name } protection settings.
 protection-report-manage-protections = Pamahalaan ang Settings
@@ -57,6 +57,8 @@ mobile-app-card-content = Gamitin ang mobile browser na may built-in na proteksy
 mobile-app-links = { -brand-product-name } Browser para sa <a data-l10n-name="android-mobile-inline-link">Android</a> at <a data-l10n-name="ios-mobile-inline-link">iOS</a>
 lockwise-title = Huwag nang muling makalimot ng password
 lockwise-header-content-logged-in = Ligtas na iimbak at i-sync ang mga password mo sa lahat ng mga device.
+protection-report-passwords-save-passwords-button = I-save ang mga password
+    .title = I-save ang mga password
 # Variables:
 # $count (Number) - Number of passwords exposed in data breaches.
 lockwise-scanned-text-breached-logins =

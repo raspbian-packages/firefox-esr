@@ -107,9 +107,35 @@ fp-cert-error-code = Flaterkoade: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } fertrout { $hostname } net, omdat it net bewize koe dat it oan de transparânsjefereasken foar iepenbiere sertifikaten foldocht.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Wierskynlik neat, omdat der wierskynlik in probleem mei de website sels is.
 fp-learn-more-about-secure-connection-failures = Mear ynfo oer mislearre befeilige ferbiningen
 fp-learn-more-about-cert-issues = Mear ynfo oer dit soarte fan sertifikaatproblemen
 fp-learn-more-about-time-related-errors = Mear ynfo oer it oplossen fan tiidrelatearre flaters
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it sertifikaat foar { $hostname } ynlutsen is en net mear fertroud wurdt.
+cert-error-bad-signature = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat de ûndertekening op it foar { $hostname } levere sertifikaat net jildich is.
+cert-error-key-pinning-failure = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat in oare publike kaai brûkt as ferwachte.
+cert-error-bad-der = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat net krekt fersifere is.
+cert-error-cert-not-in-name-space = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat net de nammebeheiningen folget fan in sertifikaat dat it útjûn hat.
+cert-error-inadequate-cert-type = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat net brûkt wurde mei troch in webserver.
+cert-error-path-len-constraint-invalid = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat te folle tuskensertifikaten yn it paad nei it rootsertifikaat befettet.
+cert-error-invalid-key = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat in ûnjildige kaai befettet. Heechstwierskynlik is dizze te lyts om feilich te wêzen.
+cert-error-unknown-critical-extension = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat in net-stipe kritike ekstinsje befettet.
+cert-error-extension-value-invalid = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat in ûnjildige ekstinsje befettet.
+cert-error-untrusted-issuer = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat útjûn is troch in sertifikaatautoriteit dy’t net mear fertroud wurdt.
+cert-error-untrusted-cert = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat as net fertroud markearre is.
+cert-error-invalid-integer-encoding = { -brand-short-name } hat jo besite oan dizze side blokkearre, omdat it foar { $hostname } levere sertifikaat in ûnjildige kodearring fan in hiel getal befettet. Gebrûklike oarsaken binne negative searjenûmers, negative RSA-moduli en kodearringen dy’t langer binne as nedich.
+cert-error-unsupported-keyalg = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it foar { $hostname } levere sertifikaat in net-stipe kaaitype hat.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat de sertifikaatautoriteit dy’t it foar { $hostname } levere sertifikaat útjûn hat net mear fertroud wurdt.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } hat jo besite oan dizze website blokkearre, omdat it ûndertekeningsalgoritme fan it foar { $hostname } levere sertifikaat net oerienkomt mei it fjild foar it ûndertekeningsalgoritme.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Dit adres hat in beheinde tagong
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Wy kinne dizze website net fine.
+internet-connection-offline-title = It liket derop dat der in probleem is mei jo ynternetferbining.
 dns-not-found-trr-only-title2 = Mooglik feilichheidsrisiko by opsykjen fan dit domein
 dns-not-found-native-fallback-title2 = Mooglik feilichheidsrisiko by opsykjen fan dit domein
 fileNotFound-title = Bestân net fûn
@@ -134,6 +161,7 @@ contentEncodingError-title = Ynhâldkodearringsflater
 unsafeContentType-title = Unfeilich bestânstype
 netReset-title = De ferbining waard opnij inisjalisearre
 netTimeout-title = De wachttiid foar de ferbining is ferstrutsen
+httpErrorPage-title = It liket derop dat der in probleem mei dizze website is
 serverError-title = It liket derop dat der in probleem mei dizze website is
 unknownProtocolFound-title = It adres waard net begrepen
 proxyConnectFailure-title = De proxyserver wegeret ferbiningen
@@ -142,6 +170,7 @@ redirectLoop-title = De side ferwiist net op in krekte wize troch
 unknownSocketType-title = Unferwacht antwurd fan de server
 nssFailure2-title = Befeilige ferbining mislearre
 csp-xfo-error-title = { -brand-short-name } kin dizze side net iepenje
+corruptedContentErrorv2-title = Skansearre-ynhâldsflater
 corruptedContentError-title = Skansearre-ynhâldsflater
 sslv3Used-title = Kin gjin befeilige ferbining meitsje
 inadequateSecurityError-title = Jo ferbining is net befeilige
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Avansearre ferstopje
 fp-certerror-override-exception-button = Trochgean nei { $hostname } (Risikofol)
 fp-certerror-intro = { -brand-short-name } hat in mooglik earnstich befeiligingsprobleem mei <strong>{ $hostname }</strong> opmurken. Ien dy’t harren foardocht as de website kin saken lykas creditcardgegevens, wachtwurden of e-mailadressen probearje te stellen.
 fp-certerror-expired-into = { -brand-short-name } hat in befeiligingsprobleem ûntdekt mei <strong>{ $hostname }</strong>. Of de website is net goed ynsteld, of de klok fan jo apparaat is op de ferkearde datum/tiid ynsteld.
+fp-certerror-transparency-intro = Immen dy’t him foardocht as <strong>{ $hostname }</strong> kin dingen lykas jo brûkersnamme, wachtwurd of e-mailadressen probearje te stellen.

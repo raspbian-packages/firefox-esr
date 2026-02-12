@@ -4,8 +4,8 @@
 
 menu-view-genai-chat =
     .label = KI-Chatbot
-menu-view-review-checker =
-    .label = Review Checker
+menu-view-contextual-password-manager =
+    .label = Passwörter
 sidebar-options-menu-button =
     .title = Menü öffnen
 
@@ -21,14 +21,24 @@ sidebar-history-date-this-month =
     .heading = { DATETIME($date, dateStyle: "full") }
 sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+sidebar-history-site-localhost =
+    .heading = (lokale Dateien)
 sidebar-history-delete =
     .title = Aus Chronik löschen
-sidebar-history-sort-by-date =
-    .label = Nach Datum sortieren
-sidebar-history-sort-by-site =
-    .label = Nach Website sortieren
 sidebar-history-clear =
     .label = Chronik löschen
+sidebar-history-sort-by-heading = Sortieren nach:
+sidebar-history-sort-option-date =
+    .label = Datum
+sidebar-history-sort-option-site =
+    .label = Website
+sidebar-history-sort-option-date-and-site =
+    .label = Datum und Website
+sidebar-history-sort-option-last-visited =
+    .label = Zuletzt besucht
 
 ## Labels for sidebar search
 
@@ -44,24 +54,21 @@ sidebar-customize-extensions-header = Sidebar-Erweiterungen
 sidebar-customize-firefox-tools-header =
     .label = { -brand-product-name }-Werkzeuge
 sidebar-customize-firefox-settings = { -brand-short-name }-Einstellungen verwalten
-sidebar-position-left =
-    .label = Links anzeigen
-sidebar-position-right =
-    .label = Rechts anzeigen
 sidebar-vertical-tabs =
     .label = Vertikale Tabs
-sidebar-horizontal-tabs =
-    .label = Horizontale Tabs
-sidebar-customize-tabs-header =
-    .label = Tab-Einstellungen
-sidebar-customize-button-header =
-    .label = Sidebar-Schaltfläche
-sidebar-customize-position-header =
-    .label = Sidebar-Position
-sidebar-visibility-setting-always-show =
-    .label = Sidebar aus- und einklappen
-sidebar-visibility-setting-hide-sidebar =
-    .label = Sidebar anzeigen und ausblenden
+sidebar-settings =
+    .label = Sidebar-Einstellungen
+sidebar-hide-tabs-and-sidebar =
+    .label = Tabs und Sidebar ausblenden
+sidebar-show-on-the-right =
+    .label = Sidebar nach rechts verschieben
+sidebar-show-on-the-left =
+    .label = Sidebar nach links verschieben
+# Option to automatically expand the collapsed sidebar when the mouse pointer
+# hovers over it.
+expand-sidebar-on-hover =
+    .label = Sidebar ausklappen, wenn der Mauszeiger darauf liegt
+sidebar-manage-extensions = Erweiterungen verwalten
 
 ## Labels for sidebar context menu items
 
@@ -71,23 +78,43 @@ sidebar-context-menu-remove-extension =
     .label = Erweiterung entfernen
 sidebar-context-menu-report-extension =
     .label = Erweiterung melden
+sidebar-context-menu-open-in-tab =
+    .label = In neuem Tab öffnen
+sidebar-context-menu-open-in-container-tab =
+    .label = In neuem Tab in Umgebung öffnen
 sidebar-context-menu-open-in-window =
     .label = In neuem Fenster öffnen
 sidebar-context-menu-open-in-private-window =
     .label = In neuem privaten Fenster öffnen
+sidebar-context-menu-forget-site =
+    .label = Alle Daten für Website löschen…
 sidebar-context-menu-bookmark-tab =
     .label = Tab als Lesezeichen hinzufügen…
 sidebar-context-menu-copy-link =
     .label = Link kopieren
+sidebar-context-menu-hide-sidebar =
+    .label = Sidebar ausblenden
+sidebar-context-menu-enable-vertical-tabs =
+    .label = Vertikale Tabs aktivieren
+sidebar-context-menu-customize-sidebar =
+    .label = Sidebar anpassen
 # Variables:
 #   $deviceName (String) - The name of the device the user is closing a tab for
 sidebar-context-menu-close-remote-tab =
     .label = Tab auf { $deviceName } schließen
+sidebar-context-menu-remove-extension2 =
+    .label = Aus { -brand-short-name } entfernen
+sidebar-context-menu-unpin-extension =
+    .label = Aus Sidebar entfernen
 
 ## Labels for sidebar history context menu items
 
-sidebar-history-context-menu-delete-page =
-    .label = Aus Chronik löschen
+sidebar-history-context-menu-delete-page-2 =
+    .label = Seite aus Chronik löschen
+sidebar-history-context-menu-bookmark-page =
+    .label = Lesezeichen für Seite hinzufügen…
+sidebar-history-context-menu-delete-pages =
+    .label = Seiten aus Chronik löschen
 
 ## Labels for sidebar menu items.
 
@@ -101,8 +128,10 @@ sidebar-menu-bookmarks-label =
     .label = Lesezeichen
 sidebar-menu-customize-label =
     .label = Sidebar anpassen
-sidebar-menu-review-checker-label =
-    .label = Review Checker
+sidebar-menu-contextual-password-manager-label =
+    .label = Passwörter
+sidebar-menu-more-tools-label =
+    .label = Weitere Werkzeuge
 
 ## Tooltips for sidebar menu items.
 
@@ -122,8 +151,16 @@ sidebar-menu-open-bookmarks-tooltip = Lesezeichen öffnen ({ $shortcut })
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Lesezeichen schließen ({ $shortcut })
-sidebar-menu-open-ai-chatbot-tooltip = KI-Chatbot öffnen
-sidebar-menu-close-ai-chatbot-tooltip = KI-Chatbot schließen
+
+## Tooltips displayed over the AI chatbot icon.
+## Variables:
+##   $shortcut (String) - The OS specific keyboard shortcut.
+##   $provider (String) - The name of the AI chatbot provider (if available).
+
+sidebar-menu-open-ai-chatbot-tooltip-generic = KI-Chatbot öffnen ({ $shortcut })
+sidebar-menu-open-ai-chatbot-provider-tooltip = { $provider } öffnen ({ $shortcut })
+sidebar-menu-close-ai-chatbot-tooltip-generic = KI-Chatbot schließen ({ $shortcut })
+sidebar-menu-close-ai-chatbot-provider-tooltip = { $provider } schließen ({ $shortcut })
 
 ## Headings for sidebar menu panels.
 
@@ -133,8 +170,8 @@ sidebar-menu-history-header =
     .heading = Chronik
 sidebar-menu-syncedtabs-header =
     .heading = Tabs von anderen Geräten
-sidebar-menu-bookmarks-header =
-    .heading = Lesezeichen
+sidebar-menu-cpm-header =
+    .heading = Passwörter
 sidebar-panel-header-close-button =
     .tooltiptext = Schließen
 
@@ -158,18 +195,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Sidebar ausklappen
-    .label = Sidebars
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Sidebar einklappen
-    .label = Sidebars
-sidebar-widget-show-sidebar =
-    .tooltiptext = Sidebar anzeigen
-    .label = Sidebars
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Sidebar ausblenden
-    .label = Sidebars
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =
@@ -190,3 +215,7 @@ sidebar-widget-show-sidebar2 =
 sidebar-widget-hide-sidebar2 =
     .tooltiptext = Sidebar ausblenden ({ $shortcut })
     .label = Sidebars
+# Promotional message displayed in the expanded sidebar state for Vertical Tabs
+# users who do not have any pinned tabs. Indicates that they can drop tabs in
+# this area to pin them.
+sidebar-pins-promo-text = Ziehen Sie wichtige Tabs hierher, um sie in Reichweite zu behalten

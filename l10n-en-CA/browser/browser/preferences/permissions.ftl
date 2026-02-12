@@ -93,6 +93,13 @@ permissions-exceptions-https-only-window2 =
 permissions-exceptions-https-only-desc = You can turn off HTTPS-Only Mode for specific websites. { -brand-short-name } won’t attempt to upgrade the connection to secure HTTPS for those sites. Exceptions do not apply to private windows.
 permissions-exceptions-https-only-desc2 = You can turn off HTTPS-Only Mode for specific websites. { -brand-short-name } won’t attempt to upgrade the connection to secure HTTPS for those sites.
 
+## Exceptions - Pop-ups And Third-Party Redirects
+
+permissions-exceptions-popup-window3 =
+    .title = Allowed Websites - Pop-ups and Third-Party Redirects
+    .style = { permissions-window2.style }
+permissions-exceptions-popup-desc2 = You can specify which websites are allowed to open pop-up windows and be redirected by third-party frames.
+
 ## Exceptions - Pop-ups
 
 permissions-exceptions-popup-window2 =
@@ -167,6 +174,26 @@ permissions-site-camera-desc = The following websites have requested to access y
 permissions-site-camera-disable-label =
     .label = Block new requests asking to access your camera
 permissions-site-camera-disable-desc = This will prevent any websites not listed above from requesting permission to access your camera. Blocking access to your camera may break some website features.
+
+## Site Permissions - Local host
+
+permissions-site-localhost-window =
+    .title = Settings - Device apps and services
+    .style = { permissions-window2.style }
+permissions-site-localhost-desc = These websites have requested access to apps and services on this device. You can choose to allow or block sites from doing this.
+permissions-site-localhost-disable-label =
+    .label = Block new requests to access to apps and services on this device
+permissions-site-localhost-disable-desc = This will stop any website not listed above from requesting access to apps and services on this device. Doing this may break some website features.
+
+## Site Permissions - Local network
+
+permissions-site-local-network-window =
+    .title = Settings - Local Network Devices
+    .style = { permissions-window2.style }
+permissions-site-local-network-desc = These websites have requested access to apps and services on devices connected to your Wi-Fi or local network. You can choose to allow or block sites from doing this.
+permissions-site-local-network-disable-label =
+    .label = Block new requests to access apps and services on devices connected to your Wi-Fi or local network.
+permissions-site-local-network-disable-desc = This will stop any website not listed above from requesting access to apps and services on devices connected to your Wi-Fi or local network devices. Doing this may break some website features.
 
 ## Site Permissions - Microphone
 

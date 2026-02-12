@@ -29,6 +29,7 @@ about-glean-category-manual-testing = Ruční testování
 about-glean-category-adhoc-testing = Ad hoc testování
 about-glean-category-profiler = Používání Profileru
 about-glean-category-about-data = O datech
+about-glean-category-metrics-table = Tabulka metrik
 about-glean-upload-enabled = Nahrávání dat je povoleno.
 about-glean-upload-disabled = Nahrávání dat je zakázáno.
 about-glean-upload-enabled-local = Nahrávání dat je povoleno pouze pro odesílání na místní server.
@@ -148,6 +149,74 @@ about-glean-about-data-list-item-debug-ping-viewer =
 about-glean-about-data-list-item-firefox-profiler =
     Pro nahrání profilu výkonu a zobrazení všech zaznamenaných metrik prosím použijte 
     <a data-l10n-name="about-glean-firefox-profiler">{ -profiler-brand-name(case: "acc") }</a>.
+about-glean-metrics-table-header = Všechny metriky
+# This message refers to the category in which a given metric is recorded.
+about-glean-metrics-table-header-category = Kategorie
+# This message refers to the name of a given metric.
+about-glean-metrics-table-header-name = Název
+# This message refers to a given metric's metric type.
+about-glean-metrics-table-header-type = Typ
+# This message refers to the underlying value of a given metric.
+about-glean-metrics-table-header-value = Hodnota
+# This message refers to the UI action buttons for a given metric.
+about-glean-metrics-table-header-actions = Akce
+about-glean-metrics-table-settings-button = Nastavení
+# Settings for the metrics table and its visualizations in about:glean
+about-glean-metrics-table-settings-title = Nastavení tabulky metrik
+about-glean-metrics-table-settings-category-general = Obecné
+about-glean-metrics-table-settings-hide-empty-value-rows = Skrýt prázdné řádky s hodnotami
+about-glean-metrics-table-settings-category-visualizations = Vizualizace
+# This is a heading that is immediately followed by an example data visualization
+about-glean-metrics-table-settings-visualization-example = Příklad
+about-glean-metrics-table-settings-category-visualizations-histogram = Histogram
+about-glean-metrics-table-settings-histograms-chart-max = Maximální výška grafu
+# The maximum height after to which the y-values on the chart will be scaled
+about-glean-metrics-table-settings-histograms-scaled-max = Maximální upravená výška
+about-glean-metrics-table-settings-histograms-box-padding = Odsazení boxu
+about-glean-metrics-table-settings-histograms-chart-padding = Odsazení grafu
+about-glean-metrics-table-settings-histograms-left-padding = Další odsazení vlevo
+about-glean-metrics-table-settings-category-visualizations-timeline = Časová osa
+about-glean-metrics-table-settings-timelines-height = Výška
+about-glean-metrics-table-settings-timelines-width = Šířka
+about-glean-metrics-table-settings-timelines-chart-padding = Odsazení grafu
+# The radius of each circle denoting individual events recorded for an event metric
+about-glean-metrics-table-settings-timelines-circle-radius = Poloměr kružnice
+# The offset on the x-axis from the end of the horizontal line for the y-axis line
+about-glean-metrics-table-settings-timelines-vertical-line-x-offset = Horizontální posun osy Y
+# The offset on the y-axis from the x-axis for the y-axis line
+about-glean-metrics-table-settings-timelines-vertical-line-y-offset = Vertikální posun osy Y
+# Label displayed near an input field that can be used to filter metrics
+about-glean-label-for-filter-metrics = Filtr
+# This message sits alongside an input field, further describing its purpose.
+# Category refers to the category in which a given metric is recorded.
+# Name refers to the name of a given metric.
+# Type refers to a given metric's metric type.
+# Value refers to the underlying value of a given metric.
+# "Simple type" refers to a value type that does not have deeply-nested data, such as a boolean, number, string, or list of strings.
+about-glean-description-for-filter-metrics = Tím se níže uvedená tabulka vyfiltruje na základě kategorie, názvu, typu a hodnoty (pokud je hodnota jednoduchého typu).
+about-glean-button-load-all = Načíst všechny hodnoty
+about-glean-button-load-value = Načíst
+# "Docs" is shorthand for "documentation"
+about-glean-button-dictionary-link = Dokumenty
+about-glean-button-watch = Sledovat
+# Meaning "to stop watching"
+about-glean-button-unwatch = Přestat sledovat
+about-glean-no-data-to-display = Žádná data k zobrazení.
+# Do not translate strings between <code> </code> tags.
+about-glean-labeled-metric-warning = V zobrazení <code>about:glean</code> zatím nejsou podporovány označené metriky.
+about-glean-unknown-metric-type-warning = Neznámý typ metriky.
+about-glean-enable-new-features-promo =
+    .message = Pracujeme na přidávání nových funkcí! Jsou stále ve fázi aktivního vývoje, ale pokud je chcete aktivovat, klepněte na tlačítko akce zde.
+    .heading = Nové funkce jsou na cestě!
+about-glean-enable-new-features-button = Povolit nové funkce
+about-glean-disable-new-features-button = Zakázat nové funkce
 about-glean-about-data-explanation =
     Chcete-li si prohlédnout seznam shromážděných údajů, podívejte se na stránku
     <a data-l10n-name="glean-dictionary-link">slovníku { -glean-brand-name }</a>.
+
+## These labels are displayed to organize the different ping types within the dropdown.
+
+about-glean-ping-list-optgroup-built-in =
+    .label = Vestavěné pingy
+about-glean-ping-list-optgroup-custom =
+    .label = Vlastní pingy

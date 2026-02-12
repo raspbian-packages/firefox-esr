@@ -39,3 +39,11 @@ remove-search-engine-button = حسنًا
 install-search-engine = أضِف { $engineName } كمحرك بحث؟
 install-search-engine-add = أضِف
 install-search-engine-no = لا
+
+## The following strings are used as input labels.
+
+add-engine-window =
+    .title = أضِف محرك بحث
+    .style = min-width: 32em;
+add-engine-button = أضِف محركًا مخصصًا
+add-engine-name = اسم محرك البحث

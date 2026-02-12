@@ -107,9 +107,35 @@ fp-cert-error-code = Código de error: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } no confía en { $hostname } porque no puede probar que cumpla con los requisitos de transparencia de los certificados públicos.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Probablemente nada, ya que es posible que haya un problema con el sitio.
 fp-learn-more-about-secure-connection-failures = Conocer más sobre los fallos de conexión segura
 fp-learn-more-about-cert-issues = Conocer más sobre este tipo de problemas con los certificados
 fp-learn-more-about-time-related-errors = Conocer más sobre cómo solucionar errores relacionados con la fecha
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } bloqueó la visita a este sitio porque el certificado provisto para { $hostname } fue revocado y ya no es confiable.
+cert-error-bad-signature = { -brand-short-name } bloqueó la visita a este sitio porque la firma en el certificado proporcionado para { $hostname } no es válida.
+cert-error-key-pinning-failure = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } usa una clave pública diferente a la esperada.
+cert-error-bad-der = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } no está codificado correctamente.
+cert-error-cert-not-in-name-space = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } no sigue las restricciones de nombre de un certificado que lo emitió.
+cert-error-inadequate-cert-type = { -brand-short-name } bloqueó la visita a este sitio porque el certificado provisto para { $hostname } no puede ser usado por un servidor web.
+cert-error-path-len-constraint-invalid = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } tiene demasiados certificados intermedios en la ruta al certificado raíz.
+cert-error-invalid-key = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } tiene una clave que no es válida. Lo más probable es que sea demasiado pequeño para ser seguro.
+cert-error-unknown-critical-extension = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } contiene una extensión crítica no soportada.
+cert-error-extension-value-invalid = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } contiene una extensión inválida.
+cert-error-untrusted-issuer = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } fue emitido por una autoridad de certificación que ya no es de confianza.
+cert-error-untrusted-cert = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } está marcado como no confiable.
+cert-error-invalid-integer-encoding = { -brand-short-name } bloqueó la visita a este sitio porque el certificado proporcionado para { $hostname } contiene una codificación de un entero no válida. Las causas comunes incluyen números de serie negativos, módulos RSA negativos y codificaciones que son más largas de lo necesario.
+cert-error-unsupported-keyalg = { -brand-short-name } bloqueó la visita a este sitio porque el certificado provisto para { $hostname } tiene un tipo de clave no soportado.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } bloqueó la visita a este sitio porque la autoridad de certificación que emitió el certificado proporcionado para { $hostname } ya no es confiable.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } bloqueó la visita a este sitio porque el algoritmo de firma del certificado provisto para { $hostname } no coincide con el campo de algoritmo de firma.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Esta dirección está restringida
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Estamos teniendo problemas encontrando ese sitio.
+internet-connection-offline-title = Parece que hay un problema con la conexión a Internet.
 dns-not-found-trr-only-title2 = Posible riesgo de seguridad buscando este dominio
 dns-not-found-native-fallback-title2 = Posible riesgo de seguridad buscando este dominio
 fileNotFound-title = Archivo no encontrado
@@ -134,6 +161,7 @@ contentEncodingError-title = Error de codificación de contenido
 unsafeContentType-title = Tipo de archivo inseguro
 netReset-title = La conexión fue restablecida
 netTimeout-title = La conexión tardó demasiado tiempo
+httpErrorPage-title = Parece que hay un problema con este sitio
 serverError-title = Parece que hay un problema con este sitio
 unknownProtocolFound-title = La dirección no fue comprendida
 proxyConnectFailure-title = El servidor proxy está rechazando las conexiones
@@ -142,6 +170,7 @@ redirectLoop-title = La página no está siendo redireccionada correctamente
 unknownSocketType-title = Respuesta inesperada del servidor
 nssFailure2-title = Fallo en conexión segura
 csp-xfo-error-title = { -brand-short-name } no puede abrir esta página
+corruptedContentErrorv2-title = Error de contenido corrupto
 corruptedContentError-title = Error de contenido corrupto
 sslv3Used-title = No se puede conectar de forma segura
 inadequateSecurityError-title = La conexión no es segura
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Ocultar avanzadas
 fp-certerror-override-exception-button = Continuar a { $hostname } (Riesgoso)
 fp-certerror-intro = { -brand-short-name } detectó un problema de seguridad potencialmente grave con <strong>{ $hostname }</strong>. Alguien que se haga pasar por el sitio podría intentar robar información de tarjetas de crédito, contraseñas o correos electrónicos.
 fp-certerror-expired-into = { -brand-short-name } detectó un problema de seguridad con <strong>{ $hostname }</strong>. O el sitio no está configurado correctamente o el reloj de su dispositivo está configurado en una fecha/hora incorrecta.
+fp-certerror-transparency-intro = Alguien que se haga pasar por <strong>{ $hostname }</strong> podría intentar robar cosas como información de tarjetas de crédito, contraseñas o correos electrónicos.

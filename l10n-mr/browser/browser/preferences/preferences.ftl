@@ -66,6 +66,10 @@ startup-header = प्रारंभीकरण
 always-check-default =
     .label = नेहमी { -brand-short-name } पूर्वनिर्धारित ब्राउझर आहे याची खात्री करा
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } सध्या आपले पूर्वनिर्धारित ब्राउझर आहे
+is-not-default-browser =
+    .message = { -brand-short-name } सध्या आपले पूर्वनिर्धारित ब्राउझर नाही आहे
 is-default = { -brand-short-name } सध्या आपले पूर्वनिर्धारित ब्राउझर आहे
 is-not-default = { -brand-short-name } सध्या आपले पूर्वनिर्धारित ब्राउझर नाही आहे
 set-as-my-default-browser =
@@ -162,6 +166,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = फाईल आणि ॲप्लिकेशन
+downloads-header-2 =
+    .label = डाउनलोड्ज
+download-save-where-2 =
+    .label = फाइल्स येथे साठवा
+    .accesskey = v
 download-header = डाउनलोड्ज
 download-save-where = फाइल्स येथे साठवा
     .accesskey = v
@@ -334,7 +343,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = नवीन पटल आणि टॅब
 home-new-windows-tabs-description2 = आपले मुखपृष्ठ, नवीन पटल, आणि नवीन टॅब उघडल्यावर जे आपण बघता ते निवडा.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = मुखपृष्ठ आणि नवीन पटल
 home-newtabs-mode-label = नवीन टॅब
@@ -446,6 +455,8 @@ search-keyword-warning-bookmark = आपण सध्या वाचनखू�
 ## Containers Section
 
 containers-header = कंटेनर टॅब्स
+containers-section-header =
+    .heading = कंटेनर टॅब्स
 containers-add-button =
     .label = नवीन कंटेनर जोडा
     .accesskey = A
@@ -554,6 +565,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = साधनाचे नाव:
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = साधनाचे नाव:
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = साधनाचे नाव बदला
+    .accesskey = h
 sync-device-name-change =
     .label = साधनाचे नाव बदला…
     .accesskey = h
@@ -609,12 +628,6 @@ forms-master-pw-change =
     .accesskey = M
 forms-master-pw-fips-desc = पासवर्ड बदल अयशस्वी
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = इतिहास
@@ -635,6 +648,10 @@ history-remember-option-never =
     .label = इतिहास कधीच लक्षात ठेवु नका
 history-remember-option-custom =
     .label = इतिहासा करीता मनपसंत संयोजना वापरा
+history-remember-description2 =
+    .description = { -brand-short-name } आपले ब्राउझिंग, डाउनलोड, फॉर्म आणि शोध इतिहास लक्षात ठेवेल.
+history-dontremember-description2 =
+    .description = { -brand-short-name } समान संयोजना खाजगी ब्राउझिंग म्हणून वापरतो, व वेब चाळतेवेळी कुठलाही इतिहास लक्षात ठेवत नाही.
 history-remember-description = { -brand-short-name } आपले ब्राउझिंग, डाउनलोड, फॉर्म आणि शोध इतिहास लक्षात ठेवेल.
 history-dontremember-description = { -brand-short-name } समान संयोजना खाजगी ब्राउझिंग म्हणून वापरतो, व वेब चाळतेवेळी कुठलाही इतिहास लक्षात ठेवत नाही.
 history-private-browsing-permanent =
@@ -681,12 +698,6 @@ sitedata-clear =
 sitedata-settings =
     .label = डेटा व्यवस्थापित करा...
     .accesskey = M
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -795,6 +806,8 @@ permissions-notification-link = अधिक जाणा
 permissions-notification-pause =
     .label = सूचना { -brand-short-name } पुन्हा सुरु होईपर्यंत स्थगित करा
     .accesskey = n
+permissions-autoplay2 =
+    .label = ऑटोप्ले
 permissions-autoplay = ऑटोप्ले
 permissions-autoplay-settings =
     .label = सेटिंग…
@@ -808,6 +821,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = अपवाद…
     .accesskey = E
+permissions-location2 =
+    .label = स्थान
+permissions-camera2 =
+    .label = कॅमेरा
+permissions-microphone2 =
+    .label = मायक्रोफोन
+permissions-notification2 =
+    .label = सूचना
 
 ## Privacy Section - Data Collection
 
@@ -827,9 +848,6 @@ addon-recommendations-link = अधिक जाणा
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = माहिती अहवाल देणे या बांधणी संरचनेमध्ये निष्क्रिय केलेले आहे
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -861,12 +879,7 @@ certs-view =
 certs-devices =
     .label = सुरक्षा साधने
     .accesskey = D
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPS कार्यान्वीत करा
 
 ## The following strings are used in the Download section of settings
 

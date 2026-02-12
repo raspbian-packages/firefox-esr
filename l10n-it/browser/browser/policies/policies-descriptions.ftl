@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = Attiva compilazione automatica per gli indirizzi
 policy-AutofillCreditCardEnabled = Attiva compilazione automatica per i metodi di pagamento.
 policy-AutoLaunchProtocolsFromOrigins = Definisce un elenco di protocolli esterni che possono essere utilizzati dalle origini approvate senza chiedere conferma all’utente.
 policy-BackgroundAppUpdate2 = Attiva o disattiva il sistema di aggiornamento in background.
+policy-Backup = Disattiva il salvataggio o il ripristino dei dati del profilo.
 policy-BlockAboutAddons = Blocca accesso al gestore componenti aggiuntivi (about:addons).
 policy-BlockAboutConfig = Blocca accesso alla pagina about:config.
 policy-BlockAboutProfiles = Blocca accesso alla pagina about:profiles.
@@ -79,6 +80,7 @@ policy-ExtensionSettings = Gestisci tutti gli aspetti connessi all’installazio
 policy-ExtensionUpdate = Attiva o disattiva l’aggiornamento automatico delle estensioni.
 policy-FirefoxHome2 = Configura { -firefox-home-brand-name }.
 policy-FirefoxSuggest = Configura { -firefox-suggest-brand-name }.
+policy-GenerativeAI = Configura le funzioni di IA generativa.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Forza la navigazione verso pagine della Intranet invece di avviare una ricerca quando si digita una singola parola nella barra degli indirizzi.
 policy-Handlers = Configura i gestori predefiniti dell’applicazione.
 policy-HardwareAcceleration = Se “false”, disattiva l’accelerazione hardware.
@@ -97,6 +99,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Ripristina nei siti sp
 ##
 
 policy-LocalFileLinks = Consenti a determinati siti web di usare link a file locali.
+policy-LocalNetworkAccess = Attiva o disattiva i controlli di accesso alla rete locale.
 policy-ManagedBookmarks = Configura un elenco di segnalibri gestiti da un amministratore e non modificabili dall’utente.
 policy-ManualAppUpdateOnly = Consenti solo aggiornamenti manuali e non segnalare all’utente la disponibilità di aggiornamenti.
 policy-PrimaryPassword = Richiedi o impedisci l’utilizzo di una password principale.
@@ -117,7 +120,8 @@ policy-PostQuantumKeyAgreementEnabled = Attiva l’accettazione chiave post-quan
 policy-PDFjs = Disattiva o configura PDF.js, il lettore integrato di PDF di { -brand-short-name }.
 policy-Permissions2 = Configura i permessi per fotocamera, microfono, posizione, notifiche e riproduzione automatica.
 policy-PictureInPicture = Attiva o disattiva Picture-in-Picture.
-policy-PopupBlocking = Consenti ad alcuni siti web di visualizzare finestre pop-up per impostazione predefinita.
+policy-PopupBlocking2 = Consenti a determinati siti web di visualizzare pop-up e di essere reindirizzati da frame di terze parti.
+policy-PopupBlocking = Consenti a determinati siti web di visualizzare finestre pop-up per impostazione predefinita.
 policy-Preferences = Imposta un gruppo di preferenze e bloccane il valore.
 policy-PrivateBrowsingModeAvailability = Imposta la disponibilità della modalità Navigazione anonima.
 policy-PromptForDownloadLocation = Chiedi dove salvare i file scaricati.
@@ -130,6 +134,8 @@ policy-SearchSuggestEnabled = Attiva o disattiva suggerimenti di ricerca.
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Aggiungi o elimina moduli PKCS #11.
 policy-ShowHomeButton = Visualizza il pulsante Pagina iniziale nella barra degli strumenti.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Non visualizzare le condizioni di utilizzo e l’informativa sulla privacy all’avvio. Dichiari di accettare e di avere l’autorità per accettare le condizioni di utilizzo per conto di tutte le persone a cui fornisci accesso a questo browser.
 policy-SSLVersionMax = Imposta la versione massima di SSL.
 policy-SSLVersionMin = Imposta la versione minima di SSL.
 policy-StartDownloadsInTempDirectory = Forza l’avvio dei download in una cartella temporanea locale invece della cartella predefinita per i download.
@@ -137,6 +143,7 @@ policy-SupportMenu = Aggiungi una voce di menu personalizzata nel menu Aiuto.
 policy-TranslateEnabled = Attiva o disattiva la traduzione di pagine web.
 policy-UserMessaging = Non visualizzare determinati messaggi all’utente.
 policy-UseSystemPrintDialog = Stampa utilizzando la finestra di dialogo di sistema.
+policy-VisualSearchEnabled = Attiva o disattiva la ricerca visiva.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Impedisci l’accesso a determinati siti web. Consulta la documentazione per ulteriori dettagli sul formato da utilizzare.
 policy-Windows10SSO = Permetti l’utilizzo di Windows single sign-on per account Microsoft, account aziendale o dell’istituto di istruzione.

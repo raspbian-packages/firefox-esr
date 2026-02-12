@@ -7,7 +7,7 @@ about-networking-http = HTTP
 about-networking-http-clear-cache-button = Izbriši HTTP predmemoriju
 about-networking-sockets = Sockets
 about-networking-dns = DNS
-about-networking-dns-clear-cache-button = Poništi predmemoriju DNS-a
+about-networking-dns-clear-cache-button = Izbriši DNS predmemoriju
 about-networking-dns-trr-url = DoH URL
 about-networking-dns-trr-mode = DoH modus
 about-networking-dns-suffix = DNS sufiks
@@ -64,6 +64,3 @@ about-networking-moved-about-logging = Ova je stranica premještena na <a data-l
 
 about-networking-networkid-is-up = Poveznica aktivna
 about-networking-networkid-status-known = Stanje poveznice je poznato
-
-##
-

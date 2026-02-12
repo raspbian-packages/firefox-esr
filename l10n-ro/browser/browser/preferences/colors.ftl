@@ -2,6 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+colors-dialog2 =
+    .title = Culori
+    .style = min-width: 41em;
 colors-close-key =
     .key = w
 colors-page-override = Înlocuiește culorile specificate de pagină cu selecțiile mele de mai sus
@@ -13,6 +16,12 @@ colors-page-override-option-auto =
 colors-page-override-option-never =
     .label = Niciodată
 colors-text-and-background = Text și fundal
+colors-text =
+    .label = Text
+    .accesskey = T
+colors-text-background =
+    .label = Fundal
+    .accesskey = B
 colors-text-header = Text
     .accesskey = T
 colors-background = Fundal
@@ -24,6 +33,12 @@ colors-underline-links =
     .label = Subliniază linkurile
     .accesskey = u
 colors-links-header = Culori pentru linkuri
+colors-links-unvisited =
+    .label = Linkuri nevizitate
+    .accesskey = L
+colors-links-visited =
+    .label = Linkuri vizitate
+    .accesskey = V
 colors-unvisited-links = Linkuri nevizitate
     .accesskey = L
 colors-visited-links = Linkuri vizitate

@@ -23,19 +23,10 @@ options-context-inspector = Inspeutor
 # The label for the checkbox option to show user agent styles
 options-show-user-agent-styles-label = Amosar los estilos del restolador
 
-## "Default Color Unit" options for the Inspector
-
-
-## Web Console section
-
-
 ## Style Editor section
 
 # The heading
 options-styleeditor-label = Editor d'estilos
-
-## Screenshot section
-
 
 ## Editor section
 
@@ -50,5 +41,5 @@ options-context-advanced-settings = Axustes avanzaos
 options-disable-javascript-label = Desactivar JavaScript *
 # The label for checkbox that toggles remote debugging, i.e. the devtools.debugger.remote-enabled preference
 options-enable-remote-label = Activar la depuración remota
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * Namás na sesión actual, recarga la páxina

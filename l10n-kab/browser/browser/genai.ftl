@@ -3,19 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-## Generative AI (GenAI) Settings section
-
-genai-settings-chat-choose = Fren chatbot
-genai-settings-chat-choose-one-menuitem =
-    .label = Fren yiwen
-
-## Chatbot prompts
-## Prompts are plain language ‘instructions’ sent to a chatbot.
-## These prompts have been made concise and direct in English because some chatbot providers
-## have character restrictions and being direct reduces the chance for misinterpretation.
-## When localizing, please be concise and direct, but not at the expense of losing meaning.
-
-
 ## Chatbot menu shortcuts
 
 genai-menu-ask-generic =
@@ -23,6 +10,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = Ssuter { $provider }
+genai-menu-open-generic =
+    .label = Ldi AI Chatbot
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Ldi { $provider }
+genai-menu-remove-generic =
+    .label = Kkes AI chatbot
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Kkes { $provider }
+genai-menu-remove-sidebar =
+    .label = Kkes seg ufeggag n yifecka
+genai-menu-new-badge = Amaynut
+genai-menu-summarize-page = Segzel asebter
 genai-input-ask-generic =
     .placeholder = Ssuter deg AI chatbot…
 # $provider (string) - name of the provider
@@ -30,6 +31,18 @@ genai-input-ask-provider =
     .placeholder = Ssuter { $provider }…
 genai-shortcuts-hide =
     .label = Ffer anegzum n chatbot
+genai-menu-choose-chatbot =
+    .label = Fren AI chatbot
+genai-menu-ask-generic-2 =
+    .label = Ssuter AI chatbot
+    .accesskey = z
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = Ssuter { $provider }
+    .accesskey = h
+genai-menu-no-provider-2 =
+    .label = Ssuter AI chatbot
+    .accesskey = z
 
 ## Chatbot header
 
@@ -42,8 +55,6 @@ genai-header-close-button =
     .title = Mdel
 genai-provider-view-details =
     .label = Sken talqayt n chatbot
-genai-provider-about-chatbots =
-    .label = Ayen yerzan chatbots
 genai-options-reload-generic =
     .label = Ales asali n AI chatbot
 # $provider (string) - name of the provider
@@ -56,8 +67,13 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = Ɣef AI chatbots deg { -brand-short-name }
 
+## Chatbot footer
+
+genai-page-button-summarize = Segzel asebter
+
 ## Chatbot onboarding
 
+genai-onboarding-choose-header = Fren AI chatbot i useqdec deg ufeggag adisan { -brand-short-name }
 genai-onboarding-primary = Kemmel
 genai-onboarding-secondary = Mdel
 genai-onboarding-claude-tooltip =
@@ -80,6 +96,8 @@ genai-onboarding-lechat-tooltip =
 genai-onboarding-lechat-learn = Issi ugar ɣef Chat
 genai-onboarding-select-header = Fren aḍris i uwali n yisumar
 genai-onboarding-select-primary = Bdu ameslay
+genai-chatbot-contextual-button = Fren chatbot
+genai-chatbot-summarize-button = Segzel asebter
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -91,6 +109,8 @@ genai-onboarding-chatgpt-generate = Sirew aḍris, tugniwin akked tengalt
 genai-onboarding-chatgpt-analyze = Sleḍ isemliyen d tugniwin
 genai-onboarding-chatgpt-price = Tixtiṛyin tilelliyin d tid n lexlaṣ; amiḍan yettwasra i kra n tmura akked twuriwin
 genai-onboarding-copilot-generate = Sirew aḍris, tugniwin akked tengalt
+genai-onboarding-copilot-analyze = Sleḍ tugniwin
+genai-onboarding-copilot-price = Tixtiṛyin tilelliyin d tid n lexlaṣ; amiḍan yettwasra i kra n temsekriyin
 genai-onboarding-gemini-generate = Sirew aḍris, tugniwin akked tengalt
 genai-onboarding-gemini-analyze = Sleḍ tugniwin (tileliyin) akked yisemliyen (n lexlaṣ)
 genai-onboarding-gemini-price = Tixtiṛyin tilelliyin d tid n lexlaṣ; amiḍan yettwasra
@@ -98,3 +118,25 @@ genai-onboarding-huggingchat-generate = Sirew aḍris akked tengalt
 genai-onboarding-huggingchat-switch = Senfel gar tegrumma yemgaraden n tmudmin yeldin
 genai-onboarding-lechat-generate = Sirew aḍris akked tengalt
 genai-onboarding-lechat-price = D ilelli: amiḍan yettwasra
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Kemmel
+genai-model-optin-optout =
+    .label = Sefsex
+genai-model-optin-cancel =
+    .label = Sefsex
+
+## Link previews
+
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = Rzu ɣer useɣwen
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Yella wacu ur neddi ara akken ilaq.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Ɛreḍ tikkelt nniḍen
+# Title that appears when user is shown the opt-in flow for link previews
+link-preview-optin-title = Wali uagr akked AI?
+# Onboarding card Close button
+link-preview-onboarding-close = Mdel

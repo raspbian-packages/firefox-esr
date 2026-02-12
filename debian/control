@@ -16,7 +16,7 @@ Build-Depends: debhelper-compat (= 12),
                libreadline-dev,
                python3 (>= 3.8),
                libnspr4-dev (>= 2:4.32~),
-               libnss3-dev (>= 2:3.101~),
+               libnss3-dev (>= 2:3.112~),
                libvpx-dev (>= 1.10.0),
                libdbus-1-dev,
                libffi-dev,
@@ -24,15 +24,15 @@ Build-Depends: debhelper-compat (= 12),
                libpulse-dev,
                libasound2-dev,
                nasm (>= 2.14) [amd64 i386],
-               rustc (>= 1.76),
-               cargo (>= 1.76),
+               rustc (>= 1.82),
+               cargo (>= 1.82),
                llvm-dev,
                libclang-dev,
                clang,
                libc++-dev-wasm32,
                libclang-rt-dev-wasm32,
                lld,
-               cbindgen (>= 0.26.0),
+               cbindgen (>= 0.27.0),
                nodejs (>= 12.22.1),
                zip,
                unzip,
@@ -49,8 +49,8 @@ Build-Conflicts: graphicsmagick-imagemagick-compat,
                  libhildonmime-dev,
                  libosso-dev
 Standards-Version: 3.9.8.0
-Vcs-Git: https://salsa.debian.org/mozilla-team/firefox.git -b esr128/master
-Vcs-Browser: https://salsa.debian.org/mozilla-team/firefox/commits/esr128/master
+Vcs-Git: https://salsa.debian.org/mozilla-team/firefox.git -b esr140/master
+Vcs-Browser: https://salsa.debian.org/mozilla-team/firefox/commits/esr140/master
 
 Package: firefox-esr
 Architecture: any
@@ -60,7 +60,7 @@ Depends: ${shlibs:Depends},
          procps,
          debianutils (>= 1.16),
          libnspr4 (>= 2:4.32~),
-         libnss3 (>= 2:3.101~)
+         libnss3 (>= 2:3.112~)
 Recommends: libavcodec61 | libavcodec-extra61 | libavcodec60 | libavcodec-extra60 | libavcodec59 | libavcodec-extra59 | libavcodec58 | libavcodec-extra58 | libavcodec57 | libavcodec-extra57 | libavcodec56 | libavcodec-extra56 | libavcodec55 | libavcodec-extra55 | libavcodec54 | libavcodec-extra54 | libavcodec53 | libavcodec-extra53
 Suggests: fonts-stix | otf-stix,
           fonts-lmodern,

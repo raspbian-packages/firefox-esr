@@ -36,6 +36,14 @@ webrtc-sharing-window = Partajezi o altă fereastră a aplicației.
 webrtc-sharing-browser-window = Partajezi { -brand-short-name }.
 webrtc-sharing-screen = Îți partajezi tot ecranul.
 webrtc-stop-sharing-button = Oprește partajarea
+webrtc-microphone-unmuted =
+    .title = Oprește microfonul
+webrtc-microphone-muted =
+    .title = Pornește microfonul
+webrtc-camera-unmuted =
+    .title = Oprește camera
+webrtc-camera-muted =
+    .title = Pornește camera
 webrtc-minimize =
     .title = Minimalizează indicatorul
 
@@ -70,7 +78,7 @@ webrtc-indicator-sharing-browser =
 ## These strings are only used on Mac for menus attached to icons
 ## near the clock on the mac menubar.
 ## Variables:
-##   $streamTitle (String): the title of the tab using the share.
+##   $streamTitle (String): the host of the tab using the share.
 ##   $tabCount (Number): the title of the tab using the share.
 
 webrtc-indicator-menuitem-control-sharing =
@@ -137,28 +145,56 @@ webrtc-indicator-menuitem-sharing-browser-with-n-tabs =
 ## Variables:
 ##   $origin (String): the website origin (e.g. www.mozilla.org).
 
+webrtc-allow-share-audio-capture = Permiți { $origin } să asculte conținutul audio de pe această filă?
 webrtc-allow-share-camera = Permiți { $origin } să îți folosească camera?
-webrtc-allow-share-microphone = Permiți lui { $origin } să îți folosească microfonul?
-webrtc-allow-share-screen = Permiți lui { $origin } să îți vadă ecranul?
-webrtc-allow-share-camera-and-microphone = Permiți lui { $origin } să îți folosească microfonul și camera?
+webrtc-allow-share-microphone = Permiți { $origin } să îți folosească microfonul?
+webrtc-allow-share-screen = Permiți { $origin } să îți vadă ecranul?
+# "Speakers" is used in a general sense that might include headphones or
+# another audio output connection.
+webrtc-allow-share-speaker = Permiți { $origin } să folosească alte boxe?
+webrtc-allow-share-camera-and-microphone = Permiți { $origin } să îți folosească microfonul și camera?
+webrtc-allow-share-camera-and-audio-capture = Permiți { $origin } să folosească camera și să asculte conținutul audio de pe această filă?
+webrtc-allow-share-screen-and-microphone = Permiți { $origin } să folosească microfonul și să îți vadă ecranul?
+webrtc-allow-share-screen-and-audio-capture = Permiți { $origin } să asculte conținutul audio de pe această filă și să îți vadă ecranul?
 
 ## Special phrasing for sharing devices when the origin is a file url.
 
+webrtc-allow-share-audio-capture-with-file = Permiți acestui fișier local să asculte conținutul audio de pe această filă?
+webrtc-allow-share-camera-with-file = Permiți acestui fișier local să îți utilizeze camera?
+webrtc-allow-share-microphone-with-file = Permiți acestui fișier local să îți folosească microfonul?
+webrtc-allow-share-screen-with-file = Permiți acestui fișier local să îți vadă ecranul?
+# "Speakers" is used in a general sense that might include headphones or
+# another audio output connection.
+webrtc-allow-share-speaker-with-file = Permiți acestui fișier local să folosească alte boxe?
+webrtc-allow-share-camera-and-microphone-with-file = Permiți acestui fișier local să îți folosească camera și microfonul?
+webrtc-allow-share-camera-and-audio-capture-with-file = Permiți acestui fișier local să folosească camera și să asculte conținutul audio de pe această filă?
+webrtc-allow-share-screen-and-microphone-with-file = Permiți acestui fișier local să folosească microfonul și să îți vadă ecranul?
+webrtc-allow-share-screen-and-audio-capture-with-file = Permiți acestui fișier local să asculte conținutul audio de pe această filă și să îți vadă ecranul?
 
 ## Variables:
 ##   $origin (String): the first party origin.
 ##   $thirdParty (String): the third party origin.
 
+webrtc-allow-share-audio-capture-unsafe-delegation = Permiți { $origin } să dea { $thirdParty } permisiunea de a asculta conținutul audio de pe această filă?
 webrtc-allow-share-camera-unsafe-delegation = Permiți { $origin } să dea { $thirdParty } acces la cameră?
+webrtc-allow-share-microphone-unsafe-delegation = Permiți { $origin } să dea { $thirdParty } acces la la microfon?
 webrtc-allow-share-screen-unsafe-delegation = Permiți { $origin } să dea { $thirdParty } permisiunea de a-ți vedea ecranul?
+# "Speakers" is used in a general sense that might include headphones or
+# another audio output connection.
+webrtc-allow-share-speaker-unsafe-delegation = Permiți { $origin } să dea { $thirdParty } acces la alte boxe?
 webrtc-allow-share-camera-and-microphone-unsafe-delegation = Permiți { $origin } să dea { $thirdParty } acces la cameră și microfon?
+webrtc-allow-share-camera-and-audio-capture-unsafe-delegation = Permiți { $origin } să dea { $thirdParty } acces la cameră și să asculte conținutul audio din această filă?
+webrtc-allow-share-screen-and-microphone-unsafe-delegation = Permiți { $origin } să dea { $thirdParty } acces la la microfon și să îți vadă ecranul?
 webrtc-allow-share-screen-and-audio-capture-unsafe-delegation = Permiți { $origin } să dea { $thirdParty } permisiunea de a asculta sunetul acestei file și de a-ți vedea ecranul?
 
 ##
 
+webrtc-share-screen-warning = Nu partaja ecranul decât cu site-uri în care ai încredere. Partajarea poate permite site-urilor înșelătoare să își însușească identitatea ta la navigare și să îți fure datele private.
+webrtc-share-browser-warning = Nu partaja { -brand-short-name } decât cu site-uri în care ai încredere. Partajarea poate permite site-urilor înșelătoare să își însușească identitatea ta la navigare și să îți fure datele private.
 webrtc-share-screen-learn-more = Află mai multe
 webrtc-pick-window-or-screen = Selectează fereastra sau ecranul
 webrtc-share-entire-screen = Tot ecranul
+webrtc-share-pipe-wire-portal = Folosește setările sistemului de operare
 # Variables:
 #   $monitorIndex (String): screen number (digits 1, 2, etc).
 webrtc-share-monitor = Ecranul { $monitorIndex }
@@ -177,10 +213,23 @@ webrtc-share-application =
 webrtc-action-allow =
     .label = Permite
     .accesskey = A
+webrtc-action-block =
+    .label = Blochează
+    .accesskey = B
+webrtc-action-always-block =
+    .label = Blochează întotdeauna
+    .accesskey = w
+webrtc-action-not-now =
+    .label = Nu acum
+    .accesskey = N
 
 ##
 
 webrtc-remember-allow-checkbox = Ține minte decizia
+webrtc-remember-allow-checkbox-camera = Reține pentru toate camerele
+webrtc-remember-allow-checkbox-microphone = Reține pentru toate microfoanele
+webrtc-remember-allow-checkbox-camera-and-microphone = Reține pentru toate camerele și microfoanele
+webrtc-mute-notifications-checkbox = Dezactivează notificările site-urilor în timpul partajării
 webrtc-reason-for-no-permanent-allow-screen = { -brand-short-name } nu poate permite accesul permanent la ecran.
 webrtc-reason-for-no-permanent-allow-audio = { -brand-short-name } nu poate permite accesul permanent la sunetele din filă fără să te întrebe ce filă să partajeze.
 webrtc-reason-for-no-permanent-allow-insecure = Conexiunea la acest site nu este sigură. Pentru a te proteja, { -brand-short-name } va permite accesul numai pentru această sesiune.

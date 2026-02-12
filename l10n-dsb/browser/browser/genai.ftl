@@ -5,11 +5,6 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = Pśidawa bocnicy chatbot wašeje wólby, za malsny pśistup pśi pśeglědowanju. <a data-l10n-name="connect">Měnjenja źěliś</a>
-genai-settings-chat-choose = Wubjeŕśo chatbot
-genai-settings-chat-choose-one-menuitem =
-    .label = Wubjeŕśo jaden
-genai-settings-chat-links = Gaž chatbot wuběraśo, zwólijośo do wuměnjenjow wužywanja a pšawidłow priwatnosći póbitowarja.
 genai-settings-chat-chatgpt-links = Gaž ChatGPT wuběraśo, zwólijośo do <a data-l10n-name="link1">>wužywańskich wuměnjenjow</a> a <a data-l10n-name="link2">pšawidłow priwatnosći</a>.
 genai-settings-chat-claude-links = Gaž Anthropic Claude wuběraśo, zwólijośo do <a data-l10n-name="link1">>pśetrjebowaŕskich wužywańskich wuměnjenjow</a> a <a data-l10n-name="link2">pšawidłow wužywanja</a> a <a data-l10n-name="link3">pšawidłow priwatnosći</a> Anthropic Claude.
 genai-settings-chat-copilot-links = Gaž Copilot wuběraśo, zwólijośo do <a data-l10n-name="link1">>wuměnjenjow za nazgónjenja KI w Copilot</a> a <a data-l10n-name="link2">powěźeńkow priwatnosći Microsoft</a>.
@@ -17,9 +12,6 @@ genai-settings-chat-gemini-links = Gaž Google Gemini wuběraśo, zwólijośo do
 genai-settings-chat-huggingchat-links = Gaž HuggingChat wuběraśo, zwólijośo do <a data-l10n-name="link1">>powěźeńki priwatnosći HuggingChat</a> a <a data-l10n-name="link2">pšawidłow priwatnosći Hugging Face</a>.
 genai-settings-chat-lechat-links = Gaž Le Chat Mistral wuběraśo, zwólijośo do <a data-l10n-name="link1">>wužywańskich wuměnjenjow</a> a <a data-l10n-name="link2">pšawidłow priwatnosći</a> Mistral AI.
 genai-settings-chat-localhost-links = Pśinjasćo swójsku priwatny lokalny chatbot ako na pśikład <a data-l10n-name="link1">llamafile</a> z inowaciskeje kupki { -vendor-short-name } sobu.
-genai-settings-chat-shortcuts =
-    .description = Pokazujo zwězanje z naspominanjami (eng. prompts), gaž tekst wuběraśo. { -brand-short-name } tekst, titel boka a naspominanje na chatbot sćelo.
-    .label = Naspominanja pśi wuběranju tekst pokazaś
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -59,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = { $provider } se pšašaś
+genai-menu-open-generic =
+    .label = Chatbot KI wócyniś
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = { $provider } wócyniś
+genai-menu-remove-generic =
+    .label = Chatbot KI wótwónoźeś
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = { $provider } wótwónoźeś
+genai-menu-remove-sidebar =
+    .label = Z bocnice wótwónoźeś
+genai-menu-new-badge = Nowy
+genai-menu-summarize-page = Bok zespominaś
 genai-input-ask-generic =
     .placeholder = Pšašajśo se AI chatbot
 # $provider (string) - name of the provider
@@ -89,20 +95,32 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = Tastowu skrotconku chatowego bota schowaś
+genai-menu-choose-chatbot =
+    .label = Wubjeŕśo chatbot KI
+genai-menu-ask-generic-2 =
+    .label = Chatbot KI se pšašaś
+    .accesskey = K
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = { $provider } se pšašaś
+    .accesskey = a
+genai-menu-no-provider-2 =
+    .label = Chatbot KI se pšašaś
+    .accesskey = C
 
 ## Chatbot header
 
 genai-chatbot-title = Chatbot KI
 genai-header-provider-menu =
     .title = Wubjeŕśo chatbot
+genai-header-settings-button =
+    .title = Nastajenja KI Chat
 genai-header-options-button =
     .title = Meni wócyniś
 genai-header-close-button =
     .title = Zacyniś
 genai-provider-view-details =
     .label = Drobnostki chatowego bota pokazaś
-genai-provider-about-chatbots =
-    .label = Wó toś tych chatowych botach
 genai-options-reload-generic =
     .label = Chatowy bot KI znowego zacytaś
 # $provider (string) - name of the provider
@@ -115,11 +133,23 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = Wó chatowych botach w { -brand-short-name }
 
+## Chatbot message
+
+genai-page-warning =
+    .message = Dokulaž bok jo dłujki, jo to źělne zespominanje.
+
+## Chatbot footer
+
+genai-page-button-summarize = Bok zespominaś
+
 ## Chatbot onboarding
 
 genai-onboarding-header = Zespominaś, namakanje idejow a wěcej, gaž pśeglědujośo
+genai-onboarding-choose-header = Wubjeŕśo chatbot KI, kótaryž se ma w bocnicy { -brand-short-name } wužywaś
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = Wubjeŕśo chatowy bot, aby jen w bocnicy { -brand-short-name } wužywał. Pokažomy drobnostki wó kuždem chatowem bośe, gaž jen wuběraśo. Móžośo jen kuždy cas změniś. <a data-l10n-name="learn-more">Dalšne informacije</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Změńśo kuždy cas. <a data-l10n-name="learn-more">Zgóńśo wěcej wó kuždem chatbośe</a> za pomoc.
 genai-onboarding-primary = Dalej
 genai-onboarding-secondary = Zacyniś
 genai-onboarding-claude-tooltip =
@@ -143,6 +173,18 @@ genai-onboarding-lechat-learn = Zgóńśo wěcej wó Le Chat
 genai-onboarding-select-header = Wubjeŕśo tekst, aby naraźenja wiźeł
 genai-onboarding-select-description = Gaž tekst wuběraśo, naraźujomy wam naspominanja, kótarež móžośo na chatowy bot pósłaś. Móžośo teke do swójskich naspominanjow pisaś.
 genai-onboarding-select-primary = Chattowaś zachopiś
+genai-chatbot-contextual-title = Wužywajśo chatbot KI bźez togo, aby rejtariki pśešaltował
+genai-chatbot-contextual-subtitle = Chattujśo a pśeglědujśo bok pó boku, gaž chatbox KI w bocnicy { -brand-short-name } pśidawaśo.
+genai-chatbot-contextual-button = Wubjeŕśo chatbot
+genai-chatbot-summarize-title = Nowy! Zespominajśo boki z jadnym kliknjenim
+genai-chatbot-summarize-button = Bok zespominaś
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = Klikniśo z pšaweju tastu na swój chatbot KI w bocnicy a wubjeŕśo „Bok zespominaś“.
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = Klikniśo z pšaweju tastu na tłocašk błyskanja w bocnicy a wubjeŕśo „Bok zespominaś“. Prědny raz teke chatbot KI wuběraśo.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = Wócyńśo swój chatbot KI w bocnicy a wubjeŕśo dołojce „Bok zespominaś“.
+genai-chatbot-summarize-footer-generic-subtitle = Pśidajśo bocnicy { -brand-short-name } chatbot KI, aby malsnje boki zespominał.
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -164,3 +206,74 @@ genai-onboarding-huggingchat-switch = Pśešaltujśo mjazy rozdźělneju sajźbu
 genai-onboarding-huggingchat-price-2 = Dermotny; konto trjebne pó wěstej licbje napšašowanjow
 genai-onboarding-lechat-generate = Tekst a kod generěrowaś
 genai-onboarding-lechat-price = Dermotny; konto jo trjebne
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Dalej
+genai-model-optin-optout =
+    .label = Pśetergnuś
+genai-model-optin-cancel =
+    .label = Pśetergnuś
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] { $range } minuta cytańskego casa
+        [two] { $range } minuśe cytańskego casa
+        [few] { $range } minuty cytańskego casa
+       *[other] { $range } minutow cytańskego casa
+    }
+# Error message displayed when a link preview cannot be generated
+link-preview-error-message = Njamóžomy pśeglěd za toś ten wótkaz pokazaś
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = K wótkazoju se woglědaś
+# Error message when we can't generate key points (summary highlights or main ideas of page content) for a page
+link-preview-generation-error-missing-data = Njamóžomy klucowe dypki za toś ten webbok generěrowaś.
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Něco njejo se raźiło.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Hyšći raz wopytaś
+# Button that opens the Link Preview settings
+link-preview-settings-button =
+    .title = Nastajenja pśeglěda wótkaza
+link-preview-settings-enable =
+    .label = Pśeglědy wótkazow zmóžniś
+    .description = Pokažćo titel boka, wopisanje a wěcej, gaž zwězanje wužywaśo abo na wótkaz klikaśo.
+link-preview-settings-key-points =
+    .label = KI dowóliś, zachopjeńk boka cytaś a klucowe dypki generěrowaś
+link-preview-settings-long-press =
+    .label = Zwězanje: Klikniśo a źaržćo wótkaz za 1 sekundu (dłujke tłocenje)
+# Title that appears when user is shown the opt-in flow for link previews
+link-preview-optin-title = Z KI wěcej pokazaś?
+# Message that appears when user is shown the opt-in flow for link previews
+link-preview-optin-message = { -brand-short-name } KI wužywa, aby zachopjeńk boka cytał a někotare klucowe dypki generěrował. Aby se waša priwatnosć priorizěrowała, se to na wašom rěźe stawa.
+# Onboarding card title for long press
+link-preview-onboarding-title-long-press = Nowy: Klikniśo a źaržćo wótkaz za pśeglěd
+# Onboarding card description for long press
+link-preview-onboarding-description-long-press = Pokažćo krotke wopisanje, cytański cas a wěcej, aby rozsuźił, lěc se wupłaśijo, wótkaz wócyniś. Stoj teke z pšawym kliknjenim k dispoziciji.
+# Header for the key points section
+link-preview-key-points-header = Klucowe dypki
+# Disclaimer for AI-generated key points
+link-preview-key-points-disclaimer = Klucowe dypki se pśez KI generěruju a mógu zmólki měś.
+# Progress message for the first-time setup
+# $progress (number) - The percentage value 1-100 indicating the progress of the setup.
+link-preview-setup = Zachopna konfiguracija • <strong>{ $progress }%</strong>
+# Message indicating faster performance after initial setup
+link-preview-setup-faster-next-time = Buźośo klucowe dypki pśiducy raz malsnjej wiźeś.
+# Onboarding card See a preview button
+link-preview-onboarding-button = Pśeglěd pokazaś
+# Onboarding card Close button
+link-preview-onboarding-close = Zacyniś
+# Title for the first-time setup modal
+link-preview-first-time-setup-title = Prědna konfiguracija
+# Message for the first-time setup modal
+link-preview-first-time-setup-message = To móžo chylku traś. Buźośo wažne dypki pózdźej malsnjej wiźeś.

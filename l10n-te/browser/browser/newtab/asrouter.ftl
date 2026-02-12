@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } వాడుకరులు
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = మీ ఇష్టాంశాలను ప్రతిచోటా సింక్రనించుకోండి.
 cfr-doorhanger-bookmark-fxa-body = భలే కనుక్కొన్నారు! ఇప్పుడు మీ చరవాణి పరికరాల్లో ఈ ఇష్టాంశం లేకుండా ఉండకండి. { -fxaccount-brand-name } మొదలుపెట్టండి.
@@ -149,9 +149,6 @@ firefoxview-cfr-secondarybutton = ఇప్పుడు కాదు
 firefoxview-spotlight-promo-primarybutton = ఎలా పనిచేస్తుందో చూడండి
 firefoxview-spotlight-promo-secondarybutton = దాటవేయి
 
-## Colorways expiry reminder CFR
-
-
 ## Cookie Banner Handling CFR
 
 cfr-cbh-dismiss-button = ఇప్పుడు కాదు
@@ -191,10 +188,6 @@ pdf-default-notification-decline-button =
 launch-on-login-learnmore = ఇంకా తెలుసుకోండి
 launch-on-login-infobar-reject-button = ఇప్పుడు కాదు
     .accesskey = N
-
-## These string variants are used when the “launch on login” infobar
-## notification is displayed for a second time.
-
 
 ## Tail Fox Set Default Spotlight
 

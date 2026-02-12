@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Падрабязнасці сцягвання
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Файлы застаюцца на вашай прыладзе
+downloads-private-browsing-message = Любы карыстальнік гэтай прылады можа ўбачыць сцягванні, нават калі вы закрыеце ўсе прыватныя вокны.
+downloads-private-browsing-delete-button =
+    .label = Аўтаматычна выдаляць файлы
+    .accesskey = в
+downloads-private-browsing-accept-button =
+    .label = Зразумела
+    .accesskey = З
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

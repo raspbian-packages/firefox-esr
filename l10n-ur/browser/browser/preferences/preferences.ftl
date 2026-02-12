@@ -48,17 +48,6 @@ should-restart-ok = { -brand-short-name } کو ابھی دوباره شروع ک
 cancel-no-restart-button = منسوخ کریں
 restart-later = بعد میں دوباره شروع کریں
 
-## Extension Control Notifications
-##
-## These strings are used to inform the user
-## about changes made by extensions to browser settings.
-##
-## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
-##
-## Variables:
-##   $name (string) - Name of the extension
-
-
 ## Preferences UI Search Results
 
 search-results-header = تلاش کے نتائج
@@ -70,6 +59,10 @@ startup-header = سٹارٹ اپ
 always-check-default =
     .label = ہمیشہ جانچ پڑتال کریں کہ { -brand-short-name } آپ کا پہلے سے طے شدہ براؤزر ہے
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } اس وقت آپ کا طےشدہ براؤزر ہے
+is-not-default-browser =
+    .message = { -brand-short-name } اس وقت آپ کا طےشدہ براؤزر نھیں ہے
 is-default = { -brand-short-name } اس وقت آپ کا طےشدہ براؤزر ہے
 is-not-default = { -brand-short-name } اس وقت آپ کا طےشدہ براؤزر نھیں ہے
 set-as-my-default-browser =
@@ -177,6 +170,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = فلیں اور ایپلی کیشن
+downloads-header-2 =
+    .label = ڈاؤن لوڈ
+download-save-where-2 =
+    .label = مسل محفوظ کریں بر
+    .accesskey = v
 download-header = ڈاؤن لوڈ
 download-save-where = مسل محفوظ کریں بر
     .accesskey = v
@@ -355,7 +353,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = نئے دریچے اور ٹیبس
 home-new-windows-tabs-description2 = جب آپ اپنا ابتدیی صفحہ ، نئی ونڈوز اور نئی ٹیبز کھولتے ہیں تو  کا انتخاب کریں اپ کیا دیکھنا چاہتے ہیں۔
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = ابتدائی صفحہ اور نیا ونڈوں
 home-newtabs-mode-label = نئے ٹیبس
@@ -475,6 +473,8 @@ search-keyword-warning-bookmark = آپ نے ایسا کلیدی لفظ منتخ�
 ## Containers Section
 
 containers-header = حامل ٹیبز
+containers-section-header =
+    .heading = حامل ٹیبز
 containers-add-button =
     .label = نئے حامل کا اضافہ کریں
     .accesskey = A
@@ -600,6 +600,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = آلہ کا نام
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = آلہ کا نام
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = آلہ کا نام تبدیل کریں
+    .accesskey = h
 sync-device-name-change =
     .label = آلہ کا نام تبدیل کریں…
     .accesskey = h
@@ -679,9 +687,6 @@ forms-master-pw-fips-desc = پاس ورڈ تبدیلی ناکام
 primary-password-os-auth-dialog-message-macosx = ایک بنیادی پاس ورڈ بنائیں
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = سابقات
@@ -695,13 +700,17 @@ history-header = سابقات
 #     This will result in "Firefox" + "Will remember history", etc.
 #   - As a stand-alone message, for example "Firefox history settings:".
 history-remember-label = { -brand-short-name }
-    .accesskey = 	w
+    .accesskey = w
 history-remember-option-all =
     .label = سابقات یاد رکھے
 history-remember-option-never =
     .label = کبھی سابقات نہ یاد رکھے
 history-remember-option-custom =
     .label = سابقات کے لیے مخصوص سیٹنگز استعمال کریں
+history-remember-description2 =
+    .description = { -brand-short-name } آپکی برائوزنگ ڈائونلوڈ اور تلاش سابقات یاد رکھے گا۔
+history-dontremember-description2 =
+    .description = { -brand-short-name } نجی براؤزنگ کی سیٹنگز استعمال کرے گا، اور آپ کے براوز کرتے وقت کوئی سابقات نہیں یاد رکھے گا۔
 history-remember-description = { -brand-short-name } آپکی برائوزنگ ڈائونلوڈ اور تلاش سابقات یاد رکھے گا۔
 history-dontremember-description = { -brand-short-name } نجی براؤزنگ کی سیٹنگز استعمال کرے گا، اور آپ کے براوز کرتے وقت کوئی سابقات نہیں یاد رکھے گا۔
 history-private-browsing-permanent =
@@ -756,12 +765,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = مستثنیات کو منظم کریں…
     .accesskey = x
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -880,6 +883,8 @@ permissions-notification-settings =
     .label = سیٹنگز…
     .accesskey = t
 permissions-notification-link = مزید سیکھیں
+permissions-autoplay2 =
+    .label = آٹو پلے
 permissions-autoplay = آٹو پلے
 permissions-autoplay-settings =
     .label = سیٹنگز…
@@ -893,6 +898,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = استثنیات…
     .accesskey = E
+permissions-location2 =
+    .label = محل وقوع
+permissions-xr2 =
+    .label = مجازی حقیقت
+permissions-camera2 =
+    .label = کیمرہ
+permissions-microphone2 =
+    .label = مائیکروفون
+permissions-notification2 =
+    .label = اعلانات
 
 ## Privacy Section - Data Collection
 
@@ -901,9 +916,6 @@ collection-health-report-telemetry-disabled-link = مزید سیکھیں
 collection-health-report-link = مزید سیکھیں
 collection-studies-link = { -brand-short-name } کی مطالعات دیکھیں
 addon-recommendations-link = مزید سیکھیں
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -934,6 +946,7 @@ certs-view =
 certs-devices =
     .label = سلامتی آلات
     .accesskey = D
+certs-devices-enable-fips = ایف آئی پی ایس اہل بنائیں
 space-alert-over-5gb-settings-button =
     .label = سیٹنگز کھولیں
     .accesskey = O
@@ -941,9 +954,6 @@ space-alert-over-5gb-settings-button =
 ## Privacy Section - HTTPS-Only
 
 httpsonly-learn-more = اورجانیے
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

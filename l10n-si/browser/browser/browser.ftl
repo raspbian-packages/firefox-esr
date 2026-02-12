@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -275,7 +272,6 @@ quickactions-print2 = මුද්‍රණ පිටුව
 quickactions-cmd-print = මුද්‍රණය
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = PDF ලෙස පිටුව සුරකින්න
-quickactions-cmd-savepdf = pdf
 # Opens a new private browsing window
 quickactions-private2 = නව පෞද්. කවුළුව
 quickactions-cmd-private = පෞද්. පිරික්සුම
@@ -472,9 +468,6 @@ sharing-warning-proceed-to-tab =
 sharing-warning-disable-for-session =
     .label = මෙම වාරය සඳහා බෙදාගැනීමේ ආරක්‍ෂාව අබල කරන්න
 
-## DevTools F12 popup
-
-
 ## URL Bar
 
 # This string is used as an accessible name to the "X" button that cancels a custom search mode (i.e. exits the Amazon.com search mode).
@@ -589,6 +582,14 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = { $engine } සමඟ සොයන්න
+urlbar-searchmode-bookmarks =
+    .label = පොත්යොමු
+urlbar-searchmode-tabs =
+    .label = පටිති
+urlbar-searchmode-history =
+    .label = ඉතිහාසය
+urlbar-searchmode-actions =
+    .label = ක්‍රියාමාර්ග
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -818,10 +819,6 @@ edit-popup-settings =
     .label = උත්පතන සැකසුම් කළමනාකරණය…
     .accesskey = M
 
-## Since the default position for PiP controls does not change for RTL layout,
-## right-to-left languages should use "Left" and "Right" as in the English strings,
-
-
 ##
 
 
@@ -868,6 +865,7 @@ restore-session-startup-suggestion-button = කෙසේදැයි පෙන�
 
 ## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
 
+filepicker-blocked-infobar = ඔබගේ සංවිධානය මෙම පරිගණකයේ ස්ථානීය ගොනු වෙත ප්‍රවේශය අවහිර කර ඇත.
 
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
@@ -901,10 +899,6 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         දිගු
         ඇතැම් දිගු සඳහා ඉඩ නොදේ
-
-## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
-## Note that the new line is intentionally part of the tooltip.
-
 
 ## Private browsing reset button
 
@@ -942,10 +936,6 @@ popup-notification-addon-install-unsigned =
     .value = (සත්‍යාපනය නොකළ)
 popup-notification-xpinstall-prompt-learn-more = එක්කහු ආරක්‍ෂිතව ස්ථාපනය ගැන තව දැනගන්න
 popup-notification-xpinstall-prompt-block-url = විස්තර බලන්න
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = පෞද්. කවුළු වල ධාවනය
-    .accesskey = P
 
 ## Pop-up warning
 

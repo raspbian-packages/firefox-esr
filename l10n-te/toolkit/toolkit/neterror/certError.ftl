@@ -90,10 +90,3 @@ networkProtocolError-title = నెట్‌వర్క్ ప్రొటో�
 nssBadCert-title = హెచ్చరిక: సంభావ్య భద్రతా అపాయం ముందుంది
 nssBadCert-sts-title = అనుసంధానం కాలేదు: సంభావ్య భద్రతా సమస్య
 certerror-mitm-title = { -brand-short-name }ను ఈ సైటుకు సురక్షితంగా అనుసంధానమవ్వకుండా సాఫ్ట్‌వేర్ నివారిస్తుంది
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

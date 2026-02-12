@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = Navegacion privada de { -brand-shortcut-name 
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,16 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } — Navegacion privada
     .data-content-title-default-with-profile = { $content-title } — { $profile-name }
     .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Navegacion privada
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — Navegacion privada
+       *[other] { -brand-full-name } navegacion privada
+    }
 
 ##
 
@@ -339,7 +347,6 @@ quickactions-print2 = Imprimir la pagina
 quickactions-cmd-print = imprimir
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Enregistrar la pagina al format PDF
-quickactions-cmd-savepdf = pdf
 # Opens a new private browsing window
 quickactions-private2 = Dobrir una fenèstra privada
 quickactions-cmd-private = navegacion privada
@@ -691,8 +698,11 @@ urlbar-searchmode-actions =
     .label = Accions
 urlbar-searchmode-exit-button =
     .tooltiptext = Tampar
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Aqueste còp, recercar amb :
-urlbar-searchmode-popup-search-settings = Paramètres de recèrca
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Paramètres de recèrca
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -1009,9 +1019,6 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Tornar dobrir los onglets precedents ?</strong> Podètz restablir vòstra session precedenta del menú d’aplicacion de { -brand-short-name } <img data-l10n-name="icon"/> estant jos Istoric.
 restore-session-startup-suggestion-button = Cossí far
 
-## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
-
-
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } manda automaticament d'unas informacions a { -vendor-short-name } per tal que poscam melhorar vòstra experiéncia.
@@ -1098,10 +1105,6 @@ popup-notification-addon-install-unsigned =
     .value = (Pas verificat)
 popup-notification-xpinstall-prompt-learn-more = Ne saber mai sus l’installacion de moduls de fòrma segura
 popup-notification-xpinstall-prompt-block-url = Afichar los detalhs
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = Executar en fenèstras privadas
-    .accesskey = E
 
 ## Pop-up warning
 

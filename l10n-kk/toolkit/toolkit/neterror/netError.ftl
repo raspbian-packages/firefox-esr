@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = Бұғатталған бет
 neterror-captive-portal-page-title = Желіге кіру
 neterror-dns-not-found-title = Сервер табылмады
 neterror-malformed-uri-page-title = Жарамсыз URL
+general-body-title = Сақ болыңыз. Бірдеңе дұрыс емес сияқты.
+problem-with-this-site-title = Бұл сайтта мәселе бар сияқты
 
 ## Error page actions
 
@@ -51,6 +53,9 @@ neterror-dns-not-found-hint-header = <strong>Дұрыс адресті енгі�
 neterror-dns-not-found-hint-try-again = Әрекетті кейінірек қайталаңыз
 neterror-dns-not-found-hint-check-network = Желі байланысын тексеріңіз
 neterror-dns-not-found-hint-firewall = { -brand-short-name } үшін интернетке кіруге рұқсаты бар екенін тексеріңіз (сіз байланысқан, бірақ файрволл артында болуыңыз мүмкін)
+neterror-dns-not-found-offline-hint-different-device = Басқа құрылғыда қосылып көріңіз.
+neterror-dns-not-found-offline-hint-modem = Модемді немесе роутерді тексеріңіз.
+neterror-dns-not-found-offline-hint-reconnect = Wi-Fi желісінен ажырап, қайта қосылыңыз.
 
 ## TRR-only specific messages
 ## Variables:
@@ -74,7 +79,6 @@ neterror-dns-not-found-trr-unknown-problem = Күтпеген мәселе.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } біздің сенімді DNS шешушісі арқылы осы сайт адресіне қатысты сұрауыңызды қорғай алмайды. Себебі:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } біздің қауіпсіз DNS ұсынушысы арқылы осы сайт адресіне қатысты сұрауыңызды қорғай алмайды. Себебі:
 neterror-dns-not-found-native-fallback-heuristic = HTTPS арқылы DNS сіздің желіңізде сөндірілген.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } { $trrDomain } доменіне қосыла алмады.
 
@@ -151,3 +155,7 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Егер сізге <b>{ $m
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> сайтының HTTP Strict Transport Security (HSTS) деп аталатын қауіпсіздік саясаты бар, бұл дегеніміз, { -brand-short-name } оған тек қауіпсіз түрде байланыса алады. Бұл веб-сайт үшін ережеден тыс жағдайды қоса алмайсыз.
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = Ешнәрсе емес сияқты, себебі сайттың өзінде мәселе болуы мүмкін.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Қате коды: { $responsestatus } { $responsestatustext }

@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Сцягванні
 appmenuitem-passwords =
     .label = Паролі
+appmenuitem-extensions-and-themes =
+    .label = Пашырэнні і тэмы
+appmenuitem-extensions =
+    .label = Пашырэнні
 appmenuitem-addons-and-themes =
     .label = Дадаткі і тэмы
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Адкрыць панэль прафайлера
+    .tooltiptext = Адкрыць панэль прафайлера
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Папярэднія налады для даследавання хібаў гуку і відэа ў { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Медыя
+profiler-popup-presets-ml-description = Папярэднія налады для даследавання хібаў машыннага навучання ў { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Машыннае навучанне
 profiler-popup-presets-networking-description = Папярэднія налады для даследавання сеткавых хібаў у { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Сетка
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Запусціць панэль мас�
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Абараніце сваю актыўнасць у інтэрнэце
 appmenu-services-header = Мае сэрвісы
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Паспрабуйце іншыя ахоўныя сродкі ад Mozilla:
 appmenu-other-protection-header = Паспрабуйце іншыя ахоўныя сродкі ад { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Профілі
 appmenu-other-profiles = Іншыя профілі
 appmenu-manage-profiles =
     .label = Кіраванне профілямі
+appmenu-copy-profile =
+    .label = Скапіяваць гэты профіль
 appmenu-create-profile =
     .label = Новы профіль
 appmenu-edit-profile =
     .aria-label = Рэдагаваць профіль
+appmenu-profiles-2 =
+    .label = Профілі

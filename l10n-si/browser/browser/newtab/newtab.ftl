@@ -8,6 +8,9 @@
 newtab-page-title = නව පටිත්ත
 newtab-settings-button =
     .title = නව පටිත්ත පිටුව අභිරුචිකරණය
+newtab-personalize-settings-icon-label =
+    .title = නව පටිත්ත පුද්ගලීකරණය
+    .aria-label = සැකසුම්
 newtab-personalize-icon-label =
     .title = නව පටිත්ත පුද්ගලීකරණය
     .aria-label = නව පටිත්ත පුද්ගලීකරණය
@@ -48,6 +51,9 @@ newtab-topsites-add-shortcut-header = නව කෙටිමඟ
 newtab-topsites-edit-topsites-header = ප්‍රචලිත අඩවිය සංස්කරණය
 newtab-topsites-edit-shortcut-header = කෙටිමඟ සංස්කරණය
 newtab-topsites-add-shortcut-label = කෙටිමඟක් යොදන්න
+newtab-topsites-add-shortcut-title =
+    .title = කෙටිමඟක් යොදන්න
+    .aria-label = කෙටිමඟක් යොදන්න
 newtab-topsites-title-label = සිරැසිය
 newtab-topsites-title-input =
     .placeholder = සිරැසියක් යොදන්න
@@ -210,9 +216,6 @@ newtab-pocket-more-recommendations = තවත් නිර්දේශ
 newtab-pocket-learn-more = තව දැනගන්න
 newtab-pocket-cta-button = { -pocket-brand-name } ගන්න
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } යනු { -brand-product-name } පවුලේ කොටසකි
-# A save to Pocket button that shows over the card thumbnail on hover.
-newtab-pocket-image =
-    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = සුරකින්න
 newtab-pocket-saved = සුරැකිණි
 
@@ -221,9 +224,6 @@ newtab-pocket-saved = සුරැකිණි
 newtab-toast-dismiss-button =
     .title = ඉවතලන්න
     .aria-label = ඉවතලන්න
-
-## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
-
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
@@ -251,9 +251,6 @@ newtab-custom-pocket-sponsored = අනුග්‍රහය ලද කතා
 newtab-custom-pocket-show-recent-saves = මෑත සුරැකීම් පෙන්වන්න
 newtab-custom-recent-title = මෑත ක්‍රියාකාරකම
 newtab-custom-recent-subtitle = මෑත අඩවි සහ අන්තර්ගතවල තේරීමකි
-newtab-custom-recent-toggle =
-    .label = මෑත ක්‍රියාකාරකම
-    .description = මෑත අඩවි සහ අන්තර්ගතවල තේරීමකි
 newtab-custom-close-button = වසන්න
 newtab-custom-settings = වෙනත් සැකසුම් කළමනාකරණය
 
@@ -274,10 +271,7 @@ newtab-wallpaper-pink = රෝස
 newtab-wallpaper-light-pink = ලා රෝස
 newtab-wallpaper-red = රතු
 
-## Abstract
-
-
-## Photographs
+## Firefox
 
 newtab-wallpaper-feature-highlight-button = තේරුණා
 # Tooltip for dismiss button
@@ -297,7 +291,6 @@ newtab-weather-menu-change-location = ස්ථානය වෙනස් කර�
 newtab-weather-change-location-search-input-placeholder =
     .placeholder = ස්ථානයක් සොයන්න
     .aria-label = ස්ථානයක් සොයන්න
-newtab-weather-change-location-search-input = ස්ථානයක් සොයන්න
 # Display options are:
 # - Simple: Displays a current weather condition icon and the current temperature
 # - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
@@ -312,24 +305,12 @@ newtab-weather-menu-learn-more = තව දැනගන්න
 # This message is shown if user is working offline
 newtab-weather-error-not-available = කාලගුණ දත්ත දැනට නොතිබේ.
 
-## Topic Labels
-
-
-## Topic Selection Modal
-
-
-## Content Feed Sections
-## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
-## e.g. Following the travel section of stories.
-
-
 ## Button to block/unblock listed topics
 ## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
 ## e.g. Blocked the politics section of stories.
 
+newtab-section-blocked-button = අවහිරයි
 
-## Confirmation modal for blocking a section
+## Strings for custom wallpaper highlight
 
-
-## Panel in the Customize menu section to manage followed and blocked topics
-
+newtab-section-mangage-topics-blocked-topics = අවහිරයි

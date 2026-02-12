@@ -111,6 +111,26 @@ fp-learn-more-about-secure-connection-failures = Więcej informacji o niepowodz
 fp-learn-more-about-cert-issues = Więcej informacji o tego rodzaju problemach z certyfikatami
 fp-learn-more-about-time-related-errors = Więcej informacji o rozwiązywaniu błędów związanych z zegarem
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } został odwołany i nie jest już zaufany.
+cert-error-bad-signature = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ podpis certyfikatu dostarczonego dla adresu { $hostname } nie jest prawidłowy.
+cert-error-key-pinning-failure = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } używa innego klucza publicznego niż oczekiwano.
+cert-error-bad-der = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } nie jest właściwie zakodowany.
+cert-error-cert-not-in-name-space = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } nie jest zgodny z ograniczeniami nazw certyfikatu, który go wystawił.
+cert-error-inadequate-cert-type = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } nie może być używany przez serwer WWW.
+cert-error-path-len-constraint-invalid = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } ma zbyt wiele certyfikatów pośrednich na ścieżce do certyfikatu głównego.
+cert-error-invalid-key = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } ma klucz, który jest nieprawidłowy. Najprawdopodobniej jest za mały, aby zapewnić bezpieczeństwo.
+cert-error-unknown-critical-extension = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } zawiera nieobsługiwane krytyczne rozszerzenie.
+cert-error-extension-value-invalid = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } zawiera nieprawidłowe rozszerzenie.
+cert-error-untrusted-issuer = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } został wystawiony przez organ certyfikacji, który nie jest już zaufany.
+cert-error-untrusted-cert = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } jest oznaczony jako niezaufany.
+cert-error-invalid-integer-encoding = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } zawiera nieprawidłowe kodowanie liczb. Typowe przyczyny to ujemne numery seryjne, ujemne moduli RSA i niepotrzebne już kodowania.
+cert-error-unsupported-keyalg = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ certyfikat dostarczony dla adresu { $hostname } ma nieobsługiwany typ klucza.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ organ certyfikacji, który wystawił certyfikat dostarczony dla adresu { $hostname }, nie jest już zaufany.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } zablokował otwarcie tej witryny, ponieważ algorytm podpisu certyfikatu dostarczonego dla adresu { $hostname } nie jest zgodny z polem algorytmu podpisu.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = Nie udało się nawiązać połączenia
@@ -118,6 +138,7 @@ deniedPortAccess-title = Zastrzeżony adres
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Niestety, nie udało się odnaleźć tej strony
+internet-connection-offline-title = Wystąpił problem z połączeniem z Internetem.
 dns-not-found-trr-only-title2 = Możliwe zagrożenie bezpieczeństwa podczas wyszukiwania tej domeny
 dns-not-found-native-fallback-title2 = Możliwe zagrożenie bezpieczeństwa podczas wyszukiwania tej domeny
 fileNotFound-title = Nie odnaleziono pliku
@@ -134,6 +155,7 @@ contentEncodingError-title = Błąd kodowania zawartości
 unsafeContentType-title = Niebezpieczny typ pliku
 netReset-title = Przerwane połączenie
 netTimeout-title = Przekroczono limit czasu połączenia
+httpErrorPage-title = Wystąpił problem z tą witryną
 serverError-title = Wystąpił problem z tą witryną
 unknownProtocolFound-title = Nieznany protokół
 proxyConnectFailure-title = Serwer proxy odrzuca połączenia
@@ -142,6 +164,7 @@ redirectLoop-title = Pętla przekierowań
 unknownSocketType-title = Nieoczekiwana odpowiedź serwera
 nssFailure2-title = Nie udało się nawiązać bezpiecznego połączenia
 csp-xfo-error-title = { -brand-short-name } nie może otworzyć tej strony
+corruptedContentErrorv2-title = Błąd: treść uszkodzona
 corruptedContentError-title = Błąd: treść uszkodzona
 sslv3Used-title = Nie udało się nawiązać bezpiecznego połączenia
 inadequateSecurityError-title = Połączenie nie gwarantuje bezpieczeństwa
@@ -166,5 +189,5 @@ fp-certerror-hide-advanced-button = Ukryj zaawansowane
 ##   $hostname (String) - Hostname of the website to which the user was trying to connect.
 
 fp-certerror-override-exception-button = Przejdź do witryny { $hostname } (ryzykowne)
-fp-certerror-intro = { -brand-short-name } wykrył potencjalnie poważny problem bezpieczeństwa na witrynie <strong>{ $hostname }</strong>. Ktoś podszywający się pod nią może próbować ukraść dane karty płatniczej, hasła, wiadomości e-mail lub coś innego.
+fp-certerror-intro = { -brand-short-name } wykrył potencjalnie poważny problem bezpieczeństwa na witrynie <strong>{ $hostname }</strong>. Ktoś podszywający się pod nią może próbować ukraść dane karty płatniczej, hasła, adresy e-mail lub coś innego.
 fp-certerror-expired-into = { -brand-short-name } wykrył problem bezpieczeństwa na witrynie <strong>{ $hostname }</strong>. Jest ona błędnie skonfigurowana albo zegar tego urządzenia jest ustawiony na błędną datę/godzinę.

@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Daw i ben / Oed-Uchaf
 storage-table-headers-cookies-size = Maint
 storage-table-headers-cookies-last-accessed = Mynediad Diwethaf
 storage-table-headers-cookies-creation-time = Crëwyd
+storage-table-headers-cookies-update-time = Diweddarwyd
 storage-table-headers-cache-status = Statws
 storage-table-headers-extension-storage-area = Ardal Storio
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = Bydd y gronfa ddata “{ $dbName }” yn cael ei dd
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = Nid oedd modd dileu cronfa ddata “{ $dbName }”.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = Nid oedd modd creu cwci: “{ $errorString }”.
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = Nid oedd modd diweddaru cwci: “{ $errorString }”.

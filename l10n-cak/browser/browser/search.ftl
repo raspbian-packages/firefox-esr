@@ -32,7 +32,10 @@ searchbar-icon =
 
 remove-search-engine-button = ÜTZ
 
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
+## The following strings are used as input labels.
 
+add-engine-window =
+    .title = Titz'aqatisäx Kanob'äl
+    .style = min-width: 32em;
+add-engine-button = Titz'aqatisäx Ichinan Kanob'äl
+add-engine-name = Rub'i' ri kanob'äl

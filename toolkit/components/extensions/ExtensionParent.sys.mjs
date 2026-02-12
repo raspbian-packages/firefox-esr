@@ -3,6 +3,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+/* eslint-disable mozilla/valid-lazy */
 
 /**
  * This module contains code for managing APIs that need to run in the
@@ -14,10 +15,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 
-/** @type {Lazy} */
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(lazy, {
+const lazy = XPCOMUtils.declareLazy({
   AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
   AsyncShutdown: "resource://gre/modules/AsyncShutdown.sys.mjs",
   BroadcastConduit: "resource://gre/modules/ConduitsParent.sys.mjs",
@@ -32,13 +30,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
   Schemas: "resource://gre/modules/Schemas.sys.mjs",
   getErrorNameForTelemetry: "resource://gre/modules/ExtensionTelemetry.sys.mjs",
   WebNavigationFrames: "resource://gre/modules/WebNavigationFrames.sys.mjs",
-});
-
-XPCOMUtils.defineLazyServiceGetters(lazy, {
-  aomStartup: [
-    "@mozilla.org/addons/addon-manager-startup;1",
-    "amIAddonManagerStartup",
-  ],
+  aomStartup: {
+    service: "@mozilla.org/addons/addon-manager-startup;1",
+    iid: Ci.amIAddonManagerStartup,
+  },
 });
 
 import { ExtensionCommon } from "resource://gre/modules/ExtensionCommon.sys.mjs";
@@ -354,6 +349,7 @@ const ProxyMessenger = {
   async recvRuntimeMessage(arg, { sender }) {
     arg.firstResponse = true;
     let kind = await this.normalizeArgs(arg, sender);
+    arg.query = true;
     let result = await this.conduit.castRuntimeMessage(kind, arg);
     if (!result) {
       // "throw new ExtensionError" cannot be used because then the stack of the
@@ -366,6 +362,7 @@ const ProxyMessenger = {
 
   async recvPortConnect(arg, { sender }) {
     if (arg.native) {
+      /** @type {ParentPort} */
       let port = this.openNative(arg.name, sender).onConnect(arg.portId, this);
       port.senderChildId = sender.childId;
       port.native = true;
@@ -380,6 +377,7 @@ const ProxyMessenger = {
 
     try {
       let kind = await this.normalizeArgs(arg, sender);
+      arg.query = true;
       let all = await this.conduit.castPortConnect(kind, arg);
       resolve();
 
@@ -403,19 +401,19 @@ const ProxyMessenger = {
       // the openNative method).
       return this.ports.get(sender.portId)?.onPortMessage(holder);
     }
-    // NOTE: the following await make sure we await for promised ports
-    // (ports that were not yet open when added to the Map,
-    // see recvPortConnect).
+    // Wait for onConnect dispatch to complete to avoid missing onMessage.
     await this.portPromises.get(sender.portId);
     this.sendPortMessage(sender.portId, holder, !sender.source);
   },
 
-  recvConduitClosed(sender) {
+  async recvConduitClosed(sender) {
     let app = this.ports.get(sender.portId);
     if (this.ports.delete(sender.portId) && sender.native) {
       this.untrackNativeAppPort(app);
       return app.onPortDisconnect();
     }
+    // Wait for onConnect dispatch to complete to avoid missing onDisconnect.
+    await this.portPromises.get(sender.portId);
     this.sendPortDisconnect(sender.portId, null, !sender.source);
   },
 
@@ -426,8 +424,13 @@ const ProxyMessenger = {
   sendPortDisconnect(portId, error, source = true) {
     let port = this.ports.get(portId);
     this.untrackNativeAppPort(port);
-    this.conduit.castPortDisconnect("port", { portId, source, error });
     this.ports.delete(portId);
+    try {
+      // This may throw: https://bugzilla.mozilla.org/show_bug.cgi?id=1931902#c3
+      this.conduit.castPortDisconnect("port", { portId, source, error });
+    } catch (e) {
+      Cu.reportError(e);
+    }
   },
 
   trackNativeAppPort(port) {
@@ -1869,14 +1872,17 @@ const DebugUtils = {
  * was received by the message manager. The promise is rejected if the message
  * manager was closed before a message was received.
  *
+ * Accepts an AbortSignal to allow early unregistration of the listeners.
+ *
  * @param {MessageListenerManager} messageManager
  *        The message manager on which to listen for messages.
  * @param {string} messageName
  *        The message to listen for.
+ * @param {AbortSignal} abortSignal
  * @returns {Promise<*>}
  */
-function promiseMessageFromChild(messageManager, messageName) {
-  return new Promise((resolve, reject) => {
+function promiseMessageFromChild(messageManager, messageName, abortSignal) {
+  const promise = new Promise((resolve, reject) => {
     let unregister;
     function listener(message) {
       unregister();
@@ -1894,19 +1900,88 @@ function promiseMessageFromChild(messageManager, messageName) {
     }
     unregister = () => {
       Services.obs.removeObserver(observer, "message-manager-close");
+      abortSignal.removeEventListener("abort", unregister);
       messageManager.removeMessageListener(messageName, listener);
+      messageManager = null;
     };
     messageManager.addMessageListener(messageName, listener);
     Services.obs.addObserver(observer, "message-manager-close");
+    abortSignal.addEventListener("abort", unregister);
   });
+  return promise;
+}
+
+/**
+ * Returns a Promise which rejects if the load in the browser is aborted.
+ * Accepts an AbortSignal to allow early unregistration of the listeners.
+ *
+ * @param {XULBrowserElement} browser
+ * @param {AbortSignal} abortSignal
+ * @returns {Promise<void>} A promise that never resolves, but only rejects.
+ */
+function promiseBrowserStopped(browser, abortSignal) {
+  const { promise, reject } = Promise.withResolvers();
+  let unregister;
+  let listener = {
+    QueryInterface: ChromeUtils.generateQI([
+      "nsIWebProgressListener",
+      "nsISupportsWeakReference",
+    ]),
+
+    onStateChange(webProgress, request, stateFlags, status) {
+      if (
+        webProgress.isTopLevel &&
+        stateFlags & Ci.nsIWebProgressListener.STATE_STOP &&
+        !Components.isSuccessCode(status) &&
+        // Ignore state change triggered by navigating away from about:blank.
+        status !== Cr.NS_BINDING_ABORTED
+      ) {
+        unregister();
+        // Known failures (and test coverage):
+        // - NS_ERROR_ILLEGAL_DURING_SHUTDOWN (test_ext_background_early_quit.js)
+        // - NS_ERROR_FILE_NOT_FOUND (test_ext_background_file_invalid.js)
+        reject(
+          new Error(
+            `Browser load failed: ${ChromeUtils.getXPCOMErrorName(status)}`
+          )
+        );
+      }
+    },
+  };
+
+  unregister = () => {
+    // browser.removeProgressListener throws if browser.webProgress is null.
+    if (browser?.webProgress) {
+      browser.removeProgressListener(listener);
+    }
+    abortSignal.removeEventListener("abort", unregister);
+    listener = null;
+    browser = null;
+  };
+  browser.addProgressListener(listener, Ci.nsIWebProgress.NOTIFY_STATE_WINDOW);
+  abortSignal.addEventListener("abort", unregister);
+  return promise;
 }
 
 // This should be called before browser.loadURI is invoked.
 async function promiseBackgroundViewLoaded(browser) {
-  let { childId } = await promiseMessageFromChild(
+  const abortController = new AbortController();
+  const messagePromise = promiseMessageFromChild(
     browser.messageManager,
-    "Extension:BackgroundViewLoaded"
+    "Extension:BackgroundViewLoaded",
+    abortController.signal
   );
+  const stopPromise = promiseBrowserStopped(browser, abortController.signal);
+
+  let childId;
+  try {
+    // stopPromise only rejects, so a non-rejection is from messagePromise.
+    let message = await Promise.race([messagePromise, stopPromise]);
+    childId = message.childId;
+  } finally {
+    abortController.abort();
+  }
+
   if (childId) {
     return ParentAPIManager.getContextById(childId);
   }
@@ -2210,7 +2285,7 @@ class CacheStore {
 // A cache to support faster initialization of extensions at browser startup.
 // All cached data is removed when the browser is updated.
 // Extension-specific data is removed when the add-on is updated.
-var StartupCache = {
+export var StartupCache = {
   _ensureDirectoryPromise: null,
   _saveTask: null,
 
@@ -2366,6 +2441,7 @@ ExtensionParent._resetStartupPromises();
 ChromeUtils.defineLazyGetter(ExtensionParent, "PlatformInfo", () => {
   return Object.freeze({
     os: (function () {
+      /** @type {string} */
       let os = AppConstants.platform;
       if (os == "macosx") {
         os = "mac";
@@ -2384,3 +2460,11 @@ ChromeUtils.defineLazyGetter(ExtensionParent, "PlatformInfo", () => {
     })(),
   });
 });
+
+// Register WPTMessages actor when running under WPT.
+if (ExtensionCommon.isInWPT && AppConstants.NIGHTLY_BUILD) {
+  const { WPTMessagesParent } = ChromeUtils.importESModule(
+    "resource://gre/modules/WPTMessagesParent.sys.mjs"
+  );
+  WPTMessagesParent.init(apiManager);
+}

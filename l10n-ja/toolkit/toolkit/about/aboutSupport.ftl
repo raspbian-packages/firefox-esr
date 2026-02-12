@@ -15,6 +15,10 @@ support-addons-type = 種類
 support-addons-enabled = 有効
 support-addons-version = バージョン
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = 格納場所
 legacy-user-stylesheets-title = 従来のユーザースタイルシート
 legacy-user-stylesheets-enabled = 使用中
 legacy-user-stylesheets-stylesheet-types = スタイルシート
@@ -179,6 +183,8 @@ media-capabilities-enumerate = データベースを列挙
 
 media-codec-support-sw-decoding = ソフトウェアデコーディング
 media-codec-support-hw-decoding = ハードウェアデコーディング
+media-codec-support-sw-encoding = ソフトウェアエンコーディング
+media-codec-support-hw-encoding = ハードウェアエンコーディング
 media-codec-support-codec-name = コーデック名
 media-codec-support-supported = 対応
 media-codec-support-unsupported = 未対応

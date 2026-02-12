@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } utentes
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Sincroniza is sinnalibros tuos in ònnia logu.
 cfr-doorhanger-bookmark-fxa-body = Ite iscoberta! Immoe no abarres chenecustu sinnalibru in is dispositivos tuos. Est tempus de impreare { -fxaccount-brand-name }.
@@ -68,6 +68,11 @@ cfr-doorhanger-bookmark-fxa-link-text = Sincroniza is sinnalibros immoe…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Butone Serra
     .title = Serra
+fxa-adoption-addresses-backup-title = Immoe amus a fàghere una còpia de seguresa de is indiritzos sarvados
+fxa-adoption-addresses-backup-subtitle = Ampara is indiritzos sarvados cun una sincronizatzione tzifrada intre dispositivos.
+fxa-adoption-credit-cards-backup-title = Immoe amus a fàghere una còpia de seguresa de is mètodos de pagamentu
+fxa-adoption-credit-cards-backup-subtitle = Ampara is mètodos de pagamentu tuos cun una sincronizatzione tzifrada intre dispositivos.
+fxa-adoption-primary-button-label = Registra·ti
 
 ## Protections panel
 
@@ -132,7 +137,7 @@ spotlight-public-wifi-vpn-link = Immoe nono
 
 ## Emotive Continuous Onboarding
 
-spotlight-better-internet-header = Un'internet mègius cumintzat dae tue
+spotlight-better-internet-header = Un’internet mègius cumintzat dae tue
 spotlight-better-internet-body = Impreende { -brand-short-name }, ses votende pro unu internet prus abertu e atzessìbile, chi est mègius pro totus.
 spotlight-peace-mind-header = Semus semper cun tue
 spotlight-peace-mind-body = Ònnia mese, { -brand-short-name } blocat una mèdia de prus che 3.000 sighiduras pro ònnia utente. Proite nudda si diat dèpere pònnere in mesu intre tue e s'internet bonu, mescamente genas pro sa riservadesa che a is sighiduras.
@@ -228,6 +233,22 @@ set-default-pdf-handler-headline =
     Modìfica o firma is formulàrios deretu in su navigadore tuo. Pro cambiare custa optzione, chirca “PDF” in is cunfiguratziones.
 set-default-pdf-handler-primary = Apo cumprèndidu
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Agiunghe sa firma tua in onni logu!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Disinna, iscrie o càrriga sa firma tua, pone·dda in su logu chi ti serbit e sarva is firmas tuas pro sa borta chi benit.
+annotations-make-default-pdf-handler-title = Boles cunfigurare { -brand-short-name } comente s’editore de PDF predefinidu?
+annotations-make-default-pdf-handler-subtitle = As a tènnere atzessu a is ainas nostras onni borta chi abèrgias unu PDF.
+annotations-make-default-pdf-primary-cta =
+    .label = Cunfigura comente predefinidu
+annotations-make-default-pdf-next =
+    .label = Imbeniente
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Ses acanta de tènnere unu dispositivu nou?
@@ -302,6 +323,10 @@ root-certificate-succession-infobar-secondary-button =
 
 ## Root Certificate Succession Windows Background Notification
 
+root-certificate-windows-background-notification-title = As pèrdidu un’atualizatzione de importu de { -brand-short-name }
+root-certificate-windows-background-notification-subtitle = Partes de importu de su navigadore no ant a funtzionare prus in pagora si no installas is atualizatziones. Est unu momentu bonu pro otènnere is ùrtimas protetziones e funtziones.
+root-certificate-windows-background-notification-learn-more-button = Àteras informatziones
+root-certificate-windows-background-notification-update-button = Atualiza { -brand-short-name }
 
 ## FxA Menu Message variants
 
@@ -309,8 +334,11 @@ fxa-menu-message-close-button =
     .title = Serra
     .aria-label = Serra
 fxa-menu-message-sign-up-button = Registra·ti
+fxa-menu-message-sign-in-button = Identìfica·ti
+fxa-menu-message-sync-button = Avia sa sincronizatzione
 fxa-menu-message-sync-devices-primary-text = Sincroniza totu is dispositivos tuos
 fxa-menu-message-sync-devices-secondary-text = Atzede deretu a totu is datos tuos, comente sinnalibros e craes, in onni logu cun { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Atzede deretu a totu is sinnalibros, is craes e àteru, dae totu is dispositivos in ue as fatu s’identificatzione cun { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Sincroniza totu is dispositivos tuos
 fxa-menu-message-backup-data-primary-text = Faghe una còpia de seguresa de is datos de navigatzione tuos
 fxa-menu-message-backup-data-secondary-text = Ampara in automàticu is sinnalibros, is craes e àteras informatziones in totu is dispositivos tuos.
@@ -324,3 +352,60 @@ fxa-menu-message-mobile-collapsed-text = Sincroniza cun su telèfonu
 
 ## Multi-CTA Fox Doodle Spotlight
 
+multi-cta-fox-doodle-title = Ti donamus torra su benebènnidu!
+multi-cta-fox-doodle-set-default-checkbox = Faghe de { -brand-short-name } su navigadore predefinidu
+multi-cta-fox-doodle-pin-startmenu-checkbox = Apica { -brand-short-name } a su menù de aviu
+multi-cta-fox-doodle-pin-checkbox =
+    { PLATFORM() ->
+        [macos] Mantene { -brand-short-name } in su Dock
+       *[other] Apica { -brand-short-name } a sa barra de is tareas
+    }
+multi-cta-fox-doodle-start-browsing-primary-button-label = Cumintza a navigare
+multi-cta-fox-doodle-main-browser-primary-button-label = Faghe de { -brand-short-name } su navigadore predefinidu
+multi-cta-fox-doodle-quick-reminder-subtitle = Un’apuntu a su bolu: podes portare su navigadore tuo preferidu e rispetosu de sa riservadesa semper acanta.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Depes atualizare dae Windows 10 de immoe a pagu?
+windows-10-eos-sync-spotlight-subtitle = Faghe una còpia de seguresa de is craes e de is sinnalibros in preparatzione pro brincare a cale si siat dispositivu.
+windows-10-eos-sync-spotlight-primary-label = Faghe una còpia de seguresa de { -brand-short-name }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Ses atualizende a Windows 11? Non perdas is sinnalibros e is craes.
+windows-10-eos-sync-toast-subtitle = Faghe una còpia de seguresa de is datos tuos in manera chi { -brand-short-name } siat prontu in cale si siat momentu, in custu elaboradore o in cussu imbeniente.
+windows-10-eos-sync-toast-primary-label = Cumintza
+windows-10-eos-sync-toast-secondary-label = Regorda·mi·ddu prus tardu
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } no est installadu in manera predefinida comente is àteros navigadores de is gigantes de sa tecnologia. Pro una resone.
+windows-10-eos-challenger-sync-callout-subtitle = Cando faghes una còpia de seguresa de is sinnalibros e is craes de { -brand-product-name }, est prus fàtzile a tramudare su navigadore chi preferis a su dispositivu imbeniente tuo.
+windows-10-eos-challenger-pin-callout-subtitle = Apica { -brand-shorter-name } a sa barra de tareas in manera chi su navigadore chi preferis siat semper in ue ti serbit.
+windows-10-eos-challenger-sync-primary-button = Faghe una còpia de seguresa de { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Apica { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } blocat is cripto-minadores, is sighiduras de retes sotziales e is generadores de imprentas digitales.
+windows-10-eos-sync-callout-privacy-screen-2-title = Pone is craes e is sinnalibros in seguresa pro su dispositivu imbeniente.
+windows-10-eos-callout-addons-primary-button = Càstia sa seletzione nostra
+windows-10-eos-sync-callout-addons-title = Non perdas is cumplementos tuos durante s’atualizatzione dae Windows 10.
+windows-10-eos-sync-callout-next-button = Imbeniente
+windows-10-eos-sync-callout-get-started-button = Cumintza
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Is ischedas verticales e is grupos de ischedas sunt inoghe!
+windows-10-eos-feature-toast-whats-new-button = Bide is novidades
+windows-10-eos-feature-toast-dismiss-button = Iscarta
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-learn-more = Àteras informatziones
+etp-strict-exceptions-infobar-button = Àplica is curretziones
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Immoe nono
+    .accesskey = n

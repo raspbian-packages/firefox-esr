@@ -13,8 +13,8 @@ protections-popup-footer-protection-label-strict = მკაცრი
     .label = მკაცრი
 protections-popup-footer-protection-label-custom = მორგებული
     .label = მორგებული
-protections-popup-footer-protection-label-standard = ჩვეულებრივი
-    .label = ჩვეულებრივი
+protections-popup-footer-protection-label-standard = საშუალო
+    .label = საშუალო
 
 ##
 
@@ -80,8 +80,8 @@ protections-panel-smartblock-desc-label = { -brand-short-name } ზღუდა�
 protections-panel-smartblock-blocking-toggle =
     .label = დაიშვას { $trackername }
 #  $trackername (String): the name of the tracker that is currently being blocked.
-smartblock-placeholder-title = { $trackername } მეთვალყურეები და შიგთავსი შეზღუდულია
-smartblock-placeholder-desc = თქვენი { -brand-short-name } მითითებული პარამეტრებით უზღუდავს ამ შიგთავსს თქვენს თვალთვალს სხვადასხვა საიტებზე ან სარეკლამოებისთვის გამოყენებას.
+smartblock-placeholder-title = { $trackername } მეთვალყურეებითა და შიგთავსით იზღუდება
+smartblock-placeholder-desc = თქვენი { -brand-short-name } გამართულია ისე, რომ ამ შიგთავსით ვერ შეძლონ თვალის დევნება სხვადასხვა საიტზე ან მონაცემთა აღრიცხვა სარეკლამოდ.
 #  $websitehost (String): host of website with blocked content.
 smartblock-placeholder-button-text = დაიშვას { $websitehost }
 
@@ -106,8 +106,8 @@ protections-panel-site-not-working-view-send-report = მოგვახსე�
 
 ##
 
-protections-panel-cross-site-tracking-cookies = ეს ფუნთუშები თან დაგყვებათ საიტებზე და აგროვებს მონაცემებს, თუ რას აკეთებთ ინტერნეტში. მათ იყენებს გარეშე მხარეები, სარეკლამო და კვლევითი დაწესებულებები.
-protections-panel-cryptominers = კრიპტოვალუტის გამომმუშავებლები სარგებლობს თქვენი სისტემის გამოთვლის სიმძლავრით ციფრული ფულის მოსაპოვებლად. ამგვარი კოდები ასუსტებს ბატარეას, ანელებს კომპიუტერს და ზრდის დენის დანახარჯს.
+protections-panel-cross-site-tracking-cookies = ეს ფუნთუშები თან დაგყვებათ საიტებზე და აგროვებს მონაცემებს, თუ რას აკეთებთ ინტერნეტში. მათ იყენებენ გარეშე მხარეები, სარეკლამო და კვლევითი დაწესებულებები.
+protections-panel-cryptominers = კრიპტოვალუტის გამომმუშავებლები სარგებლობს თქვენი სისტემის გამოთვლის სიმძლავრით ციფრული ფულის მოსაპოვებლად. ამგვარი კოდები ასუსტებს ბატარეას, ანელებს კომპიუტერს და ზრდის დენის ხარჯს.
 protections-panel-fingerprinters = მომხმარებლის ამომცნობები აგროვებს ბრაუზერისა და კომპიუტერის მონაცემებს თქვენი დახასიათების შესადგენად. ამის შედეგად კი თქვენი სხვებისგან გამორჩევაა შესაძლებელი სხვადასხვა საიტებზე.
 protections-panel-tracking-content = საიტები, ზოგჯერ გარე ბმულებიდან ტვირთავენ თვალის სადევნებელი კოდის შემცველ მასალას. მათი შეზღუდვით, საიტი უფრო სწრაფად ჩაიტვირთება, თუმცა ღილაკებმა, ანგარიშისა და სხვა შესავსებმა ველებმა შეიძლება, აღარ იმუშაოს.
 protections-panel-social-media-trackers = სოციალური ქსელები ათავსებს მეთვალყურეებს სხვა საიტებზე, რომ თვალი გადევნონ ინტერნეტში. ეს საშუალებას აძლევს მათ მფლობელ დაწესებულებებს, იმაზე მეტი რამ შეიტყონ თქვენ შესახებ, ვიდრე ამ სოციალურ ქსელში გაქვთ გაზიარებული.
@@ -164,8 +164,8 @@ protections-panel-cookie-banner-view-turn-off-label =
 protections-panel-cookie-banner-view-turn-on-label =
     .label = ჩართვა
 protections-panel-report-broken-site =
-    .label = საიტზე გაუმართაობის მოხსენება
-    .title = საიტზე გაუმართაობის მოხსენება
+    .label = არეული საიტის მოხსენება
+    .title = არეული საიტის მოხსენება
 
 ## Protections panel info message
 

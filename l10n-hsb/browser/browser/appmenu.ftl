@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Sćehnjenja
 appmenuitem-passwords =
     .label = Hesła
+appmenuitem-extensions-and-themes =
+    .label = Rozšěrjenja a drasty
+appmenuitem-extensions =
+    .label = Rozšěrjenja
 appmenuitem-addons-and-themes =
     .label = Přidatki a drasty
 appmenuitem-print =
@@ -34,7 +38,7 @@ appmenuitem-print =
 appmenuitem-find-in-page =
     .label = Na stronje pytać…
 appmenuitem-translate =
-    .label = Stronu přełožić…
+    .label = Stronu přełožować…
 appmenuitem-zoom =
     .value = Skalować
 appmenuitem-more-tools =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Strg+Umsch+2
     }
+profiler-button-dropmarker =
+    .label = Wukonowu analyzu wočinić
+    .tooltiptext = Wukonowu analyzu wočinić
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Přednastajenje za wuslědźenje zmylkow awdio a widejo w { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Medije
+profiler-popup-presets-ml-description = Přednastajenje za wuslědźenje zmylkow mašinelneho wuknjenja w { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Mašinelne wuknjenje
 profiler-popup-presets-networking-description = Přednastajenje za wuslědźenje syćowych zmylkow w { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Syć
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Startujće desku e-mejlowych maskow
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Škitajće swoju aktiwitu online
 appmenu-services-header = Moje słužby
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Wupruwujće druhe škitanske nastroje wot Mozilla:
 appmenu-other-protection-header = Testujće druhe škitanske nastroje wot { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Profile
 appmenu-other-profiles = Druhe profile
 appmenu-manage-profiles =
     .label = Profile rjadować
+appmenu-copy-profile =
+    .label = Tutón profil kopěrować
 appmenu-create-profile =
     .label = Nowy profil
 appmenu-edit-profile =
     .aria-label = Profil wobdźěłać
+appmenu-profiles-2 =
+    .label = Profile

@@ -106,10 +106,3 @@ networkProtocolError-title = Error del protocol de xarxa
 nssBadCert-title = Avís: Risc potencial de seguretat
 nssBadCert-sts-title = No s'ha connectat: Problema potencial de seguretat
 certerror-mitm-title = Hi ha programari que impedeix que el { -brand-short-name } es connecti de forma segura a aquest lloc
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

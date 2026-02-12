@@ -107,9 +107,35 @@ fp-cert-error-code = Kód chyby: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } nedôveruje serveru { $hostname }, pretože nevie dokázať, že spĺňa požiadavky na transparentnosť verejných certifikátov.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Pravdepodobne nič, pretože je pravdepodobné, že je problém so samotnou stránkou.
 fp-learn-more-about-secure-connection-failures = Ďalšie informácie o zlyhaniach zabezpečeného pripojenia
 fp-learn-more-about-cert-issues = Ďalšie informácie o týchto typoch problémov s certifikátmi
 fp-learn-more-about-time-related-errors = Ďalšie informácie o odstraňovaní chýb súvisiacich s časom
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } je označený ako nedôveryhodný.
+cert-error-bad-signature = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože podpis na certifikáte poskytnutom pre { $hostname } nie je platný.
+cert-error-key-pinning-failure = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } používa iný verejný kľúč, ako sa očakávalo.
+cert-error-bad-der = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } nie je správne zakódovaný.
+cert-error-cert-not-in-name-space = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } nespĺňa obmedzenia názvu certifikátu, ktorý ho vydal.
+cert-error-inadequate-cert-type = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } nie je povolený webovým serverom.
+cert-error-path-len-constraint-invalid = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } má v ceste ku koreňovému certifikátu príliš veľa prechodných certifikátov.
+cert-error-invalid-key = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } má neplatný kľúč. S najväčšou pravdepodobnosťou je príliš malý na to, aby bol bezpečný.
+cert-error-unknown-critical-extension = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } obsahuje nepodporované kritické rozšírenie.
+cert-error-extension-value-invalid = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } obsahuje neplatnú príponu.
+cert-error-untrusted-issuer = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } bol vydaný certifikačnou autoritou, ktorá už nie je nedôveryhodná.
+cert-error-untrusted-cert = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } je označený ako nedôveryhodný.
+cert-error-invalid-integer-encoding = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } obsahuje neplatné kódovanie celého čísla. Medzi bežné príčiny patria záporné sériové čísla, záporné RSA moduly a kódovania, ktoré sú dlhšie, ako je potrebné.
+cert-error-unsupported-keyalg = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikát poskytnutý pre { $hostname } má nepodporovaný typ kľúča.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože certifikačná autorita, ktorá vydala certifikát poskytnutý pre { $hostname }, už nie je dôveryhodná.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } zablokoval vašu návštevu tejto stránky, pretože podpisový algoritmus certifikátu poskytnutého pre { $hostname } sa nezhoduje s jeho poľom podpisového algoritmu.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Táto adresa je zakázaná
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm, túto stránku sa nám nepodarilo nájsť.
+internet-connection-offline-title = Zdá sa, že sa vyskytol problém s vaším internetovým pripojením.
 dns-not-found-trr-only-title2 = Možné bezpečnostné riziko pri hľadaní tejto domény
 dns-not-found-native-fallback-title2 = Možné bezpečnostné riziko pri hľadaní tejto domény
 fileNotFound-title = Súbor sa nenašiel
@@ -134,6 +161,7 @@ contentEncodingError-title = Chyba kódovania obsahu
 unsafeContentType-title = Nebezpečný typ obsahu
 netReset-title = Výpadok pripojenia
 netTimeout-title = Čas pripojenia vypršal
+httpErrorPage-title = Zdá sa, že s touto stránkou je problém
 serverError-title = Zdá sa, že s touto stránkou je problém
 unknownProtocolFound-title = Adresa nebola rozpoznaná
 proxyConnectFailure-title = Server proxy odmieta pripojenia
@@ -142,6 +170,7 @@ redirectLoop-title = Stránku sa nepodarilo správne presmerovať
 unknownSocketType-title = Neočakávaná odpoveď servera
 nssFailure2-title = Zabezpečené pripojenie zlyhalo
 csp-xfo-error-title = { -brand-short-name } nedokáže otvoriť túto stránku
+corruptedContentErrorv2-title = Poškodený obsah stránky
 corruptedContentError-title = Poškodený obsah stránky
 sslv3Used-title = Nie je možné sa pripojiť zabezpečene
 inadequateSecurityError-title = Vaše pripojenie nie je zabezpečené
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Skryť pokročilé
 fp-certerror-override-exception-button = Pokračovať na { $hostname } (riskantné)
 fp-certerror-intro = { -brand-short-name } zistil potenciálne vážny bezpečnostný problém so stránkou <strong>{ $hostname }</strong>. Niekto, kto predstiera, že je webom, by sa mohol pokúsiť ukradnúť veci, ako sú informácie o kreditnej karte, heslá alebo e‑maily.
 fp-certerror-expired-into = { -brand-short-name } zistil bezpečnostný problém so stránkou <strong>{ $hostname }</strong>. Buď stránka nie je správne nastavená, alebo sú hodiny vášho zariadenia nastavené na nesprávny dátum/čas.
+fp-certerror-transparency-intro = Niekto, kto sa vydáva za <strong>{ $hostname }</strong>, by sa mohol pokúsiť ukradnúť veci, ako sú informácie o kreditných kartách, heslá alebo e‑maily.

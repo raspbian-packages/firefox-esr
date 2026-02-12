@@ -3,9 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Mandar als sites web lo senhal « Me pistar pas » per lor dire que volètz pas èsser pistat
-do-not-track-description2 =
-    .label = Demandar als sites web de « Me pistar pas »
-    .accesskey = d
 do-not-track-learn-more = Ne saber mai
 do-not-track-option-default-content-blocking-known =
     .label = Solament quand { -brand-short-name } es configurat per blocar los traçadors coneguts
@@ -124,6 +121,10 @@ startup-header = Aviada
 always-check-default =
     .label = Totjorn verificar se { -brand-short-name } es vòstre navegador per defaut
     .accesskey = T
+is-default-browser =
+    .message = { -brand-short-name } es actualament vòstre navegador per defaut
+is-not-default-browser =
+    .message = { -brand-short-name } es pas vòstre navegador per defaut
 is-default = { -brand-short-name } es actualament vòstre navegador per defaut
 is-not-default = { -brand-short-name } es pas vòstre navegador per defaut
 set-as-my-default-browser =
@@ -213,7 +214,7 @@ containers-remove-alert-title = Suprimir aqueste contenedor ?
 #   $count (number) - Number of tabs that will be closed.
 containers-remove-alert-msg =
     { $count ->
-        [one] Se suprimiscatz aquel contenedor ara, { $count } onglet isolat serà tampat. Segur que volètz suprimir aqueste contenidor ? 
+        [one] Se suprimiscatz aquel contenedor ara, { $count } onglet isolat serà tampat. Segur que volètz suprimir aqueste contenidor ?
        *[other] Se suprimiscatz aquel contenedor ara, { $count } onglets isolats seràn tampats. Segur que volètz suprimir aqueste contenidor ?
     }
 containers-remove-ok-button = Suprimir aqueste contenedor
@@ -227,6 +228,15 @@ settings-tabs-show-image-in-preview =
 language-and-appearance-header = Lenga e aparéncia
 preferences-web-appearance-header = Aparéncia dels sites web
 preferences-web-appearance-description = D’unes sites web adaptan lor jòc de colors segon vòstras preferéncias. Causissètz lo jòc de colors que volètz emplegar per aqueles sites.
+preferences-web-appearance-choice-auto2 =
+    .label = Automatic
+    .title = Cambiament automatic dels rèireplans e dels contenguts dels sites Web segon los paramètres sistèma e del tèma de { -brand-short-name }.
+preferences-web-appearance-choice-light2 =
+    .label = Clar
+    .title = Utilizar una aparéncia clara pels rèireplans e lo contengut dels sites web.
+preferences-web-appearance-choice-dark2 =
+    .label = Escur
+    .title = Utilizar una aparéncia escura pels rèireplans e lo contengut dels sites web.
 preferences-web-appearance-choice-auto = Automatic
 preferences-web-appearance-choice-light = Clar
 preferences-web-appearance-choice-dark = Escur
@@ -242,13 +252,11 @@ preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-web-appearance-link =
+    .label = Gerissètz los tèmas de { -brand-short-name } dins Extensions e tèma
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Vòstras seleccion de colors subrecargan l’aparéncia dels sites web. <a data-l10n-name="colors-link">Gerir las colors</a>
-# This can appear when using windows HCM or "Override colors: always" without
-# system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Vòstras seleccion de colors subrecargan l’aparéncia dels sites web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gerissètz los tèmas de { -brand-short-name } dins <a data-l10n-name="themes-link">Extensions e tèma</a>
@@ -308,6 +316,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Fichièrs e aplicacions
+downloads-header-2 =
+    .label = Telecargaments
+download-save-where-2 =
+    .label = Enregistrar los fichièrs dins lo dossièr
+    .accesskey = n
 download-header = Telecargaments
 download-save-where = Enregistrar los fichièrs dins lo dossièr
     .accesskey = n
@@ -530,7 +543,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Novèlas fenèstras e novèls onglets
 home-new-windows-tabs-description2 = Causissètz çò que volètz veire en dobrir la pagina d’acuèlh, de fenèstras novèlas o d’onglets novèls.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Pagina d’acuèlh e novèlas fenèstras
 home-newtabs-mode-label = Onglets novèls
@@ -684,6 +697,8 @@ search-keyword-warning-bookmark = Avètz causit un mot clau que ja es utilizat p
 containers-back-button2 =
     .aria-label = Tornar als paramètres
 containers-header = Onglets de contenedor
+containers-section-header =
+    .heading = Onglets de contenedor
 containers-add-button =
     .label = Apondre un contenedor novèl
     .accesskey = A
@@ -841,6 +856,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Nom de l'aparelh
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Nom de l'aparelh
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Cambiar lo nom del periferic
+    .accesskey = h
 sync-device-name-change =
     .label = Cambiar lo nom del periferic…
     .accesskey = h
@@ -996,6 +1019,10 @@ history-remember-option-never =
     .label = Conservar pas jamai l'istoric
 history-remember-option-custom =
     .label = Utilizar los paramètres personalizats per l'istoric
+history-remember-description2 =
+    .description = { -brand-short-name } enregistrarà vòstres istorics, telecargaments e recèrcas.
+history-dontremember-description2 =
+    .description = { -brand-short-name } utilizarà los meteisses paramètres que per la navegacion privada e conservarà pas cap d'istoric quand navegaretz sus internet.
 history-remember-description = { -brand-short-name } enregistrarà vòstres istorics, telecargaments e recèrcas.
 history-dontremember-description = { -brand-short-name } utilizarà los meteisses paramètres que per la navegacion privada e conservarà pas cap d'istoric quand navegaretz sus internet.
 history-private-browsing-permanent =
@@ -1247,6 +1274,8 @@ permissions-notification-link = Ne saber mai
 permissions-notification-pause =
     .label = Pausar las notificacions fins que { -brand-short-name } reavie
     .accesskey = n
+permissions-autoplay2 =
+    .label = Lectura automatica
 permissions-autoplay = Lectura automatica
 permissions-autoplay-settings =
     .label = Paramètres…
@@ -1266,6 +1295,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Excepcions…
     .accesskey = E
+permissions-location2 =
+    .label = Localizacion
+permissions-xr2 =
+    .label = Realitat virtuala
+permissions-camera2 =
+    .label = Camèra
+permissions-microphone2 =
+    .label = Microfòn
+permissions-notification2 =
+    .label = Notificacions
 
 ## Privacy Section - Data Collection
 
@@ -1290,8 +1329,6 @@ addon-recommendations-link = Ne saber mai
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Lo rapòrt de donadas es desactivat per aquela configuracion de compilacion
 collection-backlogged-crash-reports-with-link = Autorizar { -brand-short-name } a enviar de rapòrt de plantatge en espèra a vòstre nom <a data-l10n-name="crash-reports-link">Ne saber mai</a>
-    .accesskey = A
-collection-backlogged-crash-reports = Autorizar { -brand-short-name } a enviar de rapòrt de plantatge en espèra a vòstre nom
     .accesskey = A
 privacy-segmentation-section-header = Foncionalitats novèlas per melhorar vòstra navegacion
 privacy-segmentation-section-description = Quand propausam foncionalitats qu’utilizan vòstras donadas per vos provesir una experiéncia mai personala :
@@ -1338,6 +1375,7 @@ certs-view =
 certs-devices =
     .label = Periferics de seguretat…
     .accesskey = P
+certs-devices-enable-fips = Activar FIPS
 space-alert-over-5gb-settings-button =
     .label = Dobrir los paramètres
     .accesskey = D
@@ -1353,12 +1391,8 @@ httpsonly-radio-enabled =
     .label = Activar lo mòde HTTPS solament dins totas las fenèstras
 httpsonly-radio-enabled-pbm =
     .label = Activar lo mòde HTTPS solament dins totas las fenèstras privadas
-httpsonly-radio-enabled-pbm2 =
-    .label = Utilizar solament lo HTTPS dins las fenèstras de navegacion privada
 httpsonly-radio-disabled =
     .label = Activar pas lo mòde HTTPS solament
-httpsonly-radio-disabled2 =
-    .label = Ensajar en HTTPS d’en primièr, mas permetre las connexion non seguras
 
 ## DoH Section
 
@@ -1401,8 +1435,9 @@ preferences-doh-setting-strict =
     .label = Proteccion maximala
     .accesskey = m
 preferences-doh-strict-desc = { -brand-short-name } utilizarà totjorn lo DNS segur. Veiretz un avís de seguretat abans d’utilizar lo DNS de sistèma.
-preferences-doh-strict-detailed-desc-1 = Utilizar sonque lo prevesidor que seleccionèretz
+preferences-doh-strict-detailed-desc-1 = Utilizar sonque lo provesidor que seleccionèretz
 preferences-doh-strict-detailed-desc-2 = Totjorn avertir se lo DNS segur es pas disponible
+preferences-doh-strict-detailed-desc-3 = Se lo DNS segur es indisponible, los sites se cargaràn o foncionaràn pas corrèctament
 preferences-doh-setting-off =
     .label = Desactivat
     .accesskey = D

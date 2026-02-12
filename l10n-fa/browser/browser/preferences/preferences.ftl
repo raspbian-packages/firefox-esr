@@ -96,6 +96,10 @@ startup-header = راه‌اندازی
 always-check-default =
     .label = همیشه بررسی شود که آیا { -brand-short-name } مرورگر پیش‌فرض شما است یا خیر
     .accesskey = ه
+is-default-browser =
+    .message = { -brand-short-name } مرورگر همیشگی شماست
+is-not-default-browser =
+    .message = { -brand-short-name } مرورگر پیش‌فرض شما نیست
 is-default = { -brand-short-name } مرورگر همیشگی شماست
 is-not-default = { -brand-short-name } مرورگر پیش‌فرض شما نیست
 set-as-my-default-browser =
@@ -236,6 +240,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = پرونده‌ها و برنامه‌ها
+downloads-header-2 =
+    .label = بارگیری‌ها
+download-save-where-2 =
+    .label = ذخیره پرونده در
+    .accesskey = ذ
 download-header = بارگیری‌ها
 download-save-where = ذخیره پرونده در
     .accesskey = ذ
@@ -446,7 +455,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = پنجره‌ها و زبانه‌های جدید
 home-new-windows-tabs-description2 = انتخاب کنید چه چیزی در زمان باز کردن صفحهٔ خانگی، پنجره‌ها جدید و زبانه‌های جدید می‌بینید.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = صفحهٔ خانگی و پنجره‌های جدید
 home-newtabs-mode-label = زبانه‌های جدید
@@ -585,6 +594,8 @@ search-keyword-warning-bookmark = شما کلیدواژه‌ای انتخاب ن
 containers-back-button2 =
     .aria-label = بازگشت به تنظیمات
 containers-header = زبانه‌های حامل
+containers-section-header =
+    .heading = زبانه‌های حامل
 containers-add-button =
     .label = افزودن حامل جدید
     .accesskey = ا
@@ -720,6 +731,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = نام دستگاه
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = نام دستگاه
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = تغییر نام دستگاه
+    .accesskey = ت
 sync-device-name-change =
     .label = تغییر نام دستگاه…
     .accesskey = ت
@@ -810,9 +829,6 @@ primary-password-os-auth-dialog-message-win = برای ایجاد گذرواژه
 primary-password-os-auth-dialog-message-macosx = ساخت یک گذرواژهٔ اصلی
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = تاریخچه
@@ -833,6 +849,10 @@ history-remember-option-never =
     .label = هرگز تاریخچه را به خاطر نمی‌سپارد
 history-remember-option-custom =
     .label = تنظیمات خاصی را برای تاریخچه استفاده می‌کند
+history-remember-description2 =
+    .description = { -brand-short-name } سابقهٔ مرور، دریافت‌ها، اطلاعات فرم‌ها و تاریخچهٔ جستجوهای شما را به خاطر خواهد سپرد.
+history-dontremember-description2 =
+    .description = { -brand-short-name } تنظیمات حالت مرور ناشناس را استفاده خواهد کرد، و هیچ تاریخچه‌ای از مرور شما در وب نگه نخواهد داشت.
 history-remember-description = { -brand-short-name } سابقهٔ مرور، دریافت‌ها، اطلاعات فرم‌ها و تاریخچهٔ جستجوهای شما را به خاطر خواهد سپرد.
 history-dontremember-description = { -brand-short-name } تنظیمات حالت مرور ناشناس را استفاده خواهد کرد، و هیچ تاریخچه‌ای از مرور شما در وب نگه نخواهد داشت.
 history-private-browsing-permanent =
@@ -896,12 +916,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = مدیریت استثناها…
     .accesskey = x
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -1037,6 +1051,8 @@ permissions-notification-link = بیشتر بدانید
 permissions-notification-pause =
     .label = توقف هوشدار تا زمانی که { -brand-short-name } مجدد راه اندازی شود
     .accesskey = n
+permissions-autoplay2 =
+    .label = پخش خودکار
 permissions-autoplay = پخش خودکار
 permissions-autoplay-settings =
     .label = تنظیمات...
@@ -1056,6 +1072,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = استثناها…
     .accesskey = ت
+permissions-location2 =
+    .label = مکان
+permissions-xr2 =
+    .label = واقعیت مجازی
+permissions-camera2 =
+    .label = دوربین
+permissions-microphone2 =
+    .label = صدابَر
+permissions-notification2 =
+    .label = اعلان‌ها
 
 ## Privacy Section - Data Collection
 
@@ -1079,11 +1105,6 @@ addon-recommendations-link = بیشتر بدانید
 collection-health-report-disabled = گزارش کردن داده‌ها برای این پیکربندی ساخته شده غیرفعال شده است
 collection-backlogged-crash-reports-with-link = به { -brand-short-name } اجازه دهید گزارش‌های خرابی عقب مانده را از طرف شما ارسال کند <a data-l10n-name="crash-reports-link">اطلاعات بیشتر</a>
     .accesskey = ج
-collection-backlogged-crash-reports = به { -brand-short-name } اجازه دهید گزارش‌های خرابی عقب مانده را از طرف شما ارسال کند
-    .accesskey = ج
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -1115,6 +1136,7 @@ certs-view =
 certs-devices =
     .label = امنیت دستگاه‌ها…
     .accesskey = د
+certs-devices-enable-fips = به کار انداختن FIPS
 space-alert-over-5gb-settings-button =
     .label = باز کردن تنظیمات
     .accesskey = ب

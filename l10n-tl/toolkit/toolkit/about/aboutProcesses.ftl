@@ -10,25 +10,46 @@ about-processes-title = Process Manager
 about-processes-shutdown-tab =
     .title = Isara ang Tab
 
-## Column headers
-
-
 ## Process names
 ## Variables:
 ##    $pid (String) The process id of this process, assigned by the OS.
 
-
-## Isolated process names
-## Variables:
-##    $pid (String) The process id of this process, assigned by the OS.
-##    $origin (String) The domain name for this process.
-
+about-processes-browser-process = { -brand-short-name } ({ $pid })
+about-processes-web-process = Shared Web Process ({ $pid })
+about-processes-file-process = Files ({ $pid })
+about-processes-extension-process = Extensions ({ $pid })
+about-processes-gmp-plugin-process = Gecko Media Plugins ({ $pid })
+about-processes-gpu-process = GPU ({ $pid })
+about-processes-vr-process = VR ({ $pid })
+about-processes-rdd-process = Data Decoder ({ $pid })
+about-processes-socket-process = Network ({ $pid })
+about-processes-remote-sandbox-broker-process = Remote Sandbox Broker ({ $pid })
+about-processes-fork-server-process = Fork Server ({ $pid })
+about-processes-preallocated-process = Preallocated ({ $pid })
+about-processes-utility-process = Utility ({ $pid })
 
 ## Details within processes
 
-
-## Utility process actor names
-
+# Thread details
+# Variables:
+#   $name (String) The name assigned to the thread.
+#   $tid (String) The thread id of this thread, assigned by the OS.
+about-processes-thread-name-and-id = { $name }
+    .title = Thread id: { $tid }
+# Tab
+# Variables:
+#   $name (String) The name of the tab (typically the title of the page, might be the url while the page is loading).
+about-processes-tab-name = Tab: { $name }
+about-processes-preloaded-tab = Preloaded New Tab
+# Single subframe
+# Variables:
+#   $url (String) The full url of this subframe.
+about-processes-frame-name-one = Subframe: { $url }
+# Group of subframes
+# Variables:
+#   $number (Number) The number of subframes in this group. Always ≥ 1.
+#   $shortUrl (String) The shared prefix for the subframes in the group.
+about-processes-frame-name-many = Subframes ({ $number }): { $shortUrl }
 
 ## Displaying CPU (percentage and total)
 ## Variables:

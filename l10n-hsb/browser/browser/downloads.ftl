@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Sćehnjenske podrobnosće
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Dataje na wašim graće wostawaja
+downloads-private-browsing-message = Kóždy, kiž tutón grat wužiwa, móže sćehnjenja widźeć, samo hdyž wšě priwatne wokna začinjeće.
+downloads-private-browsing-delete-button =
+    .label = Dataje awtomatisce zhašeć
+    .accesskey = h
+downloads-private-browsing-accept-button =
+    .label = Sym zrozumił
+    .accesskey = z
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

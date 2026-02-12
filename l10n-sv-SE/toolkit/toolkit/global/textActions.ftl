@@ -28,11 +28,6 @@ text-action-copy-shortcut =
 text-action-copy-clean-link =
     .label = Kopiera ren länk
     .accesskey = K
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = Kopiera utan webbplatsspårning
-    .accesskey = u
 text-action-paste =
     .label = Klistra in
     .accesskey = l
@@ -73,3 +68,23 @@ text-action-search-text-box-clear =
     .title = Rensa
 text-action-highlight-selection =
     .label = Markera urval
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = Lägg till en kommentar till markering
+# "Copy Link to Highlight" creates a permanent 'Text Fragment' link
+# to the current selection, and copies it into the user's clipboard.
+text-action-copy-link-to-highlight =
+    .label = Kopiera länk till markering
+# This combines "Copy Link to Highlight" with "Copy Clean Link", ie.
+# it creates a link with a text fragment to the current selection
+# and it strips trackers etc.
+text-action-copy-clean-link-to-highlight =
+    .label = Kopiera ren länk till markering
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = Ta bort markering
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = Ta bort alla markeringar

@@ -38,12 +38,6 @@ toolbar-button-stop =
 toolbar-button-stop-reload =
     .title = { main-context-menu-reload.aria-label }
 
-## Firefox Account Button
-
-
-## Account toolbar Button
-
-
 ## Save Page
 
 main-context-menu-page-save =
@@ -71,9 +65,7 @@ main-context-menu-save-link =
     .label = Doboo gaabu sanda…
     .accesskey = D
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Bataga aderesoo berandi
@@ -155,9 +147,6 @@ main-context-menu-audio-email =
 main-context-menu-send-to-device =
     .label = Moɲoo sanba jinaa ga
     .accesskey = j
-
-##
-
 
 ##
 

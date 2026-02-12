@@ -11,6 +11,15 @@
 unified-extensions-header-title = Extensiones
 unified-extensions-manage-extensions =
     .label = Gestionar extensiones
+unified-extensions-discover-extensions =
+    .label = Descubrir extensiones
+unified-extensions-empty-reason-private-browsing-not-allowed = Tiene extensiones instaladas, pero no habilitadas en ventanas privadas
+unified-extensions-empty-reason-extension-not-enabled = Tiene extensiones instaladas, pero no habilitadas
+# In this headline, “Level up” means to enhance your browsing experience.
+unified-extensions-empty-reason-zero-extensions-onboarding = Mejora tu navegación con extensiones
+unified-extensions-empty-content-explain-enable2 = Selecciona “{ unified-extensions-manage-extensions.label }” para habilitarlas en los ajustes.
+unified-extensions-empty-content-explain-manage2 = Selecciona “{ unified-extensions-manage-extensions.label }” para administrarlas en los ajustes.
+unified-extensions-empty-content-explain-extensions-onboarding = Personaliza { -brand-short-name } cambiando su apariencia y rendimiento o mejorando la privacidad y la seguridad.
 
 ## An extension in the main list
 
@@ -21,6 +30,9 @@ unified-extensions-manage-extensions =
 unified-extensions-item-open-menu =
     .aria-label = Abrir menú para { $extensionName }
 unified-extensions-item-message-manage = Gestionar extensión
+# Variables:
+#   $extensionName (String) - Name of the user-enabled soft-blocked extension.
+unified-extensions-item-messagebar-softblocked2 = { $extensionName } está restringida. Su uso puede ser arriesgado.
 # Variables:
 #   $extensionName (String) - Name of the user-enabled soft-blocked extension.
 unified-extensions-item-messagebar-softblocked = { $extensionName } viola las políticas de Mozilla. Usarla podría ser riesgoso.
@@ -53,6 +65,13 @@ unified-extensions-mb-quarantined-domain-learn-more = Aprender más
 unified-extensions-mb-about-addons-link = Ir a los ajustes de la extensión
 # Variables:
 #   $extensionName (String) - Name of the extension disabled through a soft-block.
+unified-extensions-mb-blocklist-warning-single2 =
+    .heading = { $extensionName } desactivada
+    .message =
+        Esta extensión está restringida y ha sido desactivada
+        Puedes habilitarla en los ajustes, pero esto puede ser arriesgado.
+# Variables:
+#   $extensionName (String) - Name of the extension disabled through a soft-block.
 unified-extensions-mb-blocklist-warning-single =
     .heading = { $extensionName } desactivada
     .message =
@@ -63,6 +82,17 @@ unified-extensions-mb-blocklist-warning-single =
 unified-extensions-mb-blocklist-error-single =
     .heading = { $extensionName } desactivada
     .message = Esta extensión viola las políticas de Mozilla y ha sido desactivada.
+# Variables:
+#   $extensionsCount (Number) - Number of extensions disabled through both soft and hard-blocks (always going to be greater than 1)
+unified-extensions-mb-blocklist-warning-multiple2 =
+    .heading =
+        { $extensionsCount ->
+            [one] { $extensionsCount } extensión desactivada
+           *[other] { $extensionsCount } extensiones desactivadas
+        }
+    .message =
+        Algunas de tus extensiones están restringidas y han sido desactivadas.
+        Puedes habilitarlas en ajustes, pero esto podría ser arriesgado.
 # Variables:
 #   $extensionsCount (Number) - Number of extensions disabled through both soft and hard-blocks (always going to be greater than 1)
 unified-extensions-mb-blocklist-warning-multiple =
@@ -83,3 +113,5 @@ unified-extensions-mb-blocklist-error-multiple =
            *[other] { $extensionsCount } extensiones desactivadas
         }
     .message = Algunas de tus extensiones han sido desactivadas por violar las políticas de Mozilla.
+unified-extensions-notice-safe-mode =
+    .message = Todas las extensiones fueron desactivadas por el modo de solución de problemas.

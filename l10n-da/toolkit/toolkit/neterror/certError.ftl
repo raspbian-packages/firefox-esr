@@ -111,6 +111,26 @@ fp-learn-more-about-secure-connection-failures = Læs mere om fejl med at oprett
 fp-learn-more-about-cert-issues = Læs mere om denne slags certifikat-problemer
 fp-learn-more-about-time-related-errors = Læs mere om at fejlsøge tids-relaterede problemer
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } er blevet tilbagekaldt og der ikke længere stoles på det.
+cert-error-bad-signature = { -brand-short-name } blokerede dit besøg på webstedet, fordi signaturen på certifikatet for { $hostname } ikke er gyldig.
+cert-error-key-pinning-failure = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } bruger en anden offentlig nøgle end forventet.
+cert-error-bad-der = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } ikke er korrekt kodet.
+cert-error-cert-not-in-name-space = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } ikke følger et udstedende certifikats navnebegrænsninger.
+cert-error-inadequate-cert-type = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } ikke må bruges af en webserver.
+cert-error-path-len-constraint-invalid = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } har for mange mellemliggende certifikater i stien til rodcertifikatet.
+cert-error-invalid-key = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } har en ugyldig nøgle. Den er sandsynligvis for lille til at være sikker.
+cert-error-unknown-critical-extension = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } indeholder en kritisk udvidelse, som ikke er understøttet.
+cert-error-extension-value-invalid = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } indeholder en ugyldig udvidelse.
+cert-error-untrusted-issuer = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } er udstedt af en certifikatautoritet, der ikke længere stoles på.
+cert-error-untrusted-cert = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } er markeret som et certifikat, der ikke stoles på.
+cert-error-invalid-integer-encoding = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } indeholder en ugyldig kodning af et heltal. Typiske årsager kan være brugen af negative serienumre, negative RSA-moduli og kodninger, der er længere end nødvendigt.
+cert-error-unsupported-keyalg = { -brand-short-name } blokerede dit besøg på webstedet, fordi certifikatet for { $hostname } har en nøgletype, som ikke er understøttet.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } blokerede dit besøg på webstedet, fordi der ikke længere stoles på certifikatautoriten, som udstedte certifikatet for { $hostname }.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } blokerede dit besøg på webstedet, fordi signatur-algoritmen for certifikatet for { $hostname } ikke stemmer overens med certifikatets felt for signatur-algoritmer.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = Ude af stand til at oprette forbindelse
@@ -118,6 +138,7 @@ deniedPortAccess-title = Adgang til denne adresse er underlagt begrænsninger
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Den side kan vi ikke finde…
+internet-connection-offline-title = Det ser ud til, at der er et problem med din internetforbindelse.
 dns-not-found-trr-only-title2 = Mulig sikkerhedsrisiko ved at slå domænet op
 dns-not-found-native-fallback-title2 = Mulig sikkerhedsrisiko ved at slå domænet op
 fileNotFound-title = Fil ikke fundet
@@ -134,6 +155,7 @@ contentEncodingError-title = Indholdskodningsfejl
 unsafeContentType-title = Usikker filtype
 netReset-title = Forbindelsen blev nulstillet
 netTimeout-title = Forbindelsens tidsfrist udløb
+httpErrorPage-title = Det ser ud til, at der er et problem med dette websted
 serverError-title = Det ser ud til, at der er et problem med dette websted
 unknownProtocolFound-title = Adressen kunne ikke forstås
 proxyConnectFailure-title = Proxyserveren afviser forbindelser
@@ -142,6 +164,7 @@ redirectLoop-title = Denne side viderestiller ikke forespørgslen korrekt
 unknownSocketType-title = Uventet svar fra server
 nssFailure2-title = Sikker forbindelse mislykkedes
 csp-xfo-error-title = { -brand-short-name } kan ikke åbne denne side
+corruptedContentErrorv2-title = Fejlbehæftet indhold
 corruptedContentError-title = Fejlbehæftet indhold
 sslv3Used-title = Kan ikke oprette sikker forbindelse
 inadequateSecurityError-title = Din forbindelse er ikke sikker

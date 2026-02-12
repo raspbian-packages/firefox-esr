@@ -24,8 +24,6 @@ contentanalysis-slow-agent-dialog-body-print = { $agent } er að yfirfara það 
 contentanalysis-operationtype-clipboard = klippispjald
 contentanalysis-operationtype-dropped-text = slepptur texti
 contentanalysis-operationtype-print = skrifa
-#   $filename - The filename associated with the request, such as "aFile.txt"
-contentanalysis-customdisplaystring-description = innsending á „{ $filename }“
 contentanalysis-warndialogtitle = Þetta efni gæti verið óöruggt
 # Variables:
 #   $content - Description of the content being warned about, such as "clipboard" or "aFile.txt"
@@ -58,6 +56,10 @@ contentanalysis-error-message-upload-file = Innsendingu á „{ $filename }“ e
 contentanalysis-error-message-dropped-text = Draga og sleppa er hafnað.
 contentanalysis-error-message-clipboard = Límingu er hafnað.
 contentanalysis-error-message-print = Prentun er hafnað.
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
+#   $contentName - Description of the content, such as "clipboard" or "aFile.txt"
+contentanalysis-timeout-block-error-message-content = Tengingin við { $agent } rann út á tíma. { $contentName } hefur verið lokað.
 contentanalysis-block-dialog-title-upload-file = Þú hefur ekki leyfi til að senda inn þessa skrá
 # Variables:
 #   $filename - Name of the file that was blocked, such as "aFile.txt"

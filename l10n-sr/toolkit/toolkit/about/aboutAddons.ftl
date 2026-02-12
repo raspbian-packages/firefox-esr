@@ -30,19 +30,19 @@ help-button = Помоћ
 sidebar-help-button-title =
     .title = Помоћ
 addons-settings-button =
-    Подешавања { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "gen") }
-        [feminine] { -brand-short-name(case: "gen") }
-        [neuter] { -brand-short-name(case: "gen") }
-       *[other] програма { -brand-short-name }
+    { -brand-short-name.gender ->
+        [masculine] Подешавања { -brand-short-name(case: "gen") }
+        [feminine] Подешавања { -brand-short-name(case: "gen") }
+        [neuter] Подешавања { -brand-short-name(case: "gen") }
+       *[other] Подешавања програма { -brand-short-name }
     }
 sidebar-settings-button-title =
     .title =
-        Подешавања { -brand-short-name.gender ->
-            [masculine] { -brand-short-name(case: "gen") }
-            [feminine] { -brand-short-name(case: "gen") }
-            [neuter] { -brand-short-name(case: "gen") }
-           *[other] програма { -brand-short-name }
+        { -brand-short-name.gender ->
+            [masculine] Подешавања { -brand-short-name(case: "gen") }
+            [feminine] Подешавања { -brand-short-name(case: "gen") }
+            [neuter] Подешавања { -brand-short-name(case: "gen") }
+           *[other] Подешавања програма { -brand-short-name }
         }
 show-unsigned-extensions-button =
     .label = Неки додаци се не могу проверити
@@ -115,13 +115,20 @@ legacy-extensions =
     .value = Застарели додаци
 legacy-extensions-description = Ове екстензије не подржавају тренутни { -brand-short-name } стандард тако да су онемогућене. <label data-l10n-name="legacy-learn-more">Сазнајте више о променама додатака</label>
 private-browsing-description2 =
-    Нови додаци које додате у { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "acc") }
-        [feminine] { -brand-short-name(case: "acc") }
-        [neuter] { -brand-short-name(case: "acc") }
-       *[other] програм { -brand-short-name }
-    } од сада неће радити у приватним прозорима и неће имати приступ вашим активностима на интернету. Увели смо ову промену како бисмо очували вашу приватност док користите режим приватног прегледања.
-    <label data-l10n-name="private-browsing-learn-more">Сазнајте како да промените подешавања додатка</label>
+    { -brand-short-name.gender ->
+        [masculine]
+            Нови додаци које додате у { -brand-short-name(case: "acc") } од сада неће радити у приватним прозорима и неће имати приступ вашим активностима на интернету. Увели смо ову промену како бисмо очували вашу приватност док користите режим приватног прегледања.
+            <label data-l10n-name="private-browsing-learn-more">Сазнајте како да промените подешавања додатка</label>
+        [feminine]
+            Нови додаци које додате у { -brand-short-name(case: "acc") } од сада неће радити у приватним прозорима и неће имати приступ вашим активностима на интернету. Увели смо ову промену како бисмо очували вашу приватност док користите режим приватног прегледања.
+            <label data-l10n-name="private-browsing-learn-more">Сазнајте како да промените подешавања додатка</label>
+        [neuter]
+            Нови додаци које додате у { -brand-short-name(case: "acc") } од сада неће радити у приватним прозорима и неће имати приступ вашим активностима на интернету. Увели смо ову промену како бисмо очували вашу приватност док користите режим приватног прегледања.
+            <label data-l10n-name="private-browsing-learn-more">Сазнајте како да промените подешавања додатка</label>
+       *[other]
+            Нови додаци које додате у програм { -brand-short-name } од сада неће радити у приватним прозорима и неће имати приступ вашим активностима на интернету. Увели смо ову промену како бисмо очували вашу приватност док користите режим приватног прегледања.
+            <label data-l10n-name="private-browsing-learn-more">Сазнајте како да промените подешавања додатка</label>
+    }
 addon-category-discover = Препоруке
 addon-category-discover-title =
     .title = Препоруке
@@ -368,6 +375,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = Дозвољено у приватним прозорима
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = Дозвољено у приватним прозорима
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -403,6 +414,10 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = Овај додатак је прегледан и задовољава наше стандарде безбедности и перформанси
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = Званични додатак организације Mozilla. Задовољава стандарде безбедности и перформанси
 
 ##
 
@@ -466,8 +481,6 @@ details-notification-hard-blocked-other =
     .message = Овај додатак је блокиран и онемогућен због кршења Mozilla-иних смерница.
 details-notification-unsigned-link = Више информација
 details-notification-blocked = { $name } је онемогућен због проблема са безбедношћу или стабилношћу.
-details-notification-blocked2 =
-    .message = { $name } је онемогућен због проблема са безбедношћу или стабилношћу.
 details-notification-blocked-link2 = Прикажи детаље
 details-notification-soft-blocked-extension-disabled =
     .message = Овај додатак је ограничен и онемогућен због кршења Mozilla-иних смерница. Можете га омогућити, али то може да буде ризично.
@@ -480,8 +493,6 @@ details-notification-soft-blocked-other-enabled =
 details-notification-softblocked-link2 = Прикажи детаље
 details-notification-blocked-link = Више информација
 details-notification-softblocked = Познато је да { $name } проузрокује проблеме са безбедношћу или стабилношћу.
-details-notification-softblocked2 =
-    .message = Познато је да { $name } проузрокује проблеме са безбедношћу или стабилношћу.
 details-notification-softblocked-link = Више информација
 details-notification-gmp-pending = { $name } ће ускоро бити инсталиран.
 details-notification-gmp-pending2 =

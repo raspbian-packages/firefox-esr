@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Lejárat / Maximális élettartam
 storage-table-headers-cookies-size = Méret
 storage-table-headers-cookies-last-accessed = Utolsó hozzáférés
 storage-table-headers-cookies-creation-time = Létrehozva
+storage-table-headers-cookies-update-time = Frissítve
 storage-table-headers-cache-status = Állapot
 storage-table-headers-extension-storage-area = Tárterület
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = „{ $dbName }” adatbázis törlésre kerül az �
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = „{ $dbName }” adatbázis nem törölhető.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = A süti nem hozható létre: „{ $errorString }”.
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = A süti nem frissíthető: „{ $errorString }”.

@@ -28,11 +28,6 @@ text-action-copy-shortcut =
 text-action-copy-clean-link =
     .label = Copïo Dolen Lân
     .accesskey = D
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = Copïo Heb Dracio Gwefan
-    .accesskey = H
 text-action-paste =
     .label = Gludo
     .accesskey = G
@@ -73,3 +68,23 @@ text-action-search-text-box-clear =
     .title = Clirio
 text-action-highlight-selection =
     .label = Amlygu Adran
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = Ychwanegu Sylw at y Dewis
+# "Copy Link to Highlight" creates a permanent 'Text Fragment' link
+# to the current selection, and copies it into the user's clipboard.
+text-action-copy-link-to-highlight =
+    .label = Copïwch y Ddolen i'w Amlygu
+# This combines "Copy Link to Highlight" with "Copy Clean Link", ie.
+# it creates a link with a text fragment to the current selection
+# and it strips trackers etc.
+text-action-copy-clean-link-to-highlight =
+    .label = Copïwch Ddolen Glân i'w Amlygu
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = Dileu Amlygu
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = Tynnu'r Holl Amlygu

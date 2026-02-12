@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Ներբեռնումներ
 appmenuitem-passwords =
     .label = Գաղտնաբառեր
+appmenuitem-extensions-and-themes =
+    .label = Ընդլայնումներ և ոճեր
+appmenuitem-extensions =
+    .label = Ընդլայնումներ
 appmenuitem-addons-and-themes =
     .label = Հավելումներ և ոճեր
 appmenuitem-print =
@@ -187,6 +191,8 @@ profiler-popup-presets-graphics-label =
     .label = Գրաֆիկա
 profiler-popup-presets-media-label =
     .label = Մեդիա
+profiler-popup-presets-ml-label =
+    .label = Մեքենայական ուսուցում
 profiler-popup-presets-networking-label =
     .label = Ցանցարկում
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -200,7 +206,7 @@ profiler-popup-presets-custom-label =
 ## History panel
 
 appmenu-manage-history =
-    .label = Կառավարեք պատմությունը
+    .label = Կառավարել պատմությունը
 appmenu-restore-session =
     .label = Վերականգնել նախորդ աշխատաշրջանը
 appmenu-clear-history =
@@ -275,10 +281,10 @@ appmenuitem-relay-description = Քողարկեք ձեր իրական էլ. փո�
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }-ով
 appmenuitem-vpn-description = Պաշտպանեք ձեր առցանց գործունեությունը
 appmenu-services-header = Իմ ծառայությունները
+appmenu-other-protection-header = Փորձեք պաշտպանության այլ գործիքներ { -vendor-short-name }-ից.
 
 ## Profiles panel
 
-appmenu-profiles = Հատկագրեր
 appmenu-other-profiles = Այլ հատկագրեր
 appmenu-manage-profiles =
     .label = Կառավարել հատկագրերը
@@ -286,3 +292,5 @@ appmenu-create-profile =
     .label = Նոր հատկագիր
 appmenu-edit-profile =
     .aria-label = Խմբագրել հատկագիրը
+appmenu-profiles-2 =
+    .label = Հատկագրեր

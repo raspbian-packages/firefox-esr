@@ -25,13 +25,9 @@ searchbar-input =
 searchbar-icon =
     .tooltiptext = Yeny
 
-## Infobar shown when search engine is removed and replaced.
-## Variables
-## $oldEngine (String) - the search engine to be removed.
-## $newEngine (String) - the search engine to replace the removed search engine.
+## The following strings are used as input labels.
 
-
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
-
+add-engine-window =
+    .title = Med Ingin me Yeny
+    .style = min-width: 32em;
+add-engine-name = Nying ingin me yeny

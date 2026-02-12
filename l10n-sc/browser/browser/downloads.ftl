@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Detàllios de s'iscarrigamentu
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Is archìvios abarrant in su dispositivu tuo
+downloads-private-browsing-message = Cale si siat persone chi impreet custu dispositivu podet bìdere is iscarrigamentos, fintzas cando as a àere serradu totu is ventanas privadas.
+downloads-private-browsing-delete-button =
+    .label = Cantzella is archìvios in automàticu
+    .accesskey = C
+downloads-private-browsing-accept-button =
+    .label = Apo cumprèndidu
+    .accesskey = A
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

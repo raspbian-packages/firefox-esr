@@ -48,9 +48,6 @@ download-cert-view-cert =
     .label = Cjale
 download-cert-view-text = Esamine certificât CA
 
-## Client Authorization Ask dialog
-
-
 ## Client Authentication Ask dialog
 
 client-auth-window =
@@ -85,8 +82,13 @@ client-auth-cert-details-issued-by = Emetût di: { $issuedBy }
 # Variables:
 # $storedOn (String) - The name of the token holding the certificate (for example, "OS Client Cert Token (Modern)")
 client-auth-cert-details-stored-on = Archiviât su: { $storedOn }
-client-auth-cert-remember-box =
-    .label = Visiti di cheste decision
+client-auth-cert-remember-label = Visiti cheste decision:
+client-auth-cert-remember-never =
+    .label = Une volte
+client-auth-cert-remember-always =
+    .label = Par simpri
+client-auth-cert-remember-temporarily =
+    .label = Par cheste session
 
 ## Set password (p12) dialog
 

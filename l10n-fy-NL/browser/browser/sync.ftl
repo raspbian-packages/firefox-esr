@@ -20,6 +20,16 @@ fxa-menu-connect-another-device =
     .label = In oar apparaat ferbine…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] Nei apparaat ferstjoere
+            [one] { $tabCount } ljepblêd nei apparaat ferstjoere
+           *[other] { $tabCount } ljepblêden nei apparaat ferstjoere
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label =
         { $tabCount ->
@@ -33,8 +43,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Stjoer in ljepblêd daliks nei elk apparaat wêrop jo oanmeld binne.
 fxa-menu-sign-out =
     .label = Ofmelde…
-fxa-menu-sync-title = Syngronisearje
 fxa-menu-sync-description = Oeral tagong ta jo ynternet
+fxa-avatar-sign-in = Oanmelde
+fxa-avatar-sign-up = Registrearje
+fxa-avatar-tooltip =
+    .tooltiptext = Meld jo oan by jo account
 sync-setup-verify-continue = Trochgean
 sync-setup-verify-title = Warskôging foar gearfoegjen
 sync-setup-verify-heading = Binne jo wis dat jo jo oanmelde wolle om te syngronisearjen?

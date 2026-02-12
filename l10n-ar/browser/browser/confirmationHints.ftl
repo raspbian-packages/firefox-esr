@@ -19,3 +19,19 @@ confirmation-hint-credit-card-updated = حُدِّثت البطاقة
 confirmation-hint-pin-tab = ثبّتناه!
 confirmation-hint-pin-tab-description = انقر باليمين على اللسان لإفلاته.
 confirmation-hint-send-to-device = نجح الإرسال.
+confirmation-hint-firefox-relay-mask-created = أُنشئ قناع جديد!
+confirmation-hint-firefox-relay-mask-reused = قناع موجود مستخدم من قبل!
+confirmation-hint-screenshot-copied = نُسخت لقطة الشاشة!
+# Variables:
+#   $tabCount (Number): The number of duplicate tabs closed, at least 1.
+confirmation-hint-duplicate-tabs-closed =
+    { $tabCount ->
+        [zero] أُغلق { $tabCount } لسان
+        [one] أُغلق لسان
+        [two] أُغلق لسانين
+        [few] أُغلق { $tabCount } ألسنة
+        [many] أُغلق { $tabCount } لسانًا
+       *[other] أُغلق { $tabCount } لسان
+    }
+# Subtle notification shown when Extensions button moves into the application menu.
+confirmation-hint-extensions-button-hidden = نُقِل إلى القائمة

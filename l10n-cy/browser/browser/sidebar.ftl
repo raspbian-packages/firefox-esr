@@ -4,8 +4,8 @@
 
 menu-view-genai-chat =
     .label = Sgwrsfot AI
-menu-view-review-checker =
-    .label = Gwirydd Adolygiadau
+menu-view-contextual-password-manager =
+    .label = Cyfrineiriau
 sidebar-options-menu-button =
     .title = Agor dewislen
 
@@ -21,14 +21,24 @@ sidebar-history-date-this-month =
     .heading = { DATETIME($date, dateStyle: "full") }
 sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+sidebar-history-site-localhost =
+    .heading = (ffeiliau lleol)
 sidebar-history-delete =
     .title = Dileu o'r Hanes
-sidebar-history-sort-by-date =
-    .label = Trefnu yn ôl dyddiad
-sidebar-history-sort-by-site =
-    .label = Trefnu yn ôl gwefan
 sidebar-history-clear =
     .label = Clirio'r hanes
+sidebar-history-sort-by-heading = Trefnu yn ôl:
+sidebar-history-sort-option-date =
+    .label = Dyddiad
+sidebar-history-sort-option-site =
+    .label = Gwefan
+sidebar-history-sort-option-date-and-site =
+    .label = Dyddiad a gwefan
+sidebar-history-sort-option-last-visited =
+    .label = Ymwelwyd ddiwethaf
 
 ## Labels for sidebar search
 
@@ -44,24 +54,21 @@ sidebar-customize-extensions-header = Estyniadau'r bar ochr
 sidebar-customize-firefox-tools-header =
     .label = Offer { -brand-product-name }
 sidebar-customize-firefox-settings = Rheoli gosodiadau { -brand-short-name }
-sidebar-position-left =
-    .label = Dangos ar y chwith
-sidebar-position-right =
-    .label = Dangos ar y dde
 sidebar-vertical-tabs =
     .label = Tabiau fertigol
-sidebar-horizontal-tabs =
-    .label = Tabiau llorweddol
-sidebar-customize-tabs-header =
-    .label = Gosodiadau tabiau
-sidebar-customize-button-header =
-    .label = Botwm bar ochr
-sidebar-customize-position-header =
-    .label = Safle'r bar ochr
-sidebar-visibility-setting-always-show =
-    .label = Ehangu a chau'r bar ochr
-sidebar-visibility-setting-hide-sidebar =
-    .label = Dangos a chuddio'r bar ochr
+sidebar-settings =
+    .label = Gosodiadau bar ochr
+sidebar-hide-tabs-and-sidebar =
+    .label = Cuddio tabiau a bar ochr
+sidebar-show-on-the-right =
+    .label = Symud y bar ochr i'r dde
+sidebar-show-on-the-left =
+    .label = Symud y bar ochr i'r chwith
+# Option to automatically expand the collapsed sidebar when the mouse pointer
+# hovers over it.
+expand-sidebar-on-hover =
+    .label = Ehangu'r bar ochr wrth hofran
+sidebar-manage-extensions = Rheoli Estyniadau
 
 ## Labels for sidebar context menu items
 
@@ -71,23 +78,43 @@ sidebar-context-menu-remove-extension =
     .label = Tynnu'r estyniad
 sidebar-context-menu-report-extension =
     .label = Adrodd ar yr estyniad
+sidebar-context-menu-open-in-tab =
+    .label = Agor mewn Tab Newydd
+sidebar-context-menu-open-in-container-tab =
+    .label = Agor mewn Tab Cynhwysydd Newydd
 sidebar-context-menu-open-in-window =
     .label = Agor mewn Ffenestr Newydd
 sidebar-context-menu-open-in-private-window =
     .label = Agor mewn Ffenestr Breifat Newydd
+sidebar-context-menu-forget-site =
+    .label = Clirio'r Holl Ddata ar gyfer y Wefan…
 sidebar-context-menu-bookmark-tab =
     .label = Gosod Nod Tudalen i'r Tab…
 sidebar-context-menu-copy-link =
     .label = Copïo'r Ddolen
+sidebar-context-menu-hide-sidebar =
+    .label = Cuddio'r bar ochr
+sidebar-context-menu-enable-vertical-tabs =
+    .label = Troi Tabiau Fertigol ymlaen
+sidebar-context-menu-customize-sidebar =
+    .label = Cyfaddasu'r Bar Offer
 # Variables:
 #   $deviceName (String) - The name of the device the user is closing a tab for
 sidebar-context-menu-close-remote-tab =
     .label = Cau tab ar { $deviceName }
+sidebar-context-menu-remove-extension2 =
+    .label = Tynnu o { -brand-short-name }
+sidebar-context-menu-unpin-extension =
+    .label = Tynnu o'r Bar Ochr
 
 ## Labels for sidebar history context menu items
 
-sidebar-history-context-menu-delete-page =
-    .label = Dileu o'r Hanes
+sidebar-history-context-menu-delete-page-2 =
+    .label = Dileu Tudalen o Hanes
+sidebar-history-context-menu-bookmark-page =
+    .label = Gosod Nod i Dudalen…
+sidebar-history-context-menu-delete-pages =
+    .label = Dileu Tudalennau o Hanes
 
 ## Labels for sidebar menu items.
 
@@ -101,8 +128,10 @@ sidebar-menu-bookmarks-label =
     .label = Nodau Tudalen
 sidebar-menu-customize-label =
     .label = Cyfaddasu'r bar offer
-sidebar-menu-review-checker-label =
-    .label = Gwirydd Adolygiadau
+sidebar-menu-contextual-password-manager-label =
+    .label = Cyfrineiriau
+sidebar-menu-more-tools-label =
+    .label = Rhagor o offer
 
 ## Tooltips for sidebar menu items.
 
@@ -122,8 +151,16 @@ sidebar-menu-open-bookmarks-tooltip = Agor nodau tudalen ( { $shortcut })
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Cau nodau tudalen ( { $shortcut } )
-sidebar-menu-open-ai-chatbot-tooltip = Agor sgwrsfot AI
-sidebar-menu-close-ai-chatbot-tooltip = Cau sgwrsfot AI
+
+## Tooltips displayed over the AI chatbot icon.
+## Variables:
+##   $shortcut (String) - The OS specific keyboard shortcut.
+##   $provider (String) - The name of the AI chatbot provider (if available).
+
+sidebar-menu-open-ai-chatbot-tooltip-generic = Agor sgwrsfot AI ( { $shortcut })
+sidebar-menu-open-ai-chatbot-provider-tooltip = Agor { $provider } ( { $shortcut } )
+sidebar-menu-close-ai-chatbot-tooltip-generic = Cau sgwrsfot AI ( { $shortcut })
+sidebar-menu-close-ai-chatbot-provider-tooltip = Cau { $provider } ( { $shortcut } )
 
 ## Headings for sidebar menu panels.
 
@@ -133,6 +170,8 @@ sidebar-menu-history-header =
     .heading = Hanes
 sidebar-menu-syncedtabs-header =
     .heading = Tabiau o ddyfeisiau eraill
+sidebar-menu-cpm-header =
+    .heading = Cyfrineiriau
 sidebar-panel-header-close-button =
     .tooltiptext = Cau
 
@@ -156,18 +195,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Ehangu'r bar ochr
-    .label = Barrau Ochr
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Cau'r bar ochr
-    .label = Barrau Ochr
-sidebar-widget-show-sidebar =
-    .tooltiptext = Dangos y bar ochr
-    .label = Barrau Ochr
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Cuddio'r bar ochr
-    .label = Barrau Ochr
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =
@@ -188,3 +215,7 @@ sidebar-widget-show-sidebar2 =
 sidebar-widget-hide-sidebar2 =
     .tooltiptext = Cuddio'r bar ochr ({ $shortcut })
     .label = Barrau Ochr
+# Promotional message displayed in the expanded sidebar state for Vertical Tabs
+# users who do not have any pinned tabs. Indicates that they can drop tabs in
+# this area to pin them.
+sidebar-pins-promo-text = Llusgwch dabiau pwysig yma i'w cadw o fewn gafael

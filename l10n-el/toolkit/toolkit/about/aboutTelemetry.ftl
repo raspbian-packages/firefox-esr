@@ -73,8 +73,8 @@ about-telemetry-settings-explanation = Η τηλεμετρία συλλέγει 
 # Variables:
 #   $name (string) - Ping name, e.g. “saved-session”
 #   $timestamp (string) - Ping localized timestamp, e.g. “2017/07/08 10:40:46”
-about-telemetry-ping-details = Κάθε κομμάτι πληροφορίας αποστέλλεται πακεταρισμένο σε “<a data-l10n-name="ping-link">pings</a>”. Βλέπετε το ping { $name }, { $timestamp }.
-about-telemetry-data-details-current = Κάθε κομμάτι πληροφορίας αποστέλλεται πακεταρισμένο σε “<a data-l10n-name="ping-link">pings</a>”. Βλέπετε τα τρέχοντα δεδομένα.
+about-telemetry-ping-details = Κάθε κομμάτι πληροφορίας αποστέλλεται πακεταρισμένο σε «<a data-l10n-name="ping-link">ping</a>». Βλέπετε το ping { $name }, { $timestamp }.
+about-telemetry-data-details-current = Κάθε κομμάτι πληροφορίας αποστέλλεται πακεταρισμένο σε «<a data-l10n-name="ping-link">ping</a>». Βλέπετε τα τρέχοντα δεδομένα.
 # string used as a placeholder for the search field
 # More info about it can be found here:
 # https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/data/main-ping.html
@@ -86,19 +86,19 @@ about-telemetry-filter-all-placeholder =
     .placeholder = Εύρεση σε όλες τις ενότητες
 # Variables:
 #   $searchTerms (string) - The searched terms
-about-telemetry-results-for-search = Αποτελέσματα για “{ $searchTerms }”
+about-telemetry-results-for-search = Αποτελέσματα για «{ $searchTerms }»
 # More info about it can be found here: https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/data/main-ping.html
 # Variables:
 #   $sectionName (string) - The section name from the structure of the ping.
 #   $currentSearchText (string) - The current text in the search input
-about-telemetry-no-search-results = Συγγνώμη! Δεν υπάρχουν αποτελέσματα στην ενότητα “{ $sectionName }” για “{ $currentSearchText }”
+about-telemetry-no-search-results = Συγγνώμη! Δεν υπάρχουν αποτελέσματα στην ενότητα «{ $sectionName }» για «{ $currentSearchText }»
 # Variables:
 #   $searchTerms (string) - The searched terms
-about-telemetry-no-search-results-all = Λυπούμαστε! Δεν υπάρχουν αποτελέσματα σε κανένα τμήμα για “{ $searchTerms }”
+about-telemetry-no-search-results-all = Δυστυχώς, δεν υπάρχουν αποτελέσματα σε καμία ενότητα για το «{ $searchTerms }»
 # This message is displayed when a section is empty.
 # Variables:
 #   $sectionName (string) - Is replaced by the section name.
-about-telemetry-no-data-to-display = Λυπούμαστε! Δεν υπάρχουν διαθέσιμα δεδομένα στο “{ $sectionName }”
+about-telemetry-no-data-to-display = Δυστυχώς, δεν υπάρχουν διαθέσιμα δεδομένα στην ενότητα «{ $sectionName }»
 # used as a tooltip for the “current” ping title in the sidebar
 about-telemetry-current-data-sidebar = τρέχοντα δεδομένα
 # used in the “Ping Type” select
@@ -125,7 +125,7 @@ about-telemetry-values-header = Τιμή
 about-telemetry-late-writes-title = Καθυστερημένη εγγραφή #{ $lateWriteCount }
 about-telemetry-stack-title = Στοίβα:
 about-telemetry-memory-map-title = Χάρτης μνήμης:
-about-telemetry-error-fetching-symbols = Προέκυψε σφάλμα κατά την λήψη συμβόλων. Βεβαιωθείτε ότι είστε συνδεδεμένοι στο διαδίκτυο και προσπαθήστε ξανά.
+about-telemetry-error-fetching-symbols = Προέκυψε σφάλμα κατά τη λήψη συμβόλων. Βεβαιωθείτε ότι είστε συνδεδεμένοι στο διαδίκτυο και δοκιμάστε ξανά.
 about-telemetry-time-stamp-header = χρονική σήμανση
 about-telemetry-category-header = κατηγορία
 about-telemetry-method-header = μέθοδος

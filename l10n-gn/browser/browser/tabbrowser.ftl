@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Tendayke mboty
 tabbrowser-menuitem-close =
     .label = Mboty
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -74,6 +87,13 @@ tabbrowser-unblock-tab-audio-tooltip =
 
 ## Tooltips for tab audio control
 
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Erujey ñe’ẽpu tendayképe
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Emokirirĩ tendayke
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Emoñe’ẽpu tendayke
 
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
@@ -142,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Anive ehechaukajey ko ñomongeta.
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Ema’ẽmi
-tabbrowser-confirm-close-duplicate-tabs-text = Rombojurujáta tendayke paha hendyhápe
 tabbrowser-confirm-close-all-duplicate-tabs-title = ¿Emboty tendayke ikõiva?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Ñambotýta umi tendayke ikõiva ko ovetãme. Tendayke paha oikóva
@@ -185,6 +203,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Tysyipa { $tabCount } ápe
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Tendayke mokirirĩ
@@ -192,8 +213,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Tendayke ñe’ẽpu moĩporã
 tabbrowser-manager-close-tab =
     .tooltiptext = Emboty tendayke
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Mboty
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Ovetã ag̃agua
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Emoheñói tendayke aty
 tab-group-editor-title-edit = Eñangareko tendayke aty
@@ -203,11 +232,42 @@ tab-group-editor-name-field =
 tab-group-editor-cancel =
     .label = Heja
     .accesskey = C
+tab-group-editor-color-selector =
+    .aria-label = Tendayke aty sa’y
+tab-group-editor-color-selector2-blue = Hovy
+    .title = Hovy
+tab-group-editor-color-selector2-purple = Pytãũ
+    .title = Pytãũ
+tab-group-editor-color-selector2-cyan = Hovyũ
+    .title = Hovyũ
+tab-group-editor-color-selector2-orange = Narã
+    .title = Narã
+tab-group-editor-color-selector2-yellow = Sa’yju
+    .title = Sa’yju
+tab-group-editor-color-selector2-pink = Pytãngy
+    .title = Pytãngy
+tab-group-editor-color-selector2-green = Hovyũ
+    .title = Hovyũ
+tab-group-editor-color-selector2-gray = Hũngy
+    .title = Hũngy
+tab-group-editor-color-selector2-red = Ñanduti
+    .title = Ñanduti
+tab-group-description = { $tabGroupName } — Tendayke aty
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Ho’apáva
+tab-group-label-tooltip-expanded = { $tabGroupName } — Tuichavéva
+tab-group-preview-name =
+    .aria-label = Tendayke aty chi’ĩmbyrépe
 tab-context-unnamed-group =
     .label = Aty hera’ỹva
+tab-group-name-default = Aty hera’ỹva
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Tendayke rysýi ijurujáva
+tab-group-preview-closed-description = Tendayke rysýi mbotypyre
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -224,6 +284,8 @@ tab-context-move-tab-to-group =
            *[other] Embojuapy tendaykekuéra atýpe
         }
     .accesskey = G
+tab-context-move-tab-to-group-saved-groups =
+    .label = Aty ñembotypýpa
 tab-group-editor-action-new-tab =
     .label = Tendayke pyahu atýpe
 tab-group-editor-action-new-window =
@@ -249,6 +311,57 @@ tab-context-ungroup-tab =
            *[other] Emboguete atykuéragui
         }
     .accesskey = R
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } tendayke hetave
+       *[other] { $tabCount } tendaykekuéra hetave
+    }
 
 ## Open/saved tab group context menu
 
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Eguerova aty ovetã pyahúpe
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Eguerova aty ko ovetãme
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Emboguete aty
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Embojuruja aty ko ovetãme
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Embojuruja aty ovetã pyahúpe
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Jehecha vorepyre
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Embojuaju jehecha pehẽmbyre
+    .accesskey = t
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Embojuruja jehecha pehẽmbyrépe
+    .accesskey = t
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Emomombyry jehecha pehẽmbyre
+    .accesskey = t
+tab-context-badge-new = Pyahu

@@ -15,7 +15,25 @@ webext-perms-header-with-perms = { $extension } přidać? Tute rozšěrjenje zm�
 webext-perms-header-unsigned = { $extension } přidać? Tute rozšěrjenje je njepřepruwowane. Złóstne rozšěrjenja móža waše priwatne daty kradnyć abo wašemu ličakej škodźić. Přidajće jo jenož, hdyž žórłu dowěrjeće.
 webext-perms-header-unsigned-with-perms = { $extension } přidać? Tute rozšěrjenje je njepřepruwowane. Złóstne rozšěrjenja móža waše priwatne daty kradnyć abo wašemu ličakej škodźić. Přidajće jo jenož, hdyž žórłu dowěrjeće. Tute rozšěrjneje změje prawo za:
 webext-perms-sideload-header = { $extension } je so přidał
+webext-perms-optional-perms-header2 = { $extension } wo přidatne prawa prosy
 webext-perms-optional-perms-header = { $extension } wo přidatne prawa prosy.
+webext-perms-header2 = { $extension } přidać
+webext-perms-list-intro-unsigned = Tute njepřepruwowane rozšěrjenje móhło wašu priwatnosć na hrački stajić abo waš grat škodźić. Přidajće jo jenož, jeli žórłu dowěrjeće.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Trěbne prawa:
+webext-perms-header-optional-settings = Wólbne nastajenja:
+webext-perms-header-update-required-perms = Nowe trěbne prawa:
+webext-perms-header-optional-required-perms = Nowe prawa:
+webext-perms-header-data-collection-perms = Trěbne hromadźenje datow:
+webext-perms-header-data-collection-is-none = Hromadźenje datow:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Nowe trěbne hromadźenje datow:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Nowe hromadźenje datow:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Přetorhnyć
     .accesskey = P
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = { $extension } je so zaktualizował. Dyrbiće nowe prawa schwalić, prjedy hač budźe so zaktualizowana wersija instalować. Jeli „Přetorhnyć“ wubjerće, so waša aktualna wersija rozšěrjenja wobchowa.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = { $extension } je so zaktualizował. Dyrbiće nowe prawa schwalić, prjedy hač budźe so zaktualizowana wersija instalować. Jeli „Přetorhnyć“ wubjerće, so waša aktualna wersija rozšěrjenja wobchowa. Tute rozšěrjenje změje prawo za:
@@ -91,6 +112,29 @@ webext-perms-host-description-multiple-domains =
        *[other] Mějće přistup k swojim datam za sydła w { $domainCount } domenach
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Wuwiwar praji, zo tute rozšěrjenje hromadźenje datow njetrjeba.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Wuwiwar praji, zo tute rozšěrjenje hromadźi: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Wuwiwar praji, zo tute rozšěrjenje budźe hromadźić: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = Wuwiwar praji, zo tute rozšěrjenje chce hromadźić: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = { $extension } sej nowe nastajenja za aktualizaciju žada
+webext-perms-update-list-intro-with-data-collection = Přetorhńće, zo byšće aktualnu wersiju a aktualne nastajenja wobchował abo aktualizujće, zo byšće nowu wersiju dóstał a wobkrućće změny.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } wo přidatne nastajenja prosy
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } wo přidatne hromadźenje datow prosy
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -124,3 +168,8 @@ webext-site-perms-header-unsigned-with-perms = { $extension } přidać? Tute roz
 
 webext-site-perms-midi = Přistup k MIDI-gratam
 webext-site-perms-midi-sysex = Přistup k MIDI-gratam z podpěru za SysEx
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Waša drasta barboweje kombinacije je so wotstroniła.</b> { -brand-shorter-name } je zaktualizował swoju zběrku barbowych kombinacijow. Móžeće najnowše wersije na sydle přidatkow namakać.
+webext-colorway-theme-migration-notification-button = Wobstarajće sej zaktualizowane barbowe kombinacije

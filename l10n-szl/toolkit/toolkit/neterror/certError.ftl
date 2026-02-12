@@ -106,10 +106,3 @@ networkProtocolError-title = Feler necowego protokołu
 nssBadCert-title = Pozōr: Możebne zagrożynie bezpieczyństwa
 nssBadCert-sts-title = Niypołōnczōne: Możebne zagrożynie bezpieczyństwa
 certerror-mitm-title = Ôprogramowanie niy dowo { -brand-short-name } bezpiecznie sie połōnczyć z tōm strōnōm.
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

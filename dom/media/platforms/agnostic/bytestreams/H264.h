@@ -12,6 +12,7 @@
 #include "mozilla/Span.h"
 #include "mozilla/gfx/Point.h"
 #include "mozilla/gfx/Types.h"
+#include "nsTArray.h"
 
 namespace mozilla {
 class BitReader;
@@ -26,7 +27,7 @@ enum H264_PROFILE {
   H264_PROFILE_HIGH = 0x64,
 };
 
-enum H264_LEVEL {
+enum class H264_LEVEL {
   H264_LEVEL_1 = 10,
   H264_LEVEL_1_b = 11,
   H264_LEVEL_1_1 = 11,
@@ -43,7 +44,10 @@ enum H264_LEVEL {
   H264_LEVEL_4_2 = 42,
   H264_LEVEL_5 = 50,
   H264_LEVEL_5_1 = 51,
-  H264_LEVEL_5_2 = 52
+  H264_LEVEL_5_2 = 52,
+  H264_LEVEL_6 = 60,
+  H264_LEVEL_6_1 = 61,
+  H264_LEVEL_6_2 = 62
 };
 
 // Spec 7.4.2.1
@@ -69,6 +73,17 @@ enum NAL_TYPES {
   H264_NAL_AUXILIARY_SLICE = 19,
   H264_NAL_SLICE_EXT = 20,
   H264_NAL_SLICE_EXT_DVC = 21,
+};
+
+// ITU-T H.264 (V15) (08/2024), 7.3.1 NAL unit syntax.
+struct MOZ_STACK_CLASS H264NALU final {
+  H264NALU(const uint8_t* aData MOZ_LIFETIME_BOUND, uint32_t aByteCount);
+  H264NALU() = default;
+
+  uint8_t mNalUnitType;
+  // This points to the full content of the NALU, which can be used to extract
+  // the RBSP.
+  const Span<const uint8_t> mNALU;
 };
 
 // According to ITU-T Rec H.264 (2017/04) Table 7.6.
@@ -513,7 +528,14 @@ class H264 {
       const mozilla::MediaByteBuffer* aExtraData);
 
   enum class FrameType {
-    I_FRAME,
+    // IDR is a special iframe, according to the spec T-REC-H.264-202408, 3.69 :
+    // "An IDR picture causes the decoding process to mark all reference
+    // pictures as "unused for reference" immediately after the decoding of the
+    // IDR picture. All coded pictures that follow an IDR picture in decoding
+    // order can be decoded without inter prediction from any picture that
+    // precedes the IDR picture in decoding order."
+    I_FRAME_IDR,
+    I_FRAME_OTHER,
     OTHER,
     INVALID,
   };
@@ -521,10 +543,15 @@ class H264 {
   // Returns the frame type. Returns I_FRAME if the sample is an IDR
   // (Instantaneous Decoding Refresh) Picture.
   static FrameType GetFrameType(const mozilla::MediaRawData* aSample);
+
+  /* From a NAL, extract the SVC temporal id, per H264 spec Annex G, 7.3.1.1 */
+  static Result<int, nsresult> ExtractSVCTemporalId(const uint8_t* aData,
+                                                    size_t aLength);
+
   // Create a dummy extradata, useful to create a decoder and test the
   // capabilities of the decoder.
   static already_AddRefed<mozilla::MediaByteBuffer> CreateExtraData(
-      uint8_t aProfile, uint8_t aConstraints, uint8_t aLevel,
+      uint8_t aProfile, uint8_t aConstraints, H264_LEVEL aLevel,
       const gfx::IntSize& aSize);
   static void WriteExtraData(mozilla::MediaByteBuffer* aDestExtraData,
                              const uint8_t aProfile, const uint8_t aConstraints,
@@ -534,6 +561,7 @@ class H264 {
 
  private:
   friend class SPSNAL;
+
   /* Extract RAW BYTE SEQUENCE PAYLOAD from NAL content.
      Returns nullptr if invalid content.
      This is compliant to ITU H.264 7.3.1 Syntax in tabular form NAL unit syntax
@@ -555,9 +583,46 @@ class H264 {
   static bool DecodeISlice(const mozilla::MediaByteBuffer* aSlice);
 };
 
-// ISO/IEC 14496-15 : avcC. We only parse partial attributes, not all of them.
+/*
+ * ISO/IEC 14496-15 : avcC.
+ * aligned(8) class AVCDecoderConfigurationRecord {
+ *   unsigned int(8) configurationVersion = 1;
+ *   unsigned int(8) AVCProfileIndication;
+ *   unsigned int(8) profile_compatibility;
+ *   unsigned int(8) AVCLevelIndication;
+ *   bit(6) reserved = '111111'b;
+ *   unsigned int(2) lengthSizeMinusOne;
+ *   bit(3) reserved = '111'b;
+ *   unsigned int(5) numOfSequenceParameterSets;
+ *   for (i = 0; i < numOfSequenceParameterSets; i++) {
+ *     unsigned int(16) sequenceParameterSetLength;
+ *     bit(8 * sequenceParameterSetLength) sequenceParameterSetNALUnit;
+ *   }
+ *   unsigned int(8) numOfPictureParameterSets;
+ *   for (i = 0; i < numOfPictureParameterSets; i++) {
+ *     unsigned int(16) pictureParameterSetLength;
+ *     bit(8 * pictureParameterSetLength) pictureParameterSetNALUnit;
+ *   }
+ *   if (AVCProfileIndication != 66 && AVCProfileIndication != 77 &&
+ *       AVCProfileIndication != 88) {
+ *     bit(6) reserved = '111111'b;
+ *     unsigned int(2) chroma_format;
+ *     bit(5) reserved = '11111'b;
+ *     unsigned int(3) bit_depth_luma_minus8;
+ *     bit(5) reserved = '11111'b;
+ *     unsigned int(3) bit_depth_chroma_minus8;
+ *     unsigned int(8) numOfSequenceParameterSetExt;
+ *     for (i = 0; i < numOfSequenceParameterSetExt; i++) {
+ *       unsigned int(16) sequenceParameterSetExtLength;
+ *       bit(8 * sequenceParameterSetExtLength) sequenceParameterSetExtNALUnit;
+ *     }
+ *   }
+ * };
+ */
 struct AVCCConfig final {
  public:
+  // The extradata (from sample or directly given) should have a lifetime equal
+  // to or longer than AVCCConfig.
   static Result<AVCCConfig, nsresult> Parse(
       const mozilla::MediaRawData* aSample);
   static Result<AVCCConfig, nsresult> Parse(
@@ -570,7 +635,23 @@ struct AVCCConfig final {
   uint8_t mProfileCompatibility;
   uint8_t mAVCLevelIndication;
   uint8_t mLengthSizeMinusOne;
-  uint8_t mNumSPS;
+  nsTArray<H264NALU> mSPSs;
+  nsTArray<H264NALU> mPPSs;
+  // Following members are optional.
+  Maybe<uint8_t> mChromaFormat;
+  Maybe<uint8_t> mBitDepthLumaMinus8;
+  Maybe<uint8_t> mBitDepthChromaMinus8;
+  nsTArray<H264NALU> mSPSExts;
+
+  uint32_t NumSPS() const { return mSPSs.Length(); }
+  uint32_t NumPPS() const { return mPPSs.Length(); }
+  uint32_t NumSPSExt() const { return mSPSExts.Length(); }
+
+  // This method is used when the attributes of AVCCConfig are modified, and
+  // then you want to create a new byte buffer based on the updated attributes.
+  // If the updated attributes make the config invalid, this method will return
+  // nullptr.
+  already_AddRefed<mozilla::MediaByteBuffer> CreateNewExtraData() const;
 
  private:
   AVCCConfig() = default;

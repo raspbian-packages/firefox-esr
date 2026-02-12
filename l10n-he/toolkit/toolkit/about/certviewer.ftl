@@ -30,6 +30,10 @@ certificate-viewer-key-id = מזהה מפתח
 certificate-viewer-key-size = גודל מפתח
 certificate-viewer-locality = מקום
 certificate-viewer-location = מיקום
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = שם הרישום
+# Log is a noun meaning a record of events.
+certificate-viewer-logid = מזהה רישום
 certificate-viewer-method = שיטה
 certificate-viewer-name = שם
 certificate-viewer-not-after = לא אחרי
@@ -89,6 +93,8 @@ certificate-viewer-export = ייצוא
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = (לא ידוע)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = אישור אבטחה
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

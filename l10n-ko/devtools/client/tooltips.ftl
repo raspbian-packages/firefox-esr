@@ -10,14 +10,6 @@ learn-more = <span data-l10n-name="link">더 알아보기</span>
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain why
 ## the property is not applied.
-## Variables:
-##   $property (string) - A CSS property name e.g. "color".
-##   $display (string) - A CSS display value e.g. "inline-block".
-
-
-## In the Rule View when a CSS property cannot be successfully applied we display
-## an icon. When this icon is hovered this message is displayed to explain why
-## the property is not applied.
 ## The variables are all passed from the same place, in `InactiveCssTooltipHelper#getTemplate`
 ## (devtools/client/shared/widgets/tooltip/inactive-css-tooltip-helper.js#95)
 ## Variables:
@@ -42,6 +34,8 @@ inactive-css-not-display-block-on-floated = 요소가 <strong>floated</strong>�
 inactive-css-not-display-block-on-floated-2 = 요소가 <strong>floated</strong>이므로 <strong>display</strong> 값이 엔진에 의해 <strong>{ $display }</strong>로 변경되었습니다.
 inactive-css-only-non-grid-or-flex-item = <strong>{ $property }</strong>는 그리드 또는 플렉스 항목에 사용할 수 없으므로 효과가 없습니다.
 inactive-css-not-block = <strong>{ $property }</strong>는 블록 수준 요소에만 적용되므로 이 요소에는 영향을 미치지 않습니다.
+inactive-css-not-block-container = <strong>{ $property }</strong>는 블록 컨테이너 요소에만 적용되므로 이 요소에는 영향을 미치지 않습니다.
+inactive-css-not-block-flex-grid-container = <strong>{ $property }</strong>는 블록, 플렉스 및 그리드 컨테이너 요소에만 적용되므로 이 요소에는 영향을 미치지 않습니다.
 inactive-css-not-floated = <strong>{ $property }</strong>는 floated 요소에만 적용되므로 효과가 없습니다.
 inactive-css-property-is-impossible-to-override-in-visited = <strong>:visited</strong> 제한으로 인해 <strong>{ $property }</strong>를 재정의 할 수 없습니다.
 inactive-css-position-property-on-unpositioned-box = 위치가 지정된 요소가 아니기 때문에 <strong>{ $property }</strong> 속성이 이 요소에 영향을 미치지 않습니다.
@@ -74,6 +68,7 @@ inactive-css-cue-pseudo-element-not-supported = <strong>{ $property }</strong>�
 inactive-css-text-wrap-balance-lines-exceeded = <strong>{ $property }</strong>는 이 요소에 { $lineCount }개 이상의 행이 있으므로 이 요소에 영향을 주지 않습니다.
 inactive-css-text-wrap-balance-fragmented = <strong>{ $property }</strong>는 조각화되어 있으므로(예: 해당 콘텐츠가 여러 열이나 페이지에 걸쳐 분할되어 있으므로) 이 요소에 영향을 주지 않습니다.
 inactive-css-no-width-height = <strong>{ $property }</strong>는 너비와 높이를 설정할 수 없으므로 이 요소에 영향을 미치지 않습니다.
+inactive-css-no-principal-box = <strong>{ $property }</strong>는 주요 박스를 생성하지 않으므로 이 요소에 영향을 미치지 않습니다.
 
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain how
@@ -96,6 +91,8 @@ inactive-css-non-replaced-inline-or-table-column-or-column-group-fix = <strong>d
 inactive-css-not-display-block-on-floated-fix = <strong>float</strong>를 제거하거나 <strong>display:block</strong>을 추가해보세요. { learn-more }
 inactive-css-only-non-grid-or-flex-item-fix = 요소 컨테이너의 <strong>display</strong> 값을 <strong>flex</strong>, <strong>grid</strong>, <strong>inline-flex</strong>, <strong>inline-grid</strong> 이외의 값으로 변경하거나 <strong>float</strong>를 제거해보세요. { learn-more }
 inactive-css-not-block-fix = <strong>display:block</strong> 또는 <strong>float:left</strong>와 같은 속성을 추가해 보세요. { learn-more }
+inactive-css-not-block-container-fix = <strong>display:block</strong>, <strong>display:inline-block</strong> 또는 <strong>display:flow-root</strong>를 추가해 보세요. { learn-more }
+inactive-css-not-block-flex-grid-container-fix = <strong>display:block</strong>, <strong>display:inline-block</strong>, <strong>display:flex</strong>, <strong>display:inline-flex</strong>, <strong>display:grid</strong>, <strong>display:inline-grid</strong> 또는 <strong>display:flow-root</strong>를 추가해보세요. { learn-more }
 inactive-css-not-floated-fix = <strong>none</strong> 이외의 값으로 <strong>float</strong> 속성을 추가해 보세요. { learn-more }
 inactive-css-position-property-on-unpositioned-box-fix = <strong>position</strong> 속성을 <strong>static</strong> 이외의 것으로 설정해 보세요. { learn-more }
 inactive-css-only-replaced-elements-fix = 대체된 요소에 속성을 추가하고 있는지 확인하세요. { learn-more }
@@ -112,6 +109,7 @@ inactive-css-resize-fix = <strong>overflow</strong>를 <strong>visible</strong> 
 inactive-css-ruby-element-fix = 윗주 텍스트의 <strong>font-size</strong>를 변경해 보세요. { learn-more }
 inactive-css-text-wrap-balance-lines-exceeded-fix = 줄 수를 줄여보세요. { learn-more }
 inactive-css-text-wrap-balance-fragmented-fix = 요소의 콘텐츠를 분할하지 마세요(예: 열을 제거하거나 <strong>page-break-inside:avoid</strong>를 사용하는 경우). { learn-more }
+inactive-css-no-principal-box-fix = <strong>block</strong>, <strong>inline-block</strong>, <strong>flex</strong>, 또는 <strong>grid</strong>와 같은 주요 박스를 생성하는 <strong>display</strong> 값을 추가해보세요. { learn-more }
 
 ## In the Rule View when a CSS property may have compatibility issues with other browsers
 ## we display an icon. When this icon is hovered this message is displayed to explain why

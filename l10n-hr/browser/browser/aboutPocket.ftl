@@ -38,9 +38,9 @@ pocket-panel-signup-learn-more = Saznaj više
 pocket-panel-signup-login = Prijava
 pocket-panel-signup-signup-email = Registracija s e-poštom
 pocket-panel-signup-signup-cta = Registriraj se na { -pocket-brand-name }. Besplatno je.
-pocket-panel-signup-signup-firefox = Registracija s { -brand-product-name }om
+pocket-panel-signup-signup-firefox = Registriraj se s { -brand-product-name }om
 pocket-panel-signup-tagline = Spremi članke i video snimke iz { -brand-product-name }a za prikaz u { -pocket-brand-name }u, na bilo kojem uređaju, bilo kada.
-pocket-panel-signup-tagline-story-one = Za spremanje bilo kojeg članka, video snimke ili stranice iz { -brand-product-name }a, klikni na { -pocket-brand-name } tipku.
+pocket-panel-signup-tagline-story-one = Za spremanje bilo kojeg članka, video snimke ili stranice iz { -brand-product-name }a, klikni gumb { -pocket-brand-name }.
 pocket-panel-signup-tagline-story-two = Pogledaj u { -pocket-brand-name }u na bilo kojem uređaju, bilo kada.
 pocket-panel-signup-cta-a-fix = Tvoj gumb za spremanje za internet
 pocket-panel-signup-cta-b-updated = Pritisni gumb { -pocket-brand-name } za spremanje članaka, videa i poveznica. Pogledaj svoja spremanja na bilo kojem uređaju, bilo kada.
@@ -50,7 +50,7 @@ pocket-panel-signup-cta-c-updated = Pogledaj svoja spremanja na bilo kojem uređ
 ## about:pocket-home panel
 
 pocket-panel-home-welcome-back = Dobrodošli natrag
-pocket-panel-home-paragraph = Možeš koristiti { -pocket-brand-name } za istraživanje i spremanje web-stranica, članaka, videozapisa i podcasta ili za vraćanje na ono što si čitao/la.
+pocket-panel-home-paragraph = Možeš koristiti { -pocket-brand-name } za istraživanje i spremanje web stranica, članaka, videozapisa i podcasta ili za vraćanje na ono što si čitao/la.
 pocket-panel-home-explore-popular-topics = Istraži popularne teme
 pocket-panel-home-discover-more = Otkrij više
 pocket-panel-home-explore-more = Istraži

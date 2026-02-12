@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = { -brand-shortcut-name } نجی براؤزن�
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,16 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } —نجی براؤزنگ
     .data-content-title-default-with-profile = { $content-title } — { $profile-name }
     .data-content-title-private-with-profile = { $content-title } — { $profile-name } — نجی براؤزنگ
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — نجی براؤزنگ
+       *[other] { -brand-full-name } نجی براؤزنگ
+    }
 
 ##
 
@@ -339,7 +347,6 @@ quickactions-print2 = ورقہ پرنٹ کرو
 quickactions-cmd-print = چھاپو
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = ورقہ پی ڈی ایف دے طور تے محفوظ کرو
-quickactions-cmd-savepdf = پی ڈی ایف
 # Opens a new private browsing window
 quickactions-private2 = نجی ونڈو کھولو
 quickactions-cmd-private = نجی براؤزنگ
@@ -664,6 +671,12 @@ urlbar-result-action-copy-to-clipboard = نقل کرو
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
 
 ## Strings used for buttons in the urlbar
 
@@ -679,6 +692,8 @@ urlbar-result-search-with-local-search-mode = { $keywords }  - { $localSearchMod
 #  $keywords (String): the default keyword and user's set keyword if available
 #  $engine (String): the name of a search engine
 urlbar-result-search-with-engine-keywords = { $keywords }  - { $engine } نال ڳولو
+urlbar-searchmode-dropmarker =
+    .tooltiptext = ڳولݨ انجݨ چݨو
 urlbar-searchmode-bookmarks =
     .label = نشانیاں
 urlbar-searchmode-tabs =
@@ -689,8 +704,11 @@ urlbar-searchmode-actions =
     .label = عمل
 urlbar-searchmode-exit-button =
     .tooltiptext = بند کرو
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = ایں واری، دے نال ڳولو:
-urlbar-searchmode-popup-search-settings = ڳولݨ ترتیباں
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = ڳولݨ ترتیباں
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -1047,10 +1065,6 @@ unified-extensions-button-quarantined =
         ایکسٹنشناں
         کجھ ایکسٹنشناں دی اجازت کائنی
 
-## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
-## Note that the new line is intentionally part of the tooltip.
-
-
 ## Private browsing reset button
 
 reset-pbm-toolbar-button =
@@ -1091,10 +1105,6 @@ popup-notification-addon-install-unsigned =
     .value = (غیر تصدیق شدہ)
 popup-notification-xpinstall-prompt-learn-more = محفوظ طریقے نال ایڈ آنز انسٹال کرݨ بارے مزید سکھو۔
 popup-notification-xpinstall-prompt-block-url = تفصیلاں ݙیکھو
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = نجی ونڈوز وِچ چلاؤ
-    .accesskey = P
 
 ## Pop-up warning
 

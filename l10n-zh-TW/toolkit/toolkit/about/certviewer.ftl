@@ -36,6 +36,9 @@ certificate-viewer-key-size = 金鑰大小
 certificate-viewer-inc-locality = 公司註冊地
 certificate-viewer-locality = 地區
 certificate-viewer-location = 位置
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = 紀錄名稱
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = Log ID
 certificate-viewer-method = 方法
 certificate-viewer-modulus = 模數
@@ -110,6 +113,8 @@ certificate-viewer-export = 匯出
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = （未知）
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = 憑證
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

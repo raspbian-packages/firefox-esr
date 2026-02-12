@@ -85,27 +85,6 @@ sandbox-sys-call-args = Arguments
 
 audio-backend = အသံနောက်ကွယ်
 
-## Codec support table
-
-
-## Media Content Decryption Modules (CDM)
-## See EME Spec for more explanation for following technical terms
-## https://w3c.github.io/encrypted-media/
-
-
-##
-
-
-## Remote Debugging
-##
-## The Firefox remote protocol provides low-level debugging interfaces
-## used to inspect state and control execution of documents,
-## browser instrumentation, user interaction simulation,
-## and for subscribing to browser-internal events.
-##
-## See also https://firefox-source-docs.mozilla.org/remote/
-
-
 ##
 
 # Variables
@@ -196,27 +175,11 @@ apz-none = မရွေးပါ
 wheel-enabled = မောက်စ်အလယ်ဘီးမှ ဒေတာလက်ခံမှုကို ဖွင့်ထားသည်
 touch-enabled = တို့ထိပြားမှ ဒေတာလက်ခံမှုကို ဖွင့်ထားသည်
 drag-enabled = စခရိုးလ်ဘားတန်းဆွဲရွှေ့ခြင်း ဖွင့်ထားသည်
+keyboard-enabled = ကီးဘုတ် ဖွင့်ပြီး
+autoscroll-enabled = အလို‌လျှောက် ရွှေ့ခြင်း ဖွင့်
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference
 
 wheel-warning = မထောက်ပံ့ထားသော အပြင်အဆင် { $preferenceKey } ကြောင့် async wheel input ကို ပိတ်ထားသည်
 touch-warning = မထောက်ပံ့ထားသော အပြင်အဆင် { $preferenceKey } ကြောင့် async touch input ကို ပိတ်ထားသည်
-
-## Strings representing the status of the Enterprise Policies engine.
-
-
-## Printing section
-
-
-## Remote Settings sections
-
-
-## Normandy sections
-
-
-## Pointing devices
-
-
-## Content Analysis (DLP)
-

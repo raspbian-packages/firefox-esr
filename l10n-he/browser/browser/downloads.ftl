@@ -88,9 +88,9 @@ downloads-cmd-show-description-2 =
 downloads-cmd-show-downloads =
     .label = הצגת תיקיית ההורדות
 downloads-cmd-retry =
-    .tooltiptext = לנסות שנית
+    .tooltiptext = ניסיון חוזר
 downloads-cmd-retry-panel =
-    .aria-label = לנסות שנית
+    .aria-label = ניסיון חוזר
 downloads-cmd-go-to-download-page =
     .label = מעבר לדף הורדה
     .accesskey = ד
@@ -215,6 +215,18 @@ downloads-history =
 # that we are showing the details of a single download.
 downloads-details =
     .title = פרטי הורדה
+
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = הקבצים נשארים במכשיר שלך
+downloads-private-browsing-message = כל מי שמשתמש במכשיר הזה יכול לראות את ההורדות, גם לאחר סגירת כל החלונות הפרטיים.
+downloads-private-browsing-delete-button =
+    .label = מחיקת קבצים באופן אוטומטי
+    .accesskey = מ
+downloads-private-browsing-accept-button =
+    .label = הבנתי
+    .accesskey = ה
 
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:

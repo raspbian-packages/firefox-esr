@@ -65,6 +65,10 @@ startup-header = စတင်ခြင်း
 always-check-default =
     .label = { -brand-short-name } သည် ပုံသေဘရောင်ဇာ ဟုတ်/မဟုတ် အမြဲစစ်ဆေးပါ
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } သည် လက်ရှိတွင် ပုံသေဘရောက်ဇာ ဖြစ်ပါသည်
+is-not-default-browser =
+    .message = { -brand-short-name } သည် ပုံသေဘရောက်ဇာ ဖြစ်မနေပါ
 is-default = { -brand-short-name } သည် လက်ရှိတွင် ပုံသေဘရောက်ဇာ ဖြစ်ပါသည်
 is-not-default = { -brand-short-name } သည် ပုံသေဘရောက်ဇာ ဖြစ်မနေပါ
 set-as-my-default-browser =
@@ -147,6 +151,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = ဖိုင်များနှင့် အက်ပလီကေးရှင်းများ
+downloads-header-2 =
+    .label = ဆွဲယူထားသည့် ဖိုင်များ
+download-save-where-2 =
+    .label = ဖိုင်များကို ထိုနေရာတွင် သိမ်းရန်
+    .accesskey = v
 download-header = ဆွဲယူထားသည့် ဖိုင်များ
 download-save-where = ဖိုင်များကို ထိုနေရာတွင် သိမ်းရန်
     .accesskey = v
@@ -308,7 +317,7 @@ network-proxy-connection-settings =
 
 home-new-windows-tabs-header = ဝင်းဒိုးအသစ်နှင့် တပ်ဗ်အသစ်များ
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = အဖွင့်စာမျက်နှာနှင့် ဝင်းဒိုးအသစ်များ
 home-newtabs-mode-label = တပ်ဗ်အသစ်များ
@@ -418,6 +427,8 @@ search-keyword-warning-bookmark = စာမှတ်စု မှာ လက်�
 ## Containers Section
 
 containers-header = ကွန်တိန်နာတပ်ဗ်များ
+containers-section-header =
+    .heading = ကွန်တိန်နာတပ်ဗ်များ
 containers-add-button =
     .label = ကွန်တိန်နာအသစ်ထပ်ထည့်ပါ
     .accesskey = A
@@ -466,9 +477,6 @@ sync-sign-in =
     .label = ဝင်ပါ
     .accesskey = g
 
-## Sync section - enabling or disabling sync.
-
-
 ## The list of things currently syncing.
 
 sync-currently-syncing-bookmarks = စာမှတ်များ
@@ -504,6 +512,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = ကိရိယာအမည်
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = ကိရိယာအမည်
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = ကိရိယာအမည်ကို ပြောင်းလဲရန်
+    .accesskey = h
 sync-device-name-change =
     .label = ကိရိယာအမည်ကို ပြောင်းလဲရန်…
     .accesskey = h
@@ -555,12 +571,6 @@ forms-master-pw-change =
     .accesskey = M
 forms-master-pw-fips-desc = စကားဝှက်ပြောင်းလဲမှု မအောင်မြင်ပါ
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = မှတ်တမ်း
@@ -581,6 +591,10 @@ history-remember-option-never =
     .label = မှတ်တမ်းကို ဘယ်တော့မှ မမှတ်ထားပါ
 history-remember-option-custom =
     .label = မှတ်တမ်းအတွက် စိတ်ကြိုက်အပြင်အဆင်ကို အသုံးပြုမည်
+history-remember-description2 =
+    .description = { -brand-short-name }သည် သင့်၏ရှာဖွေမှု၊ဆွဲယူမှု၊ရှာဖွေမှတ်တမ်းများကို မှတ်သားမည်။
+history-dontremember-description2 =
+    .description = { -brand-short-name } က တူညီတဲ့ အပြင်အဆင်များကို သီးသန့် လှော်လှန်မှုအဖြစ် သုံးစွဲမှာ ဖြစ်ပြီး၊ ကွန်ရက်ကို သင်လှော်လှန်နေစဉ် ဘယ် မှတ်တမ်းကိုမှ မှတ်သားထားမှာ မဟုတ်ဘူး။
 history-remember-description = { -brand-short-name }သည် သင့်၏ရှာဖွေမှု၊ဆွဲယူမှု၊ရှာဖွေမှတ်တမ်းများကို မှတ်သားမည်။
 history-dontremember-description = { -brand-short-name } က တူညီတဲ့ အပြင်အဆင်များကို သီးသန့် လှော်လှန်မှုအဖြစ် သုံးစွဲမှာ ဖြစ်ပြီး၊ ကွန်ရက်ကို သင်လှော်လှန်နေစဉ် ဘယ် မှတ်တမ်းကိုမှ မှတ်သားထားမှာ မဟုတ်ဘူး။
 history-private-browsing-permanent =
@@ -619,12 +633,6 @@ sitedata-clear =
 sitedata-settings =
     .label = အချက်အလက်ကို စီမံပါ...
     .accesskey = M
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -724,6 +732,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = ခြွင်းချက်များ...
     .accesskey = E
+permissions-location2 =
+    .label = တည်နေရာ
+permissions-camera2 =
+    .label = ကင်မရာ
+permissions-microphone2 =
+    .label = မိုက်ကရိုဖုန်း
+permissions-notification2 =
+    .label = အသိပေးချက်များ
 
 ## Privacy Section - Data Collection
 
@@ -742,9 +758,6 @@ addon-recommendations-link = ပိုမိုလေ့လာရန်
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = တည်ဆောက်မှုဆိုင်ရာ ယခုအပြင်အဆင်အတွက် အချက်အလက်အစီရင်ခံခြင်းကို ပိတ်ထားသည်
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -776,12 +789,7 @@ certs-view =
 certs-devices =
     .label = လုံခြုံရေး ကိရိယာများ...
     .accesskey = D
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPS ကို ဖွင့်ထားပါ
 
 ## The following strings are used in the Download section of settings
 

@@ -50,17 +50,6 @@ should-restart-ok = Atosaigh { -brand-short-name } anois
 cancel-no-restart-button = Cealaigh
 restart-later = Atosaigh Ar Ball
 
-## Extension Control Notifications
-##
-## These strings are used to inform the user
-## about changes made by extensions to browser settings.
-##
-## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
-##
-## Variables:
-##   $name (string) - Name of the extension
-
-
 ## Preferences UI Search Results
 
 search-results-header = Torthaí an Chuardaigh
@@ -71,6 +60,10 @@ startup-header = Tosú
 always-check-default =
     .label = Seiceáil i gcónaí an é { -brand-short-name } an brabhsálaí réamhshocraithe
     .accesskey = g
+is-default-browser =
+    .message = Is é { -brand-short-name } do bhrabhsálaí réamhshocraithe faoi láthair
+is-not-default-browser =
+    .message = Ní hé { -brand-short-name } do bhrabhsálaí réamhshocraithe faoi láthair
 is-default = Is é { -brand-short-name } do bhrabhsálaí réamhshocraithe faoi láthair
 is-not-default = Ní hé { -brand-short-name } do bhrabhsálaí réamhshocraithe faoi láthair
 set-as-my-default-browser =
@@ -164,6 +157,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Comhaid agus Feidhmchláir
+downloads-header-2 =
+    .label = Íoslódálacha
+download-save-where-2 =
+    .label = Sábháil comhaid i
+    .accesskey = S
 download-header = Íoslódálacha
 download-save-where = Sábháil comhaid i
     .accesskey = S
@@ -314,10 +312,7 @@ network-proxy-connection-settings =
     .label = Socruithe…
     .accesskey = e
 
-## Home Section
-
-
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-newtabs-mode-label = Cluaisíní nua
 home-mode-choice-blank =
@@ -338,9 +333,6 @@ use-current-pages =
 choose-bookmark =
     .label = Úsáid Leabharmharc…
     .accesskey = L
-
-## Home Section - Firefox Home Content Customization
-
 
 ## Home Section - Firefox Home Content Customization
 
@@ -397,6 +389,8 @@ search-keyword-warning-bookmark = Roghnaigh tú eochairfhocal atá in úsáid fa
 containers-back-button2 =
     .aria-label = Fill ar na Socruithe
 containers-header = Cluaisíní Coimeádáin
+containers-section-header =
+    .heading = Cluaisíní Coimeádáin
 containers-add-button =
     .label = Coimeádán Nua
     .accesskey = C
@@ -441,9 +435,6 @@ sync-sign-in =
     .label = Logáil isteach
     .accesskey = g
 
-## Sync section - enabling or disabling sync.
-
-
 ## The list of things currently syncing.
 
 sync-currently-syncing-tabs = Cluaisíní oscailte
@@ -468,6 +459,14 @@ sync-engine-creditcards =
 ## The device name controls.
 
 sync-device-name-header = Ainm an Ghléis
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Ainm an Ghléis
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Athraigh Ainm an Ghléis
+    .accesskey = h
 sync-device-name-change =
     .label = Athraigh Ainm an Ghléis
     .accesskey = h
@@ -492,9 +491,6 @@ sync-verification-not-sent-body = Ní rabhthas ábalta an ríomhphost deimhnithe
 
 privacy-header = Príobháideachas
 
-## Privacy Section - Logins and Passwords
-
-
 ## Privacy Section - Passwords
 
 forms-exceptions =
@@ -510,12 +506,6 @@ forms-master-pw-change =
     .label = Athraigh an Príomhfhocal Faire…
     .accesskey = P
 forms-master-pw-fips-desc = Theip ar athrú an fhocail faire.
-
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
 
 ## Privacy Section - History
 
@@ -537,6 +527,8 @@ history-remember-option-never =
     .label = Ná meabhraigh an stair riamh
 history-remember-option-custom =
     .label = Úsáid socruithe saincheaptha don stair
+history-dontremember-description2 =
+    .description = Úsáidfidh { -brand-short-name } na socruithe céanna mar a úsáidtear sa bhrabhsáil phríobháideach, agus ní mheabhróidh sé stair ar bith agus tú ag brabhsáil an Ghréasáin.
 history-dontremember-description = Úsáidfidh { -brand-short-name } na socruithe céanna mar a úsáidtear sa bhrabhsáil phríobháideach, agus ní mheabhróidh sé stair ar bith agus tú ag brabhsáil an Ghréasáin.
 history-private-browsing-permanent =
     .label = Bain úsáid as Brabhsáil Phríobháideach i gcónaí
@@ -555,12 +547,6 @@ history-clear-on-close-settings =
 
 sitedata-header = Fianáin agus Sonraí Suímh
 sitedata-learn-more = Tuilleadh eolais
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -612,9 +598,6 @@ content-blocking-fingerprinters-label =
     .label = Méarlorgairí
     .accesskey = M
 
-## Privacy Section - Tracking
-
-
 ## Privacy Section - Permissions
 
 permissions-header = Ceadanna
@@ -650,6 +633,14 @@ permissions-block-popups-exceptions-button =
 permissions-addon-exceptions =
     .label = Eisceachtaí…
     .accesskey = E
+permissions-location2 =
+    .label = Suíomh
+permissions-camera2 =
+    .label = Ceamara
+permissions-microphone2 =
+    .label = Micreafón
+permissions-notification2 =
+    .label = Fógraí
 
 ## Privacy Section - Data Collection
 
@@ -661,9 +652,6 @@ addon-recommendations-link = Tuilleadh eolais
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Díchumasaíodh tuairisciú sonraí don chumraíocht leagain seo
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -694,12 +682,7 @@ certs-view =
 certs-devices =
     .label = Gléasanna Slándála…
     .accesskey = d
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = Cumasaigh FIPS
 
 ## The following strings are used in the Download section of settings
 

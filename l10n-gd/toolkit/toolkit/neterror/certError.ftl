@@ -108,10 +108,3 @@ networkProtocolError-title = Mearachd pròtacal an lìonraidh
 nssBadCert-title = Rabhadh: Tha rud romhad a dh’fhaodadh a bhith ’na chunnart tèarainteachd
 nssBadCert-sts-title = Cha deach ceangal a dhèanamh: Rud a dh’fhaodadh a bhith ’na chunnart tèarainteachd
 certerror-mitm-title = Tha bathar-bog ann a tha a’ cumail { -brand-short-name } o bhith a’ dèanamh ceangal tèarainte ris an làrach seo
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

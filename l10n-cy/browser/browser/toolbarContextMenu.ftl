@@ -34,6 +34,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Ailagor Tabiau wedi'u Cau
         }
     .accesskey = o
+toolbar-context-turn-on-vertical-tabs =
+    .label = Troi Tabiau Fertigol ymlaen
+toolbar-context-turn-off-vertical-tabs =
+    .label = Diffodd Tabiau Fertigol
+toolbar-context-customize-sidebar =
+    .label = Cyfaddasu'r Bar Offer
 toolbar-context-menu-manage-extension =
     .label = Rheoli Estyniad
     .accesskey = E
@@ -57,6 +63,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
     .accesskey = B
 toolbar-context-menu-always-open-downloads-panel =
     .label = Dangos y Panel Pan fydd y Llwytho'n Dechrau
+    .accesskey = D
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Dangos yn y Bar Offer bob amser
     .accesskey = D
 toolbar-context-menu-remove-from-toolbar =
     .label = Tynnu o'r Bar Offer

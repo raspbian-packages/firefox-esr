@@ -99,6 +99,10 @@ ChromeUtils.defineLazyGetter(lazy, "gBrowserBundle", function () {
   );
 });
 
+ChromeUtils.defineLazyGetter(lazy, "gFluentStrings", function () {
+  return new Localization(["browser/permissions.ftl"], true /* aSync */);
+});
+
 import { SITEPERMS_ADDON_PROVIDER_PREF } from "resource://gre/modules/addons/siteperms-addon-utils.sys.mjs";
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -480,10 +484,7 @@ class PermissionPrompt {
                 promptAction.action,
                 scope
               );
-            } else if (promptAction.action == lazy.SitePermissions.BLOCK) {
-              // Temporarily store BLOCK permissions only
-              // SitePermissions does not consider subframes when storing temporary
-              // permissions on a tab, thus storing ALLOW could be exploited.
+            } else {
               lazy.SitePermissions.setForPrincipal(
                 this.principal,
                 this.permissionKey,
@@ -500,19 +501,13 @@ class PermissionPrompt {
               this.cancel();
             }
           } else if (this.permissionKey) {
-            // TODO: Add support for permitTemporaryAllow
-            if (promptAction.action == lazy.SitePermissions.BLOCK) {
-              // Temporarily store BLOCK permissions.
-              // We don't consider subframes when storing temporary
-              // permissions on a tab, thus storing ALLOW could be exploited.
-              lazy.SitePermissions.setForPrincipal(
-                null,
-                this.permissionKey,
-                promptAction.action,
-                lazy.SitePermissions.SCOPE_TEMPORARY,
-                this.browser
-              );
-            }
+            lazy.SitePermissions.setForPrincipal(
+              null,
+              this.permissionKey,
+              promptAction.action,
+              lazy.SitePermissions.SCOPE_TEMPORARY,
+              this.browser
+            );
           }
         },
       };
@@ -724,7 +719,6 @@ class SitePermsAddonInstallRequest extends PermissionPromptForRequest {
         let scriptError = scriptErrorClass.createInstance(Ci.nsIScriptError);
         scriptError.initWithWindowID(
           errorMessage,
-          null,
           null,
           0,
           0,
@@ -1177,11 +1171,25 @@ class PersistentStoragePermissionPrompt extends PermissionPromptForRequest {
     let learnMoreURL =
       Services.urlFormatter.formatURLPref("app.support.baseURL") +
       "storage-permissions";
-    return {
+    let options = {
       learnMoreURL,
       displayURI: false,
       name: this.getPrincipalName(),
     };
+
+    options.checkbox = {
+      show: !lazy.PrivateBrowsingUtils.isWindowPrivate(
+        this.browser.ownerGlobal
+      ),
+    };
+
+    if (options.checkbox.show) {
+      options.checkbox.label = lazy.gFluentStrings.formatValueSync(
+        "perm-persistent-storage-remember"
+      );
+    }
+
+    return options;
   }
 
   get notificationID() {
@@ -1387,7 +1395,7 @@ class StorageAccessPermissionPrompt extends PermissionPromptForRequest {
 
   prettifyHostPort(hostport) {
     let [host, port] = hostport.split(":");
-    host = lazy.IDNService.convertToDisplayIDN(host, {});
+    host = lazy.IDNService.convertToDisplayIDN(host);
     if (port) {
       return `${host}:${port}`;
     }

@@ -25,6 +25,7 @@ policy-AutofillAddressEnabled = Povolí automatické doplňování adres.
 policy-AutofillCreditCardEnabled = Povolí automatické vyplňování metod platby.
 policy-AutoLaunchProtocolsFromOrigins = Seznam externích protokolů, které lze použít z uvedených originů bez varování uživatele.
 policy-BackgroundAppUpdate2 = Povolení nebo zákaz aktualizací na pozadí.
+policy-Backup = Zakázat zálohování nebo obnovu dat profilu.
 policy-BlockAboutAddons = Zablokování přístupu do správce doplňků (about:addons).
 policy-BlockAboutConfig = Zablokování přístupu do editoru předvoleb (about:config).
 policy-BlockAboutProfiles = Zablokování přístupu do správce profilů (about:profiles).
@@ -99,6 +100,7 @@ policy-ExtensionSettings = Správa všech aspektů instalace rozšíření.
 policy-ExtensionUpdate = Vypnutí nebo zapnutí automatických aktualizací rozšíření.
 policy-FirefoxHome2 = Nakonfiguruje { -firefox-home-brand-name(case: "acc", capitalization: "lower") }.
 policy-FirefoxSuggest = Nakonfiguruje { -firefox-suggest-brand-name(case: "acc", capitalization: "lower") }.
+policy-GenerativeAI = Nastavení generativních funkcí umělé inteligence.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Vynutí přímou navigaci v intranetu namísto vyhledávání při zadání jednotlivých slov do adresního řádku.
 policy-Handlers = Nastavení výchozích aplikací pro odkazy a typy souborů.
 policy-HardwareAcceleration = Hodnota false vypne použití hardwarové akcelerace.
@@ -117,6 +119,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Nastaví staré výcho
 ##
 
 policy-LocalFileLinks = Povolí vybraným stránkám odkazovat na soubory uložené na místním disku.
+policy-LocalNetworkAccess = Povolení nebo zakázání kontroly přístupu k místní síti.
 policy-ManagedBookmarks = Nastavení seznamu záložek spravovaných správcem. Takové záložky uživatel nemůže měnit.
 policy-ManualAppUpdateOnly = Povolit pouze ruční aktualizace a uživatele na dostupnost aktualizací neupozorňovat.
 policy-PrimaryPassword = Vyžadovat nebo zabránit používání hlavního hesla.
@@ -149,6 +152,7 @@ policy-PDFjs =
     }
 policy-Permissions2 = Nastavení oprávnění pro kameru, mikrofon, zjišťování polohy, oznámení a automatické přehrávání.
 policy-PictureInPicture = Povolení nebo zakázání režimu obraz v obraze.
+policy-PopupBlocking2 = Umožní určitým webovým stránkám zobrazovat vyskakovací okna a být přesměrovány v rámci třetích stran
 policy-PopupBlocking = Povolení zobrazování vyskakovacích oken ve výchozím stavu.
 policy-Preferences = Nastavení a uzamčení hodnoty pro podmnožinu předvoleb.
 policy-PrivateBrowsingModeAvailability = Nastaví dostupnost v režimu anonymního prohlížení.
@@ -162,6 +166,8 @@ policy-SearchSuggestEnabled = Povolení nebo zákaz našeptávání dotazů pro 
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Přidání nebo odebrání modulů PKCS #11.
 policy-ShowHomeButton = Zobrazení domovského tlačítka na liště.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Nezobrazovat podmínky používání a zásady ochrany osobních údajů při spuštění. Prohlašujete, že souhlasíte s Podmínkami používání tohoto prohlížeče a jste oprávněni je přijmout jménem všech jednotlivců, kterým poskytnete přístup k tomuto prohlížeči.
 policy-SSLVersionMax = Nastavení maximální verze SSL.
 policy-SSLVersionMin = Nastavení minimální verze SSL.
 policy-StartDownloadsInTempDirectory = Vynutí spuštění stahování v místním dočasném umístění místo výchozího adresáře pro stažené soubory.
@@ -169,6 +175,7 @@ policy-SupportMenu = Přidání vlastní položky nabídky s nápovědou.
 policy-TranslateEnabled = Povolí nebo zakáže překlad webových stránek.
 policy-UserMessaging = Nezobrazovat uživateli určité zprávy.
 policy-UseSystemPrintDialog = Vytisknout pomocí systémového dialogu.
+policy-VisualSearchEnabled = Povolení nebo zakázání vizuálního vyhledávání.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blokování návštěvy webových stránek. Více informací o formátu najdete v dokumentaci.
 policy-Windows10SSO = Povolení jednotného přihlašování Windows pro pracovní a školní účty a účty Microsoft.

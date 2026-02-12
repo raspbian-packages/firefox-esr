@@ -7,10 +7,6 @@ search-header =
     .placeholder = addons.mozilla.org এ অনুসন্ধান করুন
     .searchbuttonlabel = অনুসন্ধান
 
-## Variables
-##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
-
-
 ##
 
 list-empty-installed =
@@ -346,16 +342,16 @@ addon-detail-update-check-label = হালনাগাদ এর জন্য �
 install-update-button = হালনাগাদ
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = ব্যক্তিগত উইন্ডোতে অনুমোদিত
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = ব্যক্তিগত উইন্ডোতে অনুমোদিত
     .aria-label = { addon-badge-private-browsing-allowed2.title }
 addon-detail-private-browsing-help = অনুমতি পেলে, প্রাইভেট ব্রাউজ করার সময় এই এক্সটেনশনে আপনার অনলাইন কার্যতালিকা পাবে। <a data-l10n-name="learn-more">আরো জানুন</a>
 addon-detail-private-browsing-allow = অনুমতি দাও
 addon-detail-private-browsing-disallow = অনুমতি দিও না
-
-## "sites with restrictions" (internally called "quarantined") are special domains
-## where add-ons are normally blocked for security reasons.
-
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -412,12 +408,8 @@ details-notification-unsigned2 =
     .message = { $name } যাচাই করা গেল না { -brand-short-name } তে ব্যবহারের জন্য, সতর্কতার সাথে আগান।
 details-notification-unsigned-link = আরও তথ্য
 details-notification-blocked = নিরাপত্তা ও স্থায়ীত্বজনিত কারণে { $name } নিস্ক্রিয় করা হয়েছে।
-details-notification-blocked2 =
-    .message = নিরাপত্তা ও স্থায়ীত্বজনিত কারণে { $name } নিস্ক্রিয় করা হয়েছে।
 details-notification-blocked-link = আরও তথ্য
 details-notification-softblocked = নিরাপত্তা ও স্থায়ীত্বজনিত ত্রুটির জন্য { $name } দায়ী।
-details-notification-softblocked2 =
-    .message = নিরাপত্তা ও স্থায়ীত্বজনিত ত্রুটির জন্য { $name } দায়ী।
 details-notification-softblocked-link = আরও তথ্য
 details-notification-gmp-pending = { $name } খুব শ্রীঘ্রই ইন্সটল করা হবে।
 details-notification-gmp-pending2 =

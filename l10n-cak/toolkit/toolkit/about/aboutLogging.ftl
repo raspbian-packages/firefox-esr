@@ -21,8 +21,3 @@ about-logging-preset-media-playback-label = Rutzijik k'ïy k'oxom
 about-logging-preset-custom-label = Ichinan
 # Error handling
 about-logging-error = Sachoj:
-
-## Variables:
-##   $k (String) - Variable name
-##   $v (String) - Variable value
-

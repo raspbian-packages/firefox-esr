@@ -30,9 +30,6 @@ about-webauthn-add-bio-enrollment-section-title = إضافة تسجيل جديد
 about-webauthn-results-success = تم!
 about-webauthn-results-general-error = خطأ!
 
-## Labels
-
-
 ## Buttons
 
 about-webauthn-cancel-button = ألغِ
@@ -49,7 +46,7 @@ about-webauthn-auth-option-clientpin = رقم التعريف الشخصي للع
 # Shows when boolean value for an option is True. True should not be translated.
 about-webauthn-auth-option-true = صحيح
 # Shows when boolean value of an option is False. False should not be translated.
-about-webauthn-auth-option-false = خاطئ
+about-webauthn-auth-option-false = False
 # If the value is missing (null), it means a certain feature is not supported.
 about-webauthn-auth-option-null = غير مدعوم
 
@@ -68,14 +65,5 @@ about-webauthn-auth-info-versions = الإصدارات
 # Shows when boolean value for an info field is True. True should not be translated.
 about-webauthn-auth-info-true = صحيح
 # Shows when boolean value for an info field is False. False should not be translated.
-about-webauthn-auth-info-false = خاطئ
+about-webauthn-auth-info-false = False
 about-webauthn-auth-info-null = غير مدعوم
-
-## Bio enrollment sample feedbacks
-
-
-## Scan (e.g. of fingerprint) was off-center (e.g. too high, too left, etc.).
-
-
-##
-

@@ -12,38 +12,14 @@
 
 add_common_setup();
 
-add_task(async function testAppMenuHelpSubmenuItemIsHidden() {
-  ensureReportBrokenSitePreffedOn();
-  const menu = AppMenuHelpSubmenu();
-  await menu.open();
-  isMenuItemHidden(menu.reportBrokenSite);
-  await menu.close();
-
-  ensureReportBrokenSitePreffedOff();
-  await menu.open();
-  isMenuItemHidden(menu.reportBrokenSite);
-  await menu.close();
-
-  await BrowserTestUtils.withNewTab(REPORTABLE_PAGE_URL, async function () {
-    await menu.open();
-    isMenuItemHidden(menu.reportBrokenSite);
-    await menu.close();
-
-    ensureReportBrokenSitePreffedOn();
-    await menu.open();
-    isMenuItemHidden(menu.reportBrokenSite);
-    await menu.close();
-  });
-});
-
-add_task(async function testOtherMenus() {
+add_task(async function testMenus() {
   ensureReportBrokenSitePreffedOff();
 
   const appMenu = AppMenu();
   const menus = [appMenu, ProtectionsPanel(), HelpMenu()];
 
   async function forceMenuItemStateUpdate() {
-    window.ReportBrokenSite.enableOrDisableMenuitems(window);
+    ReportBrokenSite.enableOrDisableMenuitems(window);
 
     // the hidden/disabled state of all of the menuitems may not update until one
     // is rendered; then the related <command>'s state is propagated to them all.
@@ -101,6 +77,19 @@ add_task(async function testOtherMenus() {
       isMenuItemHidden(
         reportBrokenSite,
         `${menuDescription} option hidden again when pref toggled back off`
+      );
+    }
+  });
+
+  ensureReportBrokenSitePreffedOn();
+  ensureReportBrokenSiteDisabledByPolicy();
+
+  await BrowserTestUtils.withNewTab(REPORTABLE_PAGE_URL, async function () {
+    await forceMenuItemStateUpdate();
+    for (const { menuDescription, reportBrokenSite } of menus) {
+      isMenuItemHidden(
+        reportBrokenSite,
+        `${menuDescription} option hidden when disabled by DisableFeedbackCommands enterprise policy`
       );
     }
   });

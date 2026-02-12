@@ -15,7 +15,25 @@ webext-perms-header-with-perms = { $extension } gehitu? Hedapen honek ondorengo 
 webext-perms-header-unsigned = { $extension } gehitu? Hedapen hau egiaztatu gabe dago. Asmo txarreko hedapenek zure informazio pertsonala lapurtu edo zure ordenagailua arriskuan jar dezakete. Instalatu soilik iturburu fidagarrikoa bada.
 webext-perms-header-unsigned-with-perms = { $extension } gehitu? Hedapen hau egiaztatu gabe dago. Asmo txarreko hedapenek zure informazio pertsonala lapurtu edo zure ordenagailua arriskuan jar dezakete. Instalatu soilik iturburu fidagarrikoa bada. Hedapen honek ondorengo baimenak izango ditu:
 webext-perms-sideload-header = { $extension } gehitu da
+webext-perms-optional-perms-header2 = { $extension } hedapenak aparteko baimenak eskatzen ditu
 webext-perms-optional-perms-header = { $extension } hedapenak aparteko baimenak eskatzen ditu.
+webext-perms-header2 = Gehitu { $extension }
+webext-perms-list-intro-unsigned = Egiaztatu gabeko hedapen honek zure pribatutasuna arriskuan jarri eta zure gailua konprometi lezake. Iturburuaz fio bazara soilik gehitu.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Beharrezko baimenak:
+webext-perms-header-optional-settings = Aukerazko ezarpenak:
+webext-perms-header-update-required-perms = Beharrezko baimen berriak:
+webext-perms-header-optional-required-perms = Baimen berriak:
+webext-perms-header-data-collection-perms = Beharrezko datu-bilketa:
+webext-perms-header-data-collection-is-none = Datu-bilketa:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Beharrezko datu-bilketa berria:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Datu-bilketa berria:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Utzi
     .accesskey = U
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = { $extension } eguneratu egin da. Baimen berriak onartu behar dituzu eguneratutako bertsioa instala dadin. "Utzi" aukeratuz gero, hedapenaren uneko bertsioarekin jarraituko duzu.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = { $extension } eguneratu egin da. Baimen berriak onartu behar dituzu eguneratutako bertsioa instala dadin. "Utzi" aukeratuz gero, hedapenaren uneko bertsioarekin jarraituko duzu. Hedapen honek ondorengo baimenak izango ditu:
@@ -85,6 +106,29 @@ webext-perms-host-description-multiple-domains =
        *[other] { $domainCount } domeinuetako zure datuak atzitzea
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Garatzaileak dio hedapen honek ez duela daturik biltzen.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Garatzaileak dio hedapen honek ondorengoa biltzen duela: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Garatzaileak dio hedapenak ondorengoa bilduko duela: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = Garatzaileak dio hedapenak ondorengoa bildu nahi duela: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = { $extension } hedapenak ezarpen berriak behar ditu eguneratzeko
+webext-perms-update-list-intro-with-data-collection = Utzi zure uneko bertsioa eta ezarpenak mantentzeko, edo eguneratu bertsio berria eskuratu eta aldaketak onartzeko.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } gehigarriak aparteko ezarpenak eskatzen ditu
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } gehigarriak aparteko datu-bilketa eskatzen du
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -118,3 +162,8 @@ webext-site-perms-header-unsigned-with-perms = { $extension } gehitu? Hedapen ha
 
 webext-site-perms-midi = MIDI gailuak atzitzea
 webext-site-perms-midi-sysex = SysEx euskarria duten MIDI gailuak atzitzea
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Zure kolore-konbinazio itxura ezabatu egin da.</b> { -brand-shorter-name }(e)k bere kolore-konbinazioen bilduma eguneratu du. Azken bertsioak gehigarrien gunean aurki ditzakezu.
+webext-colorway-theme-migration-notification-button = Eskuratu eguneratutako kolore-konbinazioak

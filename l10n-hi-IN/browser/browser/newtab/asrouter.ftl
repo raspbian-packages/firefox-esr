@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } उपयोग्कत्तायें
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = अपने बुकमार्क हर जगह सिंक करें।
 cfr-doorhanger-bookmark-fxa-body = शानदार खोज! अब आपके मोबाइल उपकरणों पर इस बुकमार्क को छोड़ा जाएगा। एक { -fxaccount-brand-name } के साथ आरंभ करें।
@@ -90,9 +90,6 @@ cfr-doorhanger-milestone-ok-button = सभी देखें
 cfr-doorhanger-milestone-close-button = बंद करें
     .accesskey = C
 
-## DOH Message
-
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-primary-button = अभी अपडेट करें
@@ -106,69 +103,3 @@ cfr-doorhanger-video-support-primary-button = अभी अपडेट कर�
 
 spotlight-public-wifi-vpn-link = अभी नहीं
     .accesskey = N
-
-## Emotive Continuous Onboarding
-
-
-## MR2022 Background Update Windows native toast notification strings.
-##
-## These strings will be displayed by the Windows operating system in
-## a native toast, like:
-##
-## <b>multi-line title</b>
-## multi-line text
-## <img>
-## [ primary button ] [ secondary button ]
-##
-## The button labels are fitted into narrow fixed-width buttons by
-## Windows and therefore must be as narrow as possible.
-
-
-## Firefox View CFR
-
-
-## Firefox View Spotlight
-
-
-## Colorways expiry reminder CFR
-
-
-## Cookie Banner Handling CFR
-
-
-## These strings are used in the Fox doodle Pin/set default spotlights
-
-
-## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
-
-
-## FxA sync CFR
-
-
-## Device Migration FxA Spotlight
-
-
-## Set as Default PDF Reader Infobar
-
-
-## Launch on login infobar notification
-
-
-## These string variants are used when the “launch on login” infobar
-## notification is displayed for a second time.
-
-
-## Tail Fox Set Default Spotlight
-
-
-## Root Certificate Succession Infobar
-
-
-## Root Certificate Succession Windows Background Notification
-
-
-## FxA Menu Message variants
-
-
-## Multi-CTA Fox Doodle Spotlight
-

@@ -15,7 +15,25 @@ webext-perms-header-with-perms = Дадаць { $extension }? Гэта пашы�
 webext-perms-header-unsigned = Дадаць { $extension }? Гэта пашырэнне неправерана. Зламысныя пашырэнні могуць выкрадаць вашу асабістую інфармацыю або кампраметаваць ваш камп'ютар. Дадавайце толькі калі давяраеце яго паходжанню.
 webext-perms-header-unsigned-with-perms = Дадаць { $extension }? Гэта пашырэнне неправерана. Зламысныя пашырэнні могуць выкрадаць вашу асабістую інфармацыю або кампраметаваць ваш камп'ютар. Дадавайце толькі калі давяраеце яго паходжанню. Гэтае пашырэнне будзе мець дазвол на:
 webext-perms-sideload-header = { $extension } дададзена
+webext-perms-optional-perms-header2 = { $extension } запытвае дадатковыя дазволы
 webext-perms-optional-perms-header = { $extension } запытвае дадатковыя дазволы.
+webext-perms-header2 = Дадаць { $extension }
+webext-perms-list-intro-unsigned = Гэта неправеранае пашырэнне можа паставіць пад пагрозу вашу прыватнасць або скампраметаваць вашу прыладу. Дадавайце яго толькі ў тым выпадку, калі давяраеце крыніцы.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Неабходныя дазволы:
+webext-perms-header-optional-settings = Неабавязковыя налады:
+webext-perms-header-update-required-perms = Новыя неабходныя дазволы:
+webext-perms-header-optional-required-perms = Новыя дазволы:
+webext-perms-header-data-collection-perms = Неабходны збор дадзеных:
+webext-perms-header-data-collection-is-none = Збор дадзеных:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Новы неабходны збор дадзеных:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Новы збор дадзеных:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Скасаваць
     .accesskey = С
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = { $extension } было абноўлена. Вы мусіце ўхваліць новыя дазволы перад устаноўкай абноўленай версіі. Выбраўшы «Скасаваць», вы захаваеце цяперашнюю версію пашырэння.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = { $extension } было абноўлена. Вы павінны ўхваліць запыт на новыя правы перад устаноўкай абноўленай версіі. Выбраўшы “Адмена”, вы захаваеце цяперашнюю версію пашырэння. Гэтае пашырэнне будзе мець дазвол на:
@@ -88,6 +109,29 @@ webext-perms-host-description-multiple-domains =
        *[many] Доступ да звестак для сайтаў у { $domainCount } даменах
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Распрацоўшчык сцвярджае, што гэта пашырэнне не патрабуе збору дадзеных.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Распрацоўшчык сцвярджае, што гэта пашырэнне збірае: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Распрацоўшчык сцвярджае, што пашырэнне будзе збіраць: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = Распрацоўшчык сцвярджае, што пашырэнне хоча збіраць: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = Для абнаўлення пашырэння { $extension } патрабуюцца новыя налады
+webext-perms-update-list-intro-with-data-collection = Скасаваць, каб захаваць бягучую версію і налады, ці абнавіць, каб атрымаць новую версію і зацвердзіць змены.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } запытвае дадатковыя налады
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } запытвае дадатковы збор дадзеных
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -121,3 +165,8 @@ webext-site-perms-header-unsigned-with-perms = Дадаць { $extension }? Гэ
 
 webext-site-perms-midi = Доступ да прылад MIDI
 webext-site-perms-midi-sysex = Доступ да прылад MIDI з падтрымкаю SysEx
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Ваша тэма расфарбоўкі была выдалена.</b> { -brand-shorter-name } абнавіў сваю калекцыю колеравых гам. Вы можаце знайсці апошнія версіі на сайце дадаткаў.
+webext-colorway-theme-migration-notification-button = Атрымаць абноўленыя расфарбоўкі

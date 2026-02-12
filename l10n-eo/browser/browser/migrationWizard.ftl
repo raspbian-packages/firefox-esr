@@ -196,6 +196,14 @@ migration-safari-password-import-step1 = En Safari, malfermu la menuon “Safari
 migration-safari-password-import-step2 = Elektu la butonon <img data-l10n-name="safari-icon-3dots"/> kaj “Elporti ĉiujn pasvortojn”
 migration-safari-password-import-step3 = Konservi la dosieron kun pasvortoj
 migration-safari-password-import-step4 = Malsupre, uzu “Elekti dosieron” por elekti la dosieron kun pasvortoj, kiun vi konservis
+migration-chrome-windows-password-import-header = Kiel enporti pasvortojn el Chrome
+migration-chrome-windows-password-import-steps-header = En Chrome:
+migration-chrome-windows-password-import-step1 = Malfermu la ĉefan menuon <img data-l10n-name="chrome-icon-3dots"/> kaj iru al Pasvortoj kaj aŭtomata plenigu > Administranto de pasvortoj de Google.
+migration-chrome-windows-password-import-step2 = Elektu “Agoroj” en la menuo.
+migration-chrome-windows-password-import-step3 = Elektu “Elŝuti dosieron” kaj konservu ĝin en via aparato.
+migration-chrome-windows-password-import-step4 = Revenu ĉi tien kaj elektu “Elekti dosieron”  por fini la enporton.
+migration-manual-password-import-skip-button = Ignori
+migration-manual-password-import-select-button = Elekti dosieron
 migration-safari-password-import-skip-button = Ignori
 migration-safari-password-import-select-button = Elekti dosieron
 # Shown in the migration wizard after importing bookmarks from another
@@ -246,7 +254,7 @@ migration-wizard-progress-extensions-support-link = Pli da informo pri kiel { -b
 # Shown in the migration wizard if there are no matched extensions
 # on import from supported browsers.
 migration-wizard-progress-no-matched-extensions = Neniu identigita etendaĵo
-migration-wizard-progress-extensions-addons-link = Esplori etendaĵoj por { -brand-short-name }
+migration-wizard-progress-extensions-addons-link = Esplori etendaĵojn por { -brand-short-name }
 
 ##
 

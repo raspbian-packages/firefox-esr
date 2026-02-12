@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Expiration / Etate maxime
 storage-table-headers-cookies-size = Dimension
 storage-table-headers-cookies-last-accessed = Ultime accesso
 storage-table-headers-cookies-creation-time = Create
+storage-table-headers-cookies-update-time = Actualisate
 storage-table-headers-cache-status = Stato
 storage-table-headers-extension-storage-area = Area de immagazinage
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = Le base de datos “{ $dbName }” essera delite po
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = Le base de datos “{ $dbName }” non ha potite esser delite.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = Le cookie non pote esser create: “{ $errorString }”.
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = Le cookie non pote esser actualisate: “{ $errorString }”.

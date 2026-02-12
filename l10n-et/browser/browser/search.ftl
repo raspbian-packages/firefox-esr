@@ -34,7 +34,10 @@ removed-search-engine-message = <strong>Vaikeotsingumootorit on muudetud</strong
 removed-search-engine-message2 = <strong>Vaikeotsingumootorit on muudetud</strong>. Otsingumootor { $oldEngine } ei ole enam { -brand-short-name }is vaikeotsingumootorina saadaval. Sinu uueks vaikeotsingumootoriks on { $newEngine }. Teisele vaikeotsingumootorile vahetamiseks ava sätted.
 remove-search-engine-button = Sobib
 
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
+## The following strings are used as input labels.
 
+add-engine-window =
+    .title = Otsingumootori lisamine
+    .style = min-width: 32em;
+add-engine-button = Lisa kohandatud otsingumootor
+add-engine-name = Otsingumootori nimi

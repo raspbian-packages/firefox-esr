@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Przywróć zamknięte karty
         }
     .accesskey = P
+toolbar-context-turn-on-vertical-tabs =
+    .label = Włącz pionowe karty
+toolbar-context-turn-off-vertical-tabs =
+    .label = Wyłącz pionowe karty
+toolbar-context-customize-sidebar =
+    .label = Dostosuj panel boczny
 toolbar-context-menu-manage-extension =
     .label = Zarządzaj rozszerzeniem
     .accesskey = Z
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Wyświetlaj panel po rozpoczęciu pobierania
     .accesskey = W
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Zawsze wyświetlaj na pasku narzędzi
+    .accesskey = Z
 toolbar-context-menu-remove-from-toolbar =
     .label = Usuń z paska narzędzi
     .accesskey = n

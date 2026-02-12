@@ -71,7 +71,7 @@ detail-private-browsing-off =
     .label = Չթույլատրել
     .tooltiptext = Անջատել գաղտնի դիտարկումում
 detail-home =
-    .label = Կայքէջը
+    .label = Տնէջ
 detail-home-value =
     .value = { detail-home.label }
 detail-repository =
@@ -85,18 +85,18 @@ detail-check-for-updates =
 detail-show-preferences =
     .label =
         { PLATFORM() ->
-            [windows] Կարգավորումներ
-           *[other] Նախընտրանքներ
+            [windows] Ընտրանքներ
+           *[other] Նախապատվություններ
         }
     .accesskey =
         { PLATFORM() ->
-            [windows] Կ
+            [windows] Ը
            *[other] Ն
         }
     .tooltiptext =
         { PLATFORM() ->
-            [windows] Կարգավորել այս հավելումը
-           *[other] Փոփոխել այս հավելման նախընտրանքները
+            [windows] Փոխել այս հավելման ընտրանքները
+           *[other] Փոխել այս հավելման նախապատվությունները
         }
 detail-rating =
     .value = Վարկանիշ
@@ -217,7 +217,7 @@ shortcuts-input =
     .placeholder = Մուտքագրեք դյուրացնում
 shortcuts-browserAction2 = Ակտիվացնել գործիքագոտու կոճակը
 shortcuts-pageAction = Ակտիվացրեք էջի գործողությունը
-shortcuts-sidebarAction = Բացել/Փակել կողային վահանակը
+shortcuts-sidebarAction = Բացել/Փակել կողագոտին
 shortcuts-modifier-mac = Ներառել Ctrl, Alt, կամ ⌘
 shortcuts-modifier-other = Ներառեք Ctrl  կամ  Alt
 shortcuts-invalid = Անվավեր համադրություն
@@ -254,11 +254,10 @@ header-back-button =
 # Explanatory introduction to the list of recommended add-ons. The action word
 # ("recommends") in the final sentence is a link to external documentation.
 discopane-intro =
-    Ընդլայնումները և հիմնապատկերները նման են ձեր դիտարկիչի գործադիրներին և դրանք ձեզ թույլատրում են
-    պաշտպանել գաղտնաբառերը, ներբեռնել տեսանյութեր, գտնել գործարքներ, արգելափակել նյարդայնացնող գովազդները, փոխել
-    ձեր զննարկչի տեսքը և ավելին։ Այս փոքր ծրագրային ծրագրերը 
-    հաճախ զարգացվել են երրորդ կողմի կողմից։ Ահա ընտրանք { -brand-product-name }
-    <a data-l10n-name="learn-more-trigger">խորհուրդ է տրվում</a> բացառիկ
+    Ընդլայնումները և ոճերը դա ձեր դիտարկիչի հավելվածներն են և դրանք ձեզ հնարավորություն են տալիս
+    պաշտպանել գաղտնաբառերը, ներբեռնել տեսանյութեր, գտնել գործարքներ, արգելափակել նյարդայնացնող գովազդները, փոխել ձեր դիտարկիչի տեսքը և ավելին։ Այս փոքր ծրագրաշարային ծրագրերը 
+    հաճախ զարգացվել են երրորդ կողմի կողմից։ Ահա դրանցից մի քանիսը, որոնք { -brand-product-name }
+    <a data-l10n-name="learn-more-trigger">խորհուրդ է տրվում</a>՝ բացառիկ
     անվտանգության, արդյունավետության և գործառություն համար։
 # Notice to make user aware that the recommendations are personalized.
 discopane-notice-recommendations = Այս առաջարկներից մի քանիսը անհատականացված են։ Դրանք հիմնված են ուրիշների վրա ձեր սահմանած ընդարձակումների, հատկագրի կարգավորումների և օգտագործման վիճակագրությունից։
@@ -286,6 +285,14 @@ find-more-themes = Գտնել ավելի շատ ոճեր
 # used for screen readers.
 addon-options-button =
     .aria-label = Լրացուցիչ ընտրանքներ
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+# We hard code "Firefox" because we do not want to imply that a Firefox fork is
+# making this recommendation.
+discopane-intro3 =
+    Ընդլայնումները և ոճերը հնարավորություն են տալիս ձեզ հարմարեցնել { -brand-product-name }-ը: Դրանք կարող են խթանել անվտանգությունը, կատարելագործել արտադրողականությունը, լավարկել մեդիան, փոխել { -brand-product-name }-ի տեսքը և շատ ավելին: Այս փոքրիկ ծրագրաշարային ծրագրերը հաճախ ստեղծվել են երրորդ կողմից: Ահա դրանցից մի քանիսը, որոնք { -brand-product-name }
+    <a data-l10n-name="learn-more-trigger">խորհուրդ է տրվում</a>՝ բացառիկ
+    անվտանգության, արդյունավետության և գործառություն համար։
 
 ## Add-on actions
 
@@ -302,7 +309,7 @@ extension-enable-addon-button-label =
 preferences-addon-button =
     { PLATFORM() ->
         [windows] Ընտրանքներ
-       *[other] Նախընտրություններ
+       *[other] Նախապատվություններ
     }
 details-addon-button = Մանրամասներ
 release-notes-addon-button = Թողարկման նշումներ
@@ -331,7 +338,7 @@ install-postponed-message = Այս ընդլայնումը կթարմացվի, ե
 # Message for add-ons with a staged pending update.
 install-postponed-message2 =
     .message = Այս ընդլայնումը կթարմացվի, երբ { -brand-short-name }-ը վերամեկնարկի:
-install-postponed-button = Թարմացնել հիմա
+install-postponed-button = Արդիացնել
 # The average rating that the add-on has received.
 # Variables:
 #   $rating (number) - A number between 0 and 5. The translation should show at most one digit after the comma.
@@ -372,6 +379,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = Թույլատրված է գաղտնի պատուհաններում
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = Թույլատրված է գաղտնի պատուհաններում
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -406,6 +417,10 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = Այս ընդլայնումը գնահատվել է՝ անվտանգության և արտադրողականության մեր չափանիշներին համապատասխանելու համար
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = Պաշտոնական ընդլայնում, հավաքված Mozilla-ի կողմից: Համապատասխանում է անվտանգության և արտադրողականության չափանիշներին
 
 ##
 
@@ -427,14 +442,14 @@ extension-heading = Կառավարեք ձեր ընդարձակումները
 theme-heading = Կառավարեք ձեր հիմնապատկերները
 plugin-heading = Կառավարեք ձեր ընդլայնումները
 dictionary-heading = Կառավարեք ձեր բառարանները
-locale-heading = Կառավարեք ձեր լեզուները
-updates-heading = Կառավարեք ձեր թարմացումները
-sitepermission-heading = Կառավարեք կայքի թույլտվությունները
+locale-heading = Կառավարել Ձեր լեզուները
+updates-heading = Կառավարել Ձեր թարմացումները
+sitepermission-heading = Կառավարել կայքի Ձեր թույլտվությունները
 discover-heading = Անհատականացրեք ձեր { -brand-short-name }-ը
 shortcuts-heading = Կառավարել ընդլայնման դյուրացումները
 default-heading-search-label = Ավելի շատ հավելումներ
 addons-heading-search-input =
-    .placeholder = Որոնել  addons.mozilla.org֊-ում
+    .placeholder = Որոնել addons.mozilla.org֊ում
 addon-page-options-button =
     .title = Գործիքներ բոլոր հավելումների համար
 
@@ -459,12 +474,8 @@ details-notification-unsigned2 =
     .message = { $name }-ը չէր կարող վավերացվել { -brand-short-name }-ում օգտագործման համար։ Կատարվել է նախազգուշացմամբ։
 details-notification-unsigned-link = Ավելի շատ տեղեկություն
 details-notification-blocked = { $name }-ը անջատվել է` անվտանգություն կամ կայունություն ապահովելու նպատակով:
-details-notification-blocked2 =
-    .message = { $name }-ը անջատվել է` անվտանգություն կամ կայունություն ապահովելու նպատակով:
 details-notification-blocked-link = Ավելի շատ տեղեկություն
 details-notification-softblocked = Հայտնի է, որ { $name }-ը պատճառում է ապահովության կամ կայունության խնդիրներ:
-details-notification-softblocked2 =
-    .message = Հայտնի է, որ { $name }-ը պատճառում է ապահովության կամ կայունության խնդիրներ:
 details-notification-softblocked-link = Ավելի շատ տեղեկություն
 details-notification-gmp-pending = { $name }-ը շուտով կտեղադրվի:
 details-notification-gmp-pending2 =

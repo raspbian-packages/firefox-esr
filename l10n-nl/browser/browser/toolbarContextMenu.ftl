@@ -30,6 +30,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Gesloten tabbladen opnieuw openen
         }
     .accesskey = o
+toolbar-context-turn-on-vertical-tabs =
+    .label = Verticale tabbladen inschakelen
+toolbar-context-turn-off-vertical-tabs =
+    .label = Verticale tabbladen uitschakelen
+toolbar-context-customize-sidebar =
+    .label = Zijbalk aanpassen
 toolbar-context-menu-manage-extension =
     .label = Extensie beheren
     .accesskey = E
@@ -54,6 +60,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Paneel tonen wanneer downloaden begint
     .accesskey = t
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Altijd in werkbalk tonen
+    .accesskey = A
 toolbar-context-menu-remove-from-toolbar =
     .label = Verwijderen van werkbalk
     .accesskey = w

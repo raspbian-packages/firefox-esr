@@ -38,6 +38,16 @@ options-collapse-attrs-tooltip =
 options-inspector-draggable-properties-label = Klik dan seret untuk mengedit nilai ukuran
 options-inspector-draggable-properties-tooltip =
     .title = Klik dan seret untuk mengedit nilai ukuran dalam tampilan rule inspektur.
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Gunakan sorotan lebih sederhana dengan prefers-reduced-motion
+options-inspector-simplified-highlighters-tooltip =
+    .title = Mengaktifkan sorotan sederhana saat prefers-reduced-motion aktif. Menggunakan garis, bukan blok warna, untuk menghindari efek berkedip.
+# The label for the checkbox option to make the Enter key move the focus to the next input
+# when editing a property name or value in the Inspector rules view
+options-inspector-rules-focus-next-on-enter-label = Fokuskan ke masukan berikutnya pada <kbd>Enter</kbd>
+options-inspector-rules-focus-next-on-enter-tooltip =
+    .title = Saat diaktifkan, menekan tombol Enter saat mengedit selektor, nama atau nilai properti akan memindahkan fokus ke input berikutnya.
 
 ## "Default Color Unit" options for the Inspector
 
@@ -53,6 +63,10 @@ options-default-color-unit-name = Nama Warna
 
 # The heading
 options-webconsole-label = Konsol Web
+# The label for the checkbox that toggle whether the Split console is enabled
+options-webconsole-split-console-label = Aktifkan Konsol Pemisah
+options-webconsole-split-console-tooltip =
+    .title = Buka Konsol Belah dengan Tombol Escape
 
 ## Style Editor section
 
@@ -113,6 +127,10 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Aktifkan pendebugan jarak jauh
 options-enable-remote-tooltip2 =
     .title = Mengaktifkan opsi ini akan memungkinkan untuk mendebug instans peramban ini dari jarak jauh
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Pakai tombol F12 untuk membuka atau menutup DevTools
+options-enable-f12-tooltip =
+    .title = Mengaktifkan opsi ini akan mengikat kunci F12 untuk membuka atau menutup kotak alat DevTools
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Aktifkan pemformat khusus
 options-enable-custom-formatters-tooltip =
@@ -125,5 +143,5 @@ options-enable-service-workers-http-tooltip =
 options-source-maps-label = Aktifkan Peta Sumber
 options-source-maps-tooltip =
     .title = Jika opsi ini diaktifkan, kode sumber akan dipetakan dalam alat.
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * Hanya sesi ini saja, memulai ulang laman

@@ -77,7 +77,7 @@ fp-certerror-return-to-previous-page-recommended-button = Назад (реком
 # Variables:
 #   $hostname (String) - Hostname of the website to which the user was trying to connect.
 #   $validHosts (String) - Valid hostnames.
-fp-certerror-bad-domain-why-dangerous-body = Сайт налаштовано на дозвіл лише безпечних з'єднань, але виникла проблема із сертифікатом сайту. Можливо, зловмисник намагається підмінити сайт. Сайти використовують сертифікати, видані центром сертифікації, щоб підтвердити, що вони справді ті, за кого себе видають. { -brand-short-name } не довіряє цьому сайту, оскільки його сертифікат недійсний для { $hostname }. Сертифікат дійсний лише для: { $validHosts }.
+fp-certerror-bad-domain-why-dangerous-body = Сайт налаштовано на дозвіл лише захищених з'єднань, але виникла проблема із сертифікатом сайту. Можливо, зловмисник намагається підмінити сайт. Сайти використовують сертифікати, видані центром сертифікації, щоб підтвердити, що вони справді ті, за кого себе видають. { -brand-short-name } не довіряє цьому сайту, оскільки його сертифікат недійсний для { $hostname }. Сертифікат дійсний лише для: { $validHosts }.
 # This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
 fp-certerror-bad-domain-what-can-you-do-body = Швидше за все, нічого, тому що ймовірно проблема з самим сайтом. Сайти використовують сертифікати, видані центром сертифікації, щоб підтвердити, що вони справді ті, за кого себе видають. Але якщо ви працюєте в корпоративній мережі, ваша служба підтримки може мати більше інформації. Якщо ви використовуєте антивірусне програмне забезпечення, спробуйте знайти потенційні конфлікти чи відомі проблеми.
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
@@ -111,6 +111,26 @@ fp-learn-more-about-secure-connection-failures = Докладніше про з�
 fp-learn-more-about-cert-issues = Докладніше про такі проблеми із сертифікатами
 fp-learn-more-about-time-related-errors = Докладніше про усунення помилок, пов'язаних із часом
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, було відкликано, і він більше не є довіреним.
+cert-error-bad-signature = { -brand-short-name } заблокував відвідування цього сайту, оскільки підпис на сертифікаті, наданому для { $hostname }, недійсний.
+cert-error-key-pinning-failure = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, використовує інший відкритий ключ, ніж очікувалося.
+cert-error-bad-der = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, не закодовано належним чином.
+cert-error-cert-not-in-name-space = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, не відповідає обмеженням імені сертифіката, який його видав.
+cert-error-inadequate-cert-type = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, не дозволено використовувати вебсерверу.
+cert-error-path-len-constraint-invalid = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, містить забагато проміжних сертифікатів на шляху до кореневого сертифіката.
+cert-error-invalid-key = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, має недійсний ключ. Найімовірніше, він замалий, щоб бути безпечним.
+cert-error-unknown-critical-extension = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, містить непідтримуване критичне розширення.
+cert-error-extension-value-invalid = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, містить недійсне розширення.
+cert-error-untrusted-issuer = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, виданий центром сертифікації, який більше не вважається довіреним.
+cert-error-untrusted-cert = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, позначено як недовірений.
+cert-error-invalid-integer-encoding = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, містить недійсне кодування цілого числа. Зазвичай причинами цього є від'ємні значення серійних номерів, від'ємні значення RSA moduli, а також кодування, що є довшими, ніж необхідно.
+cert-error-unsupported-keyalg = { -brand-short-name } заблокував відвідування цього сайту, оскільки сертифікат, наданий для { $hostname }, має непідтримуваний тип ключа.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } заблокував відвідування цього сайту, оскільки центр сертифікації, який видав сертифікат, наданий для { $hostname }, більше не вважається довіреним.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } заблокував відвідування цього сайту, оскільки алгоритм підпису сертифіката, наданого для { $hostname }, не відповідає полю алгоритму підпису.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = Не вдалося з'єднатися
@@ -118,6 +138,7 @@ deniedPortAccess-title = Звернення до цієї адреси забо�
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Гм. Ніяк не вдається знайти цей сайт.
+internet-connection-offline-title = Схоже, виникла проблема з вашим інтернет-з'єднанням.
 dns-not-found-trr-only-title2 = Ймовірна загроза безпеки під час перегляду на цьому домені
 dns-not-found-native-fallback-title2 = Ймовірна загроза безпеки під час перегляду на цьому домені
 fileNotFound-title = Файл не знайдено
@@ -134,22 +155,23 @@ contentEncodingError-title = Помилка кодування вмісту
 unsafeContentType-title = Небезпечний тип файлу
 netReset-title = З'єднання скинуто
 netTimeout-title = Перевищено термін очікування з'єднання
+httpErrorPage-title = Схоже, на цьому сайті виникла проблема
 serverError-title = Схоже, на цьому сайті виникла проблема
 unknownProtocolFound-title = Незрозуміла адреса
 proxyConnectFailure-title = Проксі-сервер відмовляється приймати з'єднання
 proxyResolveFailure-title = Неможливо знайти проксі-сервер
 redirectLoop-title = Неналежне перенаправлення на сторінці
 unknownSocketType-title = Неочікувана відповідь сервера
-nssFailure2-title = Не вдалося встановити безпечне з'єднання
+nssFailure2-title = Не вдалося встановити захищене з'єднання
 csp-xfo-error-title = { -brand-short-name } не може відкрити цю сторінку
 corruptedContentError-title = Помилка пошкодженого вмісту
-sslv3Used-title = Неможливо безпечно з'єднатися
+sslv3Used-title = Не вдалося встановити захищене з'єднання
 inadequateSecurityError-title = Ваше з'єднання не захищене
 blockedByPolicy-title = Заблокована сторінка
 clockSkewError-title = Годинник вашого комп'ютера налаштовано неправильно
 networkProtocolError-title = Помилка мережевого протоколу
-nssBadCert-title = Обережно: Попереду ймовірна загроза безпеки
-nssBadCert-sts-title = З'єднання не встановлено: Ймовірна загроза безпеки
+nssBadCert-title = Обережно: попереду ймовірна загроза безпеці
+nssBadCert-sts-title = З'єднання не встановлено: ймовірна загроза безпеці
 certerror-mitm-title = Програмне забезпечення не дозволяє { -brand-short-name } безпечно з'єднатися з цим сайтом
 
 ## Felt Privacy V1 Strings

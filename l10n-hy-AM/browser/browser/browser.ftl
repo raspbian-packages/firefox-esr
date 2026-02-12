@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -19,8 +16,8 @@
 browser-main-window-window-titles =
     .data-title-default = { -brand-full-name }
     .data-title-private = { -brand-full-name } գաղտնի դիտարկում
-    .data-content-title-default = { $content-title }. { -brand-full-name }
-    .data-content-title-private = { $content-title }. { -brand-full-name } գաղտնի դիտարկում
+    .data-content-title-default = { $content-title }․ { -brand-full-name }
+    .data-content-title-private = { $content-title }․ { -brand-full-name } գաղտնի դիտարկում
 # These are the default window titles on macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -40,9 +37,9 @@ browser-main-window-window-titles =
 #  $content-title (String): the title of the web content.
 browser-main-window-mac-window-titles =
     .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name }. Մասնավոր զննարկում
+    .data-title-private = { -brand-full-name }․ գաղտնի դիտարկում
     .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title }. Մասնավոր զննարկում
+    .data-content-title-private = { $content-title }․ գաղտնի դիտարկում
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
@@ -51,6 +48,78 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } գաղտնի դիտարկում
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } գաղտնի դիտարկում
+    .data-title-default-with-profile = { $profile-name }․ { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name }․ { -brand-full-name } գաղտնի դիտարկում
+    .data-content-title-default = { $content-title }․ { -brand-full-name }
+    .data-content-title-private = { $content-title }․ { -brand-full-name } գաղտնի դիտարկում
+    .data-content-title-default-with-profile = { $content-title }․ { $profile-name }․ { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title }․ { $profile-name }․ { -brand-full-name } գաղտնի դիտարկում
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name }․ գաղտնի դիտարկում
+    .data-title-default-with-profile = { $profile-name }․ { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name }․ { -brand-full-name } գաղտնի դիտարկում
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title }․ գաղտնի դիտարկում
+    .data-content-title-default-with-profile = { $content-title }․ { $profile-name }
+    .data-content-title-private-with-profile = { $content-title }․ { $profile-name }․ գաղտնի դիտարկում
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
+browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name }․ գաղտնի դիտարկում
+       *[other] { -brand-full-name } գաղտնի դիտարկում
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = Գաղտնի դիտարկում
 
 ##
 
@@ -68,21 +137,25 @@ urlbar-midi-notification-anchor =
 urlbar-eme-notification-anchor =
     .tooltiptext = Կառավարել DRM ծրագրաշարի օգտագործումը
 urlbar-web-authn-anchor =
-    .tooltiptext = Բացել վեբ իսկորոշման փեղկը
+    .tooltiptext = Բացել վեբ վավերացման վահանակը
 urlbar-canvas-notification-anchor =
     .tooltiptext = Կառավարել canvas դուրս բերման թույլտվությունները
 urlbar-web-rtc-share-microphone-notification-anchor =
-    .tooltiptext = Կառավարել Ձեր խոսափողի համօգտագործումն այս կայքով
+    .tooltiptext = Կառավարեք Ձեր խոսափողի համօգտագործումը կայքի հետ
 urlbar-default-notification-anchor =
     .tooltiptext = Բացել հաղորդագրության վահանակը
 urlbar-geolocation-notification-anchor =
     .tooltiptext = Բացել տեղադրության հարցման վահանակը
+urlbar-localhost-notification-anchor =
+    .tooltiptext = Կառավարեք տեղական սարքի հասանելիությունն այս կայքի համար
+urlbar-local-network-notification-anchor =
+    .tooltiptext = Կառավարեք Ձեր տեղական ցանցի հասանելիության համօգտագործումն այս կայքի հետ
 urlbar-xr-notification-anchor =
     .tooltiptext = Բացեք թվացյալ իրականության թույլտվության վահանակը
 urlbar-storage-access-anchor =
     .tooltiptext = Բացեք զննող գործունեության թույլտվության վահանակը
 urlbar-web-rtc-share-screen-notification-anchor =
-    .tooltiptext = Կառավարել պատուհանների կամ էկրանի համօգտագործումը այս կայքի հետ
+    .tooltiptext = Կառավարեք Ձեր պատուհանների կամ էկրանի համօգտագործումը կայքի հետ
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = Բացել անցանց պահեստի հաղորդագրության վահանակը
 urlbar-password-notification-anchor =
@@ -90,11 +163,11 @@ urlbar-password-notification-anchor =
 urlbar-plugins-notification-anchor =
     .tooltiptext = Կառավարել բաղադրիչների օգտագործումը
 urlbar-web-rtc-share-devices-notification-anchor =
-    .tooltiptext = Կառավարել Ձեր տեսախցիկի և/կամ խոսափողի համօգտագործումը այս կայքով
+    .tooltiptext = Կառավարեք Ձեր տեսախցիկի և/կամ խոսափողի համօգտագործումը կայքի հետ
 # "Speakers" is used in a general sense that might include headphones or
 # another audio output connection.
 urlbar-web-rtc-share-speaker-notification-anchor =
-    .tooltiptext = Կառավարեք  բարձրախոսի համօգտագործումը այս կայքի հետ
+    .tooltiptext = Կառավարեք բարձրախոսի համօգտագործումը կայքի հետ
 urlbar-autoplay-notification-anchor =
     .tooltiptext = Բացել ինքնանվագարկման վահանակը
 urlbar-persistent-storage-notification-anchor =
@@ -123,6 +196,35 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = Ստանալ օգնություն
     .accesskey = h
+urlbar-result-menu-dismiss-suggestion =
+    .label = Մերժել այս առաջարկը
+    .accesskey = D
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = Իմանալ ավելին { -firefox-suggest-brand-name }-ի մասին
+    .accesskey = L
+urlbar-result-menu-manage-firefox-suggest =
+    .label = Կառավարել { -firefox-suggest-brand-name }-ը
+    .accesskey = M
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = Հաղորդել անճշտ գտնվելու վայրի մասին
+urlbar-result-menu-show-less-frequently =
+    .label = Ցուցադրել հազվադեպ
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = Չցուցադրել եղանակի առաջարկներ
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = Բացել ցանկը
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = Շնորհակալություն Ձեր արձագանքի համար:
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = Շնորհակալություն արձագանքի համար: Դուք այլևս չեք տեսնի թրենդային որոնումներ:
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -148,6 +250,10 @@ urlbar-search-mode-actions = Գործողություններ
 
 urlbar-geolocation-blocked =
     .tooltiptext = Դուք արգելափակել եք տեղադրության տեղեկությունը այս կայքի համար:
+urlbar-localhost-blocked =
+    .tooltiptext = Դուք արգելափակել եք ծանուցումները այս կայքի համար:
+urlbar-local-network-blocked =
+    .tooltiptext = Դուք արգելափակել եք ծանուցումները այս կայքի համար:
 urlbar-xr-blocked =
     .tooltiptext = Դուք արգելափակել եք թվացյալ իրականության սարքի մատչումը այս կայքի համար։
 urlbar-web-notifications-blocked =
@@ -254,10 +360,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Դիտել հավելումները
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = ընդլայնումներ, ոճեր, հավելումներ, հավելումներ
 quickactions-cmd-addons2 = Հավելումներ
 # Opens the bookmarks library window
-quickactions-bookmarks2 = Կառավարեք էջանիշները
+quickactions-bookmarks2 = Կառավարել էջանիշները
 quickactions-cmd-bookmarks = Էջանիշեր
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = Մաքրել վերջին պատմությունը
+quickactions-cmd-clearrecenthistory = մաքրել վերջին պատմությունը, պատմություն
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Մաքրել պատմությունը
 quickactions-cmd-clearhistory = մաքրել պատմությունը
@@ -266,12 +379,23 @@ quickactions-downloads2 = Ցուցադրել ներբեռնումները
 quickactions-cmd-downloads = ներբեռնումներ
 # Opens about:addons page in the extensions section
 quickactions-extensions = Կառավարել ընդլայնումները
+quickactions-cmd-extensions2 = ընդլայնումներ, հավելումներ
 quickactions-cmd-extensions = ընդլայնումներ
+# Opens Firefox View
+quickactions-firefoxview = Բացել { -firefoxview-brand-name }ը
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = բացել { -firefoxview-brand-name }, { -firefoxview-brand-name }-ը, բացելու տեսք, տեսք
+# Opens SUMO home page
+quickactions-help = { -brand-product-name }-ի օգնություն
+quickactions-cmd-help = օգնություն, աջակցում
 # Opens the devtools web inspector
 quickactions-inspector2 = Բացել Մշակողի գործիքները
+quickactions-cmd-inspector2 = տեսուչ, մշակողների գործիքներ, մշակողների գործիքներ
 quickactions-cmd-inspector = Զննիչ, մշակման գործիքներ
 # Opens about:logins
-quickactions-logins2 = Կառավարեք գաղտնաբառերը
+quickactions-logins2 = Կառավարել գաղտնաբառերը
 quickactions-cmd-logins = մուտքագրումներ, գաղտնաբառեր
 # Opens about:addons page in the plugins section
 quickactions-plugins = Կարգավորել բաղադրիչները
@@ -281,7 +405,7 @@ quickactions-print2 = Տպել էջը
 quickactions-cmd-print = տպել
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Պահել էջը որպես PDF
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, պահպանել էջը
 # Opens a new private browsing window
 quickactions-private2 = Բացել գաղտնի պատուհան
 quickactions-cmd-private = գաղտնի դիտարկում
@@ -293,22 +417,34 @@ quickactions-restart = Վերամեկնարկել { -brand-short-name }-ը
 quickactions-cmd-restart = վերամեկնարկել
 # Opens the screenshot tool
 quickactions-screenshot3 = Ստանալ էկրանի հանույթը
+quickactions-cmd-screenshot2 = էկրանի նկար, էկրանի նկար անել
 quickactions-cmd-screenshot = էկրանի հանույթ
 # Opens about:preferences
 quickactions-settings2 = Կառավարել կարգավորումները
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = կարգավորումներ, նախապատվություններ, ընտրանքներ, կառավարել
 quickactions-cmd-settings = կարգավորումներ, նախապատվություններ, ընտրանքներ
 # Opens about:addons page in the themes section
-quickactions-themes = Կառավարեք ոճերը
+quickactions-themes = Կառավարել ոճերը
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = ոճեր, հավելումներ
 quickactions-cmd-themes = Ոճեր
 # Opens a SUMO article explaining how to update the browser
-quickactions-update = Արդիացնել { -brand-short-name }­-ը
+quickactions-update = Թարմացնել { -brand-short-name }­-ը
 quickactions-cmd-update = արդիացնել
 # Opens the view-source UI with current pages source
-quickactions-viewsource2 = Դիտել Էջի Կոդը
+quickactions-viewsource2 = Դիտել էջի աղբյուրը
+quickactions-cmd-viewsource2 = դիտել աղբյուրը, աղբյուր, էջի աղբյուրը
 quickactions-cmd-viewsource = դիտել աղբյուրը, աղբյուրը
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Իմացեք ավելին արագ գործողությունների մասին
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Սեղմեք ներդիրը՝ ընտրելու համար.
 
 ## Bookmark Panel
 
@@ -370,6 +506,8 @@ identity-https-only-dropdown-off-temporarily =
     .label = Ժամանակավորապես անջատված է
 identity-https-only-info-turn-on2 = Միացրեք Միայն HTTPS կերպը այս կայքի համար, եթե ցանկանում եք, որ { -brand-short-name }-ը արդիացնի կապակցումը, երբ հնարավոր է:
 identity-https-only-info-turn-off2 = Եթե էջը կարծես խախտված է, կարող եք անջատել միայն HTTPS-ի ռեժիմը, որպեսզի այս կայքը կրկին բեռնվի՝ օգտագործելով անապահով HTTP:
+identity-https-only-info-turn-on3 = Միացրեք HTTPS արդիացումներն այս կայքի համար, եթե ցանկանում եք, որ { -brand-short-name }-ը, երբ հնարավոր է, արդիացնի կապակցումը:
+identity-https-only-info-turn-off3 = Եթե էջը խոտանված է թվում, կարող եք անջատել HTTPS արդիացումներն այս կայքի համար՝ ոչ ապահով HTTP-ի օգտագործումը կրկին բեռնելու համար:
 identity-https-only-info-no-upgrade = Հնարավոր չէ HTTP-ից թարմացնել կապը:
 identity-permissions-storage-access-header = Միջկայքային թխուկներ
 identity-permissions-storage-access-hint = Այս կողմերը կարող են օգտագործել միջկայքաին թխուկներ և կայքի տվյալներ, երբ դուք գտնվում եք այս կայքում:
@@ -482,9 +620,6 @@ sharing-warning-proceed-to-tab =
 sharing-warning-disable-for-session =
     .label = Անջ. պաշտպանությունը ա/շրջանի համար
 
-## DevTools F12 popup
-
-
 ## URL Bar
 
 # This string is used as an accessible name to the "X" button that cancels a custom search mode (i.e. exits the Amazon.com search mode).
@@ -494,6 +629,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = Որոնեք կամ մուտքագրեք հասցե
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = Խմբագրել էլ. փոստը
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -546,6 +685,8 @@ urlbar-go-button =
     .tooltiptext = Գնալ Հասցեի Տողում նշված հասցեով
 urlbar-page-action-button =
     .tooltiptext = Էջի գործույթները
+urlbar-revert-button =
+    .tooltiptext = Ցուցադրել հասցեն տեղորոշման վահանակում
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -571,6 +712,8 @@ urlbar-result-action-visit = Այցելել
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = Փոխարկել ներդիրին · <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = Անանուն խումբ
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Այցելություն սեղմնատախտակից
 # Directs a user to press the Tab key to perform a search with the specified
@@ -600,6 +743,117 @@ urlbar-result-action-copy-to-clipboard = Պատճենել
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = անորոշ
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong> { $city }, { $region }-ում
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong>  { $city }-ում
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } ∙ Հովանավորվում է
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = Ստացեք ֆոնդային շուկայի տվյալները անմիջապես որոնման դաշտում
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = Ցուցադրել առաջարկներ
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = Ոչ հիմա
+urlbar-result-realtime-opt-in-dismiss = Բաց թողնել
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = Չցուցադրել այս առաջարկները
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = Չցուցադրել այս առաջարկները
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = Շնորհակալություն արձագանքի համար: Դուք այլևս չեք տեսնի թրենդային որոնումներ:
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = Շնորհակալություն արձագանքի համար: Դուք այլևս չեք տեսնի թրենդային որոնումներ:
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown =
+    { $daysUntilStart ->
+        [one] { $name } · { $daysUntilStart } օրից
+       *[other] { $name } · { $daysUntilStart } օրից
+    }
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range =
+    { $daysUntilStart ->
+        [one] { $name } · Սկսվում է { $daysUntilStart } օրից
+       *[other] { $name } · Սկսվում է { $daysUntilStart } օրից
+    }
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing =
+    { $daysUntilEnd ->
+        [one] { $name } · Ավարտվում է { $daysUntilEnd } օրից
+       *[other] { $name } · Ավարտվում է { $daysUntilEnd } օրից
+    }
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · Այսօր
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · Ավարտվում է այսօր
 
 ## Strings used for buttons in the urlbar
 
@@ -627,8 +881,15 @@ urlbar-searchmode-actions =
     .label = Գործողություններ
 urlbar-searchmode-exit-button =
     .tooltiptext = Փակել
+urlbar-searchmode-default =
+    .tooltiptext = Սկզբնադիր որոնիչ
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Այս անգամ որոնել հետևյալով՝
-urlbar-searchmode-popup-search-settings = Որոնման կարգավորումներ
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Որոնման կարգավորումներ
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = Նոր
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -679,6 +940,9 @@ urlbar-group-recent-searches =
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
     .label = Թրենդային { $engine }-ում
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = Հովանավորված
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = Մի ցուցադրեք թրենդային որոնումները
@@ -704,12 +968,12 @@ reader-view-close-button =
 ##   $shortcut (String) - Keyboard shortcut to execute the command.
 
 picture-in-picture-urlbar-button-open =
-    .tooltiptext = Բացեք նկարը նկարում ({ $shortcut })
+    .tooltiptext = Բացեք Նկարը նկարում ({ $shortcut })
 picture-in-picture-urlbar-button-close =
-    .tooltiptext = Փակել նկարը նկարում ({ $shortcut })
+    .tooltiptext = Փակել Նկարը նկարում ({ $shortcut })
 picture-in-picture-panel-header = Նկարը նկարում
 picture-in-picture-panel-headline = Այս կայքը խորհուրդ չի տալիս «Նկարը նկարում»:
-picture-in-picture-panel-body = Տեսանյութերը կարող են չցուցադրվել այնպես, ինչպես մշակողը նախատեսել է, մինչ «Պատկերը նկարում» միացված է:
+picture-in-picture-panel-body = Տեսանյութերը կարող են չցուցադրվել այնպես, ինչպես մշակողը նախատեսել է, մինչ «Նկարը նկարում» միացված է:
 picture-in-picture-enable-toggle =
     .label = Միացնել ամեն դեպքում
 
@@ -732,7 +996,7 @@ pointerlock-warning-no-domain = Այս փաստաթուղթը ղեկավարու
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
-    .label = Կառավարեք էջանիշները
+    .label = Կառավարել էջանիշները
 bookmarks-recent-bookmarks-panel-subheader = Վերջին Էջանիշերը
 bookmarks-toolbar-chevron =
     .tooltiptext = Ցուցադրել ավելի շատ էջանիշեր
@@ -765,7 +1029,7 @@ bookmarks-tools-toolbar-visibility-panel =
     .label =
         { $isVisible ->
             [true] Թաքցնել էջանիշների գործիքագոտին
-           *[other] Ցույց տալ էջանիշների գործիքագոտին
+           *[other] Ցուցադրել էջանիշների գործիքագոտին
         }
 bookmarks-tools-menu-button-visibility =
     .label =
@@ -875,6 +1139,9 @@ panel-save-update-password = Գաղտնաբառ
 # "More" item in macOS share menu
 menu-share-more =
     .label = Ավելին…
+menu-share-copy-link =
+    .label = Պատճենել հղումը
+    .accesskey = L
 ui-tour-info-panel-close =
     .tooltiptext = Փակել
 
@@ -894,8 +1161,8 @@ popups-infobar-dont-show-message =
     .label = Չցուցադրել սա, երբ ելնող պատուհնները արգելափակված են
     .accesskey = D
 edit-popup-settings =
-    .label = Կառավարեք ելնող պատուհանների կարգավորումները…
-    .accesskey = M
+    .label = Կառավարել թռուցիկների կարգավորումները…
+    .accesskey = Կ
 picture-in-picture-hide-toggle =
     .label = Թաքցնել Նկարը նկարում փոխարկիչը
     .accesskey = H
@@ -922,6 +1189,8 @@ navbar-accessible =
     .aria-label = Ուղղորդում
 navbar-downloads =
     .label = Ներբեռնումներ
+navbar-overflow-2 =
+    .tooltiptext = Լրացուցիչ գործիքներ
 navbar-overflow =
     .tooltiptext = Լր. գործիքներ...
 # Variables:
@@ -930,8 +1199,8 @@ navbar-print =
     .label = Տպել
     .tooltiptext = Տպել էջը... ({ $shortcut })
 navbar-home =
-    .label = Տուն
-    .tooltiptext = { -brand-short-name }-ի Տնային էջ
+    .label = Տնէջ
+    .tooltiptext = { -brand-short-name }-ի տնէջ
 navbar-library =
     .label = Շտեմարան
     .tooltiptext = Դիտել պատմությունը, պահպանված էջանիշերը և ավելին
@@ -947,6 +1216,10 @@ tabs-toolbar-new-tab =
 tabs-toolbar-list-all-tabs =
     .label = Ցուցադրել բոլոր էջերը
     .tooltiptext = Ցուցադրել բոլոր էջերը
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = Տեղադրեք ներդիրը այստեղ՝ ամրացնելու համար
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1046,10 +1319,10 @@ popup-notification-addon-install-unsigned =
     .value = (Չստուգված)
 popup-notification-xpinstall-prompt-learn-more = Իմացեք ավելին հավելումների ապահով տեղակայման մասին
 popup-notification-xpinstall-prompt-block-url = Դիտել մանրամասները
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = Աշխատեցնել գաղտնի պատուհաններում
-    .accesskey = P
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = Թույլատրել ընդլայնման աշխատանքը գաղտնի դիտարկմամբ
+    .accesskey = p
 
 ## Pop-up warning
 
@@ -1057,8 +1330,17 @@ popup-notification-addon-privatebrowsing-checkbox =
 #   $popupCount (Number): the number of pop-ups blocked.
 popup-warning-message =
     { $popupCount ->
-        [one] { -brand-short-name } կանխվել է թռուցիկի բացումը այս կայքից:
-       *[other] { -brand-short-name } կանխել է { $popupCount } թռուցիկի բացումը:
+        [one] { -brand-short-name }-ը կանխել է թռուցիկի բացումը այս կայքից:
+       *[other] { -brand-short-name }-ը կանխել է { $popupCount } թռուցիկի բացումը:
+    }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] { -brand-short-name }-ը կանխեց այս կայքին վերահասցեավորել։
+        [1] { -brand-short-name }-ը կանխեց այս կայքին բացել թռուցիկ պատուհան և վերահասցեավորել։
+        [one] { -brand-short-name }-ը կանխեց այս կայքին բացել { $popupCount } թռուցիկ պատուհան և վերահասցեավորել։
+       *[other] { -brand-short-name }-ը կանխեց այս կայքին բացել { $popupCount } թռուցիկ պատուհան և վերահասցեավորել։
     }
 # The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
 # Variables:
@@ -1079,6 +1361,10 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = Ցուցադրել '{ $popupURI }'-ը
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = Ցուցադրել «{ $redirectURI }»-ը
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
@@ -1092,3 +1378,91 @@ popup-show-popup-menuitem =
 file-picker-crashed-show-in-folder =
     .label = Ցուցադրել պանակում
     .accessKey = F
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = Ավարտել կարգավորումը
+onboarding-aw-finish-setup-button =
+    .label = Ավարտել տեղակայումը
+    .tooltiptext = Ավարտել { -brand-short-name }-ի տեղակայումը
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = Ուժեղացված հետագծման պաշտպանությունը միացված է
+trustpanel-etp-label-disabled = Ուժեղացված հետագծման պաշտպանությունը անջատված է
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = Ուժեղացված պաշտպանություն հետևելուց․ Միացված է { $host }-ի համար
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = Ուժեղացված պաշտպանություն հետևելուց․ Անջատված է { $host }-ի համար
+trustpanel-connection-label-secure = Կապակցումն ապահով է
+trustpanel-connection-label-insecure = Կապակցումն անվտանգ չէ
+trustpanel-header-enabled = { -brand-product-name }--ը պաշտպանված է
+trustpanel-header-enabled-insecure = Զգույշ եղեք այս կայքում
+trustpanel-header-disabled = Դուք անջատեցիք պաշտպանությունը
+trustpanel-clear-cookies-button = Մաքրել թխուկները և կայքի տվյալները
+trustpanel-privacy-link = Գաղտնիության կարգավորումներ
+trustpanel-clear-cookies-subview-button-clear = Մաքրել
+trustpanel-clear-cookies-subview-button-cancel = Չեղարկել
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = Միացման անվտանգություն { $host }-ի համար
+trustpanel-siteinformation-morelink = Մանրամասն տեղեկություններ
+trustpanel-blocker-see-all = Տեսնել բոլորը
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = Հետևողականության պաշտպանություն { $host }-ի համար
+
+## The urlbar trust icon & panel
+
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = Անվտանգ չէ
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header =
+    { $count ->
+        [one] <span>{ $count } </span> Հետագծիչ արգելափակված է այս կայքում
+       *[other] <span>{ $count } </span> Հետագծիչներ արգելափակված են այս կայքում
+    }
+trustpanel-insecure-section-header = Ձեր միացումն անվտանգ չէ
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [one] { $count } միջկայքային հետևող թխուկ
+       *[other] { $count } միջկայքային հետևող թխուկներ
+    }
+trustpanel-list-label-tracking-content = Հետագծվող բովանդակություն
+trustpanel-list-label-fingerprinter =
+    { $count ->
+        [one] { $count } մատնահետք
+       *[other] { $count } մատնահետքեր
+    }
+trustpanel-list-label-social-tracking =
+    { $count ->
+        [one] { $count } սոցիալական մեդիա հետագծիչ
+       *[other] { $count } սոցիալական մեդիա հետագծիչներ
+    }
+trustpanel-list-label-cryptominer =
+    { $count ->
+        [one] { $count } Կրիպտոմայներ
+       *[other] { $count } Կրիպտոմայներներ
+    }
+trustpanel-tracking-content-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name }-ը արգելափակել է { $count } հետևիչ
+       *[other] { -brand-product-name }-ը արգելափակել է { $count } հետևիչներ
+    }
+trustpanel-tracking-content-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name }-ը թույլատրել է { $count } հետևիչ
+       *[other] { -brand-product-name }-ը թույլատրել է { $count } հետևիչներ
+    }
+trustpanel-tracking-content-tab-list-header = Հետևյալ կայքերը փորձում են հետևել ձեզ՝

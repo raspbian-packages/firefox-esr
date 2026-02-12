@@ -36,17 +36,6 @@ should-restart-ok = ಈಗ { -brand-short-name } ಮರಳಿ ಆರಂಭಿಸ
 cancel-no-restart-button = ರದ್ದು ಮಾಡು
 restart-later = ಆಮೇಲೆ ಮರು ಆರಂಭಿಸು
 
-## Extension Control Notifications
-##
-## These strings are used to inform the user
-## about changes made by extensions to browser settings.
-##
-## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
-##
-## Variables:
-##   $name (string) - Name of the extension
-
-
 ## Preferences UI Search Results
 
 search-results-header = ಹುಡುಕು ಫಲಿತಾಂಶಗಳು
@@ -58,6 +47,10 @@ startup-header = ಆರಂಭಿಕ
 always-check-default =
     .label = ಯಾವಾಗಲೂ { -brand-short-name } ನಿಮ್ಮ ಪೂರ್ವನಿಯೋಜಿತ ವೀಕ್ಷಕವಾಗಿದೆಯೆ ಎಂದು ಪರೀಕ್ಷಿಸಿ
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } ಎನ್ನುವುದು ಪ್ರಸ್ತುತ ನಿಮ್ಮ ಪೂರ್ವನಿಯೋಜಿತ ಜಾಲವೀಕ್ಷಕವಾಗಿದೆ
+is-not-default-browser =
+    .message = { -brand-short-name } ಪ್ರಸ್ತುತ ನಿಮ್ಮ ಪೂರ್ವನಿಯೋಜಿತ ವೀಕ್ಷಕವಾಗಿಲ್ಲ
 is-default = { -brand-short-name } ಎನ್ನುವುದು ಪ್ರಸ್ತುತ ನಿಮ್ಮ ಪೂರ್ವನಿಯೋಜಿತ ಜಾಲವೀಕ್ಷಕವಾಗಿದೆ
 is-not-default = { -brand-short-name } ಪ್ರಸ್ತುತ ನಿಮ್ಮ ಪೂರ್ವನಿಯೋಜಿತ ವೀಕ್ಷಕವಾಗಿಲ್ಲ
 set-as-my-default-browser =
@@ -85,10 +78,6 @@ browser-containers-learn-more = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರ�
 browser-containers-settings =
     .label = ಸಿದ್ಧತೆಗಳು…‍
     .accesskey = i
-
-## Variables:
-##   $tabCount (number) - Number of tabs
-
 
 ##
 
@@ -128,6 +117,11 @@ translate-exceptions =
 ## General Section - Files and Applications
 
 files-and-applications-title = ಕಡತಗಳು ಮತ್ತು ಅನ್ವಯಕಗಳು
+downloads-header-2 =
+    .label = ಡೌನ್‍ಲೋಡ್‍ಗಳು
+download-save-where-2 =
+    .label = ಕಡತಗಳನ್ನು ಇಲ್ಲಿ ಉಳಿಸು
+    .accesskey = v
 download-header = ಡೌನ್‍ಲೋಡ್‍ಗಳು
 download-save-where = ಕಡತಗಳನ್ನು ಇಲ್ಲಿ ಉಳಿಸು
     .accesskey = v
@@ -257,10 +251,7 @@ network-proxy-connection-settings =
     .label = ಸಿದ್ಧತೆಗಳು...
     .accesskey = e
 
-## Home Section
-
-
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-newtabs-mode-label = ಹೊಸ ಟ್ಯಾಬ್ ಗಳು
 home-mode-choice-blank =
@@ -342,6 +333,8 @@ search-keyword-warning-bookmark = ಒಂದು ಬುಕ್‌ಮಾರ್ಕಿ
 ## Containers Section
 
 containers-header = ಕಂಟೈನರ್ ಟ್ಯಾಬ್‍‍ಗಳು‍
+containers-section-header =
+    .heading = ಕಂಟೈನರ್ ಟ್ಯಾಬ್‍‍ಗಳು‍
 containers-add-button =
     .label = ಹೊಸ ಕಂಟೈನರ್ ಸೇರಿಸಿ
     .accesskey = A
@@ -387,12 +380,6 @@ sync-sign-in =
     .label = ಒಳಗೆ ಪ್ರವೇಶಿಸು‍
     .accesskey = g
 
-## Sync section - enabling or disabling sync.
-
-
-## The list of things currently syncing.
-
-
 ## The "Choose what to sync" dialog.
 
 sync-engine-bookmarks =
@@ -409,6 +396,14 @@ sync-engine-tabs =
 ## The device name controls.
 
 sync-device-name-header = ಸಾಧನದ ಹೆಸರು
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = ಸಾಧನದ ಹೆಸರು
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = ಸಾಧನದ ಹೆಸರನ್ನು ಬದಲಿಸಿ
+    .accesskey = h
 sync-device-name-change =
     .label = ಸಾಧನದ ಹೆಸರನ್ನು ಬದಲಿಸಿ…
     .accesskey = h
@@ -433,9 +428,6 @@ sync-verification-not-sent-body = ನಾವು ಈ ಸಮಯದಲ್ಲಿ ಒ�
 
 privacy-header = ವೀಕ್ಷಕದ ಗೌಪ್ಯತೆ
 
-## Privacy Section - Logins and Passwords
-
-
 ## Privacy Section - Passwords
 
 forms-exceptions =
@@ -451,12 +443,6 @@ forms-master-pw-change =
     .label = ಮಾಸ್ಟರ್ ಗುಪ್ತಪದವನ್ನು ಬದಲಾಯಿಸು...
     .accesskey = M
 forms-master-pw-fips-desc = ಗುಪ್ತಪದವನ್ನು ಬದಲಾಯಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ
-
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
 
 ## Privacy Section - History
 
@@ -478,6 +464,8 @@ history-remember-option-never =
     .label = ಎಂದಿಗೂ ಇತಿಹಾಸವನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಬೇಡ
 history-remember-option-custom =
     .label = ಇತಿಹಾಸಕ್ಕಾಗಿ ನಿಮ್ಮ ಇಚ್ಛೆಯ ಸಿದ್ಧತೆಗಳನ್ನು ಬಳಸಿ
+history-dontremember-description2 =
+    .description = { -brand-short-name } ಖಾಸಗಿ ಜಾಲ ವೀಕ್ಷಣದ ರೀತಿಯದ್ದೆ ಆದ ಸಿದ್ಧತೆಗಳನ್ನು ಬಳಸುತ್ತದೆ, ಹಾಗು ನೀವು ಜಾಲವನ್ನು ವೀಕ್ಷಿಸುವಾಗ ಯಾವುದೆ ಇತಿಹಾಸವನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವುದಿಲ್ಲ.
 history-dontremember-description = { -brand-short-name } ಖಾಸಗಿ ಜಾಲ ವೀಕ್ಷಣದ ರೀತಿಯದ್ದೆ ಆದ ಸಿದ್ಧತೆಗಳನ್ನು ಬಳಸುತ್ತದೆ, ಹಾಗು ನೀವು ಜಾಲವನ್ನು ವೀಕ್ಷಿಸುವಾಗ ಯಾವುದೆ ಇತಿಹಾಸವನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವುದಿಲ್ಲ.
 history-private-browsing-permanent =
     .label = ಯಾವಾಗಲೂ ಖಾಸಗಿ ವೀಕ್ಷಣೆ ಕ್ರಮವನ್ನು ಬಳಸು
@@ -503,12 +491,6 @@ sitedata-settings =
     .label = ದತ್ತಾಂಶವನ್ನು ನಿರ್ವಹಿಸು…
     .accesskey = M
 
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
-
 ## Privacy Section - Address Bar
 
 addressbar-header = ವಿಳಾಸ ಪಟ್ಟಿ
@@ -527,19 +509,6 @@ addressbar-suggestions-settings = ಹುಡುಕು ಯಂತ್ರಗಳ ಸ�
 ## Privacy Section - Content Blocking
 
 content-blocking-learn-more = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ
-
-## These strings are used to define the different levels of
-## Enhanced Tracking Protection.
-
-
-##
-
-
-# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
-
-
-## Privacy Section - Tracking
-
 
 ## Privacy Section - Permissions
 
@@ -567,15 +536,20 @@ permissions-block-popups =
 permissions-addon-exceptions =
     .label = ವಿನಾಯಿತಿಗಳು...
     .accesskey = E
+permissions-location2 =
+    .label = ಸ್ಥಳ
+permissions-camera2 =
+    .label = ಕ್ಯಾಮೆರಾ
+permissions-microphone2 =
+    .label = ಮೈಕ್ರೊಫೋನ್
+permissions-notification2 =
+    .label = ಸೂಚನೆಗಳು
 
 ## Privacy Section - Data Collection
 
 collection-header = { -brand-short-name } ದತ್ತಾಂಶ ಸಂಗ್ರಹಣೆ ಮತ್ತು ಬಳಕೆ
 collection-privacy-notice = ಗೌಪ್ಯತಾ ಸೂಚನೆ
 collection-health-report-link = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -606,12 +580,7 @@ certs-view =
 certs-devices =
     .label = ಸುರಕ್ಷತಾ ಸಾಧನಗಳು…
     .accesskey = D
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPS ಅನ್ನು ಶಕ್ತಗೊಳಿಸಿ
 
 ## The following strings are used in the Download section of settings
 

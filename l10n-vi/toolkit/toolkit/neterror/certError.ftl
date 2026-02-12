@@ -107,9 +107,35 @@ fp-cert-error-code = Mã lỗi: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } không tin tưởng { $hostname } bởi vì nó không thể chứng minh nó đáp ứng các yêu cầu về tính minh bạch của chứng chỉ công khai.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Có vẻ không có gì, vì rất có thể trang web đó có vấn đề.
 fp-learn-more-about-secure-connection-failures = Tìm hiểu thêm về lỗi kết nối an toàn
 fp-learn-more-about-cert-issues = Tìm hiểu thêm về các vấn đề liên quan đến chứng chỉ này
 fp-learn-more-about-time-related-errors = Tìm hiểu thêm về cách khắc phục các lỗi liên quan đến thời gian
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } đã bị thu hồi và không còn đáng tin cậy nữa.
+cert-error-bad-signature = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chữ ký trên chứng chỉ được cung cấp cho { $hostname } không hợp lệ.
+cert-error-key-pinning-failure = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } sử dụng khóa công khai khác với dự kiến.
+cert-error-bad-der = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } không được mã hóa đúng cách.
+cert-error-cert-not-in-name-space = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } không tuân theo các ràng buộc về tên của chứng chỉ đã cấp nó.
+cert-error-inadequate-cert-type = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } không được phép sử dụng bởi máy chủ web.
+cert-error-path-len-constraint-invalid = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } có quá nhiều chứng chỉ trung gian trên đường dẫn (path) đến chứng chỉ gốc.
+cert-error-invalid-key = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } có khóa không hợp lệ. Nhiều khả năng là nó quá nhỏ để bảo mật.
+cert-error-unknown-critical-extension = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } chứa phần mở rộng quan trọng không được hỗ trợ.
+cert-error-extension-value-invalid = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } chứa phần mở rộng không hợp lệ.
+cert-error-untrusted-issuer = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } được cấp bởi một cơ quan cấp chứng chỉ không còn đáng tin cậy nữa.
+cert-error-untrusted-cert = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } được đánh dấu là không đáng tin cậy.
+cert-error-invalid-integer-encoding = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } chứa mã hóa không hợp lệ của một số nguyên. Các nguyên nhân phổ biến bao gồm số sê-ri âm, mô-đun RSA âm và mã hóa dài hơn mức cần thiết.
+cert-error-unsupported-keyalg = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } có kiểu khoá (key type) không được hỗ trợ.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } không còn đáng tin cậy nữa.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } đã chặn lượt truy cập của bạn đến trang web này vì chứng chỉ được cung cấp cho { $hostname } không khớp với trường thuật toán chữ ký của nó.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Địa chỉ này đã bị chặn
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Chúng tôi gặp khó khăn khi tìm trang web đó.
+internet-connection-offline-title = Có vẻ như đã xảy ra sự cố với kết nối Internet của bạn.
 dns-not-found-trr-only-title2 = Rủi ro bảo mật có thể xảy ra khi tra cứu tên miền này
 dns-not-found-native-fallback-title2 = Rủi ro bảo mật có thể xảy ra khi tra cứu tên miền này
 fileNotFound-title = Không tìm thấy tập tin
@@ -134,6 +161,7 @@ contentEncodingError-title = Lỗi encoding
 unsafeContentType-title = Kiểu tập tin không an toàn
 netReset-title = Kết nối bị khởi tạo lại
 netTimeout-title = Kết nối đã mất quá nhiều thời gian
+httpErrorPage-title = Có vẻ như có vấn đề với trang web này
 serverError-title = Có vẻ như có vấn đề với trang web này
 unknownProtocolFound-title = Chương trình không hiểu địa chỉ này
 proxyConnectFailure-title = Máy chủ proxy từ chối kết nối
@@ -142,6 +170,7 @@ redirectLoop-title = Trang này không chuyển hướng đúng cách
 unknownSocketType-title = Nhận được phản hồi lạ từ máy chủ
 nssFailure2-title = Không thể kết nối an toàn
 csp-xfo-error-title = { -brand-short-name } không thể mở trang này
+corruptedContentErrorv2-title = Lỗi nội dung không toàn vẹn
 corruptedContentError-title = Lỗi nội dung bị hỏng
 sslv3Used-title = Không thể kết nối một cách an toàn
 inadequateSecurityError-title = Kết nối của bạn không an toàn
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Ẩn nâng cao
 fp-certerror-override-exception-button = Tiếp tục đến { $hostname } (có rủi ro)
 fp-certerror-intro = { -brand-short-name } phát hiện vấn đề bảo mật nghiêm trọng với <strong>{ $hostname }</strong>. Ai đó giả danh trang web này có thể cố lấy cắp những thứ như thông tin thẻ tín dụng, mật khẩu hoặc email.
 fp-certerror-expired-into = { -brand-short-name } phát hiện vấn đề bảo mật với <strong>{ $hostname }</strong>. Trang web không được thiết lập đúng hoặc đồng hồ trên thiết bị của bạn đã đặt sai.
+fp-certerror-transparency-intro = Một người nào đó giả vờ là <strong>{ $hostname }</strong> có thể cố gắng đánh cắp những thứ như thông tin thẻ tín dụng, mật khẩu hoặc email.

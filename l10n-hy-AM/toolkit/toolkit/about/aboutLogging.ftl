@@ -32,8 +32,3 @@ about-logging-preset-windows-label = Windows
 about-logging-preset-custom-label = Հարմարեցված
 # Error handling
 about-logging-error = Սխալ՝
-
-## Variables:
-##   $k (String) - Variable name
-##   $v (String) - Variable value
-

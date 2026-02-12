@@ -206,6 +206,10 @@ addon-updates-manual-updates-found = Tampilkan Versi Baru yang Tersedia
 
 addon-install-from-file = Pasang Pengaya dari Berkas…
     .accesskey = B
+# Like `addon-install-from-file` but used when the `extensions.webextensions.prefer-update-over-install-for-existing-addon`
+# pref is set.
+addon-install-or-update-from-file = Pasang atau Perbarui Pengaya Dari Berkas…
+    .accesskey = P
 addon-install-from-file-dialog-title = Pilih berkas pengaya untuk dipasang
 addon-install-from-file-filter-name = Pengaya
 addon-open-about-debugging = Debug Pengaya
@@ -293,14 +297,6 @@ find-more-themes = Temukan lebih banyak tema
 # used for screen readers.
 addon-options-button =
     .aria-label = Opsi Lainnya
-# Explanatory introduction to the list of recommended add-ons. The action word
-# ("recommends") in the final sentence is a link to external documentation.
-discopane-intro2 =
-    Ekstensi dan tema memungkinkan Anda menyesuaikan { -brand-product-name }. Keduanya dapat meningkatkan privasi,
-    meningkatkan produktivitas, meningkatkan media, mengubah tampilan { -brand-product-name }, dan
-    lebih banyak lagi. Program perangkat lunak kecil ini sering dikembangkan oleh pihak ketiga. 
-    Berikut adalah <a data-l10n-name="learn-more-trigger">rekomendasi</a> pilihan { -brand-product-name }
-    untuk keamanan, kinerja, dan fungsionalitas yang luar biasa.
 
 ## Add-on actions
 
@@ -386,6 +382,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = Diizinkan di jendela pribadi
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = Diizinkan di jendela pribadi
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -425,6 +425,10 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = Ekstensi ini telah ditinjau untuk memenuhi standar keamanan dan kinerja kami
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = Ekstensi resmi yang dibuat oleh Mozilla, memenuhi standar keamanan dan kinerja
 
 ##
 
@@ -488,8 +492,6 @@ details-notification-hard-blocked-other =
     .message = Pengaya ini diblokir karena melanggar kebijakan Mozilla dan telah dinonaktifkan.
 details-notification-unsigned-link = Informasi Lebih Lanjut
 details-notification-blocked = { $name } telah dimatikan karena masalah keamanan atau kestabilan.
-details-notification-blocked2 =
-    .message = { $name } telah dimatikan karena masalah keamanan atau kestabilan.
 details-notification-blocked-link2 = Lihat Detail
 details-notification-soft-blocked-extension-disabled =
     .message = Ekstensi ini dibatasi karena melanggar kebijakan Mozilla dan telah dinonaktifkan. Anda dapat mengaktifkannya, tetapi ini mungkin berisiko.
@@ -502,8 +504,6 @@ details-notification-soft-blocked-other-enabled =
 details-notification-softblocked-link2 = Lihat Detail
 details-notification-blocked-link = Informasi Lebih Lanjut
 details-notification-softblocked = { $name } telah dikenali mengakibatkan masalah keamanan atau kestabilan.
-details-notification-softblocked2 =
-    .message = { $name } telah dikenali mengakibatkan masalah keamanan atau kestabilan.
 details-notification-softblocked-link = Informasi Lebih Lanjut
 details-notification-gmp-pending = { $name } akan diinstal sebentar lagi.
 details-notification-gmp-pending2 =

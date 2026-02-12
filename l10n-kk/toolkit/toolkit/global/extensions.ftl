@@ -15,7 +15,24 @@ webext-perms-header-with-perms = { $extension } қосу керек пе? Бұл
 webext-perms-header-unsigned = { $extension } қосу керек пе? Бұл кеңейту расталмаған. Зиянкес кеңейтулер сіздің жеке деректеріңізді ұрлай алады. Бұны тек шыққан көзіне сенсеңіз, орнатуға болады.
 webext-perms-header-unsigned-with-perms = { $extension } қосу керек пе? Бұл кеңейту расталмаған. Зиянкес кеңейтулер сіздің жеке деректеріңізді ұрлай алады. Бұны тек шыққан көзіне сенсеңіз, орнатуға болады. Бұл кеңейтудің келесі рұқсаттары болады:
 webext-perms-sideload-header = { $extension } қосылды
+webext-perms-optional-perms-header2 = { $extension } қосымша рұқсаттарды сұрайды
 webext-perms-optional-perms-header = { $extension } қосымша рұқсаттарды сұрайды.
+webext-perms-header2 = { $extension } қосу
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Керек рұқсаттар:
+webext-perms-header-optional-settings = Қосымша баптаулар:
+webext-perms-header-update-required-perms = Жаңа талап етілетін рұқсаттар:
+webext-perms-header-optional-required-perms = Жаңа рұқсаттар:
+webext-perms-header-data-collection-perms = Міндетті деректерді жинау:
+webext-perms-header-data-collection-is-none = Деректер жинау:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Жаңа міндетті деректерді жинау:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Жаңа деректер жинауы:
 
 ##
 
@@ -33,6 +50,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Бас тарту
     .accesskey = с
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = { $extension } жаңартылды. Жаңартылған нұсқасы орнатылу алдында жаңа рұқсаттарды сізге растау керек. "Бас тарту" таңдасаңыз, кеңейтудің ағымдағы нұсқасы қалатын болады.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = { $extension } жаңартылды. Жаңартылған нұсқасы орнатылу алдында жаңа рұқсаттарды сізге растау керек. "Бас тарту" таңдасаңыз, кеңейтудің ағымдағы нұсқасы қалатын болады. Бұл кеңейтудің келесі рұқсаттары болады:
@@ -84,6 +104,22 @@ webext-perms-host-description-multiple-domains =
         [one] { $domainCount } домендегі сайттар үшін деректеріңізге қатынау
        *[other] { $domainCount } домендегі сайттар үшін деректеріңізге қатынау
     }
+
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Әзірлеуші бұл кеңейту деректер жинауды қажет етпейтінін хабарлады.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Әзірлеуші бұл кеңейту келесіні жинайтынын хабарлады: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Әзірлеуші бұл кеңейту келесіні жинайтынын хабарлады: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } қосымша баптауларды сұрайды
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } қосымша деректер жинауды сұрайды
 
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent

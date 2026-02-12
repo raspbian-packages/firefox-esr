@@ -4,8 +4,6 @@
 
 menu-view-genai-chat =
     .label = اے آئی چیٹ بوٹ
-menu-view-review-checker =
-    .label = نظرثانی پڑتالݨ آلا
 sidebar-options-menu-button =
     .title = مینیو کھولو
 
@@ -23,10 +21,6 @@ sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
 sidebar-history-delete =
     .title = ہسٹری کنوں مٹاؤ
-sidebar-history-sort-by-date =
-    .label = تریخ دے لحاظ نال چھانٹی کرو
-sidebar-history-sort-by-site =
-    .label = سائٹ دے لحاظ نال چھانٹی کرو
 sidebar-history-clear =
     .label = تاریخ صاف کرو
 
@@ -44,24 +38,8 @@ sidebar-customize-extensions-header = سائیڈ بار ایکسٹنشناں
 sidebar-customize-firefox-tools-header =
     .label = { -brand-product-name } آوزار
 sidebar-customize-firefox-settings = { -brand-short-name } ترتیباں منیج کرو
-sidebar-position-left =
-    .label = کھٻے پاسے ݙکھاؤ
-sidebar-position-right =
-    .label = سڄے پاسے ݙکھاؤ
 sidebar-vertical-tabs =
     .label = عمودی ٹیباں
-sidebar-horizontal-tabs =
-    .label = افقی ٹیباں
-sidebar-customize-tabs-header =
-    .label = ٹیب ترتیباں
-sidebar-customize-button-header =
-    .label = سائیڈ بار بٹݨ
-sidebar-customize-position-header =
-    .label = سائیڈ بار مقام
-sidebar-visibility-setting-always-show =
-    .label = سائیڈ بار کھنڈاؤ تے ولھیٹو
-sidebar-visibility-setting-hide-sidebar =
-    .label = سائیڈ بار ݙکھاؤ تے لُکاؤ
 
 ## Labels for sidebar context menu items
 
@@ -84,11 +62,6 @@ sidebar-context-menu-copy-link =
 sidebar-context-menu-close-remote-tab =
     .label = { $deviceName } تے ٹیب بند کرو
 
-## Labels for sidebar history context menu items
-
-sidebar-history-context-menu-delete-page =
-    .label = ہسٹری کنوں مٹاؤ
-
 ## Labels for sidebar menu items.
 
 sidebar-menu-genai-chat-label =
@@ -101,11 +74,6 @@ sidebar-menu-bookmarks-label =
     .label = نشانیاں
 sidebar-menu-customize-label =
     .label = سائیڈ بار مرضی مطابق بݨاؤ
-sidebar-menu-review-checker-label =
-    .label = نظرثانی پڑتالݨ آلا
-
-## Tooltips for sidebar menu items.
-
 
 ## Headings for sidebar menu panels.
 
@@ -138,18 +106,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = سائیڈ بار کھنڈاؤ
-    .label = بغلی بار
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = سائیڈ بار ولھیٹو
-    .label = بغلی بار
-sidebar-widget-show-sidebar =
-    .tooltiptext = سائیڈ بار ݙکھاؤ
-    .label = بغلی بار
-sidebar-widget-hide-sidebar =
-    .tooltiptext = سائیڈ بار لکاؤ
-    .label = بغلی بار
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =

@@ -5,11 +5,6 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = V stransko vrstico doda klepetalnega robota po vaši izbiri za hiter dostop med brskanjem. <a data-l10n-name="connect">Povratne informacije</a>
-genai-settings-chat-choose = Izberite klepetalnik
-genai-settings-chat-choose-one-menuitem =
-    .label = Izberite enega
-genai-settings-chat-links = Ko izberete klepetalnik, se strinjate s pogoji uporabe in pravilnikom o zasebnosti ponudnika.
 genai-settings-chat-chatgpt-links = Z izbiro ChatGPT se strinjate s <a data-l10n-name="link1">pogoji uporabe</a> in <a data-l10n-name="link2">pravilnikom o zasebnosti</a> OpenAI.
 genai-settings-chat-claude-links = Z izbiro Anthropic Clauda se strinjate s <a data-l10n-name="link1">pogoji uporabe</a>, <a data-l10n-name="link2">pravilnikom o uporabi</a> in <a data-l10n-name="link3">pravilnikom o zasebnosti</a> Anthropica.
 genai-settings-chat-copilot-links = Z izbiro Copilota se strinjate s <a data-l10n-name="link1">pogoji uporabe Copilot AI Experiences</a> in <a data-l10n-name="link2">Microsoftovo izjavo o zasebnosti</a>.
@@ -17,9 +12,6 @@ genai-settings-chat-gemini-links = Z izbiro Google Gemini se strinjate z <a data
 genai-settings-chat-huggingchat-links = Z izbiro HuggingChata se strinjate z <a data-l10n-name="link1">obvestilom o zasebnosti HuggingChata</a> in <a data-l10n-name="link2">pravilnikom o zasebnosti Hugging Faca</a>.
 genai-settings-chat-lechat-links = Z izbiro Le Chat Mistral se strinjate s <a data-l10n-name="link1">pogoji uporabe</a> in z <a data-l10n-name="link2">obvestilom o zasebnosti</a>.
 genai-settings-chat-localhost-links = Pripeljite svoj zasebni klepetalnik, kot je <a data-l10n-name="link1">llamafile</a>, iz skupine za inovacije { -vendor-short-name }.
-genai-settings-chat-shortcuts =
-    .description = Prikaže bližnjico do pozivov, ko izbirate besedilo. { -brand-short-name } klepetalniku pošilja besedilo, naslov strani in poziv.
-    .label = Prikaži pozive ob izbiri besedila
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -59,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = Vprašaj { $provider }
+genai-menu-open-generic =
+    .label = Odpri UI-klepetalnik
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Odpri { $provider }
+genai-menu-remove-generic =
+    .label = Odstrani UI-klepetalnik
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Odstrani { $provider }
+genai-menu-remove-sidebar =
+    .label = Odstrani iz stranske vrstice
+genai-menu-new-badge = Novo
+genai-menu-summarize-page = Povzemi stran
 genai-input-ask-generic =
     .placeholder = Vprašaj UI-klepetalnik …
 # $provider (string) - name of the provider
@@ -89,6 +95,18 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = Skrij bližnjico klepetalnika
+genai-menu-choose-chatbot =
+    .label = Izberite UI-klepetalnik
+genai-menu-ask-generic-2 =
+    .label = Vprašaj UI-klepetalnik
+    .accesskey = k
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = Vprašaj { $provider }
+    .accesskey = V
+genai-menu-no-provider-2 =
+    .label = Vprašaj UI-klepetalnik
+    .accesskey = k
 
 ## Chatbot header
 
@@ -101,8 +119,6 @@ genai-header-close-button =
     .title = Zapri
 genai-provider-view-details =
     .label = Podrobnosti klepetalnika
-genai-provider-about-chatbots =
-    .label = O teh klepetalnikih
 genai-options-reload-generic =
     .label = Ponovno naloži UI-klepetalnik
 # $provider (string) - name of the provider
@@ -115,11 +131,18 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = O UI-klepetalnikih v { -brand-short-name(sklon: "mestnik") }
 
+## Chatbot footer
+
+genai-page-button-summarize = Povzemi stran
+
 ## Chatbot onboarding
 
 genai-onboarding-header = Povzemajte, razmišljajte in drugo med brskanjem
+genai-onboarding-choose-header = Izberite UI-klepetalnik, ki ga želite uporabljati v stranski vrstici { -brand-short-name(sklon: "rodilnik") }
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = Izberite UI-klepetalnik, ki ga želite uporabiti v stranski vrstici { -brand-short-name(sklon: "rodilnik") }. Ko ga izberete, bomo prikazali podrobnosti o klepetalniku. Preklopite kadarkoli. <a data-l10n-name="learn-more">Več o tem</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Preklopite kadarkoli. Za pomoč pri izbiri <a data-l10n-name="learn-more">preberite več o posameznem klepetalniku</a>.
 genai-onboarding-primary = Nadaljuj
 genai-onboarding-secondary = Zapri
 genai-onboarding-claude-tooltip =
@@ -143,6 +166,18 @@ genai-onboarding-lechat-learn = Več o Le Chat
 genai-onboarding-select-header = Izberite besedilo za prikaz predlogov
 genai-onboarding-select-description = Ko izberete besedilo, bomo predlagali pozive, ki jih lahko pošljete klepetalniku. Napišete lahko tudi svoje pozive.
 genai-onboarding-select-primary = Začni klepetati
+genai-chatbot-contextual-title = Uporabite UI-klepetalnik brez preklapljanja zavihkov
+genai-chatbot-contextual-subtitle = Vzporedno klepetajte in brskajte, ko v stransko vrstico { -brand-short-name(sklon: "rodilnik") } dodate UI-klepetalnik.
+genai-chatbot-contextual-button = Izberite klepetalnik
+genai-chatbot-summarize-title = Novo! Povzemite strani z enim klikom
+genai-chatbot-summarize-button = Povzemi stran
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = Desno kliknite na svoj UI-klepetalnik v stranski vrstici in izberite “Povzemi stran”.
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = Desno kliknite na gumb z iskrico v stranski vrstici izberite “Povzemi stran”. Prvič boste tudi izbrali UI-klepetalnik.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = Odprite svoj UI klepetalnik v stranski vrstici in na dnu izberite “Povzemi stran”.
+genai-chatbot-summarize-footer-generic-subtitle = Dodajte UI-klepetalnik v stransko vrstico { -brand-short-name(sklon: "rodilnik") }, da hitro povzamete strani.
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -164,3 +199,29 @@ genai-onboarding-huggingchat-switch = Izbirajte med raznolikim naborom odprtih m
 genai-onboarding-huggingchat-price-2 = Brezplačno; Račun je zahtevan po določenem številu zahtev
 genai-onboarding-lechat-generate = Ustvarite besedilo in kodo
 genai-onboarding-lechat-price = Brezplačno; zahtevan račun
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Nadaljuj
+genai-model-optin-optout =
+    .label = Prekliči
+genai-model-optin-cancel =
+    .label = Prekliči
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] Čas branja: { $range } minuta
+        [two] Čas branja: { $range } minuti
+        [few] Čas branja: { $range } minute
+       *[other] Čas branja: { $range } minut
+    }

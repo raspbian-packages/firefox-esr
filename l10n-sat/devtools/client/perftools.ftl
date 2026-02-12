@@ -146,6 +146,3 @@ perftools-presets-networking-description = { -brand-shorter-name } ᱨᱮ ᱱᱮ
 perftools-presets-power-label = ᱞᱟᱹᱭᱤᱱ
 perftools-presets-power-description = ᱠᱚᱢ ᱚᱵᱷᱚᱨᱞᱚᱰ ᱥᱟᱶᱛᱮ, { -brand-shorter-name } ᱨᱮ ᱯᱟᱣᱟᱨ ᱵᱮᱵᱷᱟᱨ ᱰᱤᱜᱟᱹᱣ ᱡᱟᱸᱪ ᱯᱚᱲᱛᱟᱞ ᱨᱟᱭᱟᱜ ᱦᱟᱡᱚᱨ ᱾
 perftools-presets-custom-label = ᱠᱩᱥᱤᱭᱟᱜ
-
-##
-

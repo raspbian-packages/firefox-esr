@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = 知道了！
     .secondarybuttonaccesskey = m
 appmenu-update-restart-message2 = 下載最新版的 { -brand-shorter-name }，重新啟動後將保留已經開啟的分頁與視窗。
+appmenu-theme-installed =
+    .secondarybuttonlabel = 還原
+    .secondarybuttonaccesskey = U
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } 無法自動更新至最新版本。
     .buttonlabel = 仍然更新 { -brand-shorter-name }
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = 好的
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = 透過應用程式選單管理您的附加元件與佈景主題。
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = 可隨時在<a data-l10n-name="settings-link">擴充套件選項</a>更新權限與資料偏好設定。
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = 將擴充套件釘選至工具列
+    .accesskey = P
 appmenu-addon-post-install-incognito-checkbox =
     .label = 允許此擴充套件於隱私瀏覽視窗中執行
     .accesskey = A

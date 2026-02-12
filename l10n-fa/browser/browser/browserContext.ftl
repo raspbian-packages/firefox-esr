@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = ذخیره پیوند در { -pocket-brand-name }
     .accesskey = د
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = رونوشت از نشانی رایانامه
@@ -162,10 +160,14 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = رونوشت از پیوند
     .accesskey = پ
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = کپی لینک بدون ردیابی تارنما
+main-context-menu-preview-link =
+    .label = پیش‌نمایش پیوند
+    .accesskey = ن
+# "Copy Clean Link" means that Firefox will remove things from the link you
+# copied, like items that identify you for advertising purposes, and other items
+# sites add into URLs to help them deliver a certain browsing experience.
+main-context-menu-copy-clean-link =
+    .label = رونوشت تمیز پیوند
     .accesskey = ر
 
 ## Media (video/audio) controls
@@ -317,6 +319,9 @@ main-context-menu-manage-passwords =
 main-context-menu-keyword =
     .label = افزودن یک کلیدواژه به این جست‌وجو…
     .accesskey = ک
+main-context-menu-add-engine =
+    .label = افزودن موتور جست‌وجو
+    .accesskey = ا
 main-context-menu-link-send-to-device =
     .label = ارسال پیوند به دستگاه
     .accesskey = د

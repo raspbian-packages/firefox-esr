@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = ჩამოტვირთვები
 appmenuitem-passwords =
     .label = პაროლები
+appmenuitem-extensions-and-themes =
+    .label = გაფართოებები და თემები
+appmenuitem-extensions =
+    .label = გაფართოებები
 appmenuitem-addons-and-themes =
     .label = დამატებები და თემები
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = გახსენით მახასიათებლების აღრიცხვის არე
+    .tooltiptext = გახსენით მახასიათებლების აღრიცხვის არე
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -180,22 +187,25 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/shared/background.sys.mjs
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
-profiler-popup-presets-web-developer-description = მზა პარამეტრები, პროგრამების ხარვეზების გამოსავლენად, ნაკლები დატვირთვით.
+profiler-popup-presets-web-developer-description = მზა პარამეტრები პროგრამების ხარვეზების გამოსავლენად ნაკლები დატვირთვით.
 profiler-popup-presets-web-developer-label =
     .label = ვებშემუშავება
 profiler-popup-presets-firefox-description = მზა პარამეტრები, რომლითაც აღიწერება { -brand-shorter-name }.
 profiler-popup-presets-firefox-label =
     .label = { -brand-shorter-name }
-profiler-popup-presets-graphics-description = მზა პარამეტრები, გრაფიკული ხარვეზების გამოსავლენად – { -brand-shorter-name }.
+profiler-popup-presets-graphics-description = მზა პარამეტრები გრაფიკული ხარვეზების გამოსავლენად – { -brand-shorter-name }.
 profiler-popup-presets-graphics-label =
     .label = გრაფიკა
-profiler-popup-presets-media-description2 = მზა პარამეტრები, ხმოვანი და ვიდეოფაილების ხარვეზების გამოსავლენად – { -brand-shorter-name }.
+profiler-popup-presets-media-description2 = მზა პარამეტრები ხმოვანი და ვიდეოფაილების ხარვეზების გამოსავლენად – { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = ფაილები
-profiler-popup-presets-networking-description = მზა პარამეტრები, ქსელის ხარვეზების გამოსავლენად – { -brand-shorter-name }.
+profiler-popup-presets-ml-description = მზა პარამეტრები მანქანური სწავლების ხარვეზების გამოსავლენად – { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = მანქანური სწავლება
+profiler-popup-presets-networking-description = მზა პარამეტრები ქსელის ხარვეზების გამოსავლენად – { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = ქსელი
-profiler-popup-presets-power-description = მზა პარამეტრები, კვების მიწოდების ხარვეზების გამოსავლენად – { -brand-shorter-name }, ჭარბი დატვირთვის შეზღუდვით.
+profiler-popup-presets-power-description = მზა პარამეტრები კვების მიწოდების ხარვეზების გამოსავლენად – { -brand-shorter-name }, ჭარბი დატვირთვის შეზღუდვით.
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = კვება
@@ -271,7 +281,7 @@ appmenu-developer-tools-subheader = ბრაუზერის ხელსა�
 appmenu-developer-tools-extensions =
     .label = გაფართოებები შემმუშავებელთათვის
 appmenuitem-report-broken-site =
-    .label = საიტზე გაუმართაობის მოხსენება
+    .label = არეული საიტის მოხსენება
 
 ## Panel for privacy and security products
 
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = შენიღბვის მაჩ�
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = დაიცავით პირადულობა ინტერნეტში
 appmenu-services-header = ჩემი მომსახურებები
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = მოსინჯეთ დაცვის სხვა ხელსაწყოებიც, Mozilla რომ ქმნის:
 appmenu-other-protection-header = მოსინჯეთ დაცვის სხვა ხელსაწყოები, რომელთაც გთავაზობთ { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = პროფილები
 appmenu-other-profiles = სხვა პროფილები
 appmenu-manage-profiles =
     .label = პროფილების მართვა
+appmenu-copy-profile =
+    .label = ამ პროფილის ასლი
 appmenu-create-profile =
     .label = ახალი პროფილი
 appmenu-edit-profile =
     .aria-label = პროფილის ჩასწორება
+appmenu-profiles-2 =
+    .label = პროფილები

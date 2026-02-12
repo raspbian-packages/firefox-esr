@@ -28,11 +28,6 @@ text-action-copy-shortcut =
 text-action-copy-clean-link =
     .label = Αντιγραφή «καθαρού» συνδέσμου
     .accesskey = ν
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = Αντιγραφή χωρίς καταγραφή ιστοτόπου
-    .accesskey = ν
 text-action-paste =
     .label = Επικόλληση
     .accesskey = π
@@ -73,3 +68,23 @@ text-action-search-text-box-clear =
     .title = Απαλοιφή
 text-action-highlight-selection =
     .label = Επισήμανση επιλογής
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = Προσθήκη σχολίου στην επιλογή
+# "Copy Link to Highlight" creates a permanent 'Text Fragment' link
+# to the current selection, and copies it into the user's clipboard.
+text-action-copy-link-to-highlight =
+    .label = Αντιγραφή συνδέσμου για επισήμανση
+# This combines "Copy Link to Highlight" with "Copy Clean Link", ie.
+# it creates a link with a text fragment to the current selection
+# and it strips trackers etc.
+text-action-copy-clean-link-to-highlight =
+    .label = Αντιγραφή «καθαρού» συνδέσμου για επισήμανση
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = Αφαίρεση επισήμανσης
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = Αφαίρεση όλων των επισημάνσεων

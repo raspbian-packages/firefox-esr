@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = הורדות
 appmenuitem-passwords =
     .label = ססמאות
+appmenuitem-extensions-and-themes =
+    .label = הרחבות וערכות נושא
+appmenuitem-extensions =
+    .label = הרחבות
 appmenuitem-addons-and-themes =
     .label = תוספות וערכות נושא
 appmenuitem-print =
@@ -165,6 +169,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = פתיחת חלונית יוצר הפרופילים
+    .tooltiptext = פתיחת חלונית יוצר הפרופילים
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -182,7 +189,7 @@ profiler-popup-capture-shortcut =
 profiler-popup-presets-web-developer-description = ערכה מומלצת עבור רוב ניפויי השגיאות של יישומוני רשת, עם תקורה נמוכה.
 profiler-popup-presets-web-developer-label =
     .label = Web Developer
-profiler-popup-presets-firefox-description = ערכת מומלצת ליצירת פרופיל ביצועים של { -brand-shorter-name }.
+profiler-popup-presets-firefox-description = ערכה מומלצת ליצירת פרופיל ביצועים של { -brand-shorter-name }.
 profiler-popup-presets-firefox-label =
     .label = { -brand-shorter-name }
 profiler-popup-presets-graphics-description = ערכה לחקירת באגים גרפיים ב־{ -brand-shorter-name }.
@@ -191,6 +198,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = ערכה לחקירת באגים בשמע ווידאו ב־{ -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Media
+profiler-popup-presets-ml-description = ערכה לחקירת באגים של למידת מכונה ב־{ -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = למידת מכונה
 profiler-popup-presets-networking-description = ערכה לחקירת באגים של רשת או תקשורת ב־{ -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Networking
@@ -282,15 +292,22 @@ appmenuitem-relay-description = מיסוך כתובת הדוא״ל והטלפו�
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = הגנה על הפעילות המקוונת שלך
 appmenu-services-header = השירותים שלי
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = נסו כלי הגנה אחרים מבית Mozilla:
 appmenu-other-protection-header = נסו כלי הגנה אחרים מ־{ -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = פרופילים
 appmenu-other-profiles = פרופילים אחרים
 appmenu-manage-profiles =
     .label = ניהול פרופילים
+appmenu-copy-profile =
+    .label = העתקת פרופיל זה
 appmenu-create-profile =
     .label = פרופיל חדש
 appmenu-edit-profile =
     .aria-label = עריכת פרופיל
+appmenu-profiles-2 =
+    .label = פרופילים

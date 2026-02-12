@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = 关闭标签页
 tabbrowser-menuitem-close =
     .label = 关闭
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -121,10 +134,8 @@ tabbrowser-confirm-caretbrowsing-checkbox = 不再显示此对话框。
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = 注意
-tabbrowser-confirm-close-duplicate-tabs-text = 我们将保留最近一次活跃的标签页
 tabbrowser-confirm-close-all-duplicate-tabs-title = 确定要关闭重复标签页吗？
-tabbrowser-confirm-close-all-duplicate-tabs-text = 我们将关闭此窗口中的重复标签页，仅保留最近一次活跃的标签页。
+tabbrowser-confirm-close-all-duplicate-tabs-text = 将关闭此窗口中的重复标签页，仅保留最近一次活跃的标签页。
 tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = 关闭标签页
 
 ##
@@ -162,6 +173,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = 列出全部 { $tabCount } 个标签页
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = 静音标签页
@@ -169,8 +183,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = 取消静音标签页
 tabbrowser-manager-close-tab =
     .tooltiptext = 关闭标签页
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — 已关闭
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — 当前窗口
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = 创建标签页群组
 tab-group-editor-title-edit = 管理标签页群组
@@ -182,22 +204,40 @@ tab-group-editor-cancel =
     .accesskey = C
 tab-group-editor-color-selector =
     .aria-label = 标签页群组颜色
-tab-group-editor-color-selector-blue = 蓝色
-tab-group-editor-color-selector-purple = 紫色
-tab-group-editor-color-selector-cyan = 青色
-tab-group-editor-color-selector-orange = 橘色
-tab-group-editor-color-selector-yellow = 黄色
-tab-group-editor-color-selector-pink = 粉色
-tab-group-editor-color-selector-green = 绿色
-tab-group-editor-color-selector-gray = 灰色
-tab-group-editor-color-selector-red = 红色
-tab-group-menu-header = 标签页群组
+tab-group-editor-color-selector2-blue = 蓝色
+    .title = 蓝色
+tab-group-editor-color-selector2-purple = 紫色
+    .title = 紫色
+tab-group-editor-color-selector2-cyan = 青色
+    .title = 青色
+tab-group-editor-color-selector2-orange = 橘色
+    .title = 橘色
+tab-group-editor-color-selector2-yellow = 黄色
+    .title = 黄色
+tab-group-editor-color-selector2-pink = 粉色
+    .title = 粉色
+tab-group-editor-color-selector2-green = 绿色
+    .title = 绿色
+tab-group-editor-color-selector2-gray = 灰色
+    .title = 灰色
+tab-group-editor-color-selector2-red = 红色
+    .title = 红色
+tab-group-description = { $tabGroupName } — 标签页群组
+tab-group-label-tooltip-collapsed = { $tabGroupName } — 已折叠
+tab-group-label-tooltip-expanded = { $tabGroupName } — 已展开
+tab-group-preview-name =
+    .aria-label = 位于已收起群组中的标签页
 tab-context-unnamed-group =
     .label = 未命名群组
 tab-group-name-default = 未命名群组
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = 标签页列表已打开
+tab-group-preview-closed-description = 标签页列表已关闭
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -213,6 +253,8 @@ tab-context-move-tab-to-group =
            *[other] 将标签页添加到群组
         }
     .accesskey = G
+tab-context-move-tab-to-group-saved-groups =
+    .label = 关闭的群组
 tab-group-editor-action-new-tab =
     .label = 在群组中新建标签页
 tab-group-editor-action-new-window =
@@ -237,6 +279,12 @@ tab-context-ungroup-tab =
            *[other] 从群组移除
         }
     .accesskey = R
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip = 还有 { $tabCount } 个标签页
 
 ## Open/saved tab group context menu
 
@@ -262,3 +310,31 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = 新建窗口打开群组
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = 分屏视图
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = 添加分屏
+    .accesskey = t
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = 分屏打开
+    .accesskey = t
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = 解除分屏
+    .accesskey = t
+tab-context-badge-new = 新
+
+## Manage Split View (icon in the address bar & three-dot menu in the footer)
+
+# "Separate" is a verb, as in "separate the split view tabs and display them normally".
+split-view-menuitem-separate-tabs =
+    .label = 分离标签页
+# "Reverse" is a verb, as in "reverse the order of split view tabs".
+split-view-menuitem-reverse-tabs =
+    .label = 对调标签页

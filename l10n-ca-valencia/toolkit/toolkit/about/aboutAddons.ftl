@@ -351,16 +351,16 @@ addon-detail-update-check-label = Cerca actualitzacions
 install-update-button = Actualitza
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = Es permet en finestres privades
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = Es permet en finestres privades
     .aria-label = { addon-badge-private-browsing-allowed2.title }
 addon-detail-private-browsing-help = Si ho permeteu, l'extensió tindrà accés a la vostra activitat a Internet encara que utilitzeu la navegació privada. <a data-l10n-name="learn-more">Més informació</a>
 addon-detail-private-browsing-allow = Permet
 addon-detail-private-browsing-disallow = No ho permetes
-
-## "sites with restrictions" (internally called "quarantined") are special domains
-## where add-ons are normally blocked for security reasons.
-
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -376,6 +376,10 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = Esta extensió s'ha revisat i compleix els nostres estàndards de seguretat i rendiment
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = Extensió oficial creada per Mozilla. Compleix els estàndards de seguretat i rendiment.
 
 ##
 
@@ -429,12 +433,8 @@ details-notification-unsigned2 =
     .message = «{ $name }» no s'ha pogut verificar per al seu ús al { -brand-short-name }. Aneu amb compte.
 details-notification-unsigned-link = Més informació
 details-notification-blocked = S'ha inhabilitat { $name } per motius de seguretat o d'estabilitat.
-details-notification-blocked2 =
-    .message = S'ha inhabilitat { $name } per motius de seguretat o d'estabilitat.
 details-notification-blocked-link = Més informació
 details-notification-softblocked = «{ $name }» pot causar problemes de seguretat o d'estabilitat.
-details-notification-softblocked2 =
-    .message = «{ $name }» pot causar problemes de seguretat o d'estabilitat.
 details-notification-softblocked-link = Més informació
 details-notification-gmp-pending = «{ $name }» s'instal·larà prompte.
 details-notification-gmp-pending2 =

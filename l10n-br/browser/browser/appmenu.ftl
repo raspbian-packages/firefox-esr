@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Pellgargadennoù
 appmenuitem-passwords =
     .label = Gerioù-tremen
+appmenuitem-extensions-and-themes =
+    .label = Askouezhioù ha neuzioù
+appmenuitem-extensions =
+    .label = Askouezhioù
 appmenuitem-addons-and-themes =
     .label = Askouezhioù ha neuzioù
 appmenuitem-print =
@@ -280,7 +284,6 @@ appmenuitem-vpn-description = Gwarezit hoc’h oberiantiz enlinenn
 
 ## Profiles panel
 
-appmenu-profiles = Profiloù
 appmenu-other-profiles = Profiloù all
 appmenu-manage-profiles =
     .label = Merañ ar profiloù
@@ -288,3 +291,5 @@ appmenu-create-profile =
     .label = Profil nevez
 appmenu-edit-profile =
     .aria-label = Kemmañ ar profil
+appmenu-profiles-2 =
+    .label = Profiloù

@@ -106,10 +106,3 @@ networkProtocolError-title = Rusachoj Rub'eyal Nisamäj K'amb'ey
 nssBadCert-title = Rutzijol K'ayewal: Nimaläj Ruk'ayewal Jikomal Petenäq
 nssBadCert-sts-title = Man Xok Ta: Jikïl jun Ruk'ayewal Jikomal
 certerror-mitm-title = Software Nuq'äch chi ri { -brand-short-name } Ütz tok pa re Ruxaq K'amaya'l Re'
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

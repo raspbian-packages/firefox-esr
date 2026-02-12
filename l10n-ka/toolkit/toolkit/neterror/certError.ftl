@@ -5,13 +5,13 @@
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 cert-error-intro = { $hostname } უსაფრთხოების უმართებულო სერტიფიკატს იყენებს.
-cert-error-mitm-intro = ვებსაიტები საკუთარ ნამდვილობას ადასტურებს სერტიფიკატებით, გამოშვებული უფლებამოსილი გამომცემლების მიერ.
+cert-error-mitm-intro = ვებსაიტები საკუთარ ნამდვილობას ადასტურებენ სერტიფიკატებით უფლებამოსილი გამომცემლებისგან.
 cert-error-mitm-mozilla = { -brand-short-name } მხარდაჭერილია არამომგებიანი Mozilla-ს მიერ, რომელიც ხელმძღვანელობს სერტიფიკატების გამცემთა (CA) სრულიად ღია საცავს. ეს CA-საცავი საშუალებას აძლევს სერტიფიკატების გამცემებს სრულად მიჰყვნენ მომხმარებლის უსაფრთხოების დაცვის დადგენილებებს.
 cert-error-mitm-connection = { -brand-short-name } დაცული კავშირის დასამოწმებლად იყენებს Mozilla-ს CA-საცავს, ნაცვლად მომხმარებლის საოპერაციო სისტემის მოწოდებული სერტიფიკატებისა. ასე რომ, თუ ანტივირუსი ან ქსელი შეეცდება კავშირში ჩართოს უსაფრთხოების სერტიფიკატი, გამოშვებული იმ გამომცემის მიერ, რომელიც არაა Mozilla-ს CA-საცავში, კავშირი მიჩნეული იქნება საფრთხის შემცველად.
 cert-error-trust-unknown-issuer-intro = შესაძლოა, ვიღაც ამ საიტის სხვა საიტად გასაღებას ცდილობდეს და ჯობია, აღარ განაგრძოთ.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
-cert-error-trust-unknown-issuer = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებს. { -brand-short-name } არ ენდობა საიტს { $hostname }, რადგან მისი უსაფრთხოების სერტიფიკატის გამომშვები უცნობია, შეიძლება თავადვე აქვთ ხელმოწერილი ან სერვერი სწორად არ აგზავნის შუალედურ სერტიფიკატებს.
+cert-error-trust-unknown-issuer = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებენ. { -brand-short-name } მიიჩნევს, რომ არასანდოა { $hostname }, რადგან მისი უსაფრთხოების სერტიფიკატის გამომშვები უცნობია, შეიძლება თავადვე აქვთ ხელმოწერილი ან სერვერი სწორად არ აგზავნის შუალედურ სერტიფიკატებს.
 cert-error-trust-cert-invalid = სერტიფიკატი სანდო არაა, რადგან სერტიფიკატების დაუდგენელი გამცემისგანაა.
 cert-error-trust-untrusted-issuer = სერტიფიკატი სანდო არაა, რადგან სერტიფიკატის გამცემი ასევე არსანდოა.
 cert-error-trust-signature-algorithm-disabled = ეს სერტიფიკატი არაა სანდო, ვინაიდან ხელმოწერილია იმ ალგორითმის საშუალებით, რომელიც გაუქმდა დაუცველობის გამო.
@@ -24,27 +24,27 @@ cert-error-trust-certificate-transparency = { -brand-short-name } არ ენ�
 cert-error-untrusted-default = სერტიფიკატის წყარო სანდო არაა.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
-cert-error-domain-mismatch = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებს. { -brand-short-name } არ ენდობა ამ საიტს, რადგან იყენებს სერტიფიკატს, რომელიც მოქმედი არაა მისამართისთვის { $hostname }.
+cert-error-domain-mismatch = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებენ. { -brand-short-name } არ ენდობა ამ საიტს, რადგან იყენებს სერტიფიკატს, რომელიც მოქმედი არაა მისამართისთვის { $hostname }.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $alt-name (string) - Alternate domain name for which the cert is valid.
-cert-error-domain-mismatch-single = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებს. { -brand-short-name } არ ენდობა ამ საიტს, რადგან იყენებს სერტიფიკატს, რომელიც მოქმედი არაა მისამართისთვის { $hostname }. სერტიფიკატი ძალმოსილია მხოლოდ მისამართისთვის <a data-l10n-name="domain-mismatch-link">{ $alt-name }</a>.
+cert-error-domain-mismatch-single = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებენ. { -brand-short-name } არ ენდობა ამ საიტს, რადგან იყენებს სერტიფიკატს, რომელიც მოქმედი არაა მისამართისთვის { $hostname }. სერტიფიკატი ძალმოსილია მხოლოდ მისამართისთვის <a data-l10n-name="domain-mismatch-link">{ $alt-name }</a>.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $alt-name (string) - Alternate domain name for which the cert is valid.
-cert-error-domain-mismatch-single-nolink = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებს. { -brand-short-name } არ ენდობა ამ საიტს, რადგან იყენებს სერტიფიკატს, რომელიც მოქმედი არაა მისამართისთვის { $hostname }. სერტიფიკატი ძალმოსილია მხოლოდ მისამართისთვის { $alt-name }.
+cert-error-domain-mismatch-single-nolink = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებენ. { -brand-short-name } არ ენდობა ამ საიტს, რადგან იყენებს სერტიფიკატს, რომელიც მოქმედი არაა მისამართისთვის { $hostname }. სერტიფიკატი ძალმოსილია მხოლოდ მისამართისთვის { $alt-name }.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $subject-alt-names (string) - Alternate domain names for which the cert is valid.
-cert-error-domain-mismatch-multiple = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებს. { -brand-short-name } არ ენდობა ამ საიტს, რადგან იყენებს სერტიფიკატს, რომელიც მოქმედი არაა მისამართისთვის { $hostname }. ეს სერტიფიკატი ძალმოსილია მხოლოდ შემდეგი მისამართებისთვის: { $subject-alt-names }
+cert-error-domain-mismatch-multiple = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებენ. { -brand-short-name } არ ენდობა ამ საიტს, რადგან იყენებს სერტიფიკატს, რომელიც მოქმედი არაა მისამართისთვის { $hostname }. ეს სერტიფიკატი ძალმოსილია მხოლოდ შემდეგი მისამართებისთვის: { $subject-alt-names }
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $not-after-local-time (Date) - Certificate is not valid after this time.
-cert-error-expired-now = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებს, რომლებიც მოქმედია გარკვეული დროით. საიტისთვის { $hostname } უსაფრთხოების სერტიფიკატის ვადის გასვლის თარიღია { $not-after-local-time }.
+cert-error-expired-now = ვებსაიტები საკუთარ ნამდვილობას სერტიფიკატებით ადასტურებენ, რომლებიც მოქმედია გარკვეული დროით. საიტისთვის { $hostname } უსაფრთხოების სერტიფიკატის ვადის გასვლის თარიღია { $not-after-local-time }.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $not-before-local-time (Date) - Certificate is not valid before this time.
-cert-error-not-yet-valid-now = ვებსაიტები საკუთარ ნამდვილობას ადასტურებს სერტიფიკატებით, რომლებიც მოქმედია გარკვეული დროით. უსაფრთხოების სერტიფიკატი საიტისთვის { $hostname } არ იქნება მოქმედი თარიღამდე { $not-before-local-time }.
+cert-error-not-yet-valid-now = ვებსაიტები საკუთარ ნამდვილობას ადასტურებენ სერტიფიკატებით, რომლებიც მოქმედია გარკვეული დროით. უსაფრთხოების სერტიფიკატი საიტისთვის { $hostname } არ იქნება მოქმედი თარიღამდე { $not-before-local-time }.
 # Variables:
 #   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 cert-error-code-prefix = შეცდომის კოდი: { $error }
@@ -57,7 +57,7 @@ cert-error-code-prefix-link = შეცდომის კოდი: <a data-l10
 cert-error-ssl-connection-error = შეცდომა დაკავშირებისას - { $hostname }. { $errorMessage }
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
-cert-error-symantec-distrust-description = ვებსაიტები საკუთარ ნამდვილობას ადასტურებს სერტიფიკატებით, გამოშვებული უფლებამოსილი კომპანიების მიერ. ბრაუზერების უმეტესობაში, აღარ მიიჩნევა სანდოდ სერტიფიკატები, რომლებსაც უშვებს GeoTrust, RapidSSL, Symantec, Thawte და VeriSign. { $hostname } იყენებს ერთ-ერთი ამ გამომშვების მიერ გამოცემულ სერტიფიკატს და შესაბამისად მისი ნამდვილობის დამოწმება ვერ მოხერხდება.
+cert-error-symantec-distrust-description = ვებსაიტები საკუთარ ნამდვილობას ადასტურებენ სერტიფიკატებით, გამოშვებული უფლებამოსილი კომპანიების მიერ. ბრაუზერების უმეტესობაში, აღარ მიიჩნევა სანდოდ სერტიფიკატები, რომლებსაც უშვებს GeoTrust, RapidSSL, Symantec, Thawte და VeriSign. { $hostname } იყენებს ერთ-ერთი ამ გამომშვების მიერ გამოცემულ სერტიფიკატს და შესაბამისად მისი ნამდვილობის დამოწმება ვერ მოხერხდება.
 cert-error-symantec-distrust-admin = შეგიძლიათ აცნობოთ ამ ხარვეზის შესახებ ვებსაიტის ხელმძღვანელობას.
 cert-error-old-tls-version = შესაძლოა, საიტზე არაა მხარდაჭერილი TLS 1.2 ოქმი, ეს კი ის უმცირესი ვერსიაა, რომელსაც საჭიროებს { -brand-short-name }.
 # Variables:
@@ -70,7 +70,7 @@ cert-error-details-cert-chain-label = Certificate chain:
 open-in-new-window-for-csp-or-xfo-error = საიტის გახსნა ახალ ფანჯარაში
 # Variables:
 #   $hostname (string) - Hostname of the website blocked by csp or xfo error.
-csp-xfo-blocked-long-desc = თქვენი უსაფრთხოებისთვის { $hostname } არ იძლევა საშუალებას და { -brand-short-name } ვერ აჩვენებს გვერდს, რომელიც სხვა საიტშია ჩამაგრებული. ამ გვერდის სანახავად, მისი ცალკე ფანჯარაში გახსნა დაგჭირდებათ.
+csp-xfo-blocked-long-desc = თქვენივე უსაფრთხოებისთვის { $hostname } არ იძლევა ნებართვას და { -brand-short-name } ვერ აჩვენებს გვერდს, რომელიც სხვა საიტზეა ჩამაგრებული. ამ გვერდის სანახავად მისი ცალკე ფანჯარაში გახსნა მოგიწევთ.
 fp-certerror-view-certificate-link = იხილეთ საიტის სერტიფიკატი
 fp-certerror-return-to-previous-page-recommended-button = უკან დაბრუნება (სასურველია)
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
@@ -107,9 +107,35 @@ fp-cert-error-code = შეცდომის კოდი: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } არ ენდობა { $hostname }-ს, რადგანაც ვერ ადასტურებს, რომ აკმაყოფილებს საჯარო სერტიფიკატის გამჭვირვალობის მოთხოვნებს.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = შესაძლოა, არც არაფრის და თავად საიტს ჰქონდეს ხარვეზი.
 fp-learn-more-about-secure-connection-failures = ვრცლად უსაფრთხო კავშირის ხარვეზების შესახებ
 fp-learn-more-about-cert-issues = ვრცლად ამ სახის სერტიფიკატების საკითხების შესახებ
 fp-learn-more-about-time-related-errors = ვრცლად არეული საათით გამოწვეული ხარვეზების მოგვარების შესახებ
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, გაუქმებულია და აღარ მიიჩნევა სანდოდ.
+cert-error-bad-signature = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან ხელმოწერა სერტიფიკატზე, რომელსაც იძლევა { $hostname }, დაუმოწმებელია.
+cert-error-key-pinning-failure = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, იყენებს მოსალოდნელისგან განსხვავებულ საჯარო გასაღებს.
+cert-error-bad-der = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, არაა სათანადოდ დაშიფრული.
+cert-error-cert-not-in-name-space = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, არაა სათანადოდ დაშიფრული.
+cert-error-inadequate-cert-type = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, არაა ნებადართული ვებსერვერისთვის.
+cert-error-path-len-constraint-invalid = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, უამრავი შუალედური სერტიფიკატითაა წარმოდგენილი ძირეულ მისამართამდე.
+cert-error-invalid-key = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, უმართებულო გასაღებითაა. სავარაუდოდ, მეტად მცირე ზომისაა უსაფრთხოებისთვის.
+cert-error-unknown-critical-extension = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, შეიცავს უკიდურესად საჭირო მხარდაუჭერელ გაფართოებას.
+cert-error-extension-value-invalid = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, შეიცავს უმართებულო გაფართოებას.
+cert-error-untrusted-issuer = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, გაცემულია უფლებამოსილი მხარისგან, რომელიც სანდოდ აღარაა მიჩნეული.
+cert-error-untrusted-cert = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, მონიშნულია არასანდოდ.
+cert-error-invalid-integer-encoding = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, შეიცავს მთელი რიცხვის არასწორ დაშიფვრას. ჩვეულებრივ, ამის გამომწვევია დართული უარყოფითი სერიული ნომრები, უარყოფითი RSA-მოდულები და საჭიროზე გრძელი დაშიფვრები.
+cert-error-unsupported-keyalg = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, მხარდაუჭერელი სახის გასაღებითაა.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან სერტიფიკატი, რომელსაც იძლევა { $hostname }, გაცემულია უფლებამოსილი მხარის მიერ, რომელიც აღარ მიიჩნევა სანდოდ.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } გიზღუდავთ ამ საიტზე შესვლას, ვინაიდან იმ სერტიფიკატის ხელმოწერის ალგორითმი, რომელსაც იძლევა { $hostname }, არ ეკუთვნის მისი ხელმოწერის ალგორითმის სივრცეს.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = ეს მისამართი შეზღუდ�
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = ჰმ. გვერდი არ იხსნება.
+internet-connection-offline-title = რაღაც ხარვეზია ქსელთან კავშირისას.
 dns-not-found-trr-only-title2 = შესაძლო საფრთხე ამ მისამართის მოძიებისას
 dns-not-found-native-fallback-title2 = შესაძლო საფრთხე ამ მისამართის მოძიებისას
 fileNotFound-title = ფაილი ვერ მოიძებნა
@@ -134,14 +161,16 @@ contentEncodingError-title = შიგთავსის დაშიფვრ�
 unsafeContentType-title = სახიფათი სახის ფაილი
 netReset-title = კავშირი გაწყდა
 netTimeout-title = კავშირის დრო ამოიწურა
+httpErrorPage-title = როგორც ჩანს, ხარვეზი საიტის მხრიდანაა
 serverError-title = როგორც ჩანს, ხარვეზი საიტის მხრიდანაა
 unknownProtocolFound-title = მისამართი გაუგებარია
-proxyConnectFailure-title = პროქსი სერვერმა კავშირი უარყო
-proxyResolveFailure-title = პროქსი სერვერის პოვნა ვერ ხერხდება
+proxyConnectFailure-title = შუამავალმა სერვერმა კავშირი უარყო
+proxyResolveFailure-title = შუამავალი სერვერის პოვნა ვერ ხერხდება
 redirectLoop-title = გვერდი არამართებულად გადამისამართდა
 unknownSocketType-title = გაუთვალისწინებელი პასუხი სერვერიდან
 nssFailure2-title = უსაფრთხო დაკავშირება ვერ მოხერხდა
 csp-xfo-error-title = { -brand-short-name } ვერ ხსნის ამ გვერდს
+corruptedContentErrorv2-title = დაზიანებული შიგთავსის შეცდომა
 corruptedContentError-title = დაზიანებული შიგთავსის შეცდომა
 sslv3Used-title = უსაფრთხო კავშირი ვერ ხერხდება
 inadequateSecurityError-title = კავშირი დაუცველია
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = შემოკლებულად
 fp-certerror-override-exception-button = მაინც გაიხსნას { $hostname } (სახიფათოა)
 fp-certerror-intro = { -brand-short-name } მიიჩნევს, რომ <strong>{ $hostname }</strong> საფრთხის შემცველია. სხვა საიტად გასაღების დროს შეიძლება მოიპარონ საკრედიტო ბარათის მონაცემები, პაროლები ან ელფოსტა.
 fp-certerror-expired-into = { -brand-short-name } მიიჩნევს, რომ <strong>{ $hostname }</strong> საფრთხის შემცველია. ან საიტია გაუმართავი, ან თქვენი საათია არეული.
+fp-certerror-transparency-intro = ვიღაც, თავს ასაღებს საიტად <strong>{ $hostname }</strong> და შეიძლება ეცადოს თქვენი ინფორმაციის მოპარვას, მათ შორის მომხმარებლის სახელის, პაროლისა თუ ელფოსტის.

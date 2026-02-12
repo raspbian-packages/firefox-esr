@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Detagls davart la telechargiada
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Las datotecas restan sin tes apparat
+downloads-private-browsing-message = Mintgin che utilisescha quest apparat po vesair las telechargiadas, era sche ti serras tut las fanestras privatas.
+downloads-private-browsing-delete-button =
+    .label = Stizzar automaticamain las datotecas
+    .accesskey = d
+downloads-private-browsing-accept-button =
+    .label = Jau hai chapì
+    .accesskey = J
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

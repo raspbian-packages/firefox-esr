@@ -30,6 +30,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Reabrir separadores fechados
         }
     .accesskey = o
+toolbar-context-turn-on-vertical-tabs =
+    .label = Ativar separadores verticais
+toolbar-context-turn-off-vertical-tabs =
+    .label = Desativar separadores verticais
+toolbar-context-customize-sidebar =
+    .label = Personalizar barra lateral
 toolbar-context-menu-manage-extension =
     .label = Gerir extensão
     .accesskey = e
@@ -54,6 +60,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Mostrar painel quando a transferência começar
     .accesskey = M
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Mostrar sempre na barra de ferramentas
+    .accesskey = s
 toolbar-context-menu-remove-from-toolbar =
     .label = Remover da barra de ferramentas
     .accesskey = R

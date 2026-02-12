@@ -34,7 +34,16 @@ removed-search-engine-message = <strong>Ha canviat el motor de cerca per defecte
 removed-search-engine-message2 = <strong>Ha canviat el motor de cerca per defecte.</strong> { $oldEngine } ja no està disponible com a motor de cerca per defecte del { -brand-short-name }. Ara el motor de cerca per defecte és { $newEngine }. Podeu canviar-lo per un altre motor de cerca per defecte en els paràmetres.
 remove-search-engine-button = D'acord
 
-## Infobar shown when user is prompted to install search engine.
+## Infobar shown when default search engine is reset due to an issue reading the settings file.
 ## Variables
-## $engineName (String) - the name of the search engine to install.
+## $newEngine (String) - the name of the new default search engine.
 
+reset-search-settings-button = D’acord
+
+## The following strings are used as input labels.
+
+add-engine-window =
+    .title = Afegeix un motor de cerca
+    .style = min-width: 32em;
+add-engine-button = Afegeix un motor personalitzat
+add-engine-name = Nom del motor de cerca

@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Masuk ke jaringan
 neterror-dns-not-found-title = Server Tidak Ditemukan
 neterror-malformed-uri-page-title = URL tidak valid
 general-body-title = Hati-hati. Ada yang tidak beres.
+problem-with-this-site-title = Sepertinya ada masalah dengan situs ini
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = Apabila Anda tidak dapat memuat laman apa pun, 
 neterror-load-error-firewall = Apabila komputer atau jaringan Anda dilindungi firewall atau proksi, pastikan bahwa { -brand-short-name } diizinkan mengakses Web.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Jika Anda mencoba memuat laman jaringan lokal, periksa apakah { -brand-short-name } telah diberikan izin Jaringan Lokal di pengaturan Privasi & Keamanan macOS.
+neterror-http-error-page = Periksa untuk memastikan Anda telah mengetikkan alamat situs web dengan benar.
 neterror-captive-portal = Anda harus masuk ke dalam jaringan ini sebelum dapat mengakses Internet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Jika Anda memasukkan alamat yang be
 neterror-dns-not-found-hint-try-again = Coba lagi nanti
 neterror-dns-not-found-hint-check-network = Periksa sambungan jaringan Anda
 neterror-dns-not-found-hint-firewall = Periksa apakah { -brand-short-name } memiliki izin untuk mengakses web (Anda mungkin tersambung tetapi berada di balik firewall)
+neterror-dns-not-found-offline-hint-header = <strong>Apa yang dapat Anda lakukan?</strong>
+neterror-dns-not-found-offline-hint-different-device = Coba sambungkan di perangkat lain.
+neterror-dns-not-found-offline-hint-modem = Periksa modem atau router Anda.
+neterror-dns-not-found-offline-hint-reconnect = Putuskan dan sambungkan kembali ke Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Kesalahan tak terduga.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } tidak dapat melindungi permintaan Anda untuk alamat situs ini melalui resolusi DNS yang terpercaya kami. Alasannya adalah sebagai berikut:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } tidak dapat melindungi permintaan Anda untuk alamat situs ini melalui penyedia DNS aman kami. Alasannya sebagai berikut:
 neterror-dns-not-found-native-fallback-heuristic = DNS lewat HTTP telah dinonaktifkan pada jaringan Anda.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } tidak dapat terhubung ke { $trrDomain }.
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = Periksa pengaturan proksi, pastikan su
 neterror-proxy-connect-failure-contact-admin = Hubungi administrator jaringan Anda untuk memastikan server proksi sudah berjalan.
 neterror-content-encoding-error = Mohon hubungi pemilik situs web mengenai masalah ini.
 neterror-unsafe-content-type = Mohon hubungi pemilik situs web mengenai masalah ini.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } tidak mempercayai { $hostname } karena sambungannya tidak aman. Coba ubah URL ke HTTPS.
 neterror-nss-failure-not-verified = Laman yang ingin dibuka tidak dapat ditampilkan karena keaslian data yang diterima tidak bisa diverifikasi.
 neterror-nss-failure-contact-website = Mohon hubungi pemilik situs web mengenai masalah ini.
 # Variables:
@@ -159,3 +167,13 @@ certerror-coep-learn-more = Pelajari lebih lanjut tentang Cross Origin Embedder 
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Kode kesalahan: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } tidak dapat membuat sambungan aman ke server di { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Sepertinya situs ini menggunakan perangkat lunak lama dengan masalah keamanan yang diketahui.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Pastikan Anda menggunakan { -brand-short-name } versi terbaru. Buka Bantuan > Tentang { -brand-short-name } di menu. Jika Anda menggunakan { -brand-short-name } terbaru, kemungkinan besar masalahnya ada pada situs itu sendiri.

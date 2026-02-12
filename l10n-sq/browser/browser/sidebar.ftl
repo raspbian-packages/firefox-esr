@@ -4,8 +4,8 @@
 
 menu-view-genai-chat =
     .label = Robot IA Fjalosjesh
-menu-view-review-checker =
-    .label = Kontrollor Shqyrtimesh
+menu-view-contextual-password-manager =
+    .label = Fjalëkalime
 sidebar-options-menu-button =
     .title = Hape menunë
 
@@ -21,14 +21,24 @@ sidebar-history-date-this-month =
     .heading = { DATETIME($date, dateStyle: "full") }
 sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+sidebar-history-site-localhost =
+    .heading = (kartela vendore)
 sidebar-history-delete =
     .title = Fshije prej Historiku
-sidebar-history-sort-by-date =
-    .label = Renditi sipas datash
-sidebar-history-sort-by-site =
-    .label = Renditi sipas sajtesh
 sidebar-history-clear =
     .label = Spastro historikun
+sidebar-history-sort-by-heading = Renditi sipas:
+sidebar-history-sort-option-date =
+    .label = Datash
+sidebar-history-sort-option-site =
+    .label = Sajtesh
+sidebar-history-sort-option-date-and-site =
+    .label = Datash dhe Sajtesh
+sidebar-history-sort-option-last-visited =
+    .label = Vizituar së fundi më
 
 ## Labels for sidebar search
 
@@ -44,24 +54,21 @@ sidebar-customize-extensions-header = Zgjerime anështylle
 sidebar-customize-firefox-tools-header =
     .label = Mjete { -brand-product-name }
 sidebar-customize-firefox-settings = Administroni rregullime { -brand-short-name }-i
-sidebar-position-left =
-    .label = Shfaqe majtas
-sidebar-position-right =
-    .label = Shfaqe djathtas
 sidebar-vertical-tabs =
     .label = Skeda vertikale
-sidebar-horizontal-tabs =
-    .label = Skeda horizontale
-sidebar-customize-tabs-header =
-    .label = Rregullime skedash
-sidebar-customize-button-header =
-    .label = Buton anështylle
-sidebar-customize-position-header =
-    .label = Pozicion anështylle
-sidebar-visibility-setting-always-show =
-    .label = Zgjeroni dhe tkurrni anështyllën
-sidebar-visibility-setting-hide-sidebar =
-    .label = Shfaqni dhe fshihni anështyllën
+sidebar-settings =
+    .label = Rregullime anështylle
+sidebar-hide-tabs-and-sidebar =
+    .label = Fshih skeda dhe anështyllë
+sidebar-show-on-the-right =
+    .label = Shpjere anështyllën djathtas
+sidebar-show-on-the-left =
+    .label = Shpjere anështyllën majtas
+# Option to automatically expand the collapsed sidebar when the mouse pointer
+# hovers over it.
+expand-sidebar-on-hover =
+    .label = Zgjeroje anështyllën, kur i kalohet kursori përsipër
+sidebar-manage-extensions = Administroni Zgjerime
 
 ## Labels for sidebar context menu items
 
@@ -71,23 +78,43 @@ sidebar-context-menu-remove-extension =
     .label = Hiqe zgjerimin
 sidebar-context-menu-report-extension =
     .label = Raportojeni zgjerimin
+sidebar-context-menu-open-in-tab =
+    .label = Hape në Skedë të Re
+sidebar-context-menu-open-in-container-tab =
+    .label = Hape në Skedë të Re Kontejneri
 sidebar-context-menu-open-in-window =
     .label = Hape në Dritare të Re
 sidebar-context-menu-open-in-private-window =
     .label = Hape në Dritare të Re Private
+sidebar-context-menu-forget-site =
+    .label = Spastroni Krejt të Dhënat për Sajtin…
 sidebar-context-menu-bookmark-tab =
     .label = Faqeruaje Skedën…
 sidebar-context-menu-copy-link =
     .label = Kopjoji Lidhjen
+sidebar-context-menu-hide-sidebar =
+    .label = Fshihe Anështyllën
+sidebar-context-menu-enable-vertical-tabs =
+    .label = Aktivizo Skeda Vertikale
+sidebar-context-menu-customize-sidebar =
+    .label = Përshtatni Anështyllën
 # Variables:
 #   $deviceName (String) - The name of the device the user is closing a tab for
 sidebar-context-menu-close-remote-tab =
     .label = Mbylle skedën te { $deviceName }
+sidebar-context-menu-remove-extension2 =
+    .label = Hiqe nga { -brand-short-name }
+sidebar-context-menu-unpin-extension =
+    .label = Hiqe nga Anështylla
 
 ## Labels for sidebar history context menu items
 
-sidebar-history-context-menu-delete-page =
-    .label = Fshije prej Historiku
+sidebar-history-context-menu-delete-page-2 =
+    .label = Fshije Faqen nga Historiku
+sidebar-history-context-menu-bookmark-page =
+    .label = Faqeruani Faqe…
+sidebar-history-context-menu-delete-pages =
+    .label = Fshini Faqe nga Historiku
 
 ## Labels for sidebar menu items.
 
@@ -101,8 +128,10 @@ sidebar-menu-bookmarks-label =
     .label = Faqerojtës
 sidebar-menu-customize-label =
     .label = Përshtatni anështyllën
-sidebar-menu-review-checker-label =
-    .label = Kontrollor Shqyrtimesh
+sidebar-menu-contextual-password-manager-label =
+    .label = Fjalëkalime
+sidebar-menu-more-tools-label =
+    .label = Më tepër mjete
 
 ## Tooltips for sidebar menu items.
 
@@ -122,8 +151,16 @@ sidebar-menu-open-bookmarks-tooltip = Hapni faqerojtësit ({ $shortcut })
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Mbyllni faqerojtësit ({ $shortcut })
-sidebar-menu-open-ai-chatbot-tooltip = Hapni robot IA
-sidebar-menu-close-ai-chatbot-tooltip = Mbyllni robot IA
+
+## Tooltips displayed over the AI chatbot icon.
+## Variables:
+##   $shortcut (String) - The OS specific keyboard shortcut.
+##   $provider (String) - The name of the AI chatbot provider (if available).
+
+sidebar-menu-open-ai-chatbot-tooltip-generic = Hapni robot IA fjalosjeje ({ $shortcut })
+sidebar-menu-open-ai-chatbot-provider-tooltip = Hapni { $provider } ({ $shortcut })
+sidebar-menu-close-ai-chatbot-tooltip-generic = Mbylleni robotin IA të fjalosjes ({ $shortcut })
+sidebar-menu-close-ai-chatbot-provider-tooltip = Mbylleni { $provider } ({ $shortcut })
 
 ## Headings for sidebar menu panels.
 
@@ -133,6 +170,8 @@ sidebar-menu-history-header =
     .heading = Historik
 sidebar-menu-syncedtabs-header =
     .heading = Skeda prej pajisjesh të tjera
+sidebar-menu-cpm-header =
+    .heading = Fjalëkalime
 sidebar-panel-header-close-button =
     .tooltiptext = Mbylle
 
@@ -156,18 +195,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Zgjeroje anështyllën
-    .label = Anështylla
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Tkurre anështyllën
-    .label = Anështylla
-sidebar-widget-show-sidebar =
-    .tooltiptext = Shfaqe anështyllën
-    .label = Anështylla
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Fshihe anështyllën
-    .label = Anështylla
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =
@@ -188,3 +215,7 @@ sidebar-widget-show-sidebar2 =
 sidebar-widget-hide-sidebar2 =
     .tooltiptext = Fshihe anështyllën ({ $shortcut })
     .label = Anështylla
+# Promotional message displayed in the expanded sidebar state for Vertical Tabs
+# users who do not have any pinned tabs. Indicates that they can drop tabs in
+# this area to pin them.
+sidebar-pins-promo-text = Tërhiqni këtu skeda të rëndësishme, për t’i pasur afër

@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Nie teraz
     .secondarybuttonaccesskey = N
 appmenu-update-restart-message2 = Pobierz najnowszą wersję przeglądarki { -brand-shorter-name }. Otwarte karty i okna zostaną przywrócone.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Cofnij
+    .secondarybuttonaccesskey = C
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } nie może zostać automatycznie uaktualniony do najnowszej wersji.
     .buttonlabel = Uaktualnij przeglądarkę { -brand-shorter-name } mimo to
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = OK
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = Zarządzaj dodatkami i motywami w menu aplikacji.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = W <a data-l10n-name="settings-link">ustawieniach rozszerzenia</a> można w każdej chwili zmienić uprawnienia i preferencje zbierania danych.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Przypnij rozszerzenie do paska narzędzi
+    .accesskey = P
 appmenu-addon-post-install-incognito-checkbox =
     .label = To rozszerzenie może działać w oknach prywatnych
     .accesskey = T

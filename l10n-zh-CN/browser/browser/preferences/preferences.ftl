@@ -4,9 +4,6 @@
 
 do-not-track-description = 向网站发出“请勿跟踪”信号，示明您不想被跟踪
 do-not-track-removal = 我们已停止支持“请勿跟踪”信号
-do-not-track-description2 =
-    .label = 向网站发出“请勿跟踪”请求
-    .accesskey = d
 do-not-track-learn-more = 详细了解
 do-not-track-option-default-content-blocking-known =
     .label = 仅当 { -brand-short-name } 设置为拦截已知跟踪器时
@@ -16,6 +13,8 @@ global-privacy-control-description =
     .label = 要求网站不许出售或共享我的数据
     .accesskey = s
 non-technical-privacy-header = 网站隐私首选项
+non-technical-privacy-label =
+    .aria-label = { non-technical-privacy-header }
 # Do not translate.
 # "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
 # included to facilitate power-user search of the about:preferences page.
@@ -71,6 +70,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = 关闭
+do-not-track-removal2 =
+    .label = 我们不再支持“请勿跟踪”信号
 
 ## Browser Restart Dialog
 
@@ -112,6 +113,10 @@ extension-controlling-proxy-config = <img data-l10n-name ="icon"/> <strong>{ $na
 # <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
 # <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
 extension-controlled-enable = 要启用该扩展，请从 <img data-l10n-name="menu-icon"/> 菜单打开 <img data-l10n-name="addons-icon"/> 附加组件页面。
+extension-controlled-enable-2 = 若要重新启用此扩展，请访问<a data-l10n-name="addons-link">扩展和主题</a>。
+# This string is shown to notify the user that their home page or new tab preferences
+# are being controlled by an extension.
+extension-controlling-homepage = “{ $name }”控制主页的部分设置。
 
 ## Preferences UI Search Results
 
@@ -126,6 +131,10 @@ startup-header = 启动
 always-check-default =
     .label = 总是检查 { -brand-short-name } 是否是您的默认浏览器
     .accesskey = w
+is-default-browser =
+    .message = { -brand-short-name } 目前是您的默认浏览器
+is-not-default-browser =
+    .message = { -brand-short-name } 目前不是您的默认浏览器
 is-default = { -brand-short-name } 目前是您的默认浏览器
 is-not-default = { -brand-short-name } 目前不是您的默认浏览器
 set-as-my-default-browser =
@@ -134,6 +143,8 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = 打开先前的窗口和标签页
     .accesskey = s
+startup-windows-launch-on-login-profile-disabled =
+    .message = 在“选择用户配置文件”窗口中勾选“{ profile-manager-use-selected.label }”以启用此首选项。
 windows-launch-on-login =
     .label = 启动电脑时自动打开 { -brand-short-name }
     .accesskey = O
@@ -148,6 +159,11 @@ preferences-data-migration-description = 将书签、密码、历史记录和自
 preferences-data-migration-button =
     .label = 导入数据
     .accesskey = m
+preferences-profiles-header = 配置文件
+preferences-manage-profiles-description = 各配置文件独立保存浏览数据和设置（包括历史记录、密码等）。
+preferences-manage-profiles-learn-more = 详细了解
+preferences-manage-profiles-button =
+    .label = 管理配置文件
 tabs-group-header = 标签页
 ctrl-tab-recently-used-order =
     .label = 按下 Ctrl+Tab 时，依照最近使用顺序循环切换标签页
@@ -155,6 +171,8 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = 在标签页中打开链接而非新窗口
     .accesskey = w
+open-external-link-next-to-active-tab =
+    .label = 从应用打开链接时，将其置于当前使用的标签页旁
 ask-on-close-multiple-tabs =
     .label = 关闭多个标签页前先询问
     .accesskey = m
@@ -215,18 +233,39 @@ containers-disable-alert-cancel-button = 保持启用
 containers-remove-alert-title = 移除此身份？
 # Variables:
 #   $count (number) - Number of tabs that will be closed.
-containers-remove-alert-msg = 如果您现在移除此身份，{ $count } 个身份标签页将被关闭。您是否确定移除此身份？
+containers-remove-alert-msg = 如果您现在移除此身份，{ $count } 个身份标签页将被关闭。您是否确定要移除此身份？
 containers-remove-ok-button = 移除此身份
 containers-remove-cancel-button = 不移除此身份
 settings-tabs-show-image-in-preview =
     .label = 悬停在标签页的标签上时显示预览图
     .accessKey = h
+browser-layout-header = 浏览器布局
+browser-layout-horizontal-tabs =
+    .label = 水平标签页
+browser-layout-horizontal-tabs-desc = 在浏览器顶部显示
+browser-layout-vertical-tabs =
+    .label = 垂直标签页
+browser-layout-vertical-tabs-desc = 在侧边的侧栏中显示
+browser-layout-show-sidebar =
+    .label = 显示侧栏
+browser-layout-show-sidebar-desc = 快捷使用书签、手机上的标签页、AI 聊天机器人等内容，无需分心于其他界面。
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = 语言与外观
 preferences-web-appearance-header = 网站外观
 preferences-web-appearance-description = 某些网站可依照您的偏好调整自身配色，您可在下方选择要使用的网站配色方案。
+preferences-web-appearance-choice-auto2 =
+    .label = 自动
+    .title = 依照系统设置和 { -brand-short-name } 主题，自动更改网站背景和内容外观。
+preferences-web-appearance-choice-light2 =
+    .label = 浅色
+    .title = 在网站背景和内容使用浅色外观。
+preferences-web-appearance-choice-dark2 =
+    .label = 深色
+    .title = 在网站背景和内容使用深色外观。
+web-appearance-group =
+    .aria-label = 网站外观
 preferences-web-appearance-choice-auto = 自动
 preferences-web-appearance-choice-light = 浅色
 preferences-web-appearance-choice-dark = 深色
@@ -244,14 +283,27 @@ preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning = 您的颜色选择将覆盖网站外观。<a data-l10n-name="colors-link">管理颜色</a>
+preferences-web-appearance-override-warning3 =
+    .message = 您的对比度控制设置正在覆盖网站外观。
+preferences-web-appearance-link =
+    .label = 在“扩展和主题”中管理 { -brand-short-name } 主题
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning2 =
-    .message = 您的颜色选择将覆盖网站外观。
+preferences-web-appearance-override-warning = 您的颜色选择将覆盖网站外观。<a data-l10n-name="colors-link">管理颜色</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = 到<a data-l10n-name="themes-link">扩展和主题</a>管理 { -brand-short-name } 主题
+preferences-contrast-control-header = 对比度控制
+preferences-contrast-control-description = 不同网站的前景色和背景色各异。通过配置 { -brand-short-name } 使用相同颜色显示所有网站，可让内容更清晰易读。
+preferences-contrast-control-use-platform-settings =
+    .label = 自动（使用系统设置）
+    .accesskey = A
+preferences-contrast-control-off =
+    .label = 关闭
+    .accesskey = O
+preferences-contrast-control-custom =
+    .label = 自定义
+    .accesskey = C
 preferences-colors-header = 颜色
 preferences-colors-description = 覆盖 { -brand-short-name } 的默认文本、网站背景、链接颜色。
 preferences-colors-manage-button =
@@ -310,6 +362,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = 文件与应用程序
+downloads-header-2 =
+    .label = 下载
+download-save-where-2 =
+    .label = 保存文件至
+    .accesskey = v
 download-header = 下载
 download-save-where = 保存文件至
     .accesskey = v
@@ -327,6 +384,9 @@ download-choose-folder =
 download-always-ask-where =
     .label = 总是询问保存至何处
     .accesskey = A
+download-private-browsing-delete =
+    .label = 关闭所有隐私窗口时删除在隐私浏览中下载的文件
+    .accesskey = D
 applications-header = 应用程序
 applications-description = 选择 { -brand-short-name } 如何处理这些文件。
 applications-filter =
@@ -481,6 +541,8 @@ performance-default-content-process-count =
 ## General Section - Browsing
 
 browsing-title = 浏览
+browsing-group-label =
+    .aria-label = 浏览
 browsing-use-autoscroll =
     .label = 使用自动滚屏
     .accesskey = a
@@ -535,9 +597,10 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = 新窗口和标签页
 home-new-windows-tabs-description2 = 选择您打开主页、新窗口和新标签页时要看到的内容。
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = 主页和新窗口
+home-homepage-mode-label2 = 新窗口
 home-newtabs-mode-label = 新标签页
 home-restore-defaults =
     .label = 恢复默认设置
@@ -550,6 +613,11 @@ home-mode-choice-blank =
     .label = 空白页
 home-homepage-custom-url =
     .placeholder = 粘贴一个网址…
+# This button is shown when the homepage is managed by an extension and is placed below extension-controlling-homepage.
+home-homepage-manage-extension-button =
+    .label = 管理扩展
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-url = 选择特定网站
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -564,18 +632,45 @@ use-current-pages =
 choose-bookmark =
     .label = 使用书签…
     .accesskey = B
+home-homepage-header = 主页
+
+## Custom Homepage subpage
+
+home-custom-homepage-header = 自定义主页
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-subheader = 网址
+home-custom-homepage-address =
+    .placeholder = 输入地址
+home-custom-homepage-address-button =
+    .label = 添加地址
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-websites-yet = 未添加网站。
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with = 替换为
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-current-pages-button =
+    .label = 当前打开的页面
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-bookmarks-button =
+    .label = 书签…
 
 ## Home Section - Firefox Home Content Customization
 
 home-prefs-content-header2 = { -firefox-home-brand-name }内容
+home-prefs-content-header3 = { -firefox-home-brand-name }
 home-prefs-content-description2 = 选择要在您的 { -firefox-home-brand-name }上显示的内容。
 home-prefs-search-header =
     .label = 网络搜索
+home-prefs-search-header2 =
+    .label = 搜索
 home-prefs-shortcuts-header =
     .label = 快捷方式
 home-prefs-shortcuts-description = 您保存或访问过的网站
 home-prefs-shortcuts-by-option-sponsored =
     .label = 赞助商网站
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
 
 ## Home Section - Firefox Home Content Customization
 
@@ -585,6 +680,12 @@ home-prefs-recommended-by-description-new = 由 { -brand-product-name } 旗下 {
 home-prefs-recommended-by-header-generic =
     .label = 推荐文章
 home-prefs-recommended-by-description-generic = 由 { -brand-product-name } 系列产品推荐的精选内容
+home-prefs-stories-header =
+    .label = 文章
+home-prefs-stories-description = 根据您的阅读记录为您推荐文章
+home-prefs-stories-header2 =
+    .label = 文章
+    .description = 由 { -brand-product-name } 系列产品推荐的精选内容
 
 ##
 
@@ -615,6 +716,26 @@ home-prefs-weather-header =
     .label = 天气
 home-prefs-weather-description = 速览今日天气预报
 home-prefs-weather-learn-more-link = 详细了解
+home-prefs-widgets-header =
+    .label = 小组件
+home-prefs-trending-search-header =
+    .label = 热门搜索
+home-prefs-trending-search-description = 流行及常搜主题
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = 清单
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = 计时器
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = 支持 { -brand-product-name }
+home-prefs-mission-message = 建设一个更好的互联网的使命，离不开我们赞助商的支持
+home-prefs-mission-message-learn-more-link = 了解其方式
+home-prefs-mission-message2 =
+    .message = 建设一个更好的互联网的使命，离不开我们赞助商的支持。
+home-prefs-manage-topics-link = 管理主题
+home-prefs-choose-wallpaper-link = 选择壁纸
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -679,6 +800,9 @@ search-remove-engine =
 search-add-engine =
     .label = 添加
     .accesskey = A
+search-edit-engine =
+    .label = 编辑
+    .accesskey = E
 search-find-more-link = 寻找更多搜索引擎
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
@@ -687,12 +811,21 @@ search-keyword-warning-title = 关键词重复
 #   $name (string) - Name of a search engine.
 search-keyword-warning-engine = 您选择的关键词已用于“{ $name }”，请换一个。
 search-keyword-warning-bookmark = 您选择的关键词已用于某个书签，请换一个。
+# This warning is displayed when the chosen name is already in use.
+# Variables:
+#   $name (string) - Name of a search engine.
+edit-engine-name-warning-duplicate = 已有名为“{ $name }”的搜索引擎，请选择其他名称。
+remove-engine-confirmation = 您确定要移除此搜索引擎吗？
+remove-engine-remove = 移除
+remove-addon-engine-alert = 若要移除此搜索引擎，请先移除关联的附加组件。
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = 回到设置
 containers-header = 身份标签页
+containers-section-header =
+    .heading = 身份标签页
 containers-add-button =
     .label = 添加新身份
     .accesskey = A
@@ -857,6 +990,14 @@ sync-choose-what-to-sync-dialog4 =
 ## The device name controls.
 
 sync-device-name-header = 设备名称
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = 设备名称
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = 更改设备名称
+    .accesskey = h
 sync-device-name-change =
     .label = 更改设备名称…
     .accesskey = h
@@ -997,6 +1138,28 @@ autofill-saved-payment-methods-button = 保存的付款方式
 # This operation requires the user to authenticate with the operating system (device sign-in)
 autofill-reauth-payment-methods-checkbox = 填写和管理付款方式前需验证设备登录信息
     .accesskey = o
+autofill-payment-methods-title = 付款方式
+autofill-payment-methods-header =
+    .aria-label = 付款方式
+autofill-payment-methods-checkbox-message-2 =
+    .label = 保存和自动填写付款信息
+    .accesskey = p
+autofill-payment-methods-manage-payments-button =
+    .label = 管理付款方式
+    .accesskey = m
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox-2 =
+    .label = 自动填写和管理付款方式前需验证设备登录信息
+    .accesskey = o
+autofill-addresses-title = 地址等信息
+autofill-addresses-header =
+    .aria-label = 地址等信息
+autofill-addresses-checkbox-message =
+    .label = 保存并自动填写地址
+    .accesskey = S
+autofill-addresses-manage-addresses-button =
+    .label = 管理地址等信息
+    .accesskey = M
 
 ## Privacy Section - History
 
@@ -1018,6 +1181,12 @@ history-remember-option-never =
     .label = 不记录历史
 history-remember-option-custom =
     .label = 使用自定义设置
+history-remember-description2 =
+    .description = { -brand-short-name } 将记住您的浏览、下载、表单和搜索记录。
+history-dontremember-description2 =
+    .description = { -brand-short-name } 将采用与“隐私浏览模式”相同的设置，不会记录您浏览网络的历史。
+history-custom-description =
+    .description = { -brand-short-name } 将使用自定义设置处理您的浏览、下载、表单和搜索记录。
 history-remember-description = { -brand-short-name } 将记住您的浏览、下载、表单和搜索记录。
 history-dontremember-description = { -brand-short-name } 将采用与“隐私浏览模式”相同的设置，不会记录您浏览网络的历史。
 history-private-browsing-permanent =
@@ -1042,7 +1211,13 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookie 和网站数据
+sitedata-label =
+    .aria-label = { sitedata-header }
 sitedata-total-size-calculating = 正在计算网站数据和缓存的大小…
+# Variables:
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size2 = 您已存储的 Cookie、历史记录、网站数据和缓存目前使用了 <strong>{ $value } { $unit }</strong> 磁盘空间。
 # Variables:
 #   $value (number) - Value of the unit (for example: 4.6, 500)
 #   $unit (string) - Name of the unit (for example: "bytes", "KB")
@@ -1051,6 +1226,8 @@ sitedata-learn-more = 详细了解
 sitedata-delete-on-close =
     .label = 关闭 { -brand-short-name } 时删除 Cookie 与网站数据
     .accesskey = C
+sitedata-delete-on-close-private-browsing3 =
+    .message = 根据您的历史记录设置，{ -brand-short-name } 将在关闭浏览器时删除浏览期间产生的 Cookie 和网站数据。
 sitedata-delete-on-close-private-browsing = 永久启用隐私浏览模式后，每次关闭 { -brand-short-name } 时都会清除 Cookie 和网站数据。
 sitedata-delete-on-close-private-browsing2 = 根据您的历史记录设置，{ -brand-short-name } 将在关闭浏览器时删除浏览期间产生的 Cookie 和网站数据。
 sitedata-allow-cookies-option =
@@ -1067,6 +1244,8 @@ sitedata-option-block-cross-site-trackers =
     .label = 跨站跟踪器
 sitedata-option-block-cross-site-tracking-cookies =
     .label = 跨站跟踪性 Cookie
+sitedata-option-block-cross-site-cookies2 =
+    .label = 隔离跨站 Cookie
 sitedata-option-block-cross-site-cookies =
     .label = 跨站跟踪性 Cookie，并隔离其余跨站 Cookie
 sitedata-option-block-unvisited =
@@ -1075,6 +1254,12 @@ sitedata-option-block-all-cross-site-cookies =
     .label = 所有跨站 Cookie（可能导致网站异常）
 sitedata-option-block-all =
     .label = 所有 Cookie（将会导致网站异常）
+sitedata-clear2 =
+    .label = 清除浏览数据
+    .accesskey = I
+sitedata-settings2 =
+    .label = 管理浏览数据
+    .accesskey = M
 sitedata-clear =
     .label = 清除数据…
     .accesskey = l
@@ -1084,6 +1269,10 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = 管理例外…
     .accesskey = x
+sitedata-cookies-exceptions2 =
+    .label = 管理例外
+    .accesskey = x
+    .description = 您可以指定一律允许或不允许哪些网站使用 Cookie 和网站数据。
 
 ## Privacy Section - Cookie Banner Handling
 
@@ -1103,7 +1292,19 @@ cookie-banner-blocker-checkbox-label =
 ## Privacy Section - Address Bar
 
 addressbar-header = 地址栏
+addressbar-suggest-1 = 选择在地址栏中显示的建议
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest-1 = { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest-1 = 在地址栏显示来自 { -brand-short-name } 及我们的合作伙伴的建议。
 addressbar-suggest = 使用地址栏时，为我建议：
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = 地址栏 — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest = 选择在地址栏显示的建议类型。
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = 详细了解
 addressbar-locbar-history-option =
     .label = 浏览历史
     .accesskey = H
@@ -1123,6 +1324,9 @@ addressbar-locbar-shortcuts-option =
 addressbar-locbar-topsites-option =
     .label = 常用网站
     .accesskey = T
+addressbar-locbar-engines-option-1 =
+    .label = 建议使用的搜索引擎
+    .accesskey = a
 addressbar-locbar-engines-option =
     .label = 搜索引擎
     .accesskey = a
@@ -1136,7 +1340,30 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = 显示热门搜索建议
     .accesskey = t
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = { -brand-short-name } 的建议
+addressbar-locbar-suggest-all-option-desc = 从网络上获取与您的搜索相关的建议。
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = { -brand-short-name } 的建议
+addressbar-locbar-suggest-nonsponsored-desc = 从网络上获取与您的搜索相关的建议。
+addressbar-locbar-suggest-sponsored-option =
+    .label = 赞助商建议
+addressbar-locbar-suggest-sponsored-desc = 不定期提供赞助商建议以支持 { -brand-short-name }。
+# This string is used for a checkbox in the settings UI that opts the
+# user into "online" Firefox Suggest, allowing them to receive suggestions from
+# Mozilla's Merino server.
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since the online suggest is created and maintained
+# by Mozilla.
+addressbar-firefox-suggest-online =
+    .label = 在键入时获取来自 Mozilla 的建议
 addressbar-quickactions-learn-more = 详细了解
+addressbar-dismissed-suggestions-label = 忽略的建议
+addressbar-restore-dismissed-suggestions-description = 恢复显示已忽略的赞助商和 { -brand-short-name } 的建议。
+addressbar-restore-dismissed-suggestions-button =
+    .label = 恢复
 
 ## Privacy Section - Content Blocking
 
@@ -1173,6 +1400,7 @@ content-blocking-private-windows = 隐私窗口中的跟踪性内容
 content-blocking-cross-site-cookies-in-all-windows2 = 所有窗口中的跨站 Cookie
 content-blocking-cross-site-tracking-cookies = 跨站跟踪性 Cookie
 content-blocking-all-cross-site-cookies-private-windows = 隐私窗口中的跨站 Cookie
+content-blocking-isolate-cross-site-cookies = 隔离跨站 Cookie
 content-blocking-cross-site-tracking-cookies-plus-isolate = 跨站跟踪性 Cookie，并隔离其余的 Cookie
 content-blocking-social-media-trackers = 社交媒体跟踪器
 content-blocking-all-cookies = 所有 Cookie
@@ -1193,8 +1421,23 @@ content-blocking-etp-standard-tcp-rollout-description = “全方位 Cookie 保�
 content-blocking-etp-standard-tcp-rollout-learn-more = 详细了解
 content-blocking-etp-standard-tcp-title = 包含我们迄今最强大的隐私保护功能 — 全方位 Cookie 保护
 content-blocking-warning-title = 注意！
+content-blocking-warning-title-2 = 严格级别跟踪保护可能导致某些网站异常
+content-blocking-warning-title-custom = 自定义跟踪保护可能导致某些网站异常
+# “Fix site issues” references the string content-blocking-exceptions-subheader
+content-blocking-and-isolating-etp-warning-description-4 = { -brand-short-name } 建议使用“修复网站问题”设置，以避免网站功能和内容出现异常。若网站异常，可尝试为其关闭跟踪保护，以加载所有内容。
 content-blocking-and-isolating-etp-warning-description-2 = 此设置可能会导致某些网站无法显示内容或正常工作。若网站异常，则可能需要关闭该网站的跟踪保护功能，以加载全部内容。
 content-blocking-warning-learn-how = 了解要如何做
+content-blocking-baseline-exceptions-3 =
+    .label = 修复严重网站问题（推荐）
+    .description = 仅取消屏蔽可能包含跟踪器的必要元素，有助于加载网站和功能。可解决大多数常见问题。
+# This option to fix minor site issues must be used with the option to fix major site issues (string content-blocking-baseline-exceptions-3)
+content-blocking-convenience-exceptions-3 =
+    .label = 修复轻微网站问题
+    .description = 取消屏蔽可能包含跟踪器的元素，以恢复文章内视频和评论区等内容。此操作可避免网站出现问题，但会降低保护效果。需配合修复严重问题功能使用。
+content-blocking-baseline-uncheck-warning-dialog-title = 您确定要关闭修复吗？
+content-blocking-baseline-uncheck-warning-dialog-body = 此设置有助于修复最常见的网站问题。关闭此功能后，部分网站可能无法正常运行，且 { -brand-short-name } 将无法协助解决相关问题。
+content-blocking-baseline-uncheck-warning-dialog-ok-button = 关闭修复
+content-blocking-baseline-uncheck-warning-dialog-cancel-button = 保持修复
 content-blocking-reload-description = 需要重新加载标签页才能应用变更。
 content-blocking-reload-tabs-button =
     .label = 重新加载所有标签页
@@ -1249,6 +1492,14 @@ permissions-location = 位置
 permissions-location-settings =
     .label = 设置…
     .accesskey = l
+permissions-localhost = 设备应用和服务
+permissions-localhost-settings =
+    .label = 设置…
+    .accesskey = t
+permissions-local-network = 本地网络设备
+permissions-local-network-settings =
+    .label = 设置…
+    .accesskey = t
 permissions-xr = 虚拟现实
 permissions-xr-settings =
     .label = 设置…
@@ -1274,10 +1525,18 @@ permissions-notification-link = 详细了解
 permissions-notification-pause =
     .label = 暂停通知直至下次打开 { -brand-short-name }
     .accesskey = n
+permissions-autoplay2 =
+    .label = 自动播放
 permissions-autoplay = 自动播放
 permissions-autoplay-settings =
     .label = 设置…
     .accesskey = t
+permissions-block-popups2 =
+    .label = 拦截弹出式窗口和第三方重定向
+    .accesskey = B
+permissions-addon-install-warning2 =
+    .label = 当网站尝试安装扩展时发出警告
+    .accesskey = W
 permissions-block-popups =
     .label = 阻止弹出式窗口
     .accesskey = B
@@ -1293,12 +1552,33 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = 例外…
     .accesskey = E
+permissions-location2 =
+    .label = 位置
+permissions-localhost2 =
+    .label = 设备应用和服务
+permissions-local-network2 =
+    .label = 本地网络设备
+permissions-xr2 =
+    .label = 虚拟现实
+permissions-camera2 =
+    .label = 摄像头
+permissions-microphone2 =
+    .label = 麦克风
+# Privacy permission for sound output devices.
+permissions-speaker2 =
+    .label = 扬声器
+permissions-notification2 =
+    .label = 通知
 
 ## Privacy Section - Data Collection
 
 collection-header = { -brand-short-name } 数据收集与使用
 collection-header2 = { -brand-short-name } 数据收集与使用
     .searchkeywords = 遥测
+preferences-collection-description = 我们力图为您提供选择权，并保证只以最低限度收集为众人改进 { -brand-product-name } 所必需的数据。
+preferences-collection-privacy-notice = 查看隐私声明
+preferences-across-profiles = 此处的设置将应用到此设备上的所有 { -brand-product-name } 配置文件。
+preferences-view-profiles = 查看所有配置文件
 collection-description = 我们力图为您提供选择权，并保证只收集我们为众人提供和改进 { -brand-short-name } 所需的信息。我们仅在征得您的同意后接收个人信息。
 collection-privacy-notice = 隐私声明
 collection-health-report-telemetry-disabled = 您不再允许 { -vendor-short-name } 捕获技术和交互数据。过去收集的所有数据将在 30 天内删除。
@@ -1306,7 +1586,7 @@ collection-health-report-telemetry-disabled-link = 详细了解
 collection-usage-ping =
     .label = 向 { -vendor-short-name } 发送每日使用情况报告
     .accesskey = u
-collection-usage-ping-description = 此数据可帮助 { -vendor-short-name } 估算活跃用户数量。
+collection-usage-ping-description = 此信息可帮助 { -vendor-short-name } 估算活跃用户数量。
 collection-health-report2 =
     .label = 向 { -vendor-short-name } 发送技术与交互数据
     .accesskey = r
@@ -1319,8 +1599,8 @@ collection-studies2 =
     .label = 安装并运行研究
 collection-studies-description = 抢先体验尚未全面推出的功能和概念。
 collection-studies =
-    .label = 允许 { -brand-short-name } 安装并运行一些实验项目
-collection-studies-link = 查看 { -brand-short-name } 在进行的实验
+    .label = 允许 { -brand-short-name } 安装并运行一些研究项目
+collection-studies-link = 查看 { -brand-short-name } 研究
 addon-recommendations2 =
     .label = 允许进行个性化扩展推荐
 addon-recommendations-description = 获取扩展推荐，改进浏览体验。
@@ -1338,8 +1618,6 @@ addon-recommendations-link = 详细了解
 # or builds with no Telemetry support available.
 collection-health-report-disabled = 在此构建配置下数据反馈被禁用
 collection-backlogged-crash-reports-with-link = 允许 { -brand-short-name } 代您发送积压的崩溃报告 <a data-l10n-name="crash-reports-link">详细了解</a>
-    .accesskey = c
-collection-backlogged-crash-reports = 允许 { -brand-short-name } 代您发送积压的崩溃报告
     .accesskey = c
 privacy-segmentation-section-header = 增强浏览体验的新功能
 privacy-segmentation-section-description = 当我们推出需使用您数据以提供更个性化的上网体验的新功能时：
@@ -1389,30 +1667,35 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = 允许 { -brand-short-name } 自动信任您安装的第三方根证书
     .accesskey = t
+certs-devices-enable-fips = 启用 FIPS
 space-alert-over-5gb-settings-button =
     .label = 打开设置
     .accesskey = O
 space-alert-over-5gb-message2 = <strong>{ -brand-short-name } 运行所需的磁盘空间不足。</strong>网站内容可能无法正常显示。您可以在 设置 > 隐私与安全 > Cookie 和网站数据 中清除已存储的数据。
 space-alert-under-5gb-message2 = <strong>{ -brand-short-name } 运行所需的磁盘空间不足。</strong>网站内容可能无法正常显示。点击“详细了解”了解如何优化您的磁盘空间，从而获得更好的浏览体验。
+certs-description2 =
+    .label = 证书
+    .description = 配置 { -brand-short-name } 用于进行身份验证的证书。
 
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = HTTPS-Only 模式
+httpsonly-label =
+    .aria-label = { httpsonly-header }
+    .description = 仅允许与网站进行安全连接。{ -brand-short-name } 将在进行不安全连接前询问。
+httpsonly-description3 = 仅允许与网站进行安全连接。{ -brand-short-name } 将在进行不安全连接前询问。
+httpsonly-learn-more2 = HTTPS-Only 模式的运作原理
 httpsonly-description = HTTPS 可在 { -brand-short-name } 和您访问的网站之间提供安全、加密的连接。现今，大多数网站都支持 HTTPS，若选择启用 HTTPS-Only 模式，{ -brand-short-name } 将会升级所有连接为 HTTPS。
-httpsonly-description2 = { -brand-short-name } 会与您访问的网站创建安全的加密连接。HTTPS-Only 模式启用时，{ -brand-short-name } 会向您警示不安全连接。
 httpsonly-learn-more = 详细了解
 httpsonly-radio-enabled =
     .label = 在所有窗口启用 HTTPS-Only 模式
-httpsonly-radio-enabled2 =
-    .label = 在所有窗口中都仅使用 HTTPS
 httpsonly-radio-enabled-pbm =
     .label = 仅在隐私窗口启用 HTTPS-Only 模式
-httpsonly-radio-enabled-pbm2 =
-    .label = 在隐私窗口中仅使用 HTTPS
+httpsonly-radio-disabled3 =
+    .label = 不启用 HTTPS-Only 模式
+    .description = { -brand-short-name } 可能仍会为某些连接进行升级
 httpsonly-radio-disabled =
     .label = 不启用 HTTPS-Only 模式
-httpsonly-radio-disabled2 =
-    .label = 首选 HTTPS，同时仍允许不安全连接
 
 ## DoH Section
 
@@ -1459,7 +1742,7 @@ preferences-doh-setting-strict =
 preferences-doh-strict-desc = { -brand-short-name } 只会使用安全 DNS。如确实需要使用系统 DNS，您将预先收到安全风险警告。
 preferences-doh-strict-detailed-desc-1 = 只使用您选择的提供方
 preferences-doh-strict-detailed-desc-2 = 安全 DNS 不可用时发出警告
-preferences-doh-strict-detailed-desc-3 = 在无法使用安全 DNS 的情况下，某些网站可能无法加载或功能异常
+preferences-doh-strict-detailed-desc-3 = 在无法使用安全 DNS 的情况下，网站将无法加载或功能异常
 preferences-doh-setting-off =
     .label = 关闭
     .accesskey = O

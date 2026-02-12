@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Expiră / Durată maximă
 storage-table-headers-cookies-size = Mărime
 storage-table-headers-cookies-last-accessed = Ultima accesare
 storage-table-headers-cookies-creation-time = Create
+storage-table-headers-cookies-update-time = Actualizat
 storage-table-headers-cache-status = Stare
 storage-table-headers-extension-storage-area = Zonă de stocare
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = Baza de date “{ $dbName }” va fi ștearsă dup�
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = Baza de date “{ $dbName }” nu a putut fi ștearsă.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = Cookie-ul nu a putut fi creat: „{ $errorString }”.
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = Cookie-ul nu a putut fi actualizat: „{ $errorString }”.

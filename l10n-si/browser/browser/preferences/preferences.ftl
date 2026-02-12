@@ -3,9 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = ඔබව ලුහුබඳිනවාට අකමැති බව ලුහු නොබඳින්න සංඥාවකින් අඩවි වෙත දන්වන්න
-do-not-track-description2 =
-    .label = අඩවි වෙත "ලුහුබඳින්න එපා" ඉල්ලීමක් යවන්න
-    .accesskey = d
 do-not-track-learn-more = තව දැනගන්න
 do-not-track-option-default-content-blocking-known =
     .label = දන්නා ලුහුබැඳීම් බාධනයට { -brand-short-name } සකසා ඇති විට පමණි
@@ -125,6 +122,10 @@ startup-header = ආරම්භය
 always-check-default =
     .label = සැමවිට { -brand-short-name } ඔබගේ පෙරනිමි අතිරික්සුව දැයි බලන්න
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } දැනට ඔබගේ පෙරනිමි අතිරික්සුවයි
+is-not-default-browser =
+    .message = { -brand-short-name } ඔබගේ පෙරනිමි අතිරික්සුව නොවේ
 is-default = { -brand-short-name } දැනට ඔබගේ පෙරනිමි අතිරික්සුවයි
 is-not-default = { -brand-short-name } ඔබගේ පෙරනිමි අතිරික්සුව නොවේ
 set-as-my-default-browser =
@@ -146,6 +147,8 @@ preferences-data-migration-description = පොත්යොමු, මුරප�
 preferences-data-migration-button =
     .label = දත්ත ආයාත කරන්න
     .accesskey = m
+preferences-profiles-header = පැතිකඩ
+preferences-manage-profiles-learn-more = තව දැනගන්න
 tabs-group-header = පටිති
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab මෑතදී භාවිතා කළ අනුපිළිවෙලට පටිති සකසයි
@@ -153,6 +156,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = නව කවුළුවල වෙනුවට පටිති තුළ සබැඳි අරින්න
     .accesskey = w
+ask-on-close-multiple-tabs =
+    .label = පටිති කිහිපයක් වැසීමට පෙර අසන්න
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = { $quitKey } මඟින් ඉවත් වීමට පෙර අසන්න.
+    .accesskey = b
 confirm-on-close-multiple-tabs =
     .label = පටිති කිහිපයක් වැසීමට පෙර තහවුරු කරන්න
     .accesskey = m
@@ -212,12 +226,25 @@ containers-remove-cancel-button = මෙම අඩංගුව ඉවත් න�
 settings-tabs-show-image-in-preview =
     .label = ඔබ පටිති මතින් යන විට රූප වල පෙරදසුන් පෙන්වන්න
     .accessKey = h
+browser-layout-header = අතිරික්සුවේ පිරිසැලසුම
+browser-layout-horizontal-tabs =
+    .label = තිරස් පටිති
+browser-layout-show-sidebar-desc = ඔබගේ ප්‍රධාන දැක්ම හැර නොයා පොත්යොමු, දුරකථනයේ පටිති, කෘතිම බුද්ධි කතා ක්‍රමලේඛ සහ තවත් දෑ වෙත ඉක්මනින් ප්‍රවේශ වන්න.
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = භාෂාව සහ පෙනුම
 preferences-web-appearance-header = අඩවියේ පෙනුම
 preferences-web-appearance-description = ඔබගේ අභිප්‍රේත මත පදනම්ව ඇතැම් වියමන අඩවිවල වර්ණ රටාව සැකසෙයි. එම අඩවි සඳහා භාවිතා කිරීමට කැමති වර්ණ රටාව තෝරන්න.
+preferences-web-appearance-choice-auto2 =
+    .label = ස්වයංක්‍රීය
+    .title = ඔබගේ පද්ධතියේ සැකසුම් සහ { -brand-short-name } තේමාව මත පදනම්ව අඩවිවල පසුබිම සහ අන්තර්ගතය ස්වයංක්‍රීයව වෙනස් කරන්න.
+preferences-web-appearance-choice-light2 =
+    .label = දීප්ත
+    .title = අඩවියේ පසුබිම් හා අන්තර්ගතය සඳහා දීප්තිමත් පෙනුමක් යොදාගන්න.
+preferences-web-appearance-choice-dark2 =
+    .label = අඳුරු
+    .title = අඩවියේ පසුබිම් හා අන්තර්ගතය සඳහා අඳුරු පෙනුමක් යොදාගන්න.
 preferences-web-appearance-choice-auto = ස්වයංක්‍රීය
 preferences-web-appearance-choice-light = දීප්ත
 preferences-web-appearance-choice-dark = අඳුරු
@@ -233,13 +260,11 @@ preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-web-appearance-link =
+    .label = දිගු සහ තේමා තුළ { -brand-short-name } තේමා කළමනාකරණය කරන්න
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = ඔබගේ වර්ණ තේරීම අඩවියෙහි පෙනුම අභිබවා යයි. <a data-l10n-name="colors-link">වර්ණ කළමනාකරණය</a>
-# This can appear when using windows HCM or "Override colors: always" without
-# system colors.
-preferences-web-appearance-override-warning2 =
-    .message = ඔබගේ වර්ණ තේරීම අඩවියෙහි පෙනුම අභිබවා යයි.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = <a data-l10n-name="themes-link">දිගු සහ තේමා</a> තුළ { -brand-short-name } තේමා කළමනාකරණය කරන්න
@@ -299,6 +324,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = ගොනු සහ යෙදුම්
+downloads-header-2 =
+    .label = බාගැනීම්
+download-save-where-2 =
+    .label = වෙත ගොනු සුරකින්න
+    .accesskey = v
 download-header = බාගැනීම්
 download-save-where = වෙත ගොනු සුරකින්න
     .accesskey = v
@@ -522,7 +552,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = නව කවුළු සහ පටිති
 home-new-windows-tabs-description2 = ඔබගේ මුල් පිටුව, නව කවුළු හෝ පටිති විවෘත කරන විට ඔබ දැකීමට ප්‍රිය දෑ තෝරන්න.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = මුල් පිටුව හා නව කවුළු
 home-newtabs-mode-label = නව පටිති
@@ -676,12 +706,15 @@ search-keyword-warning-title = අනුපිටපත් මූල පදය
 #   $name (string) - Name of a search engine.
 search-keyword-warning-engine = ඔබ තෝරාගත් මූල පදය දැනට "{ $name }" මගින් භාවිතා කරයි. වෙනත් එකක් තෝරන්න.
 search-keyword-warning-bookmark = ඔබ තෝරාගත් මූල පදය දැනට පොත්යොමුවක භාවිතා කෙරේ. වෙනත් එකක් තෝරන්න.
+remove-engine-remove = ඉවත් කරන්න
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = සැකසුම් වෙත ආපසු
 containers-header = පටිති අඩංගු
+containers-section-header =
+    .heading = පටිති අඩංගු
 containers-add-button =
     .label = නව අඩංගුවක් යොදන්න
     .accesskey = A
@@ -836,6 +869,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = උපාංගයේ නම
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = උපාංගයේ නම
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = උපාංගයේ නම වෙනස් කරන්න
+    .accesskey = h
 sync-device-name-change =
     .label = උපාංගයේ නම වෙනස් කරන්න...
     .accesskey = h
@@ -997,6 +1038,10 @@ history-remember-option-never =
     .label = ඉතිහාසය තබා නොගන්න
 history-remember-option-custom =
     .label = ඉතිහාසය සඳහා අභිරුචි සැකසුම්
+history-remember-description2 =
+    .description = { -brand-short-name } ඔබගේ පිරික්සුම්, බාගැනීම්, ආකෘති හා සෙවුම් ඉතිහාසය මතක තබා ගනියි.
+history-dontremember-description2 =
+    .description = { -brand-short-name } පෞද්ගලික පිරික්සුම් සැකසුම් එළෙසම යොදා ගැනෙයි, වියමනෙහි පිරික්සන විට කිසිදු ඉතිහාසයක් මතක තබා නොගනියි.
 history-remember-description = { -brand-short-name } ඔබගේ පිරික්සුම්, බාගැනීම්, ආකෘති හා සෙවුම් ඉතිහාසය මතක තබා ගනියි.
 history-dontremember-description = { -brand-short-name } පෞද්ගලික පිරික්සුම් සැකසුම් එළෙසම යොදා ගැනෙයි, වියමනෙහි පිරික්සන විට කිසිදු ඉතිහාසයක් මතක තබා නොගනියි.
 history-private-browsing-permanent =
@@ -1030,6 +1075,8 @@ sitedata-learn-more = තව දැනගන්න
 sitedata-delete-on-close =
     .label = { -brand-short-name } වසා දැමූ විට දත්තකඩ හා අඩවි දත්ත මකන්න
     .accesskey = c
+sitedata-delete-on-close-private-browsing3 =
+    .message = ඉතිහාස සැකසුම් වලට අනුව { -brand-short-name } අතිරික්සුව වැසූ විගස ඔබගේ වාරයේ දත්තකඩ සහ අඩවි දත්ත මැකෙනු ඇත.
 sitedata-delete-on-close-private-browsing = ස්ථිර පෞද්ගලික පිරික්සීමේ ප්‍රකාරයේ දී, { -brand-short-name } වසන විට දත්තකඩ සහ අඩවි දත්ත සෑම විටම හිස් කෙරේ.
 sitedata-delete-on-close-private-browsing2 = ඉතිහාස සැකසුම් වලට අනුව { -brand-short-name } අතිරික්සුව වැසූ විගස ඔබගේ වාරයේ දත්තකඩ සහ අඩවි දත්ත මැකෙනු ඇත.
 sitedata-allow-cookies-option =
@@ -1083,6 +1130,11 @@ cookie-banner-blocker-checkbox-label =
 
 addressbar-header = ලිපින තීරය
 addressbar-suggest = ලිපින තීරුව භාවිත කරන විට, යෝජනා කරන්න
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = ලිපින තීරුව — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = තව දැනගන්න
 addressbar-locbar-history-option =
     .label = පිරික්සුම් ඉතිහාසය
     .accesskey = h
@@ -1115,6 +1167,8 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = නැගීඑන සෙවුම් යෝජනා පෙන්වන්න
     .accesskey = t
+addressbar-locbar-suggest-sponsored-option =
+    .label = අනුග්‍රහකයින්ගෙන් යෝජනා
 addressbar-quickactions-learn-more = තව දැනගන්න
 
 ## Privacy Section - Content Blocking
@@ -1243,6 +1297,8 @@ permissions-notification-link = තව දැනගන්න
 permissions-notification-pause =
     .label = { -brand-short-name } යළි අරඹන තෙක් දැනුම්දීම් නවතන්න
     .accesskey = n
+permissions-autoplay2 =
+    .label = ස්වයං වාදනය
 permissions-autoplay = ස්වයං වාදනය
 permissions-autoplay-settings =
     .label = සැකසුම්…
@@ -1262,23 +1318,53 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = හැරදැමීම්...
     .accesskey = E
+permissions-location2 =
+    .label = ස්ථානය
+permissions-xr2 =
+    .label = අතථ්‍ය යථාර්ථය
+permissions-camera2 =
+    .label = රූගතය
+permissions-microphone2 =
+    .label = ශබ්දවාහිනිය
+permissions-notification2 =
+    .label = දැනුම්දීම්
 
 ## Privacy Section - Data Collection
 
 collection-header = { -brand-short-name } දත්ත රැස් කිරීම හා භාවිතය
 collection-header2 = { -brand-short-name } දත්ත රැස් කිරීම හා භාවිතය
     .searchkeywords = telemetry
+preferences-collection-description = අපි ඔබට තේරීම් ලබා දීමට වෙහෙසෙන අතර සැමට { -brand-product-name } වැඩිදියුණුවට වුවමනා අවම දත්ත පමණක් රැස් කරන්නෙමු.
+preferences-collection-privacy-notice = රහස්‍යතා දැන්වීම බලන්න
 collection-description = අපි බොහෝ විට ඔබට තෝරාගැනීම් ලබා දීමට වෙහෙසෙන අතර සැමට { -brand-short-name } වැඩිදියුණු කිරීමට හා සැපයීමට අවශ්‍ය දෑ පමණක් රැස් කරන්නෙමු. පෞද්ගලික තොරතුරු ලැබීමට පෙර ද සැමවිට අවසර ඉල්ලා සිටින්නෙමු.
 collection-privacy-notice = රහස්‍යතා දැන්වීම
 collection-health-report-telemetry-disabled = ඔබ තවදුරටත් { -vendor-short-name } සඳහා තාක්‍ෂණික සහ අන්තර්ක්‍රියා දත්ත ග්‍රහණය කර ගැනීමට ඉඩ නොදේ. සියළුම අතීත දත්ත දවස් 30 ක් ඇතුළත මකා දැමෙනු ඇත.
 collection-health-report-telemetry-disabled-link = තව දැනගන්න
+collection-usage-ping =
+    .label = දෛනික භාවිත හැඬවීම { -vendor-short-name } වෙත යවන්න.
+    .accesskey = u
+collection-usage-ping-description = මෙය { -vendor-short-name } සඳහා සක්‍රිය පරිශ්‍රීලකයින් තක්සේරුවට උපකාරී වේ.
+collection-health-report2 =
+    .label = තාක්‍ෂණික සහ අන්තර්ක්‍රියා දත්ත { -vendor-short-name } වෙත යවන්න
+    .accesskey = r
 collection-health-report =
     .label = තාක්‍ෂණික හා අන්තර්ක්‍රියා දත්ත { -vendor-short-name } වෙත යැවීමට ඉඩ දෙන්න
     .accesskey = r
 collection-health-report-link = තව දැනගන්න
+collection-health-report-description = මෙය { -brand-product-name } විශේෂාංග, කාර්ය සාධනය සහ ස්ථායීතාව වැඩිදියුණුවට උපකාරී වේ.
+collection-studies2 =
+    .label = අධ්‍යයන ස්ථාපනය කර ධාවනය කරන්න
+collection-studies-description = විශේෂාංග සහ අදහස් සැමට නිකුත් කිරීමට පෙර අත්හදා බලන්න.
 collection-studies =
     .label = { -brand-short-name } වෙත අධ්‍යන ස්ථාපනයට හා ධාවනයට ඉඩ දෙන්න
 collection-studies-link = { -brand-short-name } අධ්‍යන බලන්න
+addon-recommendations2 =
+    .label = පුද්ගලීකරණ දිගු නිර්දේශයට ඉඩ දෙන්න
+addon-recommendations-description = ඔබගේ පිරික්සුම් අත්දැකීම ඉහළ නැංවීමට දිගු නිර්දේශ ලබා ගන්න.
+collection-backlogged-crash-reports2 =
+    .label = බිඳවැටීම් වාර්තා ස්වයංක්‍රීයව යවන්න
+    .accesskey = c
+collection-backlogged-crash-reports-description = මෙය { -vendor-short-name } අතිරික්සුවේ දෝෂ හඳුනාගෙන ඒවා නිරාකරණයට උපකාරී වේ. වාර්තා වල පෞද්ගලික හෝ සංවේදී දත්ත ඇතුළත් විය හැකිය.
 addon-recommendations =
     .label = { -brand-short-name } වෙත පුද්ගලීකරණ දිගු නිර්දේශ සැකසීමට ඉඩ දෙන්න
 addon-recommendations-link = තව දැනගන්න
@@ -1286,8 +1372,6 @@ addon-recommendations-link = තව දැනගන්න
 # or builds with no Telemetry support available.
 collection-health-report-disabled = මෙම තැනීමේ වින්‍යාසය සඳහා දත්ත වාර්තාකරණය අබල කර ඇත
 collection-backlogged-crash-reports-with-link = ඔබට අතපසු වූ බිඳ වැටීම් වාර්තා යැවීමට { -brand-short-name } සඳහා ඉඩ දෙන්න <a data-l10n-name="crash-reports-link">තව දැනගන්න</a>
-    .accesskey = c
-collection-backlogged-crash-reports = ඔබට අතපසු වූ බිඳ වැටීම් වාර්තා යැවීමට { -brand-short-name } සඳහා ඉඩ දෙන්න
     .accesskey = c
 privacy-segmentation-section-header = ඔබගේ පිරික්සීම ඉහළ නංවන නව විශේෂාංග
 privacy-segmentation-section-description = ඔබට වඩාත් පුද්ගලික අත්දැකීමක් ලබා දීමට ඔබගේ දත්ත භාවිතා කරන විශේෂාංග පිරිනමන විට:
@@ -1337,6 +1421,7 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = ඔබ ස්ථාපනය කරන තෙවන පාර්ශ්ව මූල සහතික ස්වයංක්‍රීයව විශ්වාසයට { -brand-short-name } වෙත ඉඩ දෙන්න
     .accesskey = t
+certs-devices-enable-fips = FIPS සබල කරන්න
 space-alert-over-5gb-settings-button =
     .label = සැකසුම් අරින්න
     .accesskey = O
@@ -1346,21 +1431,21 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } සඳහා ත�
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = HTTPS-පමණි ප්‍රකාරය
+httpsonly-label =
+    .aria-label = { httpsonly-header }
+    .description = අඩවි වලට ආරක්‍ෂිත සම්බන්ධතා පමණක් ඉඩ දෙයි. අනාරක්‍ෂිතව සබැඳීමට පෙර { -brand-short-name } අසනු ඇත.
+httpsonly-description3 = අඩවි වලට ආරක්‍ෂිත සම්බන්ධතා පමණක් ඉඩ දෙයි. අනාරක්‍ෂිතව සබැඳීමට පෙර { -brand-short-name } අසනු ඇත.
 httpsonly-description = HTTPS මගින් { -brand-short-name } හා ඔබ ගොඩවදින අඩවි අතර ආරක්‍ෂිත, සංකේතිත සම්බන්‍ධතාවක් ගොඩනගයි. බොහෝ අඩවි HTTPS සඳහා සහාය දක්වයි. HTTPS-පමණි ප්‍රකාරය සබල කර ඇත්නම්, { -brand-short-name } සියළුම සම්බන්‍ධතා HTTPS වෙත උත්ශ්‍රේණි කරයි.
-httpsonly-description2 = { -brand-short-name } ඔබ ගොඩවදින අඩවි වලට ආරක්‍ෂිත සහ සංකේතිත සම්බන්‍ධතා සාදයි. HTTPS-පමණි සක්‍රිය විට සම්බන්‍ධතාවක් ආරක්‍ෂිත නැතිනම් { -brand-short-name } ඔබට අනතුරු අඟවයි.
 httpsonly-learn-more = තව දැනගන්න
 httpsonly-radio-enabled =
     .label = සියළුම කවුළු වලට HTTPS-පමණි ප්‍රකාරය සබල කරන්න
-httpsonly-radio-enabled2 =
-    .label = සියළුම කවුළු වල HTTPS පමණක් භාවිතා කරන්න
 httpsonly-radio-enabled-pbm =
     .label = පෞද්. කවුළු වලට පමණක් HTTPS-පමණි ප්‍රකාරය
-httpsonly-radio-enabled-pbm2 =
-    .label = පෞද්. කවුළු වල පමණක් HTTPS භාවිතා කරන්න
+httpsonly-radio-disabled3 =
+    .label = HTTPS-පමණි ප්‍රකාරය සබල නොකරන්න
+    .description = { -brand-short-name } තවදුරටත් සමහර සම්බන්ධතා උත්ශ්‍රේණි කරනු ඇත.
 httpsonly-radio-disabled =
     .label = HTTPS-පමණි ප්‍රකාරය සබල නොකරන්න
-httpsonly-radio-disabled2 =
-    .label = පළමුව HTTPS සඳහා උත්සාහ කරන්න, නමුත් අනාරක්‍ෂිත සම්බන්‍ධතා වලට ඉඩ දෙන්න
 
 ## DoH Section
 

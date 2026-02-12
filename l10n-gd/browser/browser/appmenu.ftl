@@ -288,7 +288,6 @@ appmenu-other-protection-header = Feuch na h-innealan dìon eile o { -vendor-sho
 
 ## Profiles panel
 
-appmenu-profiles = Pròifilean
 appmenu-other-profiles = Pròifilean eile
 appmenu-manage-profiles =
     .label = Stiùirich na pròifilean
@@ -296,3 +295,5 @@ appmenu-create-profile =
     .label = Pròifil ùr
 appmenu-edit-profile =
     .aria-label = Deasaich a’ phròifil
+appmenu-profiles-2 =
+    .label = Pròifilean

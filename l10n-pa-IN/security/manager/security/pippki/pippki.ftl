@@ -48,9 +48,6 @@ download-cert-view-cert =
     .label = ਵੇਖੋ
 download-cert-view-text = CA ਸਰਟੀਫਿਕੇਟ ਨੂੰ ਵੇਖੋ
 
-## Client Authorization Ask dialog
-
-
 ## Client Authentication Ask dialog
 
 client-auth-window =
@@ -85,8 +82,13 @@ client-auth-cert-details-issued-by = ਜਾਰੀ ਕਰਤਾ: { $issuedBy }
 # Variables:
 # $storedOn (String) - The name of the token holding the certificate (for example, "OS Client Cert Token (Modern)")
 client-auth-cert-details-stored-on = ਇਸ ਉੱਤੇ ਸੰਭਾਲਿਆ: { $storedOn }
-client-auth-cert-remember-box =
-    .label = ਇਹ ਫ਼ੈਸਲਾ ਯਾਦ ਰੱਖੋ
+client-auth-cert-remember-label = ਇਹ ਫ਼ੈਸਲਾ ਯਾਦ ਰੱਖੋ:
+client-auth-cert-remember-never =
+    .label = ਇੱਕ ਵਾਰ
+client-auth-cert-remember-always =
+    .label = ਪੱਕੇ ਤੌਰ ਉੱਤੇ
+client-auth-cert-remember-temporarily =
+    .label = ਇਸ ਸ਼ੈਸ਼ਨ ਲਈ
 
 ## Set password (p12) dialog
 

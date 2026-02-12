@@ -33,6 +33,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Отказ
     .accesskey = О
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text = Разширението { $extension } е актуализирано. Трябва да одобрите новите разрешения, преди да се инсталира актуализираното издание. Избирането на „Отказ“ ще запази текущата версия на разширението. Това разширение ще има права за:
 webext-perms-update-accept =
     .label = Обновяване
     .accesskey = О
@@ -67,17 +70,6 @@ webext-perms-host-description-too-many-sites =
        *[other] Достъп до вашите данни от { $domainCount } други страници
     }
 
-## Headers used in the webextension permissions dialog for synthetic add-ons.
-## The part of the string describing what privileges the extension gives should be consistent
-## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
-## Note, this string will be used as raw markup. Avoid characters like <, >, &
-## Variables:
-##   $hostname (String): the hostname of the site the add-on is being installed from.
-
-
-##
-
-
 ## Headers used in the webextension permissions dialog.
 ## Note: This string will be used as raw markup. Avoid characters like <, >, &
 ## Variables:
@@ -86,6 +78,3 @@ webext-perms-host-description-too-many-sites =
 
 webext-site-perms-header-with-perms = Добавяне на { $extension }? Разширението предоставя следните възможности на { $hostname }:
 webext-site-perms-header-unsigned-with-perms = Да бъде ли добавено разширението { $extension }? То е непроверено. Злонамерените разширения могат да откраднат лична информация или да компрометират компютъра ви. Добавете разширението, само ако имате доверие на източника. Това разширение предоставя следните възможности на { $hostname }:
-
-## These should remain in sync with permissions.NAME.label in sitePermissions.properties
-

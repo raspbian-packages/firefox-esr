@@ -25,6 +25,10 @@ support-addons-type = Typ
 support-addons-enabled = Povoleno
 support-addons-version = Verze
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Umístění
 legacy-user-stylesheets-title = Starší uživatelské kaskádové styly
 legacy-user-stylesheets-enabled = Aktivní
 legacy-user-stylesheets-stylesheet-types = Kaskádové styly
@@ -194,6 +198,8 @@ media-capabilities-enumerate = Vypsat databázi
 
 media-codec-support-sw-decoding = Softwarové dekódování
 media-codec-support-hw-decoding = Hardwarové dekódování
+media-codec-support-sw-encoding = Softwarové kódování
+media-codec-support-hw-encoding = Hardwarové kódování
 media-codec-support-codec-name = Název kodeku
 media-codec-support-supported = Podporované
 media-codec-support-unsupported = Nepodporováné

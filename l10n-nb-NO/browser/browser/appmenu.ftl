@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Nedlastinger
 appmenuitem-passwords =
     .label = Passord
+appmenuitem-extensions-and-themes =
+    .label = Utvidelser og temaer
+appmenuitem-extensions =
+    .label = Utvidelser
 appmenuitem-addons-and-themes =
     .label = Tillegg og temaer
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Åpne profileringsverktøy-panelet
+    .tooltiptext = Åpne profileringsverktøy-panelet
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -183,7 +190,7 @@ profiler-popup-capture-shortcut =
 profiler-popup-presets-web-developer-description = Anbefalt forhåndsinnstilling for de fleste feilsøkinger i nettapper, med lite tillegg.
 profiler-popup-presets-web-developer-label =
     .label = Nettsideutvikling
-profiler-popup-presets-firefox-description = Anbefalt forhåndsinnstilling for profilering { -brand-shorter-name }.
+profiler-popup-presets-firefox-description = Anbefalt forhåndsinnstilling for profilering av { -brand-shorter-name }.
 profiler-popup-presets-firefox-label =
     .label = { -brand-shorter-name }
 profiler-popup-presets-graphics-description = Forhåndsinnstilt for å undersøke grafikk-problemer i { -brand-shorter-name }.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Forhåndsinnstilt for å undersøke lyd- og videoproblemer i { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Media
+profiler-popup-presets-ml-description = Forhåndsinnstilling for å undersøke maskinlæringsfeil i { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Maskinlæring
 profiler-popup-presets-networking-description = Forhåndsinnstilt for å undersøke nettverksfeil i { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Nettverk
@@ -280,18 +290,26 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Få varsler om datalekkasjer
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Skjul din ekte e-postadresse og ditt telefonnummer
+appmenuitem-services-relay-description = Start oversikten for e-postalias
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Beskytt din nettaktivitet
 appmenu-services-header = Mine tjenester
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Prøv andre beskyttelsesverktøy fra Mozilla:
 appmenu-other-protection-header = Prøv andre beskyttelsesverktøy fra { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Profiler
 appmenu-other-profiles = Andre profiler
 appmenu-manage-profiles =
     .label = Behandle profiler
+appmenu-copy-profile =
+    .label = Kopier denne profilen
 appmenu-create-profile =
     .label = Ny profil
 appmenu-edit-profile =
     .aria-label = Rediger profil
+appmenu-profiles-2 =
+    .label = Profiler

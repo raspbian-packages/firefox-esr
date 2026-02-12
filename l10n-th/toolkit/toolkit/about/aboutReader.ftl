@@ -70,17 +70,22 @@ about-reader-customtheme-tab = กำหนดเอง
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = ข้อความ
-    .title = แก้ไขสี
-about-reader-custom-colors-background = พื้นหลัง
-    .title = แก้ไขสี
-about-reader-custom-colors-unvisited-links = ลิงก์ที่ยังไม่เคยเยี่ยมชม
-    .title = แก้ไขสี
-about-reader-custom-colors-visited-links = ลิงก์ที่เคยเยี่ยมชมแล้ว
-    .title = แก้ไขสี
-about-reader-custom-colors-selection-highlight = ตัวเน้นข้อความสำหรับการอ่านออกเสียง
-    .title = แก้ไขสี
 about-reader-reset-button = กลับเป็นค่าเริ่มต้น
+about-reader-custom-colors-foreground2 =
+    .label = ข้อความ
+    .title = แก้ไขสี
+about-reader-custom-colors-background2 =
+    .label = พื้นหลัง
+    .title = แก้ไขสี
+about-reader-custom-colors-unvisited-links2 =
+    .label = ลิงก์ที่ยังไม่เคยเยี่ยมชม
+    .title = แก้ไขสี
+about-reader-custom-colors-visited-links2 =
+    .label = ลิงก์ที่เคยเยี่ยมชมแล้ว
+    .title = แก้ไขสี
+about-reader-custom-colors-selection-highlight2 =
+    .label = ตัวเน้นข้อความสำหรับการอ่านออกเสียง
+    .title = แก้ไขสี
 
 ## Reader View text and layout menu
 
@@ -110,3 +115,5 @@ about-reader-text-alignment-center =
     .title = จัดข้อความอยู่กึ่งกลาง
 about-reader-text-alignment-right =
     .title = จัดข้อความชิดขวา
+about-reader-text-alignment-justify =
+    .title = จัดข้อความให้ชิดขอบ

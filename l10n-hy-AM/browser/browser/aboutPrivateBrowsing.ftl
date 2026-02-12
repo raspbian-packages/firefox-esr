@@ -4,7 +4,7 @@
 
 privatebrowsingpage-open-private-window-label = Բացել գաղտնի պատուհան
     .accesskey = Գ
-about-private-browsing-search-placeholder = Որոնել առցանց
+about-private-browsing-search-placeholder = Որոնել համացանցում
 about-private-browsing-info-title = Դուք գաղտնի պատուհանում եք
 about-private-browsing-search-btn =
     .title = Որոնել համացանցում
@@ -19,14 +19,14 @@ about-private-browsing-handoff-no-engine =
 about-private-browsing-handoff-text = Որոնեք { $engine }-ով կամ մուտքագրեք հասցե
 about-private-browsing-handoff-text-no-engine = Որոնեք կամ մուտքագրեք հասցե
 about-private-browsing-not-private = Դուք այժմ գաղտնի պատուհանում չեք:
-about-private-browsing-info-description-private-window = Գաղտնի պատուհան. { -brand-short-name }-ը մաքրում է Ձեր որոնումը և դիտարկման պատնությունը՝ երբ փակում եք բոլոր գաղտնի պատուհանները: Սա Ձեզ անանուն չի դարձնում:
+about-private-browsing-info-description-private-window = Գաղտնի պատուհան. { -brand-short-name }-ը մաքրում է Ձեր որոնումը և դիտարկման պատնությունը, երբ փակում եք բոլոր գաղտնի պատուհանները: Դա Ձեզ անանուն չի դարձնում:
 about-private-browsing-info-description-simplified = { -brand-short-name }-ը մաքրում է Ձեր որոնման և դիտարկման պատմությունը, երբ փակում եք բոլոր գաղտնի պատուհանները, բայց դա Ձեզ անանուն չի դարձնում:
 about-private-browsing-learn-more-link = Իմանալ ավելին
 about-private-browsing-hide-activity = Թաքցրեք Ձեր գործունեությունը և գտվելու վայրն ամենուր, որտեղից դիտարկում եք
 about-private-browsing-get-privacy = Ստացեք գաղտնիության պաշտպանություններ ամենուր, որտեղից զննարկում եք
 about-private-browsing-hide-activity-1 = Թաքցրեք դիտարկման գործունեությունը և գտվելու վայրը { -mozilla-vpn-brand-name }-ով: Մեկ կտտոցը ստեղծում է անվտանգ կապ՝ անգամ հանրային Wi-Fi-ում:
 about-private-browsing-prominent-cta = Մնացեք գաղտնի { -mozilla-vpn-brand-name }-ի հետ
-about-private-browsing-focus-promo-cta = Ներբեռնեք { -focus-brand-name }-ը
+about-private-browsing-focus-promo-cta = Ներբեռնել { -focus-brand-name }-ը
 about-private-browsing-focus-promo-header = { -focus-brand-name }. գաղտնի դիտարկում ընթացքի վրա
 
 ## The following strings will be used for experiments in Fx99 and Fx100
@@ -43,7 +43,7 @@ about-private-browsing-search-banner-title = { $engineName }-ը Ձեր սկզբ�
 about-private-browsing-search-banner-description =
     { PLATFORM() ->
         [windows] Այլ որոնիչ ընտրելու համար գնացեք դեպի <a data-l10n-name="link-options">Ընտրանքներ</a>
-       *[other] Այլ որոնիչ ընտրելու համար գնացեք դեպի <a data-l10n-name="link-options"> Նախընտրանքներ</a>
+       *[other] Այլ որոնիչ ընտրելու համար գնացեք դեպի <a data-l10n-name="link-options">Նախապատվություններ</a>
     }
 about-private-browsing-search-banner-close-button =
     .aria-label = Փակել

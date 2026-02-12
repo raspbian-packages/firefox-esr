@@ -52,16 +52,13 @@ mr1-onboarding-sign-in-button-label = Пријави ме
 mr1-onboarding-import-primary-button-label-attribution = Увези из прегледача { $previous }
 mr1-onboarding-theme-header = Персонализација
 mr1-onboarding-theme-subtitle =
-    Персонализујте { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "acc") }
-        [feminine] { -brand-short-name(case: "acc") }
-        [neuter] { -brand-short-name(case: "acc") }
-       *[other] програм { -brand-short-name }
-    } помоћу теме.
+    { -brand-short-name.gender ->
+        [masculine] Персонализујте { -brand-short-name(case: "acc") } помоћу теме.
+        [feminine] Персонализујте { -brand-short-name(case: "acc") } помоћу теме.
+        [neuter] Персонализујте { -brand-short-name(case: "acc") } помоћу теме.
+       *[other] Персонализујте програм { -brand-short-name } помоћу теме.
+    }
 mr1-onboarding-theme-secondary-button-label = Не сада
-newtab-wallpaper-onboarding-title = Пробајте нове боје
-newtab-wallpaper-onboarding-subtitle = Одаберите позадину за свеж изглед ваше нове картице.
-newtab-wallpaper-onboarding-primary-button-label = Постави позадину
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Системска тема
 mr1-onboarding-theme-label-light = Светла
@@ -342,7 +339,7 @@ mr2022-onboarding-colorways-image-alt =
 onboarding-device-migration-image-alt =
     .aria-label = Лисица маше на екрану лаптопа. Миш је повезан са лаптопом.
 onboarding-device-migration-title = Добродошли назад!
-onboarding-device-migration-subtitle = Пријавите се у ваш { -fxaccount-brand-name(capitalization: "sentence") } да бисте пренели ваше обележиваче, лозинке и историју на нови уређај.
+onboarding-device-migration-subtitle = Пријавите се на { -fxaccount-brand-name(case: "acc") } да бисте пренели обележиваче, лозинке и историју на нови уређај.
 onboarding-device-migration-subtitle2 = Пријавите се у ваш налог да са собом понесете обележиваче, лозинке и историју на ваш нови уређај.
 onboarding-device-migration-primary-button-label = Пријави се
 
@@ -439,9 +436,3 @@ onboarding-checklist-pin = Закачи { -brand-short-name } на траку з
 onboarding-checklist-import = Увези из претходног прегледача
 onboarding-checklist-extension = Додај додатак
 onboarding-checklist-sign-up = Региструј се или се пријави у налог
-
-## Tab Groups feature onboarding strings
-
-
-## Multi Profiles feature onboarding messages
-

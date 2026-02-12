@@ -42,6 +42,9 @@ account-send-tab-to-device-verify = Beripikahin ang Iyong Account…
 
 ## These strings are used in a notification shown when a new device joins the Firefox account.
 
+# The title shown in a notification when either this device or another device
+# has connected to, or disconnected from, a Firefox account.
+account-connection-title = { -fxaccount-brand-name(capitalization: "title") }
 # Variables:
 #   $deviceName (String): the name of the new device
 account-connection-connected-with = Ang computer na ito'y konektado na ngayon sa { $deviceName }.
@@ -90,9 +93,3 @@ account-multiple-tabs-arriving-from-unknown-device =
         [one] May { $tabCount } tab na dumating
        *[other] May { $tabCount } tab na dumating
     }
-
-## These strings are used in notifications in which the user remotely closed
-## tabs from other devices
-## Variables:
-##   $closedCount (Number): the number of tabs closed
-

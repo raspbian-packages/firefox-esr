@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = ქსელში შესვლა
 neterror-dns-not-found-title = გვერდი ვერ მოიძებნა
 neterror-malformed-uri-page-title = უმართებულო URL-ბმული
 general-body-title = სიფრთხილე გამოიჩინეთ. რაღაც რიგზე ვერაა.
+problem-with-this-site-title = როგორც ჩანს, ხარვეზი საიტის მხრიდანაა
 
 ## Error page actions
 
@@ -43,7 +44,8 @@ neterror-load-error-try-again = საიტი დროებით მიუ�
 neterror-load-error-connection = თუ სხვა გვერდების ჩატვირთვასაც ვერ ახერხებთ, შეამოწმეთ კომპიუტერის ქსელთან კავშირი.
 neterror-load-error-firewall = თუ თქვენი ქსელი ან კომპიუტერი ფარით ან პროქსითაა დაცული, გადაამოწმეთ არის თუ არა { -brand-short-name } ინტერნეტთან წვდომის უფლების მქონე.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
-neterror-load-osx-permission = თუ ცდილობთ ადგილობრივ ქსელში გვერდის გახსნას, გთხოვთ გადაამოწმოთ, რომ { -brand-short-name } ადგილობრივი ქსელის ნებართვების მქონეა macOS-ის პირადულობისა და უსაფრთხოების პარამეტრებიდან.
+neterror-load-osx-permission = თუ ცდილობთ შიდა ქსელში გვერდის გახსნას, გთხოვთ გადაამოწმოთ, რომ { -brand-short-name } შიდა ქსელში წვდომის ნებართვების მქონეა macOS-ის პირადულობისა და უსაფრთხოების პარამეტრებიდან.
+neterror-http-error-page = გადაამოწმეთ, საიტის მისამართი ხომ სწორადაა აკრეფილი.
 neterror-captive-portal = ინტერნეტთან დასაკავშირებლად საჭიროა ამ ქსელში შესვლა.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>თუ სწორად შეი
 neterror-dns-not-found-hint-try-again = კვლავ სცადოთ მოგვიანებით
 neterror-dns-not-found-hint-check-network = შეამოწმოთ ქსელთან კავშირი
 neterror-dns-not-found-hint-firewall = გადაამოწმოთ, არის თუ არა { -brand-short-name } ინტერნეტთან წვდომის ნებართვის მქონე (თუ ქსელის ფარს იყენებთ)
+neterror-dns-not-found-offline-hint-header = <strong>რის გაკეთება შეგიძლიათ?</strong>
+neterror-dns-not-found-offline-hint-different-device = სცადეთ დაკავშირება სხვა მოწყობილობიდან.
+neterror-dns-not-found-offline-hint-modem = შეამოწმეთ თქვენი მოდემი ან როუტერი.
+neterror-dns-not-found-offline-hint-reconnect = გამოთიშეთ და კვლავ მიუერთეთ WiFi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -63,7 +69,7 @@ neterror-dns-not-found-trr-only-reason2 = { -brand-short-name } ვერ ახ
 neterror-dns-not-found-trr-third-party-warning2 = შეგიძლიათ, განაგრძოთ ნაგულისხმევი DNS-გადამყვანით. თუმცაღა ამით გარეშე პირებს ექნებათ საშუალება, იხილონ, რომელ გვერდებს ეწვევით.
 neterror-dns-not-found-trr-only-could-not-connect = { -brand-short-name } და { $trrDomain } კავშირის დამყარებას ვერ ახერხებს.
 neterror-dns-not-found-trr-only-timeout = { $trrDomain } მოსალოდნელზე დიდხანს იყო დაკავშირებული.
-neterror-dns-not-found-trr-offline = არ გაქვთ ინტერნეტკავშირი.
+neterror-dns-not-found-trr-offline = არ გაქვთ ქსელთან წვდომა.
 neterror-dns-not-found-trr-unknown-host2 = საიტს ვერ პოულობს { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = ხარვეზებით მუშაობს { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = არამართებული ბმული.
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = მოულოდნელი შ�
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } ვერ ახერხებს თქვენი მოთხოვნის დაცვას ამ საიტის მისამართისთვის ჩვენი სანდო DNS-გადამყვანით. აი, რატომ:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } ვერ ახერხებს თქვენი მოთხოვნის დაცვას ამ საიტის მისამართისთვის ჩვენი სანდო DNS-გადამყვანით. აი, რის გამო:
 neterror-dns-not-found-native-fallback-heuristic = DNS-თან HTTPS-კავშირი გათიშულია თქვენს ქსელში.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } და { $trrDomain } კავშირის დამყარებას ვერ ახერხებს.
 
@@ -96,9 +101,12 @@ neterror-proxy-resolve-failure-settings = გადაამოწმეთ პ�
 neterror-proxy-resolve-failure-connection = შეამოწმეთ და დარწმუნდით, რომ თქვენი კომპიუტერის ქსელური კავშირი გამართულია.
 neterror-proxy-resolve-failure-firewall = თუ თქვენი ქსელი ან კომპიუტერი ფარით ან პროქსითაა დაცული, გადაამოწმეთ, აქვს თუ არა { -brand-short-name } პროგრამას ინტერნეტთან წვდომის უფლება.
 neterror-proxy-connect-failure-settings = გადაამოწმეთ პროქსის პარამეტრები და დარწმუნდით მათ მართებულობაში.
-neterror-proxy-connect-failure-contact-admin = დაუკავშირდით ქსელის მმართველს და დარწმუნდით, რომ პროქსი სერვერი მუშაობს.
+neterror-proxy-connect-failure-contact-admin = მიმართეთ ქსელის ზედამხედველს და დარწმუნდით, რომ შუამავალი სერვერი მუშაობს.
 neterror-content-encoding-error = გთხოვთ, მიმართოთ ვებსაიტის მფლობელებს და აცნობოთ ამ ხარვეზის შესახებ.
 neterror-unsafe-content-type = გთხოვთ, მიმართოთ ვებსაიტის მფლობელებს და აცნობოთ ამ ხარვეზის შესახებ.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } მიიჩნევს, რომ არასანდოა { $hostname } ვინაიდან კავშირი დაუცველია. სცადეთ ბმულს დაურთოთ HTTPS.
 neterror-nss-failure-not-verified = გვერდის ჩვენება, რომლის ნახვასაც ცდილობთ შეუძლებელია, რადგან მიღებული მონაცემების ნამდვილობის დადასტურება ვერ ხერხდება.
 neterror-nss-failure-contact-website = გთხოვთ, მიმართოთ ვებსაიტის მფლობელებს და აცნობოთ ამ ხარვეზის შესახებ.
 # Variables:
@@ -159,3 +167,13 @@ certerror-coep-learn-more = იხილეთ ვრცლად განს�
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = შეცდომის კოდი: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } ვერ ამყარებს დაცულ კავშირს სერვერთან { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = ჩანს, საიტი იყენებს ძველ პროგრამას უსაფრთხოების გამოვლენილი ხარვეზებით.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = დარწმუნდით, რომ { -brand-short-name } განახლებულია. მენიუში მონახეთ დახმარება > { -brand-short-name } შესახებ. თუ ისედაც უახლესი { -brand-short-name } გიყენიათ, ხარვეზი საიტის მხრიდან იქნება.

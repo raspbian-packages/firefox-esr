@@ -4,9 +4,6 @@
 
 do-not-track-description = Изпраща на сайтовете сигнал "Не проследявай" - указание, че не желаете да бъдете проследявани.
 do-not-track-removal = Вече не поддържаме сигнала „Без проследяване“.
-do-not-track-description2 =
-    .label = Изпращане на сайтовете заявка „Без проследяване“.
-    .accesskey = д
 do-not-track-learn-more = Научете повече
 do-not-track-option-default-content-blocking-known =
     .label = Само когато { -brand-short-name } е настроен да блокира известни тракери
@@ -71,6 +68,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = Затваряне
+do-not-track-removal2 =
+    .label = Вече не поддържаме сигнала „Без проследяване“.
 
 ## Browser Restart Dialog
 
@@ -126,6 +125,10 @@ startup-header = Стартиране
 always-check-default =
     .label = Винаги да се проверява дали { -brand-short-name } е браузър по подразбиране
     .accesskey = В
+is-default-browser =
+    .message = { -brand-short-name } е стандартния за системата четец
+is-not-default-browser =
+    .message = { -brand-short-name } не е стандартния за системата четец
 is-default = { -brand-short-name } е стандартния за системата четец
 is-not-default = { -brand-short-name } не е стандартния за системата четец
 set-as-my-default-browser =
@@ -134,6 +137,8 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = Отваряне на последните прозорци и раздели
     .accesskey = п
+startup-windows-launch-on-login-profile-disabled =
+    .message = Включете настройката като отметнете „{ profile-manager-use-selected.label }“ в прозореца „Избор на потребителски профил“.
 windows-launch-on-login =
     .label = Автоматично отваряне на { -brand-short-name } при стартиране на компютъра
     .accesskey = А
@@ -148,6 +153,11 @@ preferences-data-migration-description = Внасяне на отметки, п�
 preferences-data-migration-button =
     .label = Внасяне на данни
     .accesskey = н
+preferences-profiles-header = Профили
+preferences-manage-profiles-description = Всеки профил има отделни данни и настройки за сърфиране, включително история, пароли и други.
+preferences-manage-profiles-learn-more = Научете повече
+preferences-manage-profiles-button =
+    .label = Управление на профилите
 tabs-group-header = Раздели
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab обикаля разделите в реда на използване
@@ -225,12 +235,31 @@ containers-remove-cancel-button = Запазване
 settings-tabs-show-image-in-preview =
     .label = Показване на визуализация, когато задържите курсора на мишката върху раздел
     .accessKey = х
+browser-layout-header = Оформление на браузъра
+browser-layout-horizontal-tabs =
+    .label = Хоризонтални раздели
+browser-layout-horizontal-tabs-desc = Показват се в горната част на браузъра
+browser-layout-vertical-tabs =
+    .label = Вертикални раздели
+browser-layout-vertical-tabs-desc = Показват се отстрани, в страничната лента
+browser-layout-show-sidebar =
+    .label = Странична лента
+browser-layout-show-sidebar-desc = Бърз достъп до отметки, раздели от вашия телефон, AI чат ботове и други екстри, без да напускате основния изглед на браузъра.
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Език и изглед
 preferences-web-appearance-header = Изглед на страниците
 preferences-web-appearance-description = Някои страници адаптират цветовете си въз основа на вашите предпочитания. Изберете цветовата схема, която да бъде използвана за такива страници.
+preferences-web-appearance-choice-auto2 =
+    .label = Автоматично
+    .title = Автоматична промяна на фона и съдържанието на страницата въз основа на вашите системни настройки и темата на { -brand-short-name }.
+preferences-web-appearance-choice-light2 =
+    .label = Светла
+    .title = Да се ползва светъл външен вид за фон и съдържание на страниците.
+preferences-web-appearance-choice-dark2 =
+    .label = Тъмна
+    .title = Да се ползва тъмен външен вид за фон и съдържание на страниците.
 preferences-web-appearance-choice-auto = Автоматично
 preferences-web-appearance-choice-light = Светла
 preferences-web-appearance-choice-dark = Тъмна
@@ -246,16 +275,25 @@ preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-web-appearance-link =
+    .label = Управлявайте темите на { -brand-short-name } в Управление на добавки
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Избраните от вас цветове променят външния вид на сайта. <a data-l10n-name="colors-link">Управление на цветове</a>
-# This can appear when using windows HCM or "Override colors: always" without
-# system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Избраните от вас цветове променят външния вид на сайта.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Управлявайте темите на { -brand-short-name } в <a data-l10n-name="themes-link">Управление на добавки</a>
+preferences-contrast-control-header = Управление на контраста
+preferences-contrast-control-description = Уеб страниците използват многообразие от цветове за обектите на преден план и за фона. Конфигурирайте { -brand-short-name } да използва едни и същи цветове за различните сайтове за по-добра четимост.
+preferences-contrast-control-use-platform-settings =
+    .label = Автоматично (използване на системните настройки)
+    .accesskey = А
+preferences-contrast-control-off =
+    .label = Изключено
+    .accesskey = И
+preferences-contrast-control-custom =
+    .label = По избор
+    .accesskey = з
 preferences-colors-header = Цветове
 preferences-colors-description = Заменете цветовете по подразбиране на { -brand-short-name } за текст, фонове на страници и препратки.
 preferences-colors-manage-button =
@@ -314,6 +352,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Файлове и приложения
+downloads-header-2 =
+    .label = Изтегляния
+download-save-where-2 =
+    .label = Запазване на файловете в
+    .accesskey = З
 download-header = Изтегляния
 download-save-where = Запазване на файловете в
     .accesskey = З
@@ -331,6 +374,9 @@ download-choose-folder =
 download-always-ask-where =
     .label = Винаги да се пита къде да бъдат запазвани файловете
     .accesskey = В
+download-private-browsing-delete =
+    .label = Изтриване на файловете, изтеглени в поверителен режим, когато всички поверителни прозорци се затворят
+    .accesskey = ф
 applications-header = Приложения
 applications-description = Изберете как { -brand-short-name } управлява изтеглените файлове или приложенията, които използвате докато разглеждате.
 applications-filter =
@@ -539,7 +585,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Нови прозорци и раздели
 home-new-windows-tabs-description2 = Изберете какво да виждате при отваряне на началната страница, нови прозорци или раздели.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Начална страница и нови прозорци
 home-newtabs-mode-label = Нов раздел
@@ -619,6 +665,9 @@ home-prefs-weather-header =
     .label = Времето
 home-prefs-weather-description = Днешната прогноза
 home-prefs-weather-learn-more-link = Научете повече
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = Подкрепете { -brand-product-name }
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -701,6 +750,8 @@ search-keyword-warning-bookmark = Избрали сте дума, която в�
 containers-back-button2 =
     .aria-label = Към настройките
 containers-header = Изолирани раздели
+containers-section-header =
+    .heading = Изолирани раздели
 containers-add-button =
     .label = Нов изолатор
     .accesskey = и
@@ -865,6 +916,14 @@ sync-choose-what-to-sync-dialog4 =
 ## The device name controls.
 
 sync-device-name-header = Име на текущото устройство
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Име на текущото устройство
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Преименуване
+    .accesskey = м
 sync-device-name-change =
     .label = Преименуване…
     .accesskey = м
@@ -1025,7 +1084,11 @@ history-remember-option-all =
 history-remember-option-never =
     .label = не помни история
 history-remember-option-custom =
-    .label = Използва потребителски настройки
+    .label = ползва потребителски настройки за историята
+history-remember-description2 =
+    .description = { -brand-short-name } ще пази историята на разглеждане, изтегляния и търсене.
+history-dontremember-description2 =
+    .description = { -brand-short-name } ще използва същите настройки като при поверително разглеждане и няма да помни никаква история, докато сте в интернет.
 history-remember-description = { -brand-short-name } ще пази историята на разглеждане, изтегляния и търсене.
 history-dontremember-description = { -brand-short-name } ще използва същите настройки като при поверително разглеждане и няма да помни никаква история, докато сте в интернет.
 history-private-browsing-permanent =
@@ -1059,6 +1122,8 @@ sitedata-learn-more = Научете повече
 sitedata-delete-on-close =
     .label = Изтриване на бисквитки и данни на страници при изход от { -brand-short-name }
     .accesskey = д
+sitedata-delete-on-close-private-browsing3 =
+    .message = Въз основа на вашите настройки за пазене на история { -brand-short-name } изтрива бисквитки и данни от сайтове от вашата сесията при затваряне на браузъра.
 sitedata-delete-on-close-private-browsing = В постоянен режим на поверително разглеждане бисквитките и данните на страници винаги ще бъдат изчиствани при затваряне на { -brand-short-name }.
 sitedata-delete-on-close-private-browsing2 = Въз основа на вашите настройки за пазене на история { -brand-short-name } изтрива бисквитки и данни от сайтове от вашата сесията при затваряне на браузъра.
 sitedata-allow-cookies-option =
@@ -1112,6 +1177,13 @@ cookie-banner-blocker-checkbox-label =
 
 addressbar-header = Адресна лента
 addressbar-suggest = При въвеждане в адресната лента, подсказване с
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = Адресна лента — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest = Изберете типа на предложенията, които ще се появяват в адресната лента.
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = Научете повече
 addressbar-locbar-history-option =
     .label = История на разглеждане
     .accesskey = р
@@ -1119,8 +1191,8 @@ addressbar-locbar-bookmarks-option =
     .label = Отметки
     .accesskey = О
 addressbar-locbar-clipboard-option =
-    .label = Системен буфер
-    .accesskey = С
+    .label = Клипборд
+    .accesskey = к
 addressbar-locbar-openpage-option =
     .label = Отворени раздели
     .accesskey = р
@@ -1144,7 +1216,22 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = Показване на набиращи популярност предложения за търсене
     .accesskey = щ
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = Предложения от { -brand-short-name }
+addressbar-locbar-suggest-all-option-desc = Получавайте предложения от мрежата, свързани с вашето търсене.
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = Предложения от { -brand-short-name }
+addressbar-locbar-suggest-nonsponsored-desc = Получавайте предложения от мрежата, свързани с вашето търсене.
+addressbar-locbar-suggest-sponsored-option =
+    .label = Предложения от спонсори
+addressbar-locbar-suggest-sponsored-desc = Подкрепете { -brand-short-name } с показване на спонсорирани предложения.
 addressbar-quickactions-learn-more = Научете повече
+addressbar-dismissed-suggestions-label = Отхвърлени предложения
+addressbar-restore-dismissed-suggestions-description = Възстановяване на отхвърлените предложения от спонсори и { -brand-short-name }.
+addressbar-restore-dismissed-suggestions-button =
+    .label = Възстановяване
 
 ## Privacy Section - Content Blocking
 
@@ -1282,6 +1369,8 @@ permissions-notification-link = Научете повече
 permissions-notification-pause =
     .label = Спиране на известията до рестарт на { -brand-short-name }
     .accesskey = з
+permissions-autoplay2 =
+    .label = Автоматично възпроизвеждане
 permissions-autoplay = Автоматично възпроизвеждане
 permissions-autoplay-settings =
     .label = Настройки…
@@ -1301,23 +1390,57 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Изключения…
     .accesskey = И
+permissions-location2 =
+    .label = Местоположение
+permissions-xr2 =
+    .label = Виртуална реалност
+permissions-camera2 =
+    .label = Камера
+permissions-microphone2 =
+    .label = Микрофон
+permissions-notification2 =
+    .label = Известия
 
 ## Privacy Section - Data Collection
 
 collection-header = Събиране и използване на данни от { -brand-short-name }
 collection-header2 = Събиране и използване на данни от { -brand-short-name }
     .searchkeywords = събиране данни
+preferences-collection-description = Стремим се да ви предоставяме възможности и да събираме само минимума данни, необходими за подобряване на { -brand-product-name }, което ще е от полза за всички.
+preferences-collection-privacy-notice = Вижте Политиката за лични данни
+preferences-view-profiles = Преглед на всички профили
 collection-description = Стремим се да ви предоставяме възможност и да събираме само толкова, колкото ни е необходимо, за да предоставяме и подобряваме { -brand-short-name } за всички. Винаги искаме разрешение преди да получим лична информация.
 collection-privacy-notice = Политика на поверителност
 collection-health-report-telemetry-disabled = Вече не позволявате на { -vendor-short-name } да събира технически данни и данни за взаимодействията. Всички стари данни ще бъдат изтрити в рамките на 30 дни.
 collection-health-report-telemetry-disabled-link = Научете повече
+collection-usage-ping =
+    .label = Ежедневно изпращане на сигнал до { -vendor-short-name }, че продуктът се ползва
+    .accesskey = Е
+collection-usage-ping-description = Това помага на { -vendor-short-name } да направи приблизителна преценка на броя активни потребители.
+collection-health-report2 =
+    .label = Изпращане на технически данни и данни за взаимодействие към { -vendor-short-name }
+    .accesskey = т
 collection-health-report =
     .label = Разрешаване на { -brand-short-name } да изпраща техническа информация и данни за използването към { -vendor-short-name }
     .accesskey = т
 collection-health-report-link = Научете повече
+collection-health-report-description = Това ни помага да подобрим възможностите, производителността и стабилността на { -brand-product-name }.
+collection-studies2 =
+    .label = Инсталиране и стартиране на проучвания
+collection-studies-description = Изпробвайте функциите и идеите, преди да са пуснати за всички.
 collection-studies =
     .label = Разрешаване на { -brand-short-name } да инсталира и извършва изследвания
 collection-studies-link = Преглед на изследванията на { -brand-short-name }
+addon-recommendations2 =
+    .label = Разрешаване на препоръки за персонализирани разширения
+addon-recommendations-description = Получавайте препоръки за разширения, за да подобрите изживяването си при сърфиране.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Докладването на данни е изключено за тази конфигурация на изданието.
+collection-backlogged-crash-reports2 =
+    .label = Автоматично изпращане на доклади за сривове
+    .accesskey = А
+collection-backlogged-crash-reports-description = Това помага на { -vendor-short-name } да диагностицира и отстранява проблеми с браузъра. Докладите може да включват лични или чувствителни данни.
 addon-recommendations =
     .label = Разрешаване на { -brand-short-name } да прави персонализирани препоръки за разширения
 addon-recommendations-link = Научете повече
@@ -1326,8 +1449,6 @@ addon-recommendations-link = Научете повече
 collection-health-report-disabled = Докладването да данни е изключено за тази конфигурация на изданието
 collection-backlogged-crash-reports-with-link = Разрешава на { -brand-short-name } да изпраща събрани доклади за сривове от ваше име. <a data-l10n-name="crash-reports-link">Научете повече</a>
     .accesskey = щ
-collection-backlogged-crash-reports = Разрешаване на { -brand-short-name } да изпраща събрани доклади за сривове от ваше име
-    .accesskey = д
 privacy-segmentation-section-header = Нови функции, които подобряват вашето сърфиране
 privacy-segmentation-section-description = Когато предлагаме функции, които използват вашите данни, за да ви дадат по-лично изживяване:
 privacy-segmentation-radio-off =
@@ -1376,6 +1497,7 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = Разрешаване на { -brand-short-name } автоматично да се доверява на кореновите сертификати на трети страни, които инсталирате
     .accesskey = т
+certs-devices-enable-fips = Включване на FIPS
 space-alert-over-5gb-settings-button =
     .label = Към Настройки
     .accesskey = с
@@ -1385,21 +1507,18 @@ space-alert-under-5gb-message2 = Дисковото пространство н�
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = Режим „само HTTPS“
+httpsonly-learn-more2 = Как работи режимът „Само HTTPS“
 httpsonly-description = HTTPS осигурява сигурна, шифрована връзка между { -brand-short-name } и посещаваните от вас уебсайтове. Повечето уебсайтове поддържат HTTPS и ако режимът „само HTTPS“ е включен, { -brand-short-name } ще надстрои всички връзки до HTTPS.
-httpsonly-description2 = { -brand-short-name } създава сигурни и шифровани връзки към страниците, които посещавате. { -brand-short-name } ще ви предупреждава, ако връзката не е защитена, когато е включен режима "Само HTTPS".
 httpsonly-learn-more = Научете повече
 httpsonly-radio-enabled =
     .label = Включване на режим „само HTTPS“ за всички прозорци
-httpsonly-radio-enabled2 =
-    .label = Използвайте само HTTPS за всички прозорци
 httpsonly-radio-enabled-pbm =
     .label = Активиране на режим „само HTTPS“ само за поверителни прозорци
-httpsonly-radio-enabled-pbm2 =
-    .label = Използвайте HTTPS само в поверителни прозорци
+httpsonly-radio-disabled3 =
+    .label = Без активиране на режима „само HTTPS“.
+    .description = Въпреки това е възможно { -brand-short-name } да подобри някои връзки.
 httpsonly-radio-disabled =
     .label = Да не се включва режим „само HTTPS“
-httpsonly-radio-disabled2 =
-    .label = Опитва се първо с HTTPS, но се разрешават и връзки, които не са защитени
 
 ## DoH Section
 

@@ -103,10 +103,3 @@ blockedByPolicy-title = Naka-block na Pahina
 clockSkewError-title = Mali ang oras ng iyong computer
 networkProtocolError-title = Network Protocol Error
 certerror-mitm-title = May software na pumipigil sa { -brand-short-name } sa pag-connect nang ligtas sa site na ito
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

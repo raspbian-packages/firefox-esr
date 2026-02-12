@@ -6,24 +6,3 @@
 callout-primary-advance-button-label = បន្ទាប់
 # Callout dialog primary button to complete the feature tour
 callout-primary-complete-button-label = យល់ហើយ!
-
-## Firefox View feature tour strings
-
-
-## Continuous Onboarding - Firefox View: Tab pick up
-
-
-## PDF.js Feature Tour Strings
-
-
-## Firefox View Discoverability Strings
-
-
-## Split Dismiss Button Labels
-
-
-## Sidebar Strings
-
-
-## Sidebar Callout Survey Strings
-

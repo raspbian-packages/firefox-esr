@@ -25,6 +25,8 @@ return-to-amo-subtitle = Ótimo, tem o { -brand-short-name }
 return-to-amo-addon-title = Agora vamos obter o <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Adicionar a extensão
 return-to-amo-add-theme-label = Adicionar o tema
+return-to-amo-theme-install-complete-label = Tema instalado
+return-to-amo-extension-install-complete-label = Extensão instalada
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Importar de { $previous
 mr1-onboarding-theme-header = Personalize
 mr1-onboarding-theme-subtitle = Personalize o { -brand-short-name } com um tema.
 mr1-onboarding-theme-secondary-button-label = Agora não
-newtab-wallpaper-onboarding-title = Experimente um toque de cor
-newtab-wallpaper-onboarding-subtitle = Escolha um fundo para dar um novo visual ao seu novo separador.
-newtab-wallpaper-onboarding-primary-button-label = Definir fundo
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Tema do sistema
 mr1-onboarding-theme-label-light = Claro
@@ -340,7 +339,7 @@ onboarding-device-migration-primary-button-label = Entrar
 ## Add-ons Picker screen
 
 amo-picker-title = Personalize o seu { -brand-short-name }
-amo-picker-subtitle = As extensões funcionam como aplicações para o seu navegador, permitindo-lhe proteger as suas palavras-passe, descarregar vídeos, descobrir promoções, bloquear anúncios incómodos, modificar a aparência do seu navegador, entre outras funcionalidades.
+amo-picker-subtitle = As extensões funcionam como aplicações para o seu navegador, permitindo-lhe proteger as suas palavras-passe, transferir vídeos, descobrir promoções, bloquear anúncios incómodos, modificar o aspeto do seu navegador, entre outras funcionalidades.
 amo-picker-install-button-label = Adicionar ao { -brand-short-name }
 amo-picker-install-complete-label = Instalado
 amo-picker-collection-link = Explorar mais extras
@@ -425,7 +424,7 @@ onboarding-horizontal-tabs-description =
 # Additional setup card for setting up aichatbot in the sidebar
 onboarding-genai-sidebar-title = Experimente um chatbot de IA na barra lateral
 # Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
-onboarding-genai-sidebar-subtitle = Resuma conteúdos na Internet, prototipe ideias, faça rascunhos de mensagens — tudo enquanto navega. Escolha a partir de múltiplos fornecedores. Mude a qualquer altura. <a data-l10n-name="learn-more">Saber mais</a>
+onboarding-genai-sidebar-subtitle = Sumarize conteúdos na Internet, prototipe ideias, crie rascunhos de mensagens — tudo enquanto navega. Escolha a partir de múltiplos fornecedores. Mude a qualquer altura. <a data-l10n-name="learn-more">Saber mais</a>
 onboarding-genai-sidebar-primary-button = Escolha um chatbot
 onboarding-genai-sidebar-secondary-button = Começar a navegar
 
@@ -443,6 +442,12 @@ onboarding-checklist-sign-up = Registar ou iniciar sessão na sua conta
 
 tab-groups-onboarding-feature-callout-title = Grupos de separadores: menos confusão, mais concentração
 tab-groups-onboarding-feature-callout-subtitle = Organize-se arrastando um separador sobre o outro para criar o seu primeiro grupo.
+tab-groups-onboarding-create-group-title-2 = Encontre os seus grupos de separadores a qualquer momento aqui.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Encontre os seus grupos ao procurar pelos mesmos na barra de endereço.
+tab-groups-onboarding-saved-groups-title-2 = Quando fecha um grupo de separadores, pode reabri-lo aqui a qualquer momento.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Encontre os seus grupos fechados ao procurar pelos mesmos na barra de endereço.
+tab-groups-onboarding-session-restore-title = Reabra os seus grupos de separadores a qualquer momento aqui.
+tab-groups-onboarding-dismiss = Ok
 
 ## Multi Profiles feature onboarding messages
 
@@ -452,3 +457,14 @@ multi-profile-spotlight-cta = Criar um perfil
 multi-profile-callout-title = Crie perfis diferentes para o trabalho e a diversão
 multi-profile-callout-subtitle = Os perfis permitem-lhe manter as suas informações de navegação, tais como o histórico de pesquisa e as palavras-passe, totalmente separadas.
 multi-profile-callout-cta = Criar um perfil
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Transferir, sincronizar e pronto!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Digitalize o código QR para transferir o { -brand-product-name } para dispositivos móveis. Depois de instalado, selecione “Sincronizar com o telemóvel” para aceder às suas palavras-passe, marcadores e muito mais, em qualquer lugar.
+dismiss-button-label = Dispensar
+sync-to-mobile-button-label = Sincronizar com o telemóvel
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Código QR para transferir o { -brand-product-name } para dispositivos móveis

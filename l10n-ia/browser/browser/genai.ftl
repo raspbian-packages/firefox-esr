@@ -5,21 +5,13 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = Adde le chatbot preferite al barra lateral, pro accesso rapide quando tu naviga. <a data-l10n-name="connect">Compartir commentario</a>
-genai-settings-chat-choose = Elige un data chatbot
-genai-settings-chat-choose-one-menuitem =
-    .label = Elige un
-genai-settings-chat-links = Quando tu selige un chatbot, tu accepta le conditiones de uso e le politica de confidentialitate del fornitor.
 genai-settings-chat-chatgpt-links = Seligente ChatGPT, tu accepta le <a data-l10n-name="link1">Conditiones de uso</a> e <a data-l10n-name="link2">Politica de confidentialitate</a> de OpenAI.
-genai-settings-chat-claude-links = Seligente Anthropic Claude, tu accepta le <a data-l10n-name="link1">Terminos de servicio de consumitor</a>, <a data-l10n-name="link2">Regulamento de uso</a>, e <a data-l10n-name="link3">Politica de confidentialitate</a> de Anthropic.
+genai-settings-chat-claude-links = Seligente Anthropic Claude, tu accepta le <a data-l10n-name="link1">Conditiones de servicio pro consumitores</a>, le <a data-l10n-name="link2">Politica de uso</a> e le <a data-l10n-name="link3">Politica de confidentialitate</a> de Anthropic.
 genai-settings-chat-copilot-links = Seligente Copilot, tu accepta le <a data-l10n-name="link1">Terminos de experientias de IA de Copilot</a> e le <a data-l10n-name="link2">Declaration de confidentialitate de Microsoft</a>.
-genai-settings-chat-gemini-links = Seligente Google Gemini, tu accepta le <a data-l10n-name="link1">Terminos de servicio de Google</a>, le <a data-l10n-name="link2">Regulamento de uso prohibite del IA generative</a>, e le <a data-l10n-name="link3">Aviso de confidentialitate de Gemini Apps</a>.
+genai-settings-chat-gemini-links = Seligente Google Gemini, tu accepta le <a data-l10n-name="link1">Conditiones de servicio de Google</a>, le <a data-l10n-name="link2">Politica sur le uso prohibite del IA generative</a>, e le <a data-l10n-name="link3">Aviso de confidentialitate de Gemini Apps</a>.
 genai-settings-chat-huggingchat-links = Seligente HuggingChat, tu accepta le <a data-l10n-name="link1">Aviso de confidentialitate de HuggingChat</a> e le <a data-l10n-name="link2">Politica de confidentialitate de Hugging Face</a>.
 genai-settings-chat-lechat-links = Seligente Le Chat Mistral, tu accepta le X<a data-l10n-name="link1">Terminos de servicio</a> del IA e le <a data-l10n-name="link2">Politica de confidentialitate</a> de Mistral.
 genai-settings-chat-localhost-links = Apporta tu proprie chatbot local private tal como <a data-l10n-name="link1">llamafile</a> del gruppo Innovation de { -vendor-short-name }.
-genai-settings-chat-shortcuts =
-    .description = Monstra un via-breve pro suggestiones quando tu selige texto. { -brand-short-name } invia le texto, le titulo del pagina, e le requesta al chatbot.
-    .label = Monstrar suggestiones sur le texto seligite
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -59,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = Demandar a  { $provider }
+genai-menu-open-generic =
+    .label = Aperir chatbot IA
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Aperir { $provider }
+genai-menu-remove-generic =
+    .label = Remover chatbot IA
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Remover { $provider }
+genai-menu-remove-sidebar =
+    .label = Remover del barra lateral
+genai-menu-new-badge = Nove
+genai-menu-summarize-page = Summarisar pagina
 genai-input-ask-generic =
     .placeholder = Demandar a chatbot IA…
 # $provider (string) - name of the provider
@@ -85,20 +91,32 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = Celar via breve pro chatbot
+genai-menu-choose-chatbot =
+    .label = Elige un chatbot IA
+genai-menu-ask-generic-2 =
+    .label = Demandar a robot confabulator IA
+    .accesskey = f
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = Demandar a  { $provider }
+    .accesskey = d
+genai-menu-no-provider-2 =
+    .label = Demandar a un robot confabulator IA
+    .accesskey = f
 
 ## Chatbot header
 
 genai-chatbot-title = Chatbot IA
 genai-header-provider-menu =
     .title = Elige un chatbot
+genai-header-settings-button =
+    .title = Parametros de chat IA
 genai-header-options-button =
     .title = Aperir le menu
 genai-header-close-button =
     .title = Clauder
 genai-provider-view-details =
-    .label = Vider detalios de chatbot
-genai-provider-about-chatbots =
-    .label = Re iste chatbots
+    .label = Vider detalios del chatbot
 genai-options-reload-generic =
     .label = Recargar chatbot IA
 # $provider (string) - name of the provider
@@ -111,11 +129,23 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = Re le chatbots IA in { -brand-short-name }
 
+## Chatbot message
+
+genai-page-warning =
+    .message = Pois que le pagina es longe, isto es un summario partial.
+
+## Chatbot footer
+
+genai-page-button-summarize = Summarisar pagina
+
 ## Chatbot onboarding
 
-genai-onboarding-header = Resume, liberemente expone ideas, e altero quando tu naviga
+genai-onboarding-header = Summarisa, genera ideas, e plus durante que tu naviga
+genai-onboarding-choose-header = Selige un chatbot IA a usar in le barra lateral de { -brand-short-name }
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
-genai-onboarding-description = Selige un chatbot IA a usar in le barra lateral de { -brand-short-name }. Nos monstrara detalios re cata chatbot quando tu lo seligera. Muta lo quandocunque tu vole. <a data-l10n-name="learn-more">Pro saper plus</a>
+genai-onboarding-description = Selige un chatbot IA a usar in le barra lateral de { -brand-short-name }. Nos monstrara detalios sur cata chatbot quando tu lo selige. Cambia de chatbot a tote momento. <a data-l10n-name="learn-more">Saper plus</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Cambia lo a tote momento. Pro adjutar te a eliger, <a data-l10n-name="learn-more">lege plus sur cata chatbot</a>
 genai-onboarding-primary = Continuar
 genai-onboarding-secondary = Clauder
 genai-onboarding-claude-tooltip =
@@ -136,9 +166,21 @@ genai-onboarding-huggingchat-learn = Saper plus re HuggingChat
 genai-onboarding-lechat-tooltip =
     .title = Le Chat Mistral
 genai-onboarding-lechat-learn = Saper plus re Le Chat
-genai-onboarding-select-header = Seliger texto pro vider suggestiones
-genai-onboarding-select-description = Quando tu selige texto, nos suggerera le suggestiones que tu potera inviar al chatbot. Tu alsi pote inscriber tu proprie suggestiones.
-genai-onboarding-select-primary = Initia a chattar
+genai-onboarding-select-header = Selige texto pro vider suggestiones
+genai-onboarding-select-description = Quando tu selige texto, nos suggerera le consultas que tu pote inviar al chatbot. Tu pote etiam scriber tu proprie consultas.
+genai-onboarding-select-primary = Comenciar a conversar
+genai-chatbot-contextual-title = Usa un chatbot IA sin cambiar de scheda
+genai-chatbot-contextual-subtitle = Conversa e naviga latere a latere quando tu adde un chatbot IA in le barra lateral de { -brand-short-name }.
+genai-chatbot-contextual-button = Elige un chatbot
+genai-chatbot-summarize-title = Nove! Summarisar paginas in un clic
+genai-chatbot-summarize-button = Summarisar pagina
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = Clicca con le button dextre sur tu chatbot IA in le barra lateral e selige “Summarisar pagina”.
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = Clicca con le button dextre sur le button de scintillas in le barra lateral e selige “Summarisar pagina”. Le prime vice, tu alsi eligera un chatbot IA.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = Aperi tu chatbot IA in le barra lateral e selige “Summarisar pagina” al fundo.
+genai-chatbot-summarize-footer-generic-subtitle = Adde un chatbot IA al barra lateral de { -brand-short-name } pro rapidemente summarisar paginas.
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -160,3 +202,72 @@ genai-onboarding-huggingchat-switch = Passar a un diverse insimul de modellos ap
 genai-onboarding-huggingchat-price-2 = Gratuite; conto obligatori post un certe numero de requestas
 genai-onboarding-lechat-generate = Generar texto e codice
 genai-onboarding-lechat-price = Gratuite; conto obligatori
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Continuar
+genai-model-optin-optout =
+    .label = Cancellar
+genai-model-optin-cancel =
+    .label = Cancellar
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] Tempore de lectura { $range } minuta
+       *[other] Tempore de lectura { $range } minutas
+    }
+# Error message displayed when a link preview cannot be generated
+link-preview-error-message = Impossibile previsualisar iste ligamine
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = Visitar le ligamine
+# Error message when we can't generate key points (summary highlights or main ideas of page content) for a page
+link-preview-generation-error-missing-data = Impossibile generar le punctos clave de iste pagina web.
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Un problema ha occurrite.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Tentar de novo
+# Button that opens the Link Preview settings
+link-preview-settings-button =
+    .title = Parametros de previsualisation del ligamine
+link-preview-settings-enable =
+    .label = Activar previsualisationes de ligamines
+    .description = Vider le titulo, description e plus del pagina quando tu usa le accesso directe o clicca sur un ligamine con le button dextre.
+link-preview-settings-key-points =
+    .label = Permitter a IA de leger le initio del pagina e generar punctos clave
+link-preview-settings-long-press =
+    .label = Accesso directe: clicca e retene sur le ligamine durante 1 secunda (pression longe)
+# Title that appears when user is shown the opt-in flow for link previews
+link-preview-optin-title = Vider plus con IA?
+# Message that appears when user is shown the opt-in flow for link previews
+link-preview-optin-message = { -brand-short-name } usa IA pro leger le initio del pagina e generar alcun punctos clave. Pro dar major prioritate a tu confidentialitate, isto eveni sur tu apparato.
+# Onboarding card title for long press
+link-preview-onboarding-title-long-press = Nove: clicca e retene sur qualcunque ligamine pro un previsualisation
+# Onboarding card description for long press
+link-preview-onboarding-description-long-press = Vider un curte description, tempore de lectura, e plus pro decider si le ligamine es digne de esser aperite. Equalmente disponibile con un clic dextre.
+# Header for the key points section
+link-preview-key-points-header = Punctos clave
+# Disclaimer for AI-generated key points
+link-preview-key-points-disclaimer = Le punctos clave es generate per IA e pote haber errores.
+# Progress message for the first-time setup
+# $progress (number) - The percentage value 1-100 indicating the progress of the setup.
+link-preview-setup = Configuration initial • <strong>{ $progress }%</strong>
+# Message indicating faster performance after initial setup
+link-preview-setup-faster-next-time = Tu videra le punctos clave plus rapidemente le proxime vice.
+# Onboarding card See a preview button
+link-preview-onboarding-button = Vider un previsualisation
+# Onboarding card Close button
+link-preview-onboarding-close = Clauder
+# Title for the first-time setup modal
+link-preview-first-time-setup-title = Configuration initial
+# Message for the first-time setup modal
+link-preview-first-time-setup-message = Isto pote prender un momento. Tu videra le punctos clave plus rapidemente le proxime vice.

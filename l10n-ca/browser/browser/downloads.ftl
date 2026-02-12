@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Detalls de la baixada
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Els fitxers es queden al dispositiu
+downloads-private-browsing-message = Qualsevol persona que utilitzi aquest dispositiu pot veure les baixades, fins i tot quan tanqueu totes les finestres privades.
+downloads-private-browsing-delete-button =
+    .label = Suprimeix els fitxers automàticament
+    .accesskey = S
+downloads-private-browsing-accept-button =
+    .label = Entesos
+    .accesskey = E
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

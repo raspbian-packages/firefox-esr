@@ -31,6 +31,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Obnoviť zatvorené karty
         }
     .accesskey = b
+toolbar-context-turn-on-vertical-tabs =
+    .label = Zapnúť vertikálne karty
+toolbar-context-turn-off-vertical-tabs =
+    .label = Vypnúť vertikálne karty
+toolbar-context-customize-sidebar =
+    .label = Prispôsobiť bočný panel
 toolbar-context-menu-manage-extension =
     .label = Spravovať rozšírenie
     .accesskey = S
@@ -55,6 +61,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Zobraziť tento panel pri spustení sťahovania
     .accesskey = b
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Vždy zobrazovať v paneli s nástrojmi
+    .accesskey = V
 toolbar-context-menu-remove-from-toolbar =
     .label = Odstrániť z panela nástrojov
     .accesskey = O

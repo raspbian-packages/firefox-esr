@@ -119,9 +119,111 @@ fp-cert-error-code = Kód chyby: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } nedůvěřuje serveru { $hostname }, protože nemohl prokázat, že splňuje požadavky na transparentnost veřejného certifikátu.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Pravděpodobně nic, protože je pravděpodobné, že problém je se samotným webem.
 fp-learn-more-about-secure-connection-failures = Zjistěte více o chybách zabezpečeného připojení
 fp-learn-more-about-cert-issues = Zjistěte více o těchto typech problémů s certifikáty
 fp-learn-more-about-time-related-errors = Zjistěte více o řešení chyb souvisejících s časem
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate =
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name } zablokoval vaši návštěvu této stránky, protože poskytnutý certifikát byl pro server { $hostname } zneplatněn a již není považován za důvěryhodný.
+        [feminine] { -brand-short-name } zablokovala vaši návštěvu této stránky, protože poskytnutý certifikát byl pro server { $hostname } zneplatněn a již není považován za důvěryhodný.
+        [neuter] { -brand-short-name } zablokovalo vaši návštěvu této stránky, protože poskytnutý certifikát byl pro server { $hostname } zneplatněn a již není považován za důvěryhodný.
+       *[other] Aplikace { -brand-short-name } zablokovala vaši návštěvu této stránky, protože poskytnutý certifikát byl pro server { $hostname } zneplatněn a již není považován za důvěryhodný.
+    }
+cert-error-bad-signature =
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože podpis na certifikátu poskytnutém pro { $hostname } není platný.
+        [feminine] { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože podpis na certifikátu poskytnutém pro { $hostname } není platný.
+        [neuter] { -brand-short-name } zablokovalo vaši návštěvu tohoto webu, protože podpis na certifikátu poskytnutém pro { $hostname } není platný.
+       *[other] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože podpis na certifikátu poskytnutém pro { $hostname } není platný.
+    }
+cert-error-key-pinning-failure =
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } používá jiný veřejný klíč, než se očekávalo.
+        [feminine] { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } používá jiný veřejný klíč, než se očekávalo.
+        [neuter] { -brand-short-name } zablokovalo vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } používá jiný veřejný klíč, než se očekávalo.
+       *[other] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } používá jiný veřejný klíč, než se očekávalo.
+    }
+cert-error-bad-der =
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } není správně zakódován.
+        [feminine] { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } není správně zakódován.
+        [neuter] { -brand-short-name } zablokovalo vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } není správně zakódován.
+       *[other] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } není správně zakódován.
+    }
+cert-error-cert-not-in-name-space =
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } nesplňuje omezení názvu certifikátu, pro který byl vydán.
+        [feminine] { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } nesplňuje omezení názvu certifikátu, pro který byl vydán.
+        [neuter] { -brand-short-name } zablokovalo vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } nesplňuje omezení názvu certifikátu, pro který byl vydán.
+       *[other] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } nesplňuje omezení názvu certifikátu, pro který byl vydán.
+    }
+cert-error-inadequate-cert-type =
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } není webovým serverem povolen.
+        [feminine] { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } není webovým serverem povolen.
+        [neuter] { -brand-short-name } zablokovalo vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } není webovým serverem povolen.
+       *[other] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } není webovým serverem povolen.
+    }
+cert-error-path-len-constraint-invalid =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } má v cestě ke kořenovému certifikátu příliš mnoho zprostředkujících certifikátů.
+       *[no-cases] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } má v cestě ke kořenovému certifikátu příliš mnoho zprostředkujících certifikátů.
+    }
+cert-error-invalid-key =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } má neplatný klíč. S největší pravděpodobností je příliš malý na to, aby byl bezpečný.
+       *[no-cases] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } má neplatný klíč. S největší pravděpodobností je příliš malý na to, aby byl bezpečný.
+    }
+cert-error-unknown-critical-extension =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } obsahuje nepodporované kritické rozšíření.
+       *[no-cases] Aplikce { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } obsahuje nepodporované kritické rozšíření.
+    }
+cert-error-extension-value-invalid =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } obsahuje neplatné rozšíření.
+       *[no-cases] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } obsahuje neplatné rozšíření.
+    }
+cert-error-untrusted-issuer =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } byl vydán certifikační autoritou, která již není důvěryhodná.
+       *[no-cases] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } byl vydán certifikační autoritou, která již není důvěryhodná.
+    }
+cert-error-untrusted-cert =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } je označen jako nedůvěryhodný.
+       *[no-cases] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } je označen jako nedůvěryhodný.
+    }
+cert-error-invalid-integer-encoding =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } obsahuje neplatné kódování celého čísla. Mezi běžné příčiny patří záporná sériová čísla, záporné moduly RSA a kódování delší, než je nutné.
+       *[no-cases] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } obsahuje neplatné kódování celého čísla. Mezi běžné příčiny patří záporná sériová čísla, záporné moduly RSA a kódování delší, než je nutné.
+    }
+cert-error-unsupported-keyalg =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } má nepodporovaný typ klíče.
+       *[no-cases] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikát poskytnutý pro { $hostname } má nepodporovaný typ klíče.
+    }
+cert-error-issuer-no-longer-trusted =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože certifikační autorita, která vydala certifikát poskytnutý pro { $hostname }, již není důvěryhodná.
+       *[no-cases] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože certifikační autorita, která vydala certifikát poskytnutý pro { $hostname }, již není důvěryhodná.
+    }
+cert-error-signature-algorithm-mismatch =
+    { -brand-short-name.case-status ->
+        [with-cases] { -brand-short-name } zablokoval vaši návštěvu tohoto webu, protože algoritmus podpisu certifikátu poskytnutého pro { $hostname } neodpovídá jeho poli algoritmu podpisu.
+       *[no-cases] Aplikace { -brand-short-name } zablokovala vaši návštěvu tohoto webu, protože algoritmus podpisu certifikátu poskytnutého pro { $hostname } neodpovídá jeho poli algoritmu podpisu.
+    }
 
 ## Messages used for certificate error titles
 
@@ -130,6 +232,7 @@ deniedPortAccess-title = Omezení přístupu k adrese
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm, tuto stránku se nám nedaří najít.
+internet-connection-offline-title = Zdá se, že došlo k problému s připojením k internetu.
 dns-not-found-trr-only-title2 = Vyhledání této domény je možné bezpečnostní riziko
 dns-not-found-native-fallback-title2 = Vyhledání této domény je možné bezpečnostní riziko
 fileNotFound-title = Soubor nenalezen
@@ -146,6 +249,7 @@ contentEncodingError-title = Chyba znakové sady obsahu
 unsafeContentType-title = Nebezpečný typ souboru
 netReset-title = Spojení přerušeno
 netTimeout-title = Vypršel čas spojení
+httpErrorPage-title = Zdá se, že s touto stránkou nastal problém
 serverError-title = Zdá se, že s touto stránkou nastal problém
 unknownProtocolFound-title = Adresa nebyla rozpoznána
 proxyConnectFailure-title = Proxy server odmítl spojení
@@ -154,6 +258,7 @@ redirectLoop-title = Smyčka při přesměrování
 unknownSocketType-title = Neplatná odpověď serveru
 nssFailure2-title = Chyba zabezpečeného spojení
 csp-xfo-error-title = { -brand-short-name } tuto stránku nemůže otevřít
+corruptedContentErrorv2-title = Chyba v obsahu stránky
 corruptedContentError-title = Chyba v obsahu stránky
 sslv3Used-title = Nelze navázat zabezpečené spojení
 inadequateSecurityError-title = Vaše připojení není zabezpečené
@@ -190,3 +295,4 @@ fp-certerror-intro =
        *[other] Aplikace { -brand-short-name } zjistila potenciálně závažný bezpečnostní problém se stránkou <strong>{ $hostname }</strong>. Někdo, kdo se vydává za web, by se mohl pokusit ukrást například údaje o kreditní kartě, hesla nebo e-maily.
     }
 fp-certerror-expired-into = { -brand-short-name } zjistil bezpečnostní problém se stránkou <strong>{ $hostname }</strong>. Buď není web správně nastaven, nebo jsou hodiny vašeho zařízení nastaveny na špatný datum/čas.
+fp-certerror-transparency-intro = Osoba vydávající se za server <strong>{ $hostname }</strong> se může pokusit ukrást informace o platební kartě, hesla nebo e-mailové adresy.

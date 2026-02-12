@@ -98,10 +98,3 @@ blockedByPolicy-title = Potbuk ma kigengo
 clockSkewError-title = Cawa me kompiuta ni pe tye kakare
 networkProtocolError-title = Bal me Cik me Netwak
 certerror-mitm-title = Purugram tye ka Gengo { -brand-short-name } Me Kube Maber ki Kakube Man
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

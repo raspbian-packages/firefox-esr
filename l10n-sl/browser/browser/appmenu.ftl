@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Prenosi
 appmenuitem-passwords =
     .label = Gesla
+appmenuitem-extensions-and-themes =
+    .label = Razširitve in teme
+appmenuitem-extensions =
+    .label = Razširitve
 appmenuitem-addons-and-themes =
     .label = Dodatki in teme
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Odpri ploščo za spremljanje delovanja
+    .tooltiptext = Odpri ploščo za spremljanje delovanja
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Prednastavitev za preiskovanje napak zvoka in videa v { -brand-shorter-name(sklon: "mestnik") }.
 profiler-popup-presets-media-label =
     .label = Predstavnost
+profiler-popup-presets-ml-description = Prednastavitev za preiskovanje napak pri strojnem učenju v { -brand-shorter-name(sklon: "mestnik") }.
+profiler-popup-presets-ml-label =
+    .label = Strojno učenje
 profiler-popup-presets-networking-description = Prednastavitev za preiskovanje napak v delovanju omrežja v { -brand-shorter-name(sklon: "mestnik") }
 profiler-popup-presets-networking-label =
     .label = Omrežno povezovanje
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Odpri pregledno ploščo e-poštnih mas
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Zaščitite svojo spletno dejavnost
 appmenu-services-header = Moje storitve
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Preskusite druga Mozillina orodja za zaščito:
 appmenu-other-protection-header = Preskusite druga orodja { -vendor-short-name(sklon: "rodilnik") } za zaščito:
 
 ## Profiles panel
 
-appmenu-profiles = Profili
 appmenu-other-profiles = Drugi profili
 appmenu-manage-profiles =
     .label = Upravljanje profilov
+appmenu-copy-profile =
+    .label = Kopiraj ta profil
 appmenu-create-profile =
     .label = Nov profil
 appmenu-edit-profile =
     .aria-label = Urejanje profila
+appmenu-profiles-2 =
+    .label = Profili

@@ -54,16 +54,134 @@ fx-view-discoverability-secondary-button-label = Zamknij
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = Nie pokazuj więcej polecenia tej funkcji
+split-dismiss-button-dont-show-option =
+    .label = Nie pokazuj więcej polecenia tej funkcji
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = Pokazuj mniej poleceń
+split-dismiss-button-show-fewer-option =
+    .label = Pokazuj mniej poleceń
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = Zarządzaj ustawieniami
+split-dismiss-button-manage-settings-option =
+    .label = Zarządzaj ustawieniami
+# Accessibility label for dropdown menu button
+split-dismiss-button-default-label =
+    .title = Więcej opcji
+
+## Login Status Advisory Callout (points to the account icon)
+
+# The 'account icon' is the toolbar button with a 'profile' icon of a human
+# head/shoulders. It's for dealing with your Mozilla account. When hovering the
+# icon, the tooltip says 'Account'.
+login-status-advisory-title = Nie zalogowano. Kliknij ikonę konta, aby się zalogować.
+
+## Bookmarks toolbar callout strings
+
+bookmarks-toolbar-callout-1-title = Dodać tę witrynę do paska zakładek?
+bookmarks-toolbar-callout-1-subtitle = Zakładka zostanie zachowana tuż pod paskiem adresu, aby mieć ją pod ręką.
+bookmarks-toolbar-callout-1-primary-button-label = Dodaj zakładkę
+bookmarks-toolbar-callout-1-secondary-button-label = Nie, dziękuję
+# Visible if user adds a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2a-title = Łatwo dodawaj więcej zakładek
+bookmarks-toolbar-callout-2a-subtitle = Możesz przeciągać tu karty, aby mieć więcej ulubionych witryn w zasięgu ręki.
+bookmarks-toolbar-callout-2a-primary-button-label = OK
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2a-secondary-button-label = Ukryj pasek narzędzi
+# Visible if user declines to add a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2b-title = Czy pasek zakładek ma pozostać otwarty?
+bookmarks-toolbar-callout-2b-subtitle = Możesz dodać inne witryny, które odwiedzasz częściej. Po prostu przeciągnij tu karty, aby mieć ulubione witryny w zasięgu ręki.
+bookmarks-toolbar-callout-2b-primary-button-label = Zostaw otwarty
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2b-secondary-button-label = Nie, dziękuję
+
+## Account Adoption Passwords callout strings
+
+# Suggestion to backup passwords by signing up for Mozilla account and using sync
+fxa-adoption-passwords-title = Zachowano hasło. Zróbmy teraz jego kopię zapasową.
+fxa-adoption-passwords-subtitle = Chroń swoje hasła, synchronizując je ze swoimi urządzeniami za pomocą szyfrowania.
+# Opens Mozilla accounts sign-up page
+fxa-adoption-passwords-primary-button-label = Utwórz konto
+
+## Taskbar Tabs callout strings
+
+taskbar-tabs-social-callout-title = Dodaj swoje ulubione serwisy do paska zadań
+taskbar-tabs-social-callout-subtitle = Uruchamiaj serwisy społecznościowe jak aplikacje w uproszczonym oknie chronionym przez { -brand-short-name(case: "acc") }.
+taskbar-tabs-chat-callout-title = Rozmawiaj z paska zadań
+taskbar-tabs-chat-callout-subtitle = Uruchamiaj komunikatory jak aplikacje w uproszczonym oknie chronionym przez { -brand-short-name(case: "acc") }.
+taskbar-tabs-email-callout-title = Dodaj pocztę e-mail do paska zadań
+taskbar-tabs-email-callout-subtitle = Uruchamiaj pocztę e-mail jak aplikację w uproszczonym oknie chronionym przez { -brand-short-name(case: "acc") }.
+taskbar-tabs-media-callout-title = Wróć do streamu z paska zadań
+taskbar-tabs-media-callout-subtitle = Uruchamiaj serwisy streamingowe jak aplikacje w uproszczonym oknie chronionym przez { -brand-short-name(case: "acc") }.
+taskbar-tabs-value-prop-callout-title = Dodaj tę witrynę do paska zadań
+taskbar-tabs-value-prop-callout-subtitle = Uruchamiaj ją jednym kliknięciem w osobnym oknie i z uproszczonym interfejsem.
+
+## Windows 10 EoS Sync messages group 1 callouts
+
+windows-10-eos-sync-urgency-title-1 = Nie strać wszystkich zachowanych danych po przejściu na system Windows 11.
+windows-10-eos-sync-urgency-subtitle-1 = Synchronizuj już teraz, aby zakładki, hasła i ustawienia { -brand-short-name(case: "gen") } były zawsze bezpieczne i łatwe do przywrócenia.
+windows-10-eos-sync-urgency-title-2 = Żegnasz się z systemem Windows 10? Chroń swoje dane podczas przejścia na nowy system.
+windows-10-eos-sync-urgency-subtitle-2 = Nawet jeśli nie korzystasz z { -brand-short-name(case: "gen") } codziennie, synchronizuj zakładki i hasła, aby były zawsze bezpieczne i dostępne.
+windows-10-eos-sync-new-device-title-1 = Nie ryzykuj, że na nowym urządzeniu będziesz musieć zaczynać od zera.
+windows-10-eos-sync-new-device-subtitle-1 = Synchronizuj, aby zabrać zakładki, hasła i preferowane ustawienia { -brand-short-name(case: "gen") } ze sobą podczas przenosin.
+windows-10-eos-sync-new-device-title-2 = Przenosisz się na nowe urządzenie? Nie strać tego, co ważne.
+windows-10-eos-sync-new-device-subtitle-2 = Bez względu na to, jak często korzystasz z { -brand-short-name(case: "gen") }, synchronizacja chroni Twoje zakładki, hasła i ustawienia.
+windows-10-eos-sync-new-device-primary-label = Zacznij synchronizować
+windows-10-eos-sync-general-title-1 = Chroń { -brand-short-name(case: "acc") }, który stał się Twój.
+windows-10-eos-sync-general-subtitle-1 = Utwórz kopię zapasową i synchronizuj hasła, zakładki, ustawienia i pozostałe dane, aby nie stracić tego, na czym Ci zależy.
+windows-10-eos-sync-general-title-2 = To dobra chwila, aby utworzyć kopię zapasową haseł i zakładek.
+windows-10-eos-sync-general-subtitle-2 = Synchronizuj już teraz, aby chronić rzeczy powierzone { -brand-short-name(case: "dat") } — i móc odzyskać je gdzie chcesz, kiedy chcesz.
+windows-10-eos-sync-tour-title-1 = Za dużo kart? Uporządkuj je za pomocą grup kart.
+windows-10-eos-sync-tour-subtitle-1 = Przeciągnij jedną kartę na drugą, aby utworzyć grupę i zachować porządek.
+windows-10-eos-sync-tour-title-2 = Przygotuj się na przejście na system Windows 11.
+windows-10-eos-sync-tour-subtitle-2 = Synchronizuj zakładki, hasła i ustawienia, aby mieć ich kopię zapasową przed przejściem.
+windows-10-eos-sync-split-dismiss-button-show-fewer-option =
+    .label = Pokazuj mniej poleceń
+windows-10-eos-sync-dismiss-button-label = Zamknij
+windows-10-eos-sync-callout-primary-advance-button-label = Dalej
+
+## Link Preview Onboarding message callout strings
+
+link-preview-onboarding-callout-title = Nowość: kliknij i przytrzymaj, aby wyświetlić podgląd odnośnika
+link-preview-onboarding-callout-description = Zobacz krótki opis, czas potrzebny na przeczytanie i nie tylko, aby zdecydować, czy odnośnik jest warty kliknięcia. Dostępne także po kliknięciu prawym przyciskiem.
 
 ## Sidebar Strings
 
 sidebar-button-callout-title = Widoczne tytuły kart na panelu bocznym
 sidebar-button-callout-subtitle = Kliknij przycisk panelu bocznego, aby go rozszerzyć i widzieć tytuły kart.
+sidebar-button-callout-vertical-tabs = Aby wyświetlić karty, kliknij przycisk panelu bocznego na pasku narzędzi.
+
+## Sidebar Vertical Tabs Strings
+
+vertical-tabs-callout-1-title = Przytłacza Cię zbyt wiele kart?
+vertical-tabs-callout-1-subtitle = Wypróbuj nasz nowy pionowy układ kart, aby móc szybko przejrzeć listę kart. Pierwsi testerzy tej funkcji zgłaszają nam, że pomaga im ona zwiększyć organizację. Przełączaj się w dowolnej chwili.
+vertical-tabs-callout-1-cta-button = Wypróbuj pionowe karty
+vertical-tabs-callout-2-cta-button = Wypróbuj teraz
+vertical-tabs-callout-2-title = Masz dużo otwartych kart? Wypróbuj karty pionowe.
+vertical-tabs-callout-2-subtitle = Ten układ ułatwia szybkie przejrzenie listy kart. Możesz też dostosować ich szerokość, aby lepiej widzieć ich tytuły.
+
+## Sidebar Vertical Tabs Pinning Strings
+
+sidebar-pins-callout-title = Gubisz ważne karty?
+sidebar-pins-callout-subtitle = Spróbuj je przypiąć, dzięki czemu będą na górze listy kart. Kliknij wybraną kartę prawym przyciskiem myszy, a następnie wybierz „Przypnij kartę”.
+sidebar-pins-callout-cta-button = Przypnij kartę
+
+## Pinning Tabs Strings
+
+pin-tabs-callout-1-title = Trzymaj ważne karty w zasięgu ręki
+pin-tabs-callout-1-subtitle = Przeciągnij kartę na początek paska kart, aby ją przypiąć. Albo kliknij prawym przyciskiem myszy i wybierz „Przypnij kartę”.
+pin-tabs-callout-cta-1-button = Przypnij tę kartę
+pin-tabs-callout-2-title = Przypnij karty, które odwiedzasz najczęściej
+pin-tabs-callout-2-subtitle = Aby przypiąć dowolną kartę, przeciągnij ją na początek paska kart. Albo kliknij prawym przyciskiem myszy i wybierz „Przypnij kartę”.
+pin-tabs-callout-cta-2-button = Przypnij tę kartę
+pin-tabs-callout-3-title = Trzymaj ważne witryny w zasięgu ręki
+pin-tabs-callout-4-title = Przypnij witryny, które odwiedzasz najczęściej
+
+## Sidebar Onboarding Strings
+
+sidebar-customization-callout-1-title = Panel boczny: miejsce na narzędzia i karty
+sidebar-customization-callout-1-subtitle = Panel boczny { -brand-product-name(case: "gen") } umożliwia szybki dostęp do historii przeglądania, kart z innych urządzeń i czatbota opartego na sztucznej inteligencji — bez wychodzenia z głównego okna.
+sidebar-customization-callout-callout-button = Dostosuj panel boczny
+sidebar-customization-callout-dismiss-button = Ukryj panel boczny
+sidebar-customization-callout-2-title = Używaj panelu bocznego { -brand-product-name(case: "gen") } po swojemu
+sidebar-customization-callout-2-subtitle = Dodawaj i usuwaj narzędzia. Przenieś karty do panelu bocznego. Wypróbuj czatbota opartego na sztucznej inteligencji. Tylko od Ciebie zależy, jak dostosujesz swój panel boczny.
 
 ## Sidebar Callout Survey Strings
 
@@ -90,3 +208,23 @@ sidebar-callout-survey-saved-websites-2 = Szybki dostęp do zakładek
 sidebar-callout-survey-none-of-above = Żadna z powyższych
 sidebar-callout-survey-submit = Wyślij
 sidebar-callout-survey-thank-you = Dziękujemy za opinię!
+sidebar-genai-survey-satisfaction-question = Jak ocenisz swoje zadowolenie z dostępu do czatbota opartego na sztucznej inteligencji w panelu bocznym?
+sidebar-genai-survey-productive-question =
+    W jakim stopniu zgadzasz się lub nie zgadzasz z tym stwierdzeniem:<br/>
+    „Czatbot oparty na sztucznej inteligencji w panelu bocznym pomaga mi zwiększyć produktywność”?
+unified-search-callout-title = Przełączaj się między wyszukiwarkami
+unified-search-callout-subtitle = Wybierz tę, która najlepiej odpowiada temu, co chcesz znaleźć.
+unified-search-callout-primary-label = Dalej
+unified-search-callout-secondary-label = Zamknij
+unified-search-engines-callout-title = Wyszukuj na skróty
+unified-search-engines-callout-subtitle = Wpisz „@” i słowo kluczowe, aby przeszukać historię, zakładki, karty lub skorzystać z innej wyszukiwarki.
+unified-search-engines-callout-primary-label = OK
+actions-callout-title = Wykonuj typowe działania lub otwieraj podstawowe ustawienia
+# The user can type "print" and "clear" and a button will appear in the
+# search bar (e.g. Print page) the user can click to initiate the action.
+# These example text inputs correlate to the the following strings
+# (either matching the whole string, or the first word of the string).
+# "print" - quickactions-cmd-print
+# "clear" - quickactions-cmd-clearrecenthistory
+# When localizing, ensure the translations match to ensure the action button appears as expected.
+actions-callout-subtitle = Spróbuj wpisać działanie takie jak „drukuj”, aby wydrukować stronę, albo „wyczyść”, aby wyczyścić historię.

@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } mga taga-gamit
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = I-sync mo ang mga bookmark mo kahit saan.
 cfr-doorhanger-bookmark-fxa-body = Magaling! Ngayon huwag kang magpaiwan nang wala ang bookmark na ito sa mga mobile devices mo. Simulan mo sa pamamagitan ng { -fxaccount-brand-name }.
@@ -102,6 +102,8 @@ cfr-doorhanger-milestone-close-button = Isarado
 
 cfr-doorhanger-doh-body = Mahalaga ang iyong privacy. Hangga't maaari'y ligtas nang idinadaan ng { -brand-short-name } ang iyong mga DNS request sa isang partner service para maprotektahan ka habang nagba-browse.
 cfr-doorhanger-doh-header = Mas secure at encrypted na DNS lookup
+cfr-doorhanger-doh-primary-button-2 = Ok
+    .accesskey = O
 cfr-doorhanger-doh-secondary-button = i-Disable
     .accesskey = D
 
@@ -118,69 +120,40 @@ cfr-doorhanger-video-support-primary-button = Mag-update Na
 ## bit of info about how to improve their privacy and then offered a button
 ## to the Mozilla VPN page and a link to dismiss the dialog.
 
+# This header text can be explicitly wrapped.
+spotlight-public-wifi-vpn-header = Mukhang gumagamit ka ng pampublikong Wi-Fi
+spotlight-public-wifi-vpn-link = Hindi sa Ngayon
+    .accesskey = N
 
 ## Emotive Continuous Onboarding
 
-
-## MR2022 Background Update Windows native toast notification strings.
-##
-## These strings will be displayed by the Windows operating system in
-## a native toast, like:
-##
-## <b>multi-line title</b>
-## multi-line text
-## <img>
-## [ primary button ] [ secondary button ]
-##
-## The button labels are fitted into narrow fixed-width buttons by
-## Windows and therefore must be as narrow as possible.
-
+spotlight-better-internet-header = Ang mas mahusay na internet ay nagsisimula sa iyo
+spotlight-peace-mind-header = Kaming bahala sa iyo
 
 ## Firefox View CFR
 
+firefoxview-cfr-primarybutton = Subukan ito
+    .accesskey = T
+firefoxview-cfr-secondarybutton = Hindi sa ngayon
+    .accesskey = N
+firefoxview-cfr-header-v2 = Agad na ipagpatuloy kung saan ka tumigil
 
 ## Firefox View Spotlight
 
+firefoxview-spotlight-promo-primarybutton = Tignan kung paano ito gumagana
+firefoxview-spotlight-promo-secondarybutton = Laktawan
 
 ## Colorways expiry reminder CFR
 
-
-## Cookie Banner Handling CFR
-
+colorways-cfr-primarybutton = Pumili ng colorway
+    .accesskey = C
+colorways-cfr-header-28days = Ang Independent Voices colorways ay mag-e-expire sa Enero 16
+colorways-cfr-header-14days = Ang Independent Voices colorways ay mag-e-expire sa loob ng dalawang linggo
+colorways-cfr-header-7days = Ang Independent Voices colorways ay mag-e-expire ngayong linggo
+colorways-cfr-header-today = Ang Independent Voices colorways ay mag-e-expire ngayon
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
-
-## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
-
-
-## FxA sync CFR
-
-
-## Device Migration FxA Spotlight
-
-
-## Set as Default PDF Reader Infobar
-
-
-## Launch on login infobar notification
-
-
-## These string variants are used when the “launch on login” infobar
-## notification is displayed for a second time.
-
-
-## Tail Fox Set Default Spotlight
-
-
-## Root Certificate Succession Infobar
-
-
-## Root Certificate Succession Windows Background Notification
-
-
-## FxA Menu Message variants
-
-
-## Multi-CTA Fox Doodle Spotlight
-
+july-jam-headline = Kaming bahala sa iyo
+july-jam-body = Buwan-buwan, hinaharang ng { -brand-short-name } ang humigit-kumulang na 3,000+ tracker bawat user, na nagbibigay sa iyo ng ligtas at mabilis na access sa mabuting internet.
+july-jam-set-default-primary = Buksan ang aking mga link gamit ang { -brand-short-name }

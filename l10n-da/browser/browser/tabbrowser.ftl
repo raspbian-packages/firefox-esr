@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Luk faneblad
 tabbrowser-menuitem-close =
     .label = Luk
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -74,6 +87,13 @@ tabbrowser-unblock-tab-audio-tooltip =
 
 ## Tooltips for tab audio control
 
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Slå lyden til i faneblad
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Slå lyden fra i faneblad
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Afspil lyd/video i faneblad
 
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
@@ -106,7 +126,7 @@ tabbrowser-confirm-close-tabs-with-key-title = Luk vindue og afslut { -brand-sho
 tabbrowser-confirm-close-tabs-with-key-button = Afslut { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
-tabbrowser-ask-close-tabs-with-key-checkbox = Spørg. inden jeg afslutter med { $quitKey }
+tabbrowser-ask-close-tabs-with-key-checkbox = Spørg, inden jeg afslutter med { $quitKey }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Bekræft, inden jeg afslutter med { $quitKey }
@@ -142,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Vis ikke denne dialogboks igen
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Vigtigt
-tabbrowser-confirm-close-duplicate-tabs-text = Vi lader det senest aktive faneblad være åbent
 tabbrowser-confirm-close-all-duplicate-tabs-title = Luk kopierede faneblade?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Vi lukker kopierede faneblade i dette vindue. Det sidste aktive
@@ -185,6 +203,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Vis alle { $tabCount } faneblade
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Slå lyden fra i faneblad
@@ -192,8 +213,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Slå lyden til i faneblad
 tabbrowser-manager-close-tab =
     .tooltiptext = Luk faneblad
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Lukket
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Aktuelle vindue
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Opret fanebladsgruppe
 tab-group-editor-title-edit = Håndter fanebladsgruppe
@@ -203,13 +232,42 @@ tab-group-editor-name-field =
 tab-group-editor-cancel =
     .label = Annuller
     .accesskey = A
-tab-group-menu-header = Fanebladsgrupper
+tab-group-editor-color-selector =
+    .aria-label = Farve på fanebladsgruppe
+tab-group-editor-color-selector2-blue = Blå
+    .title = Blå
+tab-group-editor-color-selector2-purple = Lilla
+    .title = Lilla
+tab-group-editor-color-selector2-cyan = Cyan
+    .title = Cyan
+tab-group-editor-color-selector2-orange = Orange
+    .title = Orange
+tab-group-editor-color-selector2-yellow = Gul
+    .title = Gul
+tab-group-editor-color-selector2-pink = Pink
+    .title = Pink
+tab-group-editor-color-selector2-green = Grøn
+    .title = Grøn
+tab-group-editor-color-selector2-gray = Grå
+    .title = Grå
+tab-group-editor-color-selector2-red = Rød
+    .title = Rød
+tab-group-description = { $tabGroupName } — Fanebladsgruppe
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Sammenfoldet
+tab-group-label-tooltip-expanded = { $tabGroupName } — Udvidet
+tab-group-preview-name =
+    .aria-label = Faneblade i en sammenfoldet gruppe
 tab-context-unnamed-group =
     .label = Unavngiven gruppe
 tab-group-name-default = Gruppe uden navn
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Fanebladsliste er åben
+tab-group-preview-closed-description = Fanebladsliste er lukket
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -227,6 +285,8 @@ tab-context-move-tab-to-group =
            *[other] Føj faneblade til gruppe
         }
     .accesskey = g
+tab-context-move-tab-to-group-saved-groups =
+    .label = Lukkede grupper
 tab-group-editor-action-new-tab =
     .label = Nyt faneblad i gruppe
 tab-group-editor-action-new-window =
@@ -252,6 +312,16 @@ tab-context-ungroup-tab =
            *[other] Fjern fra grupper
         }
     .accesskey = F
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } faneblad til
+       *[other] { $tabCount } faneblade til
+    }
 
 ## Open/saved tab group context menu
 
@@ -277,3 +347,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Åbn gruppe i et nyt vindue
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Opdelt visning
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Tilføj opdelt visning
+    .accesskey = p
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Åbn i opdelt visning
+    .accesskey = p
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Adskil opdelt visning
+    .accesskey = p
+tab-context-badge-new = Ny

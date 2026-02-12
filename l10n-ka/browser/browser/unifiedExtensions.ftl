@@ -11,6 +11,15 @@
 unified-extensions-header-title = გაფართოებები
 unified-extensions-manage-extensions =
     .label = გაფართოებების მართვა
+unified-extensions-discover-extensions =
+    .label = მოიძიეთ გაფართოებები
+unified-extensions-empty-reason-private-browsing-not-allowed = თქვენ დაყენებული გაქვთ გაფართოებები, მაგრამ არაა ჩართული პირად ფანჯრებში
+unified-extensions-empty-reason-extension-not-enabled = თქვენ დაყენებული გაქვთ გაფართოებები, მაგრამ არაა ჩართული
+# In this headline, “Level up” means to enhance your browsing experience.
+unified-extensions-empty-reason-zero-extensions-onboarding = ახალ დონეზე აიყვანეთ გვერდების მონახულება გაფართოებებით
+unified-extensions-empty-content-explain-enable2 = აირჩიეთ „{ unified-extensions-manage-extensions.label }“ ჩასართავად პარამეტრებიდან.
+unified-extensions-empty-content-explain-manage2 = აირჩიეთ „{ unified-extensions-manage-extensions.label }“ გასამართად პარამეტრებიდან.
+unified-extensions-empty-content-explain-extensions-onboarding = მოირგეთ { -brand-short-name } იერსახისა თუ წარმადობის დახვეწითა და პირადულობისა თუ უსაფრთხოების გაძლიერებით.
 
 ## An extension in the main list
 
@@ -21,6 +30,9 @@ unified-extensions-manage-extensions =
 unified-extensions-item-open-menu =
     .aria-label = მენიუს გახსნა – { $extensionName }
 unified-extensions-item-message-manage = გაფართოების მართვა
+# Variables:
+#   $extensionName (String) - Name of the user-enabled soft-blocked extension.
+unified-extensions-item-messagebar-softblocked2 = { $extensionName } შეზღუდულია. მისი გამოყენება სახიფათო შესაძლოა იყოს.
 # Variables:
 #   $extensionName (String) - Name of the user-enabled soft-blocked extension.
 unified-extensions-item-messagebar-softblocked = { $extensionName } არღვევს Mozilla-ს დებულებებს. მისი გამოყენება შეიძლება სახიფათო იყოს.
@@ -53,16 +65,34 @@ unified-extensions-mb-quarantined-domain-learn-more = ვრცლად
 unified-extensions-mb-about-addons-link = გაფართოების პარამეტრების გახსნა
 # Variables:
 #   $extensionName (String) - Name of the extension disabled through a soft-block.
+unified-extensions-mb-blocklist-warning-single2 =
+    .heading = { $extensionName } ამორთულია
+    .message =
+        ეს გაფართოება შეიზღუდა და გაითიშულია.
+        მისი ჩართვა შეგიძლიათ პარამეტრებიდან, მაგრამ შესაძლოა, სახიფათო იყოს.
+# Variables:
+#   $extensionName (String) - Name of the extension disabled through a soft-block.
 unified-extensions-mb-blocklist-warning-single =
     .heading = { $extensionName } ამორთულია
     .message =
         გაფართოება არღვევს Mozilla-ს დებულებებს.
-        მისი გამოყენება შეიძლება სახიფათო იყოს.
+        მისი გამოყენება შესაძლოა სახიფათო იყოს.
 # Variables:
 #   $extensionName (String) - Name of the extension disabled through a hard-block.
 unified-extensions-mb-blocklist-error-single =
     .heading = { $extensionName } ამორთულია
     .message = გაფართოება არღვევს Mozilla-ს დებულებებს და ამორთულია
+# Variables:
+#   $extensionsCount (Number) - Number of extensions disabled through both soft and hard-blocks (always going to be greater than 1)
+unified-extensions-mb-blocklist-warning-multiple2 =
+    .heading =
+        { $extensionsCount ->
+            [one] { $extensionsCount } გაფართოება ამორთულია
+           *[other] { $extensionsCount } გაფართოება ამორთულია
+        }
+    .message =
+        თქვენი ზოგიერთი გაფართოება შეიზღუდა და ამორთულია.
+        მათი ჩართვა შეგიძლიათ პარამეტრებიდან, მაგრამ შესაძლოა, სახიფათო იყოს.
 # Variables:
 #   $extensionsCount (Number) - Number of extensions disabled through both soft and hard-blocks (always going to be greater than 1)
 unified-extensions-mb-blocklist-warning-multiple =
@@ -78,6 +108,8 @@ unified-extensions-mb-blocklist-warning-multiple =
 unified-extensions-mb-blocklist-error-multiple =
     .heading =
         { $extensionsCount ->
-           *[other] { $extensionsCount } extensions disabled
+           *[other] { $extensionsCount } გაფართოება ამორთულია
         }
-    .message = { $extensionsCount } გაფართოება ამორთულია
+    .message = თქვენი ზოგიერთი გაფართოება ამორთულია Mozilla-ს დებულებების დარღვევის გამო.
+unified-extensions-notice-safe-mode =
+    .message = ყველა გაფართოება ამორთულია გაუმართაობის მოსაგვარებელი რეჟიმით.

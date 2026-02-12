@@ -47,8 +47,9 @@ abuse-report-messagebar-error-recent-submit = لم يُرسل التقرير ع�
 
 ## Message bars actions.
 
-abuse-report-messagebar-action-remove-extension = نعم ، أزِله
+abuse-report-messagebar-action-remove-extension = نعم، أزِله
 abuse-report-messagebar-action-keep-extension = لا، سأُبقيه
+abuse-report-messagebar-action-remove-sitepermission = نعم، أزِله
 abuse-report-messagebar-action-remove-theme = نعم، أزِلها
 abuse-report-messagebar-action-keep-theme = لا، سأُبقيها
 abuse-report-messagebar-action-retry = أعِد المحاولة

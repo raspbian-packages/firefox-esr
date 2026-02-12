@@ -13,7 +13,7 @@ const PSSVC = Cc["@mozilla.org/gfx/printsettings-service;1"].getService(
 let mockCA = makeMockContentAnalysis();
 
 add_setup(async function test_setup() {
-  mockCA = mockContentAnalysisService(mockCA);
+  mockCA = await mockContentAnalysisService(mockCA);
 });
 
 let testPDFUrl;
@@ -72,6 +72,11 @@ function assertContentAnalysisRequest(request, expectedUrl) {
     "request has print analysisType"
   );
   is(
+    request.reason,
+    Ci.nsIContentAnalysisRequest.ePrintPreviewPrint,
+    "request has correct reason"
+  );
+  is(
     request.operationTypeForDisplay,
     Ci.nsIContentAnalysisRequest.eOperationPrint,
     "request has print operationTypeForDisplay"
@@ -80,6 +85,12 @@ function assertContentAnalysisRequest(request, expectedUrl) {
   is(request.filePath, "", "request filePath should be empty");
   isnot(request.printDataHandle, 0, "request printDataHandle should not be 0");
   isnot(request.printDataSize, 0, "request printDataSize should not be 0");
+  is(
+    request.userActionRequestsCount,
+    1,
+    "request userActionRequestsCount should match"
+  );
+  ok(!!request.userActionId.length, "request userActionId should not be empty");
   ok(!!request.requestToken.length, "request requestToken should not be empty");
 }
 
@@ -164,7 +175,7 @@ add_task(async function testPrintToStreamWithContentAnalysisReturningError() {
       } catch (e) {
         ok(
           /NS_ERROR_NOT_AVAILABLE/.test(e.toString()),
-          "Error in mock CA was propagated out"
+          `Error in mock CA was propagated out : ${e.toString()}`
         );
       }
       is(mockCA.calls.length, 1, "Correct number of calls to Content Analysis");
@@ -233,6 +244,33 @@ add_task(
       testPDFUrl,
       true
     );
+  }
+);
+
+add_task(
+  async function testPrintThroughDialogWithContentAnalysisActiveAndBlockingButPrefOff() {
+    await SpecialPowers.pushPrefEnv({
+      set: [
+        ["browser.contentanalysis.interception_point.print.enabled", false],
+      ],
+    });
+    await PrintHelper.withTestPage(
+      async helper => {
+        mockCA.setupForTest(false);
+
+        await helper.startPrint();
+        let fileName = addUniqueSuffix(`printDialogTest`);
+        let file = helper.mockFilePicker(fileName);
+        info(`Printing to ${file.path}`);
+        await helper.assertPrintToFile(file, () => {
+          EventUtils.sendKey("return", helper.win);
+        });
+        is(mockCA.calls.length, 0, "Should be no calls to Content Analysis");
+      },
+      testPDFUrl,
+      true
+    );
+    await SpecialPowers.popPrefEnv();
   }
 );
 

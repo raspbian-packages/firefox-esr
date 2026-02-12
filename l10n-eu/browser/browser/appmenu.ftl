@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Deskargak
 appmenuitem-passwords =
     .label = Pasahitzak
+appmenuitem-extensions-and-themes =
+    .label = Hedapenak eta itxurak
+appmenuitem-extensions =
+    .label = Hedapenak
 appmenuitem-addons-and-themes =
     .label = Gehigarriak eta itxurak
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Ireki analizatzailearen panela
+    .tooltiptext = Ireki analizatzailearen panela
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,8 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = { -brand-shorter-name }(r)en audio eta bideo programa-erroreak ikertzeko aurrezarpena.
 profiler-popup-presets-media-label =
     .label = Multimedia
+profiler-popup-presets-ml-label =
+    .label = Ikasketa automatikoa
 profiler-popup-presets-networking-description = { -brand-shorter-name }(r)en sareko programa-erroreak ikertzeko aurrezarpena.
 profiler-popup-presets-networking-label =
     .label = Sarea
@@ -280,6 +289,7 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Eskuratu datu-urratzeei buruzko alertak
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Maskaratu zure benetako helbide elektronikoa eta telefonoa
+appmenuitem-services-relay-description = Abiarazi helbide elektronikoen maskaren arbela
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Babestu lineako zure jarduera
 appmenu-services-header = Nire zerbitzuak
@@ -287,11 +297,14 @@ appmenu-other-protection-header = Probatu { -vendor-short-name }(r)en bestelako 
 
 ## Profiles panel
 
-appmenu-profiles = Profilak
 appmenu-other-profiles = Beste profilak
 appmenu-manage-profiles =
     .label = Kudeatu profilak
+appmenu-copy-profile =
+    .label = Kopiatu profil hau
 appmenu-create-profile =
     .label = Profil berria
 appmenu-edit-profile =
     .aria-label = Editatu profila
+appmenu-profiles-2 =
+    .label = Profilak

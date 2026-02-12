@@ -30,6 +30,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Torne vierç schedis sieradis
         }
     .accesskey = o
+toolbar-context-turn-on-vertical-tabs =
+    .label = Ative schedis verticâls
+toolbar-context-turn-off-vertical-tabs =
+    .label = Disative schedis verticâls
+toolbar-context-customize-sidebar =
+    .label = Personalize sbare laterâl
 toolbar-context-menu-manage-extension =
     .label = Gjestìs estension
     .accesskey = E
@@ -54,6 +60,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Mostre panel al scomençâ dal discjariament
     .accesskey = M
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Mostre simpri te sbare dai struments
+    .accesskey = a
 toolbar-context-menu-remove-from-toolbar =
     .label = Gjave de sbare dai struments
     .accesskey = G

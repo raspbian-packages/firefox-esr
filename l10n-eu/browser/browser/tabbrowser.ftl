@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Itxi fitxa
 tabbrowser-menuitem-close =
     .label = Itxi
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -74,6 +87,13 @@ tabbrowser-unblock-tab-audio-tooltip =
 
 ## Tooltips for tab audio control
 
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Ez mututu fitxa
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Mututu fitxa
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Erreproduzitu fitxa
 
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
@@ -142,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ez erakutsi berriro elkarrizketa-koa
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Argi
-tabbrowser-confirm-close-duplicate-tabs-text = Azken fitxa aktiboa irekita mantenduko dugu
 tabbrowser-confirm-close-all-duplicate-tabs-title = Bikoiztutako fitxak itxi?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Leiho honetan bikoiztuta dauden fitxak itxiko ditugu. Azken
@@ -185,6 +203,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Zerrendatu fitxa guztiak ({ $tabCount })
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Mututu fitxa
@@ -192,8 +213,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Ez mututu fitxa
 tabbrowser-manager-close-tab =
     .tooltiptext = Itxi fitxa
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Itxita
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Uneko leihoa
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Sortu fitxen multzoa
 tab-group-editor-title-edit = Kudeatu fitxen multzoa
@@ -203,13 +232,34 @@ tab-group-editor-name-field =
 tab-group-editor-cancel =
     .label = Utzi
     .accesskey = z
-tab-group-menu-header = Fitxa multzoak
+tab-group-editor-color-selector =
+    .aria-label = Fitxa multzoaren kolorea
+tab-group-editor-color-selector2-blue = Urdina
+    .title = Urdina
+tab-group-editor-color-selector2-purple = Morea
+    .title = Morea
+tab-group-editor-color-selector2-cyan = Ziana
+    .title = Ziana
+tab-group-editor-color-selector2-orange = Laranja
+    .title = Laranja
+tab-group-editor-color-selector2-yellow = Horia
+    .title = Horia
+tab-group-editor-color-selector2-pink = Arrosa
+    .title = Arrosa
+tab-group-editor-color-selector2-green = Berdea
+    .title = Berdea
+tab-group-editor-color-selector2-gray = Grisa
+    .title = Grisa
+tab-group-editor-color-selector2-red = Gorria
+    .title = Gorria
+tab-group-description = { $tabGroupName } — Fitxa multzoa
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Tolestuta
+tab-group-label-tooltip-expanded = { $tabGroupName } — Zabalduta
 tab-context-unnamed-group =
     .label = Multzo izengabea
 tab-group-name-default = Multzo izengabea
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -237,6 +287,57 @@ tab-group-editor-action-ungroup =
     .label = Atera multzotik fitxak
 tab-group-editor-action-delete =
     .label = Ezabatu multzoa
+tab-group-editor-done =
+    .label = Eginda
+    .accessKey = E
+tab-context-reopen-tab-group =
+    .label = Ireki berriro fitxa multzoa
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Kendu multzotik
+            [one] Kendu multzotik
+           *[other] Kendu multzoetatik
+        }
+    .accesskey = K
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] Fitxa { $tabCount } gehiago
+       *[other] { $tabCount } fitxa gehiago
+    }
 
 ## Open/saved tab group context menu
 
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Eraman multzoa leiho berrira
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Ekarri multzoa leiho honetara
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Ezabatu multzoa
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Ireki multzoa leiho honetan
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Ireki multzoa leiho berrian
+
+## Split View
+
+tab-context-badge-new = Berria

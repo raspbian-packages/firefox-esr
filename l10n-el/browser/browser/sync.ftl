@@ -20,6 +20,15 @@ fxa-menu-connect-another-device =
     .label = Σύνδεση άλλης συσκευής…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] Αποστολή σε συσκευή
+           *[other] Αποστολή { $tabCount } καρτελών σε συσκευή
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label =
         { $tabCount ->
@@ -33,8 +42,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Στείλτε άμεσα μια καρτέλα σε κάθε συσκευή που έχετε συνδεθεί.
 fxa-menu-sign-out =
     .label = Αποσύνδεση…
-fxa-menu-sync-title = Συγχρονισμός
 fxa-menu-sync-description = Πρόσβαση στον ιστό από οπουδήποτε
+fxa-avatar-sign-in = Σύνδεση
+fxa-avatar-sign-up = Εγγραφή
+fxa-avatar-tooltip =
+    .tooltiptext = Συνδεθείτε στον λογαριασμό σας
 sync-setup-verify-continue = Συνέχεια
 sync-setup-verify-title = Προειδοποίηση συγχώνευσης
 sync-setup-verify-heading = Θέλετε σίγουρα να κάνετε σύνδεση για συγχρονισμό;
@@ -48,8 +60,16 @@ sync-setup-verify-description = Κάποιος άλλος χρήστης έχε�
 
 # Dialog 1 - different account signing in without option to merge
 sync-profile-different-account-title = Έχετε φτάσει το όριο λογαριασμών για αυτό το προφίλ
+sync-profile-different-account-header = Αυτό το προφίλ συγχρονίστηκε στο παρελθόν με διαφορετικό λογαριασμό
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+sync-profile-different-account-description = Για την οργάνωση και την προστασία των δεδομένων σας, κάθε προφίλ του { -brand-product-name } μπορεί να συγχρονιστεί μόνο με έναν λογαριασμό. Για να συνδεθείτε με το { $acctEmail }, δημιουργήστε ένα νέο προφίλ.
 # Dialog 1 - different account signing in with merge option
 sync-profile-different-account-title-merge = Το προφίλ έχει συγχρονιστεί με διαφορετικό λογαριασμό
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+#   $profileName (String) - Name of the current profile
+sync-profile-different-account-description-merge = Για την οργάνωση και την προστασία των δεδομένων σας, προτείνουμε να δημιουργήσετε ένα νέο προφίλ για να κάνετε σύνδεση με το { $acctEmail }. Εάν συνεχίσετε με τον συγχρονισμό αυτού του προφίλ, τα δεδομένα και των δύο λογαριασμών θα συγχωνευτούν οριστικά στο προφίλ «{ $profileName }».
 # Dialog 2 - account signed in on another profile without option to merge
 sync-account-in-use-header = Ο λογαριασμός χρησιμοποιείται ήδη
 # Variables:

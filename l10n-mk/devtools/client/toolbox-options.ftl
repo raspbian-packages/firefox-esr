@@ -27,23 +27,14 @@ options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-name = Имиња на бои
 
-## Web Console section
-
-
-## Style Editor section
-
-
 ## Screenshot section
 
 options-screenshot-audio-tooltip =
     .title = Емитува звук на бленда кога се фаќаат слики од екран
 
-## Editor section
-
-
 ## Advanced section
 
 # The heading (this item is also used in perftools.ftl)
 options-context-advanced-settings = Напредни поставки
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * Само во текот на оваа сесија. Ја вчитува страницата одново.

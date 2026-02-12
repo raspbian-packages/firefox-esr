@@ -31,7 +31,7 @@ policy-CertificatesDescription = Dodaj certifikate ili koristite ugrađene certi
 policy-ContentAnalysis = Aktiviraj ili deaktiviraj vezu sa agentom za sprečavanje gubljenja podataka.
 policy-Cookies = Dozvoli ili zabrani internetskim stranicama postavljanje kolačića.
 # Containers in this context is referring to container tabs in Firefox.
-policy-Containers = Postavite politike vezane za kontejnere.
+policy-Containers = Postavi politike za kontejnere.
 policy-DisableAccounts = Deaktiviraj usluge za koje su potrebni računi, uključujući sinkronizaciju.
 policy-DisabledCiphers = Deaktiviraj šifratore.
 policy-DefaultDownloadDirectory = Postavi standardnu mapu za preuzimanje.
@@ -40,7 +40,7 @@ policy-DisableBuiltinPDFViewer = Deaktiviraj PDF.js, ugrađeni preglednik PDF da
 policy-DisableDefaultBrowserAgent = Spriječi standardnog agenta preglednika da poduzima bilo kakve radnje. Primjenjivo samo na Windowsu; druge platforme nemaju agenta.
 policy-DisableDeveloperTools = Blokiraj pristup programerskim alatima.
 policy-DisableEncryptedClientHello = Deaktiviraj upotrebu TLS funkcije Encrypted Client Hello (ECH).
-policy-DisableFeedbackCommands = Onemogući naredbe za slanje povratnih informacija u izborniku pomoći (Pošalji povratne informacije i Prijavi obmanjujuću stranicu).
+policy-DisableFeedbackCommands = Deaktiviraj naredbe za slanje povratnih informacija u izborniku pomoći (Pošalji povratne informacije i Prijavi obmanjujuću stranicu).
 policy-DisableFirefoxAccounts = Onemogući usluge koje se temelje na { -fxaccount-brand-name }u, uključujući sinkronizaciju.
 # This string is in the process of being deprecated in favor of policy-DisableAccounts.
 policy-DisableFirefoxAccounts1 = Deaktiviraj usluge za koje su potrebni računi, uključujući sinkronizaciju.
@@ -60,6 +60,7 @@ policy-DisableSecurityBypass = Spriječite korisnika da zaobiđe određena sigur
 policy-DisableSetAsDesktopBackground = Onemogućite naredbu izbornika Postavi kao pozadinu radne površine.
 policy-DisableSystemAddonUpdate = Spriječi instaliranje i aktualiziranje sustavskih dodataka u pregledniku.
 policy-DisableTelemetry = Isključi telemetriju.
+policy-DisableThirdPartyModuleBlocking = Spriječi korisnika da blokira module trećih strana koji se ubacuju u { -brand-short-name } proces.
 policy-DisplayBookmarksToolbar = Standardno prikaži alatnu traku zabilješki.
 policy-DisplayMenuBar = Standardno prikaži traku izbornika.
 policy-DNSOverHTTPS = Podesi DNS preko HTTPS-a.
@@ -109,6 +110,9 @@ policy-OverrideFirstRunPage = Poništi postavke početne stranice. Postavi ovo p
 policy-OverridePostUpdatePage = Poništi stranicu „Što je novo” nakon aktualiziranja. Postavi ovo pravilo na prazno, ako želiš deaktivirati stranicu nakon aktualiziranja.
 policy-PasswordManagerEnabled = Aktiviraj spremanje lozinki u upravljaču lozinki.
 policy-PasswordManagerExceptions = Spriječi { -brand-short-name } da sprema lozinke za određene web stranice.
+# Post-quantum refers to cryptography that is safe from attacks by quantum
+# computers. See https://en.wikipedia.org/wiki/Post-quantum_cryptography
+policy-PostQuantumKeyAgreementEnabled = Aktiviraj postkvantni dogovor ključa za TLS.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Deaktiviraj ili konfiguriraj PDF.js, ugrađeni čitač PDF-a u { -brand-short-name(case: "loc") }.
 policy-Permissions2 = Podesi dozvole za kameru, mikrofon, mjesto, obavijesti i automatsku reprodukciju.
@@ -118,14 +122,16 @@ policy-Preferences = Postavi i zaključaj vrijednosti za podskup postavki.
 policy-PrivateBrowsingModeAvailability = Postavi dostupnost modusa privatnog pregledavanja.
 policy-PromptForDownloadLocation = Pitaj gdje spremati datoteke prilikom preuzimanja.
 policy-Proxy = Podesi proxy postavke.
-policy-RequestedLocales = Postavite popis traženih jezika za aplikaciju prema redosljedu preferencija.
-policy-SanitizeOnShutdown2 = Brisanje podataka pretraživanja prilikom gašenja.
+policy-RequestedLocales = Postavi popis traženih jezika za aplikaciju prema željenom redosljedu.
+policy-SanitizeOnShutdown2 = Izbriši navigacijske podatke prilikom zatvaranja programa.
 policy-SearchBar = Postavi standardno mjesto u traci pretrage. Korisnik će ga i dalje moći prilagoditi.
 policy-SearchEngines = Prilagodi postavke tražilice. Ovo pravilo dostupno je samo u izdanju proširene podrške (ESR).
 policy-SearchSuggestEnabled = Aktiviraj ili deaktiviraj prijedloge za pretraživanje.
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Dodaj ili izbriši PKCS #11 module.
 policy-ShowHomeButton = Prikaži gumb početne stranice u alatnoj traci.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Ne prikazuj uvjete korištenja i napomene o privatnosti prilikom pokretanja. Izjavljuješ da prihvaćaš i da imaš ovlaštenje prihvatiti uvjete korištenja u ime svih pojedinaca kojima omogućiš pristup ovom pregledniku.
 policy-SSLVersionMax = Postavi maksimalnu SSL verziju.
 policy-SSLVersionMin = Postavi minimalnu SSL verziju.
 policy-StartDownloadsInTempDirectory = Prisili pokretanje preuzimanja u lokalno, privremeno mjesto umjesto u standardnu mapu za preuzimanje.

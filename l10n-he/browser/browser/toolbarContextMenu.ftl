@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] פתיחת הלשוניות שנסגרו מחדש
         }
     .accesskey = מ
+toolbar-context-turn-on-vertical-tabs =
+    .label = הפעלת לשוניות אנכיות
+toolbar-context-turn-off-vertical-tabs =
+    .label = כיבוי לשוניות אנכיות
+toolbar-context-customize-sidebar =
+    .label = התאמה אישית של סרגל הצד
 toolbar-context-menu-manage-extension =
     .label = ניהול הרחבה
     .accesskey = ה
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = הצגת החלונית כאשר הורדה מתחילה
     .accesskey = ח
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = תמיד להציג בסרגל הכלים
+    .accesskey = ת
 toolbar-context-menu-remove-from-toolbar =
     .label = הסרה מסרגל הכלים
     .accesskey = ר

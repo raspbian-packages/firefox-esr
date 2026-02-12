@@ -14,6 +14,8 @@ about-webrtc-save-page-dialog-title = simpan about:webrtc dengan nama
 
 ## These labels are for a disclosure which contains the information for closed PeerConnection sections
 
+about-webrtc-closed-peerconnection-disclosure-show-msg = Tampilkan PeerConnections Tertutup
+about-webrtc-closed-peerconnection-disclosure-hide-msg = Sembunyikan Koneksi Peer Tertutup
 
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
@@ -22,6 +24,7 @@ about-webrtc-aec-logging-off-state-label = Mulai Pencatatan AEC
 about-webrtc-aec-logging-on-state-label = Hentikan Pencatatan AEC
 about-webrtc-aec-logging-on-state-msg = Pencatatan AEC aktif (bicara dengan pemanggil selama beberapa menit lalu hentikan penangkapan)
 about-webrtc-aec-logging-toggled-on-state-msg = Pencatatan AEC aktif (bicara dengan pemanggil selama beberapa menit lalu hentikan penangkapan)
+about-webrtc-aec-logging-unavailable-sandbox = Variabel lingkungan MOZ_DISABLE_CONTENT_SANDBOX=1 diperlukan untuk mengekspor log AEC. Hanya atur variabel ini jika Anda memahami risiko yang mungkin terjadi.
 # Variables:
 #  $path (String) - The path to which the aec log file is saved.
 about-webrtc-aec-logging-toggled-off-state-msg = Berkas log tangkapan dapat ditemukan di: { $path }
@@ -30,10 +33,16 @@ about-webrtc-aec-logging-toggled-off-state-msg = Berkas log tangkapan dapat dite
 
 # The autorefresh checkbox causes a stats section to autorefresh its content when checked
 about-webrtc-auto-refresh-label = Segarkan Otomatis
+# A button which forces a refresh of displayed statistics
+about-webrtc-force-refresh-button = Segarkan
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
 # an abbreviation for Identifier. This string should not normally be translated
 # and is used as a data label.
 about-webrtc-peerconnection-id-label = ID PeerConnection:
+# The number of DataChannels that a PeerConnection has opened
+about-webrtc-data-channels-opened-label = Kanal Data Dibuka:
+# The number of once open DataChannels that a PeerConnection has closed
+about-webrtc-data-channels-closed-label = Kanal Data Ditutup:
 
 ## "SDP" is an abbreviation for Session Description Protocol, an IETF standard.
 ## See http://wikipedia.org/wiki/Session_Description_Protocol
@@ -88,6 +97,10 @@ about-webrtc-debug-mode-msg-label = Mode Debug
 about-webrtc-debug-mode-off-state-label = Mulai Mode Debug
 about-webrtc-debug-mode-on-state-label = Hentikan Mode Debug
 about-webrtc-stats-heading = Statistik Sesi
+about-webrtc-enable-logging-label = Aktifkan Prasetel Log WebRTC
+about-webrtc-peerconnections-section-heading = Statistik RTCPeerConnection
+about-webrtc-peerconnections-section-show-msg = Tampilkan Statistik RTCPeerConnection
+about-webrtc-peerconnections-section-hide-msg = Sembunyikan Statistik RTCPeerConnection
 about-webrtc-stats-clear = Bersihkan Riwayat
 about-webrtc-log-heading = Log Sambungan
 about-webrtc-log-clear = Bersihkan Log
@@ -99,6 +112,8 @@ about-webrtc-log-section-show-msg = Tampilkan log
     .title = Klik untuk membentangkan bagian ini
 about-webrtc-log-section-hide-msg = Sembunyikan log
     .title = Klik untuk menciutkan bagian ini
+about-webrtc-copy-report-button = Salin Laporan
+about-webrtc-copy-report-history-button = Salin Riwayat Laporan
 
 ## These are used to display a header for a PeerConnection.
 ## Variables:
@@ -114,6 +129,9 @@ about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (ditutup
 ## Variables:
 ##  $codecs - a list of media codecs
 
+about-webrtc-short-send-receive-direction = Kirim / Terima: { $codecs }
+about-webrtc-short-send-direction = Kirim: { $codecs }
+about-webrtc-short-receive-direction = Terima: { $codecs }
 
 ##
 
@@ -164,6 +182,8 @@ about-webrtc-remote-send-ssrc = Pengiriman SSRC Jarak Jauh
 ## These are displayed on the button that shows or hides the
 ## PeerConnection configuration disclosure
 
+about-webrtc-pc-configuration-show-msg = Tampilkan Konfigurasi
+about-webrtc-pc-configuration-hide-msg = Sembunyikan Konfigurasi
 
 ##
 
@@ -175,10 +195,14 @@ about-webrtc-configuration-element-provided = Disediakan
 about-webrtc-configuration-element-not-provided = Tidak Disediakan
 # The options set by the user in about:config that could impact a WebRTC call
 about-webrtc-custom-webrtc-configuration-heading = Preferensi WebRTC Diatur Pengguna
+# The options set by the user in about:config that could impact a WebRTC call
+about-webrtc-user-modified-configuration-heading = Konfigurasi WebRTC yang Diubah Pengguna
 
 ## These are displayed on the button that shows or hides the
 ## user modified configuration disclosure
 
+about-webrtc-user-modified-configuration-show-msg = Tampilkan Konfigurasi yang Diubah Pengguna
+about-webrtc-user-modified-configuration-hide-msg = Sembunyikan Konfigurasi yang Diubah Pengguna
 
 ##
 
@@ -278,11 +302,13 @@ about-webrtc-sdp-set-timestamp = Stempel waktu { NUMBER($timestamp, useGrouping:
 
 ## These are displayed on the button that shows or hides the SDP information disclosure
 
+about-webrtc-show-msg-sdp = Tampilkan SDP
+about-webrtc-hide-msg-sdp = Sembunyikan SDP
 
 ## These are displayed on the button that shows or hides the Media Context information disclosure.
 ## The Media Context is the set of preferences and detected capabilities that informs
 ## the negotiated CODEC settings.
 
-
-##
-
+about-webrtc-media-context-show-msg = Tampilkan Konteks Media
+about-webrtc-media-context-hide-msg = Sembunyikan Konteks Media
+about-webrtc-media-context-heading = Konteks Media

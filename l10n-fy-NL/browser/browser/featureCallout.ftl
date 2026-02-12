@@ -54,16 +54,146 @@ fx-view-discoverability-secondary-button-label = Slute
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = Dizze oanrekommandaasje net mear toane
+split-dismiss-button-dont-show-option =
+    .label = Dizze oanrekommandaasje net mear toane
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = Mear oanrekommandaasjes toane
+split-dismiss-button-show-fewer-option =
+    .label = Mear oanrekommandaasjes toane
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = Ynstellingen beheare
+split-dismiss-button-manage-settings-option =
+    .label = Ynstellingen beheare
+# Accessibility label for dropdown menu button
+split-dismiss-button-default-label =
+    .title = Mear opsjes
+
+## Login Status Advisory Callout (points to the account icon)
+
+# The 'account icon' is the toolbar button with a 'profile' icon of a human
+# head/shoulders. It's for dealing with your Mozilla account. When hovering the
+# icon, the tooltip says 'Account'.
+login-status-advisory-title = Jo binne ôfmeld. Klik op it accountpiktogram om jo oan te melden.
+
+## Bookmarks toolbar callout strings
+
+bookmarks-toolbar-callout-1-title = Dizze website oan jo blêdwizerarkbalke tafoegje?
+bookmarks-toolbar-callout-1-subtitle = Jo blêdwizer wurdt foar flugge tagong krekt ûnder de adresbalke bewarre.
+bookmarks-toolbar-callout-1-primary-button-label = Blêdwizer tafoegje
+bookmarks-toolbar-callout-1-secondary-button-label = Nee tanke
+# Visible if user adds a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2a-title = Ienfâldich mear blêdwizers tafoegje
+bookmarks-toolbar-callout-2a-subtitle = Jo kinne ljepblêden hjirhinne slepe om mear fan jo favorite websites foar de hân te hâlden.
+bookmarks-toolbar-callout-2a-primary-button-label = Begrepen
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2a-secondary-button-label = Arkbalke ferstopje
+# Visible if user declines to add a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2b-title = Jo blêdwizerakbalke iepen hâlde?
+bookmarks-toolbar-callout-2b-subtitle = Jo kinne oare websites dy’t jo faker besykje tafoegje. Fersleep gewoanwei ljepblêden hjirhinne om favorite websites foar de hân te hâlden.
+bookmarks-toolbar-callout-2b-primary-button-label = Iepen hâlde
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2b-secondary-button-label = Nee tank
+
+## Perplexity callout strings
+
+perplexity-callout-theme-1-title = Daliks it krekte antwurd nedich?
+perplexity-callout-theme-2-title = Probearje Perplexity: in nije manier fan sykjen
+perplexity-callout-theme-1-subtitle-1 = Probearje Perplexity. Kies dit fan de sykknop út as jo folsleine antwurden wolle, ynklusyf boarnen.
+perplexity-callout-theme-1-subtitle-2 = Stel fragen. Krij folsleine, goed sitearre antwurden. Kies Perplexity fan de sykknop út om it te probearjen.
+perplexity-callout-theme-2-subtitle-1 = Freegje it Perplexity. Jo krije folsleine antwurden, ynklusyf boarnen.
+perplexity-callout-theme-2-subtitle-2 = Stel fragen. Krij folsleine antwurden mei goede boarnefermelding.
+perplexity-callout-primary-label = Freegje it Perplexity
+perplexity-callout-secondary-label-1 = Slute
+perplexity-callout-secondary-label-2 = Begrepen
+
+## Account Adoption Passwords callout strings
+
+# Suggestion to backup passwords by signing up for Mozilla account and using sync
+fxa-adoption-passwords-title = Wachtwurd bewarre. Litte wy in reservekopy meitsje.
+fxa-adoption-passwords-subtitle = Beskermje jo wachtwurden troch se fersifere mei jo apparaten mei te syngronisearjen.
+# Opens Mozilla accounts sign-up page
+fxa-adoption-passwords-primary-button-label = Registrearje
+
+## Taskbar Tabs callout strings
+
+taskbar-tabs-social-callout-title = Hâld jo favorite feeds yn jo taakbalke
+taskbar-tabs-social-callout-subtitle = Start jo sosjale websites lykas in app yn in streamline finster beskerme troch { -brand-short-name }.
+taskbar-tabs-chat-callout-title = Chat fan jo taakbalke ôf
+taskbar-tabs-chat-callout-subtitle = Start jo chatwebsites lykas in app yn in streamline finster beskerme troch { -brand-short-name }.
+taskbar-tabs-email-callout-title = Hâld jo e-mail yn jo taakbalke
+taskbar-tabs-email-callout-subtitle = Start jo webmail lykas in app yn in streamline finster beskerme troch { -brand-short-name }.
+taskbar-tabs-media-callout-title = Tebek nei streaming fan jo taakbalke ôf
+taskbar-tabs-media-callout-subtitle = Start jo streamingwebsites lykas in app yn in streamline finster beskerme troch { -brand-short-name }.
+taskbar-tabs-value-prop-callout-title = Foegje dizze website ta oan jo taakbalke
+taskbar-tabs-value-prop-callout-subtitle = Start it mei ien klik yn in eigen finster en mei in ferienfâldige interface.
+
+## Windows 10 EoS Sync messages group 1 callouts
+
+windows-10-eos-sync-urgency-title-1 = Ferlies net alles wat jo bewarre hawwe as jo oerstappe nei Windows 11.
+windows-10-eos-sync-urgency-subtitle-1 = Syngronisearje no om jo { -brand-short-name }-blêdwizers, -wachtwurden en -ynstelling feilich en maklik te werstellen.
+windows-10-eos-sync-urgency-title-2 = Nimme jo ôfskie fan Windows 10? Beskermje jo gegevens as jo oerstappe.
+windows-10-eos-sync-urgency-subtitle-2 = Syngronisearje om blêdwizers en wachtwurden feilich en tagonklik te hâlden, sels as jo { -brand-short-name } net deistich brûke.
+windows-10-eos-sync-new-device-title-1 = Rin net it risiko om op jo folgjende apparaat opnij te begjinnen.
+windows-10-eos-sync-new-device-subtitle-1 = Syngronisearje om jo { -brand-short-name }-blêdwizers, -wachtwurden en -foarkarsynstellingen mei te nimmen as jo ferhúzje.
+windows-10-eos-sync-new-device-title-2 = Ferhúzje jo nei in nij apparaat? Ferlies net wat wichtich is.
+windows-10-eos-sync-new-device-subtitle-2 = Hoe faak jo { -brand-short-name } ek brûke, syngronisaasje beskermet jo blêdwizers, wachtwurden en ynstellingen.
+windows-10-eos-sync-new-device-primary-label = No syngronisearje
+windows-10-eos-sync-general-title-1 = Beskermje de { -brand-short-name } dy’t jo fan jo makke hawwe.
+windows-10-eos-sync-general-subtitle-1 = Meitsje in reservekopy en syngronisearje jo wachtwurden, blêdwizers, ynstellingen en oare gegevens om te behâlden dêr’t jo op rekkenje.
+windows-10-eos-sync-general-title-2 = Dit is in goed momint om in reservekopy fan jo wachtwurden en blêdwizers te meitsjen.
+windows-10-eos-sync-general-subtitle-2 = Syngronisearje no om de dingen dy’t jo { -brand-short-name } tafertrouwe te beskermjen – en krij it oeral en altyd werom.
+windows-10-eos-sync-tour-title-1 = Tefolle ljepblêden? Romje it op mei ljepblêdgroepen.
+windows-10-eos-sync-tour-subtitle-1 = Sleep it iene ljepblêd boppe op it oare om in groep oan te meitsjen en dingen organisearre te hâlden.
+windows-10-eos-sync-tour-title-2 = Oarderje foar Windows 11.
+windows-10-eos-sync-tour-subtitle-2 = Syngronisearje jo blêdwizers, wachtwurden en ynstellingen om der in reservekopy fan te meitsjen eardat jo oerskeakelje.
+windows-10-eos-sync-split-dismiss-button-show-fewer-option =
+    .label = Minder oanrekommandearre toane
+windows-10-eos-sync-dismiss-button-label = Slute
+windows-10-eos-sync-callout-primary-advance-button-label = Folgjende
+
+## Link Preview Onboarding message callout strings
+
+link-preview-onboarding-callout-title = Nij: keppelingen yndrukt hâlde foar in foarbyld
+link-preview-onboarding-callout-description = Besjoch in koarte beskriuwing, lêstiid en mear om te besluten oft in keppeling it klikken wurdich is. Ek beskikber mei de rjochtermûsknop.
 
 ## Sidebar Strings
 
 sidebar-button-callout-title = Ljepblêdtitels yn de sydbalke toane
 sidebar-button-callout-subtitle = Brûk de sydbalkeknop om de sydbalke út te klappen, sadat jo ljepblêdtitels sjen kinne.
+sidebar-button-callout-vertical-tabs = Selektearje de sydbalkeknop yn de arkbalke om jo ljepblêden te toanen.
+
+## Sidebar Vertical Tabs Strings
+
+vertical-tabs-callout-1-title = Oerweldige troch tefolle ljepblêden?
+vertical-tabs-callout-1-subtitle = Probearje ús nije fertikale ljepblêdyndieling om fluch jo list mei ljepblêden fluch te scannen. Iere testers melde dat dizze yndieling harren helpt om mear organisearre te fielen. Wikselje op elk winske momint.
+vertical-tabs-callout-1-cta-button = Fertikale ljepblêden probearje
+vertical-tabs-callout-2-cta-button = No probearje
+vertical-tabs-callout-2-title = In protte ljepblêden iepen hâlde? Probearje fertikale ljepblêden.
+vertical-tabs-callout-2-subtitle = Dizze yndieling makket it maklik om jo list mei ljeppers fluch te scannen. Plus, jo kinne de breedte oanpasse om mear of minder fan jo ljepblêdtitels te sjen.
+
+## Sidebar Vertical Tabs Pinning Strings
+
+sidebar-pins-callout-title = Ferlieze jo jo wichtige ljepblêden?
+sidebar-pins-callout-subtitle = Probearje se fêst te setten, sadat se boppe oan jo list mei ljepblêden bliuwe. Klik mei de rjochtermûsknop op in ljepblêd dat jo fêstsette wolle, kies dan Ljepblêd fêstsette.
+sidebar-pins-callout-cta-button = Ljepblêd fêstsette
+
+## Pinning Tabs Strings
+
+pin-tabs-callout-1-title = Hâld wichtige ljepblêden binnen hânberik
+pin-tabs-callout-1-subtitle = Sleep in ljepblêd nei it begjin fan de ljepblêdstrook om it fêst te setten. Of klik mei de rjochtermûsknop en kies Ljepblêd fêstsette.
+pin-tabs-callout-cta-1-button = Dit ljepblêd fêstsette
+pin-tabs-callout-2-title = Meast besochte ljepblêden fêstsette
+pin-tabs-callout-2-subtitle = Sleep in ljepblêd nei it begjin fan de ljepblêdstrook om it fêst te setten. Of klik mei de rjochtermûsknop en kies Ljepblêd fêstsette.
+pin-tabs-callout-cta-2-button = Dit ljepblêd fêstsette
+pin-tabs-callout-3-title = Hâld wichtige ljepblêden binnen hânberik
+pin-tabs-callout-4-title = Websites dy’t jo it meast besykje fêstmeitsje
+
+## Sidebar Onboarding Strings
+
+sidebar-customization-callout-1-title = Sydbalke: jo plak foar ark en ljepblêden
+sidebar-customization-callout-1-subtitle = De  { -brand-product-name }-sydbalke jout jo rappe tagong ta jo navigaasjeskiednis, ljepblêden fan oare apparaten, en in AI-chatbot – alles sûnder jo haadfinster te ferlitten.
+sidebar-customization-callout-callout-button = Sidebalke oanpasse
+sidebar-customization-callout-dismiss-button = Sidebalke ferstopje
+sidebar-customization-callout-2-title = De { -brand-product-name }-sydbalke fan josels meitsje
+sidebar-customization-callout-2-subtitle = Foegje ark ta en smyt se fuort. Pleats jo ljepblêden yn de sydbalke. Probearje in AI-chatbot. Hoe jo jo sydbalke oanpasse, is oan jo.
 
 ## Sidebar Callout Survey Strings
 
@@ -94,3 +224,19 @@ sidebar-genai-survey-satisfaction-question = Hoe tefreden binne jo mei tagong ta
 sidebar-genai-survey-productive-question =
     Yn hoefier binne jo it iens of net iens mei dizze stelling:<br/>
     ‘De AI-chatbot yn de sidebalke helpt my produktiver te wêzen’?
+unified-search-callout-title = Wikselje tusken sykmasinen
+unified-search-callout-subtitle = Kies wat it bêste wurket foar jo spesifike sykopdracht.
+unified-search-callout-primary-label = Folgjende
+unified-search-callout-secondary-label = Slute
+unified-search-engines-callout-title = Sykje mei in fluchkeppeling
+unified-search-engines-callout-subtitle = Typ ‘@’, folge troch in trefwurd om jo skiednis, blêdwizers, ljepblêden of mei in oare sykmasine troch te sykjen.
+unified-search-engines-callout-primary-label = Begrepen
+actions-callout-title = Algemiene taken útfiere of basisynstellingen benaderje
+# The user can type "print" and "clear" and a button will appear in the
+# search bar (e.g. Print page) the user can click to initiate the action.
+# These example text inputs correlate to the the following strings
+# (either matching the whole string, or the first word of the string).
+# "print" - quickactions-cmd-print
+# "clear" - quickactions-cmd-clearrecenthistory
+# When localizing, ensure the translations match to ensure the action button appears as expected.
+actions-callout-subtitle = Typ in aksje lykas ‘ôfdrukke’ om in side ôf te drukken, of ‘wiskje’ om jo skiednis te wiskjen.

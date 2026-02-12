@@ -6,7 +6,7 @@ certificate-viewer-certificate-section-title = Certificato
 
 ## Error messages
 
-certificate-viewer-error-message = Non è stato possibile trovare informazioni sul certificato oppure il certificato è danneggiato. Riprovare.
+certificate-viewer-error-message = Non è stato possibile trovare informazioni sul certificato oppure il certificato è danneggiato. Riprova.
 certificate-viewer-error-title = Si è verificato un problema
 
 ## Certificate information labels
@@ -36,6 +36,9 @@ certificate-viewer-key-size = Dimensione chiave
 certificate-viewer-inc-locality = Località di costituzione
 certificate-viewer-locality = Località
 certificate-viewer-location = Indirizzo
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = Nome registro
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = ID log
 certificate-viewer-method = Metodo
 certificate-viewer-modulus = Modulo
@@ -110,6 +113,8 @@ certificate-viewer-export = Esporta
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = (sconosciuto)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = certificato
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

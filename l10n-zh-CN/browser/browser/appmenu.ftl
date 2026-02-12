@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = 下载
 appmenuitem-passwords =
     .label = 密码
+appmenuitem-extensions-and-themes =
+    .label = 扩展和主题
+appmenuitem-extensions =
+    .label = 扩展
 appmenuitem-addons-and-themes =
     .label = 扩展和主题
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = 打开性能分析器面板
+    .tooltiptext = 打开性能分析器面板
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = 排查 { -brand-shorter-name } 音视频 Bug 时使用。
 profiler-popup-presets-media-label =
     .label = 媒体
+profiler-popup-presets-ml-description = 排查 { -brand-shorter-name } 机器学习 Bug 时使用。
+profiler-popup-presets-ml-label =
+    .label = 机器学习
 profiler-popup-presets-networking-description = 排查 { -brand-shorter-name } 网络 Bug 时使用。
 profiler-popup-presets-networking-label =
     .label = 网络
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = 打开马甲邮箱面板
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = 保护在线活动
 appmenu-services-header = 我的服务
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = 尝试 Mozilla 的其他保护工具：
 appmenu-other-protection-header = 试用 { -vendor-short-name } 提供的其他保护工具：
 
 ## Profiles panel
 
-appmenu-profiles = 配置文件
 appmenu-other-profiles = 其他配置文件
 appmenu-manage-profiles =
     .label = 管理配置文件
+appmenu-copy-profile =
+    .label = 复制此配置文件
 appmenu-create-profile =
     .label = 新建配置文件
 appmenu-edit-profile =
     .aria-label = 编辑配置文件
+appmenu-profiles-2 =
+    .label = 配置文件

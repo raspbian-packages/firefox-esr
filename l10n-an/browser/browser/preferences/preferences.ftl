@@ -73,6 +73,10 @@ startup-header = Inicio
 always-check-default =
     .label = Comprebar siempre si lo { -brand-short-name } ye o suyo navegador por defecto
     .accesskey = o
+is-default-browser =
+    .message = { -brand-short-name } ye agora o suyo navegador por defecto
+is-not-default-browser =
+    .message = { -brand-short-name } no ye o suyo navegador por defecto
 is-default = { -brand-short-name } ye agora o suyo navegador por defecto
 is-not-default = { -brand-short-name } no ye o suyo navegador por defecto
 set-as-my-default-browser =
@@ -184,6 +188,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Fichers y aplicacions
+downloads-header-2 =
+    .label = Descargas
+download-save-where-2 =
+    .label = Alzar os fichers en
+    .accesskey = A
 download-header = Descargas
 download-save-where = Alzar os fichers en
     .accesskey = A
@@ -374,7 +383,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Nuevas finestras y pestanyas
 home-new-windows-tabs-description2 = Triar qué ye lo que se vei quan s'ubre la pachina d'inicio, finestras nuevas y pestanyas nuevas.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Pachina d'inicio y nuevas finestras
 home-newtabs-mode-label = Nuevas pestanyas
@@ -497,6 +506,8 @@ search-keyword-warning-bookmark = Ha trigau una parola clau que ya emplega unatr
 ## Containers Section
 
 containers-header = Pestanyas contenederas
+containers-section-header =
+    .heading = Pestanyas contenederas
 containers-add-button =
     .label = Anyader nuevo contenedor
     .accesskey = A
@@ -617,6 +628,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = Nombre d'o dispositivo
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Nombre d'o dispositivo
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Cambiar lo nombre d'o dispositivo
+    .accesskey = b
 sync-device-name-change =
     .label = Cambiar lo nombre d'o dispositivo...
     .accesskey = b
@@ -702,9 +721,6 @@ primary-password-os-auth-dialog-message-win = Pa crear una clau primaria, escrib
 primary-password-os-auth-dialog-message-macosx = Crear una clau primaria
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Historial
@@ -725,6 +741,10 @@ history-remember-option-never =
     .label = no remerará l'historial
 history-remember-option-custom =
     .label = ferá servir a configuración personalizada de l'historial
+history-remember-description2 =
+    .description = { -brand-short-name } recordará la tuya navegación, descargas, formularios y historial de busqueda.
+history-dontremember-description2 =
+    .description = O { -brand-short-name } ferá servir a mesma configuración que en a navegación privada, y no remerará garra dato d'o suyo historial entre que navega por a Web.
 history-remember-description = { -brand-short-name } recordará la tuya navegación, descargas, formularios y historial de busqueda.
 history-dontremember-description = O { -brand-short-name } ferá servir a mesma configuración que en a navegación privada, y no remerará garra dato d'o suyo historial entre que navega por a Web.
 history-private-browsing-permanent =
@@ -784,12 +804,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Chestionar excepcions…
     .accesskey = x
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -910,6 +924,8 @@ permissions-notification-link = Saber-ne mas
 permissions-notification-pause =
     .label = Notificacions de pausa dica que { -brand-short-name } se reinicie
     .accesskey = n
+permissions-autoplay2 =
+    .label = Reproducción automatica
 permissions-autoplay = Reproducción automatica
 permissions-autoplay-settings =
     .label = Configuración…
@@ -923,6 +939,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Excepcions…
     .accesskey = E
+permissions-location2 =
+    .label = Puesto
+permissions-xr2 =
+    .label = Realidat Virtual
+permissions-camera2 =
+    .label = Camara
+permissions-microphone2 =
+    .label = Microfono
+permissions-notification2 =
+    .label = Notificacions
 
 ## Privacy Section - Data Collection
 
@@ -944,9 +970,6 @@ addon-recommendations-link = Saber-ne mas
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Lo reporte de datos ye desactivau en esta configuración de programa
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -978,6 +1001,7 @@ certs-view =
 certs-devices =
     .label = Dispositivos de seguranza…
     .accesskey = D
+certs-devices-enable-fips = Activar os FIPS
 
 ## Privacy Section - HTTPS-Only
 
@@ -990,9 +1014,6 @@ httpsonly-radio-enabled-pbm =
     .label = Activar lo modo Nomás-HTTPS nomás en as finestras privadas
 httpsonly-radio-disabled =
     .label = No activar lo modo Nomás-HTTPS
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

@@ -57,7 +57,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } người dùng
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Đồng bộ dấu trang của bạn ở mọi nơi.
 cfr-doorhanger-bookmark-fxa-body = Đã tìm thấy tuyệt vời! Bây giờ hãy đồng bộ các dấu trang này với thiết bị di động của bạn. Bắt đầu với một { -fxaccount-brand-name }.
@@ -66,6 +66,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Đồng bộ hóa dấu trang ngay bây 
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Nút đóng
     .title = Đóng
+fxa-adoption-addresses-backup-title = Sao lưu các địa chỉ đã lưu của bạn
+fxa-adoption-addresses-backup-subtitle = Bảo vệ các địa chỉ đã lưu của bạn bằng cách đồng bộ hóa chúng với thiết bị bằng mã hóa.
+fxa-adoption-credit-cards-backup-title = Sao lưu phương thức thanh toán của bạn
+fxa-adoption-credit-cards-backup-subtitle = Bảo vệ phương thức thanh toán của bạn bằng cách đồng bộ hóa chúng với thiết bị bằng mã hóa.
+fxa-adoption-bookmarks-treatment-backup-title = Sao lưu dấu trang của bạn
+fxa-adoption-bookmarks-treatment-backup-subtitle = Bảo vệ dấu trang của bạn bằng cách đồng bộ chúng với thiết bị bằng mã hóa.
+fxa-adoption-primary-button-label = Đăng ký
 
 ## Protections panel
 
@@ -223,6 +230,22 @@ fox-doodle-pin-secondary = Không phải bây giờ
 set-default-pdf-handler-headline = <strong>Các tập tin PDF của bạn bây giờ mở trong { -brand-short-name }.</strong> Chỉnh sửa hoặc ký biểu mẫu trực tiếp trong trình duyệt của bạn. Để thay đổi, tìm kiếm “PDF” trong cài đặt.
 set-default-pdf-handler-primary = Đã hiểu
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Ký vào dòng chấm chấm — hoặc bất cứ nơi nào!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Vẽ, nhập hoặc tải chữ ký của bạn lên, sau đó đặt nó chính xác ở vị trí bạn muốn. Lưu lại chữ ký yêu thích của bạn cho lần sau.
+annotations-make-default-pdf-handler-title = Đặt { -brand-short-name } làm trình chỉnh sửa PDF mặc định của bạn?
+annotations-make-default-pdf-handler-subtitle = Bạn có quyền truy cập vào các công cụ của chúng tôi mỗi khi mở tập tin PDF.
+annotations-make-default-pdf-primary-cta =
+    .label = Đặt làm mặc định
+annotations-make-default-pdf-next =
+    .label = Tiếp
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Thiết bị mới trong tương lai của bạn?
@@ -308,8 +331,11 @@ fxa-menu-message-close-button =
     .title = Đóng
     .aria-label = Đóng
 fxa-menu-message-sign-up-button = Đăng ký
+fxa-menu-message-sign-in-button = Đăng nhập
+fxa-menu-message-sync-button = Bắt đầu đồng bộ hóa
 fxa-menu-message-sync-devices-primary-text = Đồng bộ hoá tất cả thiết bị của bạn
 fxa-menu-message-sync-devices-secondary-text = Lấy tức thì dữ liệu của bạn — như dấu trang và mật khẩu — bất cứ mọi nơi bạn sử dụng { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Nhận ngay dấu trang, mật khẩu và nhiều thứ khác — ở mọi nơi bạn đăng nhập { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Đồng bộ hoá tất cả thiết bị của bạn
 fxa-menu-message-backup-data-primary-text = Sao lưu dữ liệu trình duyệt của bạn
 fxa-menu-message-backup-data-secondary-text = Tự động bảo vệ dấu trang, mật khẩu và thông tin khác trên tất cả thiết bị của bạn.
@@ -340,3 +366,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Giữ trình duyệt yêu thích tập trung vào quyền riêng tư của mình để mở bằng một cú nhấp chuột. Đặt { -brand-short-name } làm trình duyệt mặc định để mở các liên kết và ghim nó vào thanh tác vụ của bạn.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Giữ trình duyệt yêu thích tập trung vào quyền riêng tư của mình để mở bằng một cú nhấp chuột. Đặt { -brand-short-name } làm trình duyệt mặc định để mở các liên kết và ghim nó vào thanh tác vụ và Start menu của bạn.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Bạn sắp nâng cấp từ Windows 10?
+windows-10-eos-sync-spotlight-subtitle = Sao lưu mật khẩu và dấu trang để bạn sẵn sàng chuyển sang bất kỳ thiết bị nào.
+windows-10-eos-sync-spotlight-primary-label = Sao lưu { -brand-short-name } của bạn
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Nâng cấp lên Windows 11? Đừng để bị mất dấu trang và mật khẩu.
+windows-10-eos-sync-toast-subtitle = Sao lưu dữ liệu của bạn để { -brand-short-name } luôn sẵn sàng sử dụng bất cứ lúc nào, trên máy tính này hoặc máy tính tiếp theo.
+windows-10-eos-sync-toast-primary-label = Bắt đầu
+windows-10-eos-sync-toast-secondary-label = Nhắc tôi sau
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } không tải sẵn như các trình duyệt Big Tech khác. Đó chính là điểm nhắn.
+windows-10-eos-challenger-sync-callout-subtitle = Khi bạn sao lưu dấu trang và mật khẩu { -brand-product-name }, bạn có thể dễ dàng chuyển trình duyệt đã chọn sang thiết bị tiếp theo.
+windows-10-eos-challenger-pin-callout-subtitle = Ghim { -brand-shorter-name } vào thanh tác vụ để trình duyệt bạn chọn luôn ở đó khi bạn cần.
+windows-10-eos-challenger-sync-primary-button = Sao lưu { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Ghim { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } chặn các trình đào tiền điện tử, trình theo dõi mạng xã hội và trình theo dõi dấu vết.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Trình theo dõi không thể xác định thiết bị của bạn hoặc theo dõi bạn trên web — bởi vì chúng ta không cho phép họ.
+windows-10-eos-sync-callout-privacy-screen-2-title = Bảo mật mật khẩu và dấu trang cho thiết bị tiếp theo của bạn.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Sao lưu { -brand-shorter-name } giúp bạn dễ dàng mang theo dữ liệu và cài đặt quyền riêng tư.
+windows-10-eos-sync-callout-privacy-info-button = Xem những gì bị chặn
+windows-10-eos-callout-addons-title = Hãy thử các tiện ích: nâng cấp đơn giản, tác động lớn
+windows-10-eos-callout-addons-subtitle = Các tiện ích mở rộng này được lựa chọn để giúp bạn duy trì năng suất, được bảo vệ và không bị phân tâm.
+windows-10-eos-callout-addons-primary-button = Xem lựa chọn của chúng tôi
+windows-10-eos-sync-callout-addons-title = Đừng làm mất các tiện ích mở rộng khi bạn nâng cấp từ Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Đồng bộ ngay bây giờ để tiện ích mở rộng { -brand-product-name } của bạn luôn khả dụng, ngay cả sau khi thay đổi thiết bị.
+windows-10-eos-sync-callout-next-button = Tiếp
+windows-10-eos-sync-callout-get-started-button = Bắt đầu
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Thẻ dọc và nhóm thẻ đã có ở đây!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Theo yêu cầu của nhiều người, { -brand-product-name } vừa tung ra các tính năng mới để giúp quá trình duyệt web của bạn trở nên đơn giản và tập trung hơn.
+windows-10-eos-feature-toast-whats-new-button = Xem có gì mới
+windows-10-eos-feature-toast-dismiss-button = Bỏ qua
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Trình chống theo dõi nghiêm ngặt có thể khiến các trang web bị hỏng.</strong> Khắc phục các sự cố thường gặp bằng cách bỏ chặn các thành phần thiết yếu có thể chứa trình theo dõi.
+etp-strict-exceptions-infobar-learn-more = Tìm hiểu thêm
+etp-strict-exceptions-infobar-button = Áp dụng sửa lỗi
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Không phải bây giờ
+    .accesskey = N

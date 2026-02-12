@@ -28,11 +28,6 @@ text-action-copy-shortcut =
 text-action-copy-clean-link =
     .label = Cysty wótkaz kopěrowaś
     .accesskey = s
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = Bźez slědowanja sedła kopěrowaś
-    .accesskey = B
 text-action-paste =
     .label = Zasajźiś
     .accesskey = Z
@@ -73,3 +68,23 @@ text-action-search-text-box-clear =
     .title = Wuprozniś
 text-action-highlight-selection =
     .label = Wuběrk wuzwignuś
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = Wuběrkoju komentar pśidaś
+# "Copy Link to Highlight" creates a permanent 'Text Fragment' link
+# to the current selection, and copies it into the user's clipboard.
+text-action-copy-link-to-highlight =
+    .label = Wótkaz do wuzwignjenja kopěrowaś
+# This combines "Copy Link to Highlight" with "Copy Clean Link", ie.
+# it creates a link with a text fragment to the current selection
+# and it strips trackers etc.
+text-action-copy-clean-link-to-highlight =
+    .label = Cysty wótkaz do wuzwignjenja kopěrowaś
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = Wuzwignjenje wótpóraś
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = Wšykne wuzwignjenja wótwónoźeś

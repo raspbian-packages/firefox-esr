@@ -70,17 +70,22 @@ about-reader-customtheme-tab = 自定义
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = 文本
-    .title = 编辑颜色
-about-reader-custom-colors-background = 背景
-    .title = 编辑颜色
-about-reader-custom-colors-unvisited-links = 未访问过的链接
-    .title = 编辑颜色
-about-reader-custom-colors-visited-links = 访问过的链接
-    .title = 编辑颜色
-about-reader-custom-colors-selection-highlight = 朗读功能的高亮标示
-    .title = 编辑颜色
 about-reader-reset-button = 重置为默认设置
+about-reader-custom-colors-foreground2 =
+    .label = 文本
+    .title = 编辑颜色
+about-reader-custom-colors-background2 =
+    .label = 背景
+    .title = 编辑颜色
+about-reader-custom-colors-unvisited-links2 =
+    .label = 未访问过的链接
+    .title = 编辑颜色
+about-reader-custom-colors-visited-links2 =
+    .label = 访问过的链接
+    .title = 编辑颜色
+about-reader-custom-colors-selection-highlight2 =
+    .label = 朗读功能的高亮标示
+    .title = 编辑颜色
 
 ## Reader View text and layout menu
 
@@ -110,3 +115,5 @@ about-reader-text-alignment-center =
     .title = 文本居中对齐
 about-reader-text-alignment-right =
     .title = 文本右对齐
+about-reader-text-alignment-justify =
+    .title = 两端对齐文本

@@ -34,7 +34,10 @@ removed-search-engine-message = <strong>ᱟᱢᱟᱜ ᱢᱩᱞ ᱥᱮᱸᱫᱽ�
 removed-search-engine-message2 = <strong>ᱟᱢᱟᱜ ᱢᱩᱞ ᱥᱮᱸᱫᱽᱨᱟ ᱤᱧᱡᱤᱱ ᱫᱚ ᱵᱚᱫᱚᱞ ᱮᱱᱟ ᱾</strong> { $oldEngine } ᱫᱚ { -brand-short-name } ᱨᱮ ᱟᱨ ᱢᱩᱞ ᱥᱮᱸᱫᱽᱨᱟ ᱤᱧᱡᱤᱱ ᱞᱮᱠᱷᱟ ᱵᱟᱹᱱᱩᱜᱼᱟ ᱾ { $newEngine } ᱫᱚ ᱱᱤᱛᱚᱜ ᱟᱢᱟᱜ ᱢᱩᱞ ᱥᱮᱸᱫᱽᱨᱟ ᱤᱧᱡᱤᱱ ᱠᱟᱱᱟ ᱾ ᱮᱴᱟᱜ ᱢᱩᱞ ᱥᱮᱸᱫᱽᱨᱟ ᱤᱧᱡᱤᱱ ᱛᱮ ᱵᱚᱫᱚᱞ ᱞᱟᱹᱜᱤᱫ, ᱥᱟᱡᱟᱣ ᱛᱮ ᱪᱟᱞᱟᱜ ᱢᱮ ᱾
 remove-search-engine-button = ᱴᱷᱤᱠ
 
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
+## The following strings are used as input labels.
 
+add-engine-window =
+    .title = ᱥᱮᱸᱫᱽᱨᱟ ᱤᱧᱡᱤᱱ ᱥᱮᱞᱮᱫ ᱢᱮ
+    .style = min-width: 32em;
+add-engine-button = ᱱᱤᱡᱚᱨᱟᱜ ᱤᱧᱡᱤᱱ ᱥᱮᱞᱮᱫ ᱢᱮ
+add-engine-name = ᱥᱮᱸᱫᱽᱨᱟ ᱤᱧᱡᱤᱱ ᱧᱩᱛᱩᱢ

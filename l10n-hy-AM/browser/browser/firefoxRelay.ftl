@@ -4,7 +4,7 @@
 
 
 ## Error messages for failed HTTP web requests.
-## https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+## https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
@@ -19,9 +19,12 @@ firefox-relay-get-unlimited-masks =
     .accesskey = M
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
 firefox-relay-opt-in-title-1 = Պաշտպանեք Ձեր էլ. փոստի հասցեն․
+firefox-relay-opt-in-title-2 = Ստացեք անվճար էլ. փոստի դիմակ
 # This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
 # ends with a colon. You might need to adapt the capitalization of this string.
 firefox-relay-opt-in-subtitle-1 = Օգտագործեք { -relay-brand-name } Էլ․ փոստի դիմակը
+firefox-relay-use-mask-title-1 = Օգտագործեք էլ․ փոստի դիմակ
+firefox-relay-opt-in-subtitle-2 = Պաշտպանեք ձեր մուտքի արկղը թափոնից
 firefox-relay-use-mask-title = Օգտագործեք { -relay-brand-name } Էլ․ փոստի դիմակը
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-a
 firefox-relay-opt-in-title-a = Կանխեք թափոնն անվճար էլ. փոստի դիմակով
@@ -75,3 +78,6 @@ firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain =
 ## The "with-domain-and-value-prop" variation of the Relay offer popup
 
 firefox-relay-and-fxa-popup-notification-header-with-domain-and-value-prop = Պաշտպանեք սպամից էլ. փոստի դիմակով
+firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain-and-value-prop =
+    .label = Հաջորդը
+    .accesskey = N

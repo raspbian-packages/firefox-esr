@@ -5,11 +5,6 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = ඔබ පිරික්සන විට ඉක්මනින් ප්‍රවේශයට කැමති කතා ක්‍රමලේඛයක් පැති තීරුවට එක් කරයි. <a data-l10n-name="connect">ප්‍රතිපෝෂණ බෙදාගන්න</a>
-genai-settings-chat-choose = කතා ක්‍රමලේඛයක් තෝරන්න
-genai-settings-chat-choose-one-menuitem =
-    .label = එකක් තෝරන්න
-genai-settings-chat-links = ඔබ කතා ක්‍රමලේඛයක් තෝරන විට, ඔබ ප්‍රතිපාදකයාගේ භාවිත නියම සහ රහස්‍යතා ප්‍රතිපත්තියට එකඟ වේ.
 genai-settings-chat-chatgpt-links = ChatGPT තේරීමෙන් ඔබ OpenAI <a data-l10n-name="link1">භාවිත නියම</a> සහ <a data-l10n-name="link2">රහස්‍යතා ප්‍රතිපත්තියට</a> එකඟ වේ.
 genai-settings-chat-claude-links = Anthropic Claude තේරීමෙන් ඔබ Anthropic <a data-l10n-name="link1">පරිභෝජක සේවා නියම</a>, <a data-l10n-name="link2">භාවිත ප්‍රතිපත්තියට</a> සහ <a data-l10n-name="link3">රහස්‍යතා ප්‍රතිපත්තියට</a> එකඟ වේ.
 genai-settings-chat-copilot-links = Copilot තේරීමෙන් ඔබ <a data-l10n-name="link1">Copilot කෘතිම බුද්ධි අත්දැකීම් නියම</a> සහ <a data-l10n-name="link2">මයික්‍රොසොෆ්ට් රහස්‍යතා ප්‍රකාශයට</a> එකඟ වේ.
@@ -17,9 +12,6 @@ genai-settings-chat-gemini-links = ගූගල් ජෙමිනි තේර�
 genai-settings-chat-huggingchat-links = HuggingChat තේරීමෙන් ඔබ <a data-l10n-name="link1">HuggingChat රහස්‍යතා දැන්වීමට</a> සහ <a data-l10n-name="link2">Hugging Face රහස්‍යතා ප්‍රතිපත්තියට</a> එකඟ වේ.
 genai-settings-chat-lechat-links = Le Chat Mistral තේරීමෙන් ඔබ Mistral කෘතිම බුද්ධි<a data-l10n-name="link1">සේවා නියම</a> සහ <a data-l10n-name="link2">රහස්‍යතා ප්‍රතිපත්තියට</a> එකඟ වේ.
 genai-settings-chat-localhost-links = { -vendor-short-name } නවෝත්පාදන සමූහයෙන් <a data-l10n-name="link1">llamafile</a> වැනි ඔබගේම පුද්ගලික ස්ථානීය කතා ක්‍රමලේඛ රැගෙන එන්න.
-genai-settings-chat-shortcuts =
-    .description = ඔබ පෙළක් තේරූ විට උත්පතනයට කෙටිමඟක් පෙන්වයි. { -brand-short-name } හරහා කතා ක්‍රමලේඛය වෙත පෙළ, පිටුවේ සිරැසිය සහ උත්පතනය යවයි.
-    .label = පෙළ තෝරන විට උත්පතන පෙන්වන්න
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -70,8 +62,6 @@ genai-header-close-button =
     .title = වසන්න
 genai-provider-view-details =
     .label = කතා ක්‍රමලේඛයේ විස්තර බලන්න
-genai-provider-about-chatbots =
-    .label = මෙම කතා ක්‍රමලේඛ ගැන
 genai-options-reload-generic =
     .label = AI කතා ක්‍රමලේඛය යළි පූරණය කරන්න
 # $provider (string) - name of the provider

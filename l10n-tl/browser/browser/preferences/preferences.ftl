@@ -8,6 +8,9 @@ do-not-track-option-default-content-blocking-known =
     .label = Payagan lang kung ang { -brand-short-name } ay naka-set na mag-block ng mga kilalang tracker.
 do-not-track-option-always =
     .label = Palagi
+global-privacy-control-description =
+    .label = Sabihin sa mga website na huwag ibahagi o ibenta ang aking data
+    .accesskey = s
 settings-page-title = Mga setting
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
@@ -96,6 +99,10 @@ startup-header = Startup
 always-check-default =
     .label = Laging suriin kung { -brand-short-name } ang iyong default na browser
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } ang iyong kasalukuyang ginagamit na browser.
+is-not-default-browser =
+    .message = Hindi { -brand-short-name } ang iyong default na browser
 is-default = { -brand-short-name } ang iyong kasalukuyang ginagamit na browser.
 is-not-default = Hindi { -brand-short-name } ang iyong default na browser
 set-as-my-default-browser =
@@ -161,10 +168,15 @@ containers-remove-cancel-button = Huwag alisin ang Container na ito
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Wika at Hitsura
+preferences-web-appearance-choice-auto = Awtomatiko
+preferences-web-appearance-choice-light = Maliwanag
+preferences-web-appearance-choice-dark = Madilim
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-colors-header = Mga kulay
+preferences-fonts-header = Mga font
 default-font = Default na font
     .accesskey = D
 default-font-size = Laki
@@ -215,6 +227,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Mga File at Application
+downloads-header-2 =
+    .label = Mga Download
+download-save-where-2 =
+    .label = i-Save ang mga file sa
+    .accesskey = S
 download-header = Mga Download
 download-save-where = i-Save ang mga file sa
     .accesskey = S
@@ -413,7 +430,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Bagong mga Window at Tab
 home-new-windows-tabs-description2 = Pumili ng kung ano ang gustong makita kapag binubuksan ang iyong homepage, mga bagong window, at mga bagong tab.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Homepage at mga bagong window
 home-newtabs-mode-label = Mga bagong tab
@@ -544,6 +561,8 @@ search-keyword-warning-bookmark = Ginagamit na ng isang bookmark ang keyword na 
 containers-back-button2 =
     .aria-label = Bumalik sa Mga Setting
 containers-header = Mga Container Tab
+containers-section-header =
+    .heading = Mga Container Tab
 containers-add-button =
     .label = Magdagdag ng Bagong Container
     .accesskey = A
@@ -679,6 +698,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Pangalan ng Device
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Pangalan ng Device
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Palitan ang Pangalan ng Device
+    .accesskey = h
 sync-device-name-change =
     .label = Palitan ang Pangalan ng Device...
     .accesskey = h
@@ -726,6 +753,7 @@ forms-breach-alerts =
     .label = Magpakita ng mga alerto tungkol sa mga password sa mga breached website
     .accesskey = b
 forms-breach-alerts-learn-more-link = Alamin
+relay-integration-learn-more-link = Alamin
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = I-autofill ang mga login at password
@@ -752,6 +780,7 @@ forms-primary-pw-change =
 forms-primary-pw-former-name = Kilala dati bilang Master Password
 forms-primary-pw-fips-title = Kasalukuyan kang naka-FIPS mode. Kinakailangan ng FIPS ng isang hindi blangkong Primary Password.
 forms-master-pw-fips-desc = Nabigo ang Pagpalit ng Password
+forms-windows-sso-learn-more-link = Alamin
 
 ## OS Authentication dialog
 
@@ -766,6 +795,8 @@ master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy section - Autofill
 
+autofill-payment-methods-checkbox-message = Mag-save at maglagay ng mga payment method
+    .accesskey = m
 
 ## Privacy Section - History
 
@@ -787,6 +818,10 @@ history-remember-option-never =
     .label = Huwag kailanman tandaan ang kasaysayan
 history-remember-option-custom =
     .label = Gumamit ng mga custom setting para sa kasaysayan
+history-remember-description2 =
+    .description = Tatandaan ng { -brand-short-name } ang iyong browsing, download, form at search history.
+history-dontremember-description2 =
+    .description = Gagamitin ng { -brand-short-name } ang kaparehong mga setting sa private browsing, at hindi nito tatandaan ang iyong kasaysayan ng pag-browse sa Web.
 history-remember-description = Tatandaan ng { -brand-short-name } ang iyong browsing, download, form at search history.
 history-dontremember-description = Gagamitin ng { -brand-short-name } ang kaparehong mga setting sa private browsing, at hindi nito tatandaan ang iyong kasaysayan ng pag-browse sa Web.
 history-private-browsing-permanent =
@@ -833,6 +868,8 @@ sitedata-block-desc = Uri ng content na hinaharang
     .accesskey = T
 sitedata-option-block-cross-site-trackers =
     .label = Mga cross-site tracker
+sitedata-option-block-cross-site-tracking-cookies =
+    .label = Mga cross-site tracking cookie
 sitedata-option-block-unvisited =
     .label = Mga cookie na galing sa mga hindi pa nabisitang website
 sitedata-option-block-all =
@@ -846,12 +883,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = I-manage ang mga Exception…
     .accesskey = x
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -877,6 +908,7 @@ addressbar-locbar-engines-option =
     .label = Mga search engine
     .accesskey = a
 addressbar-suggestions-settings = Baguhin ang mga kagustuhan para sa mga mungkahi ng search engine
+addressbar-quickactions-learn-more = Alamin
 
 ## Privacy Section - Content Blocking
 
@@ -918,6 +950,7 @@ content-blocking-fingerprinters = Mga Fingerprinter
 
 # The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
+content-blocking-etp-standard-tcp-rollout-learn-more = Alamin
 content-blocking-warning-title = Mag-ingat!
 content-blocking-and-isolating-etp-warning-description-2 = Ang setting na ito ay maaaring maging sanhi ng ilang mga website na hindi ipakita ang nilalaman o gumana nang tama. Kung tila nasira ang isang site, baka gusto mong patayin ang tracking protection para sa site na iyon upang mai-load ang lahat ng nilalaman.
 content-blocking-warning-learn-how = Alamin kung paano
@@ -983,6 +1016,8 @@ permissions-notification-link = Alamin
 permissions-notification-pause =
     .label = Itigil pansamantala ang mga notification hanggang sa makapag-restart ang { -brand-short-name }
     .accesskey = n
+permissions-autoplay2 =
+    .label = Autoplay
 permissions-autoplay = Autoplay
 permissions-autoplay-settings =
     .label = Mga Setting...
@@ -990,12 +1025,28 @@ permissions-autoplay-settings =
 permissions-block-popups =
     .label = Harangin ang mga pop-up window
     .accesskey = B
+# "popup" is a misspelling that is more popular than the correct spelling of
+# "pop-up" so it's included as a search keyword, not displayed in the UI.
+permissions-block-popups-exceptions-button =
+    .label = Mga Exception…
+    .accesskey = E
+    .searchkeywords = mga popup
 permissions-addon-install-warning =
     .label = Balaan ka kapag sinusubukan ng mga website na magkabit ng mga add-on
     .accesskey = W
 permissions-addon-exceptions =
     .label = Mga exception...
     .accesskey = e
+permissions-location2 =
+    .label = Lokasyon
+permissions-xr2 =
+    .label = Virtual Reality
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Mikropono
+permissions-notification2 =
+    .label = Mga Abiso
 
 ## Privacy Section - Data Collection
 
@@ -1017,9 +1068,8 @@ addon-recommendations-link = Alamin
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Naka-disable ang pag-uulat ng data para sa build configuration na ito
-
-## Privacy Section - Website Advertising Preferences
-
+privacy-segmentation-radio-on =
+    .label = Ipakita ang detalyadong impormasyon
 
 ## Privacy Section - Security
 ##
@@ -1051,6 +1101,10 @@ certs-view =
 certs-devices =
     .label = Mga Security Device...
     .accesskey = D
+certs-devices-enable-fips = I-enable ang FIPS
+space-alert-over-5gb-settings-button =
+    .label = Buksan ang Mga Setting
+    .accesskey = O
 
 ## Privacy Section - HTTPS-Only
 
@@ -1063,9 +1117,6 @@ httpsonly-radio-enabled-pbm =
     .label = I-enable ang HTTPS-Only Mode sa mga private window lamang
 httpsonly-radio-disabled =
     .label = Huwag i-enable ang HTTPS-Only Mode
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

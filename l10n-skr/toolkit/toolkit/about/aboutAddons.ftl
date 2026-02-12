@@ -387,6 +387,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = نجی ونڈوز وِچ اجازت ہے
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = نجی ونڈوز وِچ اجازت ہے
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -426,6 +430,10 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = سیکیورٹی تے کارکردگی کیتے اساݙے معیاراں تے پورا لہݨ کیتے ایں ایکسٹنش دا جائزہ گھدا ڳیا ہے
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = موزیلا دی طرفوں بݨایا ڳیا آفیشل ایکسٹینشن۔ سیکیورٹی تے کارکردگی دے معیار تے پورا لہندا ہے۔
 
 ##
 
@@ -484,14 +492,10 @@ details-notification-unsigned2 =
     .message = { $name } دی { -brand-short-name } وِچ استعمال کیتے تصدیق نہیں تھی سڳی۔ احتیاط نال اڳو تے ودھو.
 details-notification-unsigned-link = ودھیک معلومات
 details-notification-blocked = سیکیورٹی یا استحکام دے مسائل دی وجہ توں { $name } کوں غیر فعال کر ݙتا ڳیا ہے۔
-details-notification-blocked2 =
-    .message = سیکیورٹی یا استحکام دے مسائل دی وجہ توں { $name } کوں غیر فعال کر ݙتا ڳیا ہے۔
 details-notification-blocked-link2 = تفصیلاں ݙیکھو
 details-notification-softblocked-link2 = تفصیلاں ݙیکھو
 details-notification-blocked-link = ودھیک معلومات
 details-notification-softblocked = { $name } سیکورٹی یا استحکام دے مسائل کیتے ڄاتا ویندا ہے۔
-details-notification-softblocked2 =
-    .message = { $name } سیکورٹی یا استحکام دے مسائل کیتے ڄاتا ویندا ہے۔
 details-notification-softblocked-link = ودھیک معلومات
 details-notification-gmp-pending = { $name } ستت انسٹال کر ݙتا ویسے۔
 details-notification-gmp-pending2 =

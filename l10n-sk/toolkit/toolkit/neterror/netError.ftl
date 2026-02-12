@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Prihlásiť sa do siete
 neterror-dns-not-found-title = Server sa nenašiel
 neterror-malformed-uri-page-title = Neplatná URL adresa
 general-body-title = Buďte opatrní. Niečo nie je v poriadku.
+problem-with-this-site-title = Zdá sa, že s touto stránkou je problém
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = Ak sa nedá načítať žiadna stránka, skontr
 neterror-load-error-firewall = Ak sú počítač alebo sieť chránené firewallom alebo serverom proxy, uistite sa, či má { -brand-short-name } povolený prístup k webu.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Ak sa pokúšate načítať stránku lokálnej siete, skontrolujte, či má { -brand-short-name } v nastaveniach ochrany súkromia a zabezpečenia systému macOS udelené povolenia pre lokálnu sieť.
+neterror-http-error-page = Skontrolujte, či ste adresu webovej stránky zadali správne.
 neterror-captive-portal = Pre prístup na internet sa musíte najprv prihlásiť k tejto sieti.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Ak ste zadali správnu adresu, mô�
 neterror-dns-not-found-hint-try-again = Skúsiť to znova neskôr
 neterror-dns-not-found-hint-check-network = Skontrolovať pripojenie k sieti
 neterror-dns-not-found-hint-firewall = Skontrolovať, či má { -brand-short-name } povolenie na prístup na web (môžete byť pripojený, ale za bránou firewall)
+neterror-dns-not-found-offline-hint-header = <strong>Čo s tým môžete urobiť?</strong>
+neterror-dns-not-found-offline-hint-different-device = Skúste sa pripojiť na inom zariadení.
+neterror-dns-not-found-offline-hint-modem = Skontrolujte svoj modem alebo smerovač.
+neterror-dns-not-found-offline-hint-reconnect = Odpojte sa a znova pripojte k sieti Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Neočakávaný problém.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } nedokáže ochrániť vašu žiadosť o adresu tohto webu prostredníctvom nášho dôveryhodného nástroja DNS resolver. Tu je dôvod:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } nedokáže ochrániť vašu žiadosť o adresu tohto webu prostredníctvom nášho zabezpečeného poskytovateľa DNS. Tu je dôvod:
 neterror-dns-not-found-native-fallback-heuristic = DNS cez HTTPS bol vo vašej sieti zakázaný.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name(case: "dat") } sa nepodarilo pripojiť k { $trrDomain }.
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = Skontrolujte nastavenia proxy servera.
 neterror-proxy-connect-failure-contact-admin = Obráťte sa na správcu siete a skontrolujte, či server proxy funguje.
 neterror-content-encoding-error = Obráťte sa na vlastníkov stránky a informujte ich o tomto probléme.
 neterror-unsafe-content-type = Obráťte sa na vlastníkov stránky a informujte ich o tomto probléme.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } nedôveruje lokalite { $hostname }, pretože pripojenie nie je bezpečné. Skúste zmeniť adresu URL na HTTPS.
 neterror-nss-failure-not-verified = Stránku nemožno zobraziť, pretože pravosť prijímaných údajov sa nedá overiť.
 neterror-nss-failure-contact-website = Obráťte sa na vlastníkov stránky a informujte ich o tomto probléme.
 # Variables:
@@ -140,7 +148,7 @@ certerror-unknown-issuer-what-can-you-do-about-it-contact-admin = Ak ste pripoje
 certerror-expired-cert-what-can-you-do-about-it-clock = Dátum a čas vo vašom počítači sú nastavené na { DATETIME($now, dateStyle: "medium") }. Skontrolujte, prosím, nastavenia dátumu, času a časovej zóny v nastaveniach svojho systému a potom obnovte stránku <b>{ $hostname }</b>.
 certerror-expired-cert-what-can-you-do-about-it-contact-website = Ak máte čas nastavený správne, pravdepodobne je webová stránka zle nastavená a vy tento problém nedokážete vyriešiť. O probléme môžete informovať správcu webovej stránky.
 certerror-bad-cert-domain-what-can-you-do-about-it = Tento problém je pravdepodobne na strane webovej stránky a vy ho, bohužiaľ, nedokážete vyriešiť. O probléme môžete informovať správcu webovej stránky.
-certerror-mitm-what-can-you-do-about-it-antivirus = Ak váš antivírusový program obsahuje funkciu skenovania šifrovaných spojení (často nazývaná ako „skenovanie webu“ alebo „skenovanie https“), môžete túto funkciu skúsiť vypnúť. Ak to nepomôže, môžete skúsiť antivírusový program odstrániť a preinštalovať.
+certerror-mitm-what-can-you-do-about-it-antivirus = Ak váš antivírusový program obsahuje funkciu skenovania šifrovaných spojení (často nazývaná ako “skenovanie webu” alebo “skenovanie https”), môžete túto funkciu skúsiť vypnúť. Ak to nepomôže, môžete skúsiť antivírusový program odstrániť a preinštalovať.
 certerror-mitm-what-can-you-do-about-it-corporate = Ak ste na firemnej sieti, kontaktujte jej IT oddelenie.
 # Variables:
 # $mitm (String) - The name of the software intercepting communications between you and the website (or “man in the middle”)
@@ -159,3 +167,13 @@ certerror-coep-learn-more = Ďalšie informácie o zásadách Cross Origin Embed
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Kód chyby: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } nedokáže vytvoriť zabezpečené pripojenie k serveru na adrese { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Zdá sa, že táto stránka používa starý softvér so známymi bezpečnostnými problémami.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Uistite sa, že používate najnovšiu verziu { -brand-short-name(case: "gen") }. V ponuke prejdite na Pomocník > O aplikácii { -brand-short-name }. Ak používate najnovšiu verziu { -brand-short-name(case: "gen") }, problém je s najväčšou pravdepodobnosťou na samotnej stránke.

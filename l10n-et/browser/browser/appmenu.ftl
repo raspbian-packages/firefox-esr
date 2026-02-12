@@ -111,6 +111,8 @@ appmenu-fxa-setup-sync =
 appmenu-fxa-setup-sync-new = Lülita sisse
 appmenuitem-save-page =
     .label = Salvesta veebileht kui…
+appmenuitem-fxa-sync-off-title = Sync on väljas
+appmenuitem-fxa-sync-off-description = Kaitse oma järjehoidjaid, paroole ja muud ning pääse neile kõikjal ligi.
 
 ## What's New panel in App menu.
 
@@ -193,6 +195,13 @@ profiler-popup-presets-media-label =
 profiler-popup-presets-networking-description = Preset for investigating networking bugs in { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Network
+profiler-popup-presets-power-description = Eelseadistus { -brand-shorter-name }i energiakasutuse vigade uurimiseks, madala üldkuluga.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Võimsus
+profiler-popup-presets-debug-description = Eelseadistus { -brand-shorter-name }I silumiseks. Suur üldkulu — ära kasuta jõudlust vajavaks tööks, vaid keskendu veebilehitseja käitumise mõistmisele.
+profiler-popup-presets-debug-label =
+    .label = Silumine
 profiler-popup-presets-custom-label =
     .label = Custom
 
@@ -209,6 +218,9 @@ appmenu-recently-closed-tabs =
     .label = Hiljuti suletud kaardid
 appmenu-recently-closed-windows =
     .label = Hiljuti suletud aknad
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Otsi ajaloost
 
 ## Help panel
 
@@ -228,6 +240,8 @@ appmenu-help-report-site-issue =
 appmenu-help-share-ideas =
     .label = Jaga ideid ja tagasisidet…
     .accesskey = J
+appmenu-help-switch-device =
+    .label = Ümberlülitumine uuele seadmele
 
 ## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
 ## are mutually exclusive, so it's possible to use the same accesskey for both.
@@ -256,9 +270,30 @@ appmenu-customizetoolbar =
 appmenu-developer-tools-subheader = Browser tools
 appmenu-developer-tools-extensions =
     .label = Extensions for developers
+appmenuitem-report-broken-site =
+    .label = Teata katkisest saidist
 
 ## Panel for privacy and security products
 
+appmenuitem-sign-in-account = Logi kontole sisse
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Saa andmelekkehoiatusi
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-description = Peida oma tegelik e-post ja telefon
+appmenuitem-services-relay-description = Käivita e-posti maskide juhtpaneel
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description = Kaitse oma veebitegevust
+appmenu-services-header = Minu teenused
+appmenu-other-protection-header = Proovi teisi kaitsetööriistu pakkujalt { -vendor-short-name }:
 
 ## Profiles panel
 
+appmenu-other-profiles = Muud profiilid
+appmenu-manage-profiles =
+    .label = Profiilide haldamine
+appmenu-create-profile =
+    .label = Uus profiil
+appmenu-edit-profile =
+    .aria-label = Muuda profiili
+appmenu-profiles-2 =
+    .label = Profiilid

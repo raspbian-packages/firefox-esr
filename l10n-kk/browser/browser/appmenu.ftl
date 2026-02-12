@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Жүктемелер
 appmenuitem-passwords =
     .label = Парольдер
+appmenuitem-extensions-and-themes =
+    .label = Кеңейтулер және темалар
+appmenuitem-extensions =
+    .label = Кеңейтулер
 appmenuitem-addons-and-themes =
     .label = Кеңейтулер және темалар
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Профильдеуші панелін ашу
+    .tooltiptext = Профильдеуші панелін ашу
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = { -brand-shorter-name } ішінде аудио және видео ақаулықтарын зерттеуге арналған баптаулар жиынтығы.
 profiler-popup-presets-media-label =
     .label = Медиа
+profiler-popup-presets-ml-description = { -brand-shorter-name } ішінде машиналық оқыту ақаулықтарын зерттеуге арналған баптаулар жиынтығы.
+profiler-popup-presets-ml-label =
+    .label = Машиналық оқыту
 profiler-popup-presets-networking-description = { -brand-shorter-name } ішінде желі ақаулықтарын зерттеуге арналған баптаулар жиынтығы.
 profiler-popup-presets-networking-label =
     .label = Желі
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Эл. пошта маскаларын �
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Желідегі әрекетіңізді қорғаңыз
 appmenu-services-header = Менің қызметтерім
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Mozilla ұсынған басқа қорғау құралдарын пайдаланып көріңіз:
 appmenu-other-protection-header = { -vendor-short-name } ұсынған басқа қорғау құралдарын қолданып көріңіз:
 
 ## Profiles panel
 
-appmenu-profiles = Профильдер
 appmenu-other-profiles = Басқа профильдер
 appmenu-manage-profiles =
     .label = Профильдерді басқару
+appmenu-copy-profile =
+    .label = Бұл профильді көшіру
 appmenu-create-profile =
     .label = Жаңа профиль
 appmenu-edit-profile =
     .aria-label = Профильді түзету
+appmenu-profiles-2 =
+    .label = Профильдер

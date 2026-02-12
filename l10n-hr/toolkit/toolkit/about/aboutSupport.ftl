@@ -15,7 +15,14 @@ support-addons-type = Vrsta
 support-addons-enabled = Aktivirano
 support-addons-version = Verzija
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Mjesto
+legacy-user-stylesheets-title = Stari korisnički stilski predlošci
 legacy-user-stylesheets-enabled = Aktivno
+legacy-user-stylesheets-stylesheet-types = Stilski predlošci
+legacy-user-stylesheets-no-stylesheets-found = Nema stilskih predložaka
 security-software-title = Sigurnosni softver
 security-software-type = Vrsta
 security-software-name = Ime
@@ -39,8 +46,8 @@ app-basics-update-channel = Kanal nadogradnje
 # as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
-        [linux] Mapa za ažuriranja
-       *[other] Mapa za nadogradnje
+        [linux] Mapa za aktualiziranja
+       *[other] Mapa za aktualiziranja
     }
 app-basics-update-history = Povijest nadogradnji
 app-basics-show-update-history = Prikaži povijest nadogradnji
@@ -100,10 +107,10 @@ locked-prefs-value = Vrijednost
 graphics-title = Grafika
 graphics-features-title = Funkcije
 graphics-diagnostics-title = Dijagnostika
-graphics-failure-log-title = Zapis grešaka
+graphics-failure-log-title = Zapisnik grešaka
 graphics-gpu1-title = GPU #1
 graphics-gpu2-title = GPU #2
-graphics-decision-log-title = Zapis odluka
+graphics-decision-log-title = Zapisnik odluka
 graphics-crash-guards-title = Deaktivirane funkcije čuvara rušenja
 graphics-workarounds-title = Zaobilazna rješenja
 # Windowing system in use on Linux (e.g. X11, Wayland).
@@ -133,15 +140,14 @@ sandbox-sys-call-log-title = Odbijeni pozivi sustava
 sandbox-sys-call-index = #
 sandbox-sys-call-age = prije nekoliko sekundi
 sandbox-sys-call-pid = PID
-sandbox-sys-call-tid = TID
 sandbox-sys-call-proc-type = Vrsta procesa
 sandbox-sys-call-number = Poziv sustava
 sandbox-sys-call-args = Argumenti
 troubleshoot-mode-title = Dijagnosticiranje problema
 restart-in-troubleshoot-mode-label = Modus za rješavanje problema …
-clear-startup-cache-title = Pokušaj poništiti predmemoriju pokretanja
-clear-startup-cache-label = Poništi predmemoriju pokretanja …
-startup-cache-dialog-title2 = Ponovno pokrenuti { -brand-short-name } za čišćenje predmemorije pokretanja?
+clear-startup-cache-title = Pokušaj izbrisati predmemoriju pokretanja
+clear-startup-cache-label = Izbriši predmemoriju pokretanja …
+startup-cache-dialog-title2 = Ponovno pokrenuti { -brand-short-name } za brisanje predmemorije pokretanja?
 startup-cache-dialog-body2 = Ovo neće promijeniti tvoje postavke ni ukloniti proširenja.
 restart-button-label = Pokreni ponovo
 
@@ -177,6 +183,10 @@ media-codec-support-lack-of-extension = Instaliraj proširenje
 ## See EME Spec for more explanation for following technical terms
 ## https://w3c.github.io/encrypted-media/
 
+# Clear Lead isn't defined in the spec, which means the the first few seconds
+# are not encrypted. It allows playback to start without having to wait for
+# license response, improving video start time and user experience.
+media-cdm-clear-lead = Nešifriran uvod
 
 ##
 
@@ -294,11 +304,10 @@ webgl1-extensions = WebGL 1 dodaci
 webgl2-wsiinfo = WSI informacije upravljačkog programa WebGL 2
 webgl2-renderer = Iscrtavač upravljačkog programa WebGL 2
 webgl2-version = Verzija upravljačkog programa WebGL 2
-webgl2-driver-extensions = Dodaci upravljačkog programa WebGL 2
 webgl2-extensions = WebGL 2 dodaci
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
-unknown-failure = Blokiran; kȏd neuspjeha { $failureCode }
+unknown-failure = Dodano na popis blokiranih; kod greške { $failureCode }
 d3d11layers-crash-guard = D3D11 kompozitor
 glcontext-crash-guard = OpenGL
 wmfvpxvideo-crash-guard = WMF VPX video dekoder
@@ -325,14 +334,13 @@ sandbox-proc-type-content = sadržaj
 sandbox-proc-type-file = sadržaj datoteke
 sandbox-proc-type-media-plugin = priključak za medije
 sandbox-proc-type-data-decoder = dekoder podataka
-startup-cache-title = Predmemorija pokretanja
-startup-cache-disk-cache-path = Staza predmemorije diska
+startup-cache-title = Predmemorija pokretanjasandbox-sys-call-tid = TID
+startup-cache-disk-cache-path = Staza predmemorije diskalauncher-process-status-2 = Prisilno onemogućeno
 startup-cache-ignore-disk-cache = Zanemari predmemoriju diska
-startup-cache-found-disk-cache-on-init = Pronađena je predmemorija diska pri inicijaliziranju
-startup-cache-wrote-to-disk-cache = Zapisano u predmemoriju diska
+startup-cache-found-disk-cache-on-init = Pronađena je predmemorija diska pri inicijaliziranjusupport-printing-modified-settings = Izmijenjene postavke ispisa
+startup-cache-wrote-to-disk-cache = Zapisano u predmemoriju diskawebgl2-driver-extensions = Dodaci upravljačkog programa WebGL 2
 launcher-process-status-0 = Aktivirano
 launcher-process-status-1 = Onemogućeno zbog kvara
-launcher-process-status-2 = Prisilno onemogućeno
 launcher-process-status-unknown = Nepoznato stanje
 # Variables
 # $remoteWindows (integer) - Number of remote windows
@@ -376,8 +384,7 @@ policies-error = Greška
 
 support-printing-title = Ispisivanje
 support-printing-troubleshoot = Otklanjanje grešaka
-support-printing-clear-settings-button = Očisti spremljene postavke ispisa
-support-printing-modified-settings = Izmijenjene postavke ispisa
+support-printing-clear-settings-button = Izbriši spremljene postavke ispisa
 support-printing-prefs-name = Ime
 support-printing-prefs-value = Vrijednost
 

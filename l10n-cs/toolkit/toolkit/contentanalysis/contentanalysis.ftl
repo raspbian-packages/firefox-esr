@@ -13,6 +13,17 @@ contentanalysis-slow-agent-dialog-header = Probíhá skenování
 contentanalysis-slow-agent-dialog-body-file = { $agent } prověřuje soubor “{ $filename }” z hlediska zásad pro data vaší organizace. To může chvíli trvat.
 # Variables:
 #   $agent - The name of the DLP agent doing the analysis
+#   $filename - Name of a file being analyzed, such as "aFile.txt"
+#   $count (number) - The number of additional items in the request for analysis
+contentanalysis-slow-agent-dialog-body-file-and-more =
+    { $count ->
+        [one] { $agent } kontroluje “{ $filename }” a { $count } další položku z hlediska souladu se zásadami pro data vaší organizace. Toto může chvíli trvat.
+        [few] { $agent } kontroluje “{ $filename }” a { $count } další položky z hlediska souladu se zásadami pro data vaší organizace. Toto může chvíli trvat.
+        [many] { $agent } kontroluje “{ $filename }” a { $count } dalších položek z hlediska souladu se zásadami pro data vaší organizace. Toto může chvíli trvat.
+       *[other] { $agent } kontroluje “{ $filename }” a { $count } dalších položek z hlediska souladu se zásadami pro data vaší organizace. Toto může chvíli trvat.
+    }
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
 contentanalysis-slow-agent-dialog-body-clipboard = { $agent } kontroluje, zda vložené údaje odpovídají zásadám organizace týkajícím se dat. To může chvíli trvat.
 # Note that this is shown when the user drag and drops text into the browser.
 # Variables:
@@ -25,7 +36,9 @@ contentanalysis-operationtype-clipboard = schránka
 contentanalysis-operationtype-dropped-text = přetažený text
 contentanalysis-operationtype-print = tisk
 #   $filename - The filename associated with the request, such as "aFile.txt"
-contentanalysis-customdisplaystring-description = nahrání souboru “{ $filename }”
+contentanalysis-upload-description = nahrání souboru “{ $filename }”
+#   $filename - The filename associated with the request, such as "aFile.txt"
+contentanalysis-download-description = stahování souboru “{ $filename }”
 contentanalysis-warndialogtitle = Tento obsah může být nebezpečný
 # Variables:
 #   $content - Description of the content being warned about, such as "clipboard" or "aFile.txt"
@@ -58,10 +71,18 @@ contentanalysis-error-message-upload-file = Nahrání souboru „{ $filename }�
 contentanalysis-error-message-dropped-text = Přetahování bylo zakázáno.
 contentanalysis-error-message-clipboard = Vložení bylo zamítnuto.
 contentanalysis-error-message-print = Tisk zamítnut.
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
+#   $contentName - Description of the content, such as "clipboard" or "aFile.txt"
+contentanalysis-timeout-block-error-message-content = Spojení s agentem { $agent } vypršelo. { $contentName } byl zablokován.
 contentanalysis-block-dialog-title-upload-file = Nemáte oprávnění nahrát tento soubor
 # Variables:
 #   $filename - Name of the file that was blocked, such as "aFile.txt"
 contentanalysis-block-dialog-body-upload-file = Zásady vaší organizace pro ochranu dat nepovolují nahrání souboru „{ $filename }“. Pro více informací kontaktujte svého správce.
+contentanalysis-block-dialog-title-download-file = Nemáte oprávnění stáhnout tento soubor
+# Variables:
+#   $filename - Name of the file that was blocked, such as "aFile.txt"
+contentanalysis-block-dialog-body-download-file = Podle zásad ochrany dat vaší organizace nesmíte stáhnout soubor "{ $filename }". Další informace získáte od svého správce.
 contentanalysis-block-dialog-title-clipboard = Nemáte oprávnění pro vložení tohoto obsahu
 contentanalysis-block-dialog-body-clipboard = Zásady vaší organizace pro ochranu dat nepovolují vložení tohoto obsahu. Pro více informací kontaktujte svého správce.
 contentanalysis-block-dialog-title-dropped-text = Nemáte oprávnění přetáhnout tento obsah

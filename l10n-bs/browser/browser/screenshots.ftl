@@ -2,12 +2,27 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+screenshot-toolbarbutton =
+    .label = Snimak ekrana
+    .tooltiptext = Napravi snimak ekrana
+screenshot-shortcut =
+    .key = S
 screenshots-instructions = Povucite ili kliknite na stranicu kako biste izabrali područje. Pritisnite ESC za otkazivanje radnje.
 screenshots-cancel-button = Otkaži
 screenshots-save-visible-button = Sačuvaj vidljivo
 screenshots-save-page-button = Sačuvaj cijelu stranicu
 screenshots-download-button = Preuzmi
+screenshots-download-button-tooltip = Preuzmi snimak ekrana
 screenshots-copy-button = Kopiraj
+screenshots-copy-button-tooltip = Kopiraj snimak ekrana u međuspremnik
+screenshots-download-button-title =
+    .title = Preuzmi snimak ekrana
+screenshots-copy-button-title =
+    .title = Kopiraj snimak ekrana u međuspremnik
+screenshots-cancel-button-title =
+    .title = Otkaži
+screenshots-retry-button-title =
+    .title = Ponovi snimak ekrana
 screenshots-meta-key =
     { PLATFORM() ->
         [macos] ⌘
@@ -29,10 +44,47 @@ screenshots-private-window-error-title = { -screenshots-brand-name } je onemogu�
 screenshots-private-window-error-details = Žao nam je na neugodnosti. Radimo na ovoj mogućnosti za buduća izdanja.
 screenshots-generic-error-title = Uf! { -screenshots-brand-name } se zbrkao.
 screenshots-generic-error-details = Nismo sigurni šta se upravo dogodilo. Možete li pokušati ponovo ili snimiti drukčiju stranicu?
+screenshots-too-large-error-title = Vaš snimak ekrana je izrezan jer je bio prevelik
+screenshots-too-large-error-details = Pokušajte odabrati područje koje je manje od 32.700 piksela na svojoj najdužoj strani ili 124.900.000 piksela ukupne površine.
+screenshots-component-retry-button =
+    .title = Ponovi snimak ekrana
+    .aria-label = Ponovi snimak ekrana
+screenshots-component-cancel-button =
+    .title =
+        { PLATFORM() ->
+            [macos] Otkaži (esc)
+           *[other] Otkaži (Esc)
+        }
+    .aria-label = Otkaži
+# Variables
+#   $shortcut (String) - A keyboard shortcut for copying the screenshot.
+screenshots-component-copy-button-2 = Kopiraj
+    .title = Kopiraj ({ $shortcut })
+    .aria-label = Kopiraj
+# Variables
+#   $shortcut (String) - A keyboard shortcut for saving/downloading the screenshot.
+screenshots-component-download-button-2 = Preuzmi
+    .title = Preuzmi ({ $shortcut })
+    .aria-label = Preuzmi
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the screenshot command.
+screenshot-toolbar-button =
+    .label = Snimak ekrana
+    .tooltiptext = Napravi snimak ekrana ({ $shortcut })
 
 ## The below strings are used to capture keydown events so the strings should
 ## not be changed unless the keyboard layout in the locale requires it.
 
+screenshots-component-download-key = S
+screenshots-component-copy-key = C
 
 ##
 
+# This string represents the selection size area
+# "×" here represents "by" (i.e 123 by 456)
+# Variables:
+#   $width (Number) - The width of the selection region in pixels
+#   $height (Number) - The height of the selection region in pixels
+screenshots-overlay-selection-region-size-3 = { $width } × { $height }
+screenshots-overlay-preview-face-label =
+    .aria-label = Odaberite ovu regiju

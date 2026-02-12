@@ -15,6 +15,10 @@ support-addons-type = Peteĩchagua
 support-addons-enabled = Myandypyre
 support-addons-version = Peteĩchagua
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Tendaite
 legacy-user-stylesheets-title = Kuatia mbohekoha poruhára mba’e
 legacy-user-stylesheets-enabled = Myandy
 legacy-user-stylesheets-stylesheet-types = Kuatia mbohekoha
@@ -181,6 +185,8 @@ media-capabilities-enumerate = Embopapapy mba’ekuaarã guapyha
 
 media-codec-support-sw-decoding = Software Jepapapy’o
 media-codec-support-hw-decoding = Hardware Jepapapy’o
+media-codec-support-sw-encoding = Software Mbopapapy
+media-codec-support-hw-encoding = Hardware Mbopapapy
 media-codec-support-codec-name = Codec Réra
 media-codec-support-supported = Pytyvõpyre
 media-codec-support-unsupported = Oñepytyvõ’ỹva

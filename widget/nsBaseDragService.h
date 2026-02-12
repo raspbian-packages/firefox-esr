@@ -64,12 +64,10 @@ class nsBaseDragSession : public nsIDragSession {
   int32_t TakeChildProcessDragAction();
 
   void SetDragEndPoint(nsIntPoint aEndDragPoint) {
-    mEndDragPoint =
-        mozilla::LayoutDeviceIntPoint::FromUnknownPoint(aEndDragPoint);
+    SetDragEndPoint(
+        mozilla::LayoutDeviceIntPoint::FromUnknownPoint(aEndDragPoint));
   }
-  void SetDragEndPoint(mozilla::LayoutDeviceIntPoint aEndDragPoint) {
-    mEndDragPoint = aEndDragPoint;
-  }
+  void SetDragEndPoint(mozilla::LayoutDeviceIntPoint aEndDragPoint);
 
   uint16_t GetInputSource() { return mInputSource; }
 
@@ -90,7 +88,8 @@ class nsBaseDragSession : public nsIDragSession {
       nsIPrincipal* aPrincipal, nsIContentSecurityPolicy* aCsp,
       nsICookieJarSettings* aCookieJarSettings, nsIArray* aTransferableArray,
       uint32_t aActionType, mozilla::dom::DragEvent* aDragEvent,
-      mozilla::dom::DataTransfer* aDataTransfer, bool aIsSynthesizedForTests);
+      mozilla::dom::DataTransfer* aDataTransfer, nsINode* aTargetContent,
+      bool aIsSynthesizedForTests);
 
   // The nsIDragService uses this to create nsIDragSessions when dragging
   // from anywhere else.

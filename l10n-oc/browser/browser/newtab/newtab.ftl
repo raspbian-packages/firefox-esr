@@ -53,6 +53,9 @@ newtab-topsites-add-shortcut-header = Acorchi novèl
 newtab-topsites-edit-topsites-header = Modificar lo site popular
 newtab-topsites-edit-shortcut-header = Modificar acorchi
 newtab-topsites-add-shortcut-label = Apondre un acorchi
+newtab-topsites-add-shortcut-title =
+    .title = Apondre un acorchi
+    .aria-label = Apondre un acorchi
 newtab-topsites-title-label = Títol
 newtab-topsites-title-input =
     .placeholder = Picar un títol
@@ -273,9 +276,6 @@ newtab-custom-pocket-sponsored = Istòrias pairinejadas
 newtab-custom-pocket-show-recent-saves = Afichar los enregistraments recents
 newtab-custom-recent-title = Activitat recenta
 newtab-custom-recent-subtitle = Una seleccion de sites e contenguts recents
-newtab-custom-recent-toggle =
-    .label = Activitat recenta
-    .description = Una seleccion de sites e contenguts recents
 newtab-custom-weather-toggle =
     .label = Metèo
     .description = Lo bulletin metèo d’uèi dins un ai
@@ -317,7 +317,7 @@ newtab-wallpaper-abstract-blue = Fòrmas blavas
 newtab-wallpaper-abstract-purple = Fòrmas violetas
 newtab-wallpaper-abstract-orange = Fòrmas iranjas
 
-## Photographs
+## Firefox
 
 newtab-wallpaper-category-title-photographs = Fotografias
 newtab-wallpaper-beach-at-sunrise = Plaja a l’alba
@@ -347,7 +347,6 @@ newtab-weather-menu-change-location = Modificar lo luòc
 newtab-weather-change-location-search-input-placeholder =
     .placeholder = Cercar un luòc
     .aria-label = Cercar un luòc
-newtab-weather-change-location-search-input = Cercar un luòc
 newtab-weather-menu-weather-display = Afichatge metèo
 # Display options are:
 # - Simple: Displays a current weather condition icon and the current temperature
@@ -396,19 +395,3 @@ newtab-topic-selection-button-maybe-later = Benlèu mai tard
 newtab-topic-selection-privacy-link = Descobrissètz cossí protegissèm e gerissèm vòstras donadas
 newtab-topic-selection-button-update-interests = Metre a jorn vòstres interèsses
 newtab-topic-selection-button-pick-interests = Causir vòstres interèsses
-
-## Content Feed Sections
-## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
-## e.g. Following the travel section of stories.
-
-
-## Button to block/unblock listed topics
-## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
-## e.g. Blocked the politics section of stories.
-
-
-## Confirmation modal for blocking a section
-
-
-## Panel in the Customize menu section to manage followed and blocked topics
-

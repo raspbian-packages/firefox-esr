@@ -48,9 +48,6 @@ download-cert-view-cert =
     .label = Shfaqje
 download-cert-view-text = Shqyrtoni dëshmi AD-je
 
-## Client Authorization Ask dialog
-
-
 ## Client Authentication Ask dialog
 
 client-auth-window =
@@ -85,8 +82,13 @@ client-auth-cert-details-issued-by = Lëshuar nga: { $issuedBy }
 # Variables:
 # $storedOn (String) - The name of the token holding the certificate (for example, "OS Client Cert Token (Modern)")
 client-auth-cert-details-stored-on = Depozituar në: { $storedOn }
-client-auth-cert-remember-box =
-    .label = Mbaje mend këtë vendim
+client-auth-cert-remember-label = Mbaje mend këtë vendim:
+client-auth-cert-remember-never =
+    .label = Një herë
+client-auth-cert-remember-always =
+    .label = Në mënyrë permanente
+client-auth-cert-remember-temporarily =
+    .label = Për këtë sesion
 
 ## Set password (p12) dialog
 

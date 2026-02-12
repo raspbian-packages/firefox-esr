@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } χρήστες
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Συγχρονίστε παντού τους σελιδοδείκτες σας.
 cfr-doorhanger-bookmark-fxa-body = Εξαιρετική ανακάλυψη! Μην ξεχάσετε να αποθηκεύσετε αυτόν τον σελιδοδείκτη στις κινητές συσκευές σας. Ξεκινήστε με έναν { -fxaccount-brand-name(case: "acc", capitalization: "lower") }.
@@ -68,6 +68,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Συγχρονισμός σελιδοδ�
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Κουμπί κλεισίματος
     .title = Κλείσιμο
+fxa-adoption-addresses-backup-title = Ας δημιουργήσουμε αντίγραφα ασφαλείας των αποθηκευμένων διευθύνσεών σας
+fxa-adoption-addresses-backup-subtitle = Προστατέψτε τις αποθηκευμένες διευθύνσεις σας συγχρονίζοντάς τες με κρυπτογράφηση στις συσκευές σας.
+fxa-adoption-credit-cards-backup-title = Ας δημιουργήσουμε αντίγραφα ασφαλείας των μεθόδων πληρωμής σας
+fxa-adoption-credit-cards-backup-subtitle = Προστατέψτε τις μεθόδους πληρωμής σας συγχρονίζοντάς τες με κρυπτογράφηση στις συσκευές σας.
+fxa-adoption-bookmarks-treatment-backup-title = Ας δημιουργήσουμε αντίγραφα ασφαλείας των σελιδοδεικτών σας
+fxa-adoption-bookmarks-treatment-backup-subtitle = Προστατέψτε τους σελιδοδείκτες σας συγχρονίζοντάς τους με κρυπτογράφηση στις συσκευές σας.
+fxa-adoption-primary-button-label = Εγγραφή
 
 ## Protections panel
 
@@ -122,7 +129,7 @@ cfr-doorhanger-video-support-primary-button = Ενημέρωση τώρα
 ## to the Mozilla VPN page and a link to dismiss the dialog.
 
 # This header text can be explicitly wrapped.
-spotlight-public-wifi-vpn-header = Φαίνεται πως χρησιμοποιείτε δημόσιο Wi-Fi
+spotlight-public-wifi-vpn-header = Φαίνεται ότι χρησιμοποιείτε δημόσιο Wi-Fi
 spotlight-public-wifi-vpn-body = Για να αποκρύψετε την τοποθεσία και τη διαδικτυακή σας δραστηριότητα, δοκιμάστε ένα VPN. Θα σας προστατεύει κατά την περιήγηση από δημόσια μέρη, όπως αεροδρόμια και καφετέριες.
 spotlight-public-wifi-vpn-primary-button = Προστατέψτε το απόρρητό σας με το { -mozilla-vpn-brand-name }
     .accesskey = Π
@@ -225,6 +232,22 @@ fox-doodle-pin-secondary = Όχι τώρα
 set-default-pdf-handler-headline = <strong>Τα PDF σας ανοίγουν πλέον στο { -brand-short-name }.</strong> Επεξεργαστείτε ή υπογράψτε φόρμες απευθείας από το πρόγραμμα περιήγησής σας. Για αλλαγή, αναζητήστε «PDF» στις ρυθμίσεις.
 set-default-pdf-handler-primary = Το κατάλαβα
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Προσθέστε την υπογραφή σας οπουδήποτε!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Σχεδιάστε, πληκτρολογήστε ή μεταφορτώστε την υπογραφή σας και έπειτα, τοποθετήστε την ακριβώς εκεί που θέλετε. Αποθηκεύστε τις προτιμώμενες υπογραφές σας για την επόμενη φορά.
+annotations-make-default-pdf-handler-title = Ορισμός του { -brand-short-name } ως προεπιλεγμένου εργαλείου επεξεργασίας PDF;
+annotations-make-default-pdf-handler-subtitle = Θα έχετε πρόσβαση στα εργαλεία μας κάθε φορά που ανοίγετε ένα PDF.
+annotations-make-default-pdf-primary-cta =
+    .label = Ορισμός ως προεπιλογή
+annotations-make-default-pdf-next =
+    .label = Επόμενο
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Νέα συσκευή στο μέλλον;
@@ -246,7 +269,7 @@ device-migration-fxa-spotlight-getting-new-device-header-2 = Νέα συσκευ
 device-migration-fxa-spotlight-getting-new-device-body-2 = Ακολουθήστε μερικά απλά βήματα για να έχετε μαζί σας τους σελιδοδείκτες, το ιστορικό και τους κωδικούς πρόσβασής σας όταν ξεκινάτε σε μια νέα συσκευή.
 device-migration-fxa-spotlight-getting-new-device-primary-button = Δημιουργία αντιγράφων ασφαλείας δεδομένων
 device-migration-fxa-spotlight-sync-header = Περιηγηθείτε χωρίς να χάσετε λεπτό
-device-migration-fxa-spotlight-sync-body = Συγχρονίστε όλα τα σημαντικά δεδομένα σας με κρυπτογράφηση — όπως σελιδοδείκτες και κωδικούς πρόσβασης. Μπορείτε να φέρετε τα πάντα σε όποια συσκευή χρησιμοποιείτε το { -brand-product-name }.
+device-migration-fxa-spotlight-sync-body = Συγχρονίστε όλα τα σημαντικά δεδομένα σας με κρυπτογράφηση, όπως σελιδοδείκτες και κωδικούς πρόσβασης. Μπορείτε να φέρετε τα πάντα σε όποια συσκευή χρησιμοποιείτε το { -brand-product-name }.
 device-migration-fxa-spotlight-sync-primary-button = Ξεκινήστε
 
 ## Set as Default PDF Reader Infobar
@@ -310,8 +333,11 @@ fxa-menu-message-close-button =
     .title = Κλείσιμο
     .aria-label = Κλείσιμο
 fxa-menu-message-sign-up-button = Εγγραφή
+fxa-menu-message-sign-in-button = Σύνδεση
+fxa-menu-message-sync-button = Έναρξη συγχρονισμού
 fxa-menu-message-sync-devices-primary-text = Συγχρονισμός με όλες τις συσκευές σας
 fxa-menu-message-sync-devices-secondary-text = Λάβετε άμεσα τα δεδομένα σας, όπως σελιδοδείκτες και κωδικούς πρόσβασης, σε οποιαδήποτε συσκευή με το { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Λάβετε άμεσα τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα, σε όποια συσκευή έχετε συνδεθεί στο { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Συγχρονισμός με όλες τις συσκευές σας
 fxa-menu-message-backup-data-primary-text = Αντίγραφα δεδομένων του προγράμματος περιήγησής σας
 fxa-menu-message-backup-data-secondary-text = Προστατέψτε αυτόματα τους σελιδοδείκτες, τους κωδικούς πρόσβασης και άλλα δεδομένα σε όλες τις συσκευές σας.
@@ -334,7 +360,7 @@ multi-cta-fox-doodle-pin-checkbox =
        *[other] Καρφίτσωμα του { -brand-short-name } στη γραμμή εργασιών
     }
 multi-cta-fox-doodle-start-browsing-primary-button-label = Έναρξη περιήγησης
-multi-cta-fox-doodle-main-browser-primary-button-label = Ορισμός { -brand-short-name } ως κύριου φυλλομετρητή
+multi-cta-fox-doodle-main-browser-primary-button-label = Ορισμός του { -brand-short-name } ως προεπιλογής
 multi-cta-fox-doodle-quick-reminder-subtitle = Ακολουθεί μια γρήγορη υπενθύμιση ότι μπορείτε να έχετε το αγαπημένο σας πρόγραμμα περιήγησης που έχει ως επίκεντρο το απόρρητό σας, μόνο ένα κλικ μακριά.
 multi-cta-fox-doodle-privacy-focused-subtitle =
     { PLATFORM() ->
@@ -342,3 +368,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Κρατήστε σε απόσταση ενός κλικ το αγαπημένο σας πρόγραμμα περιήγησης, που δίνει έμφαση στο απόρρητο. Ορίστε το { -brand-short-name } ως προεπιλογή για το άνοιγμα συνδέσμων και καρφιτσώστε το στη γραμμή εργασιών σας.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Κρατήστε σε απόσταση ενός κλικ το αγαπημένο σας πρόγραμμα περιήγησης, που δίνει έμφαση στο απόρρητο. Ορίστε το { -brand-short-name } ως προεπιλογή για το άνοιγμα συνδέσμων και καρφιτσώστε το στη γραμμή εργασιών και το μενού «Έναρξη» σας.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Σκοπεύετε να κάνετε σύντομα αναβάθμιση από τα Windows 10;
+windows-10-eos-sync-spotlight-subtitle = Δημιουργήστε αντίγραφα ασφαλείας των κωδικών πρόσβασης και των σελιδοδεικτών σας, ώστε να κάνετε τη μετάβαση σε οποιαδήποτε συσκευή.
+windows-10-eos-sync-spotlight-primary-label = Δημιουργήστε αντίγραφο ασφαλείας για το { -brand-short-name } σας
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Κάνετε αναβάθμιση στα Windows 11; Μην χάσετε σελιδοδείκτες και κωδικούς πρόσβασης.
+windows-10-eos-sync-toast-subtitle = Δημιουργήστε αντίγραφα ασφαλείας των δεδομένων σας, ώστε το { -brand-short-name } να είναι έτοιμο ανά πάσα στιγμή, σε αυτόν ή στον νέο υπολογιστή σας.
+windows-10-eos-sync-toast-primary-label = Έναρξη
+windows-10-eos-sync-toast-secondary-label = Υπενθύμιση αργότερα
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = Το { -brand-product-name } δεν είναι προφορτωμένο όπως τα άλλα μεγάλα προγράμματα περιήγησης. Αυτή είναι η ουσία.
+windows-10-eos-challenger-sync-callout-subtitle = Όταν δημιουργείτε αντίγραφα ασφαλείας των σελιδοδεικτών και των κωδικών πρόσβασης του { -brand-product-name }, είναι πιο εύκολο να μεταφέρετε το πρόγραμμα περιήγησης που επιλέξατε σε άλλη συσκευή σας.
+windows-10-eos-challenger-pin-callout-subtitle = Καρφιτσώστε το { -brand-shorter-name } στη γραμμή εργασιών σας, ώστε το πρόγραμμα περιήγησης που επιλέξατε να είναι πάντα διαθέσιμο όταν το χρειάζεστε.
+windows-10-eos-challenger-sync-primary-button = Αντίγραφο ασφαλείας { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Καρφίτσωμα του { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = Το { -brand-product-name } αποκλείει cryptominer, ιχνηλάτες μέσων κοινωνικής δικτύωσης και fingerprinter.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Οι ιχνηλάτες δεν μπορούν να αναγνωρίσουν τη συσκευή σας ή να σας ακολουθήσουν στο διαδίκτυο, επειδή δεν τους επιτρέπεται.
+windows-10-eos-sync-callout-privacy-screen-2-title = Προστατέψτε τους κωδικούς πρόσβασης και τους σελιδοδείκτες σας για την επόμενη συσκευή σας.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Με τη δημιουργία αντιγράφων ασφαλείας του { -brand-shorter-name }, μπορείτε να έχετε μαζί σας εύκολα τις ρυθμίσεις δεδομένων και απορρήτου.
+windows-10-eos-sync-callout-privacy-info-button = Δείτε τι αποκλείεται
+windows-10-eos-callout-addons-title = Δοκιμάστε πρόσθετα: απλές αναβαθμίσεις, μεγάλες επιπτώσεις
+windows-10-eos-callout-addons-subtitle = Αυτές οι επεκτάσεις επιλέχθηκαν για να παραμείνετε παραγωγικοί, προστατευμένοι και χωρίς περισπασμούς.
+windows-10-eos-callout-addons-primary-button = Δείτε τις επιλογές μας
+windows-10-eos-sync-callout-addons-title = Μην χάσετε τα πρόσθετα σας όταν κάνετε αναβάθμιση από τα Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Κάντε συγχρονισμό τώρα για να είναι πάντα διαθέσιμα τα πρόσθετα του { -brand-product-name } σας, ακόμα και μετά από αλλαγή συσκευής.
+windows-10-eos-sync-callout-next-button = Επόμενο
+windows-10-eos-sync-callout-get-started-button = Έναρξη
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Οι κάθετες καρτέλες και οι ομάδες καρτελών είναι εδώ!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Μετά από λαϊκή απαίτηση, το { -brand-product-name } έφερε νέες λειτουργίες για πιο απλοποιημένη και παραγωγική περιήγηση.
+windows-10-eos-feature-toast-whats-new-button = Δείτε τι νέο υπάρχει
+windows-10-eos-feature-toast-dismiss-button = Απόρριψη
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Η αυστηρή προστασία από καταγραφή μπορεί να προκαλέσει δυσλειτουργίες στους ιστοτόπους.</strong> Διορθώστε κοινά ζητήματα άροντας τον αποκλεισμό των βασικών στοιχείων που ενδέχεται να περιέχουν ιχνηλάτες.
+etp-strict-exceptions-infobar-learn-more = Μάθετε περισσότερα
+etp-strict-exceptions-infobar-button = Εφαρμογή διορθώσεων
+    .accesskey = Ε
+etp-strict-exceptions-infobar-not-now = Όχι τώρα
+    .accesskey = χ

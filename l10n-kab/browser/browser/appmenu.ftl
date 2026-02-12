@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Isadaren
 appmenuitem-passwords =
     .label = Awalen uffiren
+appmenuitem-extensions-and-themes =
+    .label = Iseɣzaf d yisental
+appmenuitem-extensions =
+    .label = Isiɣzaf
 appmenuitem-addons-and-themes =
     .label = Izegrar d yisental
 appmenuitem-print =
@@ -112,6 +116,7 @@ appmenu-fxa-setup-sync-new = Rmed
 appmenuitem-save-page =
     .label = Sekles asebter di...
 appmenuitem-fxa-sync-off-title = Amtawi yensa
+appmenuitem-fxa-sync-off-description = Mmesten ticraḍ-ik n yisebtar, awalen n uεeddi akked wayen niḍen, syen kcem ansi d wanda i tebɣiḍ
 
 ## What's New panel in App menu.
 
@@ -165,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Ldi amaɣnay deg ugalis
+    .tooltiptext = Ldi amaɣnay deg ugalis
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -191,6 +199,8 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Uzwirfren yettufeṣṣlen i usekyed n yibugen n umeslaw d tvidyut deg { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Allalen n teywalt
+profiler-popup-presets-ml-label =
+    .label = Almad n tmacint
 profiler-popup-presets-networking-description = Uzwirfren yettufeṣṣlen i usekyed n yibugen n uzeṭṭa deg { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Azeṭṭa
@@ -278,12 +288,14 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Awi alɣu mi ara ffɣen yisefka
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Ffer imayl-ik d wuṭṭun n tiliɣri n tidet
+appmenuitem-services-relay-description = Ldi tafelwit n usenqed n mefferimaylen n yimayl
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Mmesten armud-ik srid
+appmenu-services-header = Imeẓla-inu
+appmenu-other-protection-header = Ԑreḍ ifecka niḍen n ummesten seg { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Imeɣna
 appmenu-other-profiles = Imaɣunen niḍen
 appmenu-manage-profiles =
     .label = Sefrek imaɣunen
@@ -291,3 +303,5 @@ appmenu-create-profile =
     .label = Amaɣnu amaynut
 appmenu-edit-profile =
     .aria-label = Ẓreg amaɣnu
+appmenu-profiles-2 =
+    .label = Imeɣna

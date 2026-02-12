@@ -4,7 +4,7 @@
 
 
 ## Error messages for failed HTTP web requests.
-## https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+## https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
@@ -20,9 +20,11 @@ firefox-relay-get-unlimited-masks =
     .accesskey = G
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
 firefox-relay-opt-in-title-1 = Proteger o seu endereço de email:
+firefox-relay-opt-in-title-2 = Obtenha uma máscara de correio eletrónico gratuita
 # This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
 # ends with a colon. You might need to adapt the capitalization of this string.
 firefox-relay-opt-in-subtitle-1 = Utilizar a máscara de e-mail { -relay-brand-name }
+firefox-relay-use-mask-title-1 = Utilize uma máscara de correio eletrónico
 firefox-relay-use-mask-title = Utilizar a máscara de e-mail { -relay-brand-name }
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-a
 firefox-relay-opt-in-title-a = Impeça spam com uma máscara de e-mail gratuita

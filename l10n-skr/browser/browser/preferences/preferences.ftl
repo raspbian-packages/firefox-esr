@@ -3,9 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = ویب سائٹس کوں "ٹریک نہ کرو" سگنل بھیڄو جو تساں ٹریک نہیں کرݨ چاہندے
-do-not-track-description2 =
-    .label = ویب سائٹ کوں "ٹریک نہ کرو" دی عرضی گَھلُّو
-    .accesskey = ن
 do-not-track-learn-more = ٻیا سِکھو
 do-not-track-option-default-content-blocking-known =
     .label = صرف اوں ویلھے جݙاں { -brand-short-name } کوں معلوم ٹریکرز کوں بلاک کرݨ کیتے سیٹ کیتا ڳیا ہووے۔
@@ -124,6 +121,10 @@ startup-header = سٹارٹ اپ
 always-check-default =
     .label = ہمیشاں جانچ پڑتال کرو جو { -brand-short-name } تہاݙا پہلے کنوں طے شدہ براؤزر ہے
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } فی الحال تہاݙا ڈیفالٹ براؤزر ہے۔
+is-not-default-browser =
+    .message = { -brand-short-name } تہاݙا ڈیفالٹ براؤزر کائنی۔
 is-default = { -brand-short-name } فی الحال تہاݙا ڈیفالٹ براؤزر ہے۔
 is-not-default = { -brand-short-name } تہاݙا ڈیفالٹ براؤزر کائنی۔
 set-as-my-default-browser =
@@ -217,6 +218,15 @@ settings-tabs-show-image-in-preview =
 language-and-appearance-header = زبان تے ظاہری شکل
 preferences-web-appearance-header = ویب سائٹ دی ظاہری شکل
 preferences-web-appearance-description = کجھ ویب سائٹاں تہاݙیاں ترجیحاں دی بنیاد تے اپݨی رنگ سکیم کوں اپݨیندیدیاں ہن۔ منتخب کرو جو تساں انہاں سائٹاں کیتے کیڑھی رنگ سکیم استعمال کرݨ چاہندے او۔
+preferences-web-appearance-choice-auto2 =
+    .label = خود بخود
+    .title = اپݨے سسٹم دیاں ترتیباں تے { -brand-short-name } تھیم دی بنیاد تے ویب سائٹ دے پس منظر تے مواد کوں خودکار طور تے تبدیل کرو۔
+preferences-web-appearance-choice-light2 =
+    .label = پھکا
+    .title = ویب سائٹ دے پس منظر تے مواد کیتے ہلکی شکل دا استعمال کرو۔
+preferences-web-appearance-choice-dark2 =
+    .label = شوخ
+    .title = ویب سائٹ دے پس منظر تے مواد کیتے گہرے رنگ دا استعمال کرو۔
 preferences-web-appearance-choice-auto = خود بخود
 preferences-web-appearance-choice-light = پھکا
 preferences-web-appearance-choice-dark = شوخ
@@ -232,13 +242,11 @@ preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-web-appearance-link =
+    .label = ایکسٹینشنز تے تھیمز وِچ { -brand-short-name } تھیمز دا انتظام کرو
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = تہاݙے رنگاں دے انتخاب ویب سائٹ دی ظاہری شکل کوں زیر کر یندے پئے او۔ <a data-l10n-name="colors-link">رنگاں دا بندوبست کرو</a>
-# This can appear when using windows HCM or "Override colors: always" without
-# system colors.
-preferences-web-appearance-override-warning2 =
-    .message = تہاݙے رنگاں دے انتخاب ویب سائٹ دی ظاہری شکل کوں زیر کر یندے پئے او۔
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = <a data-l10n-name="themes-link">ایکسٹینشنز تے تھیمز</a> وِچ { -brand-short-name } تھیمز دا انتظام کرو
@@ -300,6 +308,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = فائلاں تے ایپلی کیشن
+downloads-header-2 =
+    .label = ڈاؤن لوڈ
+download-save-where-2 =
+    .label = تے فائل ہتھیکڑی کرو
+    .accesskey = v
 download-header = ڈاؤن لوڈ
 download-save-where = تے فائل ہتھیکڑی کرو
     .accesskey = v
@@ -525,7 +538,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = نویاں ونڈوز تے ٹیباں
 home-new-windows-tabs-description2 = جݙاں تساں اپݨا ہوم پیج، نویں ونڈوز، تے نویاں ٹیباں کھولیندے او تاں تساں جو کجھ ݙیکھدے او اونکوں منتخب کرو۔
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = ہوم پیج تے نویں ونڈوز
 home-newtabs-mode-label = نویاں ٹیباں
@@ -683,6 +696,8 @@ search-keyword-warning-bookmark = تساں اینجھا کلیدی لفظ منت
 containers-back-button2 =
     .aria-label = ترتیباں تے واپس ونڄو
 containers-header = کنٹینر ٹیباں
+containers-section-header =
+    .heading = کنٹینر ٹیباں
 containers-add-button =
     .label = نواں کنٹینر شامل کرو
     .accesskey = A
@@ -837,6 +852,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = ڈیوائس دا ناں
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = ڈیوائس دا ناں
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = ڈیوائس ناں تبدیل کرو
+    .accesskey = h
 sync-device-name-change =
     .label = ڈیوائس ناں تبدیل کرو …
     .accesskey = h
@@ -998,6 +1021,10 @@ history-remember-option-never =
     .label = کݙاہیں تاریخ یاد نہ رکھو
 history-remember-option-custom =
     .label = تاریخ کیتے من مرضی دیاں ترتیباں استعمال کرو
+history-remember-description2 =
+    .description = { -brand-short-name } تہاݙی برائوزنگ ڈائون لوڈ  ڳولݨ تاریخ کوں یاد رکھیسے ۔
+history-dontremember-description2 =
+    .description = { -brand-short-name } نجی براؤزنگ دیاں ترتیباں استعمال کریسے، تے تہاݙے براوز کریندے ویلھے کوئی تاریخ یاد کائنا رکھیسے۔
 history-remember-description = { -brand-short-name } تہاݙی برائوزنگ ڈائون لوڈ  ڳولݨ تاریخ کوں یاد رکھیسے ۔
 history-dontremember-description = { -brand-short-name } نجی براؤزنگ دیاں ترتیباں استعمال کریسے، تے تہاݙے براوز کریندے ویلھے کوئی تاریخ یاد کائنا رکھیسے۔
 history-private-browsing-permanent =
@@ -1031,6 +1058,8 @@ sitedata-learn-more = ٻیا سِکھو
 sitedata-delete-on-close =
     .label = { -brand-short-name } بند تھیوݨ تے سائٹ دا ڈیٹا تے کوکیاں مٹا ݙیو
     .accesskey = c
+sitedata-delete-on-close-private-browsing3 =
+    .message = تُہاݙی تریخ دیاں ترتیباں دی بنیاد اُتے، جہڑیلے تُساں براؤز کوں اُچّا کرین٘دے ہِیوے تاں تُہاݙے سیشن کوکیز اَتے سائٹ دے ڈیٹا کوں { -brand-short-name } حذف کرین٘دا ہِے۔
 sitedata-delete-on-close-private-browsing = مستقل نجی براؤزنگ موڈ وِچ، { -brand-short-name } بند تھیوݨ تے کوکیاں تے سائٹ دا ڈیٹا ہمیشاں صاف تھی ویسے۔
 sitedata-delete-on-close-private-browsing2 = تُہاݙی تریخ دیاں ترتیباں دی بنیاد اُتے، جہڑیلے تُساں براؤز کوں اُچّا کرین٘دے ہِیوے تاں تُہاݙے سیشن کوکیز اَتے سائٹ دے ڈیٹا کوں { -brand-short-name } حذف کرین٘دا ہِے۔
 sitedata-allow-cookies-option =
@@ -1254,6 +1283,8 @@ permissions-notification-link = ٻیا سِکھو
 permissions-notification-pause =
     .label = جے تک { -brand-short-name } نویں سروں نئیں چلدا اطلاع نامے روک ݙیو
     .accesskey = n
+permissions-autoplay2 =
+    .label = آٹو پلے
 permissions-autoplay = آٹو پلے
 permissions-autoplay-settings =
     .label = ترتیباں …
@@ -1273,6 +1304,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = استثنیات …
     .accesskey = E
+permissions-location2 =
+    .label = مقام
+permissions-xr2 =
+    .label = مجازی حقیقت
+permissions-camera2 =
+    .label = کیمرہ
+permissions-microphone2 =
+    .label = مائیکروفون
+permissions-notification2 =
+    .label = اطلاع نامے
 
 ## Privacy Section - Data Collection
 
@@ -1297,8 +1338,6 @@ addon-recommendations-link = ٻیا سِکھو
 # or builds with no Telemetry support available.
 collection-health-report-disabled = ایں بلڈ کنفیگریشن کیتے ڈیٹا رپورٹنگ غیر فعال ہے۔
 collection-backlogged-crash-reports-with-link = { -brand-short-name } کوں اپݨی طرفوں بیک لاگ کریش رپورٹاں بھیڄݨ دی اجازت ݙیو <a data-l10n-name="crash-reports-link">ودھیک ڄاݨو </a>
-    .accesskey = c
-collection-backlogged-crash-reports = { -brand-short-name } کوں اپݨی طرفوں بیک لاگ کریش رپورٹاں بھیڄݨ دی اجازت ݙیو
     .accesskey = c
 privacy-segmentation-section-header = نویاں خصوصیات جیڑھیاں تہاݙی براؤزنگ کوں بہتر کریندیاں ہن۔
 privacy-segmentation-section-description = جݙاں اساں اینجھیاں خصوصیتاں پیش کریندے ہیں جیڑھیاں تہاکوں ودھیک ذاتی تجربہ ݙیوݨ کیتے تہاݙا ڈیٹا استعمال کریندیاں ہن:
@@ -1347,6 +1386,7 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = تُساں انسٹال کرین٘دے ہوئے ترِیجھی پارٹی دے جڑ دے سرٹیفیکیٹ اُتے خود کار طریقے نال بھرواسہ کرݨ دی{ -brand-short-name } اجازت ݙیؤ
     .accesskey = t
+certs-devices-enable-fips = FIPS کوں فعال کرو۔
 space-alert-over-5gb-settings-button =
     .label = ترتیباں کھولو
     .accesskey = O
@@ -1360,16 +1400,10 @@ httpsonly-description = HTTPS { -brand-short-name } تے انہاں ویب سا�
 httpsonly-learn-more = ٻیا سِکھو
 httpsonly-radio-enabled =
     .label = تمام ونڈوز وِچ HTTPS-Only Mode فعال کرو
-httpsonly-radio-enabled2 =
-    .label = ساریاں ونڈوز وچ صرف HTTPS ورتو
 httpsonly-radio-enabled-pbm =
     .label = صرف نجی ونڈوز وِچ HTTPS-Only Mode فعال کرو
-httpsonly-radio-enabled-pbm2 =
-    .label = نجی ونڈوز وچ صرف HTTPS ورتو
 httpsonly-radio-disabled =
     .label = HTTPS-Only Mode فعال نہ کرو
-httpsonly-radio-disabled2 =
-    .label = پہلے ایچ ٹی ٹی پی ایس دی کوشش کرو، پر انہاں کنکشناں دی اجازت ݙیوو جہڑے محفوظ کائنی۔
 
 ## DoH Section
 

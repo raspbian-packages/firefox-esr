@@ -114,9 +114,7 @@ main-context-menu-save-link-to-pocket =
     .label = లంకెను { -pocket-brand-name }కు భద్రపరుచు
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = ఈమెయిలు చిరునామాను కాపీచేయి
@@ -190,6 +188,9 @@ main-context-menu-image-reload =
 main-context-menu-image-view-new-tab =
     .label = బొమ్మను కొత్త ట్యాబులో తెరువు
     .accesskey = I
+main-context-menu-video-view-new-tab =
+    .label = వీడియోను కొత్త ట్యాబులో తెరువు
+    .accesskey = i
 main-context-menu-image-copy =
     .label = బొమ్మని కాపీచేయి
     .accesskey = y
@@ -245,6 +246,9 @@ main-context-menu-use-saved-password =
 
 ##
 
+main-context-menu-suggest-strong-password =
+    .label = బలమైన సంకేతపదాన్ని  సూచించు…
+    .accesskey = S
 main-context-menu-manage-logins2 =
     .label = ప్రవేశాల నిర్వహణ
     .accesskey = M

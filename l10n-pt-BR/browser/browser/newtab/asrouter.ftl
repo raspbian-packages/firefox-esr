@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } usuários
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Sincronize seus favoritos em qualquer lugar.
 cfr-doorhanger-bookmark-fxa-body = Ótimo achado! Agora não fique sem este favorito nos seus dispositivos móveis. Comece com uma { -fxaccount-brand-name }.
@@ -68,6 +68,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Sincronizar favoritos agora…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Botão fechar
     .title = Fechar
+fxa-adoption-addresses-backup-title = Faça backup de seus endereços salvos
+fxa-adoption-addresses-backup-subtitle = Proteja seus endereços salvos, sincronizando com seus dispositivos usando criptografia.
+fxa-adoption-credit-cards-backup-title = Faça backup dos seus métodos de pagamento
+fxa-adoption-credit-cards-backup-subtitle = Proteja seus métodos de pagamento, sincronizando com seus dispositivos usando criptografia.
+fxa-adoption-bookmarks-treatment-backup-title = Vamos fazer backup de seus favoritos
+fxa-adoption-bookmarks-treatment-backup-subtitle = Proteja seus favoritos sincronizando com seus dispositivos usando criptografia.
+fxa-adoption-primary-button-label = Criar uma conta
 
 ## Protections panel
 
@@ -226,6 +233,22 @@ fox-doodle-pin-secondary = Agora não
 set-default-pdf-handler-headline = <strong>Agora seus arquivos PDF são abertos no { -brand-short-name }.</strong> Edite ou assine formulários diretamente em seu navegador. Para alterar, procure “PDF” nas configurações.
 set-default-pdf-handler-primary = Entendi
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Assine na linha tracejada, ou em qualquer lugar!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Desenhe, digite ou envie uma imagem de sua assinatura e coloque exatamente onde quiser. Salve suas assinaturas frequentes para usar nas próximas vezes.
+annotations-make-default-pdf-handler-title = Tornar o { -brand-short-name } seu editor de PDF padrão?
+annotations-make-default-pdf-handler-subtitle = Você terá acesso às nossas ferramentas sempre que abrir um PDF.
+annotations-make-default-pdf-primary-cta =
+    .label = Definir como padrão
+annotations-make-default-pdf-next =
+    .label = Avançar
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Planeja ter um novo dispositivo?
@@ -261,7 +284,7 @@ pdf-default-notification-decline-button =
 
 ## Launch on login infobar notification
 
-launch-on-login-infobar-message = <strong>Abrir o { -brand-short-name } sempre que reiniciar o computador?</strong> Agora você pode configurar o { -brand-short-name } para abrir automaticamente ao reiniciar o dispositivo.
+launch-on-login-infobar-message = <strong>Quer que o { -brand-short-name } seja aberto sempre que o computador reiniciar?</strong> Agora você pode configurar o { -brand-short-name } para abrir automaticamente ao reiniciar o dispositivo.
 launch-on-login-learnmore = Saiba mais
 launch-on-login-infobar-confirm-button = Sim, abrir o { -brand-short-name }
     .accesskey = S
@@ -311,8 +334,11 @@ fxa-menu-message-close-button =
     .title = Fechar
     .aria-label = Fechar
 fxa-menu-message-sign-up-button = Criar uma conta
+fxa-menu-message-sign-in-button = Entrar
+fxa-menu-message-sync-button = Iniciar sincronização
 fxa-menu-message-sync-devices-primary-text = Sincronize todos os seus dispositivos
 fxa-menu-message-sync-devices-secondary-text = Acesse imediatamente suas informações, como favoritos e senhas, onde quer que use o { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Tenha imediatamente seus favoritos, senhas e outras coisas, em qualquer lugar que esteja conectado ao { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Sincronize todos os seus dispositivos
 fxa-menu-message-backup-data-primary-text = Faça backup dos dados do seu navegador
 fxa-menu-message-backup-data-secondary-text = Proteja automaticamente favoritos, senhas e outras informações em todos os seus dispositivos.
@@ -343,3 +369,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Tenha seu navegador preferido, com foco em privacidade, a apenas um clique. Defina o { -brand-short-name } como navegador padrão para abrir links e fixe na barra de tarefas.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Tenha seu navegador preferido, com foco em privacidade, a apenas um clique. Defina o { -brand-short-name } como navegador padrão para abrir links e fixe na barra de tarefas e no menu Iniciar.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Vai mudar do Windows 10 em breve?
+windows-10-eos-sync-spotlight-subtitle = Faça backup de suas senhas e favoritos para estar pronto para mudar para qualquer dispositivo.
+windows-10-eos-sync-spotlight-primary-label = Faça backup do seu { -brand-short-name }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Vai atualizar para o Windows 11? Não perca favoritos e senhas.
+windows-10-eos-sync-toast-subtitle = Faça backup de seus dados para que o { -brand-short-name } esteja pronto para ser usado quando você quiser, neste computador ou no próximo.
+windows-10-eos-sync-toast-primary-label = Começar
+windows-10-eos-sync-toast-secondary-label = Lembrar mais tarde
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = O { -brand-product-name } não vem instalado previamente como outros navegadores de grandes empresas. Esta é a questão.
+windows-10-eos-challenger-sync-callout-subtitle = Ao fazer backup dos seus favoritos e senhas do { -brand-product-name }, fica mais fácil levar o navegador que você escolheu para o seu próximo dispositivo.
+windows-10-eos-challenger-pin-callout-subtitle = Fixe o { -brand-shorter-name } na barra de tarefas para ter acesso rápido ao navegador que você escolheu sempre que precisar.
+windows-10-eos-challenger-sync-primary-button = Faça backup do { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Fixar { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = O { -brand-product-name } bloqueia mineração de criptomoedas, rastreadores de redes sociais e rastreadores de identidade digital.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Rastreadores não podem identificar seu dispositivo e nem te seguir pela web, porque nós não deixamos.
+windows-10-eos-sync-callout-privacy-screen-2-title = Proteja suas senhas e favoritos para seu próximo dispositivo.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Fazer backup do { -brand-shorter-name } facilita levar seus dados e configurações de privacidade com você.
+windows-10-eos-sync-callout-privacy-info-button = Veja o que é bloqueado
+windows-10-eos-callout-addons-title = Experimente extensões: mudanças simples, grandes impactos.
+windows-10-eos-callout-addons-subtitle = Estas extensões foram escolhidas para te ajudar a continuar produtivo, protegido e livre de distrações.
+windows-10-eos-callout-addons-primary-button = Veja nossas escolhas
+windows-10-eos-sync-callout-addons-title = Não perca suas extensões ao atualizar a partir do Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Sincronize agora, para que suas extensões do { -brand-product-name } estejam sempre disponíveis, mesmo que você mude de dispositivo.
+windows-10-eos-sync-callout-next-button = Próximo
+windows-10-eos-sync-callout-get-started-button = Começar
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Aqui estão abas na vertical e grupos de abas!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Atendendo a pedidos populares, o { -brand-product-name } acaba de lançar novos recursos para manter sua navegação simples e focada.
+windows-10-eos-feature-toast-whats-new-button = Veja as novidades
+windows-10-eos-feature-toast-dismiss-button = Descartar
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>A proteção rigorosa contra rastreamento pode atrapalhar sites.</strong> Corrija problemas comuns, desbloqueando elementos essenciais que podem conter rastreadores.
+etp-strict-exceptions-infobar-learn-more = Saiba mais
+etp-strict-exceptions-infobar-button = Aplicar correções
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Agora não
+    .accesskey = A

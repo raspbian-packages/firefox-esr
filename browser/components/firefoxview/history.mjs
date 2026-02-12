@@ -18,6 +18,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   HistoryController: "resource:///modules/HistoryController.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   ProfileAge: "resource://gre/modules/ProfileAge.sys.mjs",
 });
 
@@ -139,26 +140,19 @@ class HistoryInView extends ViewPage {
   onPrimaryAction(e) {
     navigateToLink(e);
     // Record telemetry
-    Services.telemetry.recordEvent(
-      "firefoxview_next",
-      "history",
-      "visits",
-      null,
-      {}
-    );
+    Glean.firefoxviewNext.historyVisits.record();
 
     if (this.controller.searchQuery) {
-      const searchesHistogram = Services.telemetry.getKeyedHistogramById(
-        "FIREFOX_VIEW_CUMULATIVE_SEARCHES"
+      Glean.firefoxview.cumulativeSearches.history.accumulateSingleSample(
+        this.cumulativeSearches
       );
-      searchesHistogram.add("history", this.cumulativeSearches);
       this.cumulativeSearches = 0;
     }
   }
 
   onSecondaryAction(e) {
     this.triggerNode = e.originalTarget;
-    e.target.querySelector("panel-list").toggle(e.detail.originalEvent);
+    this.panelList.toggle(e.detail.originalEvent);
   }
 
   deleteFromHistory(e) {
@@ -168,16 +162,10 @@ class HistoryInView extends ViewPage {
 
   onChangeSortOption(e) {
     this.controller.onChangeSortOption(e);
-    Services.telemetry.recordEvent(
-      "firefoxview_next",
-      "sort_history",
-      "tabs",
-      null,
-      {
-        sort_type: this.controller.sortOption,
-        search_start: this.controller.searchQuery ? "true" : "false",
-      }
-    );
+    Glean.firefoxviewNext.sortHistoryTabs.record({
+      sort_type: this.controller.sortOption,
+      search_start: this.controller.searchQuery ? "true" : "false",
+    });
   }
 
   onSearchQuery(e) {
@@ -189,13 +177,7 @@ class HistoryInView extends ViewPage {
 
   showAllHistory() {
     // Record telemetry
-    Services.telemetry.recordEvent(
-      "firefoxview_next",
-      "show_all_history",
-      "tabs",
-      null,
-      {}
-    );
+    Glean.firefoxviewNext.showAllHistoryTabs.record();
 
     // Open History view in Library window
     this.getWindow().PlacesCommandHook.showPlacesOrganizer("History");
@@ -233,7 +215,8 @@ class HistoryInView extends ViewPage {
     return (
       this.profileAge < 8 &&
       !this.hasImportedHistoryPref &&
-      !this.importHistoryDismissedPref
+      !this.importHistoryDismissedPref &&
+      Services.policies.isAllowed("profileImport")
     );
   }
 
@@ -266,6 +249,7 @@ class HistoryInView extends ViewPage {
           @click=${this.openInNewPrivateWindow}
           data-l10n-id="fxviewtabrow-open-in-private-window"
           data-l10n-attrs="accesskey"
+          ?hidden=${!lazy.PrivateBrowsingUtils.enabled}
         ></panel-item>
         <hr />
         <panel-item
@@ -313,7 +297,6 @@ class HistoryInView extends ViewPage {
               @fxview-tab-list-primary-action=${this.onPrimaryAction}
               @fxview-tab-list-secondary-action=${this.onSecondaryAction}
             >
-              ${this.panelListTemplate()}
             </fxview-tab-list>
           </card-container>`;
         });
@@ -321,7 +304,7 @@ class HistoryInView extends ViewPage {
       case "site":
         cardsTemplate = this.controller.historyVisits.map(historyItem => {
           return html`<card-container>
-            <h3 slot="header" data-l10n-id="${ifDefined(historyItem.l10nId)}">
+            <h3 slot="header" data-l10n-id=${ifDefined(historyItem.l10nId)}>
               ${historyItem.domain}
             </h3>
             <fxview-tab-list
@@ -334,7 +317,6 @@ class HistoryInView extends ViewPage {
               @fxview-tab-list-primary-action=${this.onPrimaryAction}
               @fxview-tab-list-secondary-action=${this.onSecondaryAction}
             >
-              ${this.panelListTemplate()}
             </fxview-tab-list>
           </card-container>`;
         });
@@ -349,10 +331,9 @@ class HistoryInView extends ViewPage {
     let descriptionLink;
     if (Services.prefs.getBoolPref(NEVER_REMEMBER_HISTORY_PREF, false)) {
       // History pref set to never remember history
-      descriptionHeader = "firefoxview-dont-remember-history-empty-header";
+      descriptionHeader = "firefoxview-dont-remember-history-empty-header-2";
       descriptionLabels = [
-        "firefoxview-dont-remember-history-empty-description",
-        "firefoxview-dont-remember-history-empty-description-two",
+        "firefoxview-dont-remember-history-empty-description-one",
       ];
       descriptionLink = {
         url: "about:preferences#privacy",
@@ -397,9 +378,9 @@ class HistoryInView extends ViewPage {
           html`<h3
             slot="secondary-header"
             data-l10n-id="firefoxview-search-results-count"
-            data-l10n-args="${JSON.stringify({
+            data-l10n-args=${JSON.stringify({
               count: this.controller.searchResults.length,
-            })}"
+            })}
           ></h3>`
       )}
       <fxview-tab-list
@@ -413,7 +394,6 @@ class HistoryInView extends ViewPage {
         @fxview-tab-list-primary-action=${this.onPrimaryAction}
         @fxview-tab-list-secondary-action=${this.onSecondaryAction}
       >
-        ${this.panelListTemplate()}
       </fxview-tab-list>
     </card-container>`;
   }
@@ -432,6 +412,7 @@ class HistoryInView extends ViewPage {
         href="chrome://browser/content/firefoxview/history.css"
       />
       <dialog id="migrationWizardDialog"></dialog>
+      ${this.panelListTemplate()}
       <div class="sticky-container bottom-fade">
         <h2 class="page-header" data-l10n-id="firefoxview-history-header"></h2>
         <div class="history-sort-options">

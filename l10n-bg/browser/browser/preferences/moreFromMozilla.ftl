@@ -32,3 +32,9 @@ more-from-moz-mozilla-monitor-title = { -mozmonitor-brand-name }
 more-from-moz-mozilla-monitor-us-description = Автоматично вземете обратно вашата разкрита лична информация.
 more-from-moz-mozilla-monitor-global-description = Получавайте сигнали, когато вашите данни са били взломени.
 more-from-moz-mozilla-monitor-button = Вземете { -monitor-brand-short-name }
+
+## These strings are for the Solo card in about:preferences moreFromMozilla page
+
+more-from-moz-solo-title = { -solo-ai-brand-name } AI
+more-from-moz-solo-description = Създайте бързо ваш уеб сайт и свържете безплатно към собствен домейн.
+more-from-moz-solo-button = Опитайте { -solo-ai-brand-name }

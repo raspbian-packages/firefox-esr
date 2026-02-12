@@ -16,8 +16,6 @@ firefoxview-page-label =
 firefoxview-close-button =
     .title = වසන්න
     .aria-label = වසන්න
-firefoxview-empty-state-icon =
-    .alt = අවධානය:
 # Used instead of the localized relative time when a timestamp is within a minute or so of now
 firefoxview-just-now-timestamp = මේ දැන්
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
@@ -29,15 +27,10 @@ firefoxview-tabpickup-progress-label = { $percentValue }% ක් සම්පූ
 firefoxview-tabpickup-step-signin-header = උපාංග අතර බාධාවකින් තොරව මාරු වන්න
 firefoxview-tabpickup-step-signin-description = දුරකථනයේ පටිති මෙතැනට ගැනීමට, ගිණුමක් සාදන්න හෝ පිවිසෙන්න.
 firefoxview-tabpickup-step-signin-primarybutton = ඉදිරියට
-firefoxview-syncedtabs-signin-header = ඕනෑම තැනකින් පටිති ඇහිඳින්න
-firefoxview-syncedtabs-signin-description = ඔබ { -brand-product-name } භාවිතා කරන ඕනෑම තැනක දී ඔබගේ පටිති බැලීමට ගිණුමට පිවිසෙන්න. තවම ගිණුමක් නැති නම්, ඔබව ලියාපදිංචි වන පියවර හරහා ගෙන යනු ඇත.
-firefoxview-syncedtabs-signin-primarybutton = ලියාපදිංචිය හෝ පිවිසෙන්න
 firefoxview-tabpickup-adddevice-description = දුරකථනය සඳහා { -brand-product-name } බාගත කර පිවිසෙන්න.
 firefoxview-tabpickup-adddevice-learn-how = කෙසේදැයි දැනගන්න
 firefoxview-tabpickup-adddevice-primarybutton = දුරකථනය සඳහා { -brand-product-name } ගන්න
 firefoxview-syncedtabs-adddevice-header-2 = ඕනෑම තැනකින් පටිති ඇහිඳින්න
-firefoxview-syncedtabs-adddevice-header = ඔබගේ අනෙකුත් උපාංග වලින් { -brand-product-name } වෙත පිවිසෙන්න
-firefoxview-syncedtabs-adddevice-description = ඔබ { -brand-product-name } භාවිතා කරන ඕනෑම තැනක දී ඔබගේ පටිති බැලීමට, ඔබගේ සියළුම උපාංග වලට පිවිසෙන්න. <a data-l10n-name="url">අතිරේක උපාංග සම්බන්ධ කරන ආකාරය</a> දැනගන්න.
 firefoxview-syncedtabs-adddevice-primarybutton = දුරකථනයට { -brand-product-name } දාගන්න
 firefoxview-tabpickup-synctabs-header = පටිති සමමුහූර්තය සබල කරන්න
 firefoxview-tabpickup-synctabs-description = { -brand-short-name } සඳහා උපාංග අතර පටිති බෙදාගැනීමට ඉඩදෙන්න.
@@ -45,7 +38,6 @@ firefoxview-tabpickup-synctabs-learn-how = කෙසේදැයි දැනග
 firefoxview-tabpickup-synctabs-primarybutton = විවෘත පටිති සමමුහූර්තය
 firefoxview-syncedtabs-synctabs-header = සමමුහූර්ත සැකසුම් සකසන්න
 firefoxview-syncedtabs-synctabs-description = වෙනත් උපාංග වලින් පටිති බැලීමට, ඔබගේ විවෘත පටිති සමමුහූර්ත කළ යුතුය.
-firefoxview-syncedtabs-synctabs-checkbox = විවෘත පටිති සමමුහූර්තයට ඉඩදෙන්න
 firefoxview-syncedtabs-loading-header = සමමුහූර්ත වෙමින්
 firefoxview-syncedtabs-loading-description = අහවර වූ විට, ඔබ වෙනත් උපාංගවල විවෘත කර තිබෙන සියලුම පටිති දිස්වනු ඇත. මොහොතකින් පරීක්‍ෂා කරන්න.
 firefoxview-tabpickup-fxa-admin-disabled-header = ඔබගේ සංවිධානය සමමුහූර්තය අබල කර ඇත
@@ -141,8 +133,6 @@ firefoxview-opentabs-window-header =
 #   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
 firefoxview-opentabs-current-window-header =
     .title = කවුළුව { $winID } (වත්මන්)
-firefoxview-opentabs-focus-tab =
-    .title = මෙම පටිත්තට මාරුවන්න
 firefoxview-show-more = තව පෙන්වන්න
 firefoxview-show-less = අඩුවෙන් පෙන්වන්න
 firefoxview-show-all = සියල්ල පෙන්වන්න
@@ -157,9 +147,6 @@ firefoxview-search-text-box-history =
 # Placeholder for the input field to search in recently closed tabs ("search" is a verb).
 firefoxview-search-text-box-recentlyclosed =
     .placeholder = මෑත දී වසා දැමූ පටිති සොයන්න
-# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
-firefoxview-search-text-box-syncedtabs =
-    .placeholder = සමමුහූර්ත පටිති සොයන්න
 # Placeholder for the input field to search in open tabs ("search" is a verb).
 firefoxview-search-text-box-opentabs =
     .placeholder = විවෘත පටිති සොයන්න
@@ -182,10 +169,6 @@ firefoxview-sort-history-by-date-label = දිනය අනුව වර්ග�
 firefoxview-sort-history-by-site-label = අඩවිය අනුව වර්ගනය
 firefoxview-sort-open-tabs-by-recency-label = මෑත ක්‍රියාකාරකම් අනුව වර්ගනය
 firefoxview-sort-open-tabs-by-order-label = පටිති අනුපිළිවෙලට වර්ගනය
-# Variables:
-#   $url (string) - URL that will be opened in the new tab
-firefoxview-opentabs-tab-row =
-    .title = { $url } වෙත මාරු වන්න
 
 ## Variables:
 ##   $date (string) - Date to be formatted based on locale
@@ -202,7 +185,6 @@ firefoxview-history-site-localhost = (ස්ථානීය ගොනු)
 ##
 
 firefoxview-show-all-history = සමස්ත ඉතිහාසය පෙන්වන්න
-firefoxview-view-more-browsing-history = තවත් පිරික්සුම් ඉතිහාසය බලන්න
 
 ## Message displayed in Firefox View when the user has no history data
 
@@ -215,11 +197,6 @@ firefoxview-history-empty-description-two = ඔබගේ පෞද්ගලි�
 # Button text for choosing a browser within the ’Import history from another browser’ banner
 firefoxview-choose-browser-button = අතිරික්සුව තෝරන්න
     .title = අතිරික්සුව තෝරන්න
-
-## Message displayed in Firefox View when the user has chosen to never remember History
-
-firefoxview-dont-remember-history-empty-header = කිසිවක් නැත
-firefoxview-dont-remember-history-empty-description = ඔබගේ පෞද්ගලිකත්‍වය සුරැකීම අපගේ මූලික අරමුණයි. එබැවින් ඔබට { -brand-short-name } රඳවා ගන්නා ක්‍රියාකාරකම් පාලනයට හැකිය.
 
 ##
 
@@ -252,8 +229,3 @@ firefoxview-tabs =
 
 firefoxview-opentabs-pinned-tab =
     .title = { $tabTitle } වෙත මාරුවන්න
-
-## These tooltips will be displayed when hovering over an unpinned Open Tab
-## Variables:
-##   $url (string) - URL of tab that will be opened when selected
-

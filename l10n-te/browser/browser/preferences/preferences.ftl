@@ -66,17 +66,6 @@ should-restart-ok = ఇప్పుడు { -brand-short-name } ను పున
 cancel-no-restart-button = రద్దుచేయి
 restart-later = తరువాత పునఃప్రారంభించు
 
-## Extension Control Notifications
-##
-## These strings are used to inform the user
-## about changes made by extensions to browser settings.
-##
-## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
-##
-## Variables:
-##   $name (string) - Name of the extension
-
-
 ## Preferences UI Search Results
 
 search-results-header = వెతుకుడు ఫలితాలు
@@ -88,6 +77,10 @@ startup-header = మొదలవడం
 always-check-default =
     .label = { -brand-short-name } మీ అప్రమేయ విహారిణియేనా అని ఎల్లప్పుడూ పరిశీలించు
     .accesskey = w
+is-default-browser =
+    .message = { -brand-short-name } ప్రస్తుతం మీ అప్రమేయ విహారిణి
+is-not-default-browser =
+    .message = { -brand-short-name } ప్రస్తుతం మీ అప్రమేయ విహారిణి కాదు
 is-default = { -brand-short-name } ప్రస్తుతం మీ అప్రమేయ విహారిణి
 is-not-default = { -brand-short-name } ప్రస్తుతం మీ అప్రమేయ విహారిణి కాదు
 set-as-my-default-browser =
@@ -202,6 +195,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = దస్త్రాలు & అనువర్తనాలు
+downloads-header-2 =
+    .label = దింపుకోళ్ళు
+download-save-where-2 =
+    .label = ఫైళ్ళను ఇక్కడ భద్రపరచు
+    .accesskey = v
 download-header = దింపుకోళ్ళు
 download-save-where = ఫైళ్ళను ఇక్కడ భద్రపరచు
     .accesskey = v
@@ -381,7 +379,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = కొత్త కిటికీలు, ట్యాబులు
 home-new-windows-tabs-description2 = మీ ముంగిలి పేజీని, కొత్త కిటికీలను, కొత్త ట్యాబులను తెరచినప్పుడు ఏం కనబడాలో ఎంచుకోండి.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = ముంగిలి పేజీ, కొత్త కిటికీలు
 home-newtabs-mode-label = కొత్త ట్యాబు
@@ -504,6 +502,8 @@ search-keyword-warning-bookmark = మీరు ఎంచుకున్న క�
 containers-back-button2 =
     .aria-label = తిరిగి అమరికలకు
 containers-header = కంటైనర్ ట్యాబులు
+containers-section-header =
+    .heading = కంటైనర్ ట్యాబులు
 containers-add-button =
     .label = కొత్త కంటెయినరు చేర్చు
     .accesskey = A
@@ -623,6 +623,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = పరికరం పేరు
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = పరికరం పేరు
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = పరికరం పేరు మార్చు
+    .accesskey = h
 sync-device-name-change =
     .label = పరికరం పేరు మార్చు…
     .accesskey = h
@@ -691,9 +699,6 @@ forms-windows-sso-learn-more-link = ఇంకా తెలుసుకోండ�
 
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = చరిత్ర
@@ -714,6 +719,10 @@ history-remember-option-never =
     .label = ఎప్పుడూ చరిత్రను గుర్తుపెట్టుకోదు
 history-remember-option-custom =
     .label = చరిత్ర కోసం అభిమత అమరికలు వాడుతుంది
+history-remember-description2 =
+    .description = { -brand-short-name } మీ విహరణ, దింపుకోళ్ళ, ఫారాల, వెతుకులాటల చరిత్రను గుర్తుపెట్టుకుంటుంది.
+history-dontremember-description2 =
+    .description = { -brand-short-name } గోప్య వీక్షణం అమరికలనే వాడుతుంది మరియు మీ వీక్షణ చరిత్రని గుర్తుంచుకోదు.
 history-remember-description = { -brand-short-name } మీ విహరణ, దింపుకోళ్ళ, ఫారాల, వెతుకులాటల చరిత్రను గుర్తుపెట్టుకుంటుంది.
 history-dontremember-description = { -brand-short-name } గోప్య వీక్షణం అమరికలనే వాడుతుంది మరియు మీ వీక్షణ చరిత్రని గుర్తుంచుకోదు.
 history-private-browsing-permanent =
@@ -768,9 +777,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = మినహాయింపులను నిర్వహించండి…
     .accesskey = x
-
-## Privacy Section - Cookie Banner Handling
-
 
 ## Privacy Section - Cookie Banner Blocking
 
@@ -896,6 +902,8 @@ permissions-notification-link = ఇంకా తెలుసుకోండి
 permissions-notification-pause =
     .label = { -brand-short-name } పునఃప్రారంభమయ్యే వరకూ గమనింపులను నిలిపివేయి
     .accesskey = n
+permissions-autoplay2 =
+    .label = స్వీయారంభం
 permissions-autoplay = స్వీయారంభం
 permissions-autoplay-settings =
     .label = అమరికలు…
@@ -915,6 +923,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = మినహాయింపులు…
     .accesskey = E
+permissions-location2 =
+    .label = స్థానము
+permissions-camera2 =
+    .label = కెమేరా
+permissions-microphone2 =
+    .label = మైక్రోఫోను
+permissions-notification2 =
+    .label = గమనింపులు
 
 ## Privacy Section - Data Collection
 
@@ -930,9 +946,6 @@ addon-recommendations-link = ఇంకా తెలుసుకోండి
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = ఈ బిల్డ్ కాన్ఫిగరేషన్ కోసం డేటా రిపోర్టింగ్ నిలిపివేయబడింది
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -964,6 +977,7 @@ certs-view =
 certs-devices =
     .label = రక్షణ పరికరాలు…
     .accesskey = D
+certs-devices-enable-fips = FIPS చేతనంచేయి
 space-alert-over-5gb-settings-button =
     .label = అమరికలను తెరువు
     .accesskey = O

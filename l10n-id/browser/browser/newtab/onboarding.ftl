@@ -25,6 +25,8 @@ return-to-amo-subtitle = Bagus, Anda mendapat { -brand-short-name }
 return-to-amo-addon-title = Sekarang dapatkan <img data-l10n-name="icon"/><b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Tambahkan Ekstensi
 return-to-amo-add-theme-label = Tambahkan Tema
+return-to-amo-theme-install-complete-label = Tema terpasang
+return-to-amo-extension-install-complete-label = Ekstensi terpasang
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Impor dari { $previous 
 mr1-onboarding-theme-header = Jadikan milik Anda
 mr1-onboarding-theme-subtitle = Personalisasikan { -brand-short-name } dengan tema.
 mr1-onboarding-theme-secondary-button-label = Jangan sekarang
-newtab-wallpaper-onboarding-title = Coba berbagai ragam warna
-newtab-wallpaper-onboarding-subtitle = Pilih gambar latar untuk memberikan tampilan baru pada Tab Baru Anda.
-newtab-wallpaper-onboarding-primary-button-label = Tetapkan gambar latar
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Tema sistem
 mr1-onboarding-theme-label-light = Terang
@@ -395,6 +394,8 @@ onboarding-many-tabs-title = Tab Anda, cara Anda
 onboarding-many-tabs-subtitle = Membiarkan banyak tab terbuka? Coba tab di samping untuk tampilan yang lebih ramping. Atau tetap klasik dengan tab di bagian atas. Beralih kapan saja.
 # Setup screen for vertical tabs - focused variation
 onboarding-focused-tabs-title = Pilih tata letak tab Anda
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Untuk tampilan yang diringkas yang dapat membantu Anda tetap fokus, coba tab di samping. Atau tetap klasik dengan tab di bagian atas. Beralih kapan saja.
 # Text underneath an image used for selecting browser tabs to appear on the side of the browser.
 onboarding-new-vertical-tabs-label = Tab di samping
 # Text underneath an image used for selecting browser tabs to appear at the top of the browser.
@@ -443,12 +444,35 @@ onboarding-checklist-sign-up = Daftar atau masuk ke akun Anda
 
 tab-groups-onboarding-feature-callout-title = Coba grup tab untuk mengurangi tercecer, lebih fokus
 tab-groups-onboarding-feature-callout-subtitle = Atur dengan menyeret satu tab di atas tab lainnya untuk membuat grup pertama Anda.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Temukan grup tab Anda di menu Cantumkan Daftar Semua Tab kapan saja.
+tab-groups-onboarding-create-group-title-2 = Temukan grup tab Anda di sini kapan saja.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Temukan grup Anda dengan mencarinya di bilah alamat.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Saat Anda menutup grup tab, buka kembali dari menu Cantumkan Daftar Semua Tab kapan saja.
+tab-groups-onboarding-saved-groups-title-2 = Saat Anda menutup grup tab, Anda dapat membukanya kembali di sini kapan saja.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Temukan grup tertutup Anda dengan mencarinya di bilah alamat.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Buka kembali grup tab Anda dari menu Cantumkan Daftar Semua Tab kapan saja.
+tab-groups-onboarding-session-restore-title = Buka kembali grup tab Anda di sini kapan saja.
+tab-groups-onboarding-dismiss = Oke
 
 ## Multi Profiles feature onboarding messages
 
-multi-profile-spotlight-title = Kenali profil { -brand-product-name }
-multi-profile-spotlight-body = Beralih dengan mudah antara penjelajahan untuk bekerja dan bersenang-senang. Profil menjaga info penjelajahan Anda, termasuk riwayat pencarian dan kata sandi, benar-benar terpisah sehingga Anda dapat tetap teratur.
+multi-profile-spotlight-title = Mari berkenalan dengan profil { -brand-product-name }
+multi-profile-spotlight-body = Beralih dengan mudah antara penjelajahan untuk kerja dan penjelajahan untuk hiburan. Profil akan menjaga info penjelajahan, termasuk riwayat pencarian dan kata sandi, agar benar-benar terpisah sehingga Anda dapat fokus dan tertata.
 multi-profile-spotlight-cta = Buat profil
-multi-profile-callout-title = Buat profil berbeda untuk bekerja dan bersenang-senang
-multi-profile-callout-subtitle = Profil memungkinkan Anda menyimpan info penjelajahan Anda, seperti riwayat pencarian dan kata sandi, benar-benar terpisah.
+multi-profile-callout-title = Buat profil berbeda untuk bekerja dan hiburan
+multi-profile-callout-subtitle = Profil dapat digunakan untuk menyimpan info penjelajahan Anda, seperti riwayat pencarian dan kata sandi, agar benar-benar terpisah.
 multi-profile-callout-cta = Buat profil
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Unduh, sinkronkan, dan mulai!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Pindai kode QR untuk mengunduh { -brand-product-name } untuk seluler. Setelah dipasang, pilih “Sinkronkan ke seluler” untuk mengakses kata sandi, markah, dan lainnya saat bepergian.
+dismiss-button-label = Tutup
+sync-to-mobile-button-label = Sinkronkan ke ponsel
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Kode QR untuk mengunduh { -brand-product-name } untuk seluler

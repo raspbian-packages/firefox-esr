@@ -143,3 +143,7 @@ browser-data-session-checkbox =
     .label = پنجره‌ها و سربرگ ها
 browser-data-session-label =
     .value = پنجره‌ها و سربرگ ها
+browser-data-payment-methods-checkbox =
+    .label = روش‌های پرداخت
+browser-data-payment-methods-label =
+    .value = روش‌های پرداخت

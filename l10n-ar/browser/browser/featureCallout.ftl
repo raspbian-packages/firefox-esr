@@ -12,7 +12,7 @@ callout-primary-complete-button-label = فهمت!
 # "Tab pickup" refers to the section in Firefox View that displays open
 # tabs from other devices
 callout-firefox-view-tab-pickup-title = انتقل بين الأجهزة مع خاصية التقاط الألسنة
-callout-firefox-view-tab-pickup-subtitle = التقط علامات التبويب المفتوحة بسرعة من هاتفك وافتحها هنا لتحقيق أقصى قدر من التدفق.
+callout-firefox-view-tab-pickup-subtitle = التقط الألسنة المفتوحة بسرعة من هاتفك وافتحها هنا لتحقيق أقصى قدر من التدفق.
 callout-firefox-view-recently-closed-title = أعد الألسنة المغلقة في لمح البصر
 callout-firefox-view-recently-closed-subtitle = ستظهر هنا جميع الألسنة المغلقة بطريقة سحريَّة. لا تقلق أبدًا بشأن إغلاق الموقع عن طريق الخطأ مرة أخرى.
 callout-firefox-view-colorways-title = أضِف دفقة من لون
@@ -46,7 +46,7 @@ callout-pdfjs-draw-button = فهمت!
 
 ## Firefox View Discoverability Strings
 
-fx-view-discoverability-title = ألم تقصد إغلاق علامة التبويب هذه؟
+fx-view-discoverability-title = ألم تقصد إغلاق اللسان هذا؟
 fx-view-discoverability-subtitle = اعثر عليها وافتحها بسرعة هنا، نحتفظ لك بسجل للألسنة المغلقة مؤخرًا.
 fx-view-discoverability-primary-button-label = افتح { -firefoxview-brand-name }
 fx-view-discoverability-secondary-button-label = أهمِل
@@ -54,14 +54,69 @@ fx-view-discoverability-secondary-button-label = أهمِل
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = لا تظهر هذه التوصية مرة أخرى
+split-dismiss-button-dont-show-option =
+    .label = لا تظهر هذه التوصية مرة أخرى
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = أظهر توصيات أقل
+split-dismiss-button-show-fewer-option =
+    .label = أظهر توصيات أقل
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = أدِر الإعدادات
+split-dismiss-button-manage-settings-option =
+    .label = أدِر الإعدادات
+# Accessibility label for dropdown menu button
+split-dismiss-button-default-label =
+    .title = خيارات أكثر
+
+## Bookmarks toolbar callout strings
+
+bookmarks-toolbar-callout-1-primary-button-label = أضِف علامة
+bookmarks-toolbar-callout-1-secondary-button-label = لا، شكرًا
+# Visible if user adds a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2a-title = أضف المزيد من العلامات بسهولة
+bookmarks-toolbar-callout-2a-primary-button-label = فهمت
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2a-secondary-button-label = أخفِ شريط الأدوات
+# Visible if user declines to add a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2b-title = أبقِ شريط أدوات العلامات مفتوحًا؟
+bookmarks-toolbar-callout-2b-primary-button-label = أبقِ مفتوحًا
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2b-secondary-button-label = لا، شكرًا
+
+## Perplexity callout strings
+
+perplexity-callout-theme-1-title = تحتاج إلى الإجابة الصحيحة على الفور؟
+perplexity-callout-theme-2-subtitle-1 = اسأل Perplexity. ستحصل على إجابات شاملة، مع مصادر مُضمّنة.
+perplexity-callout-theme-2-subtitle-2 = اطرح أسئلة. احصل على إجابات كاملة وموثقة.
+perplexity-callout-primary-label = اسأل Perplexity
+perplexity-callout-secondary-label-1 = أهمِل
+perplexity-callout-secondary-label-2 = فهمت
 
 ## Sidebar Strings
 
+sidebar-button-callout-title = أظهِر عناوين الألسنة في الشريط الجانبي
+sidebar-button-callout-subtitle = استخدم زر الشريط الجانبي لتوسيع الشريط الجانبي حتى تتمكن من رؤية عناوين الألسنة.
+sidebar-button-callout-vertical-tabs = لإظهار ألسنتك، حدّد زر الشريط الجانبي في شريط الأدوات.
+
+## Sidebar Vertical Tabs Strings
+
+vertical-tabs-callout-1-cta-button = جرّب الألسنة العمودية
+vertical-tabs-callout-2-cta-button = جرّب الآن
+vertical-tabs-callout-2-title = هل تُبقي الكثير من الألسنة مفتوحة؟ جرّب الألسنة العمودية.
+
+## Sidebar Vertical Tabs Pinning Strings
+
+sidebar-pins-callout-title = هل فقدت مسار الألسنة المهمة لديك؟
+sidebar-pins-callout-cta-button = ثبّت اللسان
+
+## Pinning Tabs Strings
+
+pin-tabs-callout-cta-1-button = ثبّت هذا اللسان
+pin-tabs-callout-cta-2-button = ثبّت هذا اللسان
+
+## Sidebar Onboarding Strings
+
+sidebar-customization-callout-callout-button = خصّص الشريط الجانبي
+sidebar-customization-callout-dismiss-button = أخفِ الشريط الجانبي
+sidebar-customization-callout-2-subtitle = أضف أدوات وأزلها. ضع ألسنتك في الشريط الجانبي. جرّب روبوت الدردشة بالذكاء الاصطناعي. تخصيص الشريط الجانبي يعود إليك.
 
 ## Sidebar Callout Survey Strings
 
@@ -77,5 +132,11 @@ sidebar-callout-survey-strongly-agree = أوافق بشدة
 sidebar-callout-survey-agree = أوافق
 sidebar-callout-survey-disagree = لا أوافق
 sidebar-callout-survey-strongly-disagree = لا أوافق أبدًا
+sidebar-callout-survey-none-of-above = لا شيء مما سبق
 sidebar-callout-survey-submit = أرسِل
 sidebar-callout-survey-thank-you = شكرًا على تعليقك!
+unified-search-callout-primary-label = التالي
+unified-search-callout-secondary-label = أهمِل
+unified-search-engines-callout-title = ابحث باستخدام اختصار
+unified-search-engines-callout-primary-label = فهمت
+actions-callout-title = أكمل المهام الشائعة أو الوصول إلى الإعدادات الأساسية

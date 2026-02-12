@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = { -brand-shortcut-name } プライベート�
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,25 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } — プライベートブラウジング
     .data-content-title-default-with-profile = { $content-title } — { $profile-name }
     .data-content-title-private-with-profile = { $content-title } — { $profile-name } — プライベートブラウジング
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — プライベートブラウジング
+       *[other] { -brand-full-name } プライベートブラウジング
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = プライベートブラウジング
+popups-infobar-dont-show-message2 =
+    .label = ポップアップまたはサードパーティによるリダイレクトがブロックされた場合は、このメッセージを表示しない
+    .accesskey = D
+edit-popup-settings2 =
+    .label = ポップアップおよびサードパーティによるリダイレクトの設定...
+    .accesskey = M
 
 ##
 
@@ -135,6 +152,10 @@ urlbar-default-notification-anchor =
     .tooltiptext = メッセージパネルを開きます
 urlbar-geolocation-notification-anchor =
     .tooltiptext = 位置情報の要求パネルを開きます
+urlbar-localhost-notification-anchor =
+    .tooltiptext = このサイトのローカル端末へのアクセスを管理します
+urlbar-local-network-notification-anchor =
+    .tooltiptext = このサイトとローカルネットワークのアクセス共有を管理します
 urlbar-xr-notification-anchor =
     .tooltiptext = VR の許可設定パネルを開きます
 urlbar-storage-access-anchor =
@@ -181,6 +202,35 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = ヘルプを表示
     .accesskey = h
+urlbar-result-menu-dismiss-suggestion =
+    .label = この検索候補を閉じる
+    .accesskey = D
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = { -firefox-suggest-brand-name } についての詳細
+    .accesskey = L
+urlbar-result-menu-manage-firefox-suggest =
+    .label = { -firefox-suggest-brand-name } を管理
+    .accesskey = M
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = 位置情報の誤りを報告
+urlbar-result-menu-show-less-frequently =
+    .label = 表示頻度を減らす
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = 天気予報の提案を表示しない
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = メニューを開く
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = フィードバックありがとうございます
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = フィードバックありがとうございます。今後は天気予報の提案が表示されなくなります。
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -206,6 +256,10 @@ urlbar-search-mode-actions = アクション
 
 urlbar-geolocation-blocked =
     .tooltiptext = このウェブサイトでの位置情報の共有をブロックしました。
+urlbar-localhost-blocked =
+    .tooltiptext = このウェブサイトのローカル端末への接続をブロックしました。
+urlbar-local-network-blocked =
+    .tooltiptext = このウェブサイトのローカルネットワークへの接続をブロックしました。
 urlbar-xr-blocked =
     .tooltiptext = このウェブサイトの VR デバイスへのアクセスをブロックしました。
 urlbar-web-notifications-blocked =
@@ -218,6 +272,8 @@ urlbar-screen-blocked =
     .tooltiptext = このウェブサイトでの画面の共有をブロックしました。
 urlbar-persistent-storage-blocked =
     .tooltiptext = このウェブサイトの永続ストレージの使用をブロックしました。
+urlbar-popup-blocked2 =
+    .tooltiptext = このウェブサイトのポップアップとサードパーティによるリダイレクトをブロックしました。
 urlbar-popup-blocked =
     .tooltiptext = このウェブサイトのポップアップをブロックしました。
 urlbar-autoplay-media-blocked =
@@ -312,10 +368,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = アドオンを表示
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = extensions, themes, addons, add-ons
 quickactions-cmd-addons2 = add-ons
 # Opens the bookmarks library window
 quickactions-bookmarks2 = ブックマークを管理
 quickactions-cmd-bookmarks = bookmarks
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = 最近の履歴を消去
+quickactions-cmd-clearrecenthistory = clear recent history, history
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = 履歴を消去
 quickactions-cmd-clearhistory = clear history
@@ -324,9 +387,20 @@ quickactions-downloads2 = ダウンロードを表示
 quickactions-cmd-downloads = downloads
 # Opens about:addons page in the extensions section
 quickactions-extensions = 拡張機能を管理
+quickactions-cmd-extensions2 = extensions, addons, add-ons
 quickactions-cmd-extensions = extensions
+# Opens Firefox View
+quickactions-firefoxview = { -firefoxview-brand-name } を開く
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = open { -firefoxview-brand-name }, { -firefoxview-brand-name }, open view, view
+# Opens SUMO home page
+quickactions-help = { -brand-product-name } ヘルプ
+quickactions-cmd-help = help, support
 # Opens the devtools web inspector
 quickactions-inspector2 = 開発ツールを開く
+quickactions-cmd-inspector2 = inspector, devtools, dev tools
 quickactions-cmd-inspector = inspector, devtools
 # Opens about:logins
 quickactions-logins2 = パスワードを管理
@@ -339,7 +413,7 @@ quickactions-print2 = ページを印刷
 quickactions-cmd-print = print
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = ページを PDF 形式で保存
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, save page
 # Opens a new private browsing window
 quickactions-private2 = プライベートウィンドウを開く
 quickactions-cmd-private = private browsing
@@ -351,22 +425,34 @@ quickactions-restart = { -brand-short-name } を再起動
 quickactions-cmd-restart = restart
 # Opens the screenshot tool
 quickactions-screenshot3 = スクリーンショットを撮影
+quickactions-cmd-screenshot2 = screenshot, take a screenshot
 quickactions-cmd-screenshot = screenshot
 # Opens about:preferences
 quickactions-settings2 = 設定を管理
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = settings, preferences, options, manage
 quickactions-cmd-settings = settings, preferences, options
 # Opens about:addons page in the themes section
 quickactions-themes = テーマを管理
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = themes, add-ons, addons
 quickactions-cmd-themes = themes
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = { -brand-short-name } を更新
 quickactions-cmd-update = update
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = ページのソースを表示
+quickactions-cmd-viewsource2 = view source, source, page source
 quickactions-cmd-viewsource = view source, source
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = クイックアクションについての詳細
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = タブキーを押して選択:
 
 ## Bookmark Panel
 
@@ -553,6 +639,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = URL または検索語句を入力します
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = URL を入力します
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -632,6 +722,8 @@ urlbar-result-action-visit = 開く
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = タブを表示 · <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = 無名のグループ
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = クリップボードから開く
 # Directs a user to press the Tab key to perform a search with the specified
@@ -661,6 +753,119 @@ urlbar-result-action-copy-to-clipboard = コピー
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = 未定義
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong> { $region } { $city }
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature }°{ $unit }</strong> { $region } { $city }, { $country }
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong> { $city }
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } · 広告
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = 株式市場のデータを検索バーで取得
+# This string is shown as description when Market suggestion are disabled.
+urlbar-result-market-opt-in-description = 検索クエリーデータを { -vendor-short-name } と共有すると、市場の更新情報にパートナー企業からの情報を加えて表示します。<a data-l10n-name="learn-more-link">詳細情報</a>
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = 検索候補を表示する
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = 後で
+urlbar-result-realtime-opt-in-dismiss = 閉じる
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = これらの候補を表示しない
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = 市場データの候補を表示しない
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = フィードバックありがとうございます。今後は市場データの検索候補を表示しません。
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = フィードバックありがとうございます。今後はこれらの検索候補を表示しません。
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown = { $name } · あと { $daysUntilStart } 日
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range = { $name } · 開始まであと { $daysUntilStart } 日
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing = { $name } · あと { $daysUntilEnd } 日で終了
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · 今日
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · 今日まで
 
 ## Strings used for buttons in the urlbar
 
@@ -688,8 +893,13 @@ urlbar-searchmode-actions =
     .label = アクション
 urlbar-searchmode-exit-button =
     .tooltiptext = 閉じる
+urlbar-searchmode-default =
+    .tooltiptext = 既定の検索エンジン
 urlbar-searchmode-popup-description = 今回だけ使う検索エンジン:
-urlbar-searchmode-popup-search-settings = 検索設定
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = 検索設定
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = 新機能
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -740,6 +950,9 @@ urlbar-group-recent-searches =
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
     .label = { $engine } の検索トレンド
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = 広告
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = 検索トレンドを表示しない
@@ -936,6 +1149,9 @@ panel-save-update-password = パスワード
 # "More" item in macOS share menu
 menu-share-more =
     .label = その他...
+menu-share-copy-link =
+    .label = リンクをコピー
+    .accesskey = L
 ui-tour-info-panel-close =
     .tooltiptext = 閉じる
 
@@ -947,6 +1163,9 @@ popups-infobar-allow =
     .accesskey = p
 popups-infobar-block =
     .label = このサイト ({ $uriHost }) によるポップアップを禁止する
+    .accesskey = p
+popups-infobar-allow2 =
+    .label = このサイト ({ $uriHost }) によるポップアップおよびサードパーティによるリダイレクトを許可する
     .accesskey = p
 
 ##
@@ -983,6 +1202,8 @@ navbar-accessible =
     .aria-label = ナビゲーション
 navbar-downloads =
     .label = ダウンロード
+navbar-overflow-2 =
+    .tooltiptext = その他のツール
 navbar-overflow =
     .tooltiptext = その他のツール...
 # Variables:
@@ -1006,8 +1227,12 @@ tabs-toolbar =
 tabs-toolbar-new-tab =
     .label = 新しいタブ
 tabs-toolbar-list-all-tabs =
-    .label = タブを一覧表示する
+    .label = タブを一覧表示
     .tooltiptext = タブを一覧表示します
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = タブをここにドロップしてピン留めします
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1106,6 +1331,7 @@ firefox-relay-offer-why-to-use-relay = 安全で簡単に使えるメールマ�
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = メールマスクに送信されたすべてのメールは (これらをブロックしない限り) <strong>{ $useremail }</strong> に転送されます。
 firefox-relay-offer-legal-notice = [メールマスクを使用] をクリックすることにより、<label data-l10n-name="tos-url">サービス利用規約</label> および <label data-l10n-name="privacy-url">プライバシー通知</label> に同意したものとみなされます。
+firefox-relay-offer-legal-notice-1 = アカウント登録してメールマスクを作成することにより、<label data-l10n-name="tos-url">サービス利用規約</label> および <label data-l10n-name="privacy-url">プライバシー通知</label> に同意したものとみなされます。
 
 ## Add-on Pop-up Notifications
 
@@ -1113,10 +1339,15 @@ popup-notification-addon-install-unsigned =
     .value = (未検証)
 popup-notification-xpinstall-prompt-learn-more = アドオンの安全なインストールの詳細
 popup-notification-xpinstall-prompt-block-url = 詳細を見る
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = プライベートウィンドウで実行する
-    .accesskey = P
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = プライベートウィンドウで拡張機能の実行を許可する
+    .accesskey = p
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = 技術データと対話データを拡張機能の開発者と共有する
+    .accesskey = S
 
 ## Pop-up warning
 
@@ -1127,12 +1358,26 @@ popup-warning-message =
         [1] { -brand-short-name } がこのサイトでポップアップウィンドウをブロックしました。
        *[other] { -brand-short-name } がこのサイトで { $popupCount } 個のポップアップウィンドウをブロックしました。
     }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] { -brand-short-name } がこのサイトでリダイレクトをブロックしました。
+        [1] { -brand-short-name } がこのサイトでポップアップウィンドウとリダイレクトをブロックしました。
+       *[other] { -brand-short-name } がこのサイトで { $popupCount } 個のポップアップウィンドウとリダイレクトをブロックしました。
+    }
 # The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
 # Variables:
 #   $popupCount (Number): the number of pop-ups blocked.
-popup-warning-exceeded-message = 
+popup-warning-exceeded-message =
     { $popupCount ->
        *[other] { -brand-short-name } がこのサイトで { $popupCount } 個以上のポップアップウィンドウをブロックしました。
+    }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-with-redirect-message =
+    { $popupCount ->
+       *[other] { -brand-short-name } がこのサイトで { $popupCount } 個以上のポップアップウィンドウとリダイレクトをブロックしました。
     }
 popup-warning-button =
     .label =
@@ -1149,6 +1394,10 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = “{ $popupURI }” を表示
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = “{ $redirectURI }” を表示
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
@@ -1160,11 +1409,99 @@ file-picker-crashed-open = Windows のファイルダイアログがクラッシ
 #   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
 file-picker-crashed-save-somewhere = Windows のファイルダイアログがクラッシュしました。ファイルは { $path } に保存されます。
 file-picker-crashed-save-nowhere = Windows のファイルダイアログがクラッシュしました。既定のフォルダーが見つからないためファイルは保存されません。
+
 # Button used with file-picker-crashed-save-default. Opens the folder in Windows
 # Explorer, with the saved file selected and in focus.
 #
 # The wording here should be consistent with the Windows variant of
 # `downloads-cmd-show-menuitem-2` and similar messages.
+
 file-picker-crashed-show-in-folder =
     .label = フォルダーを開く
     .accessKey = F
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = セットアップを完了
+onboarding-aw-finish-setup-button =
+    .label = セットアップ完了
+    .tooltiptext = { -brand-short-name } のセットアップを完了します
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = 強化型トラッキング防止はオンです
+trustpanel-etp-label-disabled = 強化型トラッキング防止はオフです
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = 強化型トラッキング防止: { $host } でオン
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = 強化型トラッキング防止: { $host } でオフ
+trustpanel-etp-description-enabled = このサイトでの動作に問題があるときはトラッキング防止をオフにしてみてください。
+trustpanel-etp-description-disabled = { -brand-product-name } は企業によるユーザー追跡を減らします。トラッキング防止をオンにすると、できるだけ多くのトラッカーをブロックします。
+trustpanel-connection-label-secure = 接続は安全です
+trustpanel-connection-label-insecure = 接続は安全ではありません
+trustpanel-header-enabled = { -brand-product-name } が保護しています
+trustpanel-description-enabled2 = あなたは追跡から保護されています。何か見つけたらお知らせします。
+trustpanel-header-enabled-insecure = このサイトでは注意してください
+trustpanel-description-enabled-insecure = { -brand-product-name } が不審な動作を検出しました。
+trustpanel-description-enabled = あなたは追跡から保護されています。何か見つけたらお知らせします。
+trustpanel-header-disabled = 保護がオフになっています
+trustpanel-description-disabled = { -brand-product-name } によるトラッキング防止が動作していません。オンに戻すことをおすすめします。
+trustpanel-clear-cookies-button = Cookie とサイトデータを消去
+trustpanel-privacy-link = プライバシー設定
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = { $host } の Cookie とサイトデータを消去します
+trustpanel-clear-cookies-description = Cookie とサイトデータを消去するとウェブサイトからログアウトし、買い物カゴが空になります。
+trustpanel-clear-cookies-subview-button-clear = 消去
+trustpanel-clear-cookies-subview-button-cancel = キャンセル
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = { $host } への接続の保護
+trustpanel-siteinformation-morelink = サイトの詳細情報
+trustpanel-blocker-see-all = すべて表示
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = { $host } におけるトラッキング防止
+
+## The urlbar trust icon & panel
+
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = 安全でない
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header = このサイトでは <span>{ $count }</span> 個のトラッカーがブロックされました
+trustpanel-blocker-description = { -brand-product-name } は企業によるユーザー追跡を減らします。トラッキング防止をオンにすると、できるだけ多くのトラッカーをブロックします。
+trustpanel-blocked-header = { -brand-product-name } が以下のトラッカーをブロックしています:
+trustpanel-tracking-header = { -brand-product-name } はサイトが動作するように以下のトラッカーを許可しています:
+trustpanel-tracking-description = トラッカーがブロックされると、一部のボタンやフォーム、ログインフィールドがうまく動作しない場合があります。
+trustpanel-insecure-section-header = 接続が安全ではありません
+trustpanel-insecure-description = このサイトに送信するデータは暗号化されません。第三者によるデータの盗聴や窃取、改竄のおそれがあります。
+trustpanel-list-label-tracking-cookies = { $count } 個のクロスサイトトラッキング Cookie
+trustpanel-list-label-tracking-content = トラッキングコンテンツ
+trustpanel-list-label-fingerprinter = { $count } 個のフィンガープリント採取
+trustpanel-list-label-social-tracking = { $count } 個のソーシャルメディアトラッカー
+trustpanel-list-label-cryptominer = { $count } 個の暗号通貨マイニング
+trustpanel-social-tracking-blocking-tab-header = { -brand-product-name } が { $count } 個のソーシャルメディアトラッカーをブロックしました
+trustpanel-social-tracking-not-blocking-tab-header = { -brand-product-name } が { $count } 個のソーシャルメディアトラッカーを許可しました
+trustpanel-tracking-cookies-blocking-tab-header = { -brand-product-name } が { $count } 個のクロスサイトトラッキング Cookie をブロックしました
+trustpanel-tracking-cookies-not-blocking-tab-header = { -brand-product-name } が { $count } 個のクロスサイトトラッキング Cookie を許可しました
+trustpanel-tracking-content-blocking-tab-header = { -brand-product-name } が { $count } 個のトラッカーをブロックしました
+trustpanel-tracking-content-not-blocking-tab-header = { -brand-product-name } が { $count } 個のトラッカーを許可しました
+trustpanel-tracking-content-tab-list-header = 以下のサイトがあなたを追跡しようとしています:
+trustpanel-fingerprinter-blocking-tab-header = { -brand-product-name } が { $count } 個のフィンガープリント採取をブロックしました
+trustpanel-fingerprinter-not-blocking-tab-header = { -brand-product-name } が { $count } 個のフィンガープリント採取を許可しました
+trustpanel-fingerprinter-list-header = 以下のサイトがあなたのフィンガープリントを採取しようとしています:
+trustpanel-cryptominer-blocking-tab-header = { -brand-product-name } が { $count } 個の暗号通貨マイニングをブロックしました
+trustpanel-cryptominer-not-blocking-tab-header = { -brand-product-name } が { $count } 個の暗号通貨マイニングを許可しました
+trustpanel-cryptominer-tab-list-header = 以下のサイトがあなたのコンピューターを暗号通貨マイニングに利用しようとしています:

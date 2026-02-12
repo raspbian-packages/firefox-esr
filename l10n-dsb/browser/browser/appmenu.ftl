@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Ześěgnjenja
 appmenuitem-passwords =
     .label = Gronidła
+appmenuitem-extensions-and-themes =
+    .label = Rozšyrjenja a drastwy
+appmenuitem-extensions =
+    .label = Rozšyrjenja
 appmenuitem-addons-and-themes =
     .label = Dodanki a drastwy
 appmenuitem-print =
@@ -34,7 +38,7 @@ appmenuitem-print =
 appmenuitem-find-in-page =
     .label = Na boku pytaś…
 appmenuitem-translate =
-    .label = Bok pśełožyś…
+    .label = Bok pśełožowaś…
 appmenuitem-zoom =
     .value = Skalěrowaś
 appmenuitem-more-tools =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Strg+Umsch+2
     }
+profiler-button-dropmarker =
+    .label = Wugbaśowu analyzu wócyniś
+    .tooltiptext = Wugbaśowu analyzu wócyniś
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Pśednastajenje za wuslěźenje zmólkow awdio a wideo w { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Medije
+profiler-popup-presets-ml-description = Pśednastajenje za wuslěźenje zmólkow mašinelnego wuknjenja w { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Mašinelne wuknjenje
 profiler-popup-presets-networking-description = Pśednastajenje za wuslěźenje seśowych zmólkow w { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Seś
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Startujśo delu e-mailowych maskow
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Šćitajśo swóju aktiwitu online
 appmenu-services-header = Móje słužby
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Wopytajśo druge šćitańske rědy wót Mozilla:
 appmenu-other-protection-header = Testujśo druge šćitańske rědy wót { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Profile
 appmenu-other-profiles = Druge profile
 appmenu-manage-profiles =
     .label = Profile zastojaś
+appmenu-copy-profile =
+    .label = Toś ten profil kopěrowaś
 appmenu-create-profile =
     .label = Nowy profil
 appmenu-edit-profile =
     .aria-label = Profil wobźěłaś
+appmenu-profiles-2 =
+    .label = Profile

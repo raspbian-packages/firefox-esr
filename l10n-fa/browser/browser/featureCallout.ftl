@@ -54,11 +54,27 @@ fx-view-discoverability-secondary-button-label = رد کردن
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = این توصیه را دیگر نشان نده
+split-dismiss-button-dont-show-option =
+    .label = این توصیه را دیگر نشان نده
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = توصیه‌های کمتری نشان بده
+split-dismiss-button-show-fewer-option =
+    .label = توصیه‌های کمتری نشان بده
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = مدیریت تنظیمات
+split-dismiss-button-manage-settings-option =
+    .label = مدیریت تنظیمات
+
+## Bookmarks toolbar callout strings
+
+bookmarks-toolbar-callout-1-primary-button-label = افزودن نشانک
+
+## Perplexity callout strings
+
+perplexity-callout-primary-label = از پرپلکسیتی بپرسید
+
+## Account Adoption Passwords callout strings
+
+# Opens Mozilla accounts sign-up page
+fxa-adoption-passwords-primary-button-label = نام‌نویسی
 
 ## Sidebar Strings
 
@@ -94,3 +110,4 @@ sidebar-genai-survey-satisfaction-question = چقدر از دسترسی به چ�
 sidebar-genai-survey-productive-question =
     تا چه حد با این بیان موافق یا مخالف هستید:
     «چت‌بات هوش مصنوعی در نوار کناری به من کمک می‌کند تا بهره‌وری بیشتری داشته باشم.»
+unified-search-callout-primary-label = بعدی

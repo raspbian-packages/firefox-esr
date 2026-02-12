@@ -89,10 +89,3 @@ clockSkewError-title = Jam komputer anda salah
 networkProtocolError-title = Ralat Protokol Rangkaian
 nssBadCert-title = Amaran: Mungkin Ada Risiko Keselamatan
 nssBadCert-sts-title = Jangan Sambung: Potensi Isu Sekuriti
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

@@ -41,6 +41,10 @@ firefoxview-tabpickup-sync-error-primarybutton = Subukan muli
 firefoxview-tabpickup-sync-disconnected-header = Buksan ang pag-sync para magpatuloy
 firefoxview-tabpickup-sync-disconnected-description = Upang makuha ang iyong mga tab, kailangan mong payagan ang pag-sync sa { -brand-short-name }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Buksan ang mga sync in setting
+firefoxview-tabpickup-password-locked-link = Alamin
+firefoxview-tabpickup-signed-out-header = Mag-sign in para mag-reconnect
+firefoxview-tabpickup-signed-out-description = Upang mag-reconnect at kunin ang iyong mga tab, mag-sign in sa iyong { -fxaccount-brand-name }.
+firefoxview-tabpickup-signed-out-primarybutton = Mag-sign in
 firefoxview-tabpickup-syncing = Umupo ka bahang nagsi-sync ang mga tab mo. Sandali lang ito.
 firefoxview-mobile-promo-header = Kunin ang mga tabs galing sa iyong telepono o tablet
 firefoxview-mobile-promo-description = Para tignan ang iyong pinakabagong mga mobile na tab, mag-sign in sa { -brand-product-name } sa iOS o Android.
@@ -49,6 +53,7 @@ firefoxview-mobile-confirmation-header = 🎉 Pwede na!
 firefoxview-mobile-confirmation-description = Maaari mo na ngayong kunin ang iyong mga tab na { -brand-product-name } galing sa iyong tablet o telepono.
 firefoxview-closed-tabs-title = Kakasarado lang
 firefoxview-closed-tabs-description2 = Muling buksan ang mga naisara na page sa window na ito.
+firefoxview-closed-tabs-placeholder-header = Walang isinarang mga tab kamakailan
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Huling aktibo
 # Variables:
@@ -61,60 +66,8 @@ firefoxview-change-colorway-button = Baguhin ang colorway
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
+firefoxview-synced-tabs-placeholder-header = Wala pang makikita
 firefoxview-collapse-button-show =
     .title = Magpakita ang listahan
 firefoxview-collapse-button-hide =
     .title = Itago ang listahan
-
-## History in this context refers to browser history
-
-
-## Open Tabs in this context refers to all open tabs in the browser
-
-
-## Recently closed tabs in this context refers to recently closed tabs from all windows
-
-
-## Tabs from other devices refers in this context refers to synced tabs from other devices
-
-
-##
-
-
-## Variables:
-##   $date (string) - Date to be formatted based on locale
-
-
-##
-
-
-## Message displayed in Firefox View when the user has no history data
-
-
-##
-
-
-## Message displayed in Firefox View when the user has chosen to never remember History
-
-
-##
-
-
-## Text displayed in a dismissable banner to import bookmarks/history from another browser
-
-
-## Message displayed in Firefox View when the user has no recently closed tabs data
-
-
-## This message is displayed below the name of another connected device when it doesn't have any open tabs.
-
-
-## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
-## Variables:
-##  $tabTitle (string) - Title of pinned tab that will be opened when selected
-
-
-## These tooltips will be displayed when hovering over an unpinned Open Tab
-## Variables:
-##   $url (string) - URL of tab that will be opened when selected
-

@@ -81,6 +81,8 @@ addon-removal-title = Remover { $name }?
 addon-removal-message = Remover { $name } do { -brand-shorter-name }?
 addon-removal-button = Remover
 addon-removal-abuse-report-checkbox = Reportar esta extensão à { -vendor-short-name }
+# "it" refers to the local AI model that is paired to the AI feature
+addon-mlmodel-removal-body = Se utilizar as funcionalidades ou extensões que utilizam este modelo, este será adicionado novamente.
 # Variables:
 #   $addonCount (Number): the number of add-ons being downloaded
 addon-downloading-and-verifying =
@@ -123,11 +125,13 @@ addon-install-error-corrupt-file = O extra transferido a partir deste site não 
 addon-install-error-file-access = { $addonName } não pôde ser instalado porque o { -brand-short-name } não consegue modificar o ficheiro necessário.
 addon-install-error-not-signed = O { -brand-short-name } impediu este site de instalar um extra não verificado.
 addon-install-error-invalid-domain = O extra { $addonName } não pode ser instalado a partir desta localização.
+addon-install-error-no-addon-name-file-access = O extra não pôde ser instalado porque o { -brand-short-name } não consegue modificar o ficheiro necessário.
 addon-local-install-error-network-failure = Este extra não pôde ser instalado devido a um erro do sistema de ficheiros.
 addon-local-install-error-incorrect-hash = Este extra não pôde ser instalado porque não corresponde ao extra { -brand-short-name } esperado.
 addon-local-install-error-corrupt-file = Este extra não pôde ser instalado porque parece estar corrompido.
 addon-local-install-error-file-access = { $addonName } não pôde ser instalado porque o { -brand-short-name } não consegue modificar o ficheiro necessário.
 addon-local-install-error-not-signed = Este extra não pôde ser instalado porque não foi verificado.
+addon-local-install-no-addon-name-error-file-access = O extra não pôde ser instalado porque o { -brand-short-name } não consegue modificar o ficheiro necessário.
 # Variables:
 #   $appVersion (String): the application version.
 addon-install-error-incompatible = { $addonName } não pôde ser instalado porque não é compatível com o { -brand-short-name } { $appVersion }.

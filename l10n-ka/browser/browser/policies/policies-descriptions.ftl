@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = მისამართების თვი�
 policy-AutofillCreditCardEnabled = გადახდის საშუალებების თვითშევსების შესაძლებლობა.
 policy-AutoLaunchProtocolsFromOrigins = განსაზღვრავს ჩამონათვალს გარე ოქმებისა, რომლებიც შეიძლება იყოს გამოყენებული აღნუსხული წყაროებიდან, მომხმარებლის ჩაურევლად.
 policy-BackgroundAppUpdate2 = ფონური განახლების ჩართვა ან გამორთვა.
+policy-Backup = მარქაფის გამორთვა ან პროფილის მონაცემების აღდგენა.
 policy-BlockAboutAddons = დამატებების მმართველთან წვდომის შეზღუდვა (about:addons).
 policy-BlockAboutConfig = წვდომის შეზღუდვა about:config გვერდთან.
 policy-BlockAboutProfiles = წვდომის შეზღუდვა about:profiles გვერდთან.
@@ -79,6 +80,7 @@ policy-ExtensionSettings = გაფართოების დაყენე�
 policy-ExtensionUpdate = ჩართვა ან გამორთვა, გაფართოების თვითგანახლების.
 policy-FirefoxHome2 = გამართეთ { -firefox-home-brand-name }.
 policy-FirefoxSuggest = გაიმართოს { -firefox-suggest-brand-name }.
+policy-GenerativeAI = შემოქმედებით ხელგონის თვისებების გამართვა.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = იძულებით გადასვლა პირდაპირ შიდა ქსელის საიტზე ცალკეული სიტყვის მისამართების ველში შეყვანისას, ნაცვლად საძიებოში მონახვისა.
 policy-Handlers = გამართვა, ნაგულისხმევი პროგრამების დამმუშავებლების.
 policy-HardwareAcceleration = თუ უარყოფილია, აპარატურული აჩქარების გათიშვა.
@@ -97,6 +99,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = მოძველე�
 ##
 
 policy-LocalFileLinks = ცალკეული საიტების, ადგილობრივ ფაილებთან დაკავშირების შესაძლებლობა
+policy-LocalNetworkAccess = ადგილობრივ ქსელთან წვდომის შემოწმების ჩართვა ან გამორთვა.
 policy-ManagedBookmarks = საშუალებას იძლევა, ადმინისტრატორმა გამართოს სანიშნები, რომელთაც მომხმარებელი ვერ შეცვლის.
 policy-ManualAppUpdateOnly = მხოლოდ ხელით განახლებების დაშვება, განახლების შეტყობინებების გარეშე.
 policy-PrimaryPassword = მოთხოვნა ან არიდება მთავარი პაროლის გამოყენების.
@@ -117,6 +120,7 @@ policy-PostQuantumKeyAgreementEnabled = Post-Quanten-გასაღებით
 policy-PDFjs = გათიშვა ან გამართვა PDF.js-ის, ჩაშენებული PDF-გამხსნელის, რომელსაც იყენებს { -brand-short-name }.
 policy-Permissions2 = ნებართვების გამართვა კამერაზე, მიკროფონზე, მდებარეობაზე, შეტყობინებებსა და თვითგაშვებაზე.
 policy-PictureInPicture = ჩაირთოს ან გამოირთოს ეკრანი-ეკრანში
+policy-PopupBlocking2 = ცალკეული ვებსაიტებისთვის ამომხტომებისა და გარე გადამისამართების ჩარჩოების ნებართვა.
 policy-PopupBlocking = ცალკეული ვებსაიტებისთვის ამომხტომი ფანჯრების დაშვება ნაგულისხმევად.
 policy-Preferences = მნიშვნელობების შერჩევა და ჩაკეტვა, პარამეტრების ნაწილისთვის.
 policy-PrivateBrowsingModeAvailability = პირადი დათვალიერების რეჟიმის ხელმისაწვდომობის მითითება.
@@ -130,6 +134,8 @@ policy-SearchSuggestEnabled = ძიების შემოთავაზე�
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = დაემატოს ან წაიშალოს მოდულები PKCS #11.
 policy-ShowHomeButton = მთავარი გვერდის ღილაკის გამოჩენა ხელსაწყოთა ზოლზე.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = არ გამოჩნდეს გამოყენების პირობები და პირადულობის დებულება გაშვებისას. თქვენ ადასტურებთ, რომ ეთანხმებით და გაქვთ უფლებამოსილება მიიღოთ გამოყენების პირობები ყველა იმ პირის სახელით, ვისაც ამ ბრაუზერთან წვდომის ნებას რთავთ.
 policy-SSLVersionMax = SSL-ის უმაღლესი ვერსიის განსაზღვრა.
 policy-SSLVersionMin = SSL-ის უმცირესი ვერსიის განსაზღვრა.
 policy-StartDownloadsInTempDirectory = ჩამოტვირთვის იძულებით დაწყება ადგილობრივ, დროებით ადგილას, ნაცვლად ნაგულისხმევი მდებარეობისა.
@@ -137,6 +143,7 @@ policy-SupportMenu = საკუთარი მხარდაჭერის 
 policy-TranslateEnabled = ვებგვერდის თარგმნის ჩართვა ან გამორთვა.
 policy-UserMessaging = მომხმარებლისთვის, გარკვეული შეტყობინებების ჩვენების შეწყვეტა.
 policy-UseSystemPrintDialog = ამობეჭდვა სისტემის ფანჯრის მეშვეობით.
+policy-VisualSearchEnabled = გამოსახულებით ძიების ჩართვა ან გამორთვა.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = ვებსაიტების მონახულების შეზღუდვა. იხილეთ შესაბამისი მასალა დამატებითი ინფორმაციისთვის ფორმატის თაობაზე.
 policy-Windows10SSO = Windows-ით ერთიანად შესვლის დაშვება, Microsoft-ის, სამუშაოს ან სკოლის ანგარიშებზე.

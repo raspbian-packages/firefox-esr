@@ -22,11 +22,12 @@ text-action-copy =
     .accesskey = S
 text-action-copy-shortcut =
     .key = C
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = Salin Tanpa Pelacakan Situs
-    .accesskey = p
+# "Copy Clean Link" means that Firefox will remove things from the link you
+# copied, like items that identify you for advertising purposes, and other items
+# sites add into URLs to help them deliver a certain browsing experience.
+text-action-copy-clean-link =
+    .label = Salin Tautan Bersih
+    .accesskey = B
 text-action-paste =
     .label = Tempel
     .accesskey = p
@@ -38,6 +39,9 @@ text-action-paste-shortcut =
 text-action-delete =
     .label = Hapus
     .accesskey = H
+text-action-reveal-password =
+    .label = Tampilkan Sandi
+    .accesskey = T
 text-action-select-all =
     .label = Pilih Semua
     .accesskey = a
@@ -64,3 +68,23 @@ text-action-search-text-box-clear =
     .title = Bersihkan
 text-action-highlight-selection =
     .label = Sorot Pilihan
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = Tambahkan Komentar ke Pilihan
+# "Copy Link to Highlight" creates a permanent 'Text Fragment' link
+# to the current selection, and copies it into the user's clipboard.
+text-action-copy-link-to-highlight =
+    .label = Salin Tautan ke Sorotan
+# This combines "Copy Link to Highlight" with "Copy Clean Link", ie.
+# it creates a link with a text fragment to the current selection
+# and it strips trackers etc.
+text-action-copy-clean-link-to-highlight =
+    .label = Salin Tautan ke Sorotan
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = Hapus Sorotan
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = Hapus Semua Sorotan

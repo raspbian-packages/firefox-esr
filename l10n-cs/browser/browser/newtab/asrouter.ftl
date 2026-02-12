@@ -61,7 +61,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } uživatelů
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Mějte své záložky všude s sebou.
 cfr-doorhanger-bookmark-fxa-body = Skvělý nález! Chcete mít tuto záložku i ve svém mobilním zařízení? Použijte { -fxaccount-brand-name(case: "acc", capitalization: "lower") }.
@@ -70,6 +70,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Synchronizujte své záložky…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Zavírací tlačítko
     .title = Zavřít
+fxa-adoption-addresses-backup-title = Zazálohujte si uložené adresy
+fxa-adoption-addresses-backup-subtitle = Chraňte svá hesla synchronizací se zařízeními pomocí šifrování.
+fxa-adoption-credit-cards-backup-title = Pojďme si zazálohovat vaše platební metody
+fxa-adoption-credit-cards-backup-subtitle = Chraňte své platební metody tím, že je synchronizujete se svými zařízeními pomocí šifrování.
+fxa-adoption-bookmarks-treatment-backup-title = Pojďme zazálohovat vaše záložky
+fxa-adoption-bookmarks-treatment-backup-subtitle = Chraňte své záložky tím, že je synchronizujete se svými zařízeními pomocí šifrování.
+fxa-adoption-primary-button-label = Zaregistrovat se
 
 ## Protections panel
 
@@ -94,19 +101,30 @@ cfr-whatsnew-release-notes-link-text = Přečtěte si poznámky k vydání
 #   $date (Datetime) - The date we began recording the count of blocked trackers
 cfr-doorhanger-milestone-heading2 =
     { -brand-short-name.gender ->
-        [masculine] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") }
-        [feminine] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") }
-        [neuter] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") }
-       *[other] Aplikace { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") }
-    } { -brand-short-name.gender ->
-        [masculine] zablokoval více než
-        [feminine] zablokovala více než
-        [neuter] zablokovalo více než
-       *[other] zablokovala více než
-    } { $blockedCount ->
-        [one] jeden sledovací prvek.
-        [few] <b>{ $blockedCount }</b> sledovací prvky.
-       *[other] <b>{ $blockedCount }</b> sledovacích prvků.
+        [masculine]
+            { $blockedCount ->
+                [one] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokoval více než jeden sledovací prvek.
+                [few] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokoval více než <b>{ $blockedCount }</b> sledovací prvky.
+               *[other] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokoval více než <b>{ $blockedCount }</b> sledovacích prvků.
+            }
+        [feminine]
+            { $blockedCount ->
+                [one] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokovala více než jeden sledovací prvek.
+                [few] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokovala více než <b>{ $blockedCount }</b> sledovací prvky.
+               *[other] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokovala více než <b>{ $blockedCount }</b> sledovacích prvků.
+            }
+        [neuter]
+            { $blockedCount ->
+                [one] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokovalo více než jeden sledovací prvek.
+                [few] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokovalo více než <b>{ $blockedCount }</b> sledovací prvky.
+               *[other] { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokovalo více než <b>{ $blockedCount }</b> sledovacích prvků.
+            }
+       *[other]
+            { $blockedCount ->
+                [one] Aplikace { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokovala více než jeden sledovací prvek.
+                [few] Aplikace { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokovala více než <b>{ $blockedCount }</b> sledovací prvky.
+               *[other] Aplikace { -brand-short-name } od { DATETIME($date, month: "long", year: "numeric") } zablokovala více než <b>{ $blockedCount }</b> sledovacích prvků.
+            }
     }
 cfr-doorhanger-milestone-ok-button = Zobrazit vše
     .accesskey = v
@@ -130,12 +148,12 @@ cfr-doorhanger-video-support-body =
        *[no-cases] V této verzi aplikace { -brand-short-name } se videa na tomto serveru nemusí přehrávat správně. Pro plnou podporu videí aplikaci { -brand-short-name } aktualizujte.
     }
 cfr-doorhanger-video-support-header =
-    Pro přehrání videa aktualizujte { -brand-short-name.gender ->
-        [masculine] svůj { -brand-short-name(case: "acc") }
-        [feminine] svou { -brand-short-name(case: "acc") }
-        [neuter] své { -brand-short-name(case: "acc") }
-       *[other] svou aplikaci { -brand-short-name }
-    }.
+    { -brand-short-name.gender ->
+        [masculine] Pro přehrání videa aktualizujte svůj { -brand-short-name(case: "acc") }.
+        [feminine] Pro přehrání videa aktualizujte svou { -brand-short-name(case: "acc") }.
+        [neuter] Pro přehrání videa aktualizujte své { -brand-short-name(case: "acc") }.
+       *[other] Pro přehrání videa aktualizujte svou aplikaci { -brand-short-name }.
+    }
 cfr-doorhanger-video-support-primary-button = Aktualizovat
     .accesskey = A
 
@@ -295,6 +313,26 @@ set-default-pdf-handler-headline =
     }
 set-default-pdf-handler-primary = Rozumím
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Podepište se na tečkovanou čáru — nebo kdekoli jinde!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Nakreslete, napište nebo nahrajte svůj podpis a umístěte ho přesně tam, kam chcete. Uložte si své podpisy pro příště.
+annotations-make-default-pdf-handler-title =
+    { -brand-short-name.case-status ->
+        [with-cases] Nastavit { -brand-short-name(case: "acc") } jako výchozí editor PDF?
+       *[no-cases] Nastavit aplikaci { -brand-short-name } jako výchozí editor PDF?
+    }
+annotations-make-default-pdf-handler-subtitle = Při každém otevření souboru PDF budete mít přístup k našim nástrojům.
+annotations-make-default-pdf-primary-cta =
+    .label = Nastavit jako výchozí
+annotations-make-default-pdf-next =
+    .label = Další
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Plánujete v blízké budoucnosti nové zařízení?
@@ -426,11 +464,18 @@ fxa-menu-message-close-button =
     .title = Zavřít
     .aria-label = Zavřít
 fxa-menu-message-sign-up-button = Přihlásit se
+fxa-menu-message-sign-in-button = Přihlásit se
+fxa-menu-message-sync-button = Spustit synchronizaci
 fxa-menu-message-sync-devices-primary-text = Synchronizace všech zařízení
 fxa-menu-message-sync-devices-secondary-text =
     { -brand-short-name.case-status ->
         [with-cases] Okamžitě získáte své informace — například záložky a hesla — všude tam, kde použijete { -brand-short-name(case: "acc") }.
        *[no-cases] Okamžitě získáte své informace — například záložky a hesla — všude tam, kde použijete aplikaci { -brand-short-name }.
+    }
+fxa-menu-message-sync-devices-secondary-text2 =
+    { -brand-short-name.case-status ->
+        [with-cases] Okamžitě získáte své záložky, hesla a další informace všude, kde jste přihlášeni do { -brand-short-name(case: "gen") }.
+       *[no-cases] Okamžitě získáte své záložky, hesla a další informace všude, kde jste přihlášeni do aplikace { -brand-short-name }.
     }
 fxa-menu-message-sync-devices-collapsed-text = Synchronizace všech zařízení
 fxa-menu-message-backup-data-primary-text = Zálohujte si údaje prohlížeče
@@ -486,3 +531,82 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
             }
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Svůj oblíbený prohlížeč zaměřený na ochranu soukromí můžete mít na dosah jediného klepnutí. Nastavte { -brand-short-name } jako výchozí prohlížeč pro otevírání odkazů a připněte jej na hlavní panel a do nabídky Start.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Budete brzy aktualizovat z Windows 10?
+windows-10-eos-sync-spotlight-subtitle = Zálohujte si svá hesla a záložky, abyste je mohli začít používat kdekoliv na svém zařízení.
+windows-10-eos-sync-spotlight-primary-label =
+    { -brand-short-name.case-status ->
+        [with-cases] Zálohujte si svůj { -brand-short-name(case: "acc") }
+       *[no-cases] Zálohujte si svou aplikaci { -brand-short-name }
+    }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Chcete aktualizovat na Windows 11? Neztraťte své záložky a hesla.
+windows-10-eos-sync-toast-subtitle =
+    { -brand-short-name.case-status ->
+        [with-cases] Zálohujte svá data, aby byl { -brand-short-name } kdykoli připraven k použití na tomto nebo tom příštím počítači.
+       *[no-cases] Zálohujte svá data, aby byla aplikace { -brand-short-name } kdykoli připravena k použití na tomto nebo tom příštím počítači.
+    }
+windows-10-eos-sync-toast-primary-label = Začít
+windows-10-eos-sync-toast-secondary-label = Upozornit mě později
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = Jde o to, že { -brand-product-name } není předinstalován jako jiné prohlížeče od velkých technologických společností.
+windows-10-eos-challenger-sync-callout-subtitle =
+    { -brand-product-name.case-status ->
+        [with-cases] Když si zálohujete záložky a hesla ve { -brand-product-name(case: "loc") }, můžete vybraný prohlížeč snáze přenést do dalšího zařízení.
+       *[no-cases] Když si zálohujete záložky a hesla v aplikaci { -brand-product-name }, můžete vybraný prohlížeč snáze přenést do dalšího zařízení.
+    }
+windows-10-eos-challenger-pin-callout-subtitle = Připněte si { -brand-shorter-name } na hlavní panel, abyste měli vybraný prohlížeč vždy po ruce, když ho potřebujete.
+windows-10-eos-challenger-sync-primary-button = Zálohovat { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Připnout { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } blokuje kryptoměny, sledovací prvky sociálních sítí a otisky prohlížeče.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Sledovací prvky nemohou identifikovat vaše zařízení ani vás sledovat na webu — protože jim to neumožňujeme.
+windows-10-eos-sync-callout-privacy-screen-2-title = Zabezpečte svá hesla a záložky pro další zařízení.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle =
+    { -brand-shorter-name.case-status ->
+        [with-cases] Zálohování { -brand-shorter-name(case: "gen") } usnadňuje přenášení dat a nastavení soukromí s sebou.
+       *[no-cases] Zálohování { -brand-shorter-name } usnadňuje přenášení dat a nastavení soukromí s sebou.
+    }
+windows-10-eos-sync-callout-privacy-info-button = Podívejte se, co je blokováno
+windows-10-eos-callout-addons-title = Vyzkoušejte doplňky: jednoduché aktualizace, velké dopady
+windows-10-eos-callout-addons-subtitle = Tato rozšíření byla vybrána, aby vám pomohla zůstat produktivní, chránění a bez rozptylování.
+windows-10-eos-callout-addons-primary-button = Podívejte se na náš výběr
+windows-10-eos-sync-callout-addons-title = Při aktualizaci z Windows 10 nepřijdete o své doplňky.
+windows-10-eos-sync-callout-addons-subtitle =
+    { -brand-product-name.case-status ->
+        [with-cases] Synchronizujte nyní, aby vaše doplňky { -brand-product-name(case: "gen") } byly vždy k dispozici, a to i po změně zařízení.
+       *[no-cases] Synchronizujte nyní, aby vaše doplňky aplikace { -brand-product-name } byly vždy k dispozici, a to i po změně zařízení.
+    }
+windows-10-eos-sync-callout-next-button = Další
+windows-10-eos-sync-callout-get-started-button = Začít
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Svislé panely a skupiny panelů jsou tady!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle =
+    { -brand-product-name.case-status ->
+        [with-cases] Na základě mnohých požadavků prohlížeč { -brand-product-name } právě přidal nové funkce, aby bylo prohlížení efektivnější a cílené.
+       *[no-cases] Na základě mnohých požadavků prohlížeč { -brand-product-name } právě přidal nové funkce, aby bylo prohlížení efektivnější a cílené.
+    }
+windows-10-eos-feature-toast-whats-new-button = Co je nového
+windows-10-eos-feature-toast-dismiss-button = Zavřít
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Přísná ochrana proti sledování může způsobit chyby stránek.</strong> Běžné problémy odstraníte odblokováním základních prvků, které by mohly obsahovat sledovací prvky.
+etp-strict-exceptions-infobar-learn-more = Zjistit více
+etp-strict-exceptions-infobar-button = Použít opravy
+    .accesskey = P
+etp-strict-exceptions-infobar-not-now = Nyní ne
+    .accesskey = N

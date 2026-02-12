@@ -6,30 +6,6 @@
 ## Variables
 ##  $sitename (string) - Domain name for the blocked page
 
-
-##
-
-
-## Variables
-##  $sitename (string) - Domain name for the blocked page
-
-
-##
-
-
-## Variables
-##  $sitename (string) - Domain name for the blocked page
-
-
-##
-
-
-## Variables
-##  $sitename (string) - Domain name for the blocked page
-
-
-##
-
 safeb-palm-notdeceptive =
     .label = Woo manti darga nungu…
     .accesskey = d

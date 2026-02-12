@@ -34,6 +34,13 @@ removed-search-engine-message = <strong>Сіздің негізгі іздеу �
 removed-search-engine-message2 = <strong>Сіздің негізгі іздеу жүйеңіз өзгертілген.</strong> { $oldEngine } енді { -brand-short-name } ішінде енді қолжетімсіз. Негізгі іздеуі жүйеңіз енді { $newEngine }. Басқа іздеу жүйесіне ауысу үшін, баптауларға өтіңіз.
 remove-search-engine-button = ОК
 
+## Infobar shown when default search engine is reset due to an issue reading the settings file.
+## Variables
+## $newEngine (String) - the name of the new default search engine.
+
+reset-search-settings-message = Техникалық ақауға байланысты незігзі іздеу жүйеңіз қайтадан { $newEngine } болып өзгертілді. Негізгі іздеу жүйесін өзгерту үшін параметрлерге өтіңіз.
+reset-search-settings-button = ОК
+
 ## Infobar shown when user is prompted to install search engine.
 ## Variables
 ## $engineName (String) - the name of the search engine to install.
@@ -41,3 +48,43 @@ remove-search-engine-button = ОК
 install-search-engine = { $engineName } іздеу жүйесі ретінде қосу керек пе?
 install-search-engine-add = Қосу
 install-search-engine-no = Жоқ
+
+## The following strings are used as input labels.
+
+add-engine-window =
+    .title = Іздеу жүйесін қосу
+    .style = min-width: 32em;
+edit-engine-window =
+    .title = Іздеу жүйесін түзету
+    .style = min-width: 32em;
+add-engine-button = Таңдауыңызша жүйені қосу
+add-engine-name = Іздеу жүйесінің аты
+add-engine-url2 = Іздеу сөзінің орнында %s бар URL
+add-engine-keyword2 = Кілт сөз (міндетті емес)
+
+## The following placeholders are shown in the inputs when adding a new engine.
+
+add-engine-url-placeholder =
+    .placeholder = мыс., https://developer.mozilla.com/search?q=%s
+add-engine-keyword-placeholder =
+    .placeholder = мыс., @mdn
+
+## The following strings are used as error messages.
+
+add-engine-no-name = Атын енгізіңіз.
+add-engine-no-url = URL енгізіңіз.
+
+## The following strings are used as labels for the dialog's buttons.
+
+# buttonlabelextra1 is the label of a button to open the advanced section
+# of the dialog.
+add-engine-dialog2 =
+    .buttonlabelaccept = Іздеу жүйесін қосу
+    .buttonaccesskeyaccept = о
+    .buttonlabelextra1 = Кеңейтілген
+# buttonlabelextra1 is the label of a button to open the advanced section
+# of the dialog.
+edit-engine-dialog =
+    .buttonlabelaccept = Іздеу жүйесін сақтау
+    .buttonaccesskeyaccept = с
+    .buttonlabelextra1 = Кеңейтілген

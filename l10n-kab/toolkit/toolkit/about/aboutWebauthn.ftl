@@ -7,7 +7,7 @@
 
 # Page title
 # 'WebAuthn' is a protocol name and should not be translated
-about-webauthn-page-title = Γef WebAuthn
+about-webauthn-page-title = Ɣef WebAuthn
 
 ## Section titles
 
@@ -21,12 +21,16 @@ about-webauthn-confirm-deletion-section-title = Sentem tukksa
 
 ## Info field texts
 
+about-webauthn-text-connect-device = Ttxil-k qqen ajuṭ aɣellsan.
 about-webauthn-text-not-available = Ulac ɣef tɣerɣert-a.
+about-webauthn-bio-enrollment-list-subsection-title = Iseklas:
+about-webauthn-add-bio-enrollment-section-title = Rnu asekles amaynut
 
 ## Results label
 
 about-webauthn-results-success = Ifuk!
 about-webauthn-results-general-error = Tuccḍa!
+about-webauthn-results-pin-too-short-error = Tuccḍa: Tangalt-a PIN wezzilen aṭas.
 about-webauthn-results-pin-too-long-error = Tuccḍa: Tangalt-a PIN ɣezzifet aṭas.
 
 ## Labels
@@ -44,9 +48,11 @@ about-webauthn-current-set-pin-button = Sesteb tangalt PIN
 about-webauthn-current-change-pin-button = Senfel tangalt PIN
 # List is a verb, as in "Show list of credentials"
 about-webauthn-list-credentials-button = Inekcam n tebdart
+about-webauthn-add-bio-enrollment-button = Rnu asekles
 about-webauthn-cancel-button = Sefsex
 about-webauthn-send-pin-button = IH
 about-webauthn-delete-button = Kkes
+about-webauthn-start-enrollment-button = Bdu asekles
 about-webauthn-update-button = Leqqem
 
 ## Authenticator options fields
@@ -55,10 +61,13 @@ about-webauthn-update-button = Leqqem
 about-webauthn-auth-option-uv = Asenqed n useqdac
 about-webauthn-auth-option-up = Tiltin n useqdac
 about-webauthn-auth-option-clientpin = Tangalt PIN n umsaɣ
+about-webauthn-auth-option-plat = Ibenk n tɣerɣert
 # Shows when boolean value for an option is True. True should not be translated.
 about-webauthn-auth-option-true = Uzɣrin
 # Shows when boolean value of an option is False. False should not be translated.
 about-webauthn-auth-option-false = Aruzɣin
+# If the value is missing (null), it means a certain feature is not supported.
+about-webauthn-auth-option-null = Ur yettwasefrak ara
 
 ## Authenticator info fields
 ## Info fields correspond to the CTAP2 authenticatorGetInfo field member name and definitions found in https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#authenticatorGetInfo
@@ -76,12 +85,6 @@ about-webauthn-auth-info-true = Uzɣrin
 # Shows when boolean value for an info field is False. False should not be translated.
 about-webauthn-auth-info-false = Aruzɣin
 about-webauthn-auth-info-null = Ur yettwasefrak ara
-
-## Bio enrollment sample feedbacks
-
-
-## Scan (e.g. of fingerprint) was off-center (e.g. too high, too left, etc.).
-
 
 ##
 

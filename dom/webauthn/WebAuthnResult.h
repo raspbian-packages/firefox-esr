@@ -33,13 +33,28 @@ class WebAuthnRegisterResult final : public nsIWebAuthnRegisterResult {
                          const Maybe<nsCString>& aClientDataJSON,
                          const nsTArray<uint8_t>& aCredentialId,
                          const nsTArray<nsString>& aTransports,
-                         const Maybe<nsString>& aAuthenticatorAttachment)
-      : mClientDataJSON(aClientDataJSON),
+                         const Maybe<nsString>& aAuthenticatorAttachment,
+                         const Maybe<bool>& aLargeBlobSupported,
+                         const Maybe<bool>& aPrfSupported,
+                         const Maybe<nsTArray<uint8_t>>& aPrfFirst,
+                         const Maybe<nsTArray<uint8_t>>& aPrfSecond)
+      : mAttestationConsentPromptShown(false),
+        mClientDataJSON(aClientDataJSON),
         mCredPropsRk(Nothing()),
-        mAuthenticatorAttachment(aAuthenticatorAttachment) {
+        mAuthenticatorAttachment(aAuthenticatorAttachment),
+        mLargeBlobSupported(aLargeBlobSupported),
+        mPrfSupported(aPrfSupported) {
     mAttestationObject.AppendElements(aAttestationObject);
     mCredentialId.AppendElements(aCredentialId);
     mTransports.AppendElements(aTransports);
+    if (aPrfFirst.isSome()) {
+      mPrfFirst.emplace(aPrfFirst->Length());
+      mPrfFirst->Assign(aPrfFirst.ref());
+    }
+    if (aPrfSecond.isSome()) {
+      mPrfSecond.emplace(aPrfSecond->Length());
+      mPrfSecond->Assign(aPrfSecond.ref());
+    }
   }
 
 #ifdef MOZ_WIDGET_ANDROID
@@ -49,6 +64,7 @@ class WebAuthnRegisterResult final : public nsIWebAuthnRegisterResult {
         reinterpret_cast<uint8_t*>(
             aResponse->AttestationObject()->GetElements().Elements()),
         aResponse->AttestationObject()->Length());
+    mAttestationConsentPromptShown = false;
     if (aResponse->ClientDataJson()) {
       mClientDataJSON = Some(nsAutoCString(
           reinterpret_cast<const char*>(
@@ -78,6 +94,7 @@ class WebAuthnRegisterResult final : public nsIWebAuthnRegisterResult {
 
     mAttestationObject.AppendElements(aResponse->pbAttestationObject,
                                       aResponse->cbAttestationObject);
+    mAttestationConsentPromptShown = true;
 
     nsTArray<WebAuthnExtensionResult> extensions;
     if (aResponse->dwVersion >= WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_2) {
@@ -96,6 +113,7 @@ class WebAuthnRegisterResult final : public nsIWebAuthnRegisterResult {
                 (BOOL*)pExtension->pvExtension;
             if (*pCredentialCreatedWithHmacSecret) {
               mHmacCreateSecret = Some(true);
+              mPrfSupported = Some(true);
             }
           }
         }
@@ -132,6 +150,18 @@ class WebAuthnRegisterResult final : public nsIWebAuthnRegisterResult {
         mAuthenticatorAttachment = Some(u"cross-platform"_ns);
       }
     }
+
+    if (aResponse->dwVersion >= WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4) {
+      if (aResponse->bLargeBlobSupported) {
+        mLargeBlobSupported = Some(true);
+      }
+    }
+
+    if (aResponse->dwVersion >= WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_5) {
+      if (aResponse->bPrfEnabled) {
+        mPrfSupported = Some(true);
+      }
+    }
   }
 #endif
 
@@ -139,12 +169,17 @@ class WebAuthnRegisterResult final : public nsIWebAuthnRegisterResult {
   ~WebAuthnRegisterResult() = default;
 
   nsTArray<uint8_t> mAttestationObject;
+  bool mAttestationConsentPromptShown;
   nsTArray<uint8_t> mCredentialId;
   nsTArray<nsString> mTransports;
   Maybe<nsCString> mClientDataJSON;
   Maybe<bool> mCredPropsRk;
   Maybe<bool> mHmacCreateSecret;
   Maybe<nsString> mAuthenticatorAttachment;
+  Maybe<bool> mLargeBlobSupported;
+  Maybe<bool> mPrfSupported;
+  Maybe<nsTArray<uint8_t>> mPrfFirst;
+  Maybe<nsTArray<uint8_t>> mPrfSecond;
 };
 
 class WebAuthnSignResult final : public nsIWebAuthnSignResult {
@@ -157,13 +192,32 @@ class WebAuthnSignResult final : public nsIWebAuthnSignResult {
                      const nsTArray<uint8_t>& aCredentialId,
                      const nsTArray<uint8_t>& aSignature,
                      const nsTArray<uint8_t>& aUserHandle,
-                     const Maybe<nsString>& aAuthenticatorAttachment)
+                     const Maybe<nsString>& aAuthenticatorAttachment,
+                     const Maybe<bool>& aUsedAppId,
+                     const Maybe<nsTArray<uint8_t>>& aLargeBlobValue,
+                     const Maybe<bool>& aLargeBlobWritten,
+                     const Maybe<nsTArray<uint8_t>>& aPrfFirst,
+                     const Maybe<nsTArray<uint8_t>>& aPrfSecond)
       : mClientDataJSON(aClientDataJSON),
-        mAuthenticatorAttachment(aAuthenticatorAttachment) {
+        mAuthenticatorAttachment(aAuthenticatorAttachment),
+        mUsedAppId(aUsedAppId),
+        mLargeBlobWritten(aLargeBlobWritten) {
     mAuthenticatorData.AppendElements(aAuthenticatorData);
     mCredentialId.AppendElements(aCredentialId);
     mSignature.AppendElements(aSignature);
     mUserHandle.AppendElements(aUserHandle);
+    if (aLargeBlobValue.isSome()) {
+      mLargeBlobValue.emplace(aLargeBlobValue->Length());
+      mLargeBlobValue->Assign(aLargeBlobValue.ref());
+    }
+    if (aPrfFirst.isSome()) {
+      mPrfFirst.emplace(aPrfFirst.ref().Length());
+      mPrfFirst->Assign(aPrfFirst.ref());
+    }
+    if (aPrfSecond.isSome()) {
+      mPrfSecond.emplace(aPrfSecond.ref().Length());
+      mPrfSecond->Assign(aPrfSecond.ref());
+    }
   }
 
 #ifdef MOZ_WIDGET_ANDROID
@@ -197,7 +251,8 @@ class WebAuthnSignResult final : public nsIWebAuthnSignResult {
 #endif
 
 #ifdef XP_WIN
-  WebAuthnSignResult(nsCString& aClientDataJSON, PCWEBAUTHN_ASSERTION aResponse)
+  WebAuthnSignResult(nsCString& aClientDataJSON, DWORD aCredLargeBlobOperation,
+                     PCWEBAUTHN_ASSERTION aResponse)
       : mClientDataJSON(Some(aClientDataJSON)) {
     mSignature.AppendElements(aResponse->pbSignature, aResponse->cbSignature);
 
@@ -210,6 +265,40 @@ class WebAuthnSignResult final : public nsIWebAuthnSignResult {
                                       aResponse->cbAuthenticatorData);
 
     mAuthenticatorAttachment = Nothing();  // not available
+
+    if (aCredLargeBlobOperation == WEBAUTHN_CRED_LARGE_BLOB_OPERATION_GET) {
+      if (aResponse->dwVersion >= WEBAUTHN_ASSERTION_VERSION_2 &&
+          aResponse->dwCredLargeBlobStatus ==
+              WEBAUTHN_CRED_LARGE_BLOB_STATUS_SUCCESS) {
+        mLargeBlobValue.emplace();
+        mLargeBlobValue->AppendElements(aResponse->pbCredLargeBlob,
+                                        aResponse->cbCredLargeBlob);
+      }
+    } else if (aCredLargeBlobOperation ==
+               WEBAUTHN_CRED_LARGE_BLOB_OPERATION_SET) {
+      if (aResponse->dwVersion >= WEBAUTHN_ASSERTION_VERSION_2 &&
+          aResponse->dwCredLargeBlobStatus ==
+              WEBAUTHN_CRED_LARGE_BLOB_STATUS_SUCCESS) {
+        mLargeBlobWritten.emplace(true);
+      } else {
+        mLargeBlobWritten.emplace(false);
+      }
+    }
+
+    if (aResponse->dwVersion >= WEBAUTHN_ASSERTION_VERSION_3) {
+      if (aResponse->pHmacSecret) {
+        if (aResponse->pHmacSecret->cbFirst > 0) {
+          mPrfFirst.emplace();
+          mPrfFirst->AppendElements(aResponse->pHmacSecret->pbFirst,
+                                    aResponse->pHmacSecret->cbFirst);
+        }
+        if (aResponse->pHmacSecret->cbSecond > 0) {
+          mPrfSecond.emplace();
+          mPrfSecond->AppendElements(aResponse->pHmacSecret->pbSecond,
+                                     aResponse->pHmacSecret->cbSecond);
+        }
+      }
+    }
   }
 #endif
 
@@ -223,6 +312,10 @@ class WebAuthnSignResult final : public nsIWebAuthnSignResult {
   nsTArray<uint8_t> mUserHandle;
   Maybe<nsString> mAuthenticatorAttachment;
   Maybe<bool> mUsedAppId;
+  Maybe<nsTArray<uint8_t>> mLargeBlobValue;
+  Maybe<bool> mLargeBlobWritten;
+  Maybe<nsTArray<uint8_t>> mPrfFirst;
+  Maybe<nsTArray<uint8_t>> mPrfSecond;
 };
 
 }  // namespace mozilla::dom

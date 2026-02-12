@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Закрыць картку
 tabbrowser-menuitem-close =
     .label = Закрыць
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -166,8 +179,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Не паказваць мне гэ�
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Увага
-tabbrowser-confirm-close-duplicate-tabs-text = Мы будзем трымаць адкрытай апошнюю актыўную картку
 tabbrowser-confirm-close-all-duplicate-tabs-title = Закрыць дублікаты картак?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Мы закрыем дублікаты картак у гэтым акне. Апошняя
@@ -208,12 +219,15 @@ tabbrowser-tab-audio-playing-description = Прайграванне гуку
 tabbrowser-ctrl-tab-list-all-tabs =
     .label =
         { $tabCount ->
-            [one] Улічыць усе { $tabCount } картку
-            [few] Улічыць усе { $tabCount } карткі
-           *[many] Улічыць усе { $tabCount } картак
+            [one] Паказаць усе { $tabCount } картку
+            [few] Паказаць усе { $tabCount } карткі
+           *[many] Паказаць усе { $tabCount } картак
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Сцішыць картку
@@ -221,8 +235,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Раз-цішыць картку
 tabbrowser-manager-close-tab =
     .tooltiptext = Закрыць картку
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Закрыта
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Актыўнае акно
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Стварыць групу картак
 tab-group-editor-title-edit = Кіраваць групай картак
@@ -234,22 +256,40 @@ tab-group-editor-cancel =
     .accesskey = С
 tab-group-editor-color-selector =
     .aria-label = Колер групы картак
-tab-group-editor-color-selector-blue = Сіні
-tab-group-editor-color-selector-purple = Фіялетавы
-tab-group-editor-color-selector-cyan = Блакітны
-tab-group-editor-color-selector-orange = Аранжавы
-tab-group-editor-color-selector-yellow = Жоўты
-tab-group-editor-color-selector-pink = Ружовы
-tab-group-editor-color-selector-green = Зялёны
-tab-group-editor-color-selector-gray = Шэры
-tab-group-editor-color-selector-red = Чырвоны
-tab-group-menu-header = Групы картак
+tab-group-editor-color-selector2-blue = Сіні
+    .title = Сіні
+tab-group-editor-color-selector2-purple = Фіялетавы
+    .title = Фіялетавы
+tab-group-editor-color-selector2-cyan = Блакітны
+    .title = Блакітны
+tab-group-editor-color-selector2-orange = Аранжавы
+    .title = Аранжавы
+tab-group-editor-color-selector2-yellow = Жоўты
+    .title = Жоўты
+tab-group-editor-color-selector2-pink = Ружовы
+    .title = Ружовы
+tab-group-editor-color-selector2-green = Зялёны
+    .title = Зялёны
+tab-group-editor-color-selector2-gray = Шэры
+    .title = Шэры
+tab-group-editor-color-selector2-red = Чырвоны
+    .title = Чырвоны
+tab-group-description = { $tabGroupName } — Група картак
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Згорнута
+tab-group-label-tooltip-expanded = { $tabGroupName } — Разгорнута
+tab-group-preview-name =
+    .aria-label = Карткі ў згорнутай групе
 tab-context-unnamed-group =
     .label = Група без назвы
 tab-group-name-default = Група без назвы
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Спіс картак адкрыты
+tab-group-preview-closed-description = Спіс картак закрыты
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -269,6 +309,8 @@ tab-context-move-tab-to-group =
            *[many] Дадаць карткі ў групу
         }
     .accesskey = п
+tab-context-move-tab-to-group-saved-groups =
+    .label = Закрытыя групы
 tab-group-editor-action-new-tab =
     .label = Новая картка ў групе
 tab-group-editor-action-new-window =
@@ -295,6 +337,17 @@ tab-context-ungroup-tab =
            *[many] Выдаліць з груп
         }
     .accesskey = В
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] Яшчэ { $tabCount } картка
+        [few] Яшчэ { $tabCount } карткі
+       *[many] Яшчэ { $tabCount } картак
+    }
 
 ## Open/saved tab group context menu
 
@@ -320,3 +373,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Адкрыць групу ў новым акне
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Падзелены выгляд
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Дадаць падзелены выгляд
+    .accesskey = е
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Адкрыць у падзеленым выглядзе
+    .accesskey = е
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Асобны падзелены выгляд
+    .accesskey = е
+tab-context-badge-new = Новы

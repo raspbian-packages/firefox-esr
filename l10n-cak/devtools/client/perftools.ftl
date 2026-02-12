@@ -131,6 +131,3 @@ perftools-presets-networking-description = Runuk'ulem richin yekanöx sachoj taq
 perftools-presets-power-label = Uchuq'a'
 perftools-presets-power-description = Runuk'ulem richin yekanöx sachoj rokisaxik uchuq'a' pa { -brand-shorter-name }, rik'in jub'a' rokisaxik.
 perftools-presets-custom-label = Ichinan
-
-##
-

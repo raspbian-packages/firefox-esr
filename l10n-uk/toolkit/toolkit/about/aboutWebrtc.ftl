@@ -97,7 +97,7 @@ about-webrtc-debug-mode-msg-label = Режим налагодження
 about-webrtc-debug-mode-off-state-label = Запустити режим налагодження
 about-webrtc-debug-mode-on-state-label = Зупинити режим налагодження
 about-webrtc-stats-heading = Статистика сеансу
-about-webrtc-enable-logging-label = Увімкнути попередні налаштування журналу WebRTC
+about-webrtc-enable-logging-label = Увімкнути заданий параметр журналу WebRTC
 about-webrtc-peerconnections-section-heading = Статистика RTCPeerConnection
 about-webrtc-peerconnections-section-show-msg = Показати статистику RTCPeerConnection
 about-webrtc-peerconnections-section-hide-msg = Приховати статистику RTCPeerConnection
@@ -322,6 +322,3 @@ about-webrtc-hide-msg-sdp = Приховати SDP
 about-webrtc-media-context-show-msg = Показати медіаконтекст
 about-webrtc-media-context-hide-msg = Приховати медіаконтекст
 about-webrtc-media-context-heading = Медіаконтекст
-
-##
-

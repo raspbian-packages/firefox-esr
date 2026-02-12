@@ -147,6 +147,3 @@ perftools-presets-networking-description = Preset for investigating networking b
 perftools-presets-power-label = Power
 perftools-presets-power-description = Preset for investigating power use bugs in { -brand-shorter-name }, with low overhead.
 perftools-presets-custom-label = Custom
-
-##
-

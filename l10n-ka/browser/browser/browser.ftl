@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = { -brand-shortcut-name } – პირად�
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,25 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } — პირადი თვალიერება
     .data-content-title-default-with-profile = { $content-title } — { $profile-name }
     .data-content-title-private-with-profile = { $content-title } — { $profile-name } — პირადი თვალიერება
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — პირადი თვალიერება
+       *[other] { -brand-full-name } პირადი თვალიერება
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = პირადი თვალიერება
+popups-infobar-dont-show-message2 =
+    .label = არ გამოჩნდეს ეს ცნობა, როცა ამომხტომები ან გარეშე მხარის მიერ გადამისამართება შეზღუდულია
+    .accesskey = რ
+edit-popup-settings2 =
+    .label = ამომხტომებისა და გარე გადამისამართებების მართვა…
+    .accesskey = ვ
 
 ##
 
@@ -120,7 +137,7 @@ urlbar-identity-button =
 urlbar-services-notification-anchor =
     .tooltiptext = ჩადგმის შეტყობინების არის გახსნა
 urlbar-web-notification-anchor =
-    .tooltiptext = აირჩიეთ მიიღოთ თუ არა შეტყობინებები ამ საიტისგან
+    .tooltiptext = აირჩიეთ, მიიღოთ თუ არა შეტყობინებები ამ საიტისგან
 urlbar-midi-notification-anchor =
     .tooltiptext = MIDI-არეს გახსნა
 urlbar-eme-notification-anchor =
@@ -135,6 +152,10 @@ urlbar-default-notification-anchor =
     .tooltiptext = შეტყობინებების არე
 urlbar-geolocation-notification-anchor =
     .tooltiptext = მდებარეობის მოთხოვნის არე
+urlbar-localhost-notification-anchor =
+    .tooltiptext = ადგილობრივ მოწყობილობაზე წვდომის მართვა ამ საიტისთვის
+urlbar-local-network-notification-anchor =
+    .tooltiptext = საიტისთვის თქვენი შიდა ქსელის გაზიარების მართვა
 urlbar-xr-notification-anchor =
     .tooltiptext = წარმოსახვითი სინამდვილის ნებართვების არე
 urlbar-storage-access-anchor =
@@ -176,11 +197,40 @@ urlbar-result-menu-learn-more =
     .label = ვრცლად
     .accesskey = ლ
 urlbar-result-menu-remove-from-history =
-    .label = ისტორიიდან ამოშლა
+    .label = მოცილება ისტორიიდან
     .accesskey = მ
 urlbar-result-menu-tip-get-help =
     .label = დახმარების მიღება
     .accesskey = ხ
+urlbar-result-menu-dismiss-suggestion =
+    .label = ამ შეთავაზების აცილება
+    .accesskey = ც
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = იხილეთ ვრცლად { -firefox-suggest-brand-name }.
+    .accesskey = ლ
+urlbar-result-menu-manage-firefox-suggest =
+    .label = მართეთ { -firefox-suggest-brand-name }
+    .accesskey = მ
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = არაზუსტი მდებარეობის მოხსენება
+urlbar-result-menu-show-less-frequently =
+    .label = იშვიათად ჩვენება
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = ამინდის შემოთავაზებების გარეშე
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = მენიუს გახსნა
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = გმადლობთ გამოხმაურებისთვის
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = გმადლობთ გამოხმაურებისთვის. ამინდის შემოთავაზებებს აღარ იხილავთ.
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -206,6 +256,10 @@ urlbar-search-mode-actions = მოქმედებები
 
 urlbar-geolocation-blocked =
     .tooltiptext = ამ საიტისთვის თქვენს მდებარეობასთან წვდომა შეზღუდული გაქვთ.
+urlbar-localhost-blocked =
+    .tooltiptext = ამ საიტისთვის ადგილობრივ მოწყობილობასთან კავშირის უფლება შეზღუდული გაქვთ.
+urlbar-local-network-blocked =
+    .tooltiptext = ამ საიტისთვის შიდა ქსელთან კავშირის უფლება შეზღუდული გაქვთ.
 urlbar-xr-blocked =
     .tooltiptext = ამ საიტისთვის წარმოსახვითი სინამდვილის თქვენს მოწყობილობასთან წვდომა შეზღუდული გაქვთ.
 urlbar-web-notifications-blocked =
@@ -218,6 +272,8 @@ urlbar-screen-blocked =
     .tooltiptext = ამ საიტისთვის თქვენი ეკრანის გაზიარების უფლება შეზღუდული გაქვთ.
 urlbar-persistent-storage-blocked =
     .tooltiptext = ამ საიტისთვის, მუდმივ მეხსიერებასთან წვდომა შეზღუდული გაქვთ.
+urlbar-popup-blocked2 =
+    .tooltiptext = ამ საიტისთვის ამომხტომები და გარე გადამისამართებები შეზღუდული გაქვთ.
 urlbar-popup-blocked =
     .tooltiptext = ამ საიტზე, ამომხტომი ფანჯრები შეზღუდული გაქვთ.
 urlbar-autoplay-media-blocked =
@@ -312,10 +368,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = დამატებების ნახვა
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = გაფართოებები, თემები, დანამატები, დამატებები
 quickactions-cmd-addons2 = დამატებები
 # Opens the bookmarks library window
 quickactions-bookmarks2 = სანიშნების მართვა
 quickactions-cmd-bookmarks = სანიშნები
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = უახლესი ისტორიის გასუფთავება
+quickactions-cmd-clearrecenthistory = უახლესი ისტორიის გასუფთავება, ისტორია
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = ისტორიის გასუფთავება
 quickactions-cmd-clearhistory = ისტორიის გასუფთავება
@@ -324,9 +387,20 @@ quickactions-downloads2 = ჩამოტვირთვების ჩვე�
 quickactions-cmd-downloads = ჩამოტვირთვები
 # Opens about:addons page in the extensions section
 quickactions-extensions = გაფართოებების მართვა
+quickactions-cmd-extensions2 = გაფართოებები, დანამატები, დამატებები
 quickactions-cmd-extensions = გაფართოებები
+# Opens Firefox View
+quickactions-firefoxview = გაიხსნას { -firefoxview-brand-name }
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = გაიხსნას { -firefoxview-brand-name }, { -firefoxview-brand-name }, ხედის გახსნა, ხედი
+# Opens SUMO home page
+quickactions-help = { -brand-product-name } – დახმარება
+quickactions-cmd-help = დახმარება, მხარდაჭერა
 # Opens the devtools web inspector
 quickactions-inspector2 = შემმუშავებლის ხელსაწყოების გახსნა
+quickactions-cmd-inspector2 = დაკვირვება, გამოკვლევა, devtools, dev tools
 quickactions-cmd-inspector = გამოკვლევა, შემუშავება
 # Opens about:logins
 quickactions-logins2 = პაროლების მართვა
@@ -339,7 +413,7 @@ quickactions-print2 = გვერდის ამობეჭდვა
 quickactions-cmd-print = ამობეჭდვა
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = გვერდი შეინახოს, როგორც PDF
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, გვერდის შენახვა
 # Opens a new private browsing window
 quickactions-private2 = პირადი ფანჯრის გახსნა
 quickactions-cmd-private = პირადი თვალიერება
@@ -351,18 +425,26 @@ quickactions-restart = ხელახლა გაეშვას { -brand-shor
 quickactions-cmd-restart = ხელახლა გაშვება
 # Opens the screenshot tool
 quickactions-screenshot3 = ეკრანის სურათის გადაღება
+quickactions-cmd-screenshot2 = ეკრანის სურათი, ეკრანის სურათის გადაღება
 quickactions-cmd-screenshot = ეკრანის ანაბეჭდი
 # Opens about:preferences
 quickactions-settings2 = პარამეტრების მართვა
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = პარამეტრები, მახასიათებლები, გამართვა, მართვა
 quickactions-cmd-settings = პარამეტრები, მახასიათებლები, გამართვა
 # Opens about:addons page in the themes section
 quickactions-themes = თემების მართვა
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = თემები, გაფორმებები, დამატებები, დანამატები
 quickactions-cmd-themes = თემები
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = განახლდეს { -brand-short-name }
 quickactions-cmd-update = განახლება
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = გვერდის წყაროს ჩვენება
+quickactions-cmd-viewsource2 = წყაროს ნახვა, წყარო, გვერდის წყარო
 quickactions-cmd-viewsource = წყაროს ნახვა, პირველწყარო
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
@@ -436,7 +518,7 @@ identity-https-only-info-turn-on3 = ჩართეთ HTTPS-გადაყვ�
 identity-https-only-info-turn-off3 = თუ გვერდს ხარვეზები ექნება, დაგჭირდებათ HTTPS-გადასვლის გამორთვა ამ საიტისთვის და გვერდის დაუცველი HTTP-ით ჩატვირთვა.
 identity-https-only-info-no-upgrade = ვერ გადადის HTTP დაშიფრულ არხზე.
 identity-permissions-storage-access-header = საიტთაშორისი ფუნთუშები
-identity-permissions-storage-access-hint = ამ მხარეებს შეუძლია გამოიყენოს საიტთაშორისი ფუნთუშები და მონაცემები, სანამ ამ საიტზე ხართ.
+identity-permissions-storage-access-hint = მოცემულ მხარეებს შეუძლია გამოიყენოს საიტთაშორისი ფუნთუშები და მონაცემები ამ საიტზე ყოფნისას
 identity-permissions-storage-access-learn-more = ვრცლად
 identity-permissions-reload-hint = ცვლილებების ასამოქმედებლად შესაძლოა, გვერდის ხელახლა ჩატვირთვა დაგჭირდეთ.
 identity-clear-site-data =
@@ -557,6 +639,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = მოძებნეთ ან შეიყვანეთ მისამართი
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = შეიყვანეთ მისამართი
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -628,7 +714,7 @@ urlbar-result-action-search-in-private = ძიება პირად ფა�
 # Variables
 #  $engine (String): the name of a search engine
 urlbar-result-action-search-w-engine = { $engine } ძიება
-urlbar-result-action-sponsored = დამკვეთისგან
+urlbar-result-action-sponsored = დამკვეთებისგან
 urlbar-result-action-switch-tab = ჩანართზე გადასვლა
 urlbar-result-action-visit = მონახულება
 # "Switch to tab with container" is used when the target tab is located in a
@@ -636,6 +722,8 @@ urlbar-result-action-visit = მონახულება
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = ჩანართზე გადასვლა · <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = უსახელო ჯგუფი
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = აღებულ ბმულზე გადასვლა
 # Directs a user to press the Tab key to perform a search with the specified
@@ -665,6 +753,131 @@ urlbar-result-action-copy-to-clipboard = ასლი
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = განუსაზღვრელი
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong> { $city }, { $region }
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature }°{ $unit }</strong> { $city }, { $region }, { $country }
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong> { $city }
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } · დამკვეთისგან
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = მიიღეთ საფონდო ბირჟის მონაცემები პირდაპირ საძიებო ველში
+# This string is shown as description when Market suggestion are disabled.
+urlbar-result-market-opt-in-description = ბაზრის სიახლეებსა და მსგავს ინფორმაციას იხილავთ ჩვენი მოკავშირეებისგან, როცა თქვენი ნებართვით საძიებო სიტყვებს გაეცნობა { -vendor-short-name }. <a data-l10n-name="learn-more-link">ვრცლად</a>
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = შემოთავაზებების ჩვენება
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = ახლა არა
+urlbar-result-realtime-opt-in-dismiss = აცილება
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = აღარ გამოჩნდეს ამგვარი შემოთავაზებები
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = აღარ გამოჩნდეს ბაზრის შემოთავაზებები
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = გმადლობთ გამოხმაურებისთვის. ბაზრის შესახებ შემოთავაზებებს აღარ იხილავთ.
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = გმადლობთ გამოხმაურებისთვის. ამგვარ შემოთავაზებებს აღარ იხილავთ.
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown =
+    { $daysUntilStart ->
+        [one] { $name } · { $daysUntilStart } დღეში
+       *[other] { $name } · { $daysUntilStart } დღეში
+    }
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range =
+    { $daysUntilStart ->
+        [one] { $name } · დაიწყება { $daysUntilStart } დღეში
+       *[other] { $name } · დაიწყება { $daysUntilStart } დღეში
+    }
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing =
+    { $daysUntilEnd ->
+        [one] { $name } · დასრულდება { $daysUntilEnd } დღეში
+       *[other] { $name } · დასრულდება { $daysUntilEnd } დღეში
+    }
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · დღეს
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · სრულდება დღეს
 
 ## Strings used for buttons in the urlbar
 
@@ -692,8 +905,15 @@ urlbar-searchmode-actions =
     .label = მოქმედებები
 urlbar-searchmode-exit-button =
     .tooltiptext = დახურვა
+urlbar-searchmode-default =
+    .tooltiptext = ნაგულისხმევი საძიებო
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = ძიებისთვის ამჯერად გამოიყენეთ:
-urlbar-searchmode-popup-search-settings = ძიების პარამეტრები
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = ძიების პარამეტრები
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = სიახლე
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -743,10 +963,13 @@ urlbar-group-recent-searches =
 # Variables:
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
-    .label = { $engine } გთავაზობთ ხშირად მოძიებულს
+    .label = { $engine } ხშირად მოძიებულით
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = დამკვეთისგან
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
-    .label = ხშირად მოძიებულის ჩვენების გარეშე
+    .label = არ გამოჩნდეს ხშირად მოძიებული
     .accesskey = გ
 urlbar-result-menu-trending-why =
     .label = რატომ ვხედავ ამას?
@@ -924,7 +1147,7 @@ toolbar-button-new-private-window =
 
 ## EME notification panel
 
-eme-notifications-drm-content-playing = ამ საიტზე ხმოვანი ფაილების ან ვიდეოების ნაწილი ექვემდებარება DRM-პროგრამას, შედეგად, { -brand-short-name } შესაძლოა, გიზღუდავდეთ მათ თავისუფალ გამოყენებას.
+eme-notifications-drm-content-playing = ამ საიტზე ხმოვანი ან ვიდეოფაილების ნაწილი იყნებს DRM-პროგრამას, შედეგად { -brand-short-name } შესაძლოა, გიზღუდავდეთ მათ თავისუფალ გამოყენებას.
 eme-notifications-drm-content-playing-manage = პარამეტრების მართვა
 eme-notifications-drm-content-playing-manage-accesskey = ვ
 eme-notifications-drm-content-playing-dismiss = დახურვა
@@ -940,6 +1163,9 @@ panel-save-update-password = პაროლი
 # "More" item in macOS share menu
 menu-share-more =
     .label = სხვა…
+menu-share-copy-link =
+    .label = ბმულის ასლი
+    .accesskey = ს
 ui-tour-info-panel-close =
     .tooltiptext = დახურვა
 
@@ -947,11 +1173,14 @@ ui-tour-info-panel-close =
 ##  $uriHost (String): URI host for which the popup was allowed or blocked.
 
 popups-infobar-allow =
-    .label = ამომხტომი ფანჯრების დაშვება – { $uriHost }
+    .label = ნებართვა, რომ ამომხტომ ფანჯრებს აჩვენებს { $uriHost }
     .accesskey = დ
 popups-infobar-block =
     .label = ამომხტომი ფანჯრების აკრძალვა – { $uriHost }
     .accesskey = დ
+popups-infobar-allow2 =
+    .label = ნებართვა, რომ ამომხტომი ფანჯრების ჩვენებასა და გარე გადამისამართებებს შეძლებს { $uriHost }
+    .accesskey = ხ
 
 ##
 
@@ -987,6 +1216,8 @@ navbar-accessible =
     .aria-label = გადაადგილება
 navbar-downloads =
     .label = ჩამოტვირთვები
+navbar-overflow-2 =
+    .tooltiptext = სხვა ხელსაწყოები
 navbar-overflow =
     .tooltiptext = დამატებითი ხელსაწყოები...
 # Variables:
@@ -1012,6 +1243,10 @@ tabs-toolbar-new-tab =
 tabs-toolbar-list-all-tabs =
     .label = ყველა ჩანართის სია
     .tooltiptext = ყველა ჩანართის სია
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = ჩავლებით გადმოიტანეთ ჩანართი აქ მისამაგრებლად
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1110,6 +1345,7 @@ firefox-relay-offer-why-to-use-relay = ჩვენი დაცული, ა�
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = თქვენი ელფოსტის ნიღბებზე შემოსული ყველა წერილი გადამისამართდება <strong>{ $useremail }</strong>-ზე (თუ თავად არ შეზღუდავთ).
 firefox-relay-offer-legal-notice = „ელფოსტის ნიღბის გამოყენებაზე“ დაწკაპებით ეთანხმებით <label data-l10n-name="tos-url">მომსახურების პირობებსა</label> და <label data-l10n-name="privacy-url">პირადულობის განაცხადს</label>.
+firefox-relay-offer-legal-notice-1 = ანგარიშისა და ელფოსტის ნიღბის შექმნით ეთანხმებით <label data-l10n-name="tos-url">მომსახურების პირობებსა</label> და <label data-l10n-name="privacy-url">პირადულობის განაცხადს</label>.
 
 ## Add-on Pop-up Notifications
 
@@ -1117,10 +1353,15 @@ popup-notification-addon-install-unsigned =
     .value = (შეუმოწმებელი)
 popup-notification-xpinstall-prompt-learn-more = იხილეთ ვრცლად დამატებების უსაფრთხოდ ჩადგმის შესახებ
 popup-notification-xpinstall-prompt-block-url = ვრცლად
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = პირად ფანჯრებში გაშვება
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = ნებართვა გაფართოების პირად ფანჯრებში გასაშვებად
     .accesskey = პ
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = ტექნიკური და ურთიერთქმედების მონაცემების გაზიარება გაფართოების შემმუშავებლისთვის
+    .accesskey = ზ
 
 ## Pop-up warning
 
@@ -1128,13 +1369,28 @@ popup-notification-addon-privatebrowsing-checkbox =
 #   $popupCount (Number): the number of pop-ups blocked.
 popup-warning-message =
     { $popupCount ->
-        [one] { -brand-short-name } ზღუდავს საიტზე ამომხტარი ფანჯრის გახსნას.
-       *[other] { -brand-short-name } ზღუდავს საიტზე ამომხტარი { $popupCount } ფანჯრის გახსნას.
+        [one] { -brand-short-name } უზღუდავს საიტს ამომხტომი ფანჯრის ჩვენებას.
+       *[other] { -brand-short-name } უზღუდავს საიტს { $popupCount } ამომხტომი ფანჯრის ჩვენებას.
+    }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] { -brand-short-name } უზღუდავს საიტს გარე გადამისამართებას.
+        [1] { -brand-short-name } უზღუდავს საიტს ამომხტომის ჩვენებასა და გარე გადამისამართებას.
+        [one] { -brand-short-name } უზღუდავს საიტს { $popupCount } ამომხტომის ჩვენებასა და გარე გადამისამართებას.
+       *[other] { -brand-short-name } უზღუდავს საიტს { $popupCount } ამომხტომის ჩვენებასა და გარე გადამისამართებას.
     }
 # The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
 # Variables:
 #   $popupCount (Number): the number of pop-ups blocked.
-popup-warning-exceeded-message = { -brand-short-name } ზღუდავს საიტზე ამომხტარი { $popupCount }-ზე მეტი ფანჯრის გახსნას.
+popup-warning-exceeded-message = { -brand-short-name } უზღუდავს საიტს { $popupCount }-ზე მეტი ფანჯრის ჩვენებას.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-with-redirect-message =
+    { $popupCount ->
+       *[other] { -brand-short-name } უზღუდავს საიტს { $popupCount }-ზე მეტი ამომხტომის ჩვენებასა და გადამისამართებას.
+    }
 popup-warning-button =
     .label =
         { PLATFORM() ->
@@ -1150,6 +1406,10 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = გაიხსნას „{ $popupURI }“
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = გამოჩნდეს „{ $redirectURI }“
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
@@ -1171,3 +1431,148 @@ file-picker-crashed-save-nowhere = Windows-ის ფაილების მ�
 file-picker-crashed-show-in-folder =
     .label = ჩვენება საქაღალდეში
     .accessKey = ქ
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = გამართვის დასრულება
+onboarding-aw-finish-setup-button =
+    .label = გამართვის დასრულება
+    .tooltiptext = სრულადაა გამართული { -brand-short-name }
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = თვალთვალისგან გაძლიერებული დაცვა ჩართ.
+trustpanel-etp-label-disabled = თვალთვალისგან გაძლიერებული დაცვა გამორთ.
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = თვალთვალისგან გაძლიერებული დაცვა: ჩართ. { $host }
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = თვალთვალისგან გაძლიერებული დაცვა: გამორთ. { $host }
+trustpanel-etp-description-enabled = თუ საიტზე რამე გაუმართავად ჩანს, სინჯეთ გამორთვა.
+trustpanel-etp-description-disabled = { -brand-product-name } მიიჩნევს, რომ კომპანიები ნაკლებად უნდა გადევნებდნენ თვალს. ჩვენ ვზღუდავთ რაც შეიძლება მეტ მეთვალყურეს დაცვის ჩართვისას.
+trustpanel-connection-label-secure = კავშირი დაცულია
+trustpanel-connection-label-insecure = დაუცველი კავშირი
+trustpanel-header-enabled = { -brand-product-name } სადარაჯოზეა
+trustpanel-description-enabled2 = დაცული ხართ. თუ რამეს შევამჩნევთ, გაცნობებთ.
+trustpanel-header-enabled-insecure = ფრთხილად იყავით ამ საიტზე
+trustpanel-description-enabled-insecure = { -brand-product-name } რაღაც საეჭვოს წააწყდა.
+trustpanel-header-disabled = გამორთული გაქვთ დაცვა
+trustpanel-description-disabled = { -brand-product-name } უქმადაა. გირჩევთ, კვლავ ჩართოთ დაცვა.
+trustpanel-clear-cookies-button = ფუნთუშებისა და საიტის მონაცემების გასუფთავება
+trustpanel-privacy-link = პირადულობის გამართვა
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = ფუნთუშებისა და საიტის მონაცემების გასუფთავება საიტისთვის { $host }
+trustpanel-clear-cookies-description = ფუნთუშებისა და საიტის მონაცემების წაშლით შეიძლება გამოხვიდეთ შესული ანგარიშებიდან და დაგიცარიელდეთ საყიდლების კალათები.
+trustpanel-clear-cookies-subview-button-clear = გასუფთავება
+trustpanel-clear-cookies-subview-button-cancel = გაუქმება
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = კავშირის უსაფრთხოება საიტთან { $host }
+trustpanel-siteinformation-morelink = საიტის სხვა მონაცემები
+trustpanel-blocker-see-all = ყველას ნახვა
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = თვალთვალისგან დაცვა საიტისთვის { $host }
+
+## The urlbar trust icon & panel
+
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = დაუცველი
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header =
+    { $count ->
+        [one] <span>{ $count }</span> მეთვალყურე შეიზღუდა ამ საიტზე
+       *[other] <span>{ $count }</span> მეთვალყურე შეიზღუდა ამ საიტზე
+    }
+trustpanel-blocker-description = { -brand-product-name } მიიჩნევს, რომ კომპანიები ნაკლებად უნდა გადევნებდნენ თვალს. ასე რომ ჩვენ ვზღუდავთ რაც შეიძლება მეტ მათგანს.
+trustpanel-blocked-header = { -brand-product-name } თქვენთვის ზღუდავს შემდეგს:
+trustpanel-tracking-header = { -brand-product-name } საიტების გაუმართაობის ასარიდებლად არ ზღუდავს შემდეგს:
+trustpanel-tracking-description = მეთვალყურეების შეზღუდვით ზოგიერთმა ღილაკმა, კითხვარის შესავსებმა და ანგარიშზე შესვლის ველებმა შეიძლება ვერ იმუშაოს.
+trustpanel-insecure-section-header = თქვენი კავშირი დაუცველია
+trustpanel-insecure-description = ამ საიტზე შეყვანილი მონაცემები დაუშიფრავია. შეიძლება ვინმე სხვამ იხილოს, მიიტაცოს ან გადააკეთოს.
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [one] { $count } საიტთაშორისი მეთვალყურე ფუნთუშა
+       *[other] { $count } საიტთაშორისი მეთვალყურე ფუნთუშა
+    }
+trustpanel-list-label-tracking-content = თვალის მდევნელი შიგთავსი
+trustpanel-list-label-fingerprinter =
+    { $count ->
+        [one] მომხმარებლის { $count } ამომცნობი
+       *[other] მომხმარებლის { $count } ამომცნობი
+    }
+trustpanel-list-label-social-tracking =
+    { $count ->
+        [one] სოცქსელის { $count } მეთვალყურე
+       *[other] სოცქსელის { $count } მეთვალყურე
+    }
+trustpanel-list-label-cryptominer =
+    { $count ->
+        [one] { $count } კრიპტოგამომმუშავებელი
+       *[other] { $count } კრიპტოგამომმუშავებელი
+    }
+trustpanel-social-tracking-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ზღუდავს სოცქსელის { $count } მეთვალყურეს
+       *[other] { -brand-product-name } ზღუდავს სოცქსელის { $count } მეთვალყურეს
+    }
+trustpanel-social-tracking-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ნებას რთავს სოცქსელის { $count } მეთვალყურეს
+       *[other] { -brand-product-name } ნებას რთავს სოცქსელის { $count } მეთვალყურეს
+    }
+trustpanel-tracking-cookies-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ზღუდავს { $count } საიტთაშორის მეთვალყურეს
+       *[other] { -brand-product-name } ზღუდავს { $count } საიტთაშორის მეთვალყურეს
+    }
+trustpanel-tracking-cookies-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ნებას რთავს { $count } საიტთაშორის მეთვალყურეს
+       *[other] { -brand-product-name } ნებას რთავს { $count } საიტთაშორის მეთვალყურეს
+    }
+trustpanel-tracking-content-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ზღუდავს { $count } მეთვალყურეს
+       *[other] { -brand-product-name } ზღუდავს { $count } მეთვალყურეს
+    }
+trustpanel-tracking-content-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ნებას რთავს { $count } მეთვალყურეს
+       *[other] { -brand-product-name } ნებას რთავს { $count } მეთვალყურეს
+    }
+trustpanel-tracking-content-tab-list-header = მოცემული საიტები ცდილობს თვალის დევნებას:
+trustpanel-fingerprinter-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ზღუდავს მომხმარებლის { $count } ამომცნობს
+       *[other] { -brand-product-name } ზღუდავს მომხმარებლის { $count } ამომცნობს
+    }
+trustpanel-fingerprinter-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ნებას რთავს მომხმარებლის { $count } ამომცნობს
+       *[other] { -brand-product-name } ნებას რთავს მომხმარებლის { $count } ამომცნობს
+    }
+trustpanel-fingerprinter-list-header = მოცემული საიტები ცდილობს, გამოგარჩიოთ სხვებისგან:
+trustpanel-cryptominer-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ზღუდავს { $count } კრიპტოგამომმუშავებელს
+       *[other] { -brand-product-name } ზღუდავს { $count } კრიპტოგამომმუშავებელს
+    }
+trustpanel-cryptominer-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ნებას რთავს { $count } კრიპტოგამომმუშავებელს
+       *[other] { -brand-product-name } ნებას რთავს { $count } კრიპტოგამომმუშავებელს
+    }
+trustpanel-cryptominer-tab-list-header = მოცემული საიტები ცდილობს კრიპტოგამომუშავებას:

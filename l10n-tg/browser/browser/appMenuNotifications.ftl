@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Нодида гузарондан
     .secondarybuttonaccesskey = Г
 appmenu-update-restart-message2 = Версияи навтарини «{ -brand-shorter-name }»-ро ба даст оред. Варақаҳо ва равзанаҳои кушода барқарор карда мешаванд.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Ботил кардан
+    .secondarybuttonaccesskey = Б
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } ба версия нав ба таври худкор навсозӣ карда намешавад.
     .buttonlabel = Ба ҳар ҳол { -brand-shorter-name } навсозӣ карда шавад
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = Хуб
     .buttonaccesskey = О
 appmenu-addon-post-install-message3 = Ҷузъҳои иловагӣ ва мавзуъҳои худро тавассути менюи барномаҳо идора намоед.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Иҷозатҳо ва хусусиятҳои маълумотро дар <a data-l10n-name="settings-link">танзимоти васеъшавӣ</a> дар вақти дилхоҳ навсозӣ кунед.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Васл кардани васеъшавӣ ба навори абзорҳо
+    .accesskey = В
 appmenu-addon-post-install-incognito-checkbox =
     .label = Иҷозат додани иҷрокунии васеъшавӣ дар равзанаи хусусӣ
     .accesskey = A

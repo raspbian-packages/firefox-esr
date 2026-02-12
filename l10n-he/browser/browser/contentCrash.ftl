@@ -31,3 +31,20 @@ pending-crash-reports-send =
     .label = שליחה
 pending-crash-reports-always-send =
     .label = שליחה תמיד
+# Variables:
+#   $reportCount (Number): the number of pending crash reports
+requested-crash-reports-message-new =
+    { $reportCount ->
+        [one] יש לך דיווח קריסה שלא נשלח הקשור לקריסות הנמצאות בתהליכי חקירה, שליחת הדיווח תסייע לנו לשפר את { -brand-product-name }. סגירת התרעה זו תתעלם מדיווח זה.
+       *[other] יש לך { $reportCount } דיווחי קריסה שלא נשלחו הקשורות לקריסות הנמצאות בתהליכי חקירה, שליחת הדיווחים תסייע לנו לשפר את { -brand-product-name }. סגירת התרעה זו תתעלם מדיווחים אלו.
+    }
+# Variables:
+#   $reportCount (Number): the number of pending crash reports
+requested-crash-reports-message =
+    { $reportCount ->
+        [one] יש לך דיווח קריסה אחד שלא נשלח שתואם לקריסות שנחקרות, שליחת הדיווח תסייע לנו לשפר את { -brand-product-name }. סגירת התרעה זו תתעלם מדיווח זה.
+       *[other] יש לך { $reportCount } דיווחי קריסה שלא נשלחו שתואמים לקריסות שנחקרות, שליחת הדיווחים תסייע לנו לשפר את { -brand-product-name }. סגירת התרעה זו תתעלם מדיווחים אלו.
+    }
+requested-crash-reports-dont-show-again =
+    .label = לא להציג שוב
+    .accesskey = ל

@@ -43,12 +43,6 @@ const POLICIES_TESTS = [
     },
   },
 
-  // POLICY: DisableBuiltinPDFViewer
-  {
-    policies: { DisableBuiltinPDFViewer: true },
-    lockedPrefs: { "pdfjs.disabled": true },
-  },
-
   // POLICY: DisableFormHistory
   {
     policies: { DisableFormHistory: true },
@@ -86,6 +80,7 @@ const POLICIES_TESTS = [
         Cryptomining: true,
         Fingerprinting: true,
         EmailTracking: true,
+        SuspectedFingerprinting: true,
         Locked: true,
       },
     },
@@ -94,6 +89,8 @@ const POLICIES_TESTS = [
       "privacy.trackingprotection.fingerprinting.enabled": true,
       "privacy.trackingprotection.emailtracking.enabled": true,
       "privacy.trackingprotection.emailtracking.pbmode.enabled": true,
+      "privacy.fingerprintingProtection": true,
+      "privacy.fingerprintingProtection.pbmode": true,
     },
   },
 
@@ -227,10 +224,11 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.sessions": true,
       "privacy.clearOnShutdown.siteSettings": true,
       "privacy.clearOnShutdown.offlineApps": true,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": true,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": true,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": true,
       "privacy.clearOnShutdown_v2.cache": true,
       "privacy.clearOnShutdown_v2.siteSettings": true,
+      "privacy.clearOnShutdown_v2.formdata": true,
     },
   },
 
@@ -248,10 +246,11 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.sessions": false,
       "privacy.clearOnShutdown.siteSettings": false,
       "privacy.clearOnShutdown.offlineApps": false,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
       "privacy.clearOnShutdown_v2.cache": false,
       "privacy.clearOnShutdown_v2.siteSettings": false,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -269,9 +268,10 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.formdata": false,
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": false,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
       "privacy.clearOnShutdown_v2.cache": true,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -289,9 +289,10 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.formdata": false,
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": false,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": true,
       "privacy.clearOnShutdown_v2.cache": false,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -309,9 +310,10 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.formdata": false,
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": false,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
       "privacy.clearOnShutdown_v2.cache": false,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -329,9 +331,10 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.formdata": true,
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": false,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
       "privacy.clearOnShutdown_v2.cache": false,
+      "privacy.clearOnShutdown_v2.formdata": true,
     },
   },
 
@@ -349,9 +352,10 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.formdata": false,
       "privacy.clearOnShutdown.history": true,
       "privacy.clearOnShutdown.sessions": false,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": true,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": true,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
       "privacy.clearOnShutdown_v2.cache": false,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -369,9 +373,10 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.formdata": false,
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": true,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
       "privacy.clearOnShutdown_v2.cache": false,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -390,10 +395,11 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": false,
       "privacy.clearOnShutdown.siteSettings": true,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
       "privacy.clearOnShutdown_v2.cache": false,
       "privacy.clearOnShutdown_v2.siteSettings": true,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -412,7 +418,7 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": false,
       "privacy.clearOnShutdown.offlineApps": true,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
       "privacy.clearOnShutdown_v2.cache": false,
     },
@@ -437,8 +443,9 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.formdata": false,
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": false,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -462,7 +469,8 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.formdata": false,
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": false,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -481,9 +489,10 @@ const POLICIES_TESTS = [
       "privacy.clearOnShutdown.formdata": false,
       "privacy.clearOnShutdown.history": false,
       "privacy.clearOnShutdown.sessions": false,
-      "privacy.clearOnShutdown_v2.historyFormDataAndDownloads": false,
+      "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads": false,
       "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
       "privacy.clearOnShutdown_v2.cache": true,
+      "privacy.clearOnShutdown_v2.formdata": false,
     },
   },
 
@@ -624,12 +633,15 @@ const POLICIES_TESTS = [
   {
     policies: {
       FirefoxHome: {
-        Pocket: false,
+        Stories: false,
+        SponsoredStories: false,
         Locked: true,
       },
     },
     lockedPrefs: {
       "browser.newtabpage.activity-stream.feeds.system.topstories": false,
+      "browser.newtabpage.activity-stream.feeds.section.topstories": false,
+      "browser.newtabpage.activity-stream.showSponsored": false,
     },
   },
 
@@ -1157,6 +1169,51 @@ const POLICIES_TESTS = [
     },
     lockedPrefs: {
       "dom.security.https_only_mode": true,
+    },
+  },
+
+  // POLICY: SkipTermsOfUse
+  {
+    policies: {
+      SkipTermsOfUse: true,
+    },
+    lockedPrefs: {
+      "datareporting.policy.dataSubmissionPolicyAcceptedVersion": 999,
+      // "datareporting.policy.dataSubmissionPolicyNotifiedTime" is a string of
+      // the timestamp at which the policy was set, this is tested in
+      // browser/components/enterprisepolicies/tests/browser/browser_policy_usermessaging.js
+    },
+  },
+
+  // Bug 1981587
+  {
+    policies: {
+      Preferences: {
+        "security.webauthn.always_allow_direct_attestation": {
+          Value: true,
+          Status: "locked",
+        },
+      },
+    },
+    lockedPrefs: {
+      "security.webauthn.always_allow_direct_attestation": true,
+    },
+  },
+
+  // GenerativeAI
+  {
+    policies: {
+      GenerativeAI: {
+        Enabled: false,
+        Chatbot: true,
+        Locked: true,
+      },
+    },
+    lockedPrefs: {
+      "browser.ml.chat.enabled": true,
+      "browser.ml.chat.page": true,
+      "browser.ml.linkPreview.optin": false,
+      "browser.tabs.groups.smart.userEnabled": false,
     },
   },
 ];

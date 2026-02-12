@@ -111,6 +111,26 @@ fp-learn-more-about-secure-connection-failures = Mësoni më tepër rreth dësht
 fp-learn-more-about-cert-issues = Mësoni më tepër rreth këtyre llojesh problemesh dëshmish
 fp-learn-more-about-time-related-errors = Mësoni më tepër rreth diagnostikimit dhe zgjidhjes së gabimeve që lidhjen me kohën
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name }-i e bllokoi vizitën tuaj te ky sajt, ngaqë dëshmia e dhënë për { $hostname } është shfuqizuar dhe s’është më e besueshme.
+cert-error-bad-signature = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë nënshkrimi te dëshmia e dhënë për { $hostname } s’është e vlefshme.
+cert-error-key-pinning-failure = { -brand-short-name }-i bllokoi vizitën tuaj te ky sajt, ngaqë dëshmia e dhënë për { $hostname } përdor tjetër kyç publik nga ai që pritej.
+cert-error-bad-der = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë dëshmia e dhënë për { $hostname } s’është e koduar siç duhet.
+cert-error-cert-not-in-name-space = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë dëshmia e dhënë për { $hostname } s’ndjek kufizimet e emrave të një dëshmie që e emetoi.
+cert-error-inadequate-cert-type = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë dëshmia e dhënë për { $hostname } s’lejohet të përdoret nga një shërbyes.
+cert-error-path-len-constraint-invalid = { -brand-short-name }-i e bllokoi vizitën tuaj te ky sajt, ngaqë dëshmia e dhënë për { $hostname } përmban shumë dëshmi të ndërmjetme te shtegu për te dëshmia rrënjë.
+cert-error-invalid-key = { -brand-short-name }-i e bllokoi vizitën tuaj te ky sajt, ngaqë dëshmia e dhënë për { $hostname } përmban një kyç që është i pavlefshëm. Sipas shumicës së gjasave, është shumë i vogël për të qenë  siguruar.
+cert-error-unknown-critical-extension = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë dëshmia e dhënë për { $hostname } përmban një zgjerim kritik të pambuluar.
+cert-error-extension-value-invalid = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë dëshmia e dhënë për { $hostname } përmban një zgjerim të pavlefshëm.
+cert-error-untrusted-issuer = { -brand-short-name }-i e bllokoi vizitën tuaj te ky sajt, ngaqë dëshmia e dhënë për { $hostname } qe emetuar nga një autoritet dëshmish që s’është më i besueshëm.
+cert-error-untrusted-cert = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë dëshmisë së dhënë për { $hostname } i është vënë shenjë si jo e besueshme.
+cert-error-invalid-integer-encoding = { -brand-short-name }-i bllokoi vizitën tuaj te ky sajt ngaqë dëshmia e dhënë për { $hostname } përmban një kodim të pavlefshëm të një numri të plotë. Ndër shkaqet e rëndomtë përfshihen numra serialë negativë, module RSA negativë dhe kodime që janë më të gjatë se sa është e nevojshme.
+cert-error-unsupported-keyalg = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë dëshmisë së dhënë për { $hostname } i ka një lloj të pambuluar kyçesh.
+cert-error-issuer-no-longer-trusted = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë autoriteti i dëshmive i dhënë për { $hostname } s’është më i besueshëm.
+cert-error-signature-algorithm-mismatch = { -brand-short-name }-i bllokoi vizitën tuaj në këtë sajt, ngaqë algoritmi i nënshkrimeve të dëshmisë së dhënë për { $hostname } s’përkon me fushën e vet për algoritëm dëshmie.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = S’arrihet të lidhet
@@ -118,6 +138,7 @@ deniedPortAccess-title = Kjo adresë është e ndaluar
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hëm. Po kemi probleme me gjetjen e atij sajti.
+internet-connection-offline-title = Duket se ka një problem me lidhjen tuaj në internet.
 dns-not-found-trr-only-title2 = Gjasa rreziku sigurie në kërkimin e kësaj përkatësie
 dns-not-found-native-fallback-title2 = Gjasa rreziku sigurie në kërkimin e kësaj përkatësie
 fileNotFound-title = S’u gjet kartelë
@@ -134,6 +155,7 @@ contentEncodingError-title = Gabim Kodimi Lënde
 unsafeContentType-title = Lloj Kartele Jo i Parrezik
 netReset-title = Lidhja u rivendos
 netTimeout-title = Lidhjes i mbaroi koha
+httpErrorPage-title = Duket se ka një problem me këtë sajt
 serverError-title = Duket se ka një problem me këtë sajt
 unknownProtocolFound-title = Adresa nuk u kuptua
 proxyConnectFailure-title = Shërbyesi ndërmjetës po hedh poshtë lidhjet
@@ -142,6 +164,7 @@ redirectLoop-title = Faqja nuk është ridrejtuar si duhet
 unknownSocketType-title = Përgjigje e papritur prej shërbyesit
 nssFailure2-title = Dështoi Lidhja e Siguruar
 csp-xfo-error-title = { -brand-short-name }-i S’mund Ta Hapë Këtë Faqe
+corruptedContentErrorv2-title = Gabim nga Lëndë e Dëmtuar
 corruptedContentError-title = Gabim nga Lëndë e Dëmtuar
 sslv3Used-title = S’arrihet të Lidhet Në Mënyrë të Siguruar
 inadequateSecurityError-title = Lidhja juaj s’është e siguruar

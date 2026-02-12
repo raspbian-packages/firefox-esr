@@ -4,7 +4,7 @@
 
 
 ## Error messages for failed HTTP web requests.
-## https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+## https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
@@ -20,9 +20,12 @@ firefox-relay-get-unlimited-masks =
     .accesskey = п
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
 firefox-relay-opt-in-title-1 = Защитите свой адрес электронной почты:
+firefox-relay-opt-in-title-2 = Получите бесплатный псевдоним электронной почты
 # This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
 # ends with a colon. You might need to adapt the capitalization of this string.
 firefox-relay-opt-in-subtitle-1 = Используйте псевдонимы эл. почты { -relay-brand-name }
+firefox-relay-use-mask-title-1 = Используйте псевдонимы электронной почты
+firefox-relay-opt-in-subtitle-2 = Защитите свой почтовый ящик от спама
 firefox-relay-use-mask-title = Используйте псевдонимы эл. почты { -relay-brand-name }
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-a
 firefox-relay-opt-in-title-a = Избавьтесь от спама с помощью бесплатного псевдонима электронной почты
@@ -72,6 +75,8 @@ firefox-relay-and-fxa-opt-in-confirmation-enable-button-basic-info =
 
 firefox-relay-and-fxa-popup-notification-header-with-domain = Получите бесплатный псевдоним электронной почты
 firefox-relay-and-fxa-popup-notification-first-sentence-with-domain = Защитите свой почтовый ящик от спама, используя бесплатный <label data-l10n-name="firefox-relay-learn-more-url">псевдоним электронной почты</label>, чтобы скрыть свой настоящий адрес. Письма с <label data-l10n-name="firefox-fxa-and-relay-offer-domain">этого сайта</label> по-прежнему будут приходить в ваш почтовый ящик, но ваш адрес электронной почты будет скрыт.
+firefox-relay-and-fxa-popup-notification-first-sentence = Защитите свой почтовый ящик от спама, используя бесплатный <label data-l10n-name="firefox-relay-learn-more-url">псевдоним электронной почты { -relay-brand-name }</label>, чтобы скрыть свой настоящий адрес. Письма с <label data-l10n-name="firefox-fxa-and-relay-offer-domain">этого сайта</label> по-прежнему будут приходить в ваш почтовый ящик, но ваш адрес электронной почты будет скрыт.
+firefox-relay-offer-why-to-use-relay-1 = Защитите свой почтовый ящик от спама, используя бесплатный <label data-l10n-name="firefox-relay-learn-more-url">псевдоним электронной почты { -relay-brand-name }</label>, чтобы скрыть свой настоящий адрес. Письма с <label data-l10n-name="firefox-fxa-and-relay-offer-domain">этого сайта</label> по-прежнему будут приходить в ваш почтовый ящик, но ваш адрес электронной почты будет скрыт.
 firefox-relay-and-fxa-popup-notification-second-sentence-with-domain = Сначала зарегистрируйтесь или войдите в свой аккаунт, чтобы использовать псевдоним электронной почты
 firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain =
     .label = Регистрация

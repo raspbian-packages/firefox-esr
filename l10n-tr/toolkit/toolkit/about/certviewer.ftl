@@ -36,6 +36,9 @@ certificate-viewer-key-size = Anahtar boyutu
 certificate-viewer-inc-locality = Kuruluş yeri
 certificate-viewer-locality = Bölge
 certificate-viewer-location = Konum
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = Günlük adı
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = Log kimliği
 certificate-viewer-method = Yöntem
 certificate-viewer-modulus = Modülüs
@@ -110,6 +113,8 @@ certificate-viewer-export = Dışa aktar
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = (bilinmiyor)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = sertifika
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

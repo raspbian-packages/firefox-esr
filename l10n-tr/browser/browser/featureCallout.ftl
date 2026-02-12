@@ -54,16 +54,146 @@ fx-view-discoverability-secondary-button-label = Kapat
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = Bu öneriyi bir daha gösterme
+split-dismiss-button-dont-show-option =
+    .label = Bu öneriyi bir daha gösterme
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = Daha az öneri göster
+split-dismiss-button-show-fewer-option =
+    .label = Daha az öneri göster
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = Ayarları yönet
+split-dismiss-button-manage-settings-option =
+    .label = Ayarları yönet
+# Accessibility label for dropdown menu button
+split-dismiss-button-default-label =
+    .title = Diğer seçenekler
+
+## Login Status Advisory Callout (points to the account icon)
+
+# The 'account icon' is the toolbar button with a 'profile' icon of a human
+# head/shoulders. It's for dealing with your Mozilla account. When hovering the
+# icon, the tooltip says 'Account'.
+login-status-advisory-title = Çıkış yaptınız. Giriş yapmak için hesap simgesine tıklayın.
+
+## Bookmarks toolbar callout strings
+
+bookmarks-toolbar-callout-1-title = Bu site yer imleri araç çubuğunuza eklensin mi?
+bookmarks-toolbar-callout-1-subtitle = Yer iminiz hızlıca erişebilmeniz için adres çubuğunun hemen altına kaydedilecektir.
+bookmarks-toolbar-callout-1-primary-button-label = Yer imi ekle
+bookmarks-toolbar-callout-1-secondary-button-label = Hayır
+# Visible if user adds a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2a-title = Kolayca daha fazla yer imi ekleyin
+bookmarks-toolbar-callout-2a-subtitle = Sevdiğiniz sitelere anında erişmek için sekmelerinizi buraya sürükleyip bırakabilirsiniz.
+bookmarks-toolbar-callout-2a-primary-button-label = Anladım
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2a-secondary-button-label = Araç çubuğunu gizle
+# Visible if user declines to add a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2b-title = Yer imleri araç çubuğu açık kalsın mı?
+bookmarks-toolbar-callout-2b-subtitle = Sık ziyaret ettiğiniz diğer siteleri de ekleyebilirsiniz. Sevdiğiniz siteleri elinizin altında tutmak için sekmelerinizi buraya sürükleyip bırakmanız yeterli.
+bookmarks-toolbar-callout-2b-primary-button-label = Açık kalsın
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2b-secondary-button-label = Hayır
+
+## Perplexity callout strings
+
+perplexity-callout-theme-1-title = Hemen doğru cevaba mı ihtiyacınız var?
+perplexity-callout-theme-2-title = Perplexity’yi deneyin: Arama yapmanın yeni bir yolu
+perplexity-callout-theme-1-subtitle-1 = Perplexity’yi deneyin. Kaynakları belli olan eksiksiz yanıtlar istediğinizde arama düğmesinden Perplexity’yi seçin.
+perplexity-callout-theme-1-subtitle-2 = Sorularınızı sorun, eksiksiz ve kaynakları belli yanıtlar alın. Denemek için arama düğmesinden Perplexity’yi seçin.
+perplexity-callout-theme-2-subtitle-1 = Perplexity’ye sorun. Kaynaklarıyla birlikte eksiksiz cevaplar alacaksınız.
+perplexity-callout-theme-2-subtitle-2 = Sorularınızı sorun, eksiksiz ve kaynakları belli yanıtlar alın.
+perplexity-callout-primary-label = Perplexity’ye sorun
+perplexity-callout-secondary-label-1 = Kapat
+perplexity-callout-secondary-label-2 = Anladım
+
+## Account Adoption Passwords callout strings
+
+# Suggestion to backup passwords by signing up for Mozilla account and using sync
+fxa-adoption-passwords-title = Parola kaydedildi. Şimdi onu yedekleyelim.
+fxa-adoption-passwords-subtitle = Parolalarınızı şifreleyip diğer cihazlarınızla eşitleyerek onları koruyabilirsiniz.
+# Opens Mozilla accounts sign-up page
+fxa-adoption-passwords-primary-button-label = Kaydol
+
+## Taskbar Tabs callout strings
+
+taskbar-tabs-social-callout-title = En sevdiğiniz sosyal ağları görev çubuğunuzda tutun
+taskbar-tabs-social-callout-subtitle = Sosyal medya sitelerini { -brand-short-name } güvencesiyle korunan yalın bir pencerede uygulama gibi açabilirsiniz.
+taskbar-tabs-chat-callout-title = Görev çubuğunuzdan sohbet edin
+taskbar-tabs-chat-callout-subtitle = Sohbet sitelerini { -brand-short-name } güvencesiyle korunan yalın bir pencerede uygulama gibi açabilirsiniz.
+taskbar-tabs-email-callout-title = E-postanızı görev çubuğunuzda tutun
+taskbar-tabs-email-callout-subtitle = Web tabanlı e-postalarınızı { -brand-short-name } güvencesiyle korunan yalın bir pencerede uygulama gibi açabilirsiniz.
+taskbar-tabs-media-callout-title = Görev çubuğunuzdan videolarınıza geri dönün
+taskbar-tabs-media-callout-subtitle = Video yayın sitelerini { -brand-short-name } güvencesiyle korunan daha yalın bir pencerede açabilirsiniz.
+taskbar-tabs-value-prop-callout-title = Bu siteyi görev çubuğunuza ekleyin
+taskbar-tabs-value-prop-callout-subtitle = Tek tıklamayla kendi penceresinde ve basitleştirilmiş bir arayüzde başlatın.
+
+## Windows 10 EoS Sync messages group 1 callouts
+
+windows-10-eos-sync-urgency-title-1 = Windows 11’e geçerken daha önce kaydettiğiniz şeyleri kaybetmeyin.
+windows-10-eos-sync-urgency-subtitle-1 = { -brand-short-name } yer imlerinizi, parolalarınızı ve ayarlarınızı güvende tutmak ve istediğinizde kolayca geri yüklemek için şimdi eşitleme yapın.
+windows-10-eos-sync-urgency-title-2 = Windows 10’a veda mı ediyorsunuz? Geçiş yaparken verilerinizi koruyun.
+windows-10-eos-sync-urgency-subtitle-2 = Her gün { -brand-short-name } kullanmasanız bile yer imlerinizi ve parolalarınızı güvende ve erişilebilir tutmak için eşitleme yapın.
+windows-10-eos-sync-new-device-title-1 = Yeni cihazınızda sıfırdan başlamak zorunda kalmayın.
+windows-10-eos-sync-new-device-subtitle-1 = Taşınırken { -brand-short-name } yer imlerinizi, parolalarınızı ve tercih ettiğiniz ayarlarınızı yanınızda götürmek için şimdi eşitleme yapın.
+windows-10-eos-sync-new-device-title-2 = Yeni bir cihaza mı geçiyorsunuz? Önemli verilerinizi kaybetmeyin.
+windows-10-eos-sync-new-device-subtitle-2 = { -brand-short-name } tarayıcısını ne sıklıkta kullanırsanız kullanın; eşitleme yaparak yer imlerinizi, parolalarınızı ve ayarlarınızı koruyabilirsiniz.
+windows-10-eos-sync-new-device-primary-label = Şimdi eşitle
+windows-10-eos-sync-general-title-1 = { -brand-short-name } özelleştirmelerinizi kaybetmeyin.
+windows-10-eos-sync-general-subtitle-1 = Önemli bilgilerinizi kaybetmemek için parolalarınızı, yer imlerinizi, ayarlarınızı ve diğer verilerinizi yedekleyin ve eşitleyin.
+windows-10-eos-sync-general-title-2 = Şimdi parolalarınızı ve yer imlerinizi yedeklemenin tam zamanı.
+windows-10-eos-sync-general-subtitle-2 = { -brand-short-name } verilerinizi korumak için şimdi eşitleme yapın, sonra istediğiniz zaman verilerinizi geri yükleyin.
+windows-10-eos-sync-tour-title-1 = Çok fazla sekmeniz mi var? Sekmelerinizi gruplandırarak ortalığı toplayın.
+windows-10-eos-sync-tour-subtitle-1 = Sekmeleri üst üste sürükleyerek grup oluşturup sekmeleri daha düzenli tutabilirsiniz.
+windows-10-eos-sync-tour-title-2 = Windows 11 için hazırlıklarınızı yapın.
+windows-10-eos-sync-tour-subtitle-2 = Geçiş yapmadan önce yer imlerinizi, parolalarınızı ve ayarlarınızı yedeklemek için eşitleme yapın.
+windows-10-eos-sync-split-dismiss-button-show-fewer-option =
+    .label = Daha az öneri göster
+windows-10-eos-sync-dismiss-button-label = Kapat
+windows-10-eos-sync-callout-primary-advance-button-label = İleri
+
+## Link Preview Onboarding message callout strings
+
+link-preview-onboarding-callout-title = Yeni: Bağlantıları ön izlemek için tıklayıp basılı tutun
+link-preview-onboarding-callout-description = Bağlantının kısa açıklamasına, okuma süresine ve diğer bilgilerine bakarak tıklamaya değip değmeyeceğine karar verebilirsiniz. Sağ tıklamayla da kullanılabilir.
 
 ## Sidebar Strings
 
 sidebar-button-callout-title = Sekme başlıklarını kenar çubuğunda göster
 sidebar-button-callout-subtitle = Sekme başlıklarını görmek için kenar çubuğu düğmesini kullanarak kenar çubuğunu genişletin.
+sidebar-button-callout-vertical-tabs = Sekmelerinizi göstermek için araç çubuğundaki kenar çubuğu düğmesine tıklayın.
+
+## Sidebar Vertical Tabs Strings
+
+vertical-tabs-callout-1-title = Çok fazla sekmeden bunaldınız mı?
+vertical-tabs-callout-1-subtitle = Sekme listenize hızlıca göz atmak için yeni dikey sekme düzenimizi deneyin. İlk deneyenler bu düzeni faydalı bulduklarını bildiriyor. İstediğiniz zaman eski haline dönebilirsiniz.
+vertical-tabs-callout-1-cta-button = Dikey sekmeleri dene
+vertical-tabs-callout-2-cta-button = Şimdi dene
+vertical-tabs-callout-2-title = Çok fazla açık sekmeniz mi var? Dikey sekmeleri deneyin.
+vertical-tabs-callout-2-subtitle = Bu düzen, sekme listenize hızlıca göz atmanızı kolaylaştıracak. Ayrıca genişliği ayarlayarak sekme başlıklarını daha az veya daha çok görmeyi tercih edebilirsiniz.
+
+## Sidebar Vertical Tabs Pinning Strings
+
+sidebar-pins-callout-title = Önemli sekmelerinizi gözden kaçırıyor musunuz?
+sidebar-pins-callout-subtitle = Sekmeleri sabitleyerek onları listenin en başına alabilirsiniz. Sabitlemek istediğiniz sekmeye sağ tıklayıp “Sekmeyi sabitle”yi seçin.
+sidebar-pins-callout-cta-button = Sekmeyi sabitle
+
+## Pinning Tabs Strings
+
+pin-tabs-callout-1-title = Önemli sekmeleri elinizin altında tutun
+pin-tabs-callout-1-subtitle = Bir sekmeyi sabitlemek için sekme şeridinin başına sürükleyin veya sağ tıklayıp “Sekmeyi sabitle“yi seçin.
+pin-tabs-callout-cta-1-button = Bu sekmeyi sabitle
+pin-tabs-callout-2-title = En çok ziyaret ettiğiniz sekmeleri sabitleyin
+pin-tabs-callout-2-subtitle = Sabitlemek istediğiniz sekmeyi sekme şeridinin başına sürükleyin veya sağ tıklayıp “Sekmeyi sabitle“yi seçin.
+pin-tabs-callout-cta-2-button = Bu sekmeyi sabitle
+pin-tabs-callout-3-title = Önemli siteleri elinizin altında tutun
+pin-tabs-callout-4-title = En çok ziyaret ettiğiniz siteleri sabitleyin
+
+## Sidebar Onboarding Strings
+
+sidebar-customization-callout-1-title = Kenar çubuğu: Araçlarınız ve sekmeleriniz burada
+sidebar-customization-callout-1-subtitle = { -brand-product-name } kenar çubuğundan gezinti geçmişinize, diğer cihazlardaki sekmelere ve yapay zekâ sohbet botlarına hızlıca erişebilirsiniz. Ana görünümünüzden ayrılmanıza hiç gerek yok.
+sidebar-customization-callout-callout-button = Kenar çubuğunu özelleştir
+sidebar-customization-callout-dismiss-button = Kenar çubuğunu gizle
+sidebar-customization-callout-2-title = { -brand-product-name } kenar çubuğunu kişiselleştirin
+sidebar-customization-callout-2-subtitle = Araçları ekleyip kaldırın. Sekmelerinizi kenar çubuğuna yerleştirin. Yapay zekâ sohbet botlarını deneyin. Kenar çubuğunuzu nasıl özelleştireceğiniz size kalmış.
 
 ## Sidebar Callout Survey Strings
 
@@ -94,3 +224,19 @@ sidebar-genai-survey-satisfaction-question = Kenar çubuğundan bir yapay zekâ 
 sidebar-genai-survey-productive-question =
     Aşağıdaki ifadeye katılıyor musunuz?:<br/>
     “Kenar çubuğundaki yapay zekâ sohbet botu daha verimli olmamı sağlıyor”
+unified-search-callout-title = Arama motorları arasında geçiş yapın
+unified-search-callout-subtitle = Aradığınız şeye en uygun arama motorunu seçin.
+unified-search-callout-primary-label = İleri
+unified-search-callout-secondary-label = Kapat
+unified-search-engines-callout-title = Kısayolla arama yapın
+unified-search-engines-callout-subtitle = Geçmişinizde, yer imlerinizde, sekmelerinizde veya başka bir arama motoruyla arama yapmak için “@” yazdıktan sonra anahtar kelimenizi yazın.
+unified-search-engines-callout-primary-label = Anladım
+actions-callout-title = Sık kullanılan görevlere ve temel ayarlara erişin
+# The user can type "print" and "clear" and a button will appear in the
+# search bar (e.g. Print page) the user can click to initiate the action.
+# These example text inputs correlate to the the following strings
+# (either matching the whole string, or the first word of the string).
+# "print" - quickactions-cmd-print
+# "clear" - quickactions-cmd-clearrecenthistory
+# When localizing, ensure the translations match to ensure the action button appears as expected.
+actions-callout-subtitle = Sayfa yazdırmak için “yazdır” yazmayı veya geçmişinizi temizlemek için “geçmiş” yazmayı deneyin.

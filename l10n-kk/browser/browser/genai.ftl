@@ -5,11 +5,6 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = Шолу кезінде жылдам қол жеткізу үшін сіз таңдаған чат-ботты бүйір панеліне қосады. <a data-l10n-name="connect">Кері байланыс хабарламасын жіберу</a>
-genai-settings-chat-choose = Чат-ботты таңдау
-genai-settings-chat-choose-one-menuitem =
-    .label = Таңдау
-genai-settings-chat-links = Чат-ботты таңдаған кезде сіз оның провайдерінің қолдану шарттары және жекелік саясатымен келісесіз.
 genai-settings-chat-chatgpt-links = ChatGPT таңдау арқылы сіз OpenAI ұйымының <a data-l10n-name="link1">Қызмет көрсету шарттары</a> және <a data-l10n-name="link2">Жекелік саясаты</a> шарттарымен келісесіз.
 genai-settings-chat-claude-links = Anthropic Claude таңдау арқылы сіз Anthropic ұйымының <a data-l10n-name="link1">Тұтынушыларға қызмет көрсету шарттары</a>, <a data-l10n-name="link2">Пайдалану саясаты</a> және <a data-l10n-name="link3">Жекелік саясаты</a> шарттарымен келісесіз.
 genai-settings-chat-copilot-links = Copilot таңдау арқылы сіз <a data-l10n-name="link1">Copilot ЖИ қолдану шарттары</a> және <a data-l10n-name="link2">Microsoft жекелік мәлімдемесі</a> шарттарымен келісесіз.
@@ -17,9 +12,6 @@ genai-settings-chat-gemini-links = Google Gemini таңдау арқылы сі�
 genai-settings-chat-huggingchat-links = HuggingChat таңдау арқылы сіз <a data-l10n-name="link1">HuggingChat жекелік ескертуі</a> және <a data-l10n-name="link2">Hugging Face жекелік саясаты</a> шарттарымен келісесіз.
 genai-settings-chat-lechat-links = Le Chat Mistral таңдау арқылы сіз Mistral AI ұйымының <a data-l10n-name="link1">Қызмет көрсету шарттары</a> және <a data-l10n-name="link2">Жекелік саясаты</a> шарттарымен келісесіз.
 genai-settings-chat-localhost-links = { -vendor-short-name } инновациялар тобынан <a data-l10n-name="link1">llamafile</a> сияқты жеке жергілікті чат-ботты жасаңыз.
-genai-settings-chat-shortcuts =
-    .description = Мәтінді таңдаған кезде сұрауларға жарлықты көрсетеді. { -brand-short-name } мәтінді, бет тақырыбын және сұрауды чат-ботқа жібереді.
-    .label = Мәтінді таңдаған кезде сұрауларды көрсету
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -43,6 +35,10 @@ genai-prompts-quiz =
 genai-prompts-explain =
     .label = Мұны түсіндіру
     .value = Қарапайым сөздерді қолдана отырып, осы таңдаудағы негізгі ұғымдарды түсіндіріңіз. Сондай-ақ, мысалдарды қолданыңыз.
+# Prompt purpose: writing tool that helps users with spelling and grammar mistakes and produce a response that identifies errors and rewrites the inputted text correctly
+genai-prompts-proofread =
+    .label = Түзету
+    .value = Мәтінді емле және грамматикалық қателерге тексеріңіз. Қателерді анықтап, түзетілген нұсқасын ұсыныңыз. Мәтіннің мағынасы мен нақты мазмұны сақталуы тиіс. Алдымен ұсынылған түзетулер тізімін, содан кейін соңғы, түзетілген нұсқасын көрсетіңіз.
 # This prompt is added to the beginning of selection prompts sent to a chatbot.
 # $tabTitle (string) - title of the webpage
 # $selection (string) - selected text
@@ -55,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = { $provider } сұрау
+genai-menu-open-generic =
+    .label = ЖИ чат-ботын ашу
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = { $provider } ашу
+genai-menu-remove-generic =
+    .label = ЖИ чат-ботын өшіру
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = { $provider } өшіру
+genai-menu-remove-sidebar =
+    .label = Құралдар панелінен өшіру
+genai-menu-new-badge = Жаңа
+genai-menu-summarize-page = Бет қорытындысы
 genai-input-ask-generic =
     .placeholder = ЖИ чат-ботынан сұрау…
 # $provider (string) - name of the provider
@@ -62,6 +72,18 @@ genai-input-ask-provider =
     .placeholder = { $provider } сұрау…
 genai-shortcuts-hide =
     .label = Чат-бот жарлығын жасыру
+genai-menu-choose-chatbot =
+    .label = ЖИ чат-ботын таңдау
+genai-menu-ask-generic-2 =
+    .label = ЖИ чат-ботынан сұрау
+    .accesskey = ч
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = { $provider } сұрау
+    .accesskey = р
+genai-menu-no-provider-2 =
+    .label = ЖИ чат-ботын сұрау
+    .accesskey = ч
 
 ## Chatbot header
 
@@ -74,8 +96,6 @@ genai-header-close-button =
     .title = Жабу
 genai-provider-view-details =
     .label = Чат-бот мәліметтерін қарау
-genai-provider-about-chatbots =
-    .label = Бұл чат-боттар туралы
 genai-options-reload-generic =
     .label = ЖИ чат-ботын қайта жүктеу
 # $provider (string) - name of the provider
@@ -88,11 +108,18 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = { -brand-short-name } ішіндегі ЖИ чат-боттары туралы
 
+## Chatbot footer
+
+genai-page-button-summarize = Бетті қорытындылау
+
 ## Chatbot onboarding
 
 genai-onboarding-header = Шолу кезінде қорытындылау, ми шабуылын жасау және т.б
+genai-onboarding-choose-header = { -brand-short-name } бүйір панелінде пайдалану үшін ЖИ чат-ботын таңдаңыз
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = { -brand-short-name } бүйір панелінде пайдалану үшін ЖИ чат-ботын таңдаңыз. Сіз таңдаған кезде біз әрбір чат-бот туралы мәліметтерді көрсетеміз. Кез келген уақытта ауысуға болады. <a data-l10n-name="learn-more">Көбірек білу</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Кез келген уақытта ауысыңыз. Таңдау бойынша анықтама алу үшін <a data-l10n-name="learn-more">әр чат-бот туралы қосымша мәліметтер алыңыз</a>.
 genai-onboarding-primary = Жалғастыру
 genai-onboarding-secondary = Жабу
 genai-onboarding-claude-tooltip =
@@ -116,6 +143,10 @@ genai-onboarding-lechat-learn = Le Chat туралы көбірек білу
 genai-onboarding-select-header = Ұсыныстарды көру үшін мәтінді таңдаңыз
 genai-onboarding-select-description = Мәтінді таңдаған кезде чат-ботқа жіберуге болатын ескертулерді ұсынамыз. Сіз өзіңіздің сұрауларыңызды да жаза аласыз.
 genai-onboarding-select-primary = Чатты бастау
+genai-chatbot-contextual-title = ЖИ чат-ботын бетті ауыстырмай қолдану
+genai-chatbot-contextual-button = Чат-ботты таңдау
+genai-chatbot-summarize-title = Жаңа! Бір шерту арқылы беттерді қорытындылау
+genai-chatbot-summarize-button = Бетті қорытындылау
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -137,3 +168,45 @@ genai-onboarding-huggingchat-switch = Ашық үлгілердің әртүрл
 genai-onboarding-huggingchat-price-2 = Тегін; тіркелгі сұраулардың белгілі бір санынан кейін керек болады
 genai-onboarding-lechat-generate = Мәтін мен кодты генерациялау
 genai-onboarding-lechat-price = Тегін; тіркелгі қажет
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Жалғастыру
+genai-model-optin-optout =
+    .label = Бас тарту
+genai-model-optin-cancel =
+    .label = Бас тарту
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] оқу уақыты { $range } минут
+       *[other] оқу уақыты { $range } минут
+    }
+# Error message displayed when a link preview cannot be generated
+link-preview-error-message = Бұл сілтемені алдын ала қарай алмаймыз
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = Сілтемеден өту
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Бірнәрсе қате кетті.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Қайтадан көру
+# Button that opens the Link Preview settings
+link-preview-settings-button =
+    .title = Сілтемені алдын ала қарау баптаулары
+# Progress message for the first-time setup
+# $progress (number) - The percentage value 1-100 indicating the progress of the setup.
+link-preview-setup = Алғашқы баптау • <strong>{ $progress }%</strong>
+# Onboarding card See a preview button
+link-preview-onboarding-button = Алдын ала қарауды қарау
+# Onboarding card Close button
+link-preview-onboarding-close = Жабу

@@ -16,9 +16,6 @@ perftools-heading-features-default = Caraterìsticas (cussigiadas in manera pred
 perftools-heading-features-disabled = Caraterìsticas disativadas
 perftools-heading-features-experimental = Isperimentales
 
-##
-
-
 ## The controls for the interval at which the profiler samples the code.
 
 perftools-range-interval-milliseconds = { NUMBER($interval, maxFractionalUnits: 2) } ms
@@ -27,9 +24,6 @@ perftools-range-interval-milliseconds = { NUMBER($interval, maxFractionalUnits: 
 
 perftools-devtools-interval-label = Intervallu:
 perftools-devtools-settings-label = Cunfiguratzione
-
-## Various statuses that affect the current state of profiling, not typically displayed.
-
 
 ## These are shown briefly when the user is waiting for the profiler to respond.
 
@@ -47,15 +41,10 @@ perftools-button-add-directory = Agiunghe una cartella
 perftools-button-remove-directory = Cantzella sa seletzione
 perftools-button-edit-settings = Modìfica sa cunfiguratzione...
 
-## These messages are descriptions of the threads that can be enabled for the profiler.
+## More actions menu
 
-
-##
-
-
-## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
-## devtools.performance.new-panel-onboarding preference is true.
-
+perftools-menu-more-actions-button =
+    .title = Àteras atziones
 
 ## Profiler presets
 
@@ -77,12 +66,13 @@ perftools-presets-graphics-label = Gràficas
 perftools-presets-graphics-description = Profilu pro compidare faddinas de gràfica in { -brand-shorter-name }.
 perftools-presets-media-label = Cuntenutos multimediales
 perftools-presets-media-description2 = Profilu pro compidare faddinas de àudio e vìdeu in { -brand-shorter-name }.
+perftools-presets-ml-label = Aprendimentu automàticu
+perftools-presets-ml-description2 = Profilu pro compidare faddinas de aprendimentu automàticu in { -brand-shorter-name }.
 perftools-presets-networking-label = Rete
 perftools-presets-networking-description = Profilu pro compidare faddinas de rete in { -brand-shorter-name }.
 # "Power" is used in the sense of energy (electricity used by the computer).
 perftools-presets-power-label = Energia
 perftools-presets-power-description = Profilu pro compidare faddinas de impreu de energia in { -brand-shorter-name }, cun subra-càrriga (overhead) bàscia.
+perftools-presets-debug-label = Curregi faddinas
+perftools-presets-debug-description = Precunfiguratzione pro currègere faddinas in { -brand-shorter-name }. Est subracarrigadu meda, no dd’imprees pro atividades chi bògiant unu rendimentu artu, ma pro cumprèndere su cumportamentu de su navigadore.
 perftools-presets-custom-label = Personalizadu
-
-##
-

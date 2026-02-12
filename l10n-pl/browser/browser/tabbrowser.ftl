@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Zamknij kartę
 tabbrowser-menuitem-close =
     .label = Zamknij
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -166,8 +179,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Nie pytaj ponownie.
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Uwaga
-tabbrowser-confirm-close-duplicate-tabs-text = Ostatnia aktywna karta nie zostanie zamknięta
 tabbrowser-confirm-close-all-duplicate-tabs-title = Czy zamknąć podwójne karty?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Zamkniemy podwójne karty w tym oknie. Ostatnia aktywna
@@ -214,6 +225,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Wycisz kartę
@@ -221,8 +235,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Włącz dźwięk
 tabbrowser-manager-close-tab =
     .tooltiptext = Zamknij kartę
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — zamknięta
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — bieżące okno
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Utwórz grupę kart
 tab-group-editor-title-edit = Zarządzaj grupą kart
@@ -234,22 +256,40 @@ tab-group-editor-cancel =
     .accesskey = A
 tab-group-editor-color-selector =
     .aria-label = Kolor grupy kart
-tab-group-editor-color-selector-blue = Niebieski
-tab-group-editor-color-selector-purple = Fioletowy
-tab-group-editor-color-selector-cyan = Turkusowy
-tab-group-editor-color-selector-orange = Pomarańczowy
-tab-group-editor-color-selector-yellow = Żółty
-tab-group-editor-color-selector-pink = Różowy
-tab-group-editor-color-selector-green = Zielony
-tab-group-editor-color-selector-gray = Szary
-tab-group-editor-color-selector-red = Czerwony
-tab-group-menu-header = Grupy kart
+tab-group-editor-color-selector2-blue = Niebieski
+    .title = Niebieski
+tab-group-editor-color-selector2-purple = Fioletowy
+    .title = Fioletowy
+tab-group-editor-color-selector2-cyan = Turkusowy
+    .title = Turkusowy
+tab-group-editor-color-selector2-orange = Pomarańczowy
+    .title = Pomarańczowy
+tab-group-editor-color-selector2-yellow = Żółty
+    .title = Żółty
+tab-group-editor-color-selector2-pink = Różowy
+    .title = Różowy
+tab-group-editor-color-selector2-green = Zielony
+    .title = Zielony
+tab-group-editor-color-selector2-gray = Szary
+    .title = Szary
+tab-group-editor-color-selector2-red = Czerwony
+    .title = Czerwony
+tab-group-description = { $tabGroupName } — grupa kart
+tab-group-label-tooltip-collapsed = { $tabGroupName } — zwinięte
+tab-group-label-tooltip-expanded = { $tabGroupName } — rozwinięte
+tab-group-preview-name =
+    .aria-label = Karty w zwiniętej grupie
 tab-context-unnamed-group =
     .label = Grupa bez nazwy
 tab-group-name-default = Grupa bez nazwy
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Otwarta lista kart
+tab-group-preview-closed-description = Zamknięta lista kart
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -265,6 +305,8 @@ tab-context-move-tab-to-group =
            *[other] Dodaj karty do grupy
         }
     .accesskey = D
+tab-context-move-tab-to-group-saved-groups =
+    .label = Zamknięte grupy
 tab-group-editor-action-new-tab =
     .label = Nowa karta w grupie
 tab-group-editor-action-new-window =
@@ -289,6 +331,17 @@ tab-context-ungroup-tab =
            *[other] Usuń z grup
         }
     .accesskey = U
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } karta więcej
+        [few] { $tabCount } karty więcej
+       *[many] { $tabCount } kart więcej
+    }
 
 ## Open/saved tab group context menu
 
@@ -314,3 +367,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Otwórz grupę w nowym oknie
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Podzielony widok
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Dodaj podzielony widok
+    .accesskey = D
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Otwórz w podzielonym widoku
+    .accesskey = O
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Rozdziel widok
+    .accesskey = R
+tab-context-badge-new = Nowe

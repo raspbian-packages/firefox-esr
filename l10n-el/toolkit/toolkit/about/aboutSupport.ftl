@@ -18,9 +18,13 @@ support-addons-type = Τύπος
 support-addons-enabled = Ενεργό
 support-addons-version = Έκδοση
 support-addons-id = ID
-legacy-user-stylesheets-title = Φύλλα στυλ χρήστη παλαιού τύπου
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Τοποθεσία
+legacy-user-stylesheets-title = Παλαιού τύπου φύλλα μορφοποίησης χρήστη
 legacy-user-stylesheets-enabled = Ενεργό
-legacy-user-stylesheets-stylesheet-types = Φύλλο στυλ
+legacy-user-stylesheets-stylesheet-types = Φύλλα μορφοποίησης
 legacy-user-stylesheets-no-stylesheets-found = Δεν βρέθηκαν φύλλα στυλ
 security-software-title = Λογισμικό ασφαλείας
 security-software-type = Τύπος
@@ -184,6 +188,8 @@ media-capabilities-enumerate = Απαρίθμηση βάσης δεδομένω�
 
 media-codec-support-sw-decoding = Αποκωδικοποίηση λογισμικού
 media-codec-support-hw-decoding = Αποκωδικοποίηση υλικού
+media-codec-support-sw-encoding = Κωδικοποίηση λογισμικού
+media-codec-support-hw-encoding = Κωδικοποίηση υλικού
 media-codec-support-codec-name = Όνομα κωδικοποιητή
 media-codec-support-supported = Υποστηρίζεται
 media-codec-support-unsupported = Δεν υποστηρίζεται

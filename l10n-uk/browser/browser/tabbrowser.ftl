@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Закрити вкладку
 tabbrowser-menuitem-close =
     .label = Закрити
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -166,8 +179,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Більше не показуват
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Увага
-tabbrowser-confirm-close-duplicate-tabs-text = Ми залишимо відкритою останню активну вкладку
 tabbrowser-confirm-close-all-duplicate-tabs-title = Закрити дублікати вкладок?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Ми закриємо дублікати вкладок у цьому вікні. Остання активна
@@ -214,6 +225,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Вимкнути звук вкладки
@@ -221,8 +235,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Увімкнути звук вкладки
 tabbrowser-manager-close-tab =
     .tooltiptext = Закрити вкладку
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – закрито
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – поточне вікно
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Створити групу вкладок
 tab-group-editor-title-edit = Керувати групою вкладок
@@ -234,22 +256,32 @@ tab-group-editor-cancel =
     .accesskey = С
 tab-group-editor-color-selector =
     .aria-label = Колір групи вкладок
-tab-group-editor-color-selector-blue = Блакитний
-tab-group-editor-color-selector-purple = Бузковий
-tab-group-editor-color-selector-cyan = Бірюзовий
-tab-group-editor-color-selector-orange = Помаранчевий
-tab-group-editor-color-selector-yellow = Жовтий
-tab-group-editor-color-selector-pink = Рожевий
-tab-group-editor-color-selector-green = Зелений
-tab-group-editor-color-selector-gray = Сірий
-tab-group-editor-color-selector-red = Червоний
-tab-group-menu-header = Групи вкладок
+tab-group-editor-color-selector2-blue = Блакитний
+    .title = Блакитний
+tab-group-editor-color-selector2-purple = Бузковий
+    .title = Бузковий
+tab-group-editor-color-selector2-cyan = Бірюзовий
+    .title = Бірюзовий
+tab-group-editor-color-selector2-orange = Помаранчевий
+    .title = Помаранчевий
+tab-group-editor-color-selector2-yellow = Жовтий
+    .title = Жовтий
+tab-group-editor-color-selector2-pink = Рожевий
+    .title = Рожевий
+tab-group-editor-color-selector2-green = Зелений
+    .title = Зелений
+tab-group-editor-color-selector2-gray = Сірий
+    .title = Сірий
+tab-group-editor-color-selector2-red = Червоний
+    .title = Червоний
+tab-group-description = { $tabGroupName } – група вкладок
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Згорнуто
+tab-group-label-tooltip-expanded = { $tabGroupName } — Розгорнуто
 tab-context-unnamed-group =
     .label = Група без назви
 tab-group-name-default = Група без назви
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -265,6 +297,8 @@ tab-context-move-tab-to-group =
            *[other] Додати вкладки до групи
         }
     .accesskey = т
+tab-context-move-tab-to-group-saved-groups =
+    .label = Закриті групи
 tab-group-editor-action-new-tab =
     .label = Нова вкладка в групі
 tab-group-editor-action-new-window =
@@ -289,6 +323,17 @@ tab-context-ungroup-tab =
            *[other] Вилучити з груп
         }
     .accesskey = л
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] Ще { $tabCount } вкладка
+        [few] Ще { $tabCount } вкладки
+       *[many] Ще { $tabCount } вкладок
+    }
 
 ## Open/saved tab group context menu
 

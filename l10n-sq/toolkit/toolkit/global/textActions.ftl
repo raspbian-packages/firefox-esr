@@ -28,11 +28,6 @@ text-action-copy-shortcut =
 text-action-copy-clean-link =
     .label = Kopjo Lidhje të Pastër
     .accesskey = K
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = Kopjoje Pa Gjurmim Sajti
-    .accesskey = K
 text-action-paste =
     .label = Ngjite
     .accesskey = N
@@ -73,3 +68,14 @@ text-action-search-text-box-clear =
     .title = Spastroje
 text-action-highlight-selection =
     .label = Theksoje Përzgjedhjen
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = Shtoni Koment te Përzgjedhja
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = Hiqe Theksimin
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = Hiqi Krejt Theksimet

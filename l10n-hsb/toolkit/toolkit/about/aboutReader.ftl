@@ -76,17 +76,22 @@ about-reader-customtheme-tab = Swójski
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Tekst
-    .title = Barbu wobdźěłać
-about-reader-custom-colors-background = Pozadk
-    .title = Wobdźěłanska barba
-about-reader-custom-colors-unvisited-links = Njewopytane wotkazy
-    .title = Wobdźěłanska barba
-about-reader-custom-colors-visited-links = Wopytane wotkazy
-    .title = Wobdźěłanska barba
-about-reader-custom-colors-selection-highlight = Tekstowy marker za wótře čitać
-    .title = Barbu wobdźěłać
 about-reader-reset-button = Na standard wróćo stajić
+about-reader-custom-colors-foreground2 =
+    .label = Tekst
+    .title = Barbu wobdźěłać
+about-reader-custom-colors-background2 =
+    .label = Pozadk
+    .title = Wobdźěłanska barba
+about-reader-custom-colors-unvisited-links2 =
+    .label = Njewopytane wotkazy
+    .title = Wobdźěłanska barba
+about-reader-custom-colors-visited-links2 =
+    .label = Wopytane wotkazy
+    .title = Wobdźěłanska barba
+about-reader-custom-colors-selection-highlight2 =
+    .label = Tekstowy marker za wótře čitać
+    .title = Barbu wobdźěłać
 
 ## Reader View text and layout menu
 
@@ -94,7 +99,7 @@ about-reader-text-header = Tekst
 about-reader-text-size-label = Tekstowa wulkosć
 about-reader-font-type-selector-label = Pismo
 about-reader-font-weight-selector-label = Pismowa waha
-about-reader-font-weight-light = Swětły
+about-reader-font-weight-light = Ćeńki
 about-reader-font-weight-regular = Normalny
 about-reader-font-weight-bold = Tučny
 about-reader-layout-header = Wuhotowanje
@@ -116,3 +121,5 @@ about-reader-text-alignment-center =
     .title = Tekst centrowano wusměrić
 about-reader-text-alignment-right =
     .title = Tekst naprawo wusměrić
+about-reader-text-alignment-justify =
+    .title = Tekst w blokowej sadźbje wusměrić

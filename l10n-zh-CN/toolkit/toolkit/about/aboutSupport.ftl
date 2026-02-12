@@ -18,6 +18,10 @@ support-addons-type = 类型
 support-addons-enabled = 已启用
 support-addons-version = 版本
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = 位置
 legacy-user-stylesheets-title = 旧版用户样式表单
 legacy-user-stylesheets-enabled = 启用
 legacy-user-stylesheets-stylesheet-types = 样式表
@@ -102,7 +106,7 @@ modified-key-prefs-title = 修改过的重要首选项
 modified-prefs-name = 名称
 modified-prefs-value = 值
 user-js-title = user.js 设置
-user-js-description = 您的配置文件夹中有一个 <a data-l10n-name="user-js-link">user.js 文件</a>，其中包含了一些并非由 { -brand-short-name } 所创建的首选项（偏好设置）。
+user-js-description = 您的配置文件夹中有一个 <a data-l10n-name="user-js-link">user.js 文件</a>，其中包含了一些并非由 { -brand-short-name } 所创建的首选项。
 locked-key-prefs-title = 已锁定的重要首选项
 locked-prefs-name = 名称
 locked-prefs-value = 值
@@ -184,6 +188,8 @@ media-capabilities-enumerate = 枚举数据库
 
 media-codec-support-sw-decoding = 软件解码
 media-codec-support-hw-decoding = 硬件解码
+media-codec-support-sw-encoding = 软件编码
+media-codec-support-hw-encoding = 硬件编码
 media-codec-support-codec-name = 编解码器名称
 media-codec-support-supported = 已支持
 media-codec-support-unsupported = 不支持

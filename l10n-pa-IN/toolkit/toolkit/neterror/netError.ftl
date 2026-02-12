@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = ਨੈੱਟਵਰਕ ਲਈ ਲਾਗਇ�
 neterror-dns-not-found-title = ਸਰਵਰ ਨਹੀਂ ਲੱਭਿਆ
 neterror-malformed-uri-page-title = ਅਢੁੱਕਵਾਂ URL
 general-body-title = ਧਿਆਨ ਰੱਖੋ। ਕੁਝ ਸਹੀ ਨਹੀਂ ਜਾਪਦਾ ਹੈ।
+problem-with-this-site-title = ਇਸ ਸਾਈਟ ਨਾਲ ਸਮੱਸਿਆ ਜਾਪਦੀ ਹੈ
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = ਜੇ ਤੁਸੀਂ ਕੋਈ ਵੀ ਸਫ਼�
 neterror-load-error-firewall = ਜੇ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਜਾਂ ਨੈੱਟਵਰਕ ਫਾਇਰਵਾਲ ਜਾਂ ਪਰਾਕਸੀ ਰਾਹੀਂ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਹੈ ਤਾਂ ਯਕੀਨੀ ਬਣਾਓ ਕਿ { -brand-short-name } ਨੂੰ ਵੈੱਬ ਵਰਤਣ ਲਈ ਅਧਿਕਾਰ ਹੈ।
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = ਜੇ ਤੁਸੀਂ ਲੋਕਲ ਨੈੱਟਵਰਕ ਸਫ਼ੇ ਨੂੰ ਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ ਤਾਂ macOS Privacy & Security ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾਂਚ ਕਰੋ ਕਿ ਕੀ { -brand-short-name } ਨੂੰ ਲੋਕਲ ਨੈੱਟਵਰਕ ਇਜਾਜ਼ਤਾਂ ਲਈ ਮਨਜ਼ੂਰੀ ਦਿੱਤੀ ਹੈ।
+neterror-http-error-page = ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਸੀਂ ਵੈੱਬਸਾਈਟ ਦਾ ਸਿਰਨਾਵਾਂ ਠੀਕ ਤਰ੍ਹਾਂ ਲਿਖਿਆ ਹੈ।
 neterror-captive-portal = ਇਸ ਤੋਂ ਪਹਿਲਾਂ ਕਿ ਤੁਸੀਂ ਇੰਟਰਨੈੱਟ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕੋ, ਤੁਹਾਨੂੰ ਇਸ ਨੈੱਟਵਰਕ ਲਈ ਲਾਗਇਨ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>ਜੇ ਤੁਸੀਂ ਸਹੀ �
 neterror-dns-not-found-hint-try-again = ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹੋ
 neterror-dns-not-found-hint-check-network = ਆਪਣੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ
 neterror-dns-not-found-hint-firewall = ਜਾਂਚ ਕਰੋ ਕਿ { -brand-short-name } ਨੂੰ ਵੈੱਬ ਲਈ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ (ਤੁਸੀਂ ਕਨੈਕਟ ਤਾਂ ਹੋ ਸਕਦੇ ਹੋ, ਪਰ ਫਾਇਰਵਾਲ ਦੇ ਪਿੱਛੇ)
+neterror-dns-not-found-offline-hint-header = <strong>ਇਸ ਬਾਰੇ ਤੁਸੀਂ ਕੀ ਕਰ ਸਕਦੇ ਹੋ?</strong>
+neterror-dns-not-found-offline-hint-different-device = ਵੱਖਰੇ ਡਿਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕਰਕੇ ਵੇਖੋ।
+neterror-dns-not-found-offline-hint-modem = ਆਪਣੇ ਮਾਡਮ ਜਾਂ ਰਾਊਟਰ ਦੀ ਜਾਂਚ ਕਰੋ।
+neterror-dns-not-found-offline-hint-reconnect = Wi-Fi ਨਾਲੋਂ ਡਿਸ-ਕਨੈਕਟ ਹੋ ਕੇ ਫੇਰ ਕਨੈਕਟ ਕਰੋ।
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = ਅਚਾਨਕ ਗਲਤੀ ਆਈ
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } ਸਾਡੇ ਭਰੋਸੇਯੋਗ DNS ਹੱਲ਼ ਕਰਨ ਵਾਲੇ ਰਾਹੀਂ ਇਸ ਸਾਈਟ ਦੇ ਸਿਰਨਾਵਾਂ ਲਈ ਤੁਹਾਡੀ ਬੇਨਤੀ ਨੂੰ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕਰ ਸਕਦੀ ਹੈ। ਇਸ ਦੇ ਕਾਰਨ ਹਨ:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } ਇਸ ਸਾਈਟ ਦੇ ਸਿਰਨਾਵੇਂ ਦੀ ਤੁਹਾਡੀ ਬੇਨਤੀ ਨੂੰ ਸਾਡੇ ਸੁਰੱਖਿਅਤ DNS ਪੂਰਕ ਨਾਲ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕਰ ਸਕਦਾ ਹੈ। ਕਾਰਨ ਇਹ ਹਨ:
 neterror-dns-not-found-native-fallback-heuristic = HTTPS ਰਾਹੀਂ DNS ਨੂੰ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਨੇ ਅਸਮਰੱਥ ਕੀਤਾ ਹੈ।
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } { $trrDomain } ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੇ ਸਮਰੱਥ ਨਹੀਂ ਹੋਵੇਗਾ।
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = ਪਰਾਕਸੀ ਸੈਟਿੰਗ 
 neterror-proxy-connect-failure-contact-admin = ਆਪਣੇ ਨੈੱਟਵਰਕ ਪਰਸ਼ਾਸ਼ਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ ਅਤੇ ਪਤਾ ਕਰੋ ਕਿ ਪਰਾਕਸੀ ਸਰਵਰ ਕੰਮ ਕਰਦਾ ਹੈ।
 neterror-content-encoding-error = ਇਹ ਸਮੱਸਿਆ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵੈੱਬਸਾਇਟਾਂ ਦੇ ਮਾਲਕਾਂ ਨੂੰ ਦੇਣ ਲਈ ਸੰਪਰਕ ਕਰੋ।
 neterror-unsafe-content-type = ਇਹ ਸਮੱਸਿਆ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵੈੱਬਸਾਇਟ ਦੇ ਮਾਲਕਾਂ ਨੂੰ ਦੇਣ ਲਈ ਸੰਪਰਕ ਕਰੋ।
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } { $hostname } ਉੱਤੇ ਭਰੋਸਾ ਨਹੀਂ ਕਰਦਾ ਹੈ, ਕਿਉਂਕਿ ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ। URL ਨੂੰ HTTPS ਵਿੱਚ ਬਦਲ ਕੇ ਅਜ਼ਮਾਓ।
 neterror-nss-failure-not-verified = ਸਫ਼ਾ, ਜੋ ਤੁਸੀਂ ਵੇਖਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੋ ਹੋ, ਵੇਖਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ, ਕਿਉਂਕਿ ਮਿਲੇ ਡਾਟੇ ਦੀ ਪਰਮਾਣਕਿਤਾ ਨੂੰ ਜਾਂਚਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।
 neterror-nss-failure-contact-website = ਇਹ ਸਮੱਸਿਆ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵੈੱਬ ਸਾਇਟ ਦੇ ਮਾਲਕ ਨੂੰ ਦੇਣ ਲਈ ਸੰਪਰਕ ਕਰੋ। ਬਦਲਵੇਂ ਰੂਪ ਵਿੱਚ, ਮੱਦਦ ਮੇਨੂ ਵਿੱਚ ਇਹ ਖਰਾਬ ਸਾਇਟ ਬਾਰੇ ਰਿਪੋਰਟ ਦੇਣ ਲਈ ਕਮਾਂਡ ਵਰਤੋਂ
 # Variables:
@@ -153,7 +161,17 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = ਜੇ ਤੁਸੀਂ <b>{
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> ਕੋਲ ਸੁਰੱਖਿਆ ਪਾਲਸੀ ਹੈ, ਜਿਸ ਨੂੰ HTTP ਸਟਰਿਕਟ ਟਰਾਂਸਪੋਰਟ ਸਕਿਉਰਟੀ (HSTS) ਕਹਿੰਦੇ ਹਨ, ਜਿਸ ਦਾ ਅਰਥ ਹੈ ਕਿ { -brand-short-name } ਇਸ ਨਾਲ ਸਿਰਫ਼ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਹੀ ਕਨੈਕਟ ਹੋ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਛੋਟ ਨਹੀਂ ਦੇ ਸਕਦੇ ਹੋ।
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = ਸ਼ਾਇਦ ਕੁਝ ਵੀ ਨਹੀਂ, ਕਿਉਂਕਿ ਸ਼ਾਇਦ ਇਹ ਸਮੱਸਿਆ ਤਾਂ ਸਾਈਟ ਨਾਲ ਹੈ।
 certerror-blocked-by-corp-headers-description = ਕਈ ਵਾਰ ਵੈੱਬਸਾਈਟਾਂ ਖੁਦ ਅਤੇ ਤੁਹਾਡੇ ਵਰਗੇ ਲੋਕਾਂ ਤੋਂ ਹੋਰ ਸਾਈਟਾਂ ਨਾਲ ਅਣਚਾਹੇ ਤਾਲਮੇਲ ਤੋਂ ਸੁਰੱਖਿਆ ਸੈਟਅੱਪ ਕਰਦੀਆਂ ਹਨ।
+certerror-coop-learn-more = ਕਰਾਸ ਓਰੀਜ਼ਨ ਓਪਨਰ ਪਾਲਸੀਜ਼ (COOP) ਬਾਰੇ ਹੋਰ ਜਾਣੋ
+certerror-coep-learn-more = ਕਰਾਸ ਓਰੀਜ਼ਨ ਇੰਬੈਂਡਰ ਪਾਲਸੀਜ਼ (COEP) ਬਾਰੇ ਹੋਰ ਜਾਣੋ
 # Variables:
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = ਗਲਤੀ ਕੋਡ: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } { $hostname } ਉੱਤੇ ਸਰਵਰ ਨਾਲ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਬਣਾ ਸਕਦਾ ਹੈ।
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = ਇੰਝ ਜਾਪਦਾ ਹੈ ਕਿ ਇਹ ਸਾਈਟ ਸੁਰੱਖਿਆ ਮਸਲਿਆਂ ਵਾਲੇ ਪੁਰਾਣੇ ਸਾਫਟਵੇਅਰ ਨੂੰ ਵਰਤ ਰਹੀ ਹੈ।

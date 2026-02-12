@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Oanmelde by netwurk
 neterror-dns-not-found-title = Server net fûn
 neterror-malformed-uri-page-title = Unjildige URL
 general-body-title = Wês foarsichtich. Eatwat sjocht der net goed út.
+problem-with-this-site-title = It liket derop dat der in probleem mei dizze website is
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = As jo gjin inkelde side lade kinne, kontrolearj
 neterror-load-error-firewall = As jo kompjûter of netwurk befeilige wurdt troch in firewall of proxy, soargje der dan foar dat { -brand-short-name } tagong hat ta it web.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = As jo in lokale netwurkside probearje te laden, kontrolearje dan yn de privacy- en befeiligingsynstellingen fan macOS of { -brand-short-name } tastimming hat foar in Lokaal netwurk.
+neterror-http-error-page = Kontrolearje oft jo it websiteadres krekt ynfierd hawwe.
 neterror-captive-portal = Jo moatte jo oanmelde by dit netwurk eardat jo tagong krije ta it ynternet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>As jo it krekte adres ynfierd hawwe
 neterror-dns-not-found-hint-try-again = It letter opnij probearje
 neterror-dns-not-found-hint-check-network = Jo netwurkferbining kontrolearje
 neterror-dns-not-found-hint-firewall = Kontrolearje oft { -brand-short-name } tastimming hat om tagong te krijen ta ynternet (jo binne mooglik ferbûn, mar jo binne efter in firewall)
+neterror-dns-not-found-offline-hint-header = <strong>Wat kinne jo hjir oan dwaan?</strong>
+neterror-dns-not-found-offline-hint-different-device = Probearje ferbining te meitsjen op in oar apparaat.
+neterror-dns-not-found-offline-hint-modem = Kontrolearje jo modem of router.
+neterror-dns-not-found-offline-hint-reconnect = Ferbrek de ferbining ferbyn opnij mei wifi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Unferwachte probleem.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } kin jo oanfraach om it adres fan dizze website net beskermje fia ús fertroude DNS-resolver. Dit is de reden:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } kin jo oanfraach om it adres fan dizze website net beskermje fia ús feilige DNS-provider. Dit is de reden:
 neterror-dns-not-found-native-fallback-heuristic = DNS oer HTTPS is útskeakele op jo netwurk.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } koe gjin ferbining meitsje mei { $trrDomain }.
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = Kontrolearje oft jo proxy-ynstellingen
 neterror-proxy-connect-failure-contact-admin = Nim kontakt op mei jo netwurkbehearder om te kontrolearjen oft de proxyserver wurket.
 neterror-content-encoding-error = Nim kontakt op mei de website-eigeners om se oer dit probleem te ynformearjen.
 neterror-unsafe-content-type = Nim kontakt op mei de website-eigeners om se oer dit probleem te ynformearjen.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } fertrout { $hostname } net, omdat de ferbining net befeilige is. Probearje de URL nei HTTPS te wizigjen.
 neterror-nss-failure-not-verified = De side dy’t jo besjen wolle kin net toand wurde, omdat de echtheid fan de ûntfongen gegevens net ferifiearre wurde kin.
 neterror-nss-failure-contact-website = Nim kontakt op mei de website-eigeners om se oer dit probleem te ynformearjen.
 # Variables:
@@ -159,3 +167,13 @@ certerror-coep-learn-more = Mear ynfo oer Cross Origin Embedder-belied (COEP)
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Flaterkoade: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } kin gjin befeilige ferbining mei de server op { $hostname } oanmeitsje.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = It liket derop dat dizze website âlde software mei bekende befeiligingsproblemen brûkt.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Soargje derfoar dat jo de nijste ferzje fan { -brand-short-name } brûke. Gean yn it menu nei Help > Oer { -brand-short-name }. As jo de lêste { -brand-short-name } brûke, leit it probleem wierskynlik by de website sels.

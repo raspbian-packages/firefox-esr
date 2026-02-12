@@ -34,7 +34,15 @@ def is_release_promotion_available(parameters):
                 "type": "string",
                 "description": "The type of release promotion to perform.",
                 "enum": sorted(graph_config["merge-automation"]["behaviors"].keys()),
-                "default": "central-to-beta",
+                "default": "REPLACE ME",
+            },
+            "from-repo": {
+                "type": "string",
+                "description": "The URI of the source repository",
+            },
+            "to-repo": {
+                "type": "string",
+                "description": "The push URI of the target repository",
             },
             "from-branch": {
                 "type": "string",
@@ -63,7 +71,9 @@ def merge_automation_action(parameters, graph_config, input, task_group_id, task
     }
 
     for field in [
+        "from-repo",
         "from-branch",
+        "to-repo",
         "to-branch",
         "fetch-version-from",
     ]:

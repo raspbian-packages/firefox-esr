@@ -74,17 +74,22 @@ about-reader-customtheme-tab = ਕਸਟਮ
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = ਲਿਖਤ
-    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
-about-reader-custom-colors-background = ਬੈਕਗਰਾਊਂਡ
-    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
-about-reader-custom-colors-unvisited-links = ਨਾ-ਖੋਲ੍ਹੇ ਲਿੰਕ
-    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
-about-reader-custom-colors-visited-links = ਖੋਲ੍ਹੇ ਗਏ ਲਿੰਕ
-    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
-about-reader-custom-colors-selection-highlight = ਉੱਚਾ ਪੜ੍ਹੇ ਲਈ ਹਾਈਲਾਈਟਰ
-    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
 about-reader-reset-button = ਮੂਲ ਨੂੰ ਬਹਾਲ ਕਰੋ
+about-reader-custom-colors-foreground2 =
+    .label = ਲਿਖਤ
+    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
+about-reader-custom-colors-background2 =
+    .label = ਬੈਕਗਰਾਊਂਡ
+    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
+about-reader-custom-colors-unvisited-links2 =
+    .label = ਨਾ-ਖੋਲ੍ਹੇ ਲਿੰਕ
+    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
+about-reader-custom-colors-visited-links2 =
+    .label = ਖੋਲ੍ਹੇ ਗਏ ਲਿੰਕ
+    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
+about-reader-custom-colors-selection-highlight2 =
+    .label = ਉੱਚਾ ਪੜ੍ਹੇ ਲਈ ਹਾਈਲਾਈਟਰ
+    .title = ਰੰਗ ਨੂੰ ਸੋਧੋ
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = ਲਿਖਤ ਨੂੰ ਕੇਂਦਰ ਵਿੱਚ ਇਕਸਾਰ ਕਰੋ
 about-reader-text-alignment-right =
     .title = ਲਿਖਤ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਇਕਸਾਰ ਕਰੋ
+about-reader-text-alignment-justify =
+    .title = ਲਿਖਤ ਨੂੰ ਇਕਸਾਰ ਕਰੋ

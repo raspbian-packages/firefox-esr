@@ -3,18 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't re-use these strings outside of the menubar.
-
-
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't reuse these strings outside of the menubar.
-
-
 ## Application Menu (macOS only)
 
 menu-application-preferences =
@@ -145,8 +133,6 @@ menu-view-history-button =
     .label = Ιστορικό
 menu-view-synced-tabs-sidebar =
     .label = Συγχρονισμένες καρτέλες
-menu-view-megalist-sidebar =
-    .label = Κωδικοί πρόσβασης
 menu-view-full-zoom =
     .label = Ζουμ
     .accesskey = Ζ
@@ -262,6 +248,13 @@ menu-profiles-manage-profiles =
     .label = Διαχείριση προφίλ
 menu-profiles-new-profile =
     .label = Νέο προφίλ
+# Variables:
+#  $profileName (String): the name of the users profile
+menu-profiles-current =
+    .label = { $profileName } (τρέχον)
+menu-profiles-menu =
+    .label = Προφίλ
+    .accesskey = Π
 
 ## Tools Menu
 
@@ -271,6 +264,9 @@ menu-tools =
 menu-tools-downloads =
     .label = Λήψεις
     .accesskey = ψ
+menu-tools-extensions-and-themes =
+    .label = Επεκτάσεις και θέματα
+    .accesskey = Ε
 menu-tools-addons-and-themes =
     .label = Πρόσθετα και θέματα
     .accesskey = Π

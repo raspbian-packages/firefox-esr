@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Discjamâts
 appmenuitem-passwords =
     .label = Passwords
+appmenuitem-extensions-and-themes =
+    .label = Estensions e temis
+appmenuitem-extensions =
+    .label = Estensions
 appmenuitem-addons-and-themes =
     .label = Estensions e temis
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Maiusc+2
     }
+profiler-button-dropmarker =
+    .label = Vierç il panel dal profiladôr
+    .tooltiptext = Vierç il panel dal profiladôr
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Preconfigurazion par investigâ su erôrs audio e video in { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Multimediâl
+profiler-popup-presets-ml-description = Preconfigurazion pe diagnosi di problemis relatîfs al machine learning in { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Machine Learning
 profiler-popup-presets-networking-description = Preconfigurazion par investigâ su erôrs di rêt in { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Rêt
@@ -280,12 +290,14 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Oten i avîs su lis violazions di dâts
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Mascare la tô direzion e-mail e il telefon
+appmenuitem-services-relay-description = Vierç il cruscot pes mascaris di pueste eletroniche
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Protêç la tô ativitât in linie
+appmenu-services-header = I miei servizis
+appmenu-other-protection-header = Prove altris struments di protezion di { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Profîi
 appmenu-other-profiles = Altris profîi
 appmenu-manage-profiles =
     .label = Gjestìs i profîi
@@ -293,3 +305,5 @@ appmenu-create-profile =
     .label = Gnûf profîl
 appmenu-edit-profile =
     .aria-label = Modifiche profîl
+appmenu-profiles-2 =
+    .label = Profîi

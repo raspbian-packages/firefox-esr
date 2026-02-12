@@ -4,9 +4,6 @@
 
 do-not-track-description = أرسل للمواقع إشارة ”لا تتعقبني“ بأنك لا تريد أن يتعقبوك
 do-not-track-removal = لم نعد ندعم إشارة "لا تتعقبني"
-do-not-track-description2 =
-    .label = أرسل للمواقع طلب"لا تتعقبني"
-    .accesskey = س
 do-not-track-learn-more = اطّلع على المزيد
 do-not-track-option-default-content-blocking-known =
     .label = فقط حين يُضبط { -brand-short-name } على حجب المتعقّبات المعروفة
@@ -16,6 +13,12 @@ global-privacy-control-description =
     .label = أخبر مواقع الويب بعدم بيع بياناتي أو مشاركتها
     .accesskey = ش
 non-technical-privacy-header = تفضيلات خصوصية الموقع
+non-technical-privacy-label =
+    .aria-label = { non-technical-privacy-header }
+# Do not translate.
+# "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
+# included to facilitate power-user search of the about:preferences page.
+global-privacy-control-search = التحكم العالمي في الخصوصية (GPC)
 settings-page-title = الإعدادات
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
@@ -67,6 +70,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = أغلق
+do-not-track-removal2 =
+    .label = لم نعد ندعم إشارة "لا تتعقبني"
 
 ## Browser Restart Dialog
 
@@ -122,8 +127,12 @@ startup-header = البدء
 always-check-default =
     .label = تحقق دائمًا من كون { -brand-short-name } متصفّحك المبدئي
     .accesskey = د
-is-default = ‏{ -brand-short-name } هو المتصفح المبدئي حاليا
-is-not-default = ‏{ -brand-short-name } ليس المتصفح المبدئي حاليا
+is-default-browser =
+    .message = ‏{ -brand-short-name } هو المتصفح المبدئي حاليًا
+is-not-default-browser =
+    .message = ‏{ -brand-short-name } ليس المتصفح المبدئي حاليًا
+is-default = ‏{ -brand-short-name } هو المتصفح المبدئي حاليًا
+is-not-default = ‏{ -brand-short-name } ليس المتصفح المبدئي حاليًا
 set-as-my-default-browser =
     .label = اجعله المبدئي…
     .accesskey = م
@@ -142,6 +151,10 @@ preferences-data-migration-description = استورد العلامات وكلم�
 preferences-data-migration-button =
     .label = استورد البيانات
     .accesskey = د
+preferences-profiles-header = ملفات الإعدادات
+preferences-manage-profiles-learn-more = اطّلع على المزيد
+preferences-manage-profiles-button =
+    .label = أدِر ملفات الإعدادات
 tabs-group-header = الألسنة
 ctrl-tab-recently-used-order =
     .label = ‏Ctrl+Tab يتنقّل عبر الألسنة حسب ترتيب آخر استخدام
@@ -228,12 +241,31 @@ containers-remove-cancel-button = لا تزِل هذه الحاوية
 settings-tabs-show-image-in-preview =
     .label = أظهِر معاينة الصورة عند التحويم فوق اللسان
     .accessKey = ع
+browser-layout-header = تخطيط المتصفح
+browser-layout-horizontal-tabs =
+    .label = ألسنة أفقية
+browser-layout-horizontal-tabs-desc = اعرض في أعلى المتصفح
+browser-layout-vertical-tabs =
+    .label = ألسنة عمودية
+browser-layout-vertical-tabs-desc = اعرض على الجانب، في الشريط الجانبي
+browser-layout-show-sidebar =
+    .label = أظهِر الشريط الجانبي
+browser-layout-show-sidebar-desc = الوصول بسرعة إلى العلامات، والألسنة من هاتفك، ودردشة الذكاء الاصطناعي، والمزيد دون مغادرة واجهتك الرئيسية.
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = اللغة و المظهر
 preferences-web-appearance-header = مظهر الموقع
 preferences-web-appearance-description = تكيف بعض المواقع مخطط ألوانها بناء على تفضيلاتك. أختر مخطط الألوان الذي تريد إستخدامه لهذه المواقع.
+preferences-web-appearance-choice-auto2 =
+    .label = تلقائي
+    .title = غيّر تلقائيًا خلفيات الموقع و المحتوى بناءً على إعدادات نظامك و سمة { -brand-short-name }.
+preferences-web-appearance-choice-light2 =
+    .label = فاتح
+    .title = استخدم مظهرًا فاتحً لخلفيات موقع الويب ومحتواه.
+preferences-web-appearance-choice-dark2 =
+    .label = داكن
+    .title = استخدم مظهرًا داكنًا لخلفيات موقع الويب ومحتواه.
 preferences-web-appearance-choice-auto = تلقائي
 preferences-web-appearance-choice-light = فاتح
 preferences-web-appearance-choice-dark = داكن
@@ -251,14 +283,26 @@ preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning = إن اختياراتك للألوان تهيمن على مظهر موقع الويب. <a data-l10n-name="colors-link">إدارة الألوان</a>
+preferences-web-appearance-override-warning3 =
+    .message = إعدادات التحكم في التباين لديك تتغلب على مظهر موقع الوِب.
+preferences-web-appearance-link =
+    .label = أدِر سمات { -brand-short-name } في الامتدادات والسمات
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning2 =
-    .message = إن اختياراتك للألوان تهيمن على مظهر موقع الويب.
+preferences-web-appearance-override-warning = إن اختياراتك للألوان تهيمن على مظهر موقع الويب. <a data-l10n-name="colors-link">إدارة الألوان</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = أدِر سمات { -brand-short-name } في الامتدادات والسمات <a data-l10n-name="themes-link"></a>
+preferences-contrast-control-header = التحكم في التباين
+preferences-contrast-control-use-platform-settings =
+    .label = تلقائي (استخدام إعدادات النظام)
+    .accesskey = ع
+preferences-contrast-control-off =
+    .label = معطّل
+    .accesskey = ط
+preferences-contrast-control-custom =
+    .label = مخصّص
+    .accesskey = ص
 preferences-colors-header = الألوان
 preferences-colors-description = تجاوز ألوان { -brand-short-name } الافتراضية للنص، و خلفيات الموقع، و الروابط.
 preferences-colors-manage-button =
@@ -315,6 +359,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = الملفات و التطبيقات
+downloads-header-2 =
+    .label = التّنزيلات
+download-save-where-2 =
+    .label = احفظ الملفّات في
+    .accesskey = ظ
 download-header = التّنزيلات
 download-save-where = احفظ الملفّات في
     .accesskey = ظ
@@ -486,6 +535,8 @@ performance-default-content-process-count =
 ## General Section - Browsing
 
 browsing-title = التّصفّح
+browsing-group-label =
+    .aria-label = التّصفّح
 browsing-use-autoscroll =
     .label = استخدم اللّف الآلي
     .accesskey = ف
@@ -540,7 +591,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = النوافذ و الألسنة الجديدة
 home-new-windows-tabs-description2 = اختر ما تراه عندما تفتح صفحة البداية و النوافذ و الألسنة الجديدة.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = صفحة البداية و النوافذ الجديدة
 home-newtabs-mode-label = الألسنة الجديدة
@@ -691,6 +742,9 @@ search-remove-engine =
 search-add-engine =
     .label = أضِف
     .accesskey = ض
+search-edit-engine =
+    .label = حرّر
+    .accesskey = ر
 search-find-more-link = اعثر على المزيد من محركات البحث
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
@@ -699,12 +753,16 @@ search-keyword-warning-title = كرر الكلمة المفتاحية
 #   $name (string) - Name of a search engine.
 search-keyword-warning-engine = لقد اخترت كلمة مفتاحية يستخدمها ”{ $name }“ حاليا. من فضلك اختر واحدة أخرى.
 search-keyword-warning-bookmark = لقد اخترت كلمة مفتاحية تستخدمها علامة حاليا. من فضلك اختر واحدة أخرى.
+remove-engine-remove = أزِل
+remove-addon-engine-alert = لإزالة محرك البحث هذا،أزِل الإضافة المرتبطة به.
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = عُد إلى الإعدادات
 containers-header = الألسنة الحاوية
+containers-section-header =
+    .heading = الألسنة الحاوية
 containers-add-button =
     .label = أضف حاوية جديدة
     .accesskey = ح
@@ -846,6 +904,10 @@ sync-engine-creditcards =
     .label = بطاقات الائتمان
     .tooltiptext = الأسماء والأرقام وتواريخ الانتهاء (لسطح المكتب فقط)
     .accesskey = ق
+sync-engine-payment-methods2 =
+    .label = طرق الدفع
+    .tooltiptext = الأسماء وأرقام البطاقات وتواريخ انتهاء الصلاحية
+    .accesskey = n
 sync-engine-addons =
     .label = الإضافات
     .tooltiptext = امتدادات و سمات لنسخة سطح المكتب من فَيَرفُكس
@@ -858,6 +920,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = اسم الجهاز
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = اسم الجهاز
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = غيّر اسم الجهاز
+    .accesskey = ه
 sync-device-name-change =
     .label = غيّر اسم الجهاز…
     .accesskey = ه
@@ -956,6 +1026,7 @@ forms-windows-sso =
     .label = اسمح بالولوج الموحّد من وِندوز إلى حسابات ميكروسوفت وحسابات العمل والحسابات المدرسية.
 forms-windows-sso-learn-more-link = اطّلع على المزيد
 forms-windows-sso-desc = أدِر الحسابات في إعدادات الجهاز
+windows-passkey-settings-label = أدر مفاتيح السر (passkeys) في إعدادات النظام
 
 ## OS Authentication dialog
 
@@ -976,6 +1047,8 @@ autofill-addresses-checkbox = حفظ وملء العناوين
     .accesskey = ع
 autofill-saved-addresses-button = العناوين المحفوظة
     .accesskey = ظ
+autofill-payment-methods-checkbox-message = احفظ واملء طرق الدفع
+    .accesskey = ف
 autofill-saved-payment-methods-button = طرق الدفع المحفوظة
     .accesskey = ع
 
@@ -999,6 +1072,10 @@ history-remember-option-never =
     .label = لا يتذكر التأريخ أبدًا
 history-remember-option-custom =
     .label = يستخدم إعدادات مخصصة للتأريخ
+history-remember-description2 =
+    .description = سيتذكر { -brand-short-name } تأريخ التصفح، و التنزيلات، و الاستمارات، و البحث.
+history-dontremember-description2 =
+    .description = سيستخدم { -brand-short-name } نفس إعدادات التصفح الخاص، بحيث لن يحتفظ بأيّ تأريخ لتصفحك للوب.
 history-remember-description = سيتذكر { -brand-short-name } تأريخ التصفح، و التنزيلات، و الاستمارات، و البحث.
 history-dontremember-description = سيستخدم { -brand-short-name } نفس إعدادات التصفح الخاص، بحيث لن يحتفظ بأيّ تأريخ لتصفحك للوب.
 history-private-browsing-permanent =
@@ -1032,6 +1109,8 @@ sitedata-learn-more = اطّلع على المزيد
 sitedata-delete-on-close =
     .label = احذف الكعكات وبيانات المواقع عندما ينغلق { -brand-short-name }
     .accesskey = ذ
+sitedata-delete-on-close-private-browsing3 =
+    .message = استنادًا إلى إعدادات التأريخ لديك، يحذف { -brand-short-name } الكعكات وبيانات الموقع من جلستك عند إغلاق المتصفح.
 sitedata-delete-on-close-private-browsing = في وضع التصفح الخاص الدائم، تُمسح الكعكات وبيانات المواقع متى ما أُغلق { -brand-short-name }.
 sitedata-delete-on-close-private-browsing2 = استنادًا إلى إعدادات التأريخ لديك، يحذف { -brand-short-name } الكعكات وبيانات الموقع من جلستك عند إغلاق المتصفح.
 sitedata-allow-cookies-option =
@@ -1056,6 +1135,9 @@ sitedata-option-block-all-cross-site-cookies =
     .label = كل الكعكات بين المواقع (قد تتسبب بتعطُل المواقع)
 sitedata-option-block-all =
     .label = كل الكعكات (يمكن أن تعطب المواقع هكذا)
+sitedata-clear2 =
+    .label = امحُ بيانات التصفح
+    .accesskey = م
 sitedata-clear =
     .label = امسح البيانات…
     .accesskey = س
@@ -1083,6 +1165,11 @@ cookie-banner-blocker-checkbox-label =
 
 addressbar-header = شريط العناوين
 addressbar-suggest = عند استخدام شريط العناوين، اقترح
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = شريط العناوين — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = اطّلع على المزيد
 addressbar-locbar-history-option =
     .label = تأريخ التصفح
     .accesskey = ص
@@ -1112,7 +1199,25 @@ addressbar-suggestions-settings = غيّر تفضيلات اقتراحات مح�
 addressbar-locbar-showrecentsearches-option =
     .label = أظهر عمليات البحث الأخيرة
     .accesskey = ه
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = أظهر اقتراحات البحث المُتداولة
+    .accesskey = ه
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = اقتراحات من { -brand-short-name }
+addressbar-locbar-suggest-all-option-desc = احصل على اقتراحات من الوِب تتعلق ببحثك.
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = اقتراحات من { -brand-short-name }
+addressbar-locbar-suggest-nonsponsored-desc = احصل على اقتراحات من الوِب تتعلق ببحثك.
+addressbar-locbar-suggest-sponsored-option =
+    .label = اقتراحات من الرعاة
+addressbar-locbar-suggest-sponsored-desc = ادعم { -brand-short-name } باقتراحات برعاية عرضية.
 addressbar-quickactions-learn-more = اطّلع على المزيد
+addressbar-dismissed-suggestions-label = الاقتراحات المهملة
+addressbar-restore-dismissed-suggestions-description = استعِد الاقتراحات المرفوضة من الرعاة و{ -brand-short-name }.
+addressbar-restore-dismissed-suggestions-button =
+    .label = استعِد
 
 ## Privacy Section - Content Blocking
 
@@ -1153,6 +1258,7 @@ content-blocking-social-media-trackers = متعقبات مواقع التواص�
 content-blocking-all-cookies = كل الكعكات
 content-blocking-unvisited-cookies = الكعكات من المواقع غير المُزارة
 content-blocking-all-windows-tracking-content = المحتوى الذي يتعقّبك في كل النوافذ
+content-blocking-all-cross-site-cookies = جميع ملفات تعريف الارتباط عبر المواقع
 content-blocking-cryptominers = المُعدّنات المعمّاة
 content-blocking-fingerprinters = مسجّلات البصمات
 # The known fingerprinters are those that are known for collecting browser fingerprints from user devices. And
@@ -1245,6 +1351,8 @@ permissions-notification-link = اطّلع على المزيد
 permissions-notification-pause =
     .label = ألبِث التنبيهات حتى يُعاد تشغيل { -brand-short-name }
     .accesskey = ث
+permissions-autoplay2 =
+    .label = التشغيل التلقائي
 permissions-autoplay = التشغيل التلقائي
 permissions-autoplay-settings =
     .label = الإعدادات…
@@ -1264,34 +1372,59 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = الاستثناءات…
     .accesskey = ث
+permissions-location2 =
+    .label = المكان
+permissions-xr2 =
+    .label = الواقع الافتراضي
+permissions-camera2 =
+    .label = الكاميرا
+permissions-microphone2 =
+    .label = الميكروفون
+permissions-notification2 =
+    .label = التنبيهات
 
 ## Privacy Section - Data Collection
 
 collection-header = جمع { -brand-short-name } للبيانات و استخدامها
 collection-header2 = جمع { -brand-short-name } للبيانات و إستخدامها
     .searchkeywords = telemetry
+preferences-collection-privacy-notice = اعرض تنويه الخصوصية
+preferences-across-profiles = تنطبق هذه الإعدادات على كل ملف تعريف { -brand-product-name } على هذا الجهاز.
+preferences-view-profiles = اعرض جميع الملفات الشخصية
 collection-description = نبذل جهدنا لإعطائك الخيار و جمع ما نحتاجه فقط لتحسين { -brand-short-name }. نطلب الإذن دائمًا قبل استقبال أي معلومات شخصية.
 collection-privacy-notice = تنويه الخصوصية
 collection-health-report-telemetry-disabled = لم تعد تسمح بأن يلتقط { -vendor-short-name } البيانات التقنية والتفاعلية. ستُحذف البيانات القديمة كلها خلال 30 يومًا.
 collection-health-report-telemetry-disabled-link = اطّلع على المزيد
+collection-usage-ping =
+    .label = أرسل إشعار الاستخدام اليومي إلى { -vendor-short-name }
+    .accesskey = ر
 collection-health-report =
     .label = اسمح أن يُرسل { -brand-short-name } بيانات تقنية و بيانات التفاعل إلى { -vendor-short-name }
     .accesskey = ح
 collection-health-report-link = اطّلع على المزيد
 collection-studies2 =
     .label = تثبيت الدراسات وتشغيلها
+collection-studies-description = جرّب الميزات والأفكار قبل إصدارها للجميع.
 collection-studies =
     .label = اسمح أن ينصّب { -brand-short-name } ويشغل الدراسات
 collection-studies-link = اعرض دراسات { -brand-short-name }
+addon-recommendations2 =
+    .label = اسمح بتقديم توصيات مخصّصة لامتداد
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = الإبلاغ عن البيانات معطّل في إعدادات البناء.
 collection-backlogged-crash-reports2 =
     .label = أرسل تقارير الإنهيار تلقائيًا
     .accesskey = س
+collection-backlogged-crash-reports-description = يساعد هذا { -vendor-short-name } في تشخيص المشكلات وإصلاحها بالمتصفح. قد تتضمن التقارير بيانات شخصية أو حساسة.
 addon-recommendations =
     .label = اسمح بأن يقترح { -brand-short-name } الامتدادات المخصّصة لك
 addon-recommendations-link = اطّلع على المزيد
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = الإبلاغ عن البيانات معطّل في إعدادات البناء
+collection-backlogged-crash-reports-with-link = اسمح لـ { -brand-short-name } بإرسال تقارير الإنهيار المتراكمة نيابةً عنك<a data-l10n-name="crash-reports-link">معرفة المزيد</a>
+    .accesskey = م
 privacy-segmentation-section-header = خصائص جديدة تعزز تصفحك
 privacy-segmentation-radio-off =
     .label = استخدم توصيات { -brand-product-name }
@@ -1300,6 +1433,8 @@ privacy-segmentation-radio-on =
 
 ## Privacy Section - Website Advertising Preferences
 
+website-advertising-header = تفضيلات الإعلان الموقع
+website-advertising-private-attribution-description = يساعد هذا المواقع على فهم أداء إعلاناتها دون جمع بيانات عنك.
 
 ## Privacy Section - Security
 ##
@@ -1334,6 +1469,7 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = اسمح بأن يثق { -brand-short-name } تلقائيا بشهادات جذر من أطراف خارجية تقوم بتثبيتها
     .accesskey = ه
+certs-devices-enable-fips = مكّن FIPS
 space-alert-over-5gb-settings-button =
     .label = افتح الإعدادات
     .accesskey = ف
@@ -1343,25 +1479,28 @@ space-alert-under-5gb-message2 = <strong>مساحة القرص قاربت على
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = وضع HTTPS فقط
+httpsonly-label =
+    .aria-label = { httpsonly-header }
+    .description = يسمح فقط بالاتصالات الآمنة بمواقع الوب. سيسأل { -brand-short-name } قبل الاتصال بشكل غير آمن.
+httpsonly-description3 = يسمح فقط بالاتصالات الآمنة بمواقع الوب. سيسأل { -brand-short-name } قبل الاتصال بشكل غير آمن.
+httpsonly-learn-more2 = كيف يعمل HTTPS-Only
 httpsonly-description = يقدّم بروتوكول HTTPS اتصالًا آمنًا ومعمًى بين { -brand-short-name } والمواقع التي تزورها. تدعم أغلب المواقع HTTPS، ولو فعّلت وضع ”HTTPS فقط“ فسيُرقّي { -brand-short-name } كل الاتصالات لتكون ببروتوكول HTTPS.
 httpsonly-learn-more = اطّلع على المزيد
 httpsonly-radio-enabled =
     .label = فعّل وضع HTTPS فقط في كل النوافذ
-httpsonly-radio-enabled2 =
-    .label = استخدم HTTPS فقط في كافة النوافذ
 httpsonly-radio-enabled-pbm =
     .label = فعّل وضع HTTPS فقط في النوافذ الخاصة فقط
-httpsonly-radio-enabled-pbm2 =
-    .label = استخدم HTTPS فقط في النوافذ الخاصة
+httpsonly-radio-disabled3 =
+    .label = لا تفعّل وضع HTTPS فقط
+    .description = قد لا يزال { -brand-short-name } يرقي بعض الاتصالات
 httpsonly-radio-disabled =
     .label = لا تفعّل وضع HTTPS فقط
-httpsonly-radio-disabled2 =
-    .label = حاول استخدام HTTPS أولاً، ولكن اسمح بالاتصالات غير الآمنة
 
 ## DoH Section
 
 preferences-doh-header = DNS عبر HTTPS
 preferences-doh-description = يرسل نظام اسم المجال (DNS) عبر HTTPS طلبك للحصول على اسم المجال من خلال اتصال مُعمّى، مما يؤدي إلى إنشاء DNS آمن ويجعل من الصعب على الآخرين معرفة موقع الوب الذي أنت على وشك الوصول إليه.
+preferences-doh-description2 = يرسل نظام اسم المجال (DNS) عبر HTTPS طلبك للحصول على اسم مجال من خلال اتصال مُعمّى، مما يوفر DNS آمنًا ويجعل من الصعب على الآخرين رؤية موقع الوب الذي أنت على وشك الوصول إليه.
 # Variables:
 #   $status (string) - The status of the DoH connection
 preferences-doh-status = الحالة: { $status }
@@ -1371,6 +1510,7 @@ preferences-doh-resolver = المزود: { $name }
 # This is displayed instead of $name in preferences-doh-resolver
 # when the DoH URL is not a valid URL
 preferences-doh-bad-url = مسار غير صحيح
+preferences-doh-steering-status = استخدام مزود محلي
 preferences-doh-status-active = نشط
 preferences-doh-status-disabled = معطّل
 # Variables:
@@ -1392,6 +1532,7 @@ preferences-doh-setting-enabled =
     .label = حماية متزايدة
     .accesskey = ة
 preferences-doh-enabled-desc = يمكنك التحكم في الوقت الذي تستخدم فيه DNS آمن و إختيار مزودك.
+preferences-doh-enabled-detailed-desc-1 = استخدم المزود الذي تحدده
 preferences-doh-enabled-detailed-desc-2 = أستخدم فقط محلل DNS المبدئي إذا كانت هناك مشكلة مع DNS آمن
 preferences-doh-setting-strict =
     .label = أقصى حماية

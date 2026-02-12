@@ -41,7 +41,7 @@ about-logins-menu-menuitem-help = Օգնություն
 ## Login List
 
 login-list =
-    .aria-label = Մուտքագրումների համապատասխանության որոնման հարցում
+    .aria-label = Մուտքագրումների համընկնման որոնման հարցում
 # Variables
 #   $count (number) - Number of logins
 login-list-count =
@@ -112,6 +112,7 @@ login-intro-description2 = { -brand-product-name }-ում Ձեր պահած գա
 login-intro-instructions-fxa2 = Ստեղծեք կամ մուտք գործեք ձեր հաշիվ այն սարքում, որտեղ ձեր մուտքագրումները պահպանված են:
 login-intro-instructions-fxa-settings = Գնացեք Կարգավորումներ > Համաժամացում > Միացնել համաժամացումը…: Ընտրեք «Մուտքանուններ և գաղտնաբառեր» վանդակը:
 login-intro-instructions-fxa-passwords-help = Լրացուցիչ օգնության համար այցելեք <a data-l10n-name="passwords-help-link">գաղտնաբառերի աջակցություն</a>:
+about-logins-intro-browser-only-import = Եթե Ձեր մուտքերը պահպանված են այլ դիտարկիչում՝ կարող եք <a data-l10n-name="import-link">ներմուծել դրանք { -brand-product-name }</a>
 
 ## Login
 
@@ -121,6 +122,7 @@ about-logins-login-item-new-login-title = Ավելացնել գաղտնաբառ
 login-item-edit-button = Խմբագրել
 about-logins-login-item-remove-button = Հեռացնել
 login-item-origin-label = Կայքի հասցեն
+login-item-tooltip-message = Համոզվեք, որ սա համընկնում է այն կայքի ճշգրիտ հասցեի հետ, որտեղ մուտք եք գործում։
 about-logins-origin-tooltip2 = Մուտքագրեք ամբողջական հասցեն և համոզվեք, որ այն ճշգրիտ համընկնում է ձեր մուտքի վայրի հետ:
 about-logins-add-password-tooltip = Համոզվեք, որ պահպանում եք ձեր ընթացիկ գաղտնաբառը այս կայքի համար:
 login-item-origin =
@@ -302,7 +304,7 @@ about-logins-error-message-default = Գաղտնաբառի պահման ժամա�
 ## Login Export Dialog
 
 # Title of the file picker dialog
-about-logins-export-file-picker-title = Մուտքագրումների նիշքի արտահանում
+about-logins-export-file-picker-title = Արտահանել մուտքագրումների ֆայլը
 # The default file name shown in the file picker when exporting saved logins.
 # This must end in .csv
 about-logins-export-file-picker-default-filename = logins.csv
@@ -317,13 +319,13 @@ about-logins-export-file-picker-export-button = Արտահանել
 about-logins-export-file-picker-csv-filter-title =
     { PLATFORM() ->
         [macos] CSV փաստաթուղթ
-       *[other] CSV նիշք
+       *[other] CSV ֆայլ
     }
 
 ## Login Import Dialog
 
 # Title of the file picker dialog
-about-logins-import-file-picker-title = Ներածեք մուտքագրման նիշքը
+about-logins-import-file-picker-title = Ներածեք մուտքագրման ֆայլը
 # Title of the file picker dialog
 about-logins-import-file-picker-title2 = Ներմուծեք գաղտնաբառերը { -brand-short-name }-ից
 about-logins-import-file-picker-import-button = Ներածել
@@ -332,14 +334,14 @@ about-logins-import-file-picker-import-button = Ներածել
 about-logins-import-file-picker-csv-filter-title =
     { PLATFORM() ->
         [macos] CSV փաստաթուղթ
-       *[other] CSV նիշք
+       *[other] CSV ֆայլ
     }
 # A description for the .tsv file format that may be shown as the file type
 # filter by the operating system. TSV is short for 'tab separated values'.
 about-logins-import-file-picker-tsv-filter-title =
     { PLATFORM() ->
         [macos] TSV փաստաթուղթ
-       *[other] TSV նիշք
+       *[other] TSV ֆայլ
     }
 
 ##
@@ -384,8 +386,10 @@ about-logins-import-dialog-items-error =
 about-logins-import-dialog-done = Պատրաստ է
 about-logins-import-dialog-error-title = Ներմուծման սխալ
 about-logins-import-dialog-error-conflicting-values-title = Մի քանի հակասող արժեքներ մեկ մուտքի համար
+about-logins-import-dialog-error-conflicting-values-description = Օրինակ՝ բազմաթիվ օգտանուններ, գաղտնաբառեր, URL-ներ, և այլն մեկ մուտքանվան համար։
 about-logins-import-dialog-error-file-format-title = Ֆայլի ձևաչափի խնդիր
-about-logins-import-dialog-error-file-permission-title = Հնարավոր չէ կարդալ նիշքը
+about-logins-import-dialog-error-file-permission-title = Հնարավոր չէ կարդալ ֆայլը
+about-logins-import-dialog-error-file-permission-description = { -brand-short-name }-ը ֆայլը կարդալու թույլտվություն չունի։ Փորձեք փոխել ֆայլի թույլտվությունները։
 about-logins-import-dialog-error-unable-to-read-title = Հնարավոր չէ կարդալ ֆայլը
 about-logins-import-dialog-error-unable-to-read-description = Համոզվեք, որ ընտրել եք CSV կամ TSV ֆայլ:
 about-logins-import-dialog-error-no-logins-imported = Ոչ մի մուտքագրում չի ներմուծվել
@@ -427,6 +431,11 @@ about-logins-import-report-modified =
     { $count ->
         [one] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">Առկա մուտքերը թարմացվեցին</div>
        *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">Առկա մուտքերը թարմացվեցին</div>
+    }
+about-logins-import-report-no-change =
+    { $count ->
+        [one] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">կրկնվող մուտքանուն</div> <div data-l10n-name="not-imported">(ներմուծված չէ)</div>
+       *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">կրկնվող մուտքանուններ</div> <div data-l10n-name="not-imported">(ներմուծված չեն)</div>
     }
 about-logins-import-report-added2 =
     { $count ->

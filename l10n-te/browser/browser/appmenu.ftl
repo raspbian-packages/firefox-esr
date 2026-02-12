@@ -84,6 +84,7 @@ appmenu-remote-tabs-opensettings =
 appmenu-remote-tabs-noclients = ఇతర పరికరాలలో తెరిచివున్న మీ ట్యాబులను ఇక్కడ చూడాలనుకుంటున్నారా?
 appmenu-remote-tabs-connectdevice =
     .label = మరొక పరికరాన్ని అనుసంధానించండి
+appmenu-remote-tabs-welcome = మీ ఇతర పరికరాల నుండి ట్యాబుల జాబితాను చూడండి.
 appmenu-remote-tabs-unverified = మీ ఖాతాను తనిఖీ చెయ్యాలి.
 appmenuitem-fxa-manage-account = ఖాతా నిర్వహణ
 appmenu-fxa-header2 = { -fxaccount-brand-name }
@@ -117,6 +118,11 @@ profiler-popup-edit-settings-button =
     .label = అమరికలను మార్చండి…
 profiler-popup-discard-button =
     .label = విస్మరించు
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
 profiler-popup-capture-shortcut =
     { PLATFORM() ->
         [macos] ⌃⇧2
@@ -142,6 +148,8 @@ profiler-popup-presets-media-label =
     .label = మాధ్యమాలు
 profiler-popup-presets-networking-label =
     .label = నెట్‌వర్కింగ్
+profiler-popup-presets-custom-label =
+    .label = అభిమతం
 
 ## History panel
 
@@ -212,7 +220,8 @@ appmenuitem-report-broken-site =
 
 appmenuitem-sign-in-account = మీ ఖాతా లోనికి ప్రవేశించండి
 appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description = మీ ఆన్‌లైన్ కార్యాచరణను సంరక్షించుకోండి
 appmenu-services-header = నా సేవలు
-
-## Profiles panel
-
+appmenu-other-protection-header = { -vendor-short-name } వారి ఇతర రక్షణ పనిముట్లని ప్రయత్నించండి:

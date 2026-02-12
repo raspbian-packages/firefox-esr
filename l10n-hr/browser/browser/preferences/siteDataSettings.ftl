@@ -6,7 +6,7 @@
 ## Settings
 
 site-data-settings-window =
-    .title = Upravljaj kolačićima i podacima web-stranica
+    .title = Upravljaj kolačićima i podacima web stranica
 site-data-settings-description = Sljedeće stranice spremaju kolačiće i podatke web stranice na tvom računalu. { -brand-short-name } čuva podatke od web stranica koje ih trajno spremaju, sve dok ih ne izbrišeš i briše podatke od stranica koje ne spremaju podatke trajno, ako nema dovoljno memorije.
 site-data-search-textbox =
     .placeholder = Traži web stranice
@@ -18,7 +18,7 @@ site-data-column-cookies =
 site-data-column-storage =
     .label = Spremište
 site-data-column-last-used =
-    .label = Zadnje korišteno
+    .label = Zadnji put korišteno
 # This label is used in the "Host" column for local files, which have no host.
 site-data-local-file-host = (lokalna datoteka)
 site-data-remove-selected =

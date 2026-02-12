@@ -20,6 +20,20 @@ fxa-menu-connect-another-device =
     .label = Cysylltu Dyfais Arall…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] Anfon i ddyfais
+            [zero] Anfon { $tabCount } tabiau i'r ddyfais
+            [one] Anfon { $tabCount } tab i'r ddyfais
+            [two] Anfon { $tabCount } dab i'r ddyfais
+            [few] Anfon { $tabCount } thab i'r ddyfais
+            [many] Anfon { $tabCount } thab i'r ddyfais
+           *[other] Anfon { $tabCount } tab i'r ddyfais
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label =
         { $tabCount ->
@@ -37,8 +51,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Anfon tab ar unwaith i unrhyw ddyfais rydych wedi mewngofnodi arni.
 fxa-menu-sign-out =
     .label = Allgofnodi…
-fxa-menu-sync-title = Sync
 fxa-menu-sync-description = Cael mynediad i'ch gwe yn unrhyw le
+fxa-avatar-sign-in = Mewngofnodi
+fxa-avatar-sign-up = Ymuno
+fxa-avatar-tooltip =
+    .tooltiptext = Mewngofnodi i'ch cyfrif
 sync-setup-verify-continue = Ymlaen
 sync-setup-verify-title = Rhybudd Cyfuno
 sync-setup-verify-heading = Ydych chi'n siŵr eich bod am fewngofnodi i gydweddu?
@@ -79,7 +96,7 @@ sync-account-in-use-description-merge = Mae { $acctEmail } wedi mewngofnodi i'r 
 # Variables:
 #   $profileName (String) - Name of the profile to switch to
 sync-button-switch-profile = Newid i " { $profileName } "
-sync-button-create-profile = Crëwch broffil newydd
+sync-button-create-profile = Creu proffil newydd
 sync-button-sync-and-merge = Cydweddu a chadw data
 # Variables:
 #   $profileName (String) - Name of the profile to switch to

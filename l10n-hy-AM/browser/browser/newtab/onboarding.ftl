@@ -25,6 +25,8 @@ return-to-amo-subtitle = Հիանալի է, դուք ստացել եք { -brand-
 return-to-amo-addon-title = Այժմ ստացեք ձեր <img data-l10n-name="icon"/> <b>{ $addon-name }</b>:
 return-to-amo-add-extension-label = Ավելացնել ընդլայնում
 return-to-amo-add-theme-label = Ավելացնել ոճ
+return-to-amo-theme-install-complete-label = Ոճը տեղադրվել է
+return-to-amo-extension-install-complete-label = Ընդլայնումը տեղադրվել է
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -52,7 +54,6 @@ mr1-onboarding-import-primary-button-label-attribution = Ներմուծել { $p
 mr1-onboarding-theme-header = Դարձրեք այն ձերը
 mr1-onboarding-theme-subtitle = Անհատականացրեք { -brand-short-name }-ը ոճով:
 mr1-onboarding-theme-secondary-button-label = Ոչ հիմա
-newtab-wallpaper-onboarding-primary-button-label = Կայել պաստառ
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Համակարգային
 mr1-onboarding-theme-label-light = Լուսավոր
@@ -107,7 +108,7 @@ mr1-onboarding-theme-description-alpenglow =
         Օգտագործեք փոփոխական, գույնային ոճ կոճակների,
         ցանկերի և պատուհանների համար:
 # Selector description for default themes
-mr2-onboarding-default-theme-label = Ուսումնասիրեք սկզբնադիր ոճերը:
+mr2-onboarding-default-theme-label = Ուսումնասիրել սկզբնադիր ոճերը:
 
 ## Strings for Thank You page
 
@@ -130,7 +131,7 @@ mr2022-language-mismatch-subtitle = Մեր համայնքի շնորհիվ { -br
 onboarding-live-language-button-label-downloading = Լեզվի փաթեթի ներբեռնում { $negotiatedLanguage }-ի համար…
 onboarding-live-language-waiting-button = Հասանելի լեզուների ստացում…
 onboarding-live-language-installing = Լեզվի փաթեթի տեղադրում { $negotiatedLanguage }-ի համար…
-mr2022-onboarding-live-language-switch-to = Անցնել { $negotiatedLanguage }-ի
+mr2022-onboarding-live-language-switch-to = Փոխարկվել { $negotiatedLanguage }-ին
 mr2022-onboarding-live-language-continue-in = Շարունակել { $appLanguage }-ով
 onboarding-live-language-secondary-cancel-download = Չեղարկել
 onboarding-live-language-skip-button-label = Բաց թողնել
@@ -166,7 +167,7 @@ mr2022-onboarding-secondary-skip-button-label = Բաց թողնել այս քա�
 # Primary button string used on new user onboarding first screen showing multiple actions such as Set Default, Import from previous browser.
 mr2022-onboarding-easy-setup-primary-button-label = Պահել և շարունակել
 # Set Default action checkbox label used on new user onboarding first screen
-mr2022-onboarding-easy-setup-set-default-checkbox-label = Կայել { -brand-short-name }-ը որպես սկզբնադիր զննիչ
+mr2022-onboarding-easy-setup-set-default-checkbox-label = Կայել { -brand-short-name }-ը որպես սկզբնադիր դիտարկիչ
 # Import action checkbox label used on new user onboarding first screen
 mr2022-onboarding-easy-setup-import-checkbox-label = Ներմուծել նախորդ դիտարկիչից
 
@@ -185,6 +186,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Պահեք { -brand-short-name }-ը ամրակցված
        *[other] Ամրացրեք { -brand-short-name }-ը Խնդրագոտուն
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Ամրացրեք { -brand-short-name }-ն խնդրագոտիում և մեկնարկ ցանկում
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -205,8 +208,8 @@ mr2022-onboarding-existing-pin-checkbox-label = Նաև ավելացրեք { -bra
 ## MR2022 New User Set Default screen strings
 
 # This string is the title used when the user already has pinned the browser, but has not set default.
-mr2022-onboarding-set-default-title = Դարձրեք { -brand-short-name }-ը ձեր հիմնական զննիչը
-mr2022-onboarding-set-default-primary-button-label = Կայեք { -brand-short-name }-ը որպես սկզբնադիր զննիչ
+mr2022-onboarding-set-default-title = Դարձրեք { -brand-short-name }-ը Ձեր հիմնական դիտարկիչը
+mr2022-onboarding-set-default-primary-button-label = Կայեք { -brand-short-name }-ը որպես սկզբնադիր դիտարկիչ
 
 ## MR2022 Get Started screen strings.
 ## These strings will be used on the welcome page
@@ -221,6 +224,7 @@ mr2022-onboarding-get-started-primary-button-label = Տեղակայեք վայր
 ## These strings will be used on the welcome page
 ## when Firefox is already set to default and pinned.
 
+mr2022-onboarding-import-header = Կայծակնային արագ տեղակայում
 mr2022-onboarding-import-primary-button-label-no-attribution = Ներմուծել նախորդ դիտարկիչից
 
 ## If your language uses grammatical genders, in the description for the
@@ -239,10 +243,19 @@ mr2022-onboarding-colorway-label-playmaker = Փլեյմեյքեր
 mr2022-onboarding-colorway-tooltip-playmaker2 =
     .title = Փլեյմեյքեր (կարմիր)
 mr2022-onboarding-colorway-description-playmaker = <b>Դուք փլեյմեյքեր եք:</b> Դուք հնարավորություններ եք ստեղծում հաղթելու և օգնում եք ձեր շրջապատի բոլորին բարձրացնել իրենց խաղը:
+mr2022-onboarding-colorway-label-expressionist = Էքսպրեսիոնիստ
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Էքսպրեսիոնիստ (դեղին)
+mr2022-onboarding-colorway-label-visionary = Տեսլական
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Տեսողական (կանաչ)
 mr2022-onboarding-colorway-description-visionary = <b>Դուք տեսաբան եք:</b> Դուք կասկածի տակ եք դնում ստատուս քվոն և դրդում ուրիշներին պատկերացնել ավելի լավ ապագա:
 mr2022-onboarding-colorway-label-activist = Ակտիվիստ
 mr2022-onboarding-colorway-tooltip-activist2 =
     .title = Ակտիվիստ (կապույտ)
+mr2022-onboarding-colorway-label-dreamer = Երազող
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Երազող (մանուշակագույն)
 mr2022-onboarding-colorway-label-innovator = Նորարար
 mr2022-onboarding-colorway-tooltip-innovator2 =
     .title = Նորարար (նարնջագույն)
@@ -265,6 +278,7 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 
 ## MR2022 Privacy Segmentation screen strings
 
+mr2022-onboarding-privacy-segmentation-title = Մենք միշտ հարգում ենք ձեր գաղտնիությունը
 mr2022-onboarding-privacy-segmentation-button-primary-label = Օգտվել { -brand-product-name }-ի խորհուրդներից
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Ցուցադրել մանրամասն տեղեկություն
 
@@ -279,10 +293,6 @@ mr2022-onboarding-gratitude-secondary-button-label = Սկսեք զննարկել
 
 onboarding-infrequent-import-primary-button = Ներմուծել { -brand-short-name }
 
-## MR2022 Illustration alt tags
-## Descriptive tags for illustrations used by screen readers and other assistive tech
-
-
 ## Device migration onboarding
 
 onboarding-device-migration-title = Բարի վերադարձ
@@ -290,6 +300,7 @@ onboarding-device-migration-primary-button-label = Մուտք գործել
 
 ## Add-ons Picker screen
 
+amo-picker-title = Հարմարեցնել Ձեր { -brand-short-name }-ը
 amo-picker-install-button-label = Հավելել { -brand-short-name }-ին
 amo-picker-install-complete-label = Տեղադրվեց
 amo-picker-collection-link = Ուսումնասիրեք ավելի շատ հավելումներ
@@ -328,6 +339,10 @@ onboarding-new-user-survey-familiarity-based-option-4 = Օգտագործել ե�
 onboarding-new-tabs-title = Ասեք մեզ, թե որտեղ եք ցանկանում ձեր ներդիրները
 # Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
 onboarding-new-tabs-subtitle = Միացրեք այն, երբ ցանկանում եք, կողագոտու կարգավորումներում:
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Ձեր ներդիրները՝ ձեր ձևով
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Ընտրեք ձեր ներդիրի դասավորությունը
 # Text underneath an image used for selecting browser tabs to appear on the side of the browser.
 onboarding-new-vertical-tabs-label = Ներդիրները կողքից
 # Text underneath an image used for selecting browser tabs to appear at the top of the browser.
@@ -341,7 +356,9 @@ onboarding-existing-vertical-tabs-label = Փորձեք ուղղահայաց նե
 onboarding-flair-text = Նոր
 # Text underneath an image used for selecting browser tabs to appear at the top of the browser.
 onboarding-existing-horizontal-tabs-label = Պահել հորիզոնական ներդիրները
-onboarding-genai-sidebar-primary-button = Ընտրեք չաթ բոտ
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Փորձեք ԱԲ չաթբոտը Կողագոտում
+onboarding-genai-sidebar-primary-button = Ընտրեք չաթբոտ
 onboarding-genai-sidebar-secondary-button = Սկսել դիտարկումը
 
 ## New user onboarding checklist
@@ -356,6 +373,91 @@ onboarding-checklist-sign-up = Գրանցվեք կամ մուտք գործեք �
 
 ## Tab Groups feature onboarding strings
 
+tab-groups-onboarding-feature-callout-title = Փորձեք ներդիրի խմբերը ավելի քիչ առաջնահերթության, ավելի շատ կիզակետի համար
+tab-groups-onboarding-feature-callout-subtitle = Կազմակերպվեք՝ մեկ ներդիրը մյուսի վրա քաշելով՝ ձեր առաջին խումբը ստեղծելու համար։
+tab-groups-onboarding-create-group-title-2 = Գտեք ձեր ներդիրների խմբերը ցանկացած ժամանակ:
+tab-groups-onboarding-dismiss = Լավ
 
 ## Multi Profiles feature onboarding messages
 
+multi-profile-spotlight-title = Ասեք ողջույն { -brand-product-name }-ին
+multi-profile-callout-cta = Ստեղծել պրոֆիլ
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Ներբեռնեք, համաժամեցրեք և գնացեք։
+dismiss-button-label = Բաց թողնել
+sync-to-mobile-button-label = Համաժամեցեք բջջայինի հետ
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-flair = Խորհուրդ է տրվում
+create-backup-screen-1-sync-label = Համաժամեցնել { -brand-product-name }-ի հետ
+create-backup-screen-1-backup-label = Պահուստավորել համակարգչի վրա
+create-backup-screen-1-backup-body = Պահպանվում է ձեր սարքում կամ OneDrive-ում
+create-backup-select-tile-button-label = Ընտրել
+create-backup-back-button-label = Նախորդը
+create-backup-show-fewer =
+    .label = Ցուցադրել ավելի քիչ
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Հեշտ տեղադրում
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Էջանիշներ, պատմություն, կարգավորումներ և այլն
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Չի ներառում գաղտնաբառեր և վճարումներ
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Գաղտնագրված չէ
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Բոլոր տվյալները
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Ներառում է գաղտնաբառեր և վճարումներ
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Գաղտնագրված է գաղտնաբառով
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Որտե՞ղ եք ուզում, որ ձեր պահուստային պատճենը պահպանվի։
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Ստեղծեք պահուստային ֆայլի գաղտնաբառ
+create-backup-screen-3-subtitle = Պահանջվում է ձեր տվյալները կոդավորելու համար։ Պահեք այն այնպիսի տեղում, որը կհիշեք։
+fx-backup-opt-in-header = Ընտրեք ֆայլի տեղադրությունը
+fx-backup-opt-in-filepath-label = Ընտրեք այն վայրը, որտեղ պատրաստվում եք տեղափոխել այն նոր սարքի վրա, օրինակ՝ OneDrive-ի վրա։
+fx-backup-opt-in-create-password-label = Մուտքագրեք գաղտնաբառը
+fx-backup-opt-in-confirm-btn-label = Շարունակել
+fx-backup-opt-in-cancel-btn-label = Նախորդը
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Ձեր պահուստավորումը պլանավորված է
+fx-backup-confirmation-screen-close-button = Փակել
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Դիտարկման բոլոր տվյալները ներառված են
+fx-backup-confirmation-screen-all-data-item-text-2 = Պահված է ձեր սարքում
+fx-backup-confirmation-screen-all-data-item-text-3 = Գաղտնագրված և գաղտնաբառով պաշտպանված
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Ներառված են էջանիշեր, պատմություն, կարգավորումներ և այլ տվյալներ
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Պահված է ձեր սարքում
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Գաղտնաբառերը և վճարումները չեն ներառվում
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Անցեք <a data-l10n-name="settings">Կարգավորումներ</a>՝ զգայուն տվյալները ներառելու համար։
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-with-checklist-primary-button = Պահել և շարունակել
+restored-from-backup-success-with-checklist-secondary-button = Բաց թողեք այս քայլը
+restored-from-backup-success-no-checklist-primary-button = Շարունակել
+restored-from-backup-error-title = Հըմ, ձեր պահուստային ֆայլի հետ կապված խնդիր կար։
+restored-from-backup-error-primary-button = Փակել
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Անհատականացրեք{ -brand-short-name }-ի  ձեր փորձառությունը
+onboarding-personalization-subtitle = Պատասխանեք մի քանի հարցի, և մենք կառաջարկենք գործառույթներ և ընդլայնումներ՝ { -brand-short-name }-ի օգտագործումը բարելավելու համար։
+onboarding-personalization-use-case-title = Ինչի՞ համար եք օգտագործելու { -brand-short-name }-ը։
+onboarding-personalization-use-case-personal-option = Անձնական
+onboarding-personalization-use-case-school-option = Դպրոց
+onboarding-personalization-use-case-work-option = Աշխատանքային
+onboarding-personalization-motivation-title = { -brand-short-name }-ի որ յուրահատկություններն են ձեզ համար ամենակարևորը։
+onboarding-personalization-motivation-privacy-option = Գաղտնիություն և անվտանգություն
+onboarding-personalization-motivation-productivity-option = Արդյունավետություն
+onboarding-personalization-motivation-other-option = Այլ

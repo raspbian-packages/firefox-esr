@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Nij ljepblêd
     .accesskey = i
@@ -75,6 +79,10 @@ move-to-end =
 move-to-new-window =
     .label = Ferpleatse nei nij finster
     .accesskey = f
+# Variables
+#  $profileName (string): The name of the profile to move tab to
+move-to-new-profile =
+    .label = Ferpleatse nei { $profileName }
 tab-context-close-multiple-tabs =
     .label = Mear ljepblêden slute
     .accesskey = M
@@ -122,6 +130,15 @@ tab-context-move-tabs =
            *[other] Ljepblêden ferpleatse
         }
     .accesskey = f
+# The following string intentionally omits the word "Tab" from the singular and includes it in the plural.
+tab-context-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] Nei apparaat ferstjoere
+            [one] { $tabCount } ljepblêd nei apparaat ferstjoere
+           *[other] { $tabCount } ljepblêden nei apparaat ferstjoere
+        }
+    .accesskey = s
 tab-context-send-tabs-to-device =
     .label =
         { $tabCount ->
@@ -129,3 +146,11 @@ tab-context-send-tabs-to-device =
            *[other] { $tabCount } ljepblêden nei apparaat ferstjoere
         }
     .accesskey = s
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] Ljepblêd ûntlade
+            [one] { $tabCount } ljepblêd ûntlade
+           *[other] { $tabCount } ljepblêden ûntlade
+        }
+    .accesskey = l

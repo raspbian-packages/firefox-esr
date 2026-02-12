@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Sàbhail an ceangal ann am { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Dèan lethbhreac de sheòladh a' phuist-dhealain
@@ -168,11 +166,6 @@ main-context-menu-copy-link-simple =
 main-context-menu-copy-clean-link =
     .label = Dèan lethbhreac dhen cheangal ghlan
     .accesskey = D
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Dèan lethbhreac dhen cheangal as aonais tracadh na làraich
-    .accesskey = o
 
 ## Media (video/audio) controls
 ##
@@ -322,6 +315,9 @@ main-context-menu-manage-passwords =
     .accesskey = S
 main-context-menu-keyword =
     .label = Cuir facal-luirg ris an lorg seo…
+    .accesskey = C
+main-context-menu-add-engine =
+    .label = Cuir einnsean-luirg ris
     .accesskey = C
 main-context-menu-link-send-to-device =
     .label = Cuir an ceangal gun uidheam

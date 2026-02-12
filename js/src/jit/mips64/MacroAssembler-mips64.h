@@ -21,8 +21,6 @@ enum LiFlags {
 };
 
 struct ImmShiftedTag : public ImmWord {
-  explicit ImmShiftedTag(JSValueShiftedTag shtag) : ImmWord((uintptr_t)shtag) {}
-
   explicit ImmShiftedTag(JSValueType type)
       : ImmWord(uintptr_t(JSValueShiftedTag(JSVAL_TYPE_TO_SHIFTED_TAG(type)))) {
   }
@@ -63,6 +61,7 @@ class MacroAssemblerMIPS64 : public MacroAssemblerMIPSShared {
   using MacroAssemblerMIPSShared::ma_cmp_set;
   using MacroAssemblerMIPSShared::ma_ld;
   using MacroAssemblerMIPSShared::ma_li;
+  using MacroAssemblerMIPSShared::ma_liPatchable;
   using MacroAssemblerMIPSShared::ma_load;
   using MacroAssemblerMIPSShared::ma_ls;
   using MacroAssemblerMIPSShared::ma_sd;
@@ -109,7 +108,11 @@ class MacroAssemblerMIPS64 : public MacroAssemblerMIPSShared {
   FaultingCodeOffset ma_store(Register data, Address address,
                               LoadStoreSize size = SizeWord,
                               LoadStoreExtension extension = SignExtend);
-
+  void ma_store(ImmWord imm, const BaseIndex& dest,
+                LoadStoreSize size = SizeWord,
+                LoadStoreExtension extension = SignExtend);
+  void ma_store(ImmWord imm, Address address, LoadStoreSize size = SizeWord,
+                LoadStoreExtension extension = SignExtend);
   // arithmetic based ops
   // add
   void ma_daddu(Register rd, Register rs, Imm32 imm);
@@ -185,8 +188,10 @@ class MacroAssemblerMIPS64 : public MacroAssemblerMIPSShared {
   void ma_push(FloatRegister f);
 
   void ma_cmp_set(Register dst, Register lhs, ImmWord imm, Condition c);
-  void ma_cmp_set(Register dst, Address address, ImmWord imm, Condition c);
   void ma_cmp_set(Register dst, Register lhs, ImmPtr imm, Condition c);
+  void ma_cmp_set(Register dst, Register lhs, ImmGCPtr imm, Condition c);
+  void ma_cmp_set(Register dst, Address address, Register rhs, Condition c);
+  void ma_cmp_set(Register dst, Address address, ImmWord imm, Condition c);
   void ma_cmp_set(Register dst, Address address, Imm32 imm, Condition c);
 
   // These functions abstract the access to high part of the double precision
@@ -226,6 +231,22 @@ class MacroAssemblerMIPS64Compat : public MacroAssemblerMIPS64 {
   void convertFloat32ToDouble(FloatRegister src, FloatRegister dest);
   void convertInt32ToFloat32(Register src, FloatRegister dest);
   void convertInt32ToFloat32(const Address& src, FloatRegister dest);
+
+  void convertDoubleToFloat16(FloatRegister src, FloatRegister dest) {
+    MOZ_CRASH("Not supported for this target");
+  }
+  void convertFloat16ToDouble(FloatRegister src, FloatRegister dest) {
+    MOZ_CRASH("Not supported for this target");
+  }
+  void convertFloat32ToFloat16(FloatRegister src, FloatRegister dest) {
+    MOZ_CRASH("Not supported for this target");
+  }
+  void convertFloat16ToFloat32(FloatRegister src, FloatRegister dest) {
+    MOZ_CRASH("Not supported for this target");
+  }
+  void convertInt32ToFloat16(Register src, FloatRegister dest) {
+    MOZ_CRASH("Not supported for this target");
+  }
 
   void movq(Register rs, Register rd);
 
@@ -295,9 +316,15 @@ class MacroAssemblerMIPS64Compat : public MacroAssemblerMIPS64 {
     ma_push(ScratchRegister);
   }
   void push(Register reg) { ma_push(reg); }
-  void push(FloatRegister reg) { ma_push(reg); }
+  void push(FloatRegister reg) {
+    MOZ_ASSERT(reg.isDouble(), "float32 and simd128 not supported");
+    ma_push(reg);
+  }
   void pop(Register reg) { ma_pop(reg); }
-  void pop(FloatRegister reg) { ma_pop(reg); }
+  void pop(FloatRegister reg) {
+    MOZ_ASSERT(reg.isDouble(), "float32 and simd128 not supported");
+    ma_pop(reg);
+  }
 
   // Emit a branch that can be toggled to a non-operation. On MIPS64 we use
   // "andi" instruction to toggle the branch.
@@ -395,7 +422,7 @@ class MacroAssemblerMIPS64Compat : public MacroAssemblerMIPS64 {
       return;
     }
     MOZ_ASSERT(ScratchRegister != src);
-    mov(ImmWord(JSVAL_TYPE_TO_SHIFTED_TAG(type)), ScratchRegister);
+    mov(ImmShiftedTag(type), ScratchRegister);
     as_xor(dest, src, ScratchRegister);
   }
 
@@ -519,14 +546,9 @@ class MacroAssemblerMIPS64Compat : public MacroAssemblerMIPS64 {
     return scratch;
   }
 
-  void boolValueToDouble(const ValueOperand& operand, FloatRegister dest);
-  void int32ValueToDouble(const ValueOperand& operand, FloatRegister dest);
   void loadInt32OrDouble(const Address& src, FloatRegister dest);
   void loadInt32OrDouble(const BaseIndex& addr, FloatRegister dest);
   void loadConstantDouble(double dp, FloatRegister dest);
-
-  void boolValueToFloat32(const ValueOperand& operand, FloatRegister dest);
-  void int32ValueToFloat32(const ValueOperand& operand, FloatRegister dest);
   void loadConstantFloat32(float f, FloatRegister dest);
 
   void testNullSet(Condition cond, const ValueOperand& value, Register dest);
@@ -655,8 +677,8 @@ class MacroAssemblerMIPS64Compat : public MacroAssemblerMIPS64 {
     pushValue(ValueOperand(scratch));
   }
 
-  void handleFailureWithHandlerTail(Label* profilerExitTail,
-                                    Label* bailoutTail);
+  void handleFailureWithHandlerTail(Label* profilerExitTail, Label* bailoutTail,
+                                    uint32_t* returnValueCheckOffset);
 
   /////////////////////////////////////////////////////////////////
   // Common interface.
@@ -806,11 +828,6 @@ class MacroAssemblerMIPS64Compat : public MacroAssemblerMIPS64 {
   void checkStackAlignment();
 
   static void calculateAlignedStackPointer(void** stackPointer);
-
-  // If source is a double, load it into dest. If source is int32,
-  // convert it to double. Else, branch to failure.
-  void ensureDouble(const ValueOperand& source, FloatRegister dest,
-                    Label* failure);
 
   void cmpPtrSet(Assembler::Condition cond, Address lhs, ImmPtr rhs,
                  Register dest);

@@ -78,9 +78,6 @@ toolbar-button-fxaccount =
     .label = { -fxaccount-brand-name }
     .tooltiptext = { -fxaccount-brand-name }
 
-## Account toolbar Button
-
-
 ## Save Page
 
 main-context-menu-page-save =
@@ -89,6 +86,28 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-edit-bookmark-mac,
+# so should probably have the same access key if possible.
+main-context-menu-bookmark-page-mac =
+    .label = I-bookmark ang Pahina…
+    .accesskey = m
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-bookmark-page-mac,
+# so should probably have the same access key if possible.
+main-context-menu-edit-bookmark-mac =
+    .label = Baguhin ang Bookmark…
+    .accesskey = m
+main-context-menu-edit-bookmark =
+    .aria-label = Baguhin ang Bookmark…
+    .accesskey = m
+    .tooltiptext = Baguhin ang bookmark
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
+main-context-menu-edit-bookmark-with-shortcut =
+    .aria-label = Baguhin ang Bookmark…
+    .accesskey = m
+    .tooltiptext = Baguhin ang bookmark ({ $shortcut })
 main-context-menu-open-link =
     .label = Buksan ang Link
     .accesskey = O
@@ -104,23 +123,33 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Buksan ang Link sa Bagong Pribadong Window
     .accesskey = P
+main-context-menu-bookmark-link-2 =
+    .label = I-bookmark ang Link…
+    .accesskey = B
 main-context-menu-save-link =
-    .label = i-Save ang Link Bilang…
+    .label = I-save ang Link Bilang…
     .accesskey = k
 main-context-menu-save-link-to-pocket =
     .label = i-Save ang Link sa { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Kopyahin ang Email Address
     .accesskey = E
+main-context-menu-copy-phone =
+    .label = Kopyahin ang Phone Number
+    .accesskey = o
 main-context-menu-copy-link-simple =
     .label = Kopyahin ang Link
     .accesskey = L
+# "Copy Clean Link" means that Firefox will remove things from the link you
+# copied, like items that identify you for advertising purposes, and other items
+# sites add into URLs to help them deliver a certain browsing experience.
+main-context-menu-copy-clean-link =
+    .label = Kopyahin ang Malinis na Link
+    .accesskey = u
 
 ## Media (video/audio) controls
 ##
@@ -213,6 +242,9 @@ main-context-menu-image-email =
 main-context-menu-image-set-image-as-background =
     .label = Itakda ang Larawan bilang Background ng Desktop…
     .accesskey = I
+main-context-menu-image-copy-text =
+    .label = Kopyahin ang Text sa Larawan
+    .accesskey = x
 main-context-menu-image-info =
     .label = Tingnan ang Impormasyon ng Larawan
     .accesskey = f
@@ -259,6 +291,9 @@ main-context-menu-suggest-strong-password =
 main-context-menu-manage-logins2 =
     .label = Pamahalaan ang ang Login
     .accesskey = L
+main-context-menu-manage-passwords =
+    .label = Pamahalaan ang Mga Password
+    .accesskey = M
 main-context-menu-keyword =
     .label = Magdagdag ng Keyword para sa Search na ito...
     .accesskey = K
@@ -278,8 +313,11 @@ main-context-menu-frame-open-window =
     .label = Buksan ang Frame sa Bagong Window
     .accesskey = W
 main-context-menu-frame-reload =
-    .label = I-load ang Frame muli
-    .accesskey = l
+    .label = I-reload ang Frame
+    .accesskey = R
+main-context-menu-frame-add-bookmark =
+    .label = I-bookmark ang Frame…
+    .accesskey = m
 main-context-menu-frame-save-as =
     .label = i-Save ang Frame Bilang…
     .accesskey = F
@@ -323,3 +361,6 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Buksan ang Link sa Bagong { $containerName } Tab.
     .accesskey = T
+main-context-menu-reveal-password =
+    .label = Ipakita ang Password
+    .accesskey = v

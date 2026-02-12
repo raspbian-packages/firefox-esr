@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Detalios del discargamento
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Le files remane sur tu apparato
+downloads-private-browsing-message = Quicunque usa iste apparato pote vider le discargamentos, mesmo quando tu claude tote le fenestras private.
+downloads-private-browsing-delete-button =
+    .label = Deler files automaticamente
+    .accesskey = D
+downloads-private-browsing-accept-button =
+    .label = Comprendite
+    .accesskey = c
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

@@ -4,8 +4,8 @@
 
 menu-view-genai-chat =
     .label = ЖИ чатботы
-menu-view-review-checker =
-    .label = Пікірлерді тексеру
+menu-view-contextual-password-manager =
+    .label = Парольдер
 sidebar-options-menu-button =
     .title = Мәзірді ашу
 
@@ -21,14 +21,24 @@ sidebar-history-date-this-month =
     .heading = { DATETIME($date, dateStyle: "full") }
 sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+sidebar-history-site-localhost =
+    .heading = (жергілікті файлдар)
 sidebar-history-delete =
     .title = Тарихтан өшіру
-sidebar-history-sort-by-date =
-    .label = Күні бойынша сұрыптау
-sidebar-history-sort-by-site =
-    .label = Сайт бойынша сұрыптау
 sidebar-history-clear =
     .label = Тарихты тазарту
+sidebar-history-sort-by-heading = Бойынша сұрыптау:
+sidebar-history-sort-option-date =
+    .label = Күні
+sidebar-history-sort-option-site =
+    .label = Сайт
+sidebar-history-sort-option-date-and-site =
+    .label = Күні және сайт
+sidebar-history-sort-option-last-visited =
+    .label = Соңғы қаралған
 
 ## Labels for sidebar search
 
@@ -44,24 +54,17 @@ sidebar-customize-extensions-header = Бүйір панелі кеңейтуле
 sidebar-customize-firefox-tools-header =
     .label = { -brand-product-name } құралдары
 sidebar-customize-firefox-settings = { -brand-short-name } баптауларын басқару
-sidebar-position-left =
-    .label = Сол жақта көрсету
-sidebar-position-right =
-    .label = Оң жақта көрсету
 sidebar-vertical-tabs =
     .label = Вертикалды беттер
-sidebar-horizontal-tabs =
-    .label = Горизонталды беттер
-sidebar-customize-tabs-header =
-    .label = Бет баптаулары
-sidebar-customize-button-header =
-    .label = Бүйір панелі батырмасы
-sidebar-customize-position-header =
-    .label = Бүйір панелі орналасуы
-sidebar-visibility-setting-always-show =
-    .label = Бүйір панелін жазық қылу және бүктеу
-sidebar-visibility-setting-hide-sidebar =
-    .label = Бүйір панелін көрсету және жасыру
+sidebar-settings =
+    .label = Бүйір панель баптаулары
+sidebar-hide-tabs-and-sidebar =
+    .label = Беттер мен бүйірлік панельді жасыру
+sidebar-show-on-the-right =
+    .label = Бүйір панелін оңға жылжыту
+sidebar-show-on-the-left =
+    .label = Бүйір панелін солға жылжыту
+sidebar-manage-extensions = Кеңейтулерді басқару
 
 ## Labels for sidebar context menu items
 
@@ -71,23 +74,43 @@ sidebar-context-menu-remove-extension =
     .label = Кеңейтуді өшіру
 sidebar-context-menu-report-extension =
     .label = Кеңейтуге шағым жіберу
+sidebar-context-menu-open-in-tab =
+    .label = Жаңа бетте ашу
+sidebar-context-menu-open-in-container-tab =
+    .label = Жаңа контейнерлік бетте ашу
 sidebar-context-menu-open-in-window =
     .label = Жаңа терезеде ашу
 sidebar-context-menu-open-in-private-window =
     .label = Жаңа жекелік терезесінде ашу
+sidebar-context-menu-forget-site =
+    .label = Веб-сайтпен байланысты барлық деректерді өшіру…
 sidebar-context-menu-bookmark-tab =
     .label = Бетті бетбелгілерге қосу…
 sidebar-context-menu-copy-link =
     .label = Сілтемені көшіріп алу
+sidebar-context-menu-hide-sidebar =
+    .label = Бүйір панельді жасыру
+sidebar-context-menu-enable-vertical-tabs =
+    .label = Вертикалды беттерді іске қосу
+sidebar-context-menu-customize-sidebar =
+    .label = Бүйір панелін баптау
 # Variables:
 #   $deviceName (String) - The name of the device the user is closing a tab for
 sidebar-context-menu-close-remote-tab =
     .label = { $deviceName } құрылғыдағы бетті жабу
+sidebar-context-menu-remove-extension2 =
+    .label = { -brand-short-name } ішінен өшіру
+sidebar-context-menu-unpin-extension =
+    .label = Бүйір панелінен өшіру
 
 ## Labels for sidebar history context menu items
 
-sidebar-history-context-menu-delete-page =
-    .label = Тарихтан өшіру
+sidebar-history-context-menu-delete-page-2 =
+    .label = Бетті тарихтан өшіру
+sidebar-history-context-menu-bookmark-page =
+    .label = Бетті бетбелгілерге қосу…
+sidebar-history-context-menu-delete-pages =
+    .label = Беттерді тарихтан өшіру
 
 ## Labels for sidebar menu items.
 
@@ -101,8 +124,10 @@ sidebar-menu-bookmarks-label =
     .label = Бетбелгілер
 sidebar-menu-customize-label =
     .label = Бүйір панелін баптау
-sidebar-menu-review-checker-label =
-    .label = Пікірлерді тексеру
+sidebar-menu-contextual-password-manager-label =
+    .label = Парольдер
+sidebar-menu-more-tools-label =
+    .label = Көбірек құралдар
 
 ## Tooltips for sidebar menu items.
 
@@ -122,8 +147,16 @@ sidebar-menu-open-bookmarks-tooltip = Бетбелгілерді ашу ({ $shor
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Бетбелгілерді жабу ({ $shortcut })
-sidebar-menu-open-ai-chatbot-tooltip = ЖИ чат-ботын ашу
-sidebar-menu-close-ai-chatbot-tooltip = ЖИ чат-ботын жабу
+
+## Tooltips displayed over the AI chatbot icon.
+## Variables:
+##   $shortcut (String) - The OS specific keyboard shortcut.
+##   $provider (String) - The name of the AI chatbot provider (if available).
+
+sidebar-menu-open-ai-chatbot-tooltip-generic = ЖИ чат-ботын ашу ({ $shortcut })
+sidebar-menu-open-ai-chatbot-provider-tooltip = { $provider } ашу ({ $shortcut })
+sidebar-menu-close-ai-chatbot-tooltip-generic = ЖИ чат-ботын жабу ({ $shortcut })
+sidebar-menu-close-ai-chatbot-provider-tooltip = { $provider } жабу ({ $shortcut })
 
 ## Headings for sidebar menu panels.
 
@@ -133,8 +166,8 @@ sidebar-menu-history-header =
     .heading = Тарих
 sidebar-menu-syncedtabs-header =
     .heading = Басқа құрылғылардан беттер
-sidebar-menu-bookmarks-header =
-    .heading = Бетбелгілер
+sidebar-menu-cpm-header =
+    .heading = Парольдер
 sidebar-panel-header-close-button =
     .tooltiptext = Жабу
 
@@ -158,18 +191,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Бүйір панелін жазық қылу
-    .label = Бүйір панельдер
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Бүйір панелін бүктеу
-    .label = Бүйір панельдер
-sidebar-widget-show-sidebar =
-    .tooltiptext = Бүйір панелін көрсету
-    .label = Бүйір панельдер
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Бүйір панелін жасыру
-    .label = Бүйір панельдер
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =

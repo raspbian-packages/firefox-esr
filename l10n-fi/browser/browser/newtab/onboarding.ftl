@@ -25,6 +25,8 @@ return-to-amo-subtitle = Hienoa, sinulla on { -brand-short-name }
 return-to-amo-addon-title = Hankitaanpa sinulle nyt <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Lisää laajennus
 return-to-amo-add-theme-label = Lisää teema
+return-to-amo-theme-install-complete-label = Teema asennettu
+return-to-amo-extension-install-complete-label = Laajennus asennettu
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Tuo selaimesta { $previ
 mr1-onboarding-theme-header = Omalla tyylillä
 mr1-onboarding-theme-subtitle = Valitse { -brand-short-name }-teema makusi mukaan.
 mr1-onboarding-theme-secondary-button-label = Ei nyt
-newtab-wallpaper-onboarding-title = Lisää ripaus väriä
-newtab-wallpaper-onboarding-subtitle = Valitse taustakuva, joka antaa uudelle välilehdelle raikkaan ilmeen.
-newtab-wallpaper-onboarding-primary-button-label = Aseta taustakuva
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Järjestelmän teema
 mr1-onboarding-theme-label-light = Vaalea
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Rekisteröidy tai kirjaudu sisään tilillesi
 
 tab-groups-onboarding-feature-callout-title = Kokeile välilehtiryhmiä vähentääksesi sotkua ja keskittyäksesi paremmin
 tab-groups-onboarding-feature-callout-subtitle = Järjestäydy vetämällä välilehti toisen päälle ja luo siten ensimmäinen ryhmä.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Löydä välilehtiryhmäsi Listaa kaikki välilehdet -valikosta milloin tahansa.
+tab-groups-onboarding-create-group-title-2 = Löydät välilehtiryhmät täältä milloin tahansa.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Löydä ryhmäsi etsimällä niitä osoitepalkista.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Kun suljet välilehtiryhmän, voit avata sen uudelleen milloin tahansa Listaa kaikki välilehdet -valikosta.
+tab-groups-onboarding-saved-groups-title-2 = Kun suljet välilehtiryhmän, voit avata sen uudelleen milloin tahansa täältä.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Löydä suljetut ryhmät etsimällä niitä osoitepalkista.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Avaa välilehtiryhmäsi uudelleen Listaa kaikki välilehdet -valikosta milloin tahansa.
+tab-groups-onboarding-session-restore-title = Avaa välilehtiryhmät uudelleen milloin tahansa täältä.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,107 @@ multi-profile-spotlight-cta = Luo profiili
 multi-profile-callout-title = Luo eri profiilit työtä ja vapaa-aikaa varten
 multi-profile-callout-subtitle = Profiilien avulla voit pitää selaustietosi, kuten hakuhistorian ja salasanat, täysin erillään.
 multi-profile-callout-cta = Luo profiili
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Lataa, synkronoi ja menoksi!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Skannaa QR-koodi ladataksesi { -brand-product-name }in mobiililaitteelle. Kun olet asentanut sen, valitse "Synkronoi matkapuhelimeen" käyttääksesi salasanoja, kirjanmerkkejä ja muuta liikkeellä ollessasi.
+dismiss-button-label = Hylkää
+sync-to-mobile-button-label = Synkronoi mobiililaitteeseen
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-koodi { -brand-product-name }in mobiiliversion lataamiseksi
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Päivittämässä Windows 11:een?
+    Varmuuskopioidaan { -brand-product-name }-tietosi.
+create-backup-screen-1-subtitle = Suojaa salasanasi, kirjanmerkkisi ja muut tiedot automaattisesti 1–2 minuutissa.
+create-backup-screen-1-flair = Suositeltu
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Lue lisää</a>
+create-backup-screen-1-sync-label = Synkronoi { -brand-product-name }in kanssa
+create-backup-screen-1-sync-body = Varmuuskopioi kaikki sisäänkirjatut laitteet
+create-backup-screen-1-backup-label = Varmuuskopioi tietokoneelle
+create-backup-screen-1-backup-body = Tallentaa laitteellesi tai OneDriveen
+create-backup-select-tile-button-label = Valitse
+create-backup-back-button-label = Takaisin
+create-backup-show-fewer =
+    .label = Näytä vähemmän vastaavia
+create-backup-screen-2-title = Valitse varmuuskopioitavat { -brand-product-name }-tiedot
+create-backup-screen-2-subtitle = Kestää vain minuutin. Tietosi varmuuskopioidaan kerran päivässä.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Helppo määritys
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Kirjanmerkit, historia, asetukset ja paljon muuta
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Ei sisällä salasanoja ja maksuja
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Ei salattu
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Kaikki tiedot
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Sisältää salasanat ja maksut
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Salattu salasanalla
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Minne haluat varmuuskopiosi tallennettavan?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Luo varmuuskopiotiedoston salasana
+create-backup-screen-3-subtitle = Vaaditaan tietojesi salaamiseen. Säilytä se paikassa, jonka muistat.
+fx-backup-opt-in-header = Valitse tiedoston sijainti
+fx-backup-opt-in-filepath-label = Valitse sijainti, jonka aiot siirtää uudelle laitteelle, kuten OneDrive.
+fx-backup-opt-in-create-password-label = Kirjoita salasana
+fx-backup-opt-in-confirm-btn-label = Jatka
+fx-backup-opt-in-cancel-btn-label = Takaisin
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Varmuuskopiointi on ajastettu
+fx-backup-confirmation-screen-close-button = Sulje
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Kaikki selaustiedot mukana
+fx-backup-confirmation-screen-all-data-item-text-2 = Tallennettu laitteellesi
+fx-backup-confirmation-screen-all-data-item-text-3 = Salattu ja suojattu salasanalla
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Kirjanmerkit, historia, asetukset ja muut tiedot sisältyvät
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Tallennettu laitteellesi
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Salasanat ja maksut eivät sisälly
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Siirry <a data-l10n-name="settings">asetuksiin</a> lisätäksesi arkaluonteiset tiedot.
+fx-backup-confirmation-screen-item-subtext-1 = Varmuuskopiointi alkaa muutaman minuutin kuluttua ja suoritetaan kerran päivässä. Voit tarkistaa edistymisen <a data-l10n-name="settings">asetuksissa</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } etsii varmuuskopiota, jos sinun on asennettava se uudelleen.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Palauta varmuuskopiosta
+restore-from-backup-title = Palautetaan { -brand-short-name } mieleiseksesi
+restore-from-backup-subtitle = Palauta kaikki kirjanmerkit, historia ja muut tiedot, jotta voit jatkaa selaamista.
+restore-from-backup-secondary-button = Älä palauta
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Olemme palanneet! { -brand-short-name }-tietosi on palautettu.
+restored-from-backup-success-with-checklist-subtitle = Haluatko pitää yksityisyyttä varjelevan suosikkiselaimesi yhden napsautuksen päässä?
+restored-from-backup-success-no-checklist-subtitle = Voit ottaa varmuuskopioinnin käyttöön tälle laitteelle <a data-l10n-name="settings">asetuksissa</a>.
+restored-from-backup-success-with-checklist-primary-button = Tallenna ja jatka
+restored-from-backup-success-with-checklist-secondary-button = Ohita tämä vaihe
+restored-from-backup-success-no-checklist-primary-button = Jatka
+restored-from-backup-error-title = Hmm, varmuuskopiotiedostossasi oli ongelma.
+restored-from-backup-error-subtitle = Jos sinulla on toinen { -brand-short-name }-varmuuskopiotiedosto, yritä palauttaa siitä. <a data-l10n-name="restore-problems">Onko ongelmia edelleen?</a>
+restored-from-backup-error-primary-button = Sulje
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Mukauta { -brand-short-name }-kokemustasi
+onboarding-personalization-subtitle = Vastaa muutamaan kysymykseen, niin suosittelemme ominaisuuksia ja laajennuksia, jotka parantavat { -brand-short-name }in käyttöä.
+onboarding-personalization-use-case-title = Mihin aiot käyttää { -brand-short-name }ia ensijaisesti?
+onboarding-personalization-use-case-personal-option = Henkilökohtaisiin asioihin
+onboarding-personalization-use-case-school-option = Kouluasioihin
+onboarding-personalization-use-case-work-option = Työasioihin
+onboarding-personalization-motivation-title = Mitkä { -brand-short-name }in ominaisuudet ovat sinulle tärkeimpiä?
+onboarding-personalization-motivation-privacy-option = Tietosuoja ja turvallisuus
+onboarding-personalization-motivation-productivity-option = Tuottavuus
+onboarding-personalization-motivation-other-option = Muu

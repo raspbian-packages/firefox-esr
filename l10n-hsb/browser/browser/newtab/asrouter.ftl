@@ -63,7 +63,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } wužiwarjow
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Synchronizujće swoje zapołožki wšudźe.
 cfr-doorhanger-bookmark-fxa-body = Wulkotna namakanka! Njewostawajće bjez tuteje zapołožki na swojich mobilnych gratach. Započńće z { -fxaccount-brand-name }.
@@ -72,6 +72,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Synchronizujće nětko zapołožki…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Tłóčatko Začinić
     .title = Začinić
+fxa-adoption-addresses-backup-title = Zawěsćmy waše składowane adresy.
+fxa-adoption-addresses-backup-subtitle = Synchronizujće swoje hesła ze swojimi gratami ze zaklučowanjom, zo byšće swoje składowane adresy škitał.
+fxa-adoption-credit-cards-backup-title = Zawěsćmy waše płaćenske metody
+fxa-adoption-credit-cards-backup-subtitle = Synchronizujće swoje hesła ze swojimi gratami ze zaklučowanjom, zo byšće swoje płaćenske metody škitał.
+fxa-adoption-bookmarks-treatment-backup-title = Zawěsćmy waše zapołožki
+fxa-adoption-bookmarks-treatment-backup-subtitle = Synchronizujće swoje hesła ze swojimi gratami ze zaklučowanjom, zo byšće swoje zapołožki škitał.
+fxa-adoption-primary-button-label = Registrować
 
 ## Protections panel
 
@@ -232,6 +239,22 @@ fox-doodle-pin-secondary = Nic nětko
 set-default-pdf-handler-headline = <strong>Waše PDF so nětko w { -brand-short-name } wočinjeja.</strong> Wobdźěłajće abo signujće formulary direktnje w swojim wobhladowaku. Zo byšće to změnił, pytajće za „PDF“ w swojich nastajenjach.
 set-default-pdf-handler-primary = Sym zrozumił
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Podpisajće na dypkowanej liniji – abo druhdźe!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Rysujće, zapisajće abo nahrajće swoju signaturu, stajće ju potom tam, hdźe chceće. Składujće swoje signatury za přichodny raz.
+annotations-make-default-pdf-handler-title = { -brand-short-name } k swojemu standardnemu PDF-editorej činić?
+annotations-make-default-pdf-handler-subtitle = Maće přistup k našim nastrojam kóždy raz, hdyž PDF wočinjeće.
+annotations-make-default-pdf-primary-cta =
+    .label = Jako standard wužiwać
+annotations-make-default-pdf-next =
+    .label = Dale
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Nowy grat we wašim přichodźe?
@@ -317,8 +340,11 @@ fxa-menu-message-close-button =
     .title = Začinić
     .aria-label = Začinić
 fxa-menu-message-sign-up-button = Registrować
+fxa-menu-message-sign-in-button = Přizjewić
+fxa-menu-message-sync-button = Synchronizaciju započeć
 fxa-menu-message-sync-devices-primary-text = Synchronizujće wšě swoje graty
 fxa-menu-message-sync-devices-secondary-text = Wobstarajće sej hnydom swoje informacije – na přikład swoje zapołožki a hesła – wšudźe, hdźež { -brand-short-name } wužiwaće.
+fxa-menu-message-sync-devices-secondary-text2 = Wobstarajće sej hnydom swoje zapołožki, hesła a wjace – wšudźe hdźež sće so pola { -brand-short-name } přizjewił.
 fxa-menu-message-sync-devices-collapsed-text = Synchronizujće wšě swoje graty
 fxa-menu-message-backup-data-primary-text = Zawěsćće swoje daty wobhladowaka
 fxa-menu-message-backup-data-secondary-text = Škitajće awtomatisce zapołožki, hesła a druhe informacije na wšěch swojich gratach.
@@ -349,3 +375,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Dźeržće swój najlubši wobhladowak z fokusom na priwatnosć jenož jedne kliknjenje preč. Nastajće { -brand-short-name } jako swój standardny wobhladowak za wočinjenje wotkazow a připniće jón na swoju nadawkowu lajstu.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Dźeržće swój najlubši wobhladowak z fokusom na priwatnosć jenož jedne kliknjenje preč. Nastajće { -brand-short-name } jako swój standardny wobhladowak za wočinjenje wotkazow a připniće jón na swoju nadawkowu lajstu a startowy meni.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Z Windows 10 bórze aktualizować?
+windows-10-eos-sync-spotlight-subtitle = Zawěsćće swoje hesła a zapołožki, zo byšće hotowy był, na druhi grat přećahnyć.
+windows-10-eos-sync-spotlight-primary-label = Waš { -brand-short-name } zawěsćić
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Na Windows 11 aktualizować? Njezhubjejće zapołožki a hesła.
+windows-10-eos-sync-toast-subtitle = Zawěsćće swoje daty, zo by { -brand-short-name } móhł je kóždy čas wužiwać, na tutym PC abo na přichodnym.
+windows-10-eos-sync-toast-primary-label = Prěnje kroki
+windows-10-eos-sync-toast-secondary-label = Pozdźišo dopomnić
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } so prjedy njezačita, na rozdźěl wot druhich wobhladowakow wulkich technologijowych předewzaćow. To je jadro.
+windows-10-eos-challenger-sync-callout-subtitle = Hdyž swoje zapołožki a hesła { -brand-product-name } zawěsćeće, je lóšo za was, wubrany wobhladowak do přichodneho grata přewzać.
+windows-10-eos-challenger-pin-callout-subtitle = Připniće { -brand-shorter-name } k swojej nadawkowej lajsće, zo by wobhladowak, kotryž sće wubrał, je přeco tam, hdyž jón trjebaće.
+windows-10-eos-challenger-sync-primary-button = { -brand-shorter-name } zawěsćić
+windows-10-eos-challenger-pin-primary-button = { -brand-shorter-name } připjeć
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } kryptokopaki, přesćěhowaki socialnych medijow a hromadźaki porstowych wotćišćow blokuje
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Přesćěhowaki njemóža waš grat identifikować abo wam přez web slědować – dokelž jim to njedowolujemy.
+windows-10-eos-sync-callout-privacy-screen-2-title = Zawěsćće swoje hesła a zapołožki za swój přichodny grat.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Zawěsćenje { -brand-shorter-name } wam wosnadnja, waše daty a nastajenja priwatnosće wšudźe sobu wzać.
+windows-10-eos-sync-callout-privacy-info-button = Hladajće, štož so blokuje
+windows-10-eos-callout-addons-title = Wupruwujće: jednore aktualizacije, wulke wuskutki
+windows-10-eos-callout-addons-subtitle = Tute rozšěrjenja su so wubrali, zo bychu wam pomhali, produktiwny, škitany a bjez wotwjedźenja wostać.
+windows-10-eos-callout-addons-primary-button = Hlejće naše wuběry
+windows-10-eos-sync-callout-addons-title = Njezhubjejće swoje přidatki, hdyž wot Windows 10 aktualizujeće.
+windows-10-eos-sync-callout-addons-subtitle = Synchronizujće nětko. zo bychu waše přidatki { -brand-product-name } přeco k dispoziciji byli, samo po změnje grata.
+windows-10-eos-sync-callout-next-button = Dale
+windows-10-eos-sync-callout-get-started-button = Prěnje kroki
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Wertikalne rajtarki a skupiny rajtarkow su tu!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Na wjelekróćne přeće je { -brand-product-name } runje nowe funkcije wozjewił, zo by waše přehladowanje optimowane a fokusěrowane dźeržał.
+windows-10-eos-feature-toast-whats-new-button = Čitajće, štož je nowe
+windows-10-eos-feature-toast-dismiss-button = Zaćisnyć
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Striktne přesćěhowanski škit móže k tomu wjesć, zo sydła hižo njefunguja.</strong> Zběhńće blokowanje za wažne elementy, kotrež móhli přesćěhowaki wobsahować, zo byšće časte problemy rozrisał.
+etp-strict-exceptions-infobar-learn-more = Dalše informacije
+etp-strict-exceptions-infobar-button = Rozrisanja nałožić
+    .accesskey = R
+etp-strict-exceptions-infobar-not-now = Nic nětko
+    .accesskey = N

@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = ‏{ -brand-shortcut-name } במצב גליש
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,25 @@ browser-main-window-titles-mac =
     .data-content-title-private = ‏{ $content-title } - גלישה פרטית
     .data-content-title-default-with-profile = ‏{ $content-title } - ‏{ $profile-name }
     .data-content-title-private-with-profile = ‏{ $content-title } - ‏{ $profile-name } - גלישה פרטית
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] ‏{ -brand-full-name } - גלישה פרטית
+       *[other] גלישה פרטית של { -brand-full-name }
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = גלישה פרטית
+popups-infobar-dont-show-message2 =
+    .label = לא להציג הודעה זו כאשר חלונות קופצים או הפניות מצד שלישי נחסמים
+    .accesskey = ל
+edit-popup-settings2 =
+    .label = ניהול הגדרות חלונות קופצים והפניות צד שלישי…
+    .accesskey = נ
 
 ##
 
@@ -135,6 +152,10 @@ urlbar-default-notification-anchor =
     .tooltiptext = פתיחת חלונית הודעות
 urlbar-geolocation-notification-anchor =
     .tooltiptext = פתיחת חלונית בקשת מיקום
+urlbar-localhost-notification-anchor =
+    .tooltiptext = ניהול גישה למכשיר מקומי עבור אתר זה
+urlbar-local-network-notification-anchor =
+    .tooltiptext = ניהול שיתוף הגישה לרשת המקומית שלך עם אתר זה
 urlbar-xr-notification-anchor =
     .tooltiptext = פתיחת חלונית הרשאות למציאות מדומה
 urlbar-storage-access-anchor =
@@ -181,6 +202,35 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = קבלת עזרה
     .accesskey = ע
+urlbar-result-menu-dismiss-suggestion =
+    .label = סגירה הצעה זו
+    .accesskey = ס
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = מידע נוסף על { -firefox-suggest-brand-name }
+    .accesskey = מ
+urlbar-result-menu-manage-firefox-suggest =
+    .label = ניהול { -firefox-suggest-brand-name }
+    .accesskey = נ
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = דיווח על מיקום לא מדויק
+urlbar-result-menu-show-less-frequently =
+    .label = להציג בתדירות נמוכה יותר
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = לא להציג הצעות מזג אוויר
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = פתיחת תפריט
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = תודה על המשוב שלך
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = תודה על המשוב שלך. לא יוצגו עוד הצעות מזג אוויר.
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -206,6 +256,10 @@ urlbar-search-mode-actions = פעולות
 
 urlbar-geolocation-blocked =
     .tooltiptext = חסמת מפני האתר הזה לגשת לנתוני המיקום שלך.
+urlbar-localhost-blocked =
+    .tooltiptext = חסמת חיבורים למכשיר המקומי עבור אתר זה.
+urlbar-local-network-blocked =
+    .tooltiptext = חסמת חיבורים לרשת המקומית עבור אתר זה.
 urlbar-xr-blocked =
     .tooltiptext = חסמת גישה למכשיר מציאות מדומה עבור אתר זה.
 urlbar-web-notifications-blocked =
@@ -218,6 +272,8 @@ urlbar-screen-blocked =
     .tooltiptext = חסמת מפני האתר הזה את האפשרות לשתף את המסך שלך.
 urlbar-persistent-storage-blocked =
     .tooltiptext = חסמת את האתר הזה משמירת נתונים קבועים.
+urlbar-popup-blocked2 =
+    .tooltiptext = חסמת חלונות קופצים והפניות מצד שלישי עבור אתר זה.
 urlbar-popup-blocked =
     .tooltiptext = חסמת חלונות קופצים עבור אתר זה.
 urlbar-autoplay-media-blocked =
@@ -312,10 +368,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = הצגת תוספות
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = הרחבות, ערכות נושא, תוספות, תוספים
 quickactions-cmd-addons2 = הרחבות, תוספות, תוספים
 # Opens the bookmarks library window
 quickactions-bookmarks2 = ניהול סימניות
 quickactions-cmd-bookmarks = סימניות, מועדפים
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = ניקוי היסטוריה אחרונה
+quickactions-cmd-clearrecenthistory = ניקוי היסטוריה אחרונה, מחק היסטוריה, למחוק היסטוריה, מחיקת היסטוריה, היסטוריה
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = מחיקת היסטוריה
 quickactions-cmd-clearhistory = מחיקת היסטוריה, ניקוי היסטוריה, מחק היסטוריה, נקה היסטוריה, למחוק היסטוריה, לנקות היסטוריה
@@ -324,9 +387,20 @@ quickactions-downloads2 = הצגת הורדות
 quickactions-cmd-downloads = הורדות
 # Opens about:addons page in the extensions section
 quickactions-extensions = ניהול הרחבות
+quickactions-cmd-extensions2 = הרחבות, תוספות, תוספים
 quickactions-cmd-extensions = הרחבות, תוספות, תוספים
+# Opens Firefox View
+quickactions-firefoxview = פתיחת { -firefoxview-brand-name }
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = פתיחת { -firefoxview-brand-name }, לפתוח את { -firefoxview-brand-name }, לפתוח את view, view
+# Opens SUMO home page
+quickactions-help = עזרה עבור { -brand-product-name }
+quickactions-cmd-help = עזרה, תמיכה
 # Opens the devtools web inspector
 quickactions-inspector2 = פתיחת כלי פיתוח
+quickactions-cmd-inspector2 = מפקח, inspector, כלי פיתוח, כלי מפתחים, devtools, dev tools
 quickactions-cmd-inspector = מפקח, inspector, כלי פיתוח, כלי מפתח, devtools
 # Opens about:logins
 quickactions-logins2 = ניהול ססמאות
@@ -339,30 +413,38 @@ quickactions-print2 = הדפסת הדף
 quickactions-cmd-print = הדפסה, הדפס, להדפיס
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = שמירת הדף בתור PDF
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, שמירת הדף, שמירת דף, שמירת העמוד, שמירת עמוד, שמור את הדף, לשמור את הדף, שמור את העמוד, לשמור את העמוד
 # Opens a new private browsing window
 quickactions-private2 = פתיחת חלון פרטי
 quickactions-cmd-private = גלישה פרטית, גלישה אנונימית
 # Opens a SUMO article explaining how to refresh
-quickactions-refresh = רענון { -brand-short-name }
-quickactions-cmd-refresh = רענון, רענן, לרענן
+quickactions-refresh = ריענון { -brand-short-name }
+quickactions-cmd-refresh = ריענון, רענן, לרענן
 # Restarts the browser
 quickactions-restart = הפעלת { -brand-short-name } מחדש
 quickactions-cmd-restart = הפעלה מחדש, הפעל מחדש, להפעיל מחדש
 # Opens the screenshot tool
 quickactions-screenshot3 = צילום מסך
+quickactions-cmd-screenshot2 = צילום מסך, screenshot, לקיחת צילום מסך, צלם את המסך
 quickactions-cmd-screenshot = צילום מסך, צלם מסך, לצלם מסך, לצלם את המסך, לקחת צילום מסך
 # Opens about:preferences
 quickactions-settings2 = ניהול הגדרות
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = הגדרות, העדפות, אפשרויות, ניהול
 quickactions-cmd-settings = הגדרות, העדפות, אפשרויות
 # Opens about:addons page in the themes section
 quickactions-themes = ניהול ערכות נושא
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = ערכות נושא, תוספות, הרחבות
 quickactions-cmd-themes = ערכות נושא
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = עדכון { -brand-short-name }
 quickactions-cmd-update = עדכון, עדכן, לעדכן
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = הצגת מקור הדף
+quickactions-cmd-viewsource2 = הצגת מקור, הצג מקור, מקור, מקור הדף
 quickactions-cmd-viewsource = הצגת קוד מקור, הצג קוד מקור, להציג קוד מקור, קוד מקור, מקור
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
@@ -557,6 +639,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = חיפוש או הקלדת כתובת
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = נא להכניס כתובת
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -636,6 +722,8 @@ urlbar-result-action-visit = ביקור
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = מעבר ללשונית · <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = קבוצה ללא שם
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = לבקר מלוח העריכה
 # Directs a user to press the Tab key to perform a search with the specified
@@ -665,6 +753,134 @@ urlbar-result-action-copy-to-clipboard = העתקה
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = לא מוגדר
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong> ב{ $city }, { $region }
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature }°{ $unit }</strong> ב{ $city }, { $region }, { $country }
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong> ב{ $city }
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = ‏{ $provider } · ממומן
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = קבלת נתוני שוק המניות ישירות בשורת החיפוש שלך
+# This string is shown as description when Market suggestion are disabled.
+urlbar-result-market-opt-in-description = הצגת עדכונים של שוק המניות ועוד מהשותפים שלנו בעת שיתוף נתוני שאילתות חיפוש עם { -vendor-short-name }. <a data-l10n-name="learn-more-link">מידע נוסף</a>
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = הצגת הצעות
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = לא כעת
+urlbar-result-realtime-opt-in-dismiss = סגירה
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = לא להציג הצעות אלו
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = לא להציג הצעות שוק מניות
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = תודה על המשוב שלך. לא יוצגו עוד הצעות לשוק מניות.
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = תודה על המשוב שלך. לא יוצגו עוד הצעות אלו.
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown =
+    { $daysUntilStart ->
+        [one] ‏{ $name } · בעוד יום אחד
+        [two] ‏{ $name } · בעוד יומיים
+       *[other] ‏{ $name } · בעוד { $daysUntilStart } ימים
+    }
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range =
+    { $daysUntilStart ->
+        [one] ‏{ $name } · מתחיל בעוד יום אחד
+        [two] ‏{ $name } · מתחיל בעוד יומיים
+       *[other] ‏{ $name } · מתחיל בעוד { $daysUntilStart } ימים
+    }
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing =
+    { $daysUntilEnd ->
+        [one] ‏{ $name } · מסתיים בעוד יום אחד
+        [two] ‏{ $name } · מסתיים בעוד יומיים
+       *[other] ‏{ $name } · מסתיים בעוד { $daysUntilEnd } ימים
+    }
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = ‏{ $name } · היום
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = ‏{ $name } · מסתיים היום
 
 ## Strings used for buttons in the urlbar
 
@@ -692,8 +908,15 @@ urlbar-searchmode-actions =
     .label = פעולות
 urlbar-searchmode-exit-button =
     .tooltiptext = סגירה
+urlbar-searchmode-default =
+    .tooltiptext = מנוע חיפוש ברירת מחדל
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = הפעם לחפש באמצעות:
-urlbar-searchmode-popup-search-settings = הגדרות חיפוש
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = הגדרות חיפוש
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = חדש
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -744,6 +967,9 @@ urlbar-group-recent-searches =
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
     .label = פופולרי ב־{ $engine }
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = ממומן
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = לא להציע חיפושים פופולריים
@@ -940,6 +1166,9 @@ panel-save-update-password = ססמה
 # "More" item in macOS share menu
 menu-share-more =
     .label = עוד…
+menu-share-copy-link =
+    .label = העתקת קישור
+    .accesskey = ה
 ui-tour-info-panel-close =
     .tooltiptext = סגירה
 
@@ -952,6 +1181,9 @@ popups-infobar-allow =
 popups-infobar-block =
     .label = לחסום חלונות קופצים עבור { $uriHost }
     .accesskey = ח
+popups-infobar-allow2 =
+    .label = לאפשר חלונות קופצים והפניות מצד שלישי עבור { $uriHost }
+    .accesskey = א
 
 ##
 
@@ -987,6 +1219,8 @@ navbar-accessible =
     .aria-label = ניווט
 navbar-downloads =
     .label = הורדות
+navbar-overflow-2 =
+    .tooltiptext = כלים נוספים
 navbar-overflow =
     .tooltiptext = כלים נוספים…
 # Variables:
@@ -1012,6 +1246,10 @@ tabs-toolbar-new-tab =
 tabs-toolbar-list-all-tabs =
     .label = רשימת כל הלשוניות
     .tooltiptext = רשימת כל הלשוניות
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = ניתן לשחרר לשונית כאן כדי לנעוץ אותה
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1110,6 +1348,7 @@ firefox-relay-offer-why-to-use-relay = המסכות המאובטחות והקל�
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = כל הודעות הדוא״ל שנשלחות למסכות הדוא״ל שלך יועברו אל <strong>{ $useremail }</strong> (אלא אם תבחר לחסום אותם).
 firefox-relay-offer-legal-notice = לחיצה על ״שימוש במסכת דוא״ל״ מהווה הסכמה ל<label data-l10n-name="tos-url">תנאי השירות</label> <label data-l10n-name="privacy-url">ולהצהרת הפרטיות</label>.
+firefox-relay-offer-legal-notice-1 = ההרשמה ויצירת מסכת דוא״ל מהוות הסכמה ל<label data-l10n-name="tos-url">תנאי השירות</label> <label data-l10n-name="privacy-url">ולהצהרת הפרטיות</label>.
 
 ## Add-on Pop-up Notifications
 
@@ -1117,10 +1356,15 @@ popup-notification-addon-install-unsigned =
     .value = (ללא אימות)
 popup-notification-xpinstall-prompt-learn-more = מידע נוסף על התקנת תוספות בצורה בטוחה
 popup-notification-xpinstall-prompt-block-url = צפייה בפרטים
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = הפעלה בחלונות פרטיים
-    .accesskey = ה
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = לאפשר להרחבה זו לפעול בחלונות פרטיים
+    .accesskey = ל
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = שיתוף נתונים טכניים ונתוני אינטראקציה עם מפתח ההרחבה
+    .accesskey = ש
 
 ## Pop-up warning
 
@@ -1129,7 +1373,15 @@ popup-notification-addon-privatebrowsing-checkbox =
 popup-warning-message =
     { $popupCount ->
         [one] { -brand-short-name } מנע מאתר זה לפתוח חלון קופץ.
-       *[other] { -brand-short-name } מנע מאתר זה מלפתוח { $popupCount } חלונות קופצים.
+       *[other] { -brand-short-name } מנע מאתר זה לפתוח { $popupCount } חלונות קופצים.
+    }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] { -brand-short-name } מנע מאתר זה לבצע הפניה.
+        [one] { -brand-short-name } מנע מאתר זה לפתוח חלון קופץ ולבצע הפניה.
+       *[other] { -brand-short-name } מנע מאתר זה לפתוח { $popupCount } חלונות קופצים ולבצע הפניה.
     }
 # The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
 # Variables:
@@ -1138,6 +1390,13 @@ popup-warning-exceeded-message =
     { $popupCount ->
         [one] ‏
        *[other] { -brand-short-name } מנע מאתר זה לפתוח יותר מ־{ $popupCount } חלונות קופצים.
+    }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-with-redirect-message =
+    { $popupCount ->
+        [one] { -brand-short-name } מנע מאתר זה לפתוח יותר מחלון קופץ אחד ולבצע הפניה.
+       *[other] { -brand-short-name } מנע מאתר זה לפתוח יותר מ־{ $popupCount } חלונות קופצים ולבצע הפניה.
     }
 popup-warning-button =
     .label =
@@ -1154,6 +1413,10 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = הצגת “{ $popupURI }”
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = הצגת ״{ $redirectURI }״
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
@@ -1175,3 +1438,148 @@ file-picker-crashed-save-nowhere = דו־שיח הקבצים של Windows קרס
 file-picker-crashed-show-in-folder =
     .label = הצגה בתיקייה
     .accessKey = ת
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = סיום ההגדרה
+onboarding-aw-finish-setup-button =
+    .label = סיום ההגדרה
+    .tooltiptext = סיום הגדרת { -brand-short-name }
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = הגנת מעקב מתקדמת פעילה
+trustpanel-etp-label-disabled = הגנת מעקב מתקדמת כבויה
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = הגנת מעקב מתקדמת: פעילה עבור { $host }
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = הגנת מעקב מתקדמת: כבויה עבור { $host }
+trustpanel-etp-description-enabled = אם משהו נראה שבור באתר הזה, ניתן לנסות לכבות את ההגנות.
+trustpanel-etp-description-disabled = ‏{ -brand-product-name } חושב שחברות צריכות לעקוב אחריך פחות. אנו חוסמים כמה שיותר רכיבי מעקב כשההגנות פעילות.
+trustpanel-connection-label-secure = החיבור מאובטח
+trustpanel-connection-label-insecure = החיבור אינו מאובטח
+trustpanel-header-enabled = ‏{ -brand-product-name } עומד על המשמר
+trustpanel-description-enabled2 = ההגנות פעילות. אם נזהה משהו חריג, נודיע לך.
+trustpanel-header-enabled-insecure = יש להיזהר באתר זה
+trustpanel-description-enabled-insecure = ‏{ -brand-product-name } שם לב למשהו חשוד.
+trustpanel-header-disabled = כיבית את ההגנות
+trustpanel-description-disabled = ההגנות של { -brand-product-name } מושבתות כרגע. אנו מציעים להפעיל מחדש את ההגנות.
+trustpanel-clear-cookies-button = ניקוי עוגיות ונתוני אתרים
+trustpanel-privacy-link = הגדרות פרטיות
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = ניקוי עוגיות ונתוני אתר עבור { $host }
+trustpanel-clear-cookies-description = הסרת עוגיות ונתוני אתרים עשויה לנתק את החשבון שלך מאתרים ולרוקן עגלות קניות.
+trustpanel-clear-cookies-subview-button-clear = ניקוי
+trustpanel-clear-cookies-subview-button-cancel = ביטול
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = הגנות חיבור עבור { $host }
+trustpanel-siteinformation-morelink = פרטי אתר נוספים
+trustpanel-blocker-see-all = צפייה בהכל
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = הגנות מעקב עבור { $host }
+
+## The urlbar trust icon & panel
+
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = לא מאובטח
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header =
+    { $count ->
+        [one] רכיב מעקב <span>אחד</span> חסום באתר זה
+       *[other] <span>{ $count }</span> רכיבי מעקב חסומים באתר זה
+    }
+trustpanel-blocker-description = ‏{ -brand-product-name } חושב שחברות צריכות לעקוב אחריך פחות. אז אנחנו חוסמים כמה שניתן.
+trustpanel-blocked-header = ‏{ -brand-product-name } חסם את הפריטים הבאים עבורך:
+trustpanel-tracking-header = ‏{ -brand-product-name } איפשר את הפריטים הבאים כדי שהאתרים לא יישברו:
+trustpanel-tracking-description = ללא רכיבי מעקב, ייתכן שחלק מהכפתורים, הטפסים ושדות ההתחברות לא יפעלו.
+trustpanel-insecure-section-header = החיבור שלך אינו מאובטח
+trustpanel-insecure-description = הנתונים הנשלחים לאתר זה אינם מוצפנים. גורם מצד שלישי יכול לצפות, לגנוב או לשנות אותו בזמן שהוא מועבר ברשת.
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [one] עוגיית מעקב אחת חוצה אתרים
+       *[other] { $count } עוגיות מעקב חוצות אתרים
+    }
+trustpanel-list-label-tracking-content = תוכן מעקב
+trustpanel-list-label-fingerprinter =
+    { $count ->
+        [one] רכיב זהות דיגיטלית אחד
+       *[other] { $count } רכיבי זהות דיגיטלית
+    }
+trustpanel-list-label-social-tracking =
+    { $count ->
+        [one] רכיב מעקב אחד של מדיה חברתית
+       *[other] { $count } רכיבי מעקב של מדיה חברתית
+    }
+trustpanel-list-label-cryptominer =
+    { $count ->
+        [one] כורה מטבעות דיגיטליים אחד
+       *[other] { $count } כורי מטבעות דיגיטליים
+    }
+trustpanel-social-tracking-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } חסם רכיב מעקב אחד של מדיה חברתית
+       *[other] ‏{ -brand-product-name } חסם { $count } רכיבי מעקב של מדיה חברתית
+    }
+trustpanel-social-tracking-not-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } איפשר רכיב מעקב אחד של מדיה חברתית
+       *[other] ‏{ -brand-product-name } איפשר { $count } רכיבי מעקב של מדיה חברתית
+    }
+trustpanel-tracking-cookies-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } חסם עוגיית מעקב אחת חוצה אתרים
+       *[other] ‏{ -brand-product-name } חסם { $count } עוגיות מעקב חוצות אתרים
+    }
+trustpanel-tracking-cookies-not-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } איפשר עוגיית מעקב אחת חוצה אתרים
+       *[other] ‏{ -brand-product-name } איפשר { $count } עוגיות מעקב חוצות אתרים
+    }
+trustpanel-tracking-content-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } חסם רכיב מעקב אחד
+       *[other] ‏{ -brand-product-name } חסם { $count } רכיבי מעקב
+    }
+trustpanel-tracking-content-not-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } איפשר רכיב מעקב אחד
+       *[other] ‏{ -brand-product-name } איפשר { $count } רכיבי מעקב
+    }
+trustpanel-tracking-content-tab-list-header = האתרים האלה מנסים לעקוב אחריך:
+trustpanel-fingerprinter-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } חסם רכיב זהות דיגיטלית אחד
+       *[other] ‏{ -brand-product-name } חסם { $count } רכיבי זהות דיגיטלית
+    }
+trustpanel-fingerprinter-not-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } איפשר רכיב זהות דיגיטלית אחד
+       *[other] ‏{ -brand-product-name } איפשר { $count } רכיבי זהות דיגיטלית
+    }
+trustpanel-fingerprinter-list-header = האתרים האלה מנסים לקחת את טביעת האצבע הדיגיטלית שלך:
+trustpanel-cryptominer-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } חסם כורה מטבעות דיגיטליים אחד
+       *[other] ‏{ -brand-product-name } חסם { $count } כורי מטבעות דיגיטליים
+    }
+trustpanel-cryptominer-not-blocking-tab-header =
+    { $count ->
+        [one] ‏{ -brand-product-name } איפשר כורה מטבעות דיגיטליים אחד
+       *[other] ‏{ -brand-product-name } איפשר { $count } כורי מטבעות דיגיטליים
+    }
+trustpanel-cryptominer-tab-list-header = האתרים האלה מנסים לכרות מטבעות דיגיטליים:

@@ -50,9 +50,6 @@ toolbar-button-fxaccount =
     .label = { -fxaccount-brand-name }
     .tooltiptext = { -fxaccount-brand-name }
 
-## Account toolbar Button
-
-
 ## Save Page
 
 main-context-menu-page-save =
@@ -80,9 +77,7 @@ main-context-menu-save-link =
     .label = Сними ја врската како…
     .accesskey = С
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Копирај ја адресата за е-пошта
@@ -174,9 +169,6 @@ main-context-menu-audio-email =
 main-context-menu-send-to-device =
     .label = Испрати страница на уред
     .accesskey = и
-
-##
-
 
 ##
 

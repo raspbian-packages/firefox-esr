@@ -65,7 +65,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } arveriad
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Goubredit ho sinedoù e pep lec'h.
 cfr-doorhanger-bookmark-fxa-body = Kavet ho peus ul lec'hienn a-zoare! Bremañ eo dav deoc'h adkavout ar sined-mañ war ho trevnadoù hezoug. Krogit gant: { -fxaccount-brand-name }.
@@ -269,6 +269,7 @@ tail-fox-spotlight-secondary-button = Ket bremañ
 
 ## Root Certificate Succession Infobar
 
+root-certificate-succession-infobar-link = Perak e rankan hizivaat?
 root-certificate-succession-infobar-primary-button =
     .label = Hizivaat bremañ
     .accesskey = H
@@ -278,9 +279,18 @@ root-certificate-succession-infobar-secondary-button =
 
 ## Root Certificate Succession Windows Background Notification
 
+root-certificate-windows-background-notification-learn-more-button = Gouzout hiroc’h
+root-certificate-windows-background-notification-update-button = Hizivaat { -brand-short-name }
 
 ## FxA Menu Message variants
 
+fxa-menu-message-close-button =
+    .title = Serriñ
+    .aria-label = Serriñ
+fxa-menu-message-sign-up-button = Krouiñ ur gont
 
 ## Multi-CTA Fox Doodle Spotlight
 
+multi-cta-fox-doodle-title = Donemat en-dro
+multi-cta-fox-doodle-set-default-checkbox = Lakaat { -brand-short-name } da verdeer dre ziouer
+multi-cta-fox-doodle-start-browsing-primary-button-label = Kregiñ gant ar merdeiñ

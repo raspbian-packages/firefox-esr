@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = Galluogi awtolenwi cyfeiriadau.
 policy-AutofillCreditCardEnabled = Galluogi awtolenwi dulliau talu.
 policy-AutoLaunchProtocolsFromOrigins = Diffiniwch restr o brotocolau allanol y mae modd eu defnyddio o darddiad rhestredig heb annog y defnyddiwr.
 policy-BackgroundAppUpdate2 = Galluogi neu analluogi'r diweddarydd cefndir.
+policy-Backup = Analluogwch gwneud copi wrth gefn neu adfer data proffil.
 policy-BlockAboutAddons = Rhwystro mynediad at y Rheolwr Ychwanegion (about:addons)
 policy-BlockAboutConfig = Rhwystro mynediad at y dudalen about:config.
 policy-BlockAboutProfiles = Rhwystro mynediad at y dudalen about:profiles.
@@ -79,6 +80,7 @@ policy-ExtensionSettings = Rheoli pob agwedd o osod estyniad.
 policy-ExtensionUpdate = Galluogi neu analluogi diweddaru estyniadau'n awtomatig.
 policy-FirefoxHome2 = Ffurfweddu { -firefox-home-brand-name }.
 policy-FirefoxSuggest = Ffurfweddu { -firefox-suggest-brand-name }.
+policy-GenerativeAI = Ffurfweddu nodweddion AI cynhyrchiol.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Gorfodi llywio safle mewnrwyd yn uniongyrchol yn lle chwilio wrth deipio gair yn y bar cyfeiriad.
 policy-Handlers = Ffurfweddu trinwyr rhaglenni rhagosodedig.
 policy-HardwareAcceleration = Os gau, diffodd cyflymu caledwedd.
@@ -97,6 +99,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Dychwelyd at ymddygiad
 ##
 
 policy-LocalFileLinks = Caniatáu i wefannau penodol gysylltu i ffeiliau lleol.
+policy-LocalNetworkAccess = Galluogi neu analluogi gwiriadau mynediad rhwydwaith lleol.
 policy-ManagedBookmarks = Yn ffurfweddu rhestr o nodau tudalen sy'n cael eu rheoli gan weinyddwr nad yw'r defnyddiwr yn gallu eu newid.
 policy-ManualAppUpdateOnly = Caniatáu diweddariadau â llaw yn unig a pheidio â hysbysu'r defnyddiwr am ddiweddariadau.
 policy-PrimaryPassword = Ei gwneud yn ofynnol neu atal defnyddio Prif Gyfrinair.
@@ -117,6 +120,7 @@ policy-PostQuantumKeyAgreementEnabled = Galluogi cytundeb allwedd ôl-cwantwm ar
 policy-PDFjs = Analluogwch neu ffurfweddu PDF.js, y darllenydd PDF mewnol yn { -brand-short-name }.
 policy-Permissions2 = Ffurfweddwch y caniatâd ar gyfer camera, meicroffon, lleoliadau, hysbysiadau ac awtochwarae.
 policy-PictureInPicture = Galluogi neu analluogi Llun-mewn-Llun.
+policy-PopupBlocking2 = Caniatáu i rai gwefannau ddangos llamlenni a chael eich ailgyfeirio gan fframiau trydydd parti.
 policy-PopupBlocking = Caniatáu rhai gwefannau i ddangos llamlenni drwy ragosodiad.
 policy-Preferences = Gosod a chloi gwerth is-set o ddewisiadau.
 policy-PrivateBrowsingModeAvailability = Gosod argaeledd y modd pori preifat.
@@ -130,6 +134,8 @@ policy-SearchSuggestEnabled = Galluogi neu analluogi awgrymiadau chwilio.
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Ychwanegu neu ddileu modiwlau PKCS #11.
 policy-ShowHomeButton = Dangos y botwm cartref ar y bar offer.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Peidiwch a dangos y Telerau Defnyddio a'r Hysbysiad Preifatrwydd wrth gychwyn. Rydych yn dweud eich bod yn derbyn a bod gennych yr awdurdod i dderbyn y Telerau Defnyddio ar ran yr holl unigolion rydych yn darparu mynediad iddyn nhw i'r porwr hwn.
 policy-SSLVersionMax = Gosodwch y fersiwn SSL uchaf.
 policy-SSLVersionMin = Gosodwch y fersiwn SSL lleiaf.
 policy-StartDownloadsInTempDirectory = Gorfodi llwytho i lawr i gychwyn mewn lleoliad lleol, dros dro yn hytrach na'r cyfeiriadur llwytho i lawr rhagosodedig.
@@ -137,6 +143,7 @@ policy-SupportMenu = Ychwanegu eitem ddewislen cymorth cyfaddas i'r ddewislen cy
 policy-TranslateEnabled = Galluogi neu analluogi cyfieithu tudalennau gwe.
 policy-UserMessaging = Peidio â dangos rhai negeseuon i'r defnyddiwr.
 policy-UseSystemPrintDialog = Argraffu gan ddefnyddio deialog argraffu'r system.
+policy-VisualSearchEnabled = Galluogi neu analluogi chwilio gweledol.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Rhwystro gwefannau rhag derbyn ymweliadau. Gw. dogfennaeth am ragor o wybodaeth ar y fformat.
 policy-Windows10SSO = Caniatáu mewngofnodiad unigol ar gyfer cyfrifon Microsoft, gwaith ac ysgol.

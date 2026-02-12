@@ -71,6 +71,14 @@ perftools-button-add-directory = Aggiungi una cartella
 perftools-button-remove-directory = Rimuovi selezionate
 perftools-button-edit-settings = Modifica impostazioni…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = Altre azioni
+perftools-menu-more-actions-restart-with-profiling = Riavvia { -brand-shorter-name } con la profilazione all’avvio attiva
+perftools-menu-more-actions-copy-for-startup = Copia variabili di ambiente per la profilazione all’avvio
+perftools-menu-more-actions-copy-for-perf-tests = Copia parametri per i test delle prestazioni
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -143,6 +151,8 @@ perftools-presets-graphics-label = Grafica
 perftools-presets-graphics-description = Preset per la diagnosi di problemi grafici in { -brand-shorter-name }.
 perftools-presets-media-label = Multimediale
 perftools-presets-media-description2 = Preset per la diagnosi di problemi audio e video in { -brand-shorter-name }.
+perftools-presets-ml-label = Machine learning
+perftools-presets-ml-description2 = Preset per la diagnosi di problemi relativi a machine learning in { -brand-shorter-name }.
 perftools-presets-networking-label = Rete
 perftools-presets-networking-description = Preset per la diagnosi di problemi di rete in { -brand-shorter-name }.
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -150,7 +160,6 @@ perftools-presets-power-label = Energia
 perftools-presets-power-description = Preset per la diagnosi di problemi relativi al consumo di energia in { -brand-shorter-name }, con overhead limitato.
 perftools-presets-debug-label = Debug
 perftools-presets-debug-description = Preset per il debug di { -brand-shorter-name }. Overhead elevato, non utilizzare per analisi delle prestazioni ma solo per comprendere il comportamento del browser.
+perftools-presets-web-compat-label = Compatibilità web
+perftools-presets-web-compat-description = Preset consigliato per il debug dei problemi di compatibilità nei siti web, non per monitorare le prestazioni.
 perftools-presets-custom-label = Personalizzato
-
-##
-

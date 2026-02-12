@@ -111,6 +111,26 @@ fp-learn-more-about-secure-connection-failures = Več o neuspelih varnih povezav
 fp-learn-more-about-cert-issues = Več o tovrstnih težavah z digitalnimi potrdili
 fp-learn-more-about-time-related-errors = Več o odpravljanju s časom povezanih napak
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker je bilo digitalno potrdilo, ki ga uporablja { $hostname }, preklicano in se mu ne zaupa več.
+cert-error-bad-signature = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker podpis digitalnega potrdila, ki ga uporablja { $hostname }, ni veljaven.
+cert-error-key-pinning-failure = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker digitalno potrdilo za { $hostname } uporablja drug javni ključ, kot je bilo pričakovano.
+cert-error-bad-der = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker digitalno potrdilo, ki ga uporablja { $hostname }, ni pravilno kodirano.
+cert-error-cert-not-in-name-space = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker digitalno potrdilo, ki ga uporablja { $hostname }, ne upošteva omejitev imena potrdila, ki ga je izdalo.
+cert-error-inadequate-cert-type = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker digitalnega potrdila, ki ga uporablja { $hostname }, ne bi smel uporabljati spletni strežnik.
+cert-error-path-len-constraint-invalid = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker digitalno potrdilo, ki ga je predložilo { $hostname }, na poti do korenskega potrdila vsebuje preveč vmesnih potrdil.
+cert-error-invalid-key = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker je v digitalnem potrdilu za { $hostname } ključ, ki je neveljaven. Najverjetneje je premajhen, da bi bil varen.
+cert-error-unknown-critical-extension = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker digitalno potrdilo za { $hostname } vsebuje nepodprto kritično razširitev.
+cert-error-extension-value-invalid = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker digitalno potrdilo, ki ga je predložilo { $hostname }, vsebuje neveljavno razširitev.
+cert-error-untrusted-issuer = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker je digitalno potrdilo, ki ga uporablja { $hostname }, izdal overitelj, ki več ne uživa zaupanja.
+cert-error-untrusted-cert = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker je digitalno potrdilo, ki ga uporablja { $hostname }, označeno kot ne zaupanja vredno.
+cert-error-invalid-integer-encoding = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker digitalno potrdilo, ki ga uporablja { $hostname }, vsebuje neveljavno kodiranje celega števila. Pogosti vzroki so negativne serijske številke, negativni moduli RSA in kodiranja, ki so daljša, kot je potrebno.
+cert-error-unsupported-keyalg = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker digitalno potrdilo, ki ga uporablja { $hostname }, vsebuje nepodprto vrsto ključa.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker izdajatelj digitalnega potrdila, ki ga uporablja { $hostname }, ne velja več za vrednega zaupanja.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } vam je preprečil obisk tega spletnega mesta, ker se algoritem podpisa digitalnega potrdila, ki ga uporablja { $hostname }, ne ujema z njegovim poljem algoritma podpisa.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = Povezava neuspešna
@@ -118,6 +138,7 @@ deniedPortAccess-title = Ta naslov je omejen
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm, pri iskanju te strani imamo težave.
+internet-connection-offline-title = Videti je, da obstaja težava z vašo internetno povezavo.
 dns-not-found-trr-only-title2 = Možno varnostno tveganje pri iskanju te domene
 dns-not-found-native-fallback-title2 = Možno varnostno tveganje pri iskanju te domene
 fileNotFound-title = Datoteke ni mogoče najti
@@ -134,6 +155,7 @@ contentEncodingError-title = Napaka pri kodiranju vsebine
 unsafeContentType-title = Nevarna vrsta datoteke
 netReset-title = Povezava je bila ponastavljena
 netTimeout-title = Dovoljeni čas pretekel
+httpErrorPage-title = Na tem spletnem mestu se je pojavila težava
 serverError-title = Na tem spletnem mestu se je pojavila težava
 unknownProtocolFound-title = Naslova ni bilo mogoče razumeti
 proxyConnectFailure-title = Posrednik zavrača povezave
@@ -142,6 +164,7 @@ redirectLoop-title = Stran ne preusmerja pravilno
 unknownSocketType-title = Nepričakovan odgovor strežnika
 nssFailure2-title = Varna povezava ni uspela
 csp-xfo-error-title = { -brand-short-name } ne more odpreti te strani
+corruptedContentErrorv2-title = Napaka zaradi pokvarjene vsebine
 corruptedContentError-title = Napaka zaradi pokvarjene vsebine
 sslv3Used-title = Varna povezava ni mogoča
 inadequateSecurityError-title = Vaša povezava ni varna

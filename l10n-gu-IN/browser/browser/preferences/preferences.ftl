@@ -67,6 +67,10 @@ startup-header = શરૂઆત
 always-check-default =
     .label = હંમેશાં તપાસો કે { -brand-short-name } તમારું મૂળભૂત બ્રાઉઝર છે
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } હાલમાં તમારું મૂળભૂત બ્રાઉઝર છે
+is-not-default-browser =
+    .message = { -brand-short-name } તમારું મૂળભૂત બ્રાઉઝર નથી
 is-default = { -brand-short-name } હાલમાં તમારું મૂળભૂત બ્રાઉઝર છે
 is-not-default = { -brand-short-name } તમારું મૂળભૂત બ્રાઉઝર નથી
 set-as-my-default-browser =
@@ -163,6 +167,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = ફાઇલો અને એપ્લિકેશન્સ
+downloads-header-2 =
+    .label = ડાઉનલોડ
+download-save-where-2 =
+    .label = ફાઈલોને આમાં સંગ્રહો
+    .accesskey = v
 download-header = ડાઉનલોડ
 download-save-where = ફાઈલોને આમાં સંગ્રહો
     .accesskey = v
@@ -322,7 +331,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = નવી વિન્ડો અને ટૅબ્સ
 home-new-windows-tabs-description2 = જ્યારે તમે તમારું હોમપેજ, નવી વિંડોઝ અને નવી ટેબ્સ ખોલો છો ત્યારે તમે શું જુઓ છો તે પસંદ કરો.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = મુખ્ય પૃષ્ઠ અને નવી વિંડોઝ
 home-newtabs-mode-label = નવી ટૅબ્સ
@@ -433,6 +442,8 @@ search-keyword-warning-bookmark = તમે પસંદ કરેલ મુખ�
 ## Containers Section
 
 containers-header = કન્ટેઈનર ટેબ્સ
+containers-section-header =
+    .heading = કન્ટેઈનર ટેબ્સ
 containers-add-button =
     .label = નવું કન્ટેઈનર ઉમેરો
     .accesskey = A
@@ -481,12 +492,6 @@ sync-sign-in =
     .label = સાઇન ઇન કરો
     .accesskey = g
 
-## Sync section - enabling or disabling sync.
-
-
-## The list of things currently syncing.
-
-
 ## The "Choose what to sync" dialog.
 
 sync-engine-bookmarks =
@@ -515,6 +520,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = ઉપકરણનું નામ
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = ઉપકરણનું નામ
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = ઉપકરણ નામ બદલો
+    .accesskey = h
 sync-device-name-change =
     .label = ઉપકરણ નામ બદલો…
     .accesskey = h
@@ -566,12 +579,6 @@ forms-master-pw-change =
     .accesskey = M
 forms-master-pw-fips-desc = પાસવર્ડ બદલવાનું નિષ્ફળ
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = ઇતિહાસ
@@ -592,6 +599,10 @@ history-remember-option-never =
     .label = ક્યારેય ઇતિહાસ યાદ રાખશો નહિં
 history-remember-option-custom =
     .label = ઇતિહાસ માટે વૈવિધ્યપૂર્ણ સેટીંગ વાપરો
+history-remember-description2 =
+    .description = { -brand-short-name } તમારી બ્રાઉઝિંગ, ડાઉનલોડ, ફોર્મ અને શોધ ઇતિહાસ યાદ રાખશે.
+history-dontremember-description2 =
+    .description = { -brand-short-name } ખાનગી બ્રાઉઝીંગની જેમ જ સેટીંગ વાપરશે, અને તમે જેમ વેબ બ્રાઉઝ કરો તેમ ઇતિહાસ યાદ રાખશે નહિં.
 history-remember-description = { -brand-short-name } તમારી બ્રાઉઝિંગ, ડાઉનલોડ, ફોર્મ અને શોધ ઇતિહાસ યાદ રાખશે.
 history-dontremember-description = { -brand-short-name } ખાનગી બ્રાઉઝીંગની જેમ જ સેટીંગ વાપરશે, અને તમે જેમ વેબ બ્રાઉઝ કરો તેમ ઇતિહાસ યાદ રાખશે નહિં.
 history-private-browsing-permanent =
@@ -645,12 +656,6 @@ sitedata-clear =
 sitedata-settings =
     .label = ડેટા સંચાલન કરો…
     .accesskey = M
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -755,6 +760,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = અપવાદો...
     .accesskey = E
+permissions-location2 =
+    .label = સ્થાન
+permissions-camera2 =
+    .label = કેમેરા
+permissions-microphone2 =
+    .label = માઇક્રોફોન
+permissions-notification2 =
+    .label = સૂચનાઓ
 
 ## Privacy Section - Data Collection
 
@@ -774,9 +787,6 @@ addon-recommendations-link = વધુ શીખો
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = આ તૈચાર કરેલ રૂપરેખાંકન માટે ડેટા અહેવાલ અક્ષમ કરેલું છે
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -808,12 +818,7 @@ certs-view =
 certs-devices =
     .label = સુરક્ષા ઉપકરણો…
     .accesskey = D
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPS સક્રિય કરો
 
 ## The following strings are used in the Download section of settings
 

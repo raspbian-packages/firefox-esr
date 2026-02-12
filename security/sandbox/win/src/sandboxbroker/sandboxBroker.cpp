@@ -13,8 +13,10 @@
 #include <string>
 
 #include "base/win/windows_version.h"
+#include "GfxDriverInfo.h"
 #include "mozilla/Assertions.h"
 #include "mozilla/ClearOnShutdown.h"
+#include "mozilla/Components.h"
 #include "mozilla/ImportDir.h"
 #include "mozilla/Logging.h"
 #include "mozilla/NSPRLogModulesParser.h"
@@ -27,7 +29,7 @@
 #include "mozilla/StaticPrefs_widget.h"
 #include "mozilla/StaticPtr.h"
 #include "mozilla/UniquePtr.h"
-#include "mozilla/Telemetry.h"
+#include "mozilla/glean/SecuritySandboxMetrics.h"
 #include "mozilla/WinDllServices.h"
 #include "mozilla/WindowsVersion.h"
 #include "mozilla/ipc/LaunchError.h"
@@ -35,6 +37,7 @@
 #include "nsCOMPtr.h"
 #include "nsDirectoryServiceDefs.h"
 #include "nsIFile.h"
+#include "nsIGfxInfo.h"
 #include "nsIProperties.h"
 #include "nsIXULRuntime.h"
 #include "nsServiceManagerUtils.h"
@@ -68,6 +71,10 @@ bool SandboxBroker::sRunningFromNetworkDrive = false;
 static StaticAutoPtr<nsString> sBinDir;
 static StaticAutoPtr<nsString> sProfileDir;
 static StaticAutoPtr<nsString> sLocalAppDataDir;
+static StaticAutoPtr<nsString> sSystemFontsDir;
+static StaticAutoPtr<nsString> sWindowsSystemDir;
+static StaticAutoPtr<nsString> sLocalAppDataLowDir;
+static StaticAutoPtr<nsString> sLocalAppDataLowParentDir;
 #ifdef ENABLE_SYSTEM_EXTENSION_DIRS
 static StaticAutoPtr<nsString> sUserExtensionsDir;
 #endif
@@ -115,14 +122,14 @@ static sandbox::ResultCode AddWin32kLockdownPolicy(
   return result;
 }
 
-static void CacheDirAndAutoClear(const nsAString& aDir,
-                                 StaticAutoPtr<nsString>* cacheVar) {
-  *cacheVar = new nsString(aDir);
-  ClearOnShutdown(cacheVar);
+static void CacheAndStandardizeDir(const nsAString& aDir,
+                                   StaticAutoPtr<nsString>& aCacheVar) {
+  MOZ_ASSERT(!aCacheVar);
+  aCacheVar = new nsString(aDir);
 
   // Convert network share path to format for sandbox policy.
-  if (Substring(**cacheVar, 0, 2).Equals(u"\\\\"_ns)) {
-    (*cacheVar)->InsertLiteral(u"??\\UNC", 1);
+  if (Substring(*aCacheVar, 0, 2).Equals(u"\\\\"_ns)) {
+    aCacheVar->InsertLiteral(u"??\\UNC", 1);
   }
 }
 
@@ -134,12 +141,28 @@ void SandboxBroker::Initialize(sandbox::BrokerServices* aBrokerServices,
   sRunningFromNetworkDrive = widget::WinUtils::RunningFromANetworkDrive();
 
   if (!aBinDir.IsEmpty()) {
-    CacheDirAndAutoClear(aBinDir, &sBinDir);
+    CacheAndStandardizeDir(aBinDir, sBinDir);
   }
+
+  // Clear statics on shutdown.
+  RunOnShutdown([] {
+    sLaunchErrors = nullptr;
+    sBinDir = nullptr;
+    sProfileDir = nullptr;
+    sLocalAppDataDir = nullptr;
+    sSystemFontsDir = nullptr;
+    sWindowsSystemDir = nullptr;
+    sLocalAppDataLowDir = nullptr;
+    sLocalAppDataLowParentDir = nullptr;
+#ifdef ENABLE_SYSTEM_EXTENSION_DIRS
+    sUserExtensionsDir = nullptr;
+#endif
+  });
 }
 
-static void CacheDirAndAutoClear(nsIProperties* aDirSvc, const char* aDirKey,
-                                 StaticAutoPtr<nsString>* cacheVar) {
+static void CacheDirectoryServiceDir(nsIProperties* aDirSvc,
+                                     const char* aDirKey,
+                                     StaticAutoPtr<nsString>& aCacheVar) {
   nsCOMPtr<nsIFile> dirToCache;
   nsresult rv =
       aDirSvc->Get(aDirKey, NS_GET_IID(nsIFile), getter_AddRefs(dirToCache));
@@ -152,42 +175,118 @@ static void CacheDirAndAutoClear(nsIProperties* aDirSvc, const char* aDirKey,
 
   nsAutoString dirPath;
   MOZ_ALWAYS_SUCCEEDS(dirToCache->GetPath(dirPath));
-  CacheDirAndAutoClear(dirPath, cacheVar);
+  CacheAndStandardizeDir(dirPath, aCacheVar);
+}
+
+static void AddCachedDirRule(sandbox::TargetPolicy* aPolicy,
+                             sandbox::TargetPolicy::Semantics aAccess,
+                             const StaticAutoPtr<nsString>& aBaseDir,
+                             const nsLiteralString& aRelativePath = u""_ns) {
+  if (!aBaseDir) {
+    // This can only be an NS_WARNING, because it can null for xpcshell tests.
+    NS_WARNING("Tried to add rule with null base dir.");
+    LOG_E("Tried to add rule with null base dir. Relative path: %S, Access: %d",
+          static_cast<const wchar_t*>(aRelativePath.get()), aAccess);
+    return;
+  }
+
+  nsAutoString rulePath(*aBaseDir);
+  rulePath.Append(aRelativePath);
+
+  sandbox::ResultCode result = aPolicy->AddRule(
+      sandbox::TargetPolicy::SUBSYS_FILES, aAccess, rulePath.get());
+  if (sandbox::SBOX_ALL_OK != result) {
+    NS_ERROR("Failed to add file policy rule.");
+    LOG_E("Failed (ResultCode %d) to add %d access to: %S", result, aAccess,
+          rulePath.getW());
+  }
+}
+
+static void EnsureWindowsDirCached(
+    GUID aFolderID, StaticAutoPtr<nsString>& aCacheVar, const char* aErrMsg,
+    StaticAutoPtr<nsString>* aParentCacheVar = nullptr) {
+  if (aCacheVar) {
+    return;
+  }
+
+  UniquePtr<wchar_t, mozilla::CoTaskMemFreeDeleter> dirPath;
+  if (FAILED(::SHGetKnownFolderPath(aFolderID, 0, nullptr,
+                                    getter_Transfers(dirPath)))) {
+    NS_ERROR(aErrMsg);
+    LOG_E("%s", aErrMsg);
+    return;
+  }
+
+  nsDependentString dirString(dirPath.get());
+  CacheAndStandardizeDir(dirString, aCacheVar);
+  if (aParentCacheVar) {
+    nsCOMPtr<nsIFile> dirFile;
+    nsCOMPtr<nsIFile> parentDir;
+    if (NS_FAILED(NS_NewLocalFile(dirString, getter_AddRefs(dirFile))) ||
+        NS_FAILED(dirFile->GetParent(getter_AddRefs(parentDir)))) {
+      NS_WARNING("Failed to get parent directory to cache.");
+      LOG_E("%s parent", aErrMsg);
+      return;
+    }
+
+    nsString parentPath;
+    MOZ_ALWAYS_SUCCEEDS(parentDir->GetPath(parentPath));
+    CacheAndStandardizeDir(parentPath, *aParentCacheVar);
+  }
+}
+
+static void AddCachedWindowsDirRule(
+    sandbox::TargetPolicy* aPolicy, sandbox::TargetPolicy::Semantics aAccess,
+    GUID aFolderID, const nsLiteralString& aRelativePath = u""_ns) {
+  if (aFolderID == FOLDERID_Fonts) {
+    EnsureWindowsDirCached(FOLDERID_Fonts, sSystemFontsDir,
+                           "Failed to get Windows Fonts folder");
+    AddCachedDirRule(aPolicy, aAccess, sSystemFontsDir, aRelativePath);
+    return;
+  }
+  if (aFolderID == FOLDERID_System) {
+    EnsureWindowsDirCached(FOLDERID_System, sWindowsSystemDir,
+                           "Failed to get Windows System folder");
+    AddCachedDirRule(aPolicy, aAccess, sWindowsSystemDir, aRelativePath);
+    return;
+  }
+  if (aFolderID == FOLDERID_LocalAppDataLow) {
+    // For LocalAppDataLow we also require the parent dir.
+    EnsureWindowsDirCached(FOLDERID_LocalAppDataLow, sLocalAppDataLowDir,
+                           "Failed to get Windows LocalAppDataLow folder",
+                           &sLocalAppDataLowParentDir);
+    AddCachedDirRule(aPolicy, aAccess, sLocalAppDataLowDir, aRelativePath);
+    return;
+  }
+
+  MOZ_CRASH("Unhandled FOLDERID guid.");
 }
 
 /* static */
 void SandboxBroker::GeckoDependentInitialize() {
   MOZ_ASSERT(NS_IsMainThread());
 
-  bool haveXPCOM = XRE_GetProcessType() != GeckoProcessType_RemoteSandboxBroker;
-  if (haveXPCOM) {
-    // Cache directory paths for use in policy rules, because the directory
-    // service must be called on the main thread.
-    nsresult rv;
-    nsCOMPtr<nsIProperties> dirSvc =
-        do_GetService(NS_DIRECTORY_SERVICE_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) {
-      MOZ_ASSERT(false,
-                 "Failed to get directory service, cannot cache directories "
-                 "for rules.");
-      LOG_E(
-          "Failed to get directory service, cannot cache directories for "
-          "rules.");
-      return;
-    }
-
-    CacheDirAndAutoClear(dirSvc, NS_APP_USER_PROFILE_50_DIR, &sProfileDir);
-    CacheDirAndAutoClear(dirSvc, NS_WIN_LOCAL_APPDATA_DIR, &sLocalAppDataDir);
-#ifdef ENABLE_SYSTEM_EXTENSION_DIRS
-    CacheDirAndAutoClear(dirSvc, XRE_USER_SYS_EXTENSION_DIR,
-                         &sUserExtensionsDir);
-#endif
+  // Cache directory paths for use in policy rules, because the directory
+  // service must be called on the main thread.
+  nsresult rv;
+  nsCOMPtr<nsIProperties> dirSvc =
+      do_GetService(NS_DIRECTORY_SERVICE_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) {
+    MOZ_ASSERT(false,
+               "Failed to get directory service, cannot cache directories "
+               "for rules.");
+    LOG_E(
+        "Failed to get directory service, cannot cache directories for "
+        "rules.");
+    return;
   }
 
-  // Create sLaunchErrors up front because ClearOnShutdown must be called on the
-  // main thread.
-  sLaunchErrors = new nsTHashtable<nsCStringHashKey>();
-  ClearOnShutdown(&sLaunchErrors);
+  CacheDirectoryServiceDir(dirSvc, NS_APP_USER_PROFILE_50_DIR, sProfileDir);
+  CacheDirectoryServiceDir(dirSvc, NS_WIN_LOCAL_APPDATA_DIR, sLocalAppDataDir);
+#ifdef ENABLE_SYSTEM_EXTENSION_DIRS
+  CacheDirectoryServiceDir(dirSvc, XRE_USER_SYS_EXTENSION_DIR,
+                           sUserExtensionsDir);
+#endif
 }
 
 SandboxBroker::SandboxBroker() {
@@ -263,12 +362,74 @@ static void AddDeveloperRepoDirToPolicy(sandbox::TargetPolicy* aPolicy) {
   std::replace(repoPath.begin(), repoPath.end(), '/', '\\');
   repoPath.append(WSTRING("\\*"));
 
-  aPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                   sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                   repoPath.c_str());
+  auto result = aPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
+                                 sandbox::TargetPolicy::FILES_ALLOW_READONLY,
+                                 repoPath.c_str());
+  if (result != sandbox::SBOX_ALL_OK) {
+    NS_ERROR("Failed to add rule for developer repo dir.");
+    LOG_E("Failed (ResultCode %d) to add read access to developer repo dir",
+          result);
+  }
+
+  // The following is required if the process is using a USER_RESTRICTED or
+  // lower access token level.
+  result = aPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
+                            sandbox::TargetPolicy::FILES_ALLOW_READONLY,
+                            L"\\??\\MountPointManager");
+  if (result != sandbox::SBOX_ALL_OK) {
+    NS_ERROR("Failed to add rule for MountPointManager.");
+    LOG_E("Failed (ResultCode %d) to add read access to MountPointManager",
+          result);
+  }
 }
 
+#if defined(MOZ_PROFILE_GENERATE)
+// It should only be allowed on instrumented builds, never on production
+// builds.
+static void AddLLVMProfilePathDirectoryToPolicy(
+    sandbox::TargetPolicy* aPolicy) {
+  std::wstring parentPath;
+  if (GetLlvmProfileDir(parentPath)) {
+    aPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
+                     sandbox::TargetPolicy::FILES_ALLOW_ANY,
+                     parentPath.c_str());
+  }
+}
+#endif
+
 #undef WSTRING
+
+static void EnsureAppLockerAccess(sandbox::TargetPolicy* aPolicy) {
+  if (aPolicy->GetLockdownTokenLevel() < sandbox::USER_LIMITED) {
+    // The following rules are to allow DLLs to be loaded when the token level
+    // blocks access to AppLocker. If the sandbox does not allow access to the
+    // DLL or the AppLocker rules specifically block it, then it will not load.
+    auto result = aPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
+                                   sandbox::TargetPolicy::FILES_ALLOW_READONLY,
+                                   L"\\Device\\SrpDevice");
+    if (sandbox::SBOX_ALL_OK != result) {
+      NS_ERROR("Failed to add rule for SrpDevice.");
+      LOG_E("Failed (ResultCode %d) to add read access to SrpDevice", result);
+    }
+    result = aPolicy->AddRule(
+        sandbox::TargetPolicy::SUBSYS_REGISTRY,
+        sandbox::TargetPolicy::REG_ALLOW_READONLY,
+        L"HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Srp\\GP\\");
+    if (sandbox::SBOX_ALL_OK != result) {
+      NS_ERROR("Failed to add rule for Srp\\GP.");
+      LOG_E("Failed (ResultCode %d) to add read access to Srp\\GP", result);
+    }
+    // On certain Windows versions there is a double slash before GP.
+    result = aPolicy->AddRule(
+        sandbox::TargetPolicy::SUBSYS_REGISTRY,
+        sandbox::TargetPolicy::REG_ALLOW_READONLY,
+        L"HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Srp\\\\GP\\");
+    if (sandbox::SBOX_ALL_OK != result) {
+      NS_ERROR("Failed to add rule for Srp\\\\GP.");
+      LOG_E("Failed (ResultCode %d) to add read access to Srp\\\\GP", result);
+    }
+  }
+}
 
 Result<Ok, mozilla::ipc::LaunchError> SandboxBroker::LaunchApp(
     const wchar_t* aPath, const wchar_t* aArguments,
@@ -312,6 +473,8 @@ Result<Ok, mozilla::ipc::LaunchError> SandboxBroker::LaunchApp(
         mPolicy->SetDelayedProcessMitigations(delayedMitigations));
   }
 
+  EnsureAppLockerAccess(mPolicy);
+
   // If logging enabled, set up the policy.
   if (aEnableLogging) {
     ApplyLoggingPolicy();
@@ -335,6 +498,10 @@ Result<Ok, mozilla::ipc::LaunchError> SandboxBroker::LaunchApp(
   // Enable the child process to write log files when setup
   AddMozLogRulesToPolicy(mPolicy, aEnvironment);
 
+#if defined(MOZ_PROFILE_GENERATE)
+  AddLLVMProfilePathDirectoryToPolicy(mPolicy);
+#endif
+
   if (!mozilla::IsPackagedBuild()) {
     AddDeveloperRepoDirToPolicy(mPolicy);
   }
@@ -353,16 +520,13 @@ Result<Ok, mozilla::ipc::LaunchError> SandboxBroker::LaunchApp(
     key.AppendInt(static_cast<uint32_t>(last_error), 16);
 
     // Only accumulate for each combination once per session.
-    if (sLaunchErrors) {
-      if (!sLaunchErrors->Contains(key)) {
-        Telemetry::Accumulate(Telemetry::SANDBOX_FAILED_LAUNCH_KEYED, key,
-                              result);
-        sLaunchErrors->PutEntry(key);
-      }
-    } else {
-      // If sLaunchErrors not created yet then always accumulate.
-      Telemetry::Accumulate(Telemetry::SANDBOX_FAILED_LAUNCH_KEYED, key,
-                            result);
+    if (!sLaunchErrors) {
+      sLaunchErrors = new nsTHashtable<nsCStringHashKey>();
+    }
+    if (!sLaunchErrors->Contains(key)) {
+      glean::sandbox::failed_launch_keyed.Get(key).AccumulateSingleSample(
+          result);
+      sLaunchErrors->PutEntry(key);
     }
 
     LOG_E(
@@ -446,39 +610,12 @@ Result<Ok, mozilla::ipc::LaunchError> SandboxBroker::LaunchApp(
   return Ok();
 }
 
-static void AddCachedDirRule(sandbox::TargetPolicy* aPolicy,
-                             sandbox::TargetPolicy::Semantics aAccess,
-                             const StaticAutoPtr<nsString>& aBaseDir,
-                             const nsLiteralString& aRelativePath) {
-  if (!aBaseDir) {
-    // This can only be an NS_WARNING, because it can null for xpcshell tests.
-    NS_WARNING("Tried to add rule with null base dir.");
-    LOG_E("Tried to add rule with null base dir. Relative path: %S, Access: %d",
-          static_cast<const wchar_t*>(aRelativePath.get()), aAccess);
-    return;
-  }
-
-  nsAutoString rulePath(*aBaseDir);
-  rulePath.Append(aRelativePath);
-
-  sandbox::ResultCode result = aPolicy->AddRule(
-      sandbox::TargetPolicy::SUBSYS_FILES, aAccess, rulePath.get());
-  if (sandbox::SBOX_ALL_OK != result) {
-    NS_ERROR("Failed to add file policy rule.");
-    LOG_E("Failed (ResultCode %d) to add %d access to: %S", result, aAccess,
-          static_cast<const wchar_t*>(rulePath.get()));
-  }
-}
-
 // This function caches and returns an array of NT paths of the executable's
 // dependent modules.
 // If this returns Nothing(), it means the retrieval of the modules failed
 // (e.g. when the launcher process is disabled), so the process should not
 // enable pre-spawn CIG.
 static const Maybe<Vector<const wchar_t*>>& GetPrespawnCigExceptionModules() {
-  // We enable pre-spawn CIG only in Nightly for now
-  // because it caused a compat issue (bug 1682304 and 1704373).
-#if defined(NIGHTLY_BUILD)
   // The shared section contains a list of dependent modules as a
   // null-delimited string.  We convert it to a string vector and
   // cache it to avoid converting the same data every time.
@@ -494,10 +631,6 @@ static const Maybe<Vector<const wchar_t*>>& GetPrespawnCigExceptionModules() {
   }();
 
   return sDependentModules;
-#else
-  static const Maybe<Vector<const wchar_t*>> sNothing = Nothing();
-  return sNothing;
-#endif
 }
 
 static sandbox::ResultCode AllowProxyLoadFromBinDir(
@@ -513,54 +646,58 @@ static sandbox::ResultCode AllowProxyLoadFromBinDir(
 
 static sandbox::ResultCode AddCigToPolicy(
     sandbox::TargetPolicy* aPolicy, bool aAlwaysProxyBinDirLoading = false) {
-  const Maybe<Vector<const wchar_t*>>& exceptionModules =
-      GetPrespawnCigExceptionModules();
-  if (exceptionModules.isNothing()) {
-    sandbox::MitigationFlags delayedMitigations =
-        aPolicy->GetDelayedProcessMitigations();
-    MOZ_ASSERT(delayedMitigations,
-               "Delayed mitigations should be set before AddCigToPolicy.");
-    MOZ_ASSERT(!(delayedMitigations & sandbox::MITIGATION_FORCE_MS_SIGNED_BINS),
-               "AddCigToPolicy should not be called twice.");
+  if (StaticPrefs::security_sandbox_cig_prespawn_enabled()) {
+    const Maybe<Vector<const wchar_t*>>& exceptionModules =
+        GetPrespawnCigExceptionModules();
+    if (exceptionModules.isSome()) {
+      sandbox::MitigationFlags mitigations = aPolicy->GetProcessMitigations();
+      MOZ_ASSERT(mitigations,
+                 "Mitigations should be set before AddCigToPolicy.");
+      MOZ_ASSERT(!(mitigations & sandbox::MITIGATION_FORCE_MS_SIGNED_BINS),
+                 "AddCigToPolicy should not be called twice.");
 
-    delayedMitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
-    sandbox::ResultCode result =
-        aPolicy->SetDelayedProcessMitigations(delayedMitigations);
-    if (result != sandbox::SBOX_ALL_OK) {
-      return result;
-    }
+      mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
+      sandbox::ResultCode result = aPolicy->SetProcessMitigations(mitigations);
+      if (result != sandbox::SBOX_ALL_OK) {
+        return result;
+      }
 
-    if (aAlwaysProxyBinDirLoading) {
       result = AllowProxyLoadFromBinDir(aPolicy);
+      if (result != sandbox::SBOX_ALL_OK) {
+        return result;
+      }
+
+      for (const wchar_t* path : exceptionModules.ref()) {
+        result =
+            aPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_SIGNED_BINARY,
+                             sandbox::TargetPolicy::SIGNED_ALLOW_LOAD, path);
+        if (result != sandbox::SBOX_ALL_OK) {
+          return result;
+        }
+      }
+
+      return sandbox::SBOX_ALL_OK;
     }
-    return result;
   }
 
-  sandbox::MitigationFlags mitigations = aPolicy->GetProcessMitigations();
-  MOZ_ASSERT(mitigations, "Mitigations should be set before AddCigToPolicy.");
-  MOZ_ASSERT(!(mitigations & sandbox::MITIGATION_FORCE_MS_SIGNED_BINS),
+  sandbox::MitigationFlags delayedMitigations =
+      aPolicy->GetDelayedProcessMitigations();
+  MOZ_ASSERT(delayedMitigations,
+             "Delayed mitigations should be set before AddCigToPolicy.");
+  MOZ_ASSERT(!(delayedMitigations & sandbox::MITIGATION_FORCE_MS_SIGNED_BINS),
              "AddCigToPolicy should not be called twice.");
 
-  mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
-  sandbox::ResultCode result = aPolicy->SetProcessMitigations(mitigations);
+  delayedMitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
+  sandbox::ResultCode result =
+      aPolicy->SetDelayedProcessMitigations(delayedMitigations);
   if (result != sandbox::SBOX_ALL_OK) {
     return result;
   }
 
-  result = AllowProxyLoadFromBinDir(aPolicy);
-  if (result != sandbox::SBOX_ALL_OK) {
-    return result;
+  if (aAlwaysProxyBinDirLoading) {
+    result = AllowProxyLoadFromBinDir(aPolicy);
   }
-
-  for (const wchar_t* path : exceptionModules.ref()) {
-    result = aPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_SIGNED_BINARY,
-                              sandbox::TargetPolicy::SIGNED_ALLOW_LOAD, path);
-    if (result != sandbox::SBOX_ALL_OK) {
-      return result;
-    }
-  }
-
-  return sandbox::SBOX_ALL_OK;
+  return result;
 }
 
 // Returns the most strict dynamic code mitigation flag that is compatible with
@@ -782,6 +919,55 @@ static sandbox::ResultCode AddAndConfigureAppContainerProfile(
 }
 #endif
 
+void AddShaderCachesToPolicy(sandbox::TargetPolicy* aPolicy,
+                             int32_t aSandboxLevel) {
+  // The GPU process needs to write to a shader cache for performance reasons
+  if (sProfileDir) {
+    // Currently the GPU process creates the shader-cache directory if it
+    // doesn't exist, so we have to give FILES_ALLOW_ANY access.
+    // FILES_ALLOW_DIR_ANY has been seen to fail on an existing profile although
+    // the root cause hasn't been found. FILES_ALLOW_DIR_ANY has also been
+    // removed from the sandbox code upstream.
+    // It is possible that we might be able to use FILES_ALLOW_READONLY for the
+    // dir if it is already created, bug 1966157 has been filed to track.
+    AddCachedDirRule(aPolicy, sandbox::TargetPolicy::FILES_ALLOW_ANY,
+                     sProfileDir, u"\\shader-cache"_ns);
+
+    AddCachedDirRule(aPolicy, sandbox::TargetPolicy::FILES_ALLOW_ANY,
+                     sProfileDir, u"\\shader-cache\\*"_ns);
+  }
+
+  // Add GPU specific shader cache rules.
+  const nsCOMPtr<nsIGfxInfo> gfxInfo = components::GfxInfo::Service();
+  MOZ_ASSERT(gfxInfo);
+  nsAutoString vendorID;
+  if (NS_FAILED(gfxInfo->GetAdapterVendorID(vendorID))) {
+    NS_WARNING("Failed to get GPU Vendor ID.");
+    return;
+  }
+
+  if (aSandboxLevel >= 2 && vendorID == widget::GfxDriverInfo::GetDeviceVendor(
+                                            widget::DeviceVendor::Intel)) {
+    // Add rules to allow Intel's shader cache.
+    AddCachedWindowsDirRule(aPolicy, sandbox::TargetPolicy::FILES_ALLOW_ANY,
+                            FOLDERID_LocalAppDataLow,
+                            u"\\Intel\\ShaderCache\\*"_ns);
+    AddCachedWindowsDirRule(aPolicy, sandbox::TargetPolicy::FILES_ALLOW_QUERY,
+                            FOLDERID_LocalAppDataLow,
+                            u"\\Intel\\ShaderCache"_ns);
+    AddCachedWindowsDirRule(aPolicy, sandbox::TargetPolicy::FILES_ALLOW_QUERY,
+                            FOLDERID_LocalAppDataLow, u"\\Intel"_ns);
+    AddCachedWindowsDirRule(aPolicy, sandbox::TargetPolicy::FILES_ALLOW_QUERY,
+                            FOLDERID_LocalAppDataLow);
+
+    // The parent of LocalAppDataLow is cached by AddCachedWindowsDirRule.
+    if (sLocalAppDataLowParentDir) {
+      AddCachedDirRule(aPolicy, sandbox::TargetPolicy::FILES_ALLOW_QUERY,
+                       sLocalAppDataLowParentDir);
+    }
+  }
+}
+
 void SandboxBroker::SetSecurityLevelForContentProcess(int32_t aSandboxLevel,
                                                       bool aIsFileProcess) {
   MOZ_RELEASE_ASSERT(mPolicy, "mPolicy must be set before this call.");
@@ -799,6 +985,20 @@ void SandboxBroker::SetSecurityLevelForContentProcess(int32_t aSandboxLevel,
   if (aSandboxLevel >= 20) {
     jobLevel = sandbox::JOB_LOCKDOWN;
     accessTokenLevel = sandbox::USER_LOCKDOWN;
+    initialIntegrityLevel = sandbox::INTEGRITY_LEVEL_LOW;
+    delayedIntegrityLevel = sandbox::INTEGRITY_LEVEL_UNTRUSTED;
+  } else if (aSandboxLevel >= 8) {
+    jobLevel = sandbox::JOB_LOCKDOWN;
+    accessTokenLevel = sandbox::USER_RESTRICTED;
+    // This Kingsoft DLL causes a load of ole32.dll, which fails under
+    // USER_RESTRICTED because access to KnownDlls is blocked when the
+    // Everyone/World SID is set to deny only. This will also give access to any
+    // other resources that allows Everyone and Restricted, so we only do it if
+    // the DLL is loaded in the parent process. This could be extended to a list
+    // of DLLs if required. Bug 1935962.
+    if (::GetModuleHandleW(L"ks3rdhmpg.dll")) {
+      mPolicy->SetAllowEveryoneForUserRestricted();
+    }
     initialIntegrityLevel = sandbox::INTEGRITY_LEVEL_LOW;
     delayedIntegrityLevel = sandbox::INTEGRITY_LEVEL_UNTRUSTED;
   } else if (aSandboxLevel >= 7) {
@@ -987,32 +1187,80 @@ void SandboxBroker::SetSecurityLevelForContentProcess(int32_t aSandboxLevel,
       sandbox::SBOX_ALL_OK == result,
       "With these static arguments AddRule should never fail, what happened?");
 
-  if (aSandboxLevel >= 20) {
+  if (aSandboxLevel >= 8) {
     // Content process still needs to be able to read fonts.
-    wchar_t* fontsPath;
-    if (SUCCEEDED(
-            ::SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &fontsPath))) {
-      std::wstring fontsStr = fontsPath;
-      ::CoTaskMemFree(fontsPath);
-      result = mPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                                sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                                fontsStr.c_str());
+    AddCachedWindowsDirRule(
+        mPolicy, sandbox::TargetPolicy::FILES_ALLOW_READONLY, FOLDERID_Fonts);
+    AddCachedWindowsDirRule(mPolicy,
+                            sandbox::TargetPolicy::FILES_ALLOW_READONLY,
+                            FOLDERID_Fonts, u"\\*"_ns);
+
+    // Add access to Windows system binary dir to allow DLLs that are not
+    // required in all content processes to load later.
+    AddCachedWindowsDirRule(mPolicy,
+                            sandbox::TargetPolicy::FILES_ALLOW_READONLY,
+                            FOLDERID_System, u"\\*"_ns);
+
+    // Read access for MF Media Source Activate and subkeys/values.
+    result = mPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_REGISTRY,
+                              sandbox::TargetPolicy::REG_ALLOW_READONLY,
+                              L"HKEY_LOCAL_MACHINE\\Software\\Classes\\CLSID"
+                              L"\\{e79167d7-1b85-4d78-b603-798e0e1a4c67}*");
+    if (sandbox::SBOX_ALL_OK != result) {
+      NS_ERROR("Failed to add rule for MFStartup CLSID.");
+      LOG_E("Failed (ResultCode %d) to add rule for MFStartup CLSID.", result);
+    }
+
+    // Read access for other Media Foundation Classes.
+    result = mPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_REGISTRY,
+                              sandbox::TargetPolicy::REG_ALLOW_READONLY,
+                              L"HKEY_LOCAL_MACHINE\\"
+                              L"Software\\Classes\\MediaFoundation\\*");
+    if (sandbox::SBOX_ALL_OK != result) {
+      NS_ERROR("Failed to add rule for MFStartup CLSID.");
+      LOG_E("Failed (ResultCode %d) to add rule for MFStartup CLSID.", result);
+    }
+
+    // Read access for MF H264 Encoder and subkeys/values.
+    result = mPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_REGISTRY,
+                              sandbox::TargetPolicy::REG_ALLOW_READONLY,
+                              L"HKEY_LOCAL_MACHINE\\Software\\Classes\\CLSID"
+                              L"\\{6CA50344-051A-4DED-9779-A43305165E35}*");
+    if (sandbox::SBOX_ALL_OK != result) {
+      NS_ERROR("Failed to add rule for MF H264 Encoder CLSID.");
+      LOG_E("Failed (ResultCode %d) to add rule for MF H264 Encoder CLSID.",
+            result);
+    }
+
+#if !defined(_WIN64)
+    BOOL isWow64Process;
+    if (::IsWow64Process(::GetCurrentProcess(), &isWow64Process) &&
+        isWow64Process) {
+      // Read access for other Media Foundation Classes for WOW64.
+      result = mPolicy->AddRule(
+          sandbox::TargetPolicy::SUBSYS_REGISTRY,
+          sandbox::TargetPolicy::REG_ALLOW_READONLY,
+          L"HKEY_LOCAL_MACHINE\\"
+          L"Software\\Classes\\WOW6432Node\\MediaFoundation\\*");
       if (sandbox::SBOX_ALL_OK != result) {
-        NS_ERROR("Failed to add fonts dir read access policy rule.");
-        LOG_E("Failed (ResultCode %d) to add read access to: %S", result,
-              fontsStr.c_str());
+        NS_ERROR("Failed to add rule for MFStartup CLSID.");
+        LOG_E("Failed (ResultCode %d) to add rule for MFStartup CLSID.",
+              result);
       }
 
-      fontsStr += L"\\*";
-      result = mPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                                sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                                fontsStr.c_str());
+      // Read access for MF H264 Encoder and subkeys/values for WOW64.
+      result = mPolicy->AddRule(
+          sandbox::TargetPolicy::SUBSYS_REGISTRY,
+          sandbox::TargetPolicy::REG_ALLOW_READONLY,
+          L"HKEY_LOCAL_MACHINE\\Software\\Classes\\WOW6432Node\\CLSID"
+          L"\\{6CA50344-051A-4DED-9779-A43305165E35}*");
       if (sandbox::SBOX_ALL_OK != result) {
-        NS_ERROR("Failed to add fonts read access policy rule.");
-        LOG_E("Failed (ResultCode %d) to add read access to: %S", result,
-              fontsStr.c_str());
+        NS_ERROR("Failed to add rule for MF H264 Encoder CLSID.");
+        LOG_E("Failed (ResultCode %d) to add rule for MF H264 Encoder CLSID.",
+              result);
       }
     }
+#endif
 
     // We still currently create IPC named pipes in the content process.
     result = mPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_NAMED_PIPES,
@@ -1086,14 +1334,13 @@ void SandboxBroker::SetSecurityLevelForGPUProcess(int32_t aSandboxLevel) {
   AddCachedDirRule(mPolicy, sandbox::TargetPolicy::FILES_ALLOW_READONLY,
                    sBinDir, u"\\*"_ns);
 
-  // The GPU process needs to write to a shader cache for performance reasons
-  if (sProfileDir) {
-    AddCachedDirRule(mPolicy, sandbox::TargetPolicy::FILES_ALLOW_DIR_ANY,
-                     sProfileDir, u"\\shader-cache"_ns);
-
-    AddCachedDirRule(mPolicy, sandbox::TargetPolicy::FILES_ALLOW_ANY,
-                     sProfileDir, u"\\shader-cache\\*"_ns);
+  if (aSandboxLevel >= 2) {
+    // Add rule to allow access to user specific fonts.
+    AddCachedDirRule(mPolicy, sandbox::TargetPolicy::FILES_ALLOW_READONLY,
+                     sLocalAppDataDir, u"\\Microsoft\\Windows\\Fonts\\*"_ns);
   }
+
+  AddShaderCachesToPolicy(mPolicy, aSandboxLevel);
 }
 
 #define SANDBOX_ENSURE_SUCCESS(result, message)          \
@@ -1596,8 +1843,8 @@ bool SandboxBroker::SetSecurityLevelForUtilityProcess(
   }
 }
 
-bool SandboxBroker::SetSecurityLevelForGMPlugin(SandboxLevel aLevel,
-                                                bool aIsRemoteLaunch) {
+bool SandboxBroker::SetSecurityLevelForGMPlugin(
+    GMPSandboxKind aGMPSandboxKind) {
   if (!mPolicy) {
     return false;
   }
@@ -1607,8 +1854,10 @@ bool SandboxBroker::SetSecurityLevelForGMPlugin(SandboxLevel aLevel,
   SANDBOX_ENSURE_SUCCESS(
       result,
       "SetJobLevel should never fail with these arguments, what happened?");
-  auto level = (aLevel == Restricted) ? sandbox::USER_RESTRICTED
-                                      : sandbox::USER_LOCKDOWN;
+
+  // The Widevine CDM on Windows can only load at USER_RESTRICTED
+  auto level = (aGMPSandboxKind == Widevine) ? sandbox::USER_RESTRICTED
+                                             : sandbox::USER_LOCKDOWN;
   result = mPolicy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS, level);
   SANDBOX_ENSURE_SUCCESS(
       result,
@@ -1649,13 +1898,28 @@ bool SandboxBroker::SetSecurityLevelForGMPlugin(SandboxLevel aLevel,
   result = mPolicy->SetProcessMitigations(mitigations);
   SANDBOX_ENSURE_SUCCESS(result, "Invalid flags for SetProcessMitigations.");
 
-  if (StaticPrefs::security_sandbox_gmp_win32k_disable()) {
+  // win32k is currently not disabled for clearkey due to WMF decoding or
+  // widevine due to intermittent test failures, where the GMP process fails
+  // very early. See bug 1449348.
+  if (StaticPrefs::security_sandbox_gmp_win32k_disable() &&
+      aGMPSandboxKind != Widevine && aGMPSandboxKind != Clearkey) {
     result = AddWin32kLockdownPolicy(mPolicy, true);
     SANDBOX_ENSURE_SUCCESS(result, "Failed to add the win32k lockdown policy");
   }
 
   mitigations = sandbox::MITIGATION_STRICT_HANDLE_CHECKS |
                 sandbox::MITIGATION_DLL_SEARCH_ORDER;
+  if (StaticPrefs::security_sandbox_gmp_acg_enabled()) {
+    auto acgMitigation = sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
+    if (aGMPSandboxKind == Widevine) {
+      // We can't guarantee that widevine won't use dynamic code.
+      acgMitigation = 0;
+    } else if (aGMPSandboxKind == Clearkey) {
+      // Clearkey uses system decoding libraries.
+      acgMitigation = DynamicCodeFlagForSystemMediaLibraries();
+    }
+    mitigations |= acgMitigation;
+  }
 
   result = mPolicy->SetDelayedProcessMitigations(mitigations);
   SANDBOX_ENSURE_SUCCESS(result,
@@ -1762,31 +2026,6 @@ bool SandboxBroker::SetSecurityLevelForGMPlugin(SandboxLevel aLevel,
                             L"HKEY_LOCAL_"
                             L"MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVer"
                             L"sion\\SideBySide\\PreferExternalManifest");
-  SANDBOX_ENSURE_SUCCESS(
-      result,
-      "With these static arguments AddRule should never fail, what happened?");
-
-  // The following rules were added to allow a GMP to be loaded when any
-  // AppLocker DLL rules are specified. If the rules specifically block the DLL
-  // then it will not load.
-  result = mPolicy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                            sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                            L"\\Device\\SrpDevice");
-  SANDBOX_ENSURE_SUCCESS(
-      result,
-      "With these static arguments AddRule should never fail, what happened?");
-  result = mPolicy->AddRule(
-      sandbox::TargetPolicy::SUBSYS_REGISTRY,
-      sandbox::TargetPolicy::REG_ALLOW_READONLY,
-      L"HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Srp\\GP\\");
-  SANDBOX_ENSURE_SUCCESS(
-      result,
-      "With these static arguments AddRule should never fail, what happened?");
-  // On certain Windows versions there is a double slash before GP in the path.
-  result = mPolicy->AddRule(
-      sandbox::TargetPolicy::SUBSYS_REGISTRY,
-      sandbox::TargetPolicy::REG_ALLOW_READONLY,
-      L"HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Srp\\\\GP\\");
   SANDBOX_ENSURE_SUCCESS(
       result,
       "With these static arguments AddRule should never fail, what happened?");

@@ -4,7 +4,7 @@
 
 
 ## Error messages for failed HTTP web requests.
-## https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+## https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
@@ -20,9 +20,12 @@ firefox-relay-get-unlimited-masks =
     .accesskey = M
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
 firefox-relay-opt-in-title-1 = E-posta adresinizi koruyun:
+firefox-relay-opt-in-title-2 = Ücretsiz e-posta maskenizi oluşturun
 # This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
 # ends with a colon. You might need to adapt the capitalization of this string.
 firefox-relay-opt-in-subtitle-1 = { -relay-brand-name } e-posta maskesi kullanın
+firefox-relay-use-mask-title-1 = E-posta maskesi kullanın
+firefox-relay-opt-in-subtitle-2 = Gelen kutunuzu spam’den koruyun
 firefox-relay-use-mask-title = { -relay-brand-name } e-posta maskesi kullanın
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-a
 firefox-relay-opt-in-title-a = Ücretsiz e-posta maskesiyle spam’i önleyin
@@ -62,6 +65,7 @@ firefox-relay-offer-legal-notice-control = Kaydolup e-posta maskesi oluşturarak
 ## The "basic-info" variation of the Relay offer popup
 
 firefox-relay-and-fxa-popup-notification-header-basic-info = Ücretsiz e-posta maskesiyle spam’i önleyin
+firefox-relay-and-fxa-popup-notification-first-sentence-basic-info = Ücretsiz bir <label data-l10n-name="firefox-relay-learn-more-url">e-posta maskesi</label> ile gerçek e-posta adresinizi gizleyerek spam’i önleyebilirsiniz. <label data-l10n-name="firefox-fxa-and-relay-offer-domain">Bu siteden</label> e-postalar gelen kutunuza ulaşmaya devam edecek ama e-posta adresiniz gizlenecek.
 firefox-relay-and-fxa-popup-notification-second-sentence-basic-info = E-posta maskelerini kullanmak için kaydolun veya hesabınıza giriş yapın
 firefox-relay-and-fxa-opt-in-confirmation-enable-button-basic-info =
     .label = Kaydol
@@ -70,6 +74,9 @@ firefox-relay-and-fxa-opt-in-confirmation-enable-button-basic-info =
 ## The "with-domain" variation of the Relay offer popup
 
 firefox-relay-and-fxa-popup-notification-header-with-domain = Ücretsiz e-posta maskenizi oluşturun
+firefox-relay-and-fxa-popup-notification-first-sentence-with-domain = Gerçek e-posta adresinizi gizleyen ücretsiz bir <label data-l10n-name="firefox-relay-learn-more-url">e-posta maskesi</label> ile gelen kutunuzu spam’den koruyun. <label data-l10n-name="firefox-fxa-and-relay-offer-domain">Bu siteden</label> e-postalar gelen kutunuza ulaşmaya devam edecek ama e-posta adresiniz gizlenecek.
+firefox-relay-and-fxa-popup-notification-first-sentence = Gerçek e-posta adresinizi gizleyen ücretsiz bir <label data-l10n-name="firefox-relay-learn-more-url">{ -relay-brand-name } e-posta maskesi</label> ile gelen kutunuzu spam’den koruyun. <label data-l10n-name="firefox-fxa-and-relay-offer-domain">Bu siteden</label> e-postalar gelen kutunuza ulaşmaya devam edecek ama e-posta adresiniz gizlenecek.
+firefox-relay-offer-why-to-use-relay-1 = Gerçek e-posta adresinizi gizleyen ücretsiz bir <label data-l10n-name="firefox-relay-learn-more-url">{ -relay-brand-name } e-posta maskesi</label> ile gelen kutunuzu spam’den koruyun. <label data-l10n-name="firefox-fxa-and-relay-offer-domain">Bu siteden</label> e-postalar gelen kutunuza ulaşmaya devam edecek ama e-posta adresiniz gizlenecek.
 firefox-relay-and-fxa-popup-notification-second-sentence-with-domain = E-posta maskelerini kullanmak için kaydolun veya hesabınıza giriş yapın
 firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain =
     .label = Kaydol
@@ -78,6 +85,7 @@ firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain =
 ## The "with-domain-and-value-prop" variation of the Relay offer popup
 
 firefox-relay-and-fxa-popup-notification-header-with-domain-and-value-prop = E-posta maskeleriyle spam’den korunun
+firefox-relay-and-fxa-popup-notification-first-sentence-with-domain-and-value-prop = <label data-l10n-name="firefox-relay-learn-more-url">E-posta maskesi</label> ile gerçek e-posta adresinizi gizleyerek spam’den korunun. E-postalarınız <label data-l10n-name="firefox-fxa-and-relay-offer-domain">bu siteden</label> normal şekilde gelmeye devam edecek ama adresiniz maskelenmiş olacak.
 firefox-relay-and-fxa-popup-notification-second-sentence-with-domain-and-value-prop = E-posta maskelerini kullanmak için kaydolun veya hesabınıza giriş yapın
 firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain-and-value-prop =
     .label = İleri

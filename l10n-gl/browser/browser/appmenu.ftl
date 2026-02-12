@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Descargas
 appmenuitem-passwords =
     .label = Contrasinais
+appmenuitem-extensions-and-themes =
+    .label = Extensións e temas
+appmenuitem-extensions =
+    .label = Extensións
 appmenuitem-addons-and-themes =
     .label = Complementos e temas
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Maiús+2
     }
+profiler-button-dropmarker =
+    .label = Abrir o panel do perfilador
+    .tooltiptext = Abrir o panel do perfilador
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Predefinido para investigar erros de son e de vídeo en { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Recursos
+profiler-popup-presets-ml-description = Predefinido para investigar erros de aprendizaxe automática en { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Aprendizaxe automática
 profiler-popup-presets-networking-description = Predefinido para investigar erros de rede en { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Rede
@@ -199,6 +209,7 @@ profiler-popup-presets-power-description = Preestablecido para investigar erros 
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Enerxía
+profiler-popup-presets-debug-description = Predefinido para a depuración en { -brand-shorter-name }. Alta sobrecarga, non o uses para traballos de rendemento, senón para centrarte na comprensión do comportamento do navegador.
 profiler-popup-presets-debug-label =
     .label = Depurar
 profiler-popup-presets-custom-label =
@@ -279,12 +290,14 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Recibir alertas sobre filtracións de datos
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Oculte o seu correo electrónico e teléfono reais
+appmenuitem-services-relay-description = Inicia o panel de máscaras de correo electrónico
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Protexa a súa actividade en liña
+appmenu-services-header = Os meus servizos
+appmenu-other-protection-header = Proba outras ferramentas de protección de { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Perfís
 appmenu-other-profiles = Outros perfís
 appmenu-manage-profiles =
     .label = Xestionar perfís
@@ -292,3 +305,5 @@ appmenu-create-profile =
     .label = Novo perfil
 appmenu-edit-profile =
     .aria-label = Editar perfil
+appmenu-profiles-2 =
+    .label = Perfís

@@ -3,18 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't re-use these strings outside of the menubar.
-
-
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't reuse these strings outside of the menubar.
-
-
 ## Application Menu (macOS only)
 
 menu-application-preferences =
@@ -145,8 +133,6 @@ menu-view-history-button =
     .label = ისტორია
 menu-view-synced-tabs-sidebar =
     .label = დასინქ. ჩანართები
-menu-view-megalist-sidebar =
-    .label = პაროლები
 menu-view-full-zoom =
     .label = ზომის ცვლილება
     .accesskey = მ
@@ -262,6 +248,13 @@ menu-profiles-manage-profiles =
     .label = პროფილების მართვა
 menu-profiles-new-profile =
     .label = ახალი პროფილი
+# Variables:
+#  $profileName (String): the name of the users profile
+menu-profiles-current =
+    .label = { $profileName } (ამჟამინდელი)
+menu-profiles-menu =
+    .label = პროფილები
+    .accesskey = პ
 
 ## Tools Menu
 
@@ -271,6 +264,9 @@ menu-tools =
 menu-tools-downloads =
     .label = ჩამოტვირთვები
     .accesskey = ჩ
+menu-tools-extensions-and-themes =
+    .label = გაფართოებები და თემები
+    .accesskey = ფ
 menu-tools-addons-and-themes =
     .label = დამატებები და თემები
     .accesskey = დ
@@ -359,4 +355,4 @@ menu-help-not-deceptive =
     .label = ეს თაღლითური საიტი არაა…
     .accesskey = ე
 menu-report-broken-site =
-    .label = საიტზე გაუმართაობის მოხსენება
+    .label = არეული საიტის მოხსენება

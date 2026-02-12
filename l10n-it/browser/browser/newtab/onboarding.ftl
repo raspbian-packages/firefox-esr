@@ -25,6 +25,8 @@ return-to-amo-subtitle = Ottimo, ora hai installato { -brand-short-name }
 return-to-amo-addon-title = Perché adesso non provi <img data-l10n-name="icon"/> <b>{ $addon-name }</b>?
 return-to-amo-add-extension-label = Aggiungi l’estensione
 return-to-amo-add-theme-label = Aggiungi il tema
+return-to-amo-theme-install-complete-label = Tema installato
+return-to-amo-extension-install-complete-label = Estensione installata
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Importa da { $previous 
 mr1-onboarding-theme-header = Uno stile unico
 mr1-onboarding-theme-subtitle = Personalizza { -brand-short-name } con un tema.
 mr1-onboarding-theme-secondary-button-label = Non adesso
-newtab-wallpaper-onboarding-title = Prova un tocco di colore
-newtab-wallpaper-onboarding-subtitle = Scegli uno sfondo per dare un look diverso alle nuove schede.
-newtab-wallpaper-onboarding-primary-button-label = Imposta sfondo
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Tema di sistema
 mr1-onboarding-theme-label-light = Chiaro
@@ -448,7 +447,17 @@ onboarding-checklist-sign-up = Registrati o accedi al tuo account
 
 tab-groups-onboarding-feature-callout-title = Prova i gruppi di schede per ridurre il disordine e aumentare la concentrazione.
 tab-groups-onboarding-feature-callout-subtitle = Organizzati trascinando una scheda sopra l’altra per creare il tuo primo gruppo.
-tab-groups-onboarding-saved-groups-title = Se chiudi un gruppo di schede, puoi riaprirlo qui in qualsiasi momento.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Trova i tuoi gruppi di schede in qualsiasi momento nel menu “Elenco di tutte le schede”.
+tab-groups-onboarding-create-group-title-2 = Trova qui i tuoi gruppi di schede in qualsiasi momento.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Trova i tuoi gruppi cercandoli nella barra degli indirizzi.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Quando chiudi un gruppo di schede, è possibile riaprirlo dal menu “Elenco di tutte le schede” in qualsiasi momento.
+tab-groups-onboarding-saved-groups-title-2 = Quando chiudi un gruppo di schede, puoi riaprirlo qui in qualsiasi momento.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Trova i gruppi che hai chiuso cercandoli nella barra degli indirizzi.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Riapri i gruppi di schede dal menu “Elenco di tutte le schede” in qualsiasi momento.
+tab-groups-onboarding-session-restore-title = Riapri qui i gruppi di schede in qualsiasi momento.
 tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
@@ -459,3 +468,107 @@ multi-profile-spotlight-cta = Crea un profilo
 multi-profile-callout-title = Crea profili diversi per lavoro e divertimento
 multi-profile-callout-subtitle = I profili ti consentono di mantenere le informazioni relative alla navigazione, come la cronologia delle ricerche e le password, completamente separate.
 multi-profile-callout-cta = Crea un profilo
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Scarica, sincronizza e vai!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Scansiona il codice QR per scaricare { -brand-product-name } per dispositivi mobili. Una volta installato, seleziona “Sincronizza con dispositivi mobili” per accedere alle tue password, ai tuoi segnalibri e altro ancora ovunque ti trovi.
+dismiss-button-label = Chiudi
+sync-to-mobile-button-label = Sincronizza con dispositivi mobili
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Codice QR per scaricare { -brand-product-name } per dispositivi mobili
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Vuoi aggiornare a Windows 11?
+    Facciamo subito il backup dei dati di { -brand-product-name }.
+create-backup-screen-1-subtitle = Proteggi automaticamente password, segnalibri e altri dati. Bastano un paio di minuti.
+create-backup-screen-1-flair = Consigliato
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Ulteriori informazioni</a>
+create-backup-screen-1-sync-label = Sincronizza con { -brand-product-name }
+create-backup-screen-1-sync-body = Esegue il salvataggio di tutti i dispositivi in cui è stato effettuato l’accesso
+create-backup-screen-1-backup-label = Salva sul computer
+create-backup-screen-1-backup-body = Salva sul dispositivo o su OneDrive
+create-backup-select-tile-button-label = Seleziona
+create-backup-back-button-label = Indietro
+create-backup-show-fewer =
+    .label = Visualizza meno messaggi come questo
+create-backup-screen-2-title = Scegli i dati di { -brand-product-name } da salvare
+create-backup-screen-2-subtitle = Richiede solo un minuto. Il salvataggio dei dati viene effettuato una volta al giorno.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Configurazione semplificata
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Segnalibri, cronologia, impostazioni e altri dati
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Non include password e pagamenti
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Non crittato
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Tutti i dati
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Include password e metodi di pagamento
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Crittato con una password
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Dove vuoi salvare il backup?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Crea una password per il file di backup
+create-backup-screen-3-subtitle = Obbligatorio per crittare i tuoi dati. Conservala in un posto facile da ricordare.
+fx-backup-opt-in-header = Scegli dove salvare il file
+fx-backup-opt-in-filepath-label = Scegli una posizione che intendi trasferire sul nuovo dispositivo, ad esempio OneDrive.
+fx-backup-opt-in-create-password-label = Inserisci la password
+fx-backup-opt-in-confirm-btn-label = Continua
+fx-backup-opt-in-cancel-btn-label = Indietro
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Il backup è pianificato
+fx-backup-confirmation-screen-close-button = Chiudi
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Tutti i dati di navigazione inclusi
+fx-backup-confirmation-screen-all-data-item-text-2 = Salvato sul dispositivo
+fx-backup-confirmation-screen-all-data-item-text-3 = Crittato e protetto da password
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Segnalibri, cronologia, impostazioni e altri dati inclusi
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Salvato sul dispositivo
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Password e metodi di pagamento non inclusi
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Vai alle <a data-l10n-name="settings">impostazioni</a> per includere i dati sensibili.
+fx-backup-confirmation-screen-item-subtext-1 = Il backup verrà avviato tra pochi minuti e verrà eseguito una volta al giorno. Puoi controllare il progresso nelle <a data-l10n-name="settings">impostazioni</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } cercherà il tuo backup in caso di reinstallazione.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Ripristina da backup
+restore-from-backup-title = Facciamo tornare { -brand-short-name } come piace a te
+restore-from-backup-subtitle = Ripristina segnalibri, cronologia e tutti gli altri dati per tornare a navigare
+restore-from-backup-secondary-button = Non ripristinare
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Rieccoci! I tuoi dati di { -brand-short-name } sono stati ripristinati.
+restored-from-backup-success-with-checklist-subtitle = Vuoi tenere sempre a portata di clic il tuo browser preferito attento alla privacy?
+restored-from-backup-success-no-checklist-subtitle = Puoi attivare il backup per questo dispositivo nelle <a data-l10n-name="settings">Impostazioni</a>.
+restored-from-backup-success-with-checklist-primary-button = Salva e continua
+restored-from-backup-success-with-checklist-secondary-button = Salta questo passaggio
+restored-from-backup-success-no-checklist-primary-button = Continua
+restored-from-backup-error-title = Uhm… Si è verificato un problema con il file di backup.
+restored-from-backup-error-subtitle = Se hai un altro file di backup di { -brand-short-name }, prova a ripristinare da quello. <a data-l10n-name="restore-problems">Hai ancora problemi?</a>
+restored-from-backup-error-primary-button = Chiudi
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Personalizza la tua esperienza con { -brand-short-name }
+onboarding-personalization-subtitle = Rispondi a qualche domanda e ti suggeriremo funzioni ed estensioni per ottimizzare la tua esperienza con { -brand-short-name }.
+onboarding-personalization-use-case-title = Per cosa utilizzerai { -brand-short-name }?
+onboarding-personalization-use-case-personal-option = Uso personale
+onboarding-personalization-use-case-school-option = Scuola
+onboarding-personalization-use-case-work-option = Lavoro
+onboarding-personalization-motivation-title = Quali sono le caratteristiche di { -brand-short-name } più importanti per te?
+onboarding-personalization-motivation-privacy-option = Privacy e sicurezza
+onboarding-personalization-motivation-productivity-option = Produttività
+onboarding-personalization-motivation-other-option = Altro

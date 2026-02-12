@@ -11,6 +11,15 @@
 unified-extensions-header-title = Uzantılar
 unified-extensions-manage-extensions =
     .label = Uzantıları yönet
+unified-extensions-discover-extensions =
+    .label = Uzantıları keşfedin
+unified-extensions-empty-reason-private-browsing-not-allowed = Yüklenmiş ama gizli pencerelerde etkinleştirilmemiş uzantılarınız var
+unified-extensions-empty-reason-extension-not-enabled = Yüklenmiş ama etkinleştirilmemiş uzantılarınız var
+# In this headline, “Level up” means to enhance your browsing experience.
+unified-extensions-empty-reason-zero-extensions-onboarding = Uzantılarla gezinti deneyiminizi bir üst seviyeye taşıyın
+unified-extensions-empty-content-explain-enable2 = Bunları etkinleştirmek için ayarlardan “{ unified-extensions-manage-extensions.label }” seçeneğini seçin.
+unified-extensions-empty-content-explain-manage2 = Bunları yönetmek için ayarlardan “{ unified-extensions-manage-extensions.label }” seçeneğini seçin.
+unified-extensions-empty-content-explain-extensions-onboarding = { -brand-short-name } tarayıcınızı kişiselleştirin: Görünümünü ve çalışma şeklini değiştirin, gizliliğinizi ve güvenliğinizi artırın.
 
 ## An extension in the main list
 
@@ -21,6 +30,9 @@ unified-extensions-manage-extensions =
 unified-extensions-item-open-menu =
     .aria-label = { $extensionName } menüsünü aç
 unified-extensions-item-message-manage = Uzantıyı yönet
+# Variables:
+#   $extensionName (String) - Name of the user-enabled soft-blocked extension.
+unified-extensions-item-messagebar-softblocked2 = { $extensionName } uzantısı kısıtlanmıştır. Kullanımı riskli olabilir.
 # Variables:
 #   $extensionName (String) - Name of the user-enabled soft-blocked extension.
 unified-extensions-item-messagebar-softblocked = { $extensionName }, Mozilla politikalarını ihlal ediyor. Kullanılması riskli olabilir.
@@ -68,8 +80,8 @@ unified-extensions-mb-blocklist-error-single =
 unified-extensions-mb-blocklist-warning-multiple =
     .heading =
         { $extensionsCount ->
-            [one] { $extensionsCount } uzantı devre dışı
-           *[other] { $extensionsCount } uzantı devre dışı
+            [one] { $extensionsCount } uzantı devre dışı bırakıldı
+           *[other] { $extensionsCount } uzantı devre dışı bırakıldı
         }
     .message =
         Uzantılarınızdan bazıları Mozilla’nın politikalarını ihlal ettiği için devre dışı bırakıldı.
@@ -83,3 +95,5 @@ unified-extensions-mb-blocklist-error-multiple =
            *[other] { $extensionsCount } uzantı devre dışı bırakıldı
         }
     .message = Uzantılarınızdan bazıları Mozilla’nın politikalarını ihlal ettiği için devre dışı bırakıldı.
+unified-extensions-notice-safe-mode =
+    .message = Sorun giderme modunda tüm uzantılar devre dışı bırakılmıştır.

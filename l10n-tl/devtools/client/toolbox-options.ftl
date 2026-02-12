@@ -45,9 +45,6 @@ options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Mga Ngalan ng Kulay
 
-## Web Console section
-
-
 ## Style Editor section
 
 # The heading
@@ -111,5 +108,5 @@ options-enable-service-workers-http-tooltip =
 options-source-maps-label = I-enable ang mga Source Map
 options-source-maps-tooltip =
     .title = Kapag inenable ang option na ito, ang mga source ay ima-map sa mga tool.
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * Kasalukuyang session lang, ire-reload ang pahina

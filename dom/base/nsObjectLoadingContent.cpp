@@ -73,6 +73,7 @@
 #include "mozilla/PresShell.h"
 #include "mozilla/ProfilerLabels.h"
 #include "mozilla/StaticPrefs_browser.h"
+#include "mozilla/StaticPrefs_dom.h"
 #include "nsChannelClassifier.h"
 #include "nsFocusManager.h"
 #include "ReferrerInfo.h"
@@ -236,8 +237,7 @@ nsObjectLoadingContent::nsObjectLoadingContent()
       mIsStopping(false),
       mIsLoading(false),
       mScriptRequested(false),
-      mRewrittenYoutubeEmbed(false),
-      mLoadingSyntheticDocument(false) {}
+      mRewrittenYoutubeEmbed(false) {}
 
 nsObjectLoadingContent::~nsObjectLoadingContent() {
   // Should have been unbound from the tree at this point, and
@@ -616,11 +616,15 @@ bool nsObjectLoadingContent::CheckLoadPolicy(int16_t* aContentPolicy) {
 
   nsContentPolicyType contentPolicyType = GetContentPolicyType();
 
-  nsCOMPtr<nsILoadInfo> secCheckLoadInfo =
-      new LoadInfo(doc->NodePrincipal(),  // loading principal
-                   doc->NodePrincipal(),  // triggering principal
-                   el, nsILoadInfo::SEC_ONLY_FOR_EXPLICIT_CONTENTSEC_CHECK,
-                   contentPolicyType);
+  Result<RefPtr<LoadInfo>, nsresult> maybeLoadInfo =
+      LoadInfo::Create(doc->NodePrincipal(),  // loading principal
+                       doc->NodePrincipal(),  // triggering principal
+                       el, nsILoadInfo::SEC_ONLY_FOR_EXPLICIT_CONTENTSEC_CHECK,
+                       contentPolicyType);
+  if (NS_WARN_IF(maybeLoadInfo.isErr())) {
+    return false;
+  }
+  RefPtr<LoadInfo> secCheckLoadInfo = maybeLoadInfo.unwrap();
 
   *aContentPolicy = nsIContentPolicy::ACCEPT;
   nsresult rv =
@@ -656,10 +660,14 @@ bool nsObjectLoadingContent::CheckProcessPolicy(int16_t* aContentPolicy) {
       return false;
   }
 
-  nsCOMPtr<nsILoadInfo> secCheckLoadInfo = new LoadInfo(
+  Result<RefPtr<LoadInfo>, nsresult> maybeLoadInfo = LoadInfo::Create(
       doc->NodePrincipal(),  // loading principal
       doc->NodePrincipal(),  // triggering principal
       el, nsILoadInfo::SEC_ONLY_FOR_EXPLICIT_CONTENTSEC_CHECK, objectType);
+  if (NS_WARN_IF(maybeLoadInfo.isErr())) {
+    return false;
+  }
+  RefPtr<LoadInfo> secCheckLoadInfo = maybeLoadInfo.unwrap();
 
   *aContentPolicy = nsIContentPolicy::ACCEPT;
   nsresult rv = NS_CheckContentProcessPolicy(
@@ -675,6 +683,15 @@ bool nsObjectLoadingContent::CheckProcessPolicy(int16_t* aContentPolicy) {
   return true;
 }
 
+bool nsObjectLoadingContent::IsSyntheticImageDocument() const {
+  if (mType != ObjectType::Document || !mFrameLoader) {
+    return false;
+  }
+
+  BrowsingContext* browsingContext = mFrameLoader->GetExtantBrowsingContext();
+  return browsingContext && browsingContext->GetIsSyntheticDocumentContainer();
+}
+
 nsObjectLoadingContent::ParameterUpdateFlags
 nsObjectLoadingContent::UpdateObjectParameters() {
   Element* el = AsElement();
@@ -684,7 +701,6 @@ nsObjectLoadingContent::UpdateObjectParameters() {
 
   nsresult rv;
   nsAutoCString newMime;
-  nsAutoString typeAttr;
   nsCOMPtr<nsIURI> newURI;
   nsCOMPtr<nsIURI> newBaseURI;
   ObjectType newType;
@@ -702,7 +718,7 @@ nsObjectLoadingContent::UpdateObjectParameters() {
   // already opened a channel or tried to instantiate content, whereas channel
   // parameter changes require re-opening the channel even if we haven't gotten
   // that far.
-  nsObjectLoadingContent::ParameterUpdateFlags retval = eParamNoChange;
+  ParameterUpdateFlags retval = eParamNoChange;
 
   ///
   /// Initial MIME Type
@@ -712,7 +728,6 @@ nsObjectLoadingContent::UpdateObjectParameters() {
       el->HasNonEmptyAttr(nsGkAtoms::classid)) {
     // We don't support class ID plugin references, so we should always treat
     // having class Ids as attributes as invalid, and fallback accordingly.
-    newMime.Truncate();
     stateInvalid = true;
   }
 
@@ -720,11 +735,12 @@ nsObjectLoadingContent::UpdateObjectParameters() {
   /// Codebase
   ///
 
-  nsAutoString codebaseStr;
   nsIURI* docBaseURI = el->GetBaseURI();
-  el->GetAttr(nsGkAtoms::codebase, codebaseStr);
 
-  if (!codebaseStr.IsEmpty()) {
+  nsAutoString codebaseStr;
+  el->GetAttr(nsGkAtoms::codebase, codebaseStr);
+  if (StaticPrefs::dom_object_embed_codebase_enabled() &&
+      !codebaseStr.IsEmpty()) {
     rv = nsContentUtils::NewURIWithDocumentCharset(
         getter_AddRefs(newBaseURI), codebaseStr, el->OwnerDoc(), docBaseURI);
     if (NS_FAILED(rv)) {
@@ -739,16 +755,6 @@ nsObjectLoadingContent::UpdateObjectParameters() {
   // If we failed to build a valid URI, use the document's base URI
   if (!newBaseURI) {
     newBaseURI = docBaseURI;
-  }
-
-  nsAutoString rawTypeAttr;
-  el->GetAttr(nsGkAtoms::type, rawTypeAttr);
-  if (!rawTypeAttr.IsEmpty()) {
-    typeAttr = rawTypeAttr;
-    nsAutoString params;
-    nsAutoString mime;
-    nsContentUtils::SplitMimeType(rawTypeAttr, mime, params);
-    CopyUTF16toUTF8(mime, newMime);
   }
 
   ///
@@ -766,6 +772,7 @@ nsObjectLoadingContent::UpdateObjectParameters() {
   }
 
   mRewrittenYoutubeEmbed = false;
+
   // Note that the baseURI changing could affect the newURI, even if uriStr did
   // not change.
   if (!uriStr.IsEmpty()) {
@@ -781,6 +788,41 @@ nsObjectLoadingContent::UpdateObjectParameters() {
 
     if (NS_FAILED(rv)) {
       stateInvalid = true;
+    }
+  }
+
+  ///
+  /// type
+  ///
+  nsAutoString rawTypeAttr;
+  el->GetAttr(nsGkAtoms::type, rawTypeAttr);
+  // YouTube embeds might be using type="application/x-shockwave-flash"
+  // which needs to be allowed, but must not override the text/html MIME set
+  // above.
+  if (!mRewrittenYoutubeEmbed && !rawTypeAttr.IsEmpty()) {
+    nsAutoString params;
+    nsAutoString mime;
+    nsContentUtils::SplitMimeType(rawTypeAttr, mime, params);
+
+    if (!StaticPrefs::dom_object_embed_type_hint_enabled()) {
+      NS_ConvertUTF16toUTF8 mimeUTF8(mime);
+      if (imgLoader::SupportImageWithMimeType(mimeUTF8)) {
+        // Normally the type attribute should not be used as a hint, but for
+        // images it does seem to happen in Chrome and Safari. Images generally
+        // don't lead to code execution and we don't use
+        // AcceptedMimeTypes::IMAGES_AND_DOCUMENTS above.
+        newMime = mimeUTF8;
+      } else if (GetTypeOfContent(mimeUTF8) != ObjectType::Document) {
+        LOG(
+            ("OBJLC [%p]: MIME '%s' from type attribute is not supported, "
+             "forcing fallback.",
+             this, mimeUTF8.get()));
+        stateInvalid = true;
+      }
+
+      // Don't use the type attribute as a Content-Type hint in other cases.
+    } else {
+      CopyUTF16toUTF8(mime, newMime);
     }
   }
 
@@ -956,9 +998,6 @@ nsObjectLoadingContent::UpdateObjectParameters() {
     newType = ObjectType::Fallback;
     LOG(("OBJLC [%p]: NewType #4: %u", this, uint32_t(newType)));
   }
-
-  mLoadingSyntheticDocument = newType == ObjectType::Document &&
-                              imgLoader::SupportImageWithMimeType(newMime);
 
   ///
   /// Handle existing channels
@@ -1399,7 +1438,7 @@ nsresult nsObjectLoadingContent::OpenChannel() {
       true,                 // aInheritForAboutBlank
       false);               // aForceInherit
 
-  bool inheritPrincipal = inheritAttrs && !SchemeIsData(mURI);
+  bool inheritPrincipal = inheritAttrs && !mURI->SchemeIs("data");
 
   nsSecurityFlags securityFlags =
       nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_SEC_CONTEXT_IS_NULL;
@@ -1430,7 +1469,7 @@ nsresult nsObjectLoadingContent::OpenChannel() {
   }
 
   // --- Create LoadInfo
-  RefPtr<LoadInfo> loadInfo = new LoadInfo(
+  RefPtr<LoadInfo> loadInfo = MOZ_TRY(LoadInfo::Create(
       /*aLoadingPrincipal = aLoadingContext->NodePrincipal() */ nullptr,
       /*aTriggeringPrincipal = aLoadingPrincipal */ nullptr,
       /*aLoadingContext = */ el,
@@ -1438,7 +1477,7 @@ nsresult nsObjectLoadingContent::OpenChannel() {
       /*aContentPolicyType = */ contentPolicyType,
       /*aLoadingClientInfo = */ Nothing(),
       /*aController = */ Nothing(),
-      /*aSandboxFlags = */ sandboxFlags);
+      /*aSandboxFlags = */ sandboxFlags));
 
   if (inheritAttrs) {
     loadInfo->SetPrincipalToInherit(el->NodePrincipal());
@@ -1464,6 +1503,19 @@ nsresult nsObjectLoadingContent::OpenChannel() {
     // Is the ...WithoutClone(...) important?
     auto referrerInfo = MakeRefPtr<ReferrerInfo>(*doc);
     loadState->SetReferrerInfo(referrerInfo);
+
+    loadState->SetShouldCheckForRecursion(true);
+
+    // When loading using DocumentChannel, ensure that the MIME type hint is
+    // propagated to DocumentLoadListener. Object elements can override MIME
+    // handling in some scenarios.
+    if (!mOriginalContentType.IsEmpty()) {
+      nsAutoCString parsedMime, dummy;
+      NS_ParseResponseContentType(mOriginalContentType, parsedMime, dummy);
+      if (!parsedMime.IsEmpty()) {
+        loadState->SetTypeHint(parsedMime);
+      }
+    }
 
     chan =
         DocumentChannel::CreateForObject(loadState, loadInfo, loadFlags, shim);
@@ -1621,6 +1673,8 @@ nsObjectLoadingContent::ObjectType nsObjectLoadingContent::GetTypeOfContent(
   Element* el = AsElement();
   NS_ASSERTION(el, "must be a content");
 
+  Document* doc = el->OwnerDoc();
+
   // Images and documents are always supported.
   MOZ_ASSERT((GetCapabilities() & (eSupportImages | eSupportDocuments)) ==
              (eSupportImages | eSupportDocuments));
@@ -1629,8 +1683,9 @@ nsObjectLoadingContent::ObjectType nsObjectLoadingContent::GetTypeOfContent(
       ("OBJLC [%p]: calling HtmlObjectContentTypeForMIMEType: aMIMEType: %s - "
        "el: %p\n",
        this, aMIMEType.get(), el));
-  auto ret = static_cast<ObjectType>(
-      nsContentUtils::HtmlObjectContentTypeForMIMEType(aMIMEType));
+  auto ret =
+      static_cast<ObjectType>(nsContentUtils::HtmlObjectContentTypeForMIMEType(
+          aMIMEType, doc->GetSandboxFlags()));
   LOG(("OBJLC [%p]: called HtmlObjectContentTypeForMIMEType\n", this));
   return ret;
 }
@@ -1809,8 +1864,6 @@ void nsObjectLoadingContent::SubdocumentIntrinsicSizeOrRatioChanged(
 
 void nsObjectLoadingContent::SubdocumentImageLoadComplete(nsresult aResult) {
   ObjectType oldType = mType;
-  mLoadingSyntheticDocument = false;
-
   if (NS_FAILED(aResult)) {
     UnloadObject();
     mType = ObjectType::Fallback;

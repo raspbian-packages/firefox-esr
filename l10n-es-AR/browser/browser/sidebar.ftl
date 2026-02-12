@@ -4,8 +4,8 @@
 
 menu-view-genai-chat =
     .label = Chatbot de IA
-menu-view-review-checker =
-    .label = Verificador de revisiones
+menu-view-contextual-password-manager =
+    .label = Contraseñas
 sidebar-options-menu-button =
     .title = Abrir menú
 
@@ -21,14 +21,24 @@ sidebar-history-date-this-month =
     .heading = { DATETIME($date, dateStyle: "full") }
 sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+sidebar-history-site-localhost =
+    .heading = (archivos locales)
 sidebar-history-delete =
     .title = Eliminar del historial
-sidebar-history-sort-by-date =
-    .label = Ordenar por fecha
-sidebar-history-sort-by-site =
-    .label = Ordenar por sitio
 sidebar-history-clear =
     .label = Limpiar historial
+sidebar-history-sort-by-heading = Ordenar por:
+sidebar-history-sort-option-date =
+    .label = Fecha
+sidebar-history-sort-option-site =
+    .label = Sitio
+sidebar-history-sort-option-date-and-site =
+    .label = Fecha y sitio
+sidebar-history-sort-option-last-visited =
+    .label = Última visita
 
 ## Labels for sidebar search
 
@@ -44,24 +54,21 @@ sidebar-customize-extensions-header = Extensiones de la barra lateral
 sidebar-customize-firefox-tools-header =
     .label = Herramientas de { -brand-product-name }
 sidebar-customize-firefox-settings = Administrar configuración de { -brand-short-name }
-sidebar-position-left =
-    .label = Mostrar a la izquierda
-sidebar-position-right =
-    .label = Mostrar a la derecha
 sidebar-vertical-tabs =
     .label = Pestañas verticales
-sidebar-horizontal-tabs =
-    .label = Pestañas horizontales
-sidebar-customize-tabs-header =
-    .label = Configuración de pestañas
-sidebar-customize-button-header =
-    .label = Botón de barra lateral
-sidebar-customize-position-header =
-    .label = Posición de barra lateral
-sidebar-visibility-setting-always-show =
-    .label = Expandir y colapsar la barra lateral
-sidebar-visibility-setting-hide-sidebar =
-    .label = Mostrar y ocultar la barra lateral
+sidebar-settings =
+    .label = Configuración de barra lateral
+sidebar-hide-tabs-and-sidebar =
+    .label = Ocultar pestañas y barra lateral
+sidebar-show-on-the-right =
+    .label = Mover barra hacia la derecha
+sidebar-show-on-the-left =
+    .label = Mover barra hacia la izquierda
+# Option to automatically expand the collapsed sidebar when the mouse pointer
+# hovers over it.
+expand-sidebar-on-hover =
+    .label = Expandir la barra lateral al pasar el mouse
+sidebar-manage-extensions = Administrar extensiones
 
 ## Labels for sidebar context menu items
 
@@ -71,23 +78,43 @@ sidebar-context-menu-remove-extension =
     .label = Eliminar extensión
 sidebar-context-menu-report-extension =
     .label = Informar extensión
+sidebar-context-menu-open-in-tab =
+    .label = Abrir en nueva pestaña
+sidebar-context-menu-open-in-container-tab =
+    .label = Abrir en una nueva pestaña contenedora
 sidebar-context-menu-open-in-window =
     .label = Abrir en nueva ventana
 sidebar-context-menu-open-in-private-window =
     .label = Abrir en nueva ventana privada
+sidebar-context-menu-forget-site =
+    .label = Eliminar todos los datos del sitio web…
 sidebar-context-menu-bookmark-tab =
     .label = Agregar pestaña a marcadores…
 sidebar-context-menu-copy-link =
     .label = Copiar enlace
+sidebar-context-menu-hide-sidebar =
+    .label = Ocultar barra lateral
+sidebar-context-menu-enable-vertical-tabs =
+    .label = Habilitar pestañas verticales
+sidebar-context-menu-customize-sidebar =
+    .label = Personalizar barra lateral
 # Variables:
 #   $deviceName (String) - The name of the device the user is closing a tab for
 sidebar-context-menu-close-remote-tab =
     .label = Cerrar pestaña en { $deviceName }
+sidebar-context-menu-remove-extension2 =
+    .label = Eliminar de { -brand-short-name }
+sidebar-context-menu-unpin-extension =
+    .label = Eliminar de la barra lateral
 
 ## Labels for sidebar history context menu items
 
-sidebar-history-context-menu-delete-page =
-    .label = Eliminar del historial
+sidebar-history-context-menu-delete-page-2 =
+    .label = Eliminar página del historial
+sidebar-history-context-menu-bookmark-page =
+    .label = Agregar página a marcadores…
+sidebar-history-context-menu-delete-pages =
+    .label = Eliminar páginas del historial
 
 ## Labels for sidebar menu items.
 
@@ -101,8 +128,10 @@ sidebar-menu-bookmarks-label =
     .label = Marcadores
 sidebar-menu-customize-label =
     .label = Personalizar barra lateral
-sidebar-menu-review-checker-label =
-    .label = Verificador de revisiones
+sidebar-menu-contextual-password-manager-label =
+    .label = Contraseñas
+sidebar-menu-more-tools-label =
+    .label = Más herramientas
 
 ## Tooltips for sidebar menu items.
 
@@ -122,8 +151,16 @@ sidebar-menu-open-bookmarks-tooltip = Abrir marcadores ({ $shortcut })
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Cerrar marcadores ({ $shortcut })
-sidebar-menu-open-ai-chatbot-tooltip = Abrir chatbot IA
-sidebar-menu-close-ai-chatbot-tooltip = Cerrar chatbot IA
+
+## Tooltips displayed over the AI chatbot icon.
+## Variables:
+##   $shortcut (String) - The OS specific keyboard shortcut.
+##   $provider (String) - The name of the AI chatbot provider (if available).
+
+sidebar-menu-open-ai-chatbot-tooltip-generic = Abrir chatbot IA ({ $shortcut })
+sidebar-menu-open-ai-chatbot-provider-tooltip = Abrir { $provider } ({ $shortcut })
+sidebar-menu-close-ai-chatbot-tooltip-generic = Cerrar chatbot IA ({ $shortcut })
+sidebar-menu-close-ai-chatbot-provider-tooltip = Cerrar { $provider } ({ $shortcut })
 
 ## Headings for sidebar menu panels.
 
@@ -133,8 +170,8 @@ sidebar-menu-history-header =
     .heading = Historial
 sidebar-menu-syncedtabs-header =
     .heading = Pestañas de otros dispositivos
-sidebar-menu-bookmarks-header =
-    .heading = Marcadores
+sidebar-menu-cpm-header =
+    .heading = Contraseñas
 sidebar-panel-header-close-button =
     .tooltiptext = Cerrar
 
@@ -158,18 +195,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Expandir la barra lateral
-    .label = Barras laterales
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Colapsar la barra lateral
-    .label = Barras laterales
-sidebar-widget-show-sidebar =
-    .tooltiptext = Mostrar barra lateral
-    .label = Barras laterales
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Ocultar barra lateral
-    .label = Barras laterales
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =
@@ -190,3 +215,7 @@ sidebar-widget-show-sidebar2 =
 sidebar-widget-hide-sidebar2 =
     .tooltiptext = Ocultar barra lateral ({ $shortcut })
     .label = Barras laterales
+# Promotional message displayed in the expanded sidebar state for Vertical Tabs
+# users who do not have any pinned tabs. Indicates that they can drop tabs in
+# this area to pin them.
+sidebar-pins-promo-text = Arrastre las pestañas importantes acá para tenerlas al alcance

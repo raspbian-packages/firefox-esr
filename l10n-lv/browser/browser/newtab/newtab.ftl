@@ -53,6 +53,9 @@ newtab-topsites-add-shortcut-header = Jauna saīsne
 newtab-topsites-edit-topsites-header = Rediģēt populārās vietnes
 newtab-topsites-edit-shortcut-header = Rediģēt saīsni
 newtab-topsites-add-shortcut-label = Pievienot saīsni
+newtab-topsites-add-shortcut-title =
+    .title = Pievienot saīsni
+    .aria-label = Pievienot saīsni
 newtab-topsites-title-label = Virsraksts
 newtab-topsites-title-input =
     .placeholder = Ievadīt nosaukumu
@@ -130,10 +133,9 @@ newtab-privacy-modal-button-done = Gatavs
 newtab-privacy-modal-button-manage = Pārvaldīt apmaksāta satura iestatījumus
 newtab-privacy-modal-header = Jūsu privātumam ir nozīme.
 newtab-privacy-modal-paragraph-2 =
-    Papildus aizraujošiem stāstiem mēs jums parādām arī atbilstošu,
-    pārbaudītu saturu no atsevišķiem sponsoriem. Varat būt drošs, ka <strong>jūsu pārlūkošanas
-    dati nekad neatstāj jūsu personīgo { -brand-product-name }</strong> kopiju — mēs tos neredzam, un mūsu
-    sponsori arī nē.
+    Papildus aizraujošiem stāstiem mēs rādām arī atbilstošu,
+    kārtīgi pārbaudītu saturu no atlasītiem sponsoriem. Satraukumam nav pamata, jo <strong>pārlūkošanas
+    dati nekad neatstāj personīgo { -brand-product-name } kopiju</strong> — ne mēs, ne mūsu sponsori tos neredz.
 newtab-privacy-modal-link = Jaunā cilnē uzziniet, kā darbojas privātums
 
 ##
@@ -246,9 +248,6 @@ newtab-pocket-learn-more = Uzzināt vairāk
 newtab-pocket-cta-button = Izmēģiniet { -pocket-brand-name }
 newtab-pocket-cta-text = Saglabājiet interesantus stāstus { -pocket-brand-name } un barojiet savu prātu ar interesantu lasāmvielu.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } ir daļa no { -brand-product-name } saimes
-# A save to Pocket button that shows over the card thumbnail on hover.
-newtab-pocket-image =
-    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Saglabāt
 newtab-pocket-saved = Saglabāts
 
@@ -263,7 +262,6 @@ newtab-pocket-thumbs-down-tooltip =
 # Used to show the user a message upon clicking the thumbs up or down buttons
 newtab-toast-thumbs-up-or-down2 =
     .message = Paldies. Jūsu atsauksmes palīdzēs mums uzlabot jūsu plūsmu.
-newtab-toast-thumbs-up-or-down = Paldies. Jūsu atsauksmes palīdzēs mums uzlabot jūsu plūsmu.
 newtab-toast-dismiss-button =
     .title = Noraidīt
     .aria-label = Noraidīt
@@ -304,9 +302,6 @@ newtab-custom-pocket-sponsored = Sponsorētie stāsti
 newtab-custom-pocket-show-recent-saves = Rādīt nesen saglabāto
 newtab-custom-recent-title = Nesenās aktivitātes
 newtab-custom-recent-subtitle = Neseno vietņu un satura izlase
-newtab-custom-recent-toggle =
-    .label = Nesenās aktivitātes
-    .description = Neseno vietņu un satura izlase
 newtab-custom-weather-toggle =
     .label = Laikapstākļi
     .description = Šodienas prognoze ātrā acu uzmetienā
@@ -361,7 +356,7 @@ newtab-wallpaper-abstract-orange = Oranžas formas
 newtab-wallpaper-gradient-orange = Oranža un rozā krāsu pāreja
 newtab-wallpaper-abstract-blue-purple = Zilas un violetas formas
 
-## Photographs
+## Firefox
 
 newtab-wallpaper-category-title-photographs = Fotogrāfijas
 newtab-wallpaper-beach-at-sunrise = Pludmale saullēktā
@@ -398,7 +393,6 @@ newtab-weather-menu-change-location = Mainīt atrašanās vietu
 newtab-weather-change-location-search-input-placeholder =
     .placeholder = Meklēt atrašanās vietu
     .aria-label = Meklēt atrašanās vietu
-newtab-weather-change-location-search-input = Meklēt atrašanās vietu
 newtab-weather-menu-weather-display = Laikapstākļu attēlotājs
 # Display options are:
 # - Simple: Displays a current weather condition icon and the current temperature
@@ -465,17 +459,6 @@ newtab-section-follow-button = Sekot
 newtab-section-following-button = Seko
 newtab-section-unfollow-button = Pārtraukt sekošanu
 
-## Button to block/unblock listed topics
-## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
-## e.g. Blocked the politics section of stories.
-
-
 ## Confirmation modal for blocking a section
 
-newtab-section-confirm-block-section-p1 = Vai tiešām vēlaties bloķēt šo sadaļu?
-newtab-section-confirm-block-section-p2 = Bloķētā sadaļa vairs neparādīsies jūsu plūsmā.
-newtab-section-block-section-button = Bloķēt šo sadaļu
 newtab-section-cancel-button = Ne tagad
-
-## Panel in the Customize menu section to manage followed and blocked topics
-

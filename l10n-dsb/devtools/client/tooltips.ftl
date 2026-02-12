@@ -10,14 +10,6 @@ learn-more = <span data-l10n-name="link">Dalšne informacije</span>
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain why
 ## the property is not applied.
-## Variables:
-##   $property (string) - A CSS property name e.g. "color".
-##   $display (string) - A CSS display value e.g. "inline-block".
-
-
-## In the Rule View when a CSS property cannot be successfully applied we display
-## an icon. When this icon is hovered this message is displayed to explain why
-## the property is not applied.
 ## The variables are all passed from the same place, in `InactiveCssTooltipHelper#getTemplate`
 ## (devtools/client/shared/widgets/tooltip/inactive-css-tooltip-helper.js#95)
 ## Variables:
@@ -42,6 +34,8 @@ inactive-css-not-display-block-on-floated = Gódnota <strong>display</strong> jo
 inactive-css-not-display-block-on-floated-2 = Gódnota <strong>display</strong> jo se změnił pśez engine do <strong>{ $display }</strong>, dokulaž element jo <strong>floated</strong>.
 inactive-css-only-non-grid-or-flex-item = <strong>{ $property }</strong> njama wustatkowanje, dokulaž njedajo se daniž na zapiskach grid daniž na zapiskach flex wužywaś.
 inactive-css-not-block = <strong>{ $property }</strong> na toś ten element wustatkowanje njama, dokulaž se jano na elementy blokoweje rowniny nałožujo.
+inactive-css-not-block-container = <strong>{ $property }</strong> na toś ten element wustatkowanje njama, dokulaž se jano na blokowe kontejnerowe elementy nałožujo.
+inactive-css-not-block-flex-grid-container = <strong>{ $property }</strong> na toś ten element wustatkowanje njama, dokulaž se jano na kontejnerowe elementy block, flex a grid nałožujo.
 inactive-css-not-floated = <strong>{ $property }</strong> wustatkowanje njama, dokulaž se jano na znosujuce se elementy nałožujo.
 inactive-css-property-is-impossible-to-override-in-visited = Wobgranicowanja <strong>:visited</strong> dla jo njemóžno, <strong>{ $property }</strong> pśepisaś.
 inactive-css-position-property-on-unpositioned-box = <strong>{ $property }</strong> njama efekt na toś ten element, dokulaž njejo pozicioněrowany element.
@@ -80,6 +74,7 @@ inactive-css-text-wrap-balance-lines-exceeded =
     }
 inactive-css-text-wrap-balance-fragmented = <strong>{ $property }</strong> njama efekt na toś ten element, dokulaž jo fragmentěrowany, t. gr. jogo wopśimjeśe jo na někotare słupy abo boki rozdźělone.
 inactive-css-no-width-height = <strong>{ $property }</strong> njama efekt na toś ten element, dokulaž jogo šyrokosć a wusokosć njedajotej se nastajiś tabela.
+inactive-css-no-principal-box = <strong>{ $property }</strong> na toś ten element wustatkowanje njama, dokulaž głowny kašćik njenapórajo.
 
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain how
@@ -102,6 +97,8 @@ inactive-css-non-replaced-inline-or-table-column-or-column-group-fix = Wopytajś
 inactive-css-not-display-block-on-floated-fix = Wopytajśo <strong>float</strong> wotstronić abo <strong>display:block</strong> pśidaś. { learn-more }
 inactive-css-only-non-grid-or-flex-item-fix = Wopytajśo gódnotu <strong>display</strong> elementowego kontejnera do něco drugego ako <strong>flex</strong>, <strong>grid</strong>, <strong>inline-flex</strong> abo <strong>inline-grid</strong> změniś abo <strong>float</strong> wótwónoźeś. { learn-more }
 inactive-css-not-block-fix = Wopytajśo kakosći <strong>display:block</strong> abo <strong>float:left</strong> pśidaś. { learn-more }
+inactive-css-not-block-container-fix = Wopytajśo <strong>display:block</strong>, <strong>display:inline-block</strong> abo <strong>display:flow-root</strong> pśidaś. { learn-more }
+inactive-css-not-block-flex-grid-container-fix = Wopytajśo <strong>display:block</strong>, <strong>display:inline-block</strong>, <strong>display:flex</strong>, <strong>display:inline-flex</strong>, <strong>display:grid</strong>, <strong>display:inline-grid</strong> abo <strong>display:flow-root</strong> pśidaś. { learn-more }
 inactive-css-not-floated-fix = Wopytajśo kakosć <strong>float</strong> z drugeju gódnotu ako <strong>none</strong> pśidaś. { learn-more }
 inactive-css-position-property-on-unpositioned-box-fix = Wopytajśo jogo kakosć <strong>position</strong> na něco druge ako <strong>static</strong> nastajiś. { learn-more }
 inactive-css-only-replaced-elements-fix = Zawěsććo, až kakosć wuměnjonemu elementoju pśidawaśo { learn-more }
@@ -118,6 +115,7 @@ inactive-css-resize-fix = Wopytajśo <strong>overflow</strong> na drugu gódnotu
 inactive-css-ruby-element-fix = Wopytajśo <strong>font-size</strong> teksta ruby změniś. { learn-more }
 inactive-css-text-wrap-balance-lines-exceeded-fix = Wopytajśo licbu smužkow reducěrowaś. { learn-more }
 inactive-css-text-wrap-balance-fragmented-fix = Wótwónoźćo słupy abo wužywajśo <strong>page-break-inside:avoid</strong>, aby se rozdźělenja elementowego wopśimjeśa wobinuł. { learn-more }
+inactive-css-no-principal-box-fix = Wopytajśo gódnotu za kakosć <strong>display</strong> pśidaś, kótaraž głowny kašćik napórajo, na pśikład <strong>block</strong>, <strong>inline-block</strong>, <strong>flex</strong> abo <strong>grid</strong>. { learn-more }
 
 ## In the Rule View when a CSS property may have compatibility issues with other browsers
 ## we display an icon. When this icon is hovered this message is displayed to explain why

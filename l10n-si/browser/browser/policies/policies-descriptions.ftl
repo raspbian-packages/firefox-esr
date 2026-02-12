@@ -62,10 +62,8 @@ policy-ExtensionUpdate = දිගු ස්වයංක්‍රීයව ය�
 policy-FirefoxHome2 = { -firefox-home-brand-name } වින්‍යාස කරන්න.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = මුල් පිටුව සකසා විකල්ප ලෙස අගුළු දමන්න.
+policy-HttpsOnlyMode = HTTPS-පමණි ප්‍රකාරය සබල වීමට ඉඩ දෙන්න.
 policy-InstallAddonsPermission = ඇතැම් අඩවි වලට එක්කහු ස්ථාපනය කිරීමට ඉඩදෙන්න.
-
-## Do not translate "SameSite", it's the name of a cookie attribute.
-
 
 ##
 

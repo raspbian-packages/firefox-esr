@@ -43,9 +43,6 @@ options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-name = Nying rangi
 
-## Web Console section
-
-
 ## Style Editor section
 
 # The heading
@@ -101,5 +98,5 @@ options-enable-remote-label = Ye nongo bal ki kama bor
 options-enable-service-workers-http-label = Cak Service Workers i HTTP (kacce bok me gitic tye ayaba)
 options-enable-service-workers-http-tooltip =
     .title = Cako ter man bicako service workers i HTTP pi dirica matino weng matye ki bok me gitic ayaba.
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * Kare ma kombedi ni keken, nwoyo cano pot buk

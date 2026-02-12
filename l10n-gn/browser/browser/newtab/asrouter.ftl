@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } poruhára
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Embojuehe nde rechaukaha eimeha guive.
 cfr-doorhanger-bookmark-fxa-body = ¡Mba’eguasu jejuhu! Ko’ág̃a aníke epyta ko techaukaha’ỹre ne pumbyry popeguápe. Eñepyrũ { -fxaccount-brand-name } ndive.
@@ -68,6 +68,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Embojuehehína techaukaha...
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Emboty votõ
     .title = Emboty
+fxa-adoption-addresses-backup-title = Ñañongatu jo’a ko’ã kundaharape ñongatupyre
+fxa-adoption-addresses-backup-subtitle = Emo’ã umi kundaharape ñongatupyre embojuehévo umi mba’e’oka ipapapýva ndive.
+fxa-adoption-credit-cards-backup-title = Ñañongatu jo’a jehepyme’ẽrã rehegua
+fxa-adoption-credit-cards-backup-subtitle = Emo’ã nde jehepyme’ẽrã rape embojuehévo ne mba’e’okakuérape ipapapýva reheve.
+fxa-adoption-bookmarks-treatment-backup-title = Ñañongatu jey techaukaha rekorosãrã
+fxa-adoption-bookmarks-treatment-backup-subtitle = Emo’ã nde rechaukaha mbojuehepyre ne mba’e’okápe eiporúvo mbopapapy.
+fxa-adoption-primary-button-label = Eñemboheraguapy
 
 ## Protections panel
 
@@ -225,6 +232,22 @@ fox-doodle-pin-secondary = Ani ko’ág̃a
 set-default-pdf-handler-headline = <strong>Umi PDFs ijurujáma { -brand-short-name }.</strong> Embosako’i ha emboheraguapy myanyhẽha kundaharapevoi. Emoambue hag̃ua, eheka “PDF” ñemoĩporãha.
 set-default-pdf-handler-primary = Aikũmby
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = ¡Emoĩ kyta líñope térã oimeraẽ hendápe!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Emoha’ãnga, ehai térã ehupi ne reraguapy, upéi emoĩ eipotahápe. Eñongatu umi nde reraguapy ehayhuvéva ambue jeyrã.
+annotations-make-default-pdf-handler-title = ¿Ejapo { -brand-short-name }-gui nde PDF mbosako’iha ypygua
+annotations-make-default-pdf-handler-subtitle = Eikekuaáta ore rembiporukuérape embojuruja vove peteĩ PDF.
+annotations-make-default-pdf-primary-cta =
+    .label = Eipuru ijypykuévaramo
+annotations-make-default-pdf-next =
+    .label = Tenondegua
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = ¿Eikesépa mba’e’oka pyahúpe?
@@ -310,8 +333,11 @@ fxa-menu-message-close-button =
     .title = Mboty
     .aria-label = Mboty
 fxa-menu-message-sign-up-button = Eñemboheraguapy
+fxa-menu-message-sign-in-button = Eñemboheraguapy
+fxa-menu-message-sync-button = Embojuehe ñepyrũ
 fxa-menu-message-sync-devices-primary-text = Embojuehe opavave mba’e’oka
 fxa-menu-message-sync-devices-secondary-text = Eñemomarandu pya’e — ikatúva techaukaha ha ñe’ẽñemi — tenda eiporuhápe { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Eraha nde rechaukaha, ñe’ẽñemi, tembiasakue ha hetave opaite hendápe eñepyrũ haguépe tembiapo { -brand-short-name }-pe.
 fxa-menu-message-sync-devices-collapsed-text = Embojuehe opavave mba’e’oka
 fxa-menu-message-backup-data-primary-text = Eykeko kundahára mba’ekuaarã
 fxa-menu-message-backup-data-secondary-text = Ñemo’ã ijeheguíva techaukaha, ñe’ẽñemi ha ambue marandu opaite ne mba’e’okápe.
@@ -334,5 +360,66 @@ multi-cta-fox-doodle-pin-checkbox =
        *[other] Embjuaju { -brand-short-name } tembiaporã rendáre
     }
 multi-cta-fox-doodle-start-browsing-primary-button-label = Eñepyrũ eikundaha
-multi-cta-fox-doodle-main-browser-primary-button-label = Ajapo { -brand-short-name }-gui che kundahára aipuruvéva
+multi-cta-fox-doodle-main-browser-primary-button-label = Ajapo { -brand-short-name }-gui che kundahára aiporuvéva
 multi-cta-fox-doodle-quick-reminder-subtitle = Peteĩ ñemomandu’a ikatuha ereko ne kundahára, oma’ẽva tekoñemi, erohoryvéva namombyryiete ndehegui.
+multi-cta-fox-doodle-privacy-focused-subtitle =
+    { PLATFORM() ->
+        [macos] Ereko ne kundahára erohoryvéva ema’ẽvo tekoñemíre nde ykére oĩva. Emboheko { -brand-short-name } kundahára ypyguárõ embojuruja hag̃ua juajuha ha emboja ne rembiapo rupáre ha Ñepyrũha poravorãre.
+       *[other] Ereko ne kundahára erohoryvéva ema’ẽvo tekoñemíre nde ykére oĩva. Emboheko { -brand-short-name } kundahára ypyguárõ embojuruja hag̃ua juajuha ha emboja ne rembiapo rupáre ha Ñepyrũha poravorãre.
+    }
+multi-cta-fox-doodle-msix-privacy-focused-subtitle = Ereko ne kundahára erohoryvéva ema’ẽvo tekoñemíre nde ykére. Emboheko { -brand-short-name } kundahára ypyguárõ embojuruja hag̃ua juajuha ha emboja ne rembiapo rupáre ha Ñepyrũha poravorãre.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = ¿Embohekopyahu Windows 10 pya’e?
+windows-10-eos-sync-spotlight-subtitle = Eñongatu jey ne ñe’ẽñemi ha techaukaha ikatu hag̃uáicha ehasa oimeraẽva mba’e’okápe.
+windows-10-eos-sync-spotlight-primary-label = Eñongatuve tekorosãrã ne { -brand-short-name } rehegua
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = ¿Embohekopyahu Windows 11-pe? Ani ehundi techaukaha térã ñe’ẽñemi.
+windows-10-eos-sync-toast-subtitle = Eñongatu jey ne mba’ekuaarã { -brand-short-name } oiko porã hag̃ua, ko mohendaha térã oútavape.
+windows-10-eos-sync-toast-primary-label = Emoñepyrũ
+windows-10-eos-sync-toast-secondary-label = Chemomandu’a ag̃ave
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } nahenyhẽi ipyahúpe ambue kundaháraicha. Upéva pe amombe’uséva.
+windows-10-eos-challenger-sync-callout-subtitle = Eñongatu jeývo tekorosãrã { -brand-product-name } rechaukaha ha ñe’ẽñemi, ndahasýi egueraha hag̃ua ne kundahára ambue mba’e’okápe.
+windows-10-eos-challenger-pin-callout-subtitle = Embojuaju { -brand-shorter-name } tembiaporã rupáre ikatu hag̃ua kundahára eiporavóva oĩ eikotevẽ jave.
+windows-10-eos-challenger-sync-primary-button = Ñongatu jo’a { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Papyñemi { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } ojoko apopyrã criptomoneda rehegua, ava ñandutieta jehapykueho ha poruhára jeikuaa.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Umi tapykuehoha ndohechakuaái imba’e’oka avei osegívo ñandutípe, ore noromoneĩri chupekuéra.
+windows-10-eos-sync-callout-privacy-screen-2-title = Emo’ã ñe’ẽñemi ha techaukaha eiporu hag̃ua ambue mba’e’okápe.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Eñongatu jeývo tekorosãrã { -brand-shorter-name } ndahasýi eraha hag̃ua ne mba’ekuaarã ha ñemigua ñemboheko nendive.
+windows-10-eos-sync-callout-privacy-info-button = Ehecha pe jejokopyre
+windows-10-eos-callout-addons-title = Eiporu moĩmbaha: hekopyahúva, iporã añetéva
+windows-10-eos-callout-addons-subtitle = Ko’ã jepysokue ojeporavókuri nepytyvõ hag̃ua nde rapykuere rechauka, ñemo’ã ha vyrorei’ỹre.
+windows-10-eos-callout-addons-primary-button = Ehecha ore poravopyre
+windows-10-eos-sync-callout-addons-title = Ani okañy ne moĩmbahaha embohekopyahúvo Windows 10 guive.
+windows-10-eos-sync-callout-addons-subtitle = Embojuehe ne moĩmbaha { -brand-product-name } rehegua toĩ eiporu hag̃ua, emoambuérõ jepe ne mba’e’oka.
+windows-10-eos-sync-callout-next-button = Upeigua
+windows-10-eos-sync-callout-get-started-button = Eñepyrũ
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = ¡Tendaykeita ñembo’y ha tendayke aty oĩma ápe!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Ojejerure rupi, { -brand-product-name } ombosako’i tembiapoite ipyahúva ikundahára oiko porãve hag̃ua tenondeve.
+windows-10-eos-feature-toast-whats-new-button = Ehecha mba’epyahu
+windows-10-eos-feature-toast-dismiss-button = Mboyke
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Ñemo’ã jehapykueho rovake ikatu hína ombyai ñanduti rogue.</strong> Emyatyrõ apañuái ejorávo umi mba’eporurã ikatukuaáva oguereko tapykuehoha.
+etp-strict-exceptions-infobar-learn-more = Eikuaave
+etp-strict-exceptions-infobar-button = Emboheko ñemyatyrõ
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Ani ko’ág̃a
+    .accesskey = N

@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Боргириҳо
 appmenuitem-passwords =
     .label = Ниҳонвожаҳо
+appmenuitem-extensions-and-themes =
+    .label = Васеъшавиҳо ва мавзуъҳо
+appmenuitem-extensions =
+    .label = Васеъшавиҳо
 appmenuitem-addons-and-themes =
     .label = Ҷузъҳои иловагӣ ва мавзуъҳо
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Кушодани лавҳаи профилсоз
+    .tooltiptext = Кушодани лавҳаи профилсоз
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Танзимот барои тафтиши хатоҳои аудио ва видео дар { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Расона
+profiler-popup-presets-ml-description = Танзимот барои тафтиши хатоҳои омӯзиши мошинӣ дар «{ -brand-shorter-name }».
+profiler-popup-presets-ml-label =
+    .label = Омӯзиши мошинӣ
 profiler-popup-presets-networking-description = Танзимот барои тафтиши хатоҳои шабакасозӣ дар { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Шабакасозӣ
@@ -288,11 +298,14 @@ appmenu-other-protection-header = Абзорҳои муҳофизати дига
 
 ## Profiles panel
 
-appmenu-profiles = Профилҳо
 appmenu-other-profiles = Профилҳои дигар
 appmenu-manage-profiles =
     .label = Идоракунии профилҳо
+appmenu-copy-profile =
+    .label = Нусха бардоштани ин профил
 appmenu-create-profile =
     .label = Профили нав
 appmenu-edit-profile =
     .aria-label = Таҳрир кардани профил
+appmenu-profiles-2 =
+    .label = Профилҳо

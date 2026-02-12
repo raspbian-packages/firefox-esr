@@ -78,7 +78,7 @@ webrtc-indicator-sharing-browser =
 ## These strings are only used on Mac for menus attached to icons
 ## near the clock on the mac menubar.
 ## Variables:
-##   $streamTitle (String): the title of the tab using the share.
+##   $streamTitle (String): the host of the tab using the share.
 ##   $tabCount (Number): the title of the tab using the share.
 
 webrtc-indicator-menuitem-control-sharing =
@@ -153,6 +153,17 @@ webrtc-allow-share-screen-and-audio-capture = Permitir que { $origin } escoite o
 
 ## Special phrasing for sharing devices when the origin is a file url.
 
+webrtc-allow-share-audio-capture-with-file = Permitir que este ficheiro local escoite o audio desta pestana?
+webrtc-allow-share-camera-with-file = Permitir que este ficheiro local use a túa cámara?
+webrtc-allow-share-microphone-with-file = Permitir que este ficheiro local use o teu micrófono?
+webrtc-allow-share-screen-with-file = Permitir que este ficheiro local vexa a túa pantalla?
+# "Speakers" is used in a general sense that might include headphones or
+# another audio output connection.
+webrtc-allow-share-speaker-with-file = Permitir que este ficheiro local use outros altofalantes?
+webrtc-allow-share-camera-and-microphone-with-file = Permitir que este ficheiro local use a túa cámara e o teu micrófono?
+webrtc-allow-share-camera-and-audio-capture-with-file = Permitir que este ficheiro local use a túa cámara e escoite o audio desta pestana?
+webrtc-allow-share-screen-and-microphone-with-file = Permitir que este ficheiro local use o teu micrófono e vexa a túa pantalla?
+webrtc-allow-share-screen-and-audio-capture-with-file = Permitir que este ficheiro local escoite o audio desta pestana e vexa a túa pantalla?
 
 ## Variables:
 ##   $origin (String): the first party origin.
@@ -208,6 +219,9 @@ webrtc-action-not-now =
 ##
 
 webrtc-remember-allow-checkbox = Lembrar esta decisión
+webrtc-remember-allow-checkbox-camera = Lembrar para todas as cámaras
+webrtc-remember-allow-checkbox-microphone = Lembrar para todos os micrófonos
+webrtc-remember-allow-checkbox-camera-and-microphone = Lembrar para todas as cámaras e micrófonos
 webrtc-mute-notifications-checkbox = Silenciar as notificacións do sitio web mentres se comparte
 webrtc-reason-for-no-permanent-allow-screen = Non é posíbel que { -brand-short-name } permita o acceso permanente a súa pantalla.
 webrtc-reason-for-no-permanent-allow-audio = Non é posíbel que { -brand-short-name } permita o acceso permanente ao son da súa lapela sen preguntar que lapela compartir.

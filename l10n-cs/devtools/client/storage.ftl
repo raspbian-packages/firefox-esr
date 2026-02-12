@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Doba platnosti
 storage-table-headers-cookies-size = Velikost
 storage-table-headers-cookies-last-accessed = Poslední přístup
 storage-table-headers-cookies-creation-time = Vytvořeno
+storage-table-headers-cookies-update-time = Aktualizováno
 storage-table-headers-cache-status = Stav
 storage-table-headers-extension-storage-area = Úložiště
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = Databáze “{ $dbName }” bude smazána poté, co
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = Databáze „{ $dbName }“ nemohla být smazána.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = Nepodařilo se vytvořit cookie: “{ $errorString }”.
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = Nepodařilo se aktualizovat cookie: “{ $errorString }”.

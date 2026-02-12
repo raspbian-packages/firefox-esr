@@ -53,7 +53,6 @@ mr1-onboarding-import-primary-button-label-attribution = Ion-phortaich o { $prev
 mr1-onboarding-theme-header = Gnàthaich dhut-sa e
 mr1-onboarding-theme-subtitle = Cuir dreach pearsanta air { -brand-short-name } le ùrlar.
 mr1-onboarding-theme-secondary-button-label = Chan ann an-dràsta
-newtab-wallpaper-onboarding-primary-button-label = Suidhich pàipear-balla
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Ùrlar an t-siostaim
 mr1-onboarding-theme-label-light = Soilleir
@@ -333,9 +332,6 @@ onboarding-device-migration-subtitle = Clàraich a-steach dhan { -fxaccount-bran
 onboarding-device-migration-subtitle2 = Clàraich a-steach dhan chunntas agad is thoir leat na comharran-lìn, faclan-faire agus an eachdraidh agad gun uidheam ùr.
 onboarding-device-migration-primary-button-label = Clàraich a-steach
 
-## Add-ons Picker screen
-
-
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -344,18 +340,3 @@ onboarding-easy-setup-security-and-privacy-subtitle = Cuiridh am brabhsair again
 # Mobile download screen
 onboarding-mobile-download-security-and-privacy-title = Cùm rudan crioptaichte is tu a’ gluasad o uidheam gu uidheam
 onboarding-mobile-download-security-and-privacy-subtitle = Nuair a bhios an sioncronachadh deiseil, crioptaichidh { -brand-short-name } na faclan-faire, comharran-lìn is mòran a bharrachd dhut. Agus gheibh thu cothrom orra o na h-uidheaman eile agad.
-
-## New user time and familiarity survey strings
-
-
-## UI strings for the sidebar and vertical tabs
-
-
-## New user onboarding checklist
-
-
-## Tab Groups feature onboarding strings
-
-
-## Multi Profiles feature onboarding messages
-

@@ -29,8 +29,8 @@ about-logins-menu-menuitem-import-from-another-browser = Uvezi iz drugog pregled
 about-logins-menu-menuitem-import-from-a-file = Uvezi iz datoteke…
 about-logins-menu-menuitem-export-logins = Izvezi prijave…
 about-logins-menu-menuitem-remove-all-logins = Ukloni sve prijave…
-about-logins-menu-menuitem-export-logins2 = Izvezi lozinke …
-about-logins-menu-menuitem-remove-all-logins2 = Ukloni sve lozinke …
+about-logins-menu-menuitem-export-logins2 = Izvezi lozinke…
+about-logins-menu-menuitem-remove-all-logins2 = Ukloni sve lozinke…
 menu-menuitem-preferences =
     { PLATFORM() ->
         [windows] Mogućnosti
@@ -78,12 +78,12 @@ login-list-filtered-count2 =
     }
 login-list-sort-label-text = Poredaj po:
 login-list-name-option = Ime (A-Z)
-login-list-name-reverse-option = Ime (Z-A)
+login-list-name-reverse-option = Naziv (Z-A)
 login-list-username-option = Korisničko ime (A-Z)
 login-list-username-reverse-option = Korisničko ime (Z-A)
 about-logins-login-list-alerts-option = Upozorenja
 login-list-last-changed-option = Zadnja promjena
-login-list-last-used-option = Zadnje korišteno
+login-list-last-used-option = Zadnji put korišteno
 login-list-intro-title = Nema prijava
 login-list-intro-title2 = Nema spremljenih lozinki
 login-list-intro-description = Kad spremaš lozinku u { -brand-product-name }u, ona će se pojaviti ovdje.
@@ -95,15 +95,15 @@ login-list-item-subtitle-new-login = Upiši svoje podatke za prijavu
 login-list-item-title-new-login2 = Dodaj lozinku
 login-list-item-subtitle-missing-username = (nema korisničkog imena)
 about-logins-list-item-breach-icon =
-    .title = Hakirana web-stranica
+    .title = Hakirana web stranica
 about-logins-list-item-vulnerable-password-icon =
     .title = Ranjiva lozinka
-about-logins-list-section-breach = Hakirane web-stranice
+about-logins-list-section-breach = Hakirane web stranice
 about-logins-list-section-vulnerable = Ranjive lozinke
 about-logins-list-section-nothing = Bez upozorenja
 about-logins-list-section-today = Danas
 about-logins-list-section-yesterday = Jučer
-about-logins-list-section-week = Posljednjih 7 dana
+about-logins-list-section-week = Zadnjih 7 dana
 
 ## Introduction screen
 
@@ -114,7 +114,7 @@ login-intro-instructions-fxa = Stvori ili prijavi se na svoj { -fxaccount-brand-
 about-logins-login-intro-heading-message = Spremite svoje lozinke na sigurno mjesto
 login-intro-description2 = Sve lozinke koje spremiš u { -brand-product-name } se šifriraju. Osim toga, pazimo na curenja lozinki i upozoravamo te ako si pogođen/a. <a data-l10n-name="breach-alert-link">Saznaj više</a>
 login-intro-instructions-fxa2 = Otvori račun ili se prijavi u svoj na uređaju gdje su tvoje prijave spremljene.
-login-intro-instructions-fxa-settings = Idi u Postavke > Sinkronizacija > Uključi sinkronizaciju… Odaberi opciju "Prijave i lozinke".
+login-intro-instructions-fxa-settings = Idi u Postavke > Sinkronizacija > Uključi sinkronizaciju … Odaberi opciju „Prijave i lozinke”.
 login-intro-instructions-fxa-passwords-help = Posjeti <a data-l10n-name="passwords-help-link">podršku za lozinke</a> za dodatnu pomoć.
 about-logins-intro-browser-only-import = Ako su tvoje prijave spremljene u drugom pregledniku, možeš ih <a data-l10n-name="import-link">uvesti u { -brand-product-name }</a>
 about-logins-intro-import2 = Ako su tvoje prijave spremljene izvan { -brand-product-name(case: "gen") }, možeš ih <a data-l10n-name="import-browser-link">uvesti iz jednog drugog preglednika</a> ili <a data-l10n-name="import-file-link">iz jedne datoteke</a>
@@ -330,8 +330,8 @@ confirm-discard-changes-dialog-confirm-button = Odbaci
 
 ## Breach Alert notification
 
-about-logins-breach-alert-title = Hakirana web-stranica
-breach-alert-text = Lozinke su procurile ili su ukradene s ove web-stranice od zadnjeg aktualiziranja tvojih podataka za prijavu. Za zaštitu svog računa, promijeni lozinku.
+about-logins-breach-alert-title = Hakirana web stranica
+breach-alert-text = Lozinke su procurile ili su ukradene s ove web stranice od zadnjeg aktualiziranja tvojih podataka za prijavu. Za zaštitu svog računa, promijeni lozinku.
 about-logins-breach-alert-date = Curenje podataka dogodilo se { DATETIME($date, day: "numeric", month: "long", year: "numeric") }
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"

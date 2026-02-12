@@ -74,17 +74,22 @@ about-reader-customtheme-tab = Προσαρμοσμένο
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Κείμενο
-    .title = Επεξεργασία χρώματος
-about-reader-custom-colors-background = Παρασκήνιο
-    .title = Επεξεργασία χρώματος
-about-reader-custom-colors-unvisited-links = Σύνδεσμοι που δεν έχετε επισκεφτεί
-    .title = Επεξεργασία χρώματος
-about-reader-custom-colors-visited-links = Σύνδεσμοι που έχετε επισκεφτεί
-    .title = Επεξεργασία χρώματος
-about-reader-custom-colors-selection-highlight = Επισήμανση για εκφώνηση
-    .title = Επεξεργασία χρώματος
 about-reader-reset-button = Επαναφορά προεπιλογών
+about-reader-custom-colors-foreground2 =
+    .label = Κείμενο
+    .title = Επεξεργασία χρώματος
+about-reader-custom-colors-background2 =
+    .label = Παρασκήνιο
+    .title = Επεξεργασία χρώματος
+about-reader-custom-colors-unvisited-links2 =
+    .label = Σύνδεσμοι που δεν έχετε επισκεφτεί
+    .title = Επεξεργασία χρώματος
+about-reader-custom-colors-visited-links2 =
+    .label = Σύνδεσμοι που έχετε επισκεφτεί
+    .title = Επεξεργασία χρώματος
+about-reader-custom-colors-selection-highlight2 =
+    .label = Επισήμανση για εκφώνηση
+    .title = Επεξεργασία χρώματος
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = Στοίχιση κειμένου στο κέντρο
 about-reader-text-alignment-right =
     .title = Στοίχιση κειμένου δεξιά
+about-reader-text-alignment-justify =
+    .title = Πλήρης στοίχιση κειμένου

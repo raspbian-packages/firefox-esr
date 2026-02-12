@@ -8,6 +8,9 @@ places-open =
 places-open-in-tab =
     .label = Deschide într-o filă nouă
     .accesskey = w
+places-open-in-container-tab =
+    .label = Deschide într-o filă container nouă
+    .accesskey = i
 places-open-all-bookmarks =
     .label = Deschide toate marcajele
     .accesskey = O
@@ -61,6 +64,9 @@ places-bookmarks-search =
 places-delete-domain-data =
     .label = Uită totul despre acest site
     .accesskey = d
+places-forget-domain-data =
+    .label = Uită site-ul...
+    .accesskey = F
 places-sortby-name =
     .label = Sortează după nume
     .accesskey = r
@@ -71,6 +77,18 @@ places-edit-bookmark =
 places-edit-generic =
     .label = Editează…
     .accesskey = i
+places-edit-folder2 =
+    .label = Editează dosarul...
+    .accesskey = E
+# Variables
+#   $count (number) - Number of folders to delete
+places-delete-folder =
+    .label =
+        { $count ->
+            [1] Șterge dosarul
+           *[other] Delete Folders
+        }
+    .accesskey = D
 # Variables:
 #   $count (number) - The number of pages selected for removal.
 places-delete-page =
@@ -92,9 +110,35 @@ other-bookmarks-folder =
 places-show-in-folder =
     .label = Afișează în dosar
     .accesskey = F
+# Variables:
+# $count (number) - The number of elements being selected for removal.
+places-delete-bookmark =
+    .label =
+        { $count ->
+            [1] Șterge marcajul
+           *[other] Delete Bookmarks
+        }
+    .accesskey = D
+# Variables:
+#   $count (number) - The number of bookmarks being added.
+places-create-bookmark =
+    .label =
+        { $count ->
+            [1] Marchează pagina…
+           *[other] Bookmark Pages…
+        }
+    .accesskey = B
+places-untag-bookmark =
+    .label = Elimină eticheta
+    .accesskey = R
 places-manage-bookmarks =
     .label = Gestionează marcajele
     .accesskey = M
+places-forget-about-this-site-confirmation-title = Uită site-ul
+# Variables:
+# $hostOrBaseDomain (string) - The base domain (or host in case there is no base domain) for which data is being removed
+places-forget-about-this-site-confirmation-msg = Acțiunea va elimina datele legate de { $hostOrBaseDomain }, inclusiv istoricul, cookie-urile, memoria cache și preferințele de conținut. Marcajele și parolele aferente nu vor fi eliminate. Sigur vrei să continui?
+places-forget-about-this-site-forget = Uită
 places-library3 =
     .title = Bibliotecă
 places-organize-button =
@@ -132,8 +176,8 @@ places-view-sort-descending =
     .label = De la Z la A
     .accesskey = Z
 places-maintenance-button =
-    .label = Importare și copie de siguranță
-    .tooltiptext = Importă și fă copie de siguranță marcajelor
+    .label = Import și copie de rezervă
+    .tooltiptext = Importă și fă o copie de siguranță cu marcajele
     .accesskey = I
 places-maintenance-button-mac =
     .label = Importare și copie de siguranță

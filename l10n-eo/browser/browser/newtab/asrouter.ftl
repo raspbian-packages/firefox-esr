@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } uzantoj
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Spegulu viajn legosignojn ĉie.
 cfr-doorhanger-bookmark-fxa-body = Bona trovaĵo! Nun, retrovu tiun ĉi legosignon en viaj poŝaparatoj. Komencu per { -fxaccount-brand-name }.
@@ -68,6 +68,11 @@ cfr-doorhanger-bookmark-fxa-link-text = Speguli legosignojn nun…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Ferma butono
     .title = Fermi
+fxa-adoption-addresses-backup-title = Faru ni sekurkopion de viaj konservitaj adresoj
+fxa-adoption-addresses-backup-subtitle = Protektu viajn konservitajn adresojn per ĉifrado kaj konservado en viaj aparatoj.
+fxa-adoption-credit-cards-backup-title = Faru ni sekurkopion de viaj pagmetodoj
+fxa-adoption-credit-cards-backup-subtitle = Protektu viajn pagmetodojn per ĉifrado kaj konservado en viaj aparatoj.
+fxa-adoption-primary-button-label = Krei konton
 
 ## Protections panel
 
@@ -225,6 +230,22 @@ fox-doodle-pin-secondary = Ne nun
 set-default-pdf-handler-headline = <strong>Viaj dosieroj PDFs malfermiĝas en { -brand-short-name }.</strong> Redakti aŭ subskribi formularojn rekte el via retesplorilo. Por ŝanĝi tion, serĉu “PDF” en la agordoj.
 set-default-pdf-handler-primary = Mi komprenis
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Subskribu sur la linio de punktoj — aŭ ie ajn!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Desegnu, tajpu aŭ alŝutu vian subskribon, poste metu ĝin ekzakte tien, kie vi ĝin volas. Konservu viajn oftajn subskribojn por uzi ilin estontece.
+annotations-make-default-pdf-handler-title = Ĉu igi { -brand-short-name } via norma PDF redaktilo?
+annotations-make-default-pdf-handler-subtitle = Malferminte dosieron PDF vi ĉiam povos aliri niajn ilojn.
+annotations-make-default-pdf-primary-cta =
+    .label = Elekti kiel norma
+annotations-make-default-pdf-next =
+    .label = Antaŭen
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Ĉu vi planas akiri novan aparaton?
@@ -260,7 +281,7 @@ pdf-default-notification-decline-button =
 
 ## Launch on login infobar notification
 
-launch-on-login-infobar-message = <strong>Ĉu malfermi { -brand-short-name } ĉiufoje je restarto de via komputilo?</strong> Vi nun povas agordi { -brand-short-name } por ke ĝi aŭtomate malfermiĝu kiam vi restartigas vian aparaton.
+launch-on-login-infobar-message = <strong>Ĉu malfermi { -brand-short-name } ĉiufoje post restarto de via komputilo?</strong> Vi nun povas agordi { -brand-short-name } por ke ĝi aŭtomate malfermiĝu kiam vi restartigas vian aparaton.
 launch-on-login-learnmore = Pli da informo
 launch-on-login-infobar-confirm-button = Jes, malfermi per { -brand-short-name }
     .accesskey = J
@@ -270,7 +291,7 @@ launch-on-login-infobar-reject-button = Ne nun
 ## These string variants are used when the “launch on login” infobar
 ## notification is displayed for a second time.
 
-launch-on-login-infobar-final-message = <strong>Ĉu malfermi { -brand-short-name } ĉiufoje je restarto de via komputilo?</strong> Por administri la agordojn de aŭtomata malfermo, serĉi “restarto” en la agordoj..
+launch-on-login-infobar-final-message = <strong>Ĉu malfermi { -brand-short-name } ĉiufoje post restarto de via komputilo?</strong> Por administri la agordojn de aŭtomata malfermo, serĉi “restarto” en la agordoj..
 launch-on-login-infobar-final-reject-button = Ne, dankon
     .accesskey = N
 
@@ -310,8 +331,11 @@ fxa-menu-message-close-button =
     .title = Fermi
     .aria-label = Fermi
 fxa-menu-message-sign-up-button = Krei konton
+fxa-menu-message-sign-in-button = Komenci seancon
+fxa-menu-message-sync-button = Komenci speguli
 fxa-menu-message-sync-devices-primary-text = Speguli ĉiujn viajn aparatojn
 fxa-menu-message-sync-devices-secondary-text = Tuj ricevi viajn informojn — kiel legosignojn kaj pasvortojn — ie ajn, kie vi uzas { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Aliru tuj viajn legosignojn, pasvortojn kaj pli, el kie ajn vi komencis seancon de { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Speguli ĉiujn viajn aparatojn
 fxa-menu-message-backup-data-primary-text = Faru sekurkopion de viaj retumilaj datumoj
 fxa-menu-message-backup-data-secondary-text = Aŭtomate protekti legosignojn, pasvortojn kaj aliajn informojn en ĉiuj viaj aparatoj.
@@ -342,3 +366,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Havu vian preferatan privatecozorgan retumilon atingebla je unu alklako. Igi { -brand-short-name } via norma retumilo por malfermo de ligiloj kaj alpinglu ĝin al via taska ilaro.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Havu vian preferatan privatecozorgan retumilon atingebla je unu alklako. Igi { -brand-short-name } via norma retumilo por malfermo de ligiloj kaj alpinglu ĝin al la komenca menuo.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Ĉu vi planas baldaŭe ĝisdatigi Windows 10?
+windows-10-eos-sync-spotlight-subtitle = Faru sekurkopion de viaj pasvortoj kaj legosignoj, tiel vi pretos uzi iun ajn aparaton.
+windows-10-eos-sync-spotlight-primary-label = Fari sekurkopion de via { -brand-short-name }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Ĉu vi planas ĝisdatigi al Windows 11? Ne perdu viajn legosignojn kaj pasvortojn.
+windows-10-eos-sync-toast-subtitle = Faru sekurkopion de viaj datumoj, tiel ke { -brand-short-name } estos preta por uzo, ĉu en tiu ĉi komputilo ĉu en la venonta.
+windows-10-eos-sync-toast-primary-label = Unuaj paŝoj
+windows-10-eos-sync-toast-secondary-label = Rememorigi poste
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } ne estas antaŭinstalita kiel aliaj retumiloj de gigantaj entreprenoj. Ĝuste pri tio temas.
+windows-10-eos-challenger-sync-callout-subtitle = Kiam vi faras sekurkopion de viaj legosignoj kaj pasvortoj de { -brand-product-name }, estos pli facile transmeti ion al via elektita retumilo en alia aparato.
+windows-10-eos-challenger-pin-callout-subtitle = Alpinglu { -brand-shorter-name } al via taska ilaro, tiel ke via elektita retumilo estos ĉiam ĉemane kiam vi ĝin bezonos.
+windows-10-eos-challenger-sync-primary-button = Fari sekurkopion de via { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Alpingli { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } blokas minilojn de ĉifromono, sociretajn spurilojn kaj identigilojn de ciferecaj spuroj.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Spurioj ne povas identigi vian aparaton aŭ sekvi vin tra la reto, ĉar ni ne permesas tion al ili.
+windows-10-eos-sync-callout-privacy-screen-2-title = Protektu viajn pasvortojn kaj legosignojn por via venonta aparato.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Sekurkopio de { -brand-shorter-name } faciligas la taskon kunporti kun vi viajn datumojn kaj privatecajn agordojn.
+windows-10-eos-sync-callout-privacy-info-button = Montri blokataĵojn
+windows-10-eos-callout-addons-title = Provu aldonaĵojn: simplaj ĝisdatigoj, rimarkeblaj efikoj
+windows-10-eos-callout-addons-subtitle = Tiuj ĉi etendaĵoj estis elektitaj por helpi vin resti produktema, protektita kaj koncentrita.
+windows-10-eos-callout-addons-primary-button = Montri niajn elektojn
+windows-10-eos-sync-callout-addons-title = Vi ne perdos viajn aldonaĵojn kiam vi ĝisdatigos el Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Spegulu nun, tiel ke viaj aldonaĵoj de { -brand-product-name } estos ĉiam haveblaj, eĉ post ŝanĝo de aparato.
+windows-10-eos-sync-callout-next-button = Antaŭen
+windows-10-eos-sync-callout-get-started-button = Unuaj paŝoj
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Alvenis vertikalaj langetoj kaj grupoj de langetoj!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Pro populara peto, { -brand-product-name } ĵus aldonis novajn trajtojn por igi vian retumon simpla kaj sendistra.
+windows-10-eos-feature-toast-whats-new-button = Montri la novaĵojn
+windows-10-eos-feature-toast-dismiss-button = Ignori
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Rigora protekto kontraŭ spurado povas misfunkciigi retejojn.</strong> Solvu oftajn problemojn per malblokado de nepraj elementoj, kiuj povus tamen enhavi spurilojn.
+etp-strict-exceptions-infobar-learn-more = Pli da informo
+etp-strict-exceptions-infobar-button = Apliki korektojn
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Ne nun
+    .accesskey = N

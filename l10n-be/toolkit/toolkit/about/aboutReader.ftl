@@ -75,17 +75,22 @@ about-reader-customtheme-tab = Адмыслова
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Тэкст
-    .title = Змяніць колер
-about-reader-custom-colors-background = Фон
-    .title = Змяніць колер
-about-reader-custom-colors-unvisited-links = Ненаведаныя спасылкі
-    .title = Змяніць колер
-about-reader-custom-colors-visited-links = Наведаныя спасылкі
-    .title = Змяніць колер
-about-reader-custom-colors-selection-highlight = Падфарбоўка для чытання ўслых
-    .title = Змяніць колер
 about-reader-reset-button = Скінуць да прадвызначаных
+about-reader-custom-colors-foreground2 =
+    .label = Тэкст
+    .title = Змяніць колер
+about-reader-custom-colors-background2 =
+    .label = Фон
+    .title = Змяніць колер
+about-reader-custom-colors-unvisited-links2 =
+    .label = Ненаведаныя спасылкі
+    .title = Змяніць колер
+about-reader-custom-colors-visited-links2 =
+    .label = Наведаныя спасылкі
+    .title = Змяніць колер
+about-reader-custom-colors-selection-highlight2 =
+    .label = Падфарбоўка для чытання ўслых
+    .title = Змяніць колер
 
 ## Reader View text and layout menu
 
@@ -115,3 +120,5 @@ about-reader-text-alignment-center =
     .title = Выраўнаваць тэкст па цэнтры
 about-reader-text-alignment-right =
     .title = Выраўнаваць тэкст па правым краі
+about-reader-text-alignment-justify =
+    .title = Выраўнаваць тэкст

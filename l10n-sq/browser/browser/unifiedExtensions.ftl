@@ -11,6 +11,15 @@
 unified-extensions-header-title = Zgjerime
 unified-extensions-manage-extensions =
     .label = Administroni zgjerime
+unified-extensions-discover-extensions =
+    .label = Zbuloni zgjerime
+unified-extensions-empty-reason-private-browsing-not-allowed = Keni zgjerime të instaluara, por jo të aktivizuara për dritare private
+unified-extensions-empty-reason-extension-not-enabled = Keni zgjerime të instaluara, por jo të aktivizuara
+# In this headline, “Level up” means to enhance your browsing experience.
+unified-extensions-empty-reason-zero-extensions-onboarding = Ngrijeni më lart shfletimin tuaj, me zgjerimet
+unified-extensions-empty-content-explain-enable2 = Përzgjidhni “{ unified-extensions-manage-extensions.label }” që të aktivizohen te rregullimet.
+unified-extensions-empty-content-explain-manage2 = Përzgjidhni “{ unified-extensions-manage-extensions.label }” që t’i administroni te rregullimet.
+unified-extensions-empty-content-explain-extensions-onboarding = Bëjeni { -brand-short-name }-in si e doni, duke ndryshuar si duket dhe si funksionon, ose duke përforcuar privatësinë dhe parrezikshmërinë.
 
 ## An extension in the main list
 
@@ -21,6 +30,9 @@ unified-extensions-manage-extensions =
 unified-extensions-item-open-menu =
     .aria-label = Hap menunë për { $extensionName }
 unified-extensions-item-message-manage = Administroni zgjerim
+# Variables:
+#   $extensionName (String) - Name of the user-enabled soft-blocked extension.
+unified-extensions-item-messagebar-softblocked2 = Për { $extensionName } ka kufizime. Përdorimi i tij mund të jetë me rrezik.
 # Variables:
 #   $extensionName (String) - Name of the user-enabled soft-blocked extension.
 unified-extensions-item-messagebar-softblocked = { $extensionName } cenon rregullat e Mozilla-s. Përdorimi i saj mund të jetë me rrezik.
@@ -81,3 +93,5 @@ unified-extensions-mb-blocklist-error-multiple =
            *[other] U çaktivizuan { $extensionsCount } zgjerime
         }
     .message = Disa nga zgjerimet tuaja janë çaktivizuar, pasi cenojnë rregulla të Mozilla-s.
+unified-extensions-notice-safe-mode =
+    .message = Krejt zgjerimet janë çaktivizuar nga Mënyra Diagnostikim.

@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } потребителя
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Синхронизирайте отметките си навсякъде.
 cfr-doorhanger-bookmark-fxa-body = Чудесно откритие! Сега не оставайте без тази отметка на мобилните си устройства. Започнете с { -fxaccount-brand-name }.
@@ -68,6 +68,7 @@ cfr-doorhanger-bookmark-fxa-link-text = Синхронизиране на отм
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Бутон за затваряне
     .title = Затваряне
+fxa-adoption-primary-button-label = Регистриране
 
 ## Protections panel
 
@@ -310,10 +311,11 @@ fxa-menu-message-close-button =
     .title = Затваряне
     .aria-label = Затваряне
 fxa-menu-message-sign-up-button = Регистриране
+fxa-menu-message-sign-in-button = Вписване
 fxa-menu-message-sync-devices-primary-text = Синхронизирайте устройствата си
 fxa-menu-message-sync-devices-secondary-text = Незабавно получавайте информацията си – като отметки и пароли – навсякъде, където използвате { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Синхронизирайте устройствата си
-fxa-menu-message-backup-data-primary-text = Резервно копие на данните от четеца
+fxa-menu-message-backup-data-primary-text = Архивирайте данните на браузъра си
 fxa-menu-message-backup-data-secondary-text = Автоматична защита за отметки, пароли и друга информация на всички ваши устройства.
 fxa-menu-message-backup-data-collapsed-text = Резервно копие на данните от четеца
 fxa-menu-message-backup-sync-primary-text = Пазете данните си защитени и синхронизирани
@@ -342,3 +344,27 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Дръжте любимия си насочен към поверителността мрежов четец само на щракване разстояние. Задайте { -brand-short-name } подразбиран четец и го дръжте на лентата със задачи.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Дръжте любимия си насочен към поверителността мрежов четец само на щракване разстояние. Задайте { -brand-short-name } подразбиран четец и го дръжте на лентата със задачи и в менюто Start.
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-primary-label = Въведение
+windows-10-eos-sync-toast-secondary-label = Напомняне по-късно
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-sync-callout-next-button = Напред
+windows-10-eos-sync-callout-get-started-button = Въведение
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-whats-new-button = Вижте какво ново
+windows-10-eos-feature-toast-dismiss-button = Прекратяване
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-learn-more = Научете повече

@@ -8,16 +8,20 @@
  *
  * @tagname moz-label
  * @attribute {string} accesskey - Key used for keyboard access.
+ * @attribute {string} shownaccesskey - Key to underline but not set as
+ *   accesskey, this is useful to work around an issue where multiple accesskeys
+ *   on the same element cause it to be focused isntead of activated.
  */
 class MozTextLabel extends HTMLLabelElement {
   #insertSeparator = false;
   #alwaysAppendAccessKey = false;
   #lastFormattedAccessKey = null;
+  #observer = null;
 
   // Default to underlining accesskeys for Windows and Linux.
   static #underlineAccesskey = !navigator.platform.includes("Mac");
   static get observedAttributes() {
-    return ["accesskey"];
+    return ["accesskey", "shownaccesskey"];
   }
 
   static stylesheetUrl = "chrome://global/content/elements/moz-label.css";
@@ -61,15 +65,51 @@ class MozTextLabel extends HTMLLabelElement {
     }
   }
 
+  #startMutationObserver() {
+    if (!this.#observer) {
+      return;
+    }
+    this.#observer.observe(this, {
+      characterData: true,
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  #stopMutationObserver() {
+    if (!this.#observer) {
+      return;
+    }
+    this.#observer.disconnect();
+  }
+
   connectedCallback() {
     this.#setStyles();
     this.formatAccessKey();
+    if (!this.#observer) {
+      this.#observer = new MutationObserver(() => {
+        this.#lastFormattedAccessKey = null;
+        this.formatAccessKey();
+      });
+      this.#startMutationObserver();
+    }
+  }
+
+  disconnectedCallback() {
+    if (this.#observer) {
+      this.#stopMutationObserver();
+      this.#observer = null;
+    }
   }
 
   // Bug 1820588 - we may want to generalize this into
   // MozHTMLElement.insertCssIfNeeded(style)
   #setStyles() {
     let root = this.getRootNode();
+    if (root.__mozLabelCssAdded) {
+      return;
+    }
+
     let container = root.head ?? root;
 
     for (let link of container.querySelectorAll("link")) {
@@ -82,6 +122,7 @@ class MozTextLabel extends HTMLLabelElement {
     style.rel = "stylesheet";
     style.href = this.constructor.stylesheetUrl;
     container.appendChild(style);
+    root.__mozLabelCssAdded = true;
   }
 
   set textContent(val) {
@@ -155,7 +196,7 @@ class MozTextLabel extends HTMLLabelElement {
   // label uses [value]). So this is just for when we have textContent.
   formatAccessKey() {
     // Skip doing any DOM manipulation whenever possible:
-    let accessKey = this.accessKey;
+    let accessKey = this.accessKey || this.getAttribute("shownaccesskey");
     if (
       !MozTextLabel.#underlineAccesskey ||
       this.#lastFormattedAccessKey == accessKey ||
@@ -164,6 +205,15 @@ class MozTextLabel extends HTMLLabelElement {
     ) {
       return;
     }
+    this.#stopMutationObserver();
+    try {
+      this.#formatAccessKey(accessKey);
+    } finally {
+      queueMicrotask(() => this.#startMutationObserver());
+    }
+  }
+
+  #formatAccessKey(accessKey) {
     this.#lastFormattedAccessKey = accessKey;
     if (this.accessKeySpan) {
       // Clear old accesskey

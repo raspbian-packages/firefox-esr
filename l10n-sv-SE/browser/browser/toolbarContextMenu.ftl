@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Öppna stängda flikar igen
         }
     .accesskey = p
+toolbar-context-turn-on-vertical-tabs =
+    .label = Aktivera vertikala flikar
+toolbar-context-turn-off-vertical-tabs =
+    .label = Stäng av vertikala flikar
+toolbar-context-customize-sidebar =
+    .label = Anpassa sidofält
 toolbar-context-menu-manage-extension =
     .label = Hantera tillägg
     .accesskey = H
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Visa panelen när nedladdningen börjar
     .accesskey = V
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Visa alltid i verktygsfältet
+    .accesskey = a
 toolbar-context-menu-remove-from-toolbar =
     .label = Ta bort från verktygsfält
     .accesskey = T

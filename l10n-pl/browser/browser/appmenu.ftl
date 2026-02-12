@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Pobrane
 appmenuitem-passwords =
     .label = Hasła
+appmenuitem-extensions-and-themes =
+    .label = Rozszerzenia i motywy
+appmenuitem-extensions =
+    .label = Rozszerzenia
 appmenuitem-addons-and-themes =
     .label = Dodatki i motywy
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Otwórz panel profilera
+    .tooltiptext = Otwórz panel profilera
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Ustawienie do badania błędów dźwięku i obrazu w { -brand-shorter-name(case: "loc") }.
 profiler-popup-presets-media-label =
     .label = Multimedia
+profiler-popup-presets-ml-description = Ustawienie do badania błędów uczenia maszynowego w { -brand-shorter-name(case: "loc") }.
+profiler-popup-presets-ml-label =
+    .label = Uczenie maszynowe
 profiler-popup-presets-networking-description = Ustawienie do badania błędów sieciowych w { -brand-shorter-name(case: "loc") }.
 profiler-popup-presets-networking-label =
     .label = Sieć
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Otwórz panel masek dla adresów e-mail
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Chroń swoje działania w Internecie
 appmenu-services-header = Moje usługi
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Wypróbuj inne narzędzia ochrony od Mozilli:
 appmenu-other-protection-header = Wypróbuj inne narzędzia ochrony od { -vendor-short-name(case: "gen") }:
 
 ## Profiles panel
 
-appmenu-profiles = Profile
 appmenu-other-profiles = Inne profile
 appmenu-manage-profiles =
     .label = Zarządzaj profilami
+appmenu-copy-profile =
+    .label = Kopiuj ten profil
 appmenu-create-profile =
     .label = Nowy profil
 appmenu-edit-profile =
     .aria-label = Edytuj profil
+appmenu-profiles-2 =
+    .label = Profile

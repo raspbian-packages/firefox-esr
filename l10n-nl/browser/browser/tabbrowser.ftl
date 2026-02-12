@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Tabblad sluiten
 tabbrowser-menuitem-close =
     .label = Sluiten
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } – { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -149,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Dit dialoogvenster niet meer tonen.
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Opgelet
-tabbrowser-confirm-close-duplicate-tabs-text = We houden het laatste actieve tabblad open
 tabbrowser-confirm-close-all-duplicate-tabs-title = Dubbele tabbladen sluiten?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Dubbele tabbladen in dit venster worden gesloten. Het laatst actieve
@@ -192,6 +203,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Alle { $tabCount } tabbladtitels tonen
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Tabblad dempen
@@ -199,8 +213,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Tabblad dempen opheffen
 tabbrowser-manager-close-tab =
     .tooltiptext = Tabblad sluiten
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Gesloten
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Huidig venster
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Tabbladgroep maken
 tab-group-editor-title-edit = Tabbladgroep beheren
@@ -212,22 +234,40 @@ tab-group-editor-cancel =
     .accesskey = A
 tab-group-editor-color-selector =
     .aria-label = Tabbladgroepskleur
-tab-group-editor-color-selector-blue = Blauw
-tab-group-editor-color-selector-purple = Paars
-tab-group-editor-color-selector-cyan = Cyaan
-tab-group-editor-color-selector-orange = Oranje
-tab-group-editor-color-selector-yellow = Geel
-tab-group-editor-color-selector-pink = Roze
-tab-group-editor-color-selector-green = Groen
-tab-group-editor-color-selector-gray = Grijs
-tab-group-editor-color-selector-red = Rood
-tab-group-menu-header = Tabbladgroepen
+tab-group-editor-color-selector2-blue = Blauw
+    .title = Blauw
+tab-group-editor-color-selector2-purple = Paars
+    .title = Paars
+tab-group-editor-color-selector2-cyan = Cyaan
+    .title = Cyaan
+tab-group-editor-color-selector2-orange = Oranje
+    .title = Oranje
+tab-group-editor-color-selector2-yellow = Geel
+    .title = Geel
+tab-group-editor-color-selector2-pink = Roze
+    .title = Roze
+tab-group-editor-color-selector2-green = Groen
+    .title = Groen
+tab-group-editor-color-selector2-gray = Grijs
+    .title = Grijs
+tab-group-editor-color-selector2-red = Rood
+    .title = Rood
+tab-group-description = { $tabGroupName } – Tabbladgroep
+tab-group-label-tooltip-collapsed = { $tabGroupName } – Samengevouwen
+tab-group-label-tooltip-expanded = { $tabGroupName } – Uitgevouwen
+tab-group-preview-name =
+    .aria-label = Tabbladen in een samengevouwen groep
 tab-context-unnamed-group =
     .label = Naamloze groep
 tab-group-name-default = Naamloze groep
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Tabbladenlijst open
+tab-group-preview-closed-description = Tabbladenlijst gesloten
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -245,6 +285,8 @@ tab-context-move-tab-to-group =
            *[other] Tabbladen aan groep toevoegen
         }
     .accesskey = g
+tab-context-move-tab-to-group-saved-groups =
+    .label = Gesloten groepen
 tab-group-editor-action-new-tab =
     .label = Nieuw tabblad in groep
 tab-group-editor-action-new-window =
@@ -270,6 +312,16 @@ tab-context-ungroup-tab =
            *[other] Verwijderen uit groepen
         }
     .accesskey = V
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] Nog { $tabCount } tabblad
+       *[other] Nog { $tabCount } tabbladen
+    }
 
 ## Open/saved tab group context menu
 
@@ -295,3 +347,33 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Groep in nieuw venster openen
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Gesplitste weergave
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Gesplitste weergave toevoegen
+    .accesskey = t
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Openen in gesplitste weergave
+    .accesskey = t
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Gesplitste weergave afzonderen
+    .accesskey = t
+tab-context-badge-new = Nieuw
+
+## Manage Split View (icon in the address bar & three-dot menu in the footer)
+
+# "Separate" is a verb, as in "separate the split view tabs and display them normally".
+split-view-menuitem-separate-tabs =
+    .label = Tabbladen scheiden
+# "Reverse" is a verb, as in "reverse the order of split view tabs".
+split-view-menuitem-reverse-tabs =
+    .label = Tabbladen omkeren
+split-view-menuitem-close-both-tabs =
+    .label = Beide tabbladen sluiten

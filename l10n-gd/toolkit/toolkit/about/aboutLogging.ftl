@@ -38,9 +38,7 @@ about-logging-preset-custom-description = Log modules manually selected
 # Error handling
 about-logging-error = Error:
 
-## Variables:
-##   $k (String) - Variable name
-##   $v (String) - Variable value
+##
 
 about-logging-invalid-output = Invalid value “{ $v }“ for key “{ $k }“
 about-logging-unknown-logging-preset = Unknown logging preset “{ $v }“

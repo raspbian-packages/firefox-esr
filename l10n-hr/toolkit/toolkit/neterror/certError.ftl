@@ -47,10 +47,10 @@ cert-error-expired-now = Web stranice dokazuju svoj identitet putem certifikata,
 cert-error-not-yet-valid-now = Web stranice dokazuju svoj identitet putem certifikata, koji vrijede samo određeno vrijeme. Certifikat za { $hostname } vrijedit će tek od { $not-before-local-time }.
 # Variables:
 #   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
-cert-error-code-prefix = Kȏd greške: { $error }
+cert-error-code-prefix = Kod greške: { $error }
 # Variables:
 #   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
-cert-error-code-prefix-link = Kȏd greške: <a data-l10n-name="error-code-link">{ $error }</a>
+cert-error-code-prefix-link = Kod greške: <a data-l10n-name="error-code-link">{ $error }</a>
 # Variables:
 #   $hostname (string) - Hostname of the website with SSL error.
 #   $errorMessage (string) - Error message corresponding to the type of error we are experiencing.
@@ -70,7 +70,7 @@ cert-error-details-cert-chain-label = Lanac certifikata:
 open-in-new-window-for-csp-or-xfo-error = Otvori stranicu u novom prozoru
 # Variables:
 #   $hostname (string) - Hostname of the website blocked by csp or xfo error.
-csp-xfo-blocked-long-desc = Iz sigurnosnih razloga, { $hostname } ne dopušta da { -brand-short-name } prikaže stranicu, ako je ugrađena u drugu web-stranicu. Za prikaz ove stranice, otvori je u novom prozoru.
+csp-xfo-blocked-long-desc = Iz sigurnosnih razloga, { $hostname } ne dopušta da { -brand-short-name } prikaže stranicu, ako je ugrađena u drugu web stranicu. Za prikaz ove stranice, otvori je u novom prozoru.
 fp-certerror-view-certificate-link = Pogledaj certifikat web stranice
 fp-certerror-return-to-previous-page-recommended-button = Idi natrag (preporučeno)
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
@@ -87,7 +87,7 @@ fp-certerror-not-yet-valid-why-dangerous-body = Web stranice koriste certifikate
 fp-certerror-expired-what-can-you-do-body = Sat tvog uređaja je postavljen na { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }. Ako je to točno, vjerojatno je web stranica uzrok za sigurnosni problem. Ako je krivo, možeš ga promijeniti u postavkama sustava tvog uređaja.
 # Variables:
 #   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
-fp-cert-error-code = Kȏd greške: { $error }
+fp-cert-error-code = Kod greške: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
@@ -102,12 +102,13 @@ deniedPortAccess-title = Pristup adresi je ograničen
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Ne možemo pronaći tu stranicu.
+internet-connection-offline-title = Čini se da postoji problem s tvojom internetskom vezom.
 dns-not-found-trr-only-title2 = Mogući sigurnosni rizik pri pretraživanju ove domene
 dns-not-found-native-fallback-title2 = Mogući sigurnosni rizik pri pretraživanju ove domene
 fileNotFound-title = Datoteka nije pronađena
 fileAccessDenied-title = Pristup datoteci je odbijen
 generic-title = Ups.
-captivePortal-title = Prijava na mrežu
+captivePortal-title = Prijavi se na mrežu
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 malformedURI-title = Hmm. Ta adresa ne izgleda dobro.
@@ -118,6 +119,7 @@ contentEncodingError-title = Greška kodiranja sadržaja
 unsafeContentType-title = Nesiguran tip datoteke
 netReset-title = Veza je prekinuta
 netTimeout-title = Vezi je isteklo vrijeme
+httpErrorPage-title = Čini se da postoji problem s ovom web stranicom
 serverError-title = Čini se da postoji problem s ovom web stranicom
 unknownProtocolFound-title = Nepoznata vrsta adrese
 proxyConnectFailure-title = Proxy server odbija veze
@@ -150,3 +152,4 @@ fp-certerror-hide-advanced-button = Sakrij napredno
 ##   $hostname (String) - Hostname of the website to which the user was trying to connect.
 
 fp-certerror-override-exception-button = Nastavi na { $hostname } (riskantno)
+fp-certerror-intro = { -brand-short-name } je ustanovio potencijalno ozbiljan sigurnosni problem s <strong>{ $hostname }</strong>. Netko tko se pretvara da je ta web stranica bi mogao pokušati ukrasti stvari poput podataka o kreditnim karticama, lozinke ili e-mail adrese.

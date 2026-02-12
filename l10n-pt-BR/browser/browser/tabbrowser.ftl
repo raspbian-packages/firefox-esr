@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Fechar aba
 tabbrowser-menuitem-close =
     .label = Fechar
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -152,8 +165,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Não mostrar mais este aviso.
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Atenção
-tabbrowser-confirm-close-duplicate-tabs-text = A aba com atividade mais recente permanecerá aberta
 tabbrowser-confirm-close-all-duplicate-tabs-title = Fechar abas duplicadas?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     As abas duplicadas nesta janela serão fechadas.
@@ -195,6 +206,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Listar as { $tabCount } abas
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Silenciar aba
@@ -202,8 +216,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Ativar som da aba
 tabbrowser-manager-close-tab =
     .tooltiptext = Fechar aba
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Fechado
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Janela atual
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Criar grupo de abas
 tab-group-editor-title-edit = Gerenciar grupo de abas
@@ -215,37 +237,57 @@ tab-group-editor-cancel =
     .accesskey = C
 tab-group-editor-color-selector =
     .aria-label = Cor do grupo de abas
-tab-group-editor-color-selector-blue = Azul
-tab-group-editor-color-selector-purple = Roxo
-tab-group-editor-color-selector-cyan = Ciano
-tab-group-editor-color-selector-orange = Laranja
-tab-group-editor-color-selector-yellow = Amarelo
-tab-group-editor-color-selector-pink = Rosa
-tab-group-editor-color-selector-green = Verde
-tab-group-editor-color-selector-gray = Cinza
-tab-group-editor-color-selector-red = Vermelho
-tab-group-menu-header = Grupos de abas
+tab-group-editor-color-selector2-blue = Azul
+    .title = Azul
+tab-group-editor-color-selector2-purple = Roxo
+    .title = Roxo
+tab-group-editor-color-selector2-cyan = Ciano
+    .title = Ciano
+tab-group-editor-color-selector2-orange = Laranja
+    .title = Laranja
+tab-group-editor-color-selector2-yellow = Amarelo
+    .title = Amarelo
+tab-group-editor-color-selector2-pink = Rosa
+    .title = Rosa
+tab-group-editor-color-selector2-green = Verde
+    .title = Verde
+tab-group-editor-color-selector2-gray = Cinza
+    .title = Cinza
+tab-group-editor-color-selector2-red = Vermelho
+    .title = Vermelho
+tab-group-description = { $tabGroupName } — Grupo de abas
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Recolhido
+tab-group-label-tooltip-expanded = { $tabGroupName } — Expandido
+tab-group-preview-name =
+    .aria-label = Abas em um grupo recolhido
 tab-context-unnamed-group =
     .label = Grupo sem nome
 tab-group-name-default = Grupo sem nome
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Lista de abas aberta
+tab-group-preview-closed-description = Lista de abas fechada
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
         { $tabCount ->
             [1] Adicionar aba a um novo grupo
-           *[other] Add Tabs to New Group
+           *[other] Adicionar abas a um novo grupo
         }
     .accesskey = g
 tab-context-move-tab-to-group =
     .label =
         { $tabCount ->
             [1] Adicionar aba a um grupo
-           *[other] Add Tabs to Group
+           *[other] Adicionar abas a um grupo
         }
     .accesskey = g
+tab-context-move-tab-to-group-saved-groups =
+    .label = Grupos fechados
 tab-group-editor-action-new-tab =
     .label = Nova aba no grupo
 tab-group-editor-action-new-window =
@@ -270,6 +312,16 @@ tab-context-ungroup-tab =
            *[other] Remove from Groups
         }
     .accesskey = R
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] Mais { $tabCount } aba
+       *[other] Mais { $tabCount } abas
+    }
 
 ## Open/saved tab group context menu
 
@@ -295,3 +347,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Abrir grupo em nova janela
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Exibição dividida
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Adicionar exibição dividida
+    .accesskey = v
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Abrir em exibição dividida
+    .accesskey = v
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Separar exibição dividida
+    .accesskey = v
+tab-context-badge-new = Novidade

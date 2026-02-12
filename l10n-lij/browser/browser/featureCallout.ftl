@@ -7,9 +7,6 @@ callout-primary-advance-button-label = Pròscimo
 # Callout dialog primary button to complete the feature tour
 callout-primary-complete-button-label = Reçevuo!
 
-## Firefox View feature tour strings
-
-
 ## Continuous Onboarding - Firefox View: Tab pick up
 
 continuous-onboarding-firefox-view-tab-pickup-primary-button-label = Iniçia
@@ -17,15 +14,3 @@ continuous-onboarding-firefox-view-tab-pickup-primary-button-label = Iniçia
 ## PDF.js Feature Tour Strings
 
 callout-pdfjs-draw-button = Reçevuo!
-
-## Firefox View Discoverability Strings
-
-
-## Split Dismiss Button Labels
-
-
-## Sidebar Strings
-
-
-## Sidebar Callout Survey Strings
-

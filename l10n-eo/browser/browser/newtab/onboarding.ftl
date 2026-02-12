@@ -25,6 +25,8 @@ return-to-amo-subtitle = Bonege, vi havas { -brand-short-name }
 return-to-amo-addon-title = Nun, instalu ni <img data-l10n-name="icon"/><b>{ $addon-name }</b> por vi.
 return-to-amo-add-extension-label = Aldoni etendaĵon
 return-to-amo-add-theme-label = Aldoni la etoson
+return-to-amo-theme-install-complete-label = Etoso instalita
+return-to-amo-extension-install-complete-label = Etendaĵo instalita
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Enporti el { $previous 
 mr1-onboarding-theme-header = Personecigu ĝin
 mr1-onboarding-theme-subtitle = Personecigi { -brand-short-name } per etoso.
 mr1-onboarding-theme-secondary-button-label = Ne nun
-newtab-wallpaper-onboarding-title = Provu koloran tuŝeton
-newtab-wallpaper-onboarding-subtitle = Elektu ekranfonon por doni novan aspekton al la paĝo por novaj langetoj.
-newtab-wallpaper-onboarding-primary-button-label = Elekti ekranfonon
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Sistema etoso
 mr1-onboarding-theme-label-light = Hela
@@ -445,6 +444,18 @@ onboarding-checklist-sign-up = Registriĝu aŭ komencu seancon per via konto
 
 tab-groups-onboarding-feature-callout-title = Provu la grupojn de langetoj, por pli da ordo kaj fokuso.
 tab-groups-onboarding-feature-callout-subtitle = Ordigu viajn langetojn per treno de unu sur alia, por krei vian unuan grupon.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Trovu iam ajn viajn grupojn de langetoj en la menuo Listigi ĉiujn langetojn
+tab-groups-onboarding-create-group-title-2 = Iam ajn retrovu ĉi tie viajn grupojn de langetoj.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Retrovu viajn grupojn de langetoj per serĉo en la adresa strio.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Se vi fermas grupon de langetoj, vi povas iam ajn remalfermi ĝin en la menuo Listigi ĉiujn langetojn
+tab-groups-onboarding-saved-groups-title-2 = Se vi fermas grupon de langetoj, vi povas remalfermi ĝin ĉi tie, iam ajn.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Retrovu viajn fermitajn grupojn de langetoj per serĉo en la adresa strio.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Remalfermi iam ajn viajn grupojn de langetoj en la menuo Listigi ĉiujn langetojn
+tab-groups-onboarding-session-restore-title = Remalfermu viajn grupojn de langetoj ĉi tie, iam ajn.
+tab-groups-onboarding-dismiss = Akcepti
 
 ## Multi Profiles feature onboarding messages
 
@@ -454,3 +465,107 @@ multi-profile-spotlight-cta = Krei profilon
 multi-profile-callout-title = Krei malsamajn profilojn por laboro kaj libertempo
 multi-profile-callout-subtitle = Profiloj permesas al vi plene izolas viajn retumajn datumojn, kiel serĉan historion kaj pasvortojn.
 multi-profile-callout-cta = Krei profilon
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Elŝutu, spegulu, kaj ek!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Skanu la kodon QR por elŝuti { -brand-product-name } por poŝaparatoj. Post instalo elektu "Speguli en poŝaparato” por aliri viajn pasvortojn, legosignojn kaj pli el ie ajn.
+dismiss-button-label = Ignori
+sync-to-mobile-button-label = Speguli en poŝaparato
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Kodo QR por elŝuti { -brand-product-name } por poŝaparatoj
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Ĉu vi ĝisdatigas al Windows 11?
+    Faru ni sekurkopion de viaj datumoj de { -brand-product-name }.
+create-backup-screen-1-subtitle = Aŭtomate protektu viajn pasvortojn, legosignojn kaj pli, en malpli ol du minutoj.
+create-backup-screen-1-flair = Rekomenditaj
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Pli da informo</a>
+create-backup-screen-1-sync-label = Speguli per { -brand-product-name }
+create-backup-screen-1-sync-body = Fari sekurkopion de ĉiuj aparatoj kun seancoj malfermitaj
+create-backup-screen-1-backup-label = Fari sekurkopion en la komputilo
+create-backup-screen-1-backup-body = Fari sekurkopion en via aparato aŭ en OneDrive
+create-backup-select-tile-button-label = Elekti
+create-backup-back-button-label = Reen
+create-backup-show-fewer =
+    .label = Montri malpli da ĉi tiaj mesaĝoj
+create-backup-screen-2-title = Elekti la datumojn de { -brand-product-name } kiuj estos en la sekurkopio
+create-backup-screen-2-subtitle = Tio ĉi prenos nur minuton. Viaj datumoj estos sekurkopiitaj fojon ĉiutage.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Facila agordado
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Legosignoj, historio, agordoj kaj pli
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Tio ĉi inkluzivas nek pasvortojn nek pagmetodojn
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Neĉifrita
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Ĉiuj datumoj
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Tio ĉi inkluzivas kaj pasvortojn kaj pagmetodojn
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Ĉifrita de pasvorto
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Kie vi volas konservi la sekurkopion?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Krei pasvorton por ĉifri sekurkopion
+create-backup-screen-3-subtitle = Tio ĉi estas postulata por ĉifri viajn datumojn. Gardu ĝin en loko, kiun vi memoros.
+fx-backup-opt-in-header = Elekti lokon por la dosiero
+fx-backup-opt-in-filepath-label = Elektu lokon, kiun vi planas porti al alia aparato, ekzemple OneDrive.
+fx-backup-opt-in-create-password-label = Tajpu pasvorton
+fx-backup-opt-in-confirm-btn-label = Daŭrigi
+fx-backup-opt-in-cancel-btn-label = Reen
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Via sekurkopio estas programita
+fx-backup-confirmation-screen-close-button = Fermi
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Ĉiuj retumaj datumoj inkluzivitaj
+fx-backup-confirmation-screen-all-data-item-text-2 = Konservi en via aparato
+fx-backup-confirmation-screen-all-data-item-text-3 = Ĉifrita kaj protektita de pasvorto
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Legosignoj, historio, agordoj kaj aliaj datumoj inkluzivitaj
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Konservi en via aparato
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Pasvortoj kaj pagmetodoj ne inkluzivitaj
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Iru al <a data-l10n-name="settings">Agordoj</a> por inkluzivi delikatajn datumojn.
+fx-backup-confirmation-screen-item-subtext-1 = Via sekurkopio komenciĝos post kelkaj minutoj kaj estos rulita fojon ĉiutage. Vi povas sekvi la progreson en <a data-l10n-name="settings">Agordoj</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } serĉos vian sekurkopion se vi bezonas reinstali ĝin.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Reakiri el sekurkopio
+restore-from-backup-title = Rehavu ni { -brand-short-name } tiel kiel vi ĝin ŝatas
+restore-from-backup-subtitle = Reakiru ĉiujn viajn legosignojn, historion kaj aliajn datumojn por daŭrigi vian retumon.
+restore-from-backup-secondary-button = Ne reakiri
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Ni revenis! Viaj datumoj de { -brand-short-name } estis reakiritaj.
+restored-from-backup-success-with-checklist-subtitle = Ĉu vi volas gardi vian plej ŝatatan retumilon, kiu ĉefe zorgas pri via privateco, je unu alklako?
+restored-from-backup-success-no-checklist-subtitle = Vi povas ŝalti sekurkopiojn por tiu ĉi aparato en <a data-l10n-name="settings">Agordoj</a>.
+restored-from-backup-success-with-checklist-primary-button = Konservi kaj daŭrigi
+restored-from-backup-success-with-checklist-secondary-button = Pretersalti tiun ĉi paŝon
+restored-from-backup-success-no-checklist-primary-button = Daŭrigi
+restored-from-backup-error-title = Hmm, estis problemo kun via sekurkopia dosiero.
+restored-from-backup-error-subtitle = Se vi havas alian sekurkopian dosieron de { -brand-short-name }, klopodu reakiri el tiu. <a data-l10n-name="restore-problems">Ĉu plu estas problemoj?</a>
+restored-from-backup-error-primary-button = Fermi
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Personecigu vian sperton en { -brand-short-name }
+onboarding-personalization-subtitle = Respondu kelkajn demandojn kaj ni rekomendos trajtojn kaj etendaĵojn por plibonigi vian uzon de { -brand-short-name }.
+onboarding-personalization-use-case-title = Por kio vi uzos { -brand-short-name }?
+onboarding-personalization-use-case-personal-option = Persona
+onboarding-personalization-use-case-school-option = Lernejo
+onboarding-personalization-use-case-work-option = Laboro
+onboarding-personalization-motivation-title = Kiuj trajtoj de { -brand-short-name } estas plej gravaj por vi?
+onboarding-personalization-motivation-privacy-option = Privateco kaj sekureco
+onboarding-personalization-motivation-productivity-option = Produktemo
+onboarding-personalization-motivation-other-option = Aliaj

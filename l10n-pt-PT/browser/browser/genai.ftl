@@ -5,11 +5,6 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = Adiciona o chatbot da sua escolha à barra lateral, para um acesso rápido enquanto navega. <a data-l10n-name="connect">Partilhar Feedback</a>
-genai-settings-chat-choose = Escolher um chatbot
-genai-settings-chat-choose-one-menuitem =
-    .label = Escolher um
-genai-settings-chat-links = Quando escolhe um chatbot, concorda com os termos de utilização e política de privacidade do fornecedor.
 genai-settings-chat-chatgpt-links = Ao optar pelo ChatGPT, concorda com os <a data-l10n-name="link1">Termos de Utilização</a> e a <a data-l10n-name="link2">Política de Privacidade</a> da OpenIA.
 genai-settings-chat-claude-links = Ao optar pelo Claude da Anthropic, aceita os <a data-l10n-name="link1">Termos de Serviço para Consumidores</a> da Anthropic, a <a data-l10n-name="link2">Política de Utilização</a> e a <a data-l10n-name="link3">Política de Privacidade</a>.
 genai-settings-chat-copilot-links = Ao optar pelo Copilot, aceita os <a data-l10n-name="link1">Termos de Uso das Experiências IA do Copilot</a> e a <a data-l10n-name="link2">Política de Privacidade da Microsoft</a>.
@@ -17,9 +12,6 @@ genai-settings-chat-gemini-links = Ao optar pelo Google Gemini, está a aceitar 
 genai-settings-chat-huggingchat-links = Ao optar pelo HuggingChat, está a aceitar as <a data-l10n-name="link1">Informações de Privacidade do HuggingChat</a> e a <a data-l10n-name="link2">Política de Privacidade do Hugging Face</a>.
 genai-settings-chat-lechat-links = Ao optar pelo Le Chat Mistral, está a aceitar os <a data-l10n-name="link1">Termos de Serviço</a> e a <a data-l10n-name="link2">Política de Privacidade</a> da Mistral IA.
 genai-settings-chat-localhost-links = Traga o seu próprio chatbot local privado, tal como <a data-l10n-name="link1">llamafile</a> do grupo de inovação do { -vendor-short-name }.
-genai-settings-chat-shortcuts =
-    .description = Mostra um atalho para uma mensagem quando seleciona texto. O { -brand-short-name } envia o texto, título da página e pedido para o chatbot.
-    .label = Mostra mensagens ao  selecionar o texto
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -59,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = Pedir ao { $provider }
+genai-menu-open-generic =
+    .label = Abrir o Chatbot de IA
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Abrir { $provider }
+genai-menu-remove-generic =
+    .label = Remover chatbot de IA
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Remover { $provider }
+genai-menu-remove-sidebar =
+    .label = Remover da barra lateral
+genai-menu-new-badge = Novo
+genai-menu-summarize-page = Resumir página
 genai-input-ask-generic =
     .placeholder = Perguntar ao chatbot de IA…
 # $provider (string) - name of the provider
@@ -85,6 +91,18 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = Ocultar atalho do chatbot
+genai-menu-choose-chatbot =
+    .label = Escolher um Chatbot de IA
+genai-menu-ask-generic-2 =
+    .label = Perguntar ao Chatbot de IA
+    .accesskey = z
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = Perguntar ao { $provider }
+    .accesskey = z
+genai-menu-no-provider-2 =
+    .label = Perguntar a um Chatbot de IA
+    .accesskey = z
 
 ## Chatbot header
 
@@ -97,8 +115,6 @@ genai-header-close-button =
     .title = Fechar
 genai-provider-view-details =
     .label = Ver detalhes do chatbot
-genai-provider-about-chatbots =
-    .label = Sobre estes chatbots
 genai-options-reload-generic =
     .label = Recarregar chatbot de IA
 # $provider (string) - name of the provider
@@ -111,11 +127,23 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = Sobre os chatbots de IA no { -brand-short-name }
 
+## Chatbot message
+
+genai-page-warning =
+    .message = Como a página é longa, este é um resumo parcial.
+
+## Chatbot footer
+
+genai-page-button-summarize = Resumir página
+
 ## Chatbot onboarding
 
 genai-onboarding-header = Faça resumos, brainstorming e muito mais, enquanto navega
+genai-onboarding-choose-header = Escolha um chatbot de IA para utilizar na barra lateral do { -brand-short-name }
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = Escolha um chatbot de IA para utilizar na barra lateral do { -brand-short-name }. Iremos mostrar detalhes sobre cada chatbot quando o selecionar. Mude a qualquer momento. <a data-l10n-name="learn-more">Saber mais</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Mude a qualquer altura. Para ajudar na escolha, <a data-l10n-name="learn-more">saiba mais sobre cada chatbot</a>.
 genai-onboarding-primary = Continuar
 genai-onboarding-secondary = Fechar
 genai-onboarding-claude-tooltip =
@@ -139,6 +167,18 @@ genai-onboarding-lechat-learn = Saber mais sobre o Le Chat
 genai-onboarding-select-header = Selecione o texto para ver sugestões
 genai-onboarding-select-description = Quando seleciona texto, iremos sugerir mensagens que pode enviar para o chatbot. Pode também escrever as suas próprias mensagens.
 genai-onboarding-select-primary = Começar a conversar
+genai-chatbot-contextual-title = Utilize um robô de conversação de IA sem mudar de separadores
+genai-chatbot-contextual-subtitle = Converse e navegue, lado a lado, quando adiciona um chatbot com IA à barra lateral do { -brand-short-name }.
+genai-chatbot-contextual-button = Escolha um chatbot
+genai-chatbot-summarize-title = Novo! Resumir páginas com um clique
+genai-chatbot-summarize-button = Resumir página
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = Clique com o botão direito no seu chatbot de IA na barra lateral e escolha “Resumir página”.
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = Clique com o botão direito no botão de brilhos na barra lateral e escolha “Resumir página”. Na primeira vez, também irá escolher um chatbot de IA.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = Abra o seu chatbot de IA na barra lateral e escolha “Resumir página” no final.
+genai-chatbot-summarize-footer-generic-subtitle = Adicione um chatbot de IA à barra lateral do { -brand-short-name } para resumir rapidamente as páginas.
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -160,3 +200,43 @@ genai-onboarding-huggingchat-switch = Alternar entre um conjunto diverso de mode
 genai-onboarding-huggingchat-price-2 = Gratuito; é necessária uma conta após um determinado número de pedidos
 genai-onboarding-lechat-generate = Gerar texto e código
 genai-onboarding-lechat-price = Gratuito; é necessária uma conta
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Continuar
+genai-model-optin-optout =
+    .label = Cancelar
+genai-model-optin-cancel =
+    .label = Cancelar
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] { $range } minuto de tempo de leitura
+       *[other] { $range } minutos de tempo de leitura
+    }
+# Error message displayed when a link preview cannot be generated
+link-preview-error-message = Não podemos pré-visualizar esta ligação
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = Visitar ligação
+# Error message when we can't generate key points (summary highlights or main ideas of page content) for a page
+link-preview-generation-error-missing-data = Não conseguimos gerar pontos-chave para esta página da Internet.
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Algo correu mal.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Tentar novamente
+# Button that opens the Link Preview settings
+link-preview-settings-button =
+    .title = Definições de pré-visualização de ligações
+link-preview-settings-enable =
+    .label = Ativar pré-visualizações de ligações
+    .description = Veja o título, descrição e mais informações da página quando utiliza um atalho ou utiliza menu de contexto numa ligação.

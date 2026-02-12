@@ -408,8 +408,7 @@ StyleSheetInfo::StyleSheetInfo(StyleSheetInfo& aCopy, StyleSheet* aPrimarySheet)
       // We don't rebuild the child because we're making a copy without
       // children.
       mSourceMapURL(aCopy.mSourceMapURL),
-      mContents(Servo_StyleSheet_Clone(aCopy.mContents.get(), aPrimarySheet)
-                    .Consume()),
+      mContents(Servo_StyleSheet_Clone(aCopy.mContents.get()).Consume()),
       mURLData(aCopy.mURLData)
 #ifdef DEBUG
       ,
@@ -733,7 +732,7 @@ already_AddRefed<dom::Promise> StyleSheet::Replace(const nsACString& aText,
       css::Loader::UseSystemPrincipal::No, css::StylePreloadKind::None,
       /* aPreloadEncoding */ nullptr, /* aObserver */ nullptr,
       mConstructorDocument->NodePrincipal(), GetReferrerInfo(),
-      /* aNonce */ u""_ns, FetchPriority::Auto);
+      /* aNonce */ u""_ns, FetchPriority::Auto, nullptr);
 
   // In parallel
   // 5.1 Parse aText into rules.
@@ -778,14 +777,14 @@ void StyleSheet::ReplaceSync(const nsACString& aText, ErrorResult& aRv) {
           loader, this,
           /* load_data = */ nullptr, &aText, mParsingMode, URLData(),
           mConstructorDocument->GetCompatibilityMode(),
-          /* reusable_sheets = */ nullptr,
-          mConstructorDocument->GetStyleUseCounters(),
-          StyleAllowImportRules::No, StyleSanitizationKind::None,
+          /* reusable_sheets = */ nullptr, StyleAllowImportRules::No,
+          StyleSanitizationKind::None,
           /* sanitized_output = */ nullptr)
           .Consume();
 
   // 5. Set sheet's rules to the new rules.
   Inner().mContents = std::move(rawContent);
+  PropagateUseCountersTo(mConstructorDocument);
   FixUpRuleListAfterContentsChangeIfNeeded();
   RuleChanged(nullptr, StyleRuleChangeKind::Generic);
 }
@@ -827,11 +826,11 @@ void StyleSheet::RuleRemoved(css::Rule& aRule) {
   NOTIFY(RuleRemoved, (*this, aRule));
 }
 
-void StyleSheet::RuleChanged(css::Rule* aRule, StyleRuleChangeKind aKind) {
+void StyleSheet::RuleChanged(css::Rule* aRule, const StyleRuleChange& aChange) {
   MOZ_ASSERT(!aRule || HasUniqueInner(),
              "Shouldn't have mutated a shared sheet");
   SetModifiedRules();
-  NOTIFY(RuleChanged, (*this, aRule, aKind));
+  NOTIFY(RuleChanged, (*this, aRule, aChange));
 }
 
 // nsICSSLoaderObserver implementation
@@ -954,6 +953,29 @@ void StyleSheet::SubjectSubsumesInnerPrincipal(nsIPrincipal& aSubjectPrincipal,
   WillDirty();
 
   info.mPrincipal = &aSubjectPrincipal;
+}
+
+bool StyleSheet::IsDirectlyAssociatedTo(
+    dom::DocumentOrShadowRoot& aTree) const {
+  if (mParentSheet) {
+    // @import is never directly associated to a tree.
+    MOZ_ASSERT(aTree.StyleOrderIndexOfSheet(*this) ==
+               nsTArray<RefPtr<StyleSheet>>::NoIndex);
+    return false;
+  }
+  bool associated = false;
+  if (IsConstructed()) {
+    // Idea is that the adopted stylesheet list is likely to be smaller than
+    // list of adopters of a single sheet, but we could reverse the check if
+    // needed.
+    associated = aTree.AdoptedStyleSheets().Contains(this);
+    MOZ_ASSERT(associated == mAdopters.Contains(&aTree));
+  } else {
+    associated = GetAssociatedDocumentOrShadowRoot() == &aTree;
+  }
+  MOZ_ASSERT(associated == (aTree.StyleOrderIndexOfSheet(*this) !=
+                            nsTArray<RefPtr<StyleSheet>>::NoIndex));
+  return associated;
 }
 
 bool StyleSheet::AreRulesAvailable(nsIPrincipal& aSubjectPrincipal,
@@ -1139,21 +1161,38 @@ void StyleSheet::FixUpAfterInnerClone() {
 
   RefPtr<StyleLockedCssRules> rules =
       Servo_StyleSheet_GetRules(Inner().mContents.get()).Consume();
-  uint32_t index = 0;
-  while (true) {
-    uint32_t line, column;  // Actually unused.
-    RefPtr<StyleLockedImportRule> import =
-        Servo_CssRules_GetImportRuleAt(rules, index, &line, &column).Consume();
-    if (!import) {
-      // Note that only @charset rules come before @import rules, and @charset
-      // rules are parsed but skipped, so we can stop iterating as soon as we
-      // find something that isn't an @import rule.
+  size_t len = Servo_CssRules_GetRuleCount(rules.get());
+  bool reachedBody = false;
+  for (size_t i = 0; i < len; ++i) {
+    switch (Servo_CssRules_GetRuleTypeAt(rules, i)) {
+      case StyleCssRuleType::Import: {
+        MOZ_ASSERT(!reachedBody);
+        uint32_t line, column;  // Actually unused.
+        RefPtr<StyleLockedImportRule> import =
+            Servo_CssRules_GetImportRuleAt(rules, i, &line, &column).Consume();
+        MOZ_ASSERT(import);
+        if (auto* sheet =
+                const_cast<StyleSheet*>(Servo_ImportRule_GetSheet(import))) {
+          AppendStyleSheetSilently(*sheet);
+        }
+        break;
+      }
+      case StyleCssRuleType::LayerStatement:
+        break;
+      default:
+        // Note that only @charset and @layer statements can come before
+        // @import. @charset rules are parsed but skipped, so we can stop
+        // iterating as soon as we find the stylesheet body.
+        reachedBody = true;
+        break;
+    }
+#ifndef DEBUG
+    // Keep iterating in debug builds so that we can assert that we really have
+    // no more @import rules.
+    if (reachedBody) {
       break;
     }
-    auto* sheet = const_cast<StyleSheet*>(Servo_ImportRule_GetSheet(import));
-    MOZ_ASSERT(sheet);
-    AppendStyleSheetSilently(*sheet);
-    index++;
+#endif
   }
 }
 
@@ -1186,43 +1225,60 @@ RefPtr<StyleSheetParsePromise> StyleSheet::ParseSheet(
                               ? StyleAllowImportRules::No
                               : StyleAllowImportRules::Yes;
   URLExtraData* urlData = URLData();
-  const bool shouldRecordCounters =
-      aLoader.GetDocument() && aLoader.GetDocument()->GetStyleUseCounters() &&
-      !urlData->ChromeRulesEnabled();
-
   if (aLoadData->get()->mRecordErrors) {
     MOZ_ASSERT(NS_IsMainThread());
-    UniquePtr<StyleUseCounters> counters;
-    if (shouldRecordCounters) {
-      counters.reset(Servo_UseCounters_Create());
-    }
     RefPtr<StyleStylesheetContents> contents =
         Servo_StyleSheet_FromUTF8Bytes(
             &aLoader, this, aLoadData->get(), &aBytes, mParsingMode, urlData,
             aLoadData->get()->mCompatMode,
-            /* reusable_sheets = */ nullptr, counters.get(), allowImportRules,
+            /* reusable_sheets = */ nullptr, allowImportRules,
             StyleSanitizationKind::None,
             /* sanitized_output = */ nullptr)
             .Consume();
-    FinishAsyncParse(contents.forget(), std::move(counters));
+    FinishAsyncParse(contents.forget());
   } else {
     Servo_StyleSheet_FromUTF8BytesAsync(
         aLoadData, urlData, &aBytes, mParsingMode,
-        aLoadData->get()->mCompatMode, shouldRecordCounters, allowImportRules);
+        aLoadData->get()->mCompatMode, allowImportRules);
   }
 
   return p;
 }
 
 void StyleSheet::FinishAsyncParse(
-    already_AddRefed<StyleStylesheetContents> aSheetContents,
-    UniquePtr<StyleUseCounters> aUseCounters) {
+    already_AddRefed<StyleStylesheetContents> aSheetContents) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!mParsePromise.IsEmpty());
   Inner().mContents = aSheetContents;
-  Inner().mUseCounters = std::move(aUseCounters);
   FixUpRuleListAfterContentsChangeIfNeeded();
   UnblockParsePromise();
+}
+
+StyleLikelyBaseUriDependency StyleSheet::OriginalContentsBaseUriDependency()
+    const {
+  const auto* counters = UseCounters();
+  if (Servo_IsCustomUseCounterRecorded(
+          counters, StyleCustomUseCounter::MaybeHasFullBaseUriDependency)) {
+    return StyleLikelyBaseUriDependency::Full;
+  }
+  if (Servo_IsCustomUseCounterRecorded(
+          counters, StyleCustomUseCounter::MaybeHasPathBaseUriDependency)) {
+    return StyleLikelyBaseUriDependency::Path;
+  }
+  return StyleLikelyBaseUriDependency::No;
+}
+
+const StyleUseCounters* StyleSheet::UseCounters() const {
+  return Servo_StyleSheet_UseCounters(RawContents());
+}
+
+void StyleSheet::PropagateUseCountersTo(Document* aDoc) const {
+  if (!aDoc || URLData()->ChromeRulesEnabled()) {
+    return;
+  }
+  if (auto* counters = aDoc->GetStyleUseCounters()) {
+    Servo_UseCounters_Merge(counters, UseCounters());
+  }
 }
 
 void StyleSheet::ParseSheetSync(
@@ -1242,21 +1298,17 @@ void StyleSheet::ParseSheetSync(
   SetURLExtraData();
 
   URLExtraData* urlData = URLData();
-  const StyleUseCounters* useCounters =
-      aLoader && aLoader->GetDocument() && !urlData->ChromeRulesEnabled()
-          ? aLoader->GetDocument()->GetStyleUseCounters()
-          : nullptr;
-
   auto allowImportRules = SelfOrAncestorIsConstructed()
                               ? StyleAllowImportRules::No
                               : StyleAllowImportRules::Yes;
 
-  Inner().mContents = Servo_StyleSheet_FromUTF8Bytes(
-                          aLoader, this, aLoadData, &aBytes, mParsingMode,
-                          urlData, compatMode, aReusableSheets, useCounters,
-                          allowImportRules, StyleSanitizationKind::None,
-                          /* sanitized_output = */ nullptr)
-                          .Consume();
+  Inner().mContents =
+      Servo_StyleSheet_FromUTF8Bytes(
+          aLoader, this, aLoadData, &aBytes, mParsingMode, urlData, compatMode,
+          aReusableSheets, allowImportRules, StyleSanitizationKind::None,
+          /* sanitized_output = */ nullptr)
+          .Consume();
+  PropagateUseCountersTo(aLoader ? aLoader->GetDocument() : nullptr);
 }
 
 void StyleSheet::ReparseSheet(const nsACString& aInput, ErrorResult& aRv) {

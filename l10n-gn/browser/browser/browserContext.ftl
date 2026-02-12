@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Eñongatu juajuha { -pocket-brand-name }-pe
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Maranduveve rape mbohasarã
@@ -162,17 +160,15 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Emonguatia juajuha
     .accesskey = L
+main-context-menu-preview-link =
+    .label = Juajuha jehecha ypy
+    .accesskey = r
 # "Copy Clean Link" means that Firefox will remove things from the link you
 # copied, like items that identify you for advertising purposes, and other items
 # sites add into URLs to help them deliver a certain browsing experience.
 main-context-menu-copy-clean-link =
     .label = Emonguatia juajuha ipotĩva
     .accesskey = u
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Emonguatia juajuha tenda rapykueho’ỹre
-    .accesskey = y
 
 ## Media (video/audio) controls
 ##
@@ -274,6 +270,11 @@ main-context-menu-image-info =
 main-context-menu-image-desc =
     .label = Moesakãha jehecha
     .accesskey = D
+# Variables
+#   $engine (String) - Name of the search engine that will perform the search.
+main-context-menu-visual-search-2 =
+    .label = Eheka ta’ãnga { $engine } ndive
+    .accesskey = e
 main-context-menu-video-save-as =
     .label = Ta’ãngamýi ñongatu pyahu…
     .accesskey = v
@@ -323,6 +324,9 @@ main-context-menu-manage-passwords =
 main-context-menu-keyword =
     .label = Jehero mbojoapy ko jehekápe g̃uarã…
     .accesskey = K
+main-context-menu-add-engine =
+    .label = Embojuaju hekaha mongu’eha
+    .accesskey = S
 main-context-menu-link-send-to-device =
     .label = Emondo Juajuha Mba’e’okápe
     .accesskey = n
@@ -393,3 +397,5 @@ main-context-menu-open-link-in-container-tab =
 main-context-menu-reveal-password =
     .label = Ñe’ẽñemi jehechauka
     .accesskey = v
+# The label of a badge shown in menu items to call out new features.
+main-context-menu-new-feature-badge = Pyahu

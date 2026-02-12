@@ -3,18 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't re-use these strings outside of the menubar.
-
-
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't reuse these strings outside of the menubar.
-
-
 ## Application Menu (macOS only)
 
 menu-application-preferences =
@@ -147,8 +135,6 @@ menu-view-history-button =
     .label = Povijest
 menu-view-synced-tabs-sidebar =
     .label = Sinkronizirane kartice
-menu-view-megalist-sidebar =
-    .label = Lozinke
 menu-view-full-zoom =
     .label = Zumiraj
     .accesskey = Z
@@ -264,6 +250,10 @@ menu-profiles-manage-profiles =
     .label = Upravljaj profilima
 menu-profiles-new-profile =
     .label = Novi profil
+# Variables:
+#  $profileName (String): the name of the users profile
+menu-profiles-current =
+    .label = { $profileName } (trenutačno)
 
 ## Tools Menu
 
@@ -273,6 +263,9 @@ menu-tools =
 menu-tools-downloads =
     .label = Preuzimanja
     .accesskey = r
+menu-tools-extensions-and-themes =
+    .label = Proširenja i teme
+    .accesskey = P
 menu-tools-addons-and-themes =
     .label = Dodaci i teme
     .accesskey = a
@@ -341,7 +334,7 @@ menu-help-more-troubleshooting-info =
 menu-help-report-site-issue =
     .label = Prijavi problem sa stranicom …
 menu-help-share-ideas =
-    .label = Dijeli ideje i povratne informcije …
+    .label = Dijeli ideje i povratne informacije …
     .accesskey = i
 menu-help-enter-troubleshoot-mode2 =
     .label = Modus za rješavanje problema …
@@ -355,7 +348,7 @@ menu-help-switch-device =
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =
-    .label = Prijavi obmanjujuću stranicu…
+    .label = Prijavi obmanjujuću stranicu …
     .accesskey = b
 menu-help-not-deceptive =
     .label = Ovo nije obmanjujuća stranica…

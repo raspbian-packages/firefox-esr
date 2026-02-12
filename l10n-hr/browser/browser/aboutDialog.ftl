@@ -28,14 +28,14 @@ update-adminDisabled = Tvoj administrator sustava je deaktivirao aktualiziranja
 update-policy-disabled = Tvoja organizacija je deaktivirala mogućnost aktuliziranja
 update-noUpdatesFound = Koristiš najnoviji { -brand-short-name }
 aboutdialog-update-checking-failed = Provjera za dopunama nije uspjela.
-update-otherInstanceHandlingUpdates = { -brand-short-name } nadograđuje jedna druga instanca
+update-otherInstanceHandlingUpdates = Jedna druga instanca aktualizira { -brand-short-name }
 
 ## Variables:
 ##   $displayUrl (String): URL to page with download instructions. Example: www.mozilla.org/firefox/nightly/
 
 aboutdialog-update-manual-with-link = Nove verzije su dostupne na <label data-l10n-name="manual-link">{ $displayUrl }</label>
 settings-update-manual-with-link = Nove verzije su dostupne na <a data-l10n-name="manual-link">{ $displayUrl }</a>
-update-unsupported = Na ovom sustavu više ne možeš nadograđivati. <label data-l10n-name="unsupported-link">Saznaj više</label>
+update-unsupported = Na ovom sustavu više ne možeš aktualizirati verziju. <label data-l10n-name="unsupported-link">Saznaj više</label>
 update-restarting = Ponovno pokretanje…
 update-internal-error2 = Neuspjelo traženje novih verzija zbog interne greške. Nove verzije su dostupne na <label data-l10n-name="manual-link">{ $displayUrl }</label>
 
@@ -51,6 +51,8 @@ community-exp = <label data-l10n-name="community-exp-mozillaLink">{ -vendor-shor
 community-2 = { -brand-short-name } je dizajnirala <label data-l10n-name="community-mozillaLink">{ -vendor-short-name }</label>, <label data-l10n-name="community-creditsLink">globalna zajednica</label> koja nastoji zadržati internet otvorenim, javnim i dostupnim svima.
 helpus = Želiš pomoći? <label data-l10n-name="helpus-donateLink">Doniraj</label> ili <label data-l10n-name="helpus-getInvolvedLink">uključi se u rad!</label>
 bottomLinks-license = Informacije o licenciranju
+bottom-links-terms = Uvjeti korištenja
+bottom-links-privacy = Napomena o privatnosti
 bottomLinks-rights = Korisnička prava
 bottomLinks-privacy = Politika privatnosti
 # Example of resulting string: 66.0.1 (64-bit)

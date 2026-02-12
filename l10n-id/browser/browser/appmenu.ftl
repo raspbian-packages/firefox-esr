@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Unduhan
 appmenuitem-passwords =
     .label = Kata Sandi
+appmenuitem-extensions-and-themes =
+    .label = Ekstensi dan tema
+appmenuitem-extensions =
+    .label = Ekstensi
 appmenuitem-addons-and-themes =
     .label = Pengaya dan Tema
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Buka panel profiler
+    .tooltiptext = Buka panel profiler
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Prasetel untuk menyelidiki bug audio dan video di { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Media
+profiler-popup-presets-ml-description = Prasetel untuk menyelidiki bug pembelajaran mesin di { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Pembelajaran Mesin
 profiler-popup-presets-networking-description = Prasetel untuk menyelidiki bug jaringan di { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Jaringan
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Luncurkan dasbor masker surel
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Lindungi aktivitas daring Anda
 appmenu-services-header = Layanan saya
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Coba alat perlindungan lain dari Mozilla:
 appmenu-other-protection-header = Coba alat perlindungan lain dari { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Profil
 appmenu-other-profiles = Profil lainnya
 appmenu-manage-profiles =
     .label = Kelola profil
+appmenu-copy-profile =
+    .label = Salin profil ini
 appmenu-create-profile =
     .label = Profil baru
 appmenu-edit-profile =
     .aria-label = Sunting profil
+appmenu-profiles-2 =
+    .label = Profil

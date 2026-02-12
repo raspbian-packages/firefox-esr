@@ -25,6 +25,8 @@ return-to-amo-subtitle = Wjelicnje, maśo { -brand-short-name }
 return-to-amo-addon-title = Wobstarajśo se něnto <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Rozšyrjenje pśidaś
 return-to-amo-add-theme-label = Drastwu pśidaś
+return-to-amo-theme-install-complete-label = Drastwa jo instalěrowana
+return-to-amo-extension-install-complete-label = Rozšyrjenje jo instalěrowane
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Z { $previous } import�
 mr1-onboarding-theme-header = Pśiswójśo se jen
 mr1-onboarding-theme-subtitle = Personalizěrujśo { -brand-short-name } z drastwu.
 mr1-onboarding-theme-secondary-button-label = Nic něnto
-newtab-wallpaper-onboarding-title = Wopytajśo chrapku barwy
-newtab-wallpaper-onboarding-subtitle = Wubjeŕśo slězynowy wobraz, aby swójomu nowemu rejtarikoju nowy naglěd dał.
-newtab-wallpaper-onboarding-primary-button-label = Slězynowy wobraz nastajiś
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systemowa drastwa
 mr1-onboarding-theme-label-light = Swětły
@@ -277,7 +276,7 @@ mr2022-onboarding-colorway-description-innovator = <b>Sćo inowator.</b> Wiźiś
 mr2022-onboarding-mobile-download-title = Skócćo wót laptopa do telefona a zasej slědk
 mr2022-onboarding-mobile-download-subtitle = Wobstarajśo se rejtariki z jadnogo rěda a cyńśo tam dalej, gaž sćo pśestał na drugem rěźe. Mimo togo móžośo swóje cytańske znamjenja a gronidła synchronizěrowaś, źožkuli { -brand-product-name } wužywaśo.
 mr2022-onboarding-mobile-download-cta-text = Scannujśo QR-kod, aby { -brand-product-name } za swój mobilny rěd dostał abo <a data-l10n-name="download-label">sćelśo se ześěgnjeński wótkaz.</a>
-mr2022-onboarding-no-mobile-download-cta-text = Skannujśo QR-kod, aby se { -brand-product-name } za mobilny rěd wobstarał.
+mr2022-onboarding-no-mobile-download-cta-text = Scannujśo QR-kod, aby se { -brand-product-name } za mobilny rěd wobstarał.
 
 ## MR2022 Upgrade Dialog screens
 ## Pin private window screen shown only for users who don't have Firefox private pinned
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Registrěrujśo se abo pśizjawśo se pla swójog
 
 tab-groups-onboarding-feature-callout-title = Wopytajśo kupki rejtarikow za mjenjej njepórěda a wěcej fokusa
 tab-groups-onboarding-feature-callout-subtitle = Organizěrujśo se, śěgniśo jaden rejtarik górjejce na drugi, aby wašu prědnu kupku napórał.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Namakajśo kuždy cas swóje kupki rejtarikow w meniju Wšykne rejtariki nalicyś.
+tab-groups-onboarding-create-group-title-2 = Namakajśo swóje kupki rejtarikow how kuždy cas.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Pytajśo za swójimi kupkami, aby je w adresowem pólu namakał.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Gaž kupku rejtarikow zacynjaśo, wócyńśo ju zasej kuždy cas z menija Wšykne rejtariki nalicyś.
+tab-groups-onboarding-saved-groups-title-2 = Gaž kupku rejtarikow zacynjaśo, móžośo ju how kuždy cas zasej wócyniś.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Pytajśo za swójimi zacynjonymi kupkami, aby je w adresowem pólu namakał.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Wócyńśo zasej kuždy cas swóje kupki rejtarikow z menija Wšykne rejtariki nalicyś.
+tab-groups-onboarding-session-restore-title = Wócyńśo zasej swóje kupki rejtarikow how kuždy cas.
+tab-groups-onboarding-dismiss = W pórěźe
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,107 @@ multi-profile-spotlight-cta = Profil załožyś
 multi-profile-callout-title = Załožćo rozdźělne profile za źěło a wjasele
 multi-profile-callout-subtitle = Profile wam zmóžnjaju, waše pśeglědowańske informacije ako pytańsku historiju a gronidła dopołnje separatnje wobchowaś.
 multi-profile-callout-cta = Profil załožyś
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Ześěgniśo, synchronizěrujśo, start!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Scannujśo QR-kod, aby { -brand-product-name } za mobilne rědy ześěgnuł. Gaž sćo jen instalěrował, wubjeŕśo „Z mobilnym rědom synchronizěrowaś“, aby ducy pśistup k swójim gronidłam, cytańskim znamjenjam a wěcej dostał.
+dismiss-button-label = Zachyśiś
+sync-to-mobile-button-label = Z mobilnym rědom synchronizěrowaś
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-kod za ześěgnjenje { -brand-product-name } za mobilne rědy
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Aktualizěrujośo na Windows 11?
+    Dajśo nam waše daty { -brand-product-name } zawěsćiś.
+create-backup-screen-1-subtitle = Šćitajśo awtomatiski waše gronidła, cytańske znamjenja a wěcej za 1 minutu abo 2 minuśe.
+create-backup-screen-1-flair = Dopórucony
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Dalšne informacije</a>
+create-backup-screen-1-sync-label = Z { -brand-product-name } synchronizěrowaś
+create-backup-screen-1-sync-body = Zawěsćujo wšykne pśizjawjone rědy
+create-backup-screen-1-backup-label = Na PC zawěsćiś
+create-backup-screen-1-backup-body = Składujo na wašom rěźe abo OneDrive
+create-backup-select-tile-button-label = Wubraś
+create-backup-back-button-label = Slědk
+create-backup-show-fewer =
+    .label = Mjenjej wót nich pokazaś
+create-backup-screen-2-title = Wubjeŕśo daty { -brand-product-name }, kótarež se maju zawěsćiś
+create-backup-screen-2-subtitle = Trajo jano minutu. Waše daty se jaden raz na źeń zawěsćuju.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Lažka konfiguracija
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Cytańske znamjenja, historija, nastajenja a wěcej
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Njewopśimujo gronidła a płaśenja
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Njekoděrowany
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Wšykne daty
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Wopśimujo gronidła a płaśenja
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Z gronidłom skoděrowany
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Źo cośo swójo zawěsćenje składowaś?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Gronidło za zawěsćeńsku dataju napóraś
+create-backup-screen-3-subtitle = Trjebne za koděrowanje wašych datow. Składujśo je na městnje, na kótarež se dopominaśo.
+fx-backup-opt-in-header = Městno dataje wubraś
+fx-backup-opt-in-filepath-label = Wubjeŕśo městno, kótarež cośo do nowego rěda pśenosowaś, na pśikład OneDrive.
+fx-backup-opt-in-create-password-label = Gronidło zapódaś
+fx-backup-opt-in-confirm-btn-label = Dalej
+fx-backup-opt-in-cancel-btn-label = Slědk
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Wašo zawěsćenje jo planowane
+fx-backup-confirmation-screen-close-button = Zacyniś
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Wšykne pśeglědowańske daty wopśimjone
+fx-backup-confirmation-screen-all-data-item-text-2 = Na wašom rěźe skłaźone
+fx-backup-confirmation-screen-all-data-item-text-3 = Skoděrowane a pśez gronidło šćitane
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Cytańske znamjenja, historija, nastajenja a druge daty wopśimjone
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Na wašom rěźe skłaźone
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Gronidła a płaśenja njewopśimjone
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Źiśo k <a data-l10n-name="settings">nastajenjam</a>, aby sensibelne daty zapśimjeł.
+fx-backup-confirmation-screen-item-subtext-1 = Wašo zawěsćenje buźo za mało minutow zachopinaś a wuwjedujo se jaden raz na źeń. Móžośo procesoju w <a data-l10n-name="settings">nastajenjach</a> slědowaś.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } buźo wašo zawěsćenje pytaś, jolic musyśo znowego instalěrowaś.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Ze zawěsćenja wótnowiś
+restore-from-backup-title = Dostańmy { -brand-short-name } slědk, ako se wam spódoba
+restore-from-backup-subtitle = Wótnowśo wšykne waše cytańske znamjenja, historiju a druge daty, aby se k pśeglědowanjeju wrośił.
+restore-from-backup-secondary-button = Njewótnowiś
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Smy slědk! Waše daty { -brand-short-name } su se wótnowili.
+restored-from-backup-success-with-checklist-subtitle = Cośo swój nejlubšy wobglědowak z fokusom na priwatnosć jano jaden kliknjenje pšec wobchowaś?
+restored-from-backup-success-no-checklist-subtitle = Móžośo zawěsćenje za toś ten rěd w <a data-l10n-name="settings">nastajenjach</a> zmóžniś.
+restored-from-backup-success-with-checklist-primary-button = Składowaś a pókšacowaś
+restored-from-backup-success-with-checklist-secondary-button = Toś ten kšac pśeskócyś
+restored-from-backup-success-no-checklist-primary-button = Dalej
+restored-from-backup-error-title = Hmm, dajo problem z wašeju zawěsćeńskeju dataju.
+restored-from-backup-error-subtitle = Jolic drugu zawěsćeńsku dataju { -brand-short-name } maśo, wopytajśo z njeje wótnowiś. <a data-l10n-name="restore-problems">Maśo hyšći problemy?</a>
+restored-from-backup-error-primary-button = Zacyniś
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Pśiměŕśo swójo dožywjenje { -brand-short-name }
+onboarding-personalization-subtitle = Wótegrońśo na někotare pšašanja a pórucamy funkcije a rozšyrjenja, aby my wašo wužyśe { -brand-short-name } pólěpšyli.
+onboarding-personalization-use-case-title = Za co buźośo { -brand-short-name } wužywaś?
+onboarding-personalization-use-case-personal-option = Wósobinski
+onboarding-personalization-use-case-school-option = Šula
+onboarding-personalization-use-case-work-option = Słužbny
+onboarding-personalization-motivation-title = Kótare funkcije { -brand-short-name } su nejwažnjejše za was?
+onboarding-personalization-motivation-privacy-option = Priwatnosć a wěstota
+onboarding-personalization-motivation-productivity-option = Produktiwita
+onboarding-personalization-motivation-other-option = Druge

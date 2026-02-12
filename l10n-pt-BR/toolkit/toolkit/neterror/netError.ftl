@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Autenticar na rede
 neterror-dns-not-found-title = Servidor não encontrado
 neterror-malformed-uri-page-title = URL inválida
 general-body-title = Tenha cuidado. Algo não parece estar certo.
+problem-with-this-site-title = Parece que há um problema neste site
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = Se você não conseguir carregar nenhuma págin
 neterror-load-error-firewall = Se a rede ou o computador estiver protegido por um firewall ou proxy, verifique se o { -brand-short-name } está autorizado a acessar a web.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Se estiver tentando carregar uma página de rede local, verifique se o { -brand-short-name } recebeu permissões de rede local nas configurações de privacidade e segurança do macOS.
+neterror-http-error-page = Verifique se você digitou o endereço do site corretamente.
 neterror-captive-portal = Você deve se autenticar nessa rede antes de poder acessar a internet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Se você digitou o endereço corret
 neterror-dns-not-found-hint-try-again = Tentar novamente mais tarde
 neterror-dns-not-found-hint-check-network = Verificar a conexão de rede
 neterror-dns-not-found-hint-firewall = Verificar se o { -brand-short-name } tem permissão para acessar a web (a conexão pode estar limitada por um firewall)
+neterror-dns-not-found-offline-hint-header = <strong>O que você pode fazer?</strong>
+neterror-dns-not-found-offline-hint-different-device = Experimente conectar usando outro dispositivo.
+neterror-dns-not-found-offline-hint-modem = Verifique seu modem ou roteador.
+neterror-dns-not-found-offline-hint-reconnect = Desconecte e volte a conectar ao WiFi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Problema não esperado.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = O { -brand-short-name } não pode proteger sua requisição para o endereço deste site através de nosso resolvedor confiável de DNS. Motivo:
-neterror-dns-not-found-native-fallback-reason2 = O { -brand-short-name } não pode proteger sua requisição para o endereço deste site através de nosso provedor de DNS seguro. Motivo:
 neterror-dns-not-found-native-fallback-heuristic = O DNS sobre HTTPS foi desativado em sua rede.
 neterror-dns-not-found-native-fallback-not-confirmed2 = O { -brand-short-name } não conseguiu se conectar com { $trrDomain }.
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = Verifique se as configurações de pro
 neterror-proxy-connect-failure-contact-admin = Entre em contato com um administrador de rede para verificar se o servidor proxy está  funcionando.
 neterror-content-encoding-error = Entre em contato com os responsáveis pelo site para informar este problema.
 neterror-unsafe-content-type = Entre em contato com os responsáveis pelo site para informar este problema.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = O { -brand-short-name } não considera { $hostname } confiável porque a conexão não é segura. Experimente mudar o início do endereço para HTTPS.
 neterror-nss-failure-not-verified = A página que você está tentando ver não pode ser exibida porque a autenticidade dos dados recebidos não pôde ser comprovada.
 neterror-nss-failure-contact-website = Entre em contato com os responsáveis pelo site para informar este problema.
 # Variables:
@@ -159,3 +167,13 @@ certerror-coep-learn-more = Saiba mais sobre Cross Origin Embedder Policies (COE
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Código de erro: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = O { -brand-short-name } não consegue criar uma conexão segura com o servidor em { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Parece que este site está usando um software antigo com problemas de segurança conhecidos.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Certifique-se de estar usando a versão mais recente do { -brand-short-name }. Confira em Ajuda > Sobre o { -brand-short-name } no menu. Se você estiver usando o { -brand-short-name } mais recente, provavelmente o problema está no próprio site.

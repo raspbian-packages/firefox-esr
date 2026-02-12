@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Tải xuống
 appmenuitem-passwords =
     .label = Mật khẩu
+appmenuitem-extensions-and-themes =
+    .label = Tiện ích mở rộng và chủ đề
+appmenuitem-extensions =
+    .label = Tiện ích mở rộng
 appmenuitem-addons-and-themes =
     .label = Tiện ích mở rộng và chủ đề
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Mở bảng profiler
+    .tooltiptext = Mở bảng profiler
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Giá trị đặt trước để điều tra lỗi âm thanh và video trong { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Media
+profiler-popup-presets-ml-description = Cài đặt trước để điều tra lỗi học máy (machine learning) trong { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Học máy (Machine Learning)
 profiler-popup-presets-networking-description = Giá trị đặt trước để điều tra lỗi mạng trong { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Kết nối mạng
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Khởi chạy bảng điều khiển em
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Bảo vệ hoạt động trực tuyến của bạn
 appmenu-services-header = Dịch vụ của tôi
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Hãy thử các công cụ bảo vệ khác từ Mozilla:
 appmenu-other-protection-header = Hãy thử các công cụ bảo vệ khác từ { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Hồ sơ người dùng
 appmenu-other-profiles = Các hồ sơ người dùng khác
 appmenu-manage-profiles =
     .label = Quản lý hồ sơ người dùng
+appmenu-copy-profile =
+    .label = Sao chép hồ sơ này
 appmenu-create-profile =
     .label = Hồ sơ người dùng mới
 appmenu-edit-profile =
     .aria-label = Chỉnh sửa hồ sơ người dùng
+appmenu-profiles-2 =
+    .label = Hồ sơ người dùng

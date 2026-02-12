@@ -63,7 +63,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } wužywarjow
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Synchronizěrujśo swóje cytańske znamjenja wšuźi.
 cfr-doorhanger-bookmark-fxa-body = Wjelicna namakanka! Njewóstawajśo bźez toś togo cytańskego znamjenja na swójich mobilnych rědach. Zachopśo z { -fxaccount-brand-name }.
@@ -72,6 +72,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Synchronizěrujśo něnto cytańske znam
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Tłocašk Zacyniś
     .title = Zacyniś
+fxa-adoption-addresses-backup-title = Zawěsćmy waše skłaźone adrese.
+fxa-adoption-addresses-backup-subtitle = Synchronizěrujśo swóje gronidła ze swójimi rědami ze skoděrowanim, aby swóje skłaźone adrese šćitał.
+fxa-adoption-credit-cards-backup-title = Zawěsćmy waše płaśeńske metody
+fxa-adoption-credit-cards-backup-subtitle = Synchronizěrujśo swóje gronidła ze swójimi rědami ze skoděrowanim, aby swóje płaśeńske metody šćitał.
+fxa-adoption-bookmarks-treatment-backup-title = Zawěsćmy waše cytańske znamjenja
+fxa-adoption-bookmarks-treatment-backup-subtitle = Synchronizěrujśo swóje cytańske znamjenja ze swójimi rědami ze skoděrowanim, aby swóje gronidła šćitał.
+fxa-adoption-primary-button-label = Registrěrowaś
 
 ## Protections panel
 
@@ -232,6 +239,22 @@ fox-doodle-pin-secondary = Nic něnto
 set-default-pdf-handler-headline = <strong>Waše PDF se něnto w { -brand-short-name } wócynjaju.</strong> Wobźěłajśo abo signěrujćśoformulary direktnje w swójom wobglědowaku. Aby to změnił, pytajśo za „PDF“ w swójich nastajenjach.
 set-default-pdf-handler-primary = Som zrozměł
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Pódpišćo na dypkatej liniji – abo hynźi!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Kresliśo, zapišćo abo nagrajśo swóju signaturu, stajśo ju pón tam, źo cośo. Składujśo swóje signatury za pśiducy raz.
+annotations-make-default-pdf-handler-title = { -brand-short-name } k swójomu standardnemu PDF-editoroju cyniś?
+annotations-make-default-pdf-handler-subtitle = Maśo pśistup k našym rědam kuždy raz, gaž PDF wócynjaśo.
+annotations-make-default-pdf-primary-cta =
+    .label = Ako standard wužywaś
+annotations-make-default-pdf-next =
+    .label = Dalej
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Nowy rěd we wašom pśichoźe?
@@ -317,8 +340,11 @@ fxa-menu-message-close-button =
     .title = Zacyniś
     .aria-label = Zacyniś
 fxa-menu-message-sign-up-button = Registrěrowaś
+fxa-menu-message-sign-in-button = Pśizjawiś
+fxa-menu-message-sync-button = Synchronizaciju zachopiś
 fxa-menu-message-sync-devices-primary-text = Synchronizěrujśo wšykne swóje rědy
 fxa-menu-message-sync-devices-secondary-text = Wobstarajśo se ned swóje informacije – na pśikład swóje cytańske znamjenja a gronidła – wšuźi, źož { -brand-short-name } wužywaśo.
+fxa-menu-message-sync-devices-secondary-text2 = Wobstarajśo se ned swóje cytańske znamjenja, gronidła a wěcej – wšuźi, źož sćo se pśizjawił pla { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Synchronizěrujśo wšykne swóje rědy
 fxa-menu-message-backup-data-primary-text = Zawěsććo swóje daty wobglědowaka
 fxa-menu-message-backup-data-secondary-text = Šćitajśo awtomatiski cytańske znamjenja, gronidła a druge informacije na wšych swójich rědach.
@@ -349,3 +375,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Źaržćo swój nejlubšy wobglědowak z fokusom na priwatnosć jano jedno kliknjenje pšec. Nastajśo { -brand-short-name } ako swój standardny wobglědowak za wócynjanje wótkazow a pśipnějśo jen na swóju nadawkowu rědku.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Źaržćo swój nejlubšy wobglědowak z fokusom na priwatnosć jano jedno kliknjenje pšec. Nastajśo { -brand-short-name } ako swój standardny wobglědowak za wócynjanje wótkazow a pśipnějśo jen na swóju nadawkowu rědku a startowy meni.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Z Windows 10 skóro aktualizěrowaś?
+windows-10-eos-sync-spotlight-subtitle = Zawěsććo swóje gronidł a cytańske znamjenja, aby gótowy był, na drugi rěd pśeśěgnuś.
+windows-10-eos-sync-spotlight-primary-label = Waš { -brand-short-name } zawěsćiś
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Na Windows 11 aktualizěrowaś? Njezgubujśo cytańske znamjenja a gronidła.
+windows-10-eos-sync-toast-subtitle = Zawěsććo swóje daty, aby { -brand-short-name } mógł je kuždy cas wužywaś, na toś tom PC abo na pśiducem.
+windows-10-eos-sync-toast-primary-label = Prědne kšace
+windows-10-eos-sync-toast-secondary-label = Pózdźej dopomnjeś
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } se do togo njezacytajo, na rozdźěl wót drugich wobglědowakow wjelikich technologijowych pśedewześow. To jo rozsudny dypk.
+windows-10-eos-challenger-sync-callout-subtitle = Gaž swóje cytańske znamjenja a gronidłahesła { -brand-product-name } zawěsćujośo, jo lažčej za was, wubrany wobglědowak do pśiducego rěda pśewześ.
+windows-10-eos-challenger-pin-callout-subtitle = Pśipijśo { -brand-shorter-name } k swójej nadawkowej rědce, aby wobglědowak, kótaryž sćo wubrał, jo pśecej tam, gaž jen trjebaśo.
+windows-10-eos-challenger-sync-primary-button = { -brand-shorter-name } zawěsćiś
+windows-10-eos-challenger-pin-primary-button = { -brand-shorter-name } pśipěś
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } kryptokopaki, pśeslědowaki socialnych medijow a gromaźarje palcowych wótśišćow blokěrujo
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Pśeslědowaki njamógu waš rěd identificěrowaś abo wam pśez web slědowaś – dokulaž jim to njedowólujomy.
+windows-10-eos-sync-callout-privacy-screen-2-title = Zawěsććo swóje gronidła a cytańske znamjenja za swój pśiducy rěd.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Zawěsćenje { -brand-shorter-name } wam wólažcujo, waše daty a nastajenja priwatnosći wšuźi sobu wześ.
+windows-10-eos-sync-callout-privacy-info-button = Glědajśo, což se blokěrujo
+windows-10-eos-callout-addons-title = Wopytajśo: jadnore aktualizacije, wjelike wustatkowanja
+windows-10-eos-callout-addons-subtitle = Toś te rozšyrjenja su se wubrali, aby wam pomagali, produktiwny, šćitany a bźez wótchylenja wóstaś.
+windows-10-eos-callout-addons-primary-button = Glejśo naše wuběrki
+windows-10-eos-sync-callout-addons-title = Njezgubujśo swóje dodanki, gaž wót Windows 10 aktualizěrujośo.
+windows-10-eos-sync-callout-addons-subtitle = Synchronizěrujśo něnto, aby waše dodanki { -brand-product-name } pśecek k dispoziciji byli, samo pó změnje rěda.
+windows-10-eos-sync-callout-next-button = Dalej
+windows-10-eos-sync-callout-get-started-button = Prědne kšace
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Wertikalne rejtariki a kupki rejtarikow su how!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Na wjelesere žycenje jo { -brand-product-name } rowno wózjawił nowe funkcije, aby waše pśeglědowanje optiměrowane a fokusěrowane źaržał.
+windows-10-eos-feature-toast-whats-new-button = Cytajśo, což jo nowe
+windows-10-eos-feature-toast-dismiss-button = Zachyśiś
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Striktny pśeslědowański šćit móžo k tomu wjasć, až sedła wěcej njefunkcioněruju.</strong> Wótpórajśo blokěrowanje za wažne elementy, kótarež mógli pśeslědowaki wopśimowaś, aby ceste problemy rozwězał.
+etp-strict-exceptions-infobar-learn-more = Dalšne informacije
+etp-strict-exceptions-infobar-button = Rozwězanja nałožyś
+    .accesskey = R
+etp-strict-exceptions-infobar-not-now = Nic něnto
+    .accesskey = N

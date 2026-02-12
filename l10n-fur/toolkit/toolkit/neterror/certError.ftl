@@ -111,6 +111,26 @@ fp-learn-more-about-secure-connection-failures = Scuvierç di plui sui erôrs de
 fp-learn-more-about-cert-issues = Scuvierç di plui su chescj gjenars di problemis sui certificâts
 fp-learn-more-about-time-related-errors = Scuvierç di plui su la risoluzion dai problemis relatîfs a date e ore
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al è stât revocât e nol è plui atendibil.
+cert-error-bad-signature = { -brand-short-name } al à blocât la tô visite a chest sît parcè che la firme sul certificât furnît par { $hostname } no je valide.
+cert-error-key-pinning-failure = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al dopre une clâf publiche divierse di chê previodude.
+cert-error-bad-der = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } nol è codificât ben.
+cert-error-cert-not-in-name-space = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } nol rispiete i vincui relatîfs al non stabilîts di un certificât che lu à emetût.
+cert-error-inadequate-cert-type = { -brand-short-name } al à blocât la tô visite a chest sît parcè che un servidôr web nol pues doprâ il certificât furnît par { $hostname }.
+cert-error-path-len-constraint-invalid = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al conten masse certificâts intermedis tal percors al certificât lidrîs.
+cert-error-invalid-key = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al conten une clâf che no je valide. Al è facil che e sedi masse piçule par jessi sigure.
+cert-error-unknown-critical-extension = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al conten une estension critiche che no je supuartade.
+cert-error-extension-value-invalid = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al conten une estension che no je valide.
+cert-error-untrusted-issuer = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al è stât mandât fûr di une autoritât di certificazion che no je plui atendibile.
+cert-error-untrusted-cert = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al è segnât tant che no atendibil.
+cert-error-invalid-integer-encoding = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al conten une codifiche di un numar intîr che no je valide. Lis causis plui usuâls a includin numars di serie negatîfs, modui RSA negatîfs e codifichis plui lungjis di ce che al covente.
+cert-error-unsupported-keyalg = { -brand-short-name } al à blocât la tô visite a chest sît parcè che il certificât furnît par { $hostname } al à un gjenar di clâf che nol è supuartât.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } al à blocât la tô visite a chest sît parcè che la autoritât di certificazion che e à mandât fûr il certificât furnît par { $hostname } no je plui atendibile.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } al à blocât la tô visite a chest sît parcè che l’algoritmi di firme dal certificât furnît par { $hostname } nol corispuint al cjamp dal certificât relatîf al algoritmi di firme.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = Impussibil conetisi
@@ -118,6 +138,7 @@ deniedPortAccess-title = Cheste direzion e je sometude a restrizions
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm... No rivìn a cjatâ chel sît.
+internet-connection-offline-title = Al somee che al sedi vignût fûr un probleme cu la conession a internet.
 dns-not-found-trr-only-title2 = Potenziâl risi pe sigurece cirint chest domini
 dns-not-found-native-fallback-title2 = Potenziâl risi pe sigurece tal cirî chest domini
 fileNotFound-title = File no cjatât
@@ -134,6 +155,7 @@ contentEncodingError-title = Erôr te codifiche dal contignût
 unsafeContentType-title = Gjenar di file no sigûr
 netReset-title = La conession e je stade anulade
 netTimeout-title = La conession e je lade fûr timp massim
+httpErrorPage-title = Al somee che al sedi vignût fûr un probleme cun chest sît
 serverError-title = Al somee che al sedi vignût fûr un probleme cun chest sît
 unknownProtocolFound-title = No ai capît la direzion
 proxyConnectFailure-title = Il servidôr proxy al refude lis conessions
@@ -142,6 +164,7 @@ redirectLoop-title = Il gnûf-dirotament di cheste pagjine nol funzione ben
 unknownSocketType-title = Rispueste inspietade dal servidôr
 nssFailure2-title = Conession sigure falide
 csp-xfo-error-title = { -brand-short-name } nol rive a vierzi cheste pagjine
+corruptedContentErrorv2-title = Erôr: contignût comprometût
 corruptedContentError-title = Erôr di contignût comprometût
 sslv3Used-title = Impussibil conetisi in maniere sigure
 inadequateSecurityError-title = La conession no je sigure

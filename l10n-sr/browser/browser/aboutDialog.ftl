@@ -4,26 +4,22 @@
 
 aboutDialog-title =
     .title =
-        О { -brand-full-name.gender ->
-            [masculine] { -brand-full-name(case: "loc") }
-            [feminine] { -brand-full-name(case: "loc") }
-            [neuter] { -brand-full-name(case: "loc") }
-           *[other] програму { -brand-full-name }
+        { -brand-full-name.declinable ->
+            [true] О { -brand-full-name(case: "loc") }
+           *[false] О програму { -brand-full-name }
         }
 releaseNotes-link = Шта је ново
 update-checkForUpdatesButton =
-    .label = Провери доступност ажурирања
+    .label = Потражи ажурирање
     .accesskey = П
 update-updateButton =
     .label =
-        { -brand-shorter-name.gender ->
-            [masculine] Поново покрени и ажурирај { -brand-shorter-name(case: "acc") }
-            [feminine] Поново покрени и ажурирај { -brand-shorter-name(case: "acc") }
-            [neuter] Поново покрени и ажурирај { -brand-shorter-name(case: "acc") }
-           *[other] Поново покрени и ажурирај програм { -brand-shorter-name }
+        { -brand-shorter-name.declinable ->
+            [true] Поново покрени и ажурирај { -brand-shorter-name(case: "acc") }
+           *[false] Поново покрени и ажурирај програм { -brand-shorter-name }
         }
     .accesskey = Р
-update-checkingForUpdates = Провера доступности ажурирања…
+update-checkingForUpdates = Тражи се ажурирање…
 
 ## Variables:
 ##   $transfer (string) - Transfer progress.
@@ -42,17 +38,10 @@ update-noUpdatesFound =
     { -brand-short-name.gender ->
         [masculine] { -brand-short-name } је ажуран
         [feminine] { -brand-short-name } је ажурна
-        [neuter] { -brand-short-name } је ажурно
        *[other] Програм { -brand-short-name } је ажуран
     }
 aboutdialog-update-checking-failed = Провера ажурирања није успела.
-update-otherInstanceHandlingUpdates =
-    { -brand-short-name.gender ->
-        [masculine] { -brand-short-name }
-        [feminine] { -brand-short-name }
-        [neuter] { -brand-short-name }
-       *[other] Програм { -brand-short-name }
-    } се ажурира у другом примерку
+update-otherInstanceHandlingUpdates = { -brand-short-name } се ажурира у другој инстанци
 
 ## Variables:
 ##   $displayUrl (String): URL to page with download instructions. Example: www.mozilla.org/firefox/nightly/
@@ -68,19 +57,24 @@ update-internal-error2 = Интерна грешка спречава прове
 # Variables:
 #   $channel (String): description of the update channel (e.g. "release", "beta", "nightly" etc.)
 aboutdialog-channel-description = Користите <label data-l10n-name="current-channel">{ $channel }</label> канал за ажурирања.
-warningDesc-version = { -brand-short-name } је експерименталан и може бити нестабилан.
+warningDesc-version =
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name } је експерименталан и може бити нестабилан.
+        [feminine] { -brand-short-name } је експериментална и може бити нестабилна.
+       *[other] Програм { -brand-short-name } је експерименталан и може бити нестабилан.
+    }
 aboutdialog-help-user =
-    Помоћ за { -brand-product-name.gender ->
-        [masculine] { -brand-product-name(case: "acc") }
-        [feminine] { -brand-product-name(case: "acc") }
-        [neuter] { -brand-product-name(case: "acc") }
-       *[other] програм { -brand-product-name }
+    { -brand-product-name.declinable ->
+        [true] Помоћ за { -brand-product-name(case: "acc") }
+       *[false] Помоћ за програм { -brand-product-name }
     }
 aboutdialog-submit-feedback = Пошаљите повратне информације
 community-exp = <label data-l10n-name="community-exp-mozillaLink">{ -vendor-short-name }</label> је <label data-l10n-name="community-exp-creditsLink"> глобална заједница</label> која ради на томе да задржи веб отвореним, јавним и доступним свима.
-community-2 = { -brand-short-name } развија <label data-l10n-name="community-mozillaLink">{ -vendor-short-name }</label>, <label data-l10n-name="community-creditsLink"> глобална заједница</label> која се залаже да интернет остане отворен, јаван и доступан свима.
+community-2 = { -brand-short-name } развија <label data-l10n-name="community-mozillaLink">{ -vendor-short-name }</label>, <label data-l10n-name="community-creditsLink"> глобална заједница</label> која се залаже да веб остане отворен, јаван и доступан свима.
 helpus = Желите да помогнете? <label data-l10n-name="helpus-donateLink">Донирајте</label> или <label data-l10n-name="helpus-getInvolvedLink">се прикључите!</label>
 bottomLinks-license = Информације о лиценцирању
+bottom-links-terms = Услови коришћења
+bottom-links-privacy = Обавештење о приватности
 bottomLinks-rights = Права крајњег корисника
 bottomLinks-privacy = Политика приватности
 # Example of resulting string: 66.0.1 (64-bit)

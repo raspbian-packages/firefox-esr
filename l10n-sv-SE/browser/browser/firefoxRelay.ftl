@@ -4,7 +4,7 @@
 
 
 ## Error messages for failed HTTP web requests.
-## https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+## https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
@@ -20,9 +20,12 @@ firefox-relay-get-unlimited-masks =
     .accesskey = H
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
 firefox-relay-opt-in-title-1 = Skydda din e-postadress:
+firefox-relay-opt-in-title-2 = Få ett gratis e-postalias
 # This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
 # ends with a colon. You might need to adapt the capitalization of this string.
 firefox-relay-opt-in-subtitle-1 = Använd { -relay-brand-name } e-postalias
+firefox-relay-use-mask-title-1 = Använd ett e-postalias
+firefox-relay-opt-in-subtitle-2 = Skydda din inkorg från skräppost
 firefox-relay-use-mask-title = Använd { -relay-brand-name } e-postalias
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-a
 firefox-relay-opt-in-title-a = Förhindra skräppost med ett gratis e-postalias
@@ -72,6 +75,8 @@ firefox-relay-and-fxa-opt-in-confirmation-enable-button-basic-info =
 
 firefox-relay-and-fxa-popup-notification-header-with-domain = Få ett gratis e-postalias
 firefox-relay-and-fxa-popup-notification-first-sentence-with-domain = Skydda din inkorg från skräppost genom att använda ett gratis <label data-l10n-name="firefox-relay-learn-more-url">e-postalias</label> för att dölja din riktiga adress. E-postmeddelanden från <label data-l10n-name="firefox-fxa-and-relay-offer-domain">den här webbplatsen</label> kommer fortfarande till din inkorg, men med din e-postadress dold.
+firefox-relay-and-fxa-popup-notification-first-sentence = Skydda din inkorg från skräppost genom att använda ett gratis e-postalias från <label data-l10n-name="firefox-relay-learn-more-url">{ -relay-brand-name } </label> för att dölja din riktiga e-postadress. E-postmeddelanden från <label data-l10n-name="firefox-fxa-and-relay-offer-domain">den här webbplatsen</label> kommer fortfarande till din inkorg, men med din e-postadress dold.
+firefox-relay-offer-why-to-use-relay-1 = Skydda din inkorg från skräppost genom att använda ett gratis e-postalias från <label data-l10n-name="firefox-relay-learn-more-url">{ -relay-brand-name } </label> för att dölja din riktiga e-postadress. E-postmeddelanden från <label data-l10n-name="firefox-fxa-and-relay-offer-domain">den här webbplatsen</label> kommer fortfarande till din inkorg, men med din e-postadress dold.
 firefox-relay-and-fxa-popup-notification-second-sentence-with-domain = Registrera dig först eller logga in på ditt konto för att använda ett e-postalias
 firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain =
     .label = Registrera dig

@@ -82,7 +82,7 @@ class AppTrustDomain final : public mozilla::pkix::TrustDomain {
                            size_t digestBufLen) override;
 
  private:
-  Span<const uint8_t> mTrustedRoot;
+  nsTArray<Span<const uint8_t>> mTrustedRoots;
   nsTArray<Span<const uint8_t>> mAddonsIntermediates;
   nsTArray<Span<const uint8_t>> mIntermediates;
   nsCOMPtr<nsICertStorage> mCertBlocklist;

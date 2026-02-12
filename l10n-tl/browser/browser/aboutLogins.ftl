@@ -4,6 +4,17 @@
 # NOTE: New strings should use the about-logins- prefix.
 
 about-logins-page-title = Mga Login at Password
+about-logins-login-filter =
+    .placeholder = Maghanap ng Mga Login
+    .key = F
+create-new-login-button =
+    .title = Gumawa ng bagong login
+about-logins-page-title-name = Mga password
+about-logins-login-filter2 =
+    .placeholder = Maghanap ng mga Password
+    .key = F
+create-login-button =
+    .title = Magdagdag ng password
 fxaccounts-sign-in-text = Kuhanin ang iyong mga password sa iba mong mga device
 fxaccounts-sign-in-sync-button = Mag-sign in sa sync
 fxaccounts-avatar-button =
@@ -18,6 +29,7 @@ about-logins-menu-menuitem-import-from-another-browser = Mag-import mula sa Iban
 about-logins-menu-menuitem-import-from-a-file = Kunin mula sa File…
 about-logins-menu-menuitem-export-logins = i-Export ang mga Login…
 about-logins-menu-menuitem-remove-all-logins = Alisin Lahat ng Login...
+about-logins-menu-menuitem-export-logins2 = I-export ang mga Password…
 menu-menuitem-preferences =
     { PLATFORM() ->
         [windows] Mga Kagustuhan
@@ -36,6 +48,29 @@ login-list-count =
         [one] { $count } login
        *[other] { $count } login
     }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $current } ng { $total } login
+       *[other] { $count } ng { $total } mga login
+    }
+# Variables
+#   $count (number) - Number of logins
+login-list-count2 =
+    { $count ->
+        [one] { $count } password
+       *[other] { $count } mga password
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count2 =
+    { $total ->
+        [one] { $count } ng { $total } na  password
+       *[other] { $count } ng { $total } na mga password
+    }
 login-list-sort-label-text = Pagsunud-sunurin ayon sa:
 login-list-name-option = Pangalan (A-Z)
 login-list-name-reverse-option = Pangalan (Z-A)
@@ -45,11 +80,14 @@ about-logins-login-list-alerts-option = Mga Alerto
 login-list-last-changed-option = Huling Binago
 login-list-last-used-option = Huling Ginamit
 login-list-intro-title = Walang natagpuang mga login
+login-list-intro-title2 = Walang mga password na naka-save
 login-list-intro-description = Kapag nagse-save ka ng isang password sa { -brand-product-name }, lalabas iyon dito.
 about-logins-login-list-empty-search-title = Walang natagpuang mga login
+about-logins-login-list-empty-search-title2 = Walang nakitang password
 about-logins-login-list-empty-search-description = Walang resultang tumugma sa iyong hinahanap.
 login-list-item-title-new-login = Bagong Login
 login-list-item-subtitle-new-login = Ipasok ang iyong mga login credential
+login-list-item-title-new-login2 = Magdagdag ng password
 login-list-item-subtitle-missing-username = (walang username)
 about-logins-list-item-breach-icon =
     .title = Breached website
@@ -68,6 +106,7 @@ about-logins-login-intro-heading-logged-out2 = Hinahanap mo ba ang iyong nai-sav
 about-logins-login-intro-heading-logged-in = Walang natagpuang naka-sync na mga login.
 login-intro-description = Kung nag-save ka ng mga login mo sa { -brand-product-name } sa ibang device, ganito ang dapat gawin para makuha mo sila rito:
 login-intro-instructions-fxa = Gumawa o mag-sign in sa iyong { -fxaccount-brand-name } sa pamamagitan ng device kung saan naka-save ang mga login mo.
+about-logins-login-intro-heading-message = I-save ang iyong mga password sa isang ligtas na lugar
 login-intro-instructions-fxa-settings = Pumunta sa Mga Setting> Sync> I-on ang pag-sync ... Piliin ang checkbox ng Mga login at password.
 login-intro-instructions-fxa-passwords-help = Visit <a data-l10n-name="passwords-help-link">passwords support</a> for more help.
 about-logins-intro-import2 = Kung naka-save ang mga login mo sa labas ng { -brand-product-name }, maaari mo <a data-l10n-name="import-browser-link">i-import ang mga ito mula sa ibang browser</a> o <a data-l10n-name="import-file-link">mula sa isang file</a>
@@ -75,10 +114,14 @@ about-logins-intro-import2 = Kung naka-save ang mga login mo sa labas ng { -bran
 ## Login
 
 login-item-new-login-title = Gumawa ng Panibagong Login
+# Header for adding a password
+about-logins-login-item-new-login-title = Magdagdag ng password
 login-item-edit-button = Baguhin
 about-logins-login-item-remove-button = Tanggalin
 login-item-origin-label = Website Address
 login-item-tooltip-message = Tiyaking tumutugma ito sa eksaktong address ng website kung saan ka nag-log in.
+about-logins-origin-tooltip2 = Ilagay ang buong address at tiyaking eksaktong tugma ito para sa kung saan ka magsa-sign in.
+about-logins-add-password-tooltip = Tiyaking sine-save mo ang iyong kasalukuyang password para sa site na ito.
 login-item-origin =
     .placeholder = https://www.example.com
 login-item-username-label = Username
@@ -92,6 +135,7 @@ login-item-password-reveal-checkbox =
 login-item-copy-password-button-text = Kopyahin
 login-item-copied-password-button-text = Nakopya na!
 login-item-save-changes-button = I-Save ang mga Pagbabago
+about-logins-login-item-save-changes-button = I-save
 login-item-save-new-button = i-Save
 login-item-cancel-button = Ikansela
 
@@ -99,6 +143,9 @@ login-item-cancel-button = Ikansela
 ## A label is displayed under the date to describe the type of change.
 ## (e.g. updated, created, etc.)
 
+login-item-timeline-action-created = Ginawa
+login-item-timeline-action-updated = Na-update
+login-item-timeline-action-used = Ginamit
 
 ## OS Authentication dialog
 
@@ -113,6 +160,11 @@ about-logins-edit-login-os-auth-dialog-message-win = Para mabago ang iyong login
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message-macosx = i-edit ang naka-save na login
+# This message can be seen when attempting to edit a login in about:logins on Windows.
+about-logins-edit-login-os-auth-dialog-message2-win = Upang i-edit ang iyong password, ilagay ang iyong mga kredensyal sa pag-log in sa Windows. Nakakatulong ito na protektahan ang seguridad ng iyong mga account.
+# This message can be seen when attempting to edit a login in about:logins
+# On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
+about-logins-edit-login-os-auth-dialog-message2-macosx = i-edit ang naka-save na password
 # This message can be seen when attempting to reveal a password in about:logins on Windows.
 about-logins-reveal-password-os-auth-dialog-message-win = Para makita ang iyong password, ipasok ang iyong mga Windows login credential. Nakatutulong ito protektahan ang seguridad ng iyong mga account.
 # This message can be seen when attempting to reveal a password in about:logins
@@ -128,6 +180,9 @@ about-logins-export-password-os-auth-dialog-message-win = Para ma-export ang iyo
 # This message can be seen when attempting to export a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-export-password-os-auth-dialog-message-macosx = mag-export ng mga naka-save na login at password
+# This message can be seen when attempting to export a password in about:logins
+# On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
+about-logins-export-password-os-auth-dialog-message2-macosx = i-export ang mga naka-save na password
 
 ## Primary Password notification
 
@@ -138,11 +193,13 @@ master-password-reload-button =
 
 ## Dialogs
 
-confirmation-dialog-cancel-button = Kanselahin
+confirmation-dialog-cancel-button = Ikansela
 confirmation-dialog-dismiss-button =
-    .title = Kanselahin
+    .title = Ikansela
 about-logins-confirm-remove-dialog-title = Alisin ang login?
 confirm-delete-dialog-message = Hindi na pwedeng bawiin ang kilos na ito.
+# Title for modal to confirm the removal of one saved password
+about-logins-confirm-delete-dialog-title = Alisin ang password?
 about-logins-confirm-remove-dialog-confirm-button = Tanggalin
 
 ## Variables
@@ -156,14 +213,9 @@ about-logins-confirm-remove-all-dialog-confirm-button-label =
     }
 about-logins-confirm-remove-all-dialog-checkbox-label =
     { $count ->
-        [1] Sige, tangalin itong login
-        [one] Sige, tangalin itong mga login
-       *[other] Sige, tangalin ang mga login
-    }
-about-logins-confirm-remove-all-dialog-title =
-    { $count ->
-        [one] Alisin ang lahat ng { $count } login?
-       *[other] Remove all { $count } logins?
+        [1] Sige, tanggalin itong login
+        [one] Sige, tanggalin itong login
+       *[other] Sige, tanggalin itong mga login
     }
 about-logins-confirm-remove-all-dialog-message =
     { $count ->
@@ -180,12 +232,33 @@ about-logins-confirm-remove-all-sync-dialog-message =
         [1] Aalisin nito ang login na nai-save mo sa { -brand-short-name } ng lahat ng mga device na naka-sync sa iyong { -fxaccount-brand-name }. Aalisin din nito ang mga alerto sa paglabag na lilitaw dito. Hindi mo maibabalik ang pagkilos na ito.
        *[other] Aalisin nito ang lahat ng mga login na nai-save mo sa { -brand-short-name } ng lahat ng mga device na naka-sync sa iyong { -fxaccount-brand-name }. Aalisin din nito ang mga alerto sa paglabag na lilitaw dito. Hindi mo maibabalik ang pagkilos na ito.
     }
+# Checkbox for modal to confirm the removal of saved passwords
+about-logins-confirm-remove-all-dialog-checkbox-label2 =
+    { $count ->
+        [1] Oo, tanggalin ang password
+        [one] Oo, tanggalin ang password
+       *[other] Oo, tanggalin ang mga password
+    }
+# Title for modal to confirm the removal of all saved passwords when user is NOT synced
+about-logins-confirm-remove-all-dialog-title2 =
+    { $count ->
+        [one] Tanggalin ang { $count } password?
+       *[other] Tanggalin ang lahat ng { $count } password?
+    }
+# Title for modal to confirm the removal of all saved passwords when user IS SYNCED
+about-logins-confirm-remove-all-sync-dialog-title2 =
+    { $count ->
+        [one] Tanggalin ang { $count } password mula sa lahat ng mga device?
+       *[other] Tanggalin ang lahat ng { $count } password mula sa lahat ng mga device?
+    }
 
 ##
 
 about-logins-confirm-export-dialog-title = Mag-export ng mga login at password
 about-logins-confirm-export-dialog-message = Mase-save ang mga password mo bilang readable text (hal., PangitNaP@ssw0rd) kaya pwede itong makita ng kahit sinong makakapagbukas ng na-export na file.
-about-logins-confirm-export-dialog-confirm-button = i-Export…
+about-logins-confirm-export-dialog-confirm-button = I-export…
+about-logins-confirm-export-dialog-title2 = Isang tala tungkol sa pag-export ng mga password
+about-logins-confirm-export-dialog-confirm-button2 = Magpatuloy sa pag-export
 about-logins-alert-import-title = Kumpleto na ang Pag-import
 about-logins-alert-import-message = Tingnan ang detalyadong Buod ng Pag-import
 confirm-discard-changes-dialog-title = Itapon ang mga hindi nai-save na pagbabago?
@@ -227,7 +300,12 @@ about-logins-export-file-picker-title = I-export ang Login File
 # The default file name shown in the file picker when exporting saved logins.
 # This must end in .csv
 about-logins-export-file-picker-default-filename = logins.csv
-about-logins-export-file-picker-export-button = i-Export
+# Title of the file picker dialog
+about-logins-export-file-picker-title2 = I-export ang Mga Password mula sa { -brand-short-name }
+# The default file name shown in the file picker when exporting saved logins.
+# This must end in .csv
+about-logins-export-file-picker-default-filename2 = passwords.csv
+about-logins-export-file-picker-export-button = I-export
 # A description for the .csv file format that may be shown as the file type
 # filter by the operating system.
 about-logins-export-file-picker-csv-filter-title =
@@ -239,8 +317,10 @@ about-logins-export-file-picker-csv-filter-title =
 ## Login Import Dialog
 
 # Title of the file picker dialog
-about-logins-import-file-picker-title = Kunin ang Logins File
-about-logins-import-file-picker-import-button = i-Import
+about-logins-import-file-picker-title = I-import ang Logins File
+# Title of the file picker dialog
+about-logins-import-file-picker-title2 = Mag-import ng mga Password sa { -brand-short-name }
+about-logins-import-file-picker-import-button = I-import
 # A description for the .csv file format that may be shown as the file type
 # filter by the operating system.
 about-logins-import-file-picker-csv-filter-title =
@@ -274,6 +354,11 @@ about-logins-import-dialog-items-no-change =
     { $count ->
        *[other] <span>Mga nahanap na magkaparehong login:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(hindi na-import)</span>
     }
+about-logins-import-dialog-items-added2 =
+    { $count ->
+        [one] <span>Mga naidagdag na bagong password:</span> <span data-l10n-name="count">{ $count }</span>
+       *[other] <span>Mga naidagdag na mga bagong password:</span> <span data-l10n-name="count">{ $count }</span>
+    }
 about-logins-import-dialog-items-error =
     { $count ->
        *[other] <span>Mga error:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(hindi na-import)</span>
@@ -289,11 +374,12 @@ about-logins-import-dialog-error-file-permission-description = Walang pahintulot
 about-logins-import-dialog-error-unable-to-read-title = Hindi Mabasa ang File
 about-logins-import-dialog-error-unable-to-read-description = Tiyaking nakapili ka ng isang CSV o TSV file.
 about-logins-import-dialog-error-no-logins-imported = Walang na-import na mga login
-about-logins-import-dialog-error-learn-more = Karagdagang kaalaman
+about-logins-import-dialog-error-learn-more = Alamin
 about-logins-import-dialog-error-try-import-again = Subukan Muling Mag-import…
-about-logins-import-dialog-error-cancel = Kanselahin
+about-logins-import-dialog-error-cancel = Ikansela
 about-logins-import-report-title = Buod ng Pag-import
 about-logins-import-report-description = Na-import ang mga login at password sa { -brand-short-name }.
+about-logins-import-report-description2 = Na-import na ang mga password sa { -brand-short-name }.
 #
 # Variables:
 #  $number (number) - The number of the row
@@ -301,7 +387,9 @@ about-logins-import-report-row-index = Hanay { $number }
 about-logins-import-report-row-description-no-change = Magkapareho: Eksaktong tugma ng umiiral na login
 about-logins-import-report-row-description-modified = Binago ang umiiral na login
 about-logins-import-report-row-description-added = Nadagdag ang bagong login
-about-logins-import-report-row-description-error = Error: Nawawalang patlang
+about-logins-import-report-row-description-no-change2 = Duplicate: Eksaktong tugma ng kasalukuyang entry
+about-logins-import-report-row-description-added2 = Naidagdag na ang bagong password
+about-logins-import-report-row-description-error = Error: Nawawalang field
 
 ##
 ## Variables:

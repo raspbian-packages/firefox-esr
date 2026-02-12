@@ -25,6 +25,8 @@ return-to-amo-subtitle = Stupent, ussa has ti { -brand-short-name }
 return-to-amo-addon-title = Pertge n'emprovas ti ussa betg <img data-l10n-name="icon"/> <b>{ $addon-name }</b>?
 return-to-amo-add-extension-label = Agiuntar l'extensiun
 return-to-amo-add-theme-label = Agiuntar il design
+return-to-amo-theme-install-complete-label = Installà il design
+return-to-amo-extension-install-complete-label = Installà l’extensiun
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Importar da { $previous
 mr1-onboarding-theme-header = L'adatta a tes basegns
 mr1-onboarding-theme-subtitle = Persunalisescha { -brand-short-name } cun in design.
 mr1-onboarding-theme-secondary-button-label = Betg ussa
-newtab-wallpaper-onboarding-title = Emprova cun in zic colur
-newtab-wallpaper-onboarding-subtitle = Tscherna in maletg dal fund davos per dar in nov look a la pagina da novs tabs.
-newtab-wallpaper-onboarding-primary-button-label = Definir in fund davos
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Design dal sistem
 mr1-onboarding-theme-label-light = Cler
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Crear in conto u s’annunziar en tes conto
 
 tab-groups-onboarding-feature-callout-title = Emprova las gruppas da tabs per dapli urden e concentraziun
 tab-groups-onboarding-feature-callout-subtitle = Optimescha l’organisaziun cun trair in tab sin in auter per crear tia emprima gruppa.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Ti chattas tias gruppas da tabs adina en il menu «Glista da tut ils tabs».
+tab-groups-onboarding-create-group-title-2 = Ti chattas qua da tut temp tias gruppas da tabs.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Chatta tias gruppas cun las tschertgar en la trav d’adressas.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Cura che ti serras ina gruppa da tabs, la pos ti reavrir da tut temp en il menu «Glista da tut ils tabs».
+tab-groups-onboarding-saved-groups-title-2 = Sche ti serras ina gruppa da tabs, pos ti la reavrir qua da tut temp.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Chatta tias gruppas serradas cun las tschertgar en la trav d’adressas.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Reavra da tut temp tias gruppas da tabs en il menu «Glista da tut ils tabs».
+tab-groups-onboarding-session-restore-title = Reavra qua tias gruppas da tabs da tut temp.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,33 @@ multi-profile-spotlight-cta = Crear in profil
 multi-profile-callout-title = Crear differents profils per la lavur ed il temp liber
 multi-profile-callout-subtitle = Profils ta permettan da separar cumplettamain tias datas da navigaziun, sco la cronologia da tschertga ed ils pleds-clav.
 multi-profile-callout-cta = Crear in profil
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Telechargiar, sincronisar e dai!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Scannescha il code QR per telechargiar { -brand-product-name } per apparats mobils. Suenter l’installaziun, tscherna «Sincronisaziun cun apparats mobils» per acceder a tes pleds-clav, segnapaginas e dapli – tuttina nua che ti ta chattas.
+dismiss-button-label = Serrar
+sync-to-mobile-button-label = Sincronisaziun cun apparats mobils
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Code QR per telechargiar { -brand-product-name } per apparats mobils
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Restaurar dad ina copia da segirezza
+restore-from-backup-title = Reconstruin il { -brand-short-name } che ta plascha
+restore-from-backup-subtitle = Recuperescha tut tes segnapaginas, la cronologia ed autras datas per reprender tia navigaziun.
+restore-from-backup-secondary-button = Betg restaurar
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Nus essan puspè qua! Las datas da { -brand-short-name } èn vegnidas restauradas.
+restored-from-backup-success-with-checklist-subtitle = Vuls ti che tes navigatur preferì che dat la prioritad a la sfera privata saja accessibel cun in clic?
+restored-from-backup-success-no-checklist-subtitle = Ti pos activar backups per quest apparat en ils <a data-l10n-name="settings">parameters</a>.
+restored-from-backup-success-with-checklist-primary-button = Memorisar e cuntinuar
+restored-from-backup-success-with-checklist-secondary-button = Sursiglir quest pass
+restored-from-backup-success-no-checklist-primary-button = Cuntinuar
+restored-from-backup-error-title = Hmm, igl ha dà in problem cun tia datoteca da backup.
+restored-from-backup-error-subtitle = Sche ti has in’autra datoteca da backup da { -brand-short-name }, emprova da restaurar cun agid da lezza. <a data-l10n-name="restore-problems">Na funcziuni anc adina betg?</a>
+restored-from-backup-error-primary-button = Serrar

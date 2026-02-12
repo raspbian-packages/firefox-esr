@@ -15,6 +15,10 @@ support-addons-type = Түрі
 support-addons-enabled = Іске қосылған
 support-addons-version = Нұсқасы
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Орналасу
 legacy-user-stylesheets-title = Ескірген пайдаланушы стильдер кестелері
 legacy-user-stylesheets-enabled = Белсенді
 legacy-user-stylesheets-stylesheet-types = Стильдер кестелері
@@ -51,7 +55,7 @@ app-basics-show-update-history = Жаңартулар тарихын көрсе�
 app-basics-binary = Қолданбаның бинарлы файлы
 app-basics-profile-dir =
     { PLATFORM() ->
-        [linux] Профайл бумасы
+        [linux] Профиль бумасы
        *[other] Профиль сақталатын бума
     }
 app-basics-enabled-plugins = Іске қосулы плагиндер
@@ -181,6 +185,8 @@ media-capabilities-enumerate = Дерекқор жазбаларын шығар�
 
 media-codec-support-sw-decoding = Бағдарламалық декодтау
 media-codec-support-hw-decoding = Құрылғылық декодтау
+media-codec-support-sw-encoding = Бағдарламалық кодтау
+media-codec-support-hw-encoding = Құрылғылық кодтау
 media-codec-support-codec-name = Кодек атауы
 media-codec-support-supported = Қолдауы бар
 media-codec-support-unsupported = Қолдауы жоқ

@@ -112,6 +112,8 @@ about-debugging-setup-usb-step-enable-dev-menu2 = Activează meniul pentru dezvo
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = Activează depanarea USB în meniul pentru dezvoltatori de pe dispozitivul Android.
 # USB section step by step guide
+about-debugging-setup-usb-step-enable-file-transfer = Activează transferul de fișiere și asigură-te că dispozitivul nu este în modul doar încărcare.
+# USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = Activează depanarea USB în Firefox pe dispozitivul Android.
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Conectează dispozitivul Android la calculator.
@@ -188,7 +190,7 @@ about-debugging-runtime-service-workers-not-compatible = Configurația browserul
 # "Troubleshooting" link points to https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
-about-debugging-browser-version-too-old = Browserul conectat are o versiune veche ({ $runtimeVersion }). Versiunea minimă cu suport este ({ $minVersion }). Aceasta este o configurație fără suport și poate produce disfuncționalități DevTools. Te rugăm să actualizezi browserul conectat. <a>Depanare</a>
+about-debugging-browser-version-too-old = Browserul conectat are o versiune veche ({ $runtimeVersion }). Versiunea minimă cu suport este ({ $minVersion }). Aceasta este o configurație fără suport și poate produce disfuncționalități în instrumentele pentru dezvoltatori. Te rugăm să actualizezi browserul conectat. <a>Depanare</a>
 # Dedicated message for a backward compatibility issue that occurs when connecting:
 # from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
 about-debugging-browser-version-too-old-fennec = Această versiune de Firefox nu poate depana Firefox pentru Android (68). Recomandăm instalarea pentru testare pe telefon a versiunii Nightly de Firefox pentru Android. <a>Mai multe detalii</a>
@@ -198,7 +200,7 @@ about-debugging-browser-version-too-old-fennec = Această versiune de Firefox nu
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $localVersion } is the version of your current browser (same format)
-about-debugging-browser-version-too-recent = Browserul conectat este mai recent ({ $runtimeVersion }, buildID { $runtimeID }) decât versiunea ta de { -brand-shorter-name } ({ $localVersion }, buildID { $localID }). Acesta este o configurare fără suport și poate conduce la disfuncționalități DevTools. Te rugăm să actualizezi Firefox. <a>Depanare</a>
+about-debugging-browser-version-too-recent = Browserul conectat este mai recent ({ $runtimeVersion }, buildID { $runtimeID }) decât versiunea ta de { -brand-shorter-name } ({ $localVersion }, buildID { $localID }). Acesta este o configurare fără suport și poate conduce la disfuncționalități în instrumentele pentru dezvoltatori. Te rugăm să actualizezi Firefox. <a>Depanare</a>
 # Displayed for runtime info in runtime pages.
 # { $name } is brand name such as "Firefox Nightly"
 # { $version } is version such as "64.0a1"
@@ -239,6 +241,11 @@ about-debugging-tmp-extension-reload-button = Reîncarcă
 # Text of a button displayed for a temporary extension loaded in the "This Firefox" page.
 # Clicking on the button will uninstall the extension and remove it from the page.
 about-debugging-tmp-extension-remove-button = Elimină
+# Text of a button displayed for a temporary extension loaded in the "This Firefox" page.
+# Clicking on the button will forcefully terminate the extension background script (button
+# only visible in extensions that includes a non-persistent background script, either an
+# event page or a background service worker).
+about-debugging-tmp-extension-terminate-bgscript-button = Oprește scriptul din fundal
 # Message displayed in the file picker that opens to select a temporary extension to load
 # (triggered by the button using "about-debugging-tmp-extension-install-button")
 # manifest.json .xpi and .zip should not be localized.
@@ -262,6 +269,15 @@ about-debugging-extension-location =
 # For instance "geckoprofiler@mozilla.com" or "{ed26ddcb-5611-4512-a89a-51b8db81cfb2}".
 about-debugging-extension-id =
     .label = ID-ul extensiei
+# Text displayed for extensions in "runtime" pages, before displaying the status of the
+# extension background script.
+about-debugging-extension-backgroundscript =
+    .label = Script din fundal
+# Displayed for extension using a non-persistent background page (either an event page or
+# background service worker) when the background script is currently running.
+about-debugging-extension-backgroundscript-status-running = În curs de execuție
+# Displayed for extension using a non-persistent background page when is currently stopped.
+about-debugging-extension-backgroundscript-status-stopped = Oprit
 # This string is displayed as a label of the button that pushes a test payload
 # to a service worker.
 # Note this relates to the "Push" API, which is normally not localized so it is
@@ -297,6 +313,9 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Serviciu Push
+# Displayed for service workers in runtime pages, to label the origin of a worker.
+about-debugging-worker-origin =
+    .label = Origine
 # Displayed as title of the inspect button when service worker debugging is disabled.
 about-debugging-worker-inspect-action-disabled =
     .title = Inspecția scripturilor Service Worker este în prezent dezactivată pentru multiprocesul { -brand-shorter-name }

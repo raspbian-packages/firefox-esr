@@ -28,11 +28,6 @@ text-action-copy-shortcut =
 text-action-copy-clean-link =
     .label = Skjinne keppeling kopiearje
     .accesskey = k
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = Sûnder websitetracking kopiearje
-    .accesskey = n
 text-action-paste =
     .label = Plakke
     .accesskey = P
@@ -73,3 +68,23 @@ text-action-search-text-box-clear =
     .title = Wiskje
 text-action-highlight-selection =
     .label = Seleksje markearje
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = Opmerking oan seleksje tafoegje
+# "Copy Link to Highlight" creates a permanent 'Text Fragment' link
+# to the current selection, and copies it into the user's clipboard.
+text-action-copy-link-to-highlight =
+    .label = Keppeling nei markearring kopiearje
+# This combines "Copy Link to Highlight" with "Copy Clean Link", ie.
+# it creates a link with a text fragment to the current selection
+# and it strips trackers etc.
+text-action-copy-clean-link-to-highlight =
+    .label = Skjinne keppeling nei markearring kopiearje
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = Markearring fuortsmite
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = Alle markearringen fuortsmite

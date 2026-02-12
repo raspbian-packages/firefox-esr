@@ -76,6 +76,10 @@ fp-certerror-return-to-previous-page-recommended-button = ਪਿੱਛੇ ਜਾ
 # This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
 fp-certerror-self-signed-what-can-you-do-body = ਕੁਝ ਖਾਸ ਨਹੀਂ। ਇਹ ਖੁਦ ਸਾਈਟ ਨਾਲ ਵੀ ਸਮੱਸਿਆ ਜਾਪਦੀ ਹੈ।
 fp-certerror-self-signed-important-note = ਖਾਸ ਸੂਚਨਾ: ਜੇ ਤੁਸੀਂ ਕਾਰਪੋਰੇਟ ਇੰਟਰਾਨੈੱਟ ਉੱਤੇ ਇਸ ਸਾਈਟ ਨੂੰ ਵੇਖ ਰਹੇ ਹੋ ਤਾਂ ਤੁਹਾਡੇ IT ਸਟਾਫ ਵਲੋਂ ਖੁਦ-ਸਾਈਨ ਕੀਤੇ ਸਰਟੀਫਿਕੇਟ ਵਰਤੇ ਜਾ ਰਹੇ ਹੋ ਸਕਦੇ ਹਨ। ਇਸ ਦੀ ਪਰਮਾਣਕਿਤਾ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਤੁਸੀਂ ਉਹਨਾਂ ਤੋਂ ਮਦਦ ਲੈ ਸਕਦੇ ਹੋ।
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+# Variables:
+#   $date (Date) - Clock date.
+fp-certerror-expired-what-can-you-do-body = ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਦਾ ਕਲਾਕ { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") } ਲਈ ਸੈੱਟ ਹੈ। ਜੇ ਇਹ ਠੀਕ ਹੈ ਤਾਂ ਸੁਰੱਖਿਆ ਮਸਲਾ ਸਾਈਟ ਨਾਲ ਹੋਣ ਦੀ ਸੰਭਾਵਨਾ ਹੈ। ਜੇ ਇਹ ਗਲਤ ਹੈ ਤਾਂ ਤੁਸੀਂ ਇਸ ਨੂੰ ਆਪਣੇ ਡਿਵਾਈਸ ਦੀਆਂ ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬਦਲ ਸਕਦੇ ਹੋ।
 # Variables:
 #   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 fp-cert-error-code = ਗ਼ਲਤੀ ਕੋਡ: { $error }
@@ -93,6 +97,7 @@ deniedPortAccess-title = ਇਹ ਐਡਰੈੱਸ ਪਾਬੰਦੀਸ਼ੁਦ�
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = ਓਹ ਹੋ। ਸਾਨੂੰ ਉਹ ਸਾਈਟ ਲੱਭਣ ਲਈ ਸਮੱਸਿਆ ਆ ਰਹੀ ਹੈ।
+internet-connection-offline-title = ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਨਾਲ ਸਮੱਸਿਆ ਜਾਪਦੀ ਹੈ।
 dns-not-found-trr-only-title2 = ਇਹ ਡੋਮੇਨ ਖੋਜਣ ਲਈ ਸੰਭਾਵਿਤ ਸੁਰੱਖਿਆ ਖ਼ਤਰਾ ਹੈ
 dns-not-found-native-fallback-title2 = ਇਹ ਡੋਮੇਨ ਖੋਜਣ ਲਈ ਸੰਭਾਵਿਤ ਸੁਰੱਖਿਆ ਖ਼ਤਰਾ ਹੈ
 fileNotFound-title = ਫਾਈਲ ਨਹੀਂ ਲੱਭੀ
@@ -109,6 +114,7 @@ contentEncodingError-title = ਸਮਗੱਰੀ ਇੰਕੋਡਿੰਗ ਗਲ�
 unsafeContentType-title = ਅਸੁਰੱਖਿਅਤ ਫਾਈਲ ਕਿਸਮ
 netReset-title = ਕਨੈਕਸ਼ਨ ਰੀ-ਸੈੱਟ ਕੀਤਾ ਗਿਆ
 netTimeout-title = ਕਨੈਕਸ਼ਨ ਟਾਈਮ-ਆਉਟ ਹੋ ਗਿਆ
+httpErrorPage-title = ਇਸ ਸਾਈਟ ਨਾਲ ਵੀ ਸਮੱਸਿਆ ਹੋ ਸਕਦੀ ਹੈ
 serverError-title = ਇਸ ਸਾਈਟ ਨਾਲ ਵੀ ਸਮੱਸਿਆ ਹੋ ਸਕਦੀ ਹੈ
 unknownProtocolFound-title = ਐਡਰੈਸ ਦੀ ਸਮਝ ਨਹੀਂ ਆਈ
 proxyConnectFailure-title = ਪਰਾਕਸੀ ਸਰਵਰ ਕਨੈਕਸ਼ਨਾਂ ਤੋਂ ਇਨਕਾਰ ਕਰ ਰਿਹਾ ਹੈ
@@ -117,6 +123,7 @@ redirectLoop-title = ਸਫ਼ਾ ਢੁੱਕਵੇਂ ਰੂਪ ਵਿੱਚ �
 unknownSocketType-title = ਸਰਵਰ ਤੋਂ ਗ਼ੈਰ-ਲੋੜੀਦਾ ਜਵਾਬ
 nssFailure2-title = ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਫੇਲ੍ਹ ਹੋਇਆ
 csp-xfo-error-title = { -brand-short-name } ਇਸ ਸਫ਼ੇ ਨੂੰ ਖੋਲ੍ਹ ਨਹੀਂ ਸਕਦਾ ਹੈ
+corruptedContentErrorv2-title = ਨਿਕਾਰਾ ਹੋਈ ਸਮੱਗਰੀ ਗਲਤੀ
 corruptedContentError-title = ਨਿਕਾਰਾ ਹੋਈ ਸਮੱਗਰੀ ਗਲਤੀ
 sslv3Used-title = ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਅਸਮਰੱਥ
 inadequateSecurityError-title = ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ

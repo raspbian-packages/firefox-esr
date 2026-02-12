@@ -39,14 +39,14 @@ graph-today = Hôm nay
 graph-legend-description = Một biểu đồ chứa tổng số lượng của từng loại trình theo dõi bị chặn trong tuần này.
 social-tab-title = Trình theo dõi truyền thông xã hội
 social-tab-contant = Mạng xã hội đặt trình theo dõi trên các trang web khác để theo dõi những gì bạn làm, xem và xem trực tuyến. Điều này cho phép các công ty truyền thông xã hội tìm hiểu thêm về bạn ngoài những gì bạn chia sẻ trên hồ sơ truyền thông xã hội của mình. <a data-l10n-name="learn-more-link">Tìm hiểu thêm</a>
-cookie-tab-title = Cookie theo dõi trên nhiều trang web
-cookie-tab-content = Những cookie này theo bạn từ trang này sang trang khác để thu thập dữ liệu về những gì bạn làm trực tuyến. Chúng được đặt bởi các bên thứ ba như nhà quảng cáo và công ty phân tích. Chặn cookie theo dõi nhiều trang web làm giảm số lượng quảng cáo theo bạn xung quanh. <a data-l10n-name="learn-more-link">Tìm hiểu thêm</a>
+cookie-tab-title = Cookie theo dõi liên trang web
+cookie-tab-content = Những cookie này theo bạn từ trang này sang trang khác để thu thập dữ liệu về những gì bạn làm trực tuyến. Chúng được đặt bởi các bên thứ ba như nhà quảng cáo và công ty phân tích. Chặn cookie theo dõi liên web làm giảm số lượng quảng cáo theo bạn xung quanh. <a data-l10n-name="learn-more-link">Tìm hiểu thêm</a>
 tracker-tab-title = Trình theo dõi nội dung
 tracker-tab-description = Trang web có thể tải quảng cáo bên ngoài, video và nội dung khác với đoạn mã theo dõi. Chặn nội dung theo dõi có thể giúp các trang web tải nhanh hơn, nhưng một số nút, biểu mẫu và trường đăng nhập có thể không hoạt động. <a data-l10n-name="learn-more-link">Tìm hiểu thêm</a>
 fingerprinter-tab-title = Dấu vết
 fingerprinter-tab-content = Dấu vết thu thập cài đặt từ trình duyệt và máy tính của bạn để tạo hồ sơ về bạn. Sử dụng dấu vết kỹ thuật số này, họ có thể theo dõi bạn trên các trang web khác nhau. <a data-l10n-name="learn-more-link">Tìm hiểu thêm</a>
-cryptominer-tab-title = Tiền điện tử
-cryptominer-tab-content = Tiền điện tử sử dụng sức mạnh tính toán của hệ thống của bạn để khai thác tiền kỹ thuật số. Các tập lệnh mã hóa làm cạn kiệt pin của bạn, làm chậm máy tính của bạn và có thể tăng hóa đơn năng lượng của bạn. <a data-l10n-name="learn-more-link">Tìm hiểu thêm</a>
+cryptominer-tab-title = Trình đào tiền điện tử
+cryptominer-tab-content = Trình đào tiền điện tử sử dụng sức mạnh tính toán của hệ thống của bạn để khai thác tiền kỹ thuật số. Các tập lệnh mã hóa làm cạn kiệt pin của bạn, làm chậm máy tính của bạn và có thể tăng hóa đơn năng lượng của bạn. <a data-l10n-name="learn-more-link">Tìm hiểu thêm</a>
 protections-close-button2 =
     .aria-label = Đóng
     .title = Đóng
@@ -165,10 +165,10 @@ bar-tooltip-social =
            *[other] { $count } trình theo dõi truyền thông xã hội ({ $percentage }%)
         }
 bar-tooltip-cookie =
-    .title = Cookie theo dõi trên nhiều trang web
+    .title = Cookie theo dõi liên trang web
     .aria-label =
         { $count ->
-           *[other] { $count } cookie theo dõi trên nhiều trang web ({ $percentage }%)
+           *[other] { $count } cookie theo dõi liên trang web ({ $percentage }%)
         }
 bar-tooltip-tracker =
     .title = Trình theo dõi nội dung
@@ -183,8 +183,8 @@ bar-tooltip-fingerprinter =
            *[other] { $count } dấu vết ({ $percentage }%)
         }
 bar-tooltip-cryptominer =
-    .title = Tiền điện tử
+    .title = Trình đào tiền điện tử
     .aria-label =
         { $count ->
-           *[other] { $count } tiền điện tử ({ $percentage }%)
+           *[other] { $count } trình đào tiền điện tử ({ $percentage }%)
         }

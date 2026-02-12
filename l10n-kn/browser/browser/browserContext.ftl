@@ -72,12 +72,6 @@ toolbar-button-stop =
 toolbar-button-stop-reload =
     .title = { main-context-menu-reload.aria-label }
 
-## Firefox Account Button
-
-
-## Account toolbar Button
-
-
 ## Save Page
 
 main-context-menu-page-save =
@@ -105,9 +99,7 @@ main-context-menu-save-link =
     .label = ಕೊಂಡಿಯನ್ನು ಹೀಗೆ ಉಳಿಸು...
     .accesskey = k
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = ಇಮೈಲ್ ವಿಳಾಸವನ್ನು ಕಾಪಿ ಮಾಡು
@@ -189,9 +181,6 @@ main-context-menu-audio-email =
 main-context-menu-send-to-device =
     .label = ಪುಟವನ್ನು ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸು
     .accesskey = D
-
-##
-
 
 ##
 

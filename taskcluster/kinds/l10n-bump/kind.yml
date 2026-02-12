@@ -25,7 +25,7 @@ task-defaults:
                 mozilla-central: main
                 mozilla-beta: firefox-beta
                 mozilla-release: firefox-release
-                mozilla-esr128: firefox-esr128
+                mozilla-esr140: firefox-esr140
                 autoland: firefox-autoland
                 # change this if you want to test esr bumps against other
                 # branches on try; there's rarely a need though.
@@ -51,6 +51,7 @@ task-defaults:
                               - linux-devedition
                               - linux64
                               - linux64-devedition
+                              - linux64-aarch64-devedition
                               - linux64-aarch64
                               - win32
                               - win32-devedition
@@ -68,6 +69,7 @@ task-defaults:
                                           "linux64",
                                           "linux64-aarch64",
                                           "linux64-devedition",
+                                          "linux64-aarch64-devedition",
                                           "macosx64",
                                           "macosx64-devedition",
                                           "win32",
@@ -111,6 +113,7 @@ task-defaults:
                               - linux64
                               - linux64-aarch64
                               - linux64-devedition
+                              - linux64-aarch64-devedition
                               - win32
                               - win32-devedition
                               - win64
@@ -127,6 +130,7 @@ task-defaults:
                                           "linux64",
                                           "linux64-aarch64",
                                           "linux64-devedition",
+                                          "linux64-aarch64-devedition",
                                           "macosx64",
                                           "macosx64-devedition",
                                           "win32",

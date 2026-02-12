@@ -65,6 +65,10 @@ startup-header = Kurmital
 always-check-default =
     .label = Ƴeewto sahaa kala so { -brand-short-name } ko wanngorde maa woowaande
     .accesskey = t
+is-default-browser =
+    .message = { -brand-short-name } ko wanngoraade maa woowaande oo sahaa
+is-not-default-browser =
+    .message = { -brand-short-name } wonaa wanngoraade maa woowaande
 is-default = { -brand-short-name } ko wanngoraade maa woowaande oo sahaa
 is-not-default = { -brand-short-name } wonaa wanngoraade maa woowaande
 set-as-my-default-browser =
@@ -165,6 +169,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Pille e Jaaɓnirɗe
+downloads-header-2 =
+    .label = Gaawte
+download-save-where-2 =
+    .label = Danndu piille to
+    .accesskey = n
 download-header = Gaawte
 download-save-where = Danndu piille to
     .accesskey = n
@@ -344,7 +353,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Kenorɗe Kese kam e Tabbe
 home-new-windows-tabs-description2 = Suɓo ko njiyataa so a udditii hello maa jaɓɓorgo, henorde hesere, e tabbere hesere.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Hello jaɓɓorgo kam e kenorɗe kese
 home-newtabs-mode-label = Tabbe kese
@@ -456,6 +465,8 @@ search-keyword-warning-bookmark = A suɓiima helmere yiylorde wonnde e huutoreed
 ## Containers Section
 
 containers-header = Tabbe Mooftirɗe
+containers-section-header =
+    .heading = Tabbe Mooftirɗe
 containers-add-button =
     .label = Ɓeydu Mooftiree Hesere
     .accesskey = Ɓ
@@ -510,9 +521,6 @@ sync-sign-in =
     .label = Seŋao
     .accesskey = g
 
-## Sync section - enabling or disabling sync.
-
-
 ## The list of things currently syncing.
 
 sync-currently-syncing-bookmarks = Maantore
@@ -558,6 +566,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = Innde Kaɓirgol
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Innde Kaɓirgol
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Waylu Innde Kaɓirgel
+    .accesskey = a
 sync-device-name-change =
     .label = Waylu Innde Kaɓirgel…
     .accesskey = a
@@ -614,9 +630,6 @@ forms-master-pw-fips-desc = Baylugol Finnde Woorii
 
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Aslol
@@ -637,6 +650,10 @@ history-remember-option-never =
     .label = Hoto siftor aslol hay sahaa
 history-remember-option-custom =
     .label = Huutoro teelte peŋtore e aslol
+history-remember-description2 =
+    .description = { -brand-short-name } siiftoroyat banngogol maa, gaawtogol maa, formere kam e aslol njiilaw maa.
+history-dontremember-description2 =
+    .description = { -brand-short-name } maa huutoro teelte banngagol suturo ɗee tee teskotaako hay aslol gootol tuma nde mbanngoto-ɗaa e nder Geese.
 history-remember-description = { -brand-short-name } siiftoroyat banngogol maa, gaawtogol maa, formere kam e aslol njiilaw maa.
 history-dontremember-description = { -brand-short-name } maa huutoro teelte banngagol suturo ɗee tee teskotaako hay aslol gootol tuma nde mbanngoto-ɗaa e nder Geese.
 history-private-browsing-permanent =
@@ -689,12 +706,6 @@ sitedata-settings =
     .label = Yuɓɓin keɓe…
     .accesskey = M
 
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
-
 ## Privacy Section - Address Bar
 
 addressbar-header = Palal Ñiiɓirɗe
@@ -714,19 +725,12 @@ addressbar-suggestions-settings = Waylu cuɓe wonande cakkitte yiylorde
 
 content-blocking-learn-more = Ɓeydu humpito
 
-## These strings are used to define the different levels of
-## Enhanced Tracking Protection.
-
-
 ##
 
 
 # The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-tracking-protection-change-block-list = Waylo doggol padde
-
-## Privacy Section - Tracking
-
 
 ## Privacy Section - Permissions
 
@@ -760,6 +764,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Paltooje…
     .accesskey = P
+permissions-location2 =
+    .label = Nokkuure
+permissions-camera2 =
+    .label = Kameraa
+permissions-microphone2 =
+    .label = Mikkoroo
+permissions-notification2 =
+    .label = Tintine
 
 ## Privacy Section - Data Collection
 
@@ -776,9 +788,6 @@ collection-studies-link = Yiy jaŋdeeji { -brand-short-name }
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Ciimti keɓe ko daaƴaaɗi wonande kaa ngonka mahngo
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -810,12 +819,7 @@ certs-view =
 certs-devices =
     .label = kaɓirɗi Kisal…
     .accesskey = k
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = Daaƴtu FIPS
 
 ## The following strings are used in the Download section of settings
 

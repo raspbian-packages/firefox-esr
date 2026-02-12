@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Skrij
     .secondarybuttonaccesskey = k
 appmenu-update-restart-message2 = Namestite najnovejšo različico { -brand-shorter-name(sklon: "rodilnik") }. Odprta okna in zavihki bodo obnovljeni.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Razveljavi
+    .secondarybuttonaccesskey = R
 appmenu-update-other-instance =
     .label = { -brand-shorter-name }a ni mogoče samodejno posodobiti na najnovejšo različico.
     .buttonlabel = Vseeno posodobi { -brand-shorter-name }
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = V redu
     .buttonaccesskey = V
 appmenu-addon-post-install-message3 = Upravljajte dodatke in teme v meniju aplikacije.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Dovoljenja in nastavitve podatkov lahko kadarkoli spremenite v <a data-l10n-name="settings-link">nastavitvah razširitve</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Pripni razširitev v orodno vrstico
+    .accesskey = P
 appmenu-addon-post-install-incognito-checkbox =
     .label = Dovoli, da se ta razširitev izvaja v zasebnih oknih
     .accesskey = D

@@ -129,7 +129,7 @@ downloads-cmd-choose-unblock-panel =
 # blocked.This opens a dialog where the user can choose whether to open the
 # file or remove the download. Opening is the default option.
 downloads-cmd-choose-open =
-    .tooltiptext = Բացել կամ հեռացնել նիշքը
+    .tooltiptext = Բացել կամ հեռացնել ֆայլը
 downloads-cmd-choose-open-panel =
     .aria-label = Բացել կամ հեռացնել ֆայլը
 # Displayed when hovering a blocked download, indicates that it's possible to
@@ -182,6 +182,18 @@ downloads-history =
 # that we are showing the details of a single download.
 downloads-details =
     .title = Ներբեռնմանի մանրամասները
+
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Ֆայլերը մնում են ձեր սարքում
+downloads-private-browsing-message = Այս սարքն օգտագործող ցանկացած անձ կարող է տեսնել ներբեռնումները, նույնիսկ երբ դուք փակում եք բոլոր գաղտնի պատուհանները։
+downloads-private-browsing-delete-button =
+    .label = Ջնջել ֆայլերն ինքնաբերաբար
+    .accesskey = Ջ
+downloads-private-browsing-accept-button =
+    .label = Հասկացա
+    .accesskey = G
 
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:

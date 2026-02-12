@@ -17,6 +17,7 @@ certmgr-tab-ca =
 certmgr-mine = Ai certificate de la aceste organizații care te identifică
 certmgr-remembered = Aceste certificate sunt folosite pentru a te identifica pe site-urile web
 certmgr-people = Ai stocate certificate care identifică aceste persoane
+certmgr-server = Aceste intrări identifică excepții de eroare de certificat server
 certmgr-ca = Ai stocate certificate care identifică aceste autorități de certificare
 certmgr-edit-ca-cert2 =
     .title = Editează setările certificatului de încredere AC
@@ -45,6 +46,8 @@ certmgr-email =
     .label = Adresă de e-mail
 certmgr-serial =
     .label = Număr de serie
+certmgr-fingerprint-sha-256 =
+    .label = Amprentă SHA-256
 certmgr-view =
     .label = Vezi
     .accesskey = V
@@ -61,11 +64,11 @@ certmgr-delete-builtin =
     .label = Șterge sau anulează încrederea…
     .accesskey = D
 certmgr-backup =
-    .label = Salvează
-    .accesskey = S
+    .label = Copie de siguranță…
+    .accesskey = B
 certmgr-backup-all =
-    .label = Salvează tot
-    .accesskey = l
+    .label = Copie de siguranță pentru toate…
+    .accesskey = k
 certmgr-restore =
     .label = Importă…
     .accesskey = m
@@ -92,14 +95,14 @@ exception-mgr-permanent =
 pk11-bad-password = Parola introdusă este incorectă.
 pkcs12-decode-err = Nu se poate decoda fișierul.  Fie acesta nu e în format PKCS #12, fie a fost corupt, fie parola pe care ați introdus-o e incorectă.
 pkcs12-unknown-err-restore = Nu s-a putut restaura fișierul de tip PKCS #12 din motive necunoscute.
-pkcs12-unknown-err-backup = Nu s-a putut crea fișierul de backup de tip PKCS #12 din motive necunoscute.
+pkcs12-unknown-err-backup = Copia de siguranță PKCS #12 nu a putut fi creată din motive necunoscute.
 pkcs12-unknown-err = Operația PKCS #12 a eșuat din motive necunoscute.
 pkcs12-info-no-smartcard-backup = Nu este posibilă salvarea certificatelor de pe dispozitive hardware de securitate, cum ar fi cardurile inteligente.
 pkcs12-dup-data = Certificatul și cheia privată există deja în dispozitivul de securitate.
 
 ## PKCS#12 file dialogs
 
-choose-p12-backup-file-dialog = Nume fișier de salvat
+choose-p12-backup-file-dialog = Denumire fișier de copie de siguranță
 file-browse-pkcs12-spec = Fișiere PKCS12
 choose-p12-restore-file-dialog = Fișierul certificatului de importat
 
@@ -121,6 +124,10 @@ delete-user-cert-title =
     .title = Șterge certificatele proprii
 delete-user-cert-confirm = Sigur vrei să ștergi aceste certificate?
 delete-user-cert-impact = Dacă ștergi unul dintre certificatele proprii, nu-l vei mai putea folosi pentru a te identifica.
+delete-ssl-override-title =
+    .title = Excepție de ștergere a certificatului de server
+delete-ssl-override-confirm = Sigur vrei să ștergi această excepție de server?
+delete-ssl-override-impact = Dacă ștergi o excepție de server, restabilești verificările de securitate obișnuite pentru acel server și îi ceri să folosească un certificat valid.
 delete-ca-cert-title =
     .title = Șterge sau anulează încrederea certificatelor AC
 delete-ca-cert-confirm = Ai cerut ștergerea acestor certificate AC. Pentru certificatele incluse, toate încrederile acordate vor fi eliminate, lucru ce are același efect. Sigur vrei să ștergi sau să elimini încrederea?
@@ -137,18 +144,24 @@ cert-with-serial =
     .value = Certificatul cu numărul de serie: { $serialNumber }
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Nu trimite niciun certificat de client
+# Used when no cert is stored for an override
+no-cert-stored-for-override = (Nestocat)
+# When a certificate is unavailable (for example, it has been deleted or the token it exists on has been removed).
+certificate-not-available = (Indisponibil)
 
 ## Used to show whether an override is temporary or permanent
 
+permanent-override = Permanentă
+temporary-override = Temporară
 
 ## Add Security Exception dialog
 
 add-exception-branded-warning = Ești pe cale să schimbi modul în care { -brand-short-name } identifică acest site.
 add-exception-invalid-header = Acest site încearcă să se identifice cu informații nevalide.
 add-exception-domain-mismatch-short = Site greșit
-add-exception-domain-mismatch-long = Certificatul aparține unui alt site, ceea ce ar putea însemna că cineva încearcă să uzurpe identitatea acestui site.
+add-exception-domain-mismatch-long = Certificatul aparține unui alt site, ceea ce ar putea însemna că cineva încearcă să uzurpe identitatea site-ului.
 add-exception-expired-short = Informații depășite
-add-exception-expired-long = Certificatul nu este în prezent valid. Ar putea fi furat sau pierdut și ar putea fi folosit de cineva pentru a uzurpa identitatea acestui site.
+add-exception-expired-long = Certificatul nu este valid. Ar putea fi furat sau pierdut și ar putea fi folosit de cineva ca să uzurpe identitatea site-ului.
 add-exception-unverified-or-bad-signature-short = Identitate necunoscută
 add-exception-unverified-or-bad-signature-long = Certificatul nu prezintă încredere deoarece nu a fost verificat de către o autoritate recunoscută folosind o semnătură securizată.
 add-exception-valid-short = Certificat valid

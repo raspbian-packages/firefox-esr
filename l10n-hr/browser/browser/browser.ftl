@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = { -brand-shortcut-name } privatno pregledavan
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,16 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } – privatno pregledavanje
     .data-content-title-default-with-profile = { $content-title } – { $profile-name }
     .data-content-title-private-with-profile = { $content-title } – { $profile-name } – privatno pregledavanje
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } – privatno pregledavanje
+       *[other] { -brand-full-name } privatno pregledavanje
+    }
 
 ##
 
@@ -181,6 +189,35 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = Dobij pomoć
     .accesskey = D
+urlbar-result-menu-dismiss-suggestion =
+    .label = Odbaci ovaj prijedlog
+    .accesskey = O
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = Saznaj više o { -firefox-suggest-brand-name }u
+    .accesskey = S
+urlbar-result-menu-manage-firefox-suggest =
+    .label = Upravljaj { -firefox-suggest-brand-name }om
+    .accesskey = U
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = Prijavi netočnu lokaciju
+urlbar-result-menu-show-less-frequently =
+    .label = Prikaži rjeđe
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = Ne prikazuj prijedloge za vremensku prognozu
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = Otvori izbornik
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = Hvala ti povratnim informacijama
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = Hvala ti na povratnim informacijama. Više nećeš vidjeti prijedloge za vremensku prognozu.
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -312,21 +349,39 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Pregledaj dodatke
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = proširenja, teme, dodaci
 quickactions-cmd-addons2 = dodaci
 # Opens the bookmarks library window
 quickactions-bookmarks2 = Upravljaj zabilješkama
 quickactions-cmd-bookmarks = zabilješke
 # Opens a SUMO article explaining how to clear history
-quickactions-clearhistory = Obriši povijest
-quickactions-cmd-clearhistory = obriši povijest
+quickactions-clearrecenthistory = Izbriši nedavnu povijest
+quickactions-cmd-clearrecenthistory = izbriši nedavnu povijest, povijest
+# Opens a SUMO article explaining how to clear history
+quickactions-clearhistory = Izbriši povijest
+quickactions-cmd-clearhistory = izbriši povijest
 # Opens about:downloads page
 quickactions-downloads2 = Prikaži preuzimanja
 quickactions-cmd-downloads = preuzimanja
 # Opens about:addons page in the extensions section
 quickactions-extensions = Upravljaj proširenjima
+quickactions-cmd-extensions2 = proširenja, dodaci
 quickactions-cmd-extensions = proširenja
+# Opens Firefox View
+quickactions-firefoxview = Otvori { -firefoxview-brand-name }
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = otvori { -firefoxview-brand-name }, { -firefoxview-brand-name }, otvori pogled, pogled
+# Opens SUMO home page
+quickactions-help = { -brand-product-name } pomoć
+quickactions-cmd-help = pomoć, podrška
 # Opens the devtools web inspector
 quickactions-inspector2 = Otvori alate za programere
+quickactions-cmd-inspector2 = inspektor, programerski alati
 quickactions-cmd-inspector = inspektor, programerski alati
 # Opens about:logins
 quickactions-logins2 = Upravljaj lozinkama
@@ -339,7 +394,7 @@ quickactions-print2 = Ispiši stranicu
 quickactions-cmd-print = ispis
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Spremi stranicu kao PDF
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, spremi stranicu
 # Opens a new private browsing window
 quickactions-private2 = Otvori privatni prozor
 quickactions-cmd-private = privatno pregledavanje
@@ -351,19 +406,27 @@ quickactions-restart = Ponovo pokreni { -brand-short-name }
 quickactions-cmd-restart = ponovo pokreni
 # Opens the screenshot tool
 quickactions-screenshot3 = Snimi ekran
+quickactions-cmd-screenshot2 = snimka ekrana, snimi ekran
 quickactions-cmd-screenshot = snimka ekrana
 # Opens about:preferences
 quickactions-settings2 = Upravljaj postavkama
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = postavke, opcije, upravljanje
 quickactions-cmd-settings = postavke, osobne postavke, mogućnosti
 # Opens about:addons page in the themes section
 quickactions-themes = Upravljaj temama
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = teme, dodaci
 quickactions-cmd-themes = teme
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = Aktualiziraj { -brand-short-name }
 quickactions-cmd-update = aktualiziraj
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = Prikaži izvorni kod stranice
-quickactions-cmd-viewsource = pogledaj izvorni kod, izvorni kod
+quickactions-cmd-viewsource2 = prikaži izvorni kod, izvorni kod, izvorni kod stranice
+quickactions-cmd-viewsource = prikaži izvorni kod, izvorni kod
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Saznaj više o brzim radnjama
@@ -437,7 +500,7 @@ identity-https-only-info-turn-on3 = Uključite HTTPS nadogradnje za ovu stranicu
 identity-https-only-info-turn-off3 = Ukoliko se stranica ne učitava ispravno, možda biste trebali isključiti HTTPS nadogradnje za ovu stranicu i koristiti nesigurni HTTP.
 identity-https-only-info-no-upgrade = Nije moguće nadograditi vezu s HTTP-a.
 identity-permissions-storage-access-header = Međustranični kolačići
-identity-permissions-storage-access-hint = Ove stranke mogu koristiti kolačiće i podatke dijeljene među više stranica dok ste na toj stranici.
+identity-permissions-storage-access-hint = Ove stranke mogu koristiti kolačiće i podatke dijeljene među više stranica dok si na toj stranici.
 identity-permissions-storage-access-learn-more = Saznaj više
 identity-permissions-reload-hint = Stranica se možda mora ponovo učitati, kako bi se primijenile promjene.
 identity-clear-site-data =
@@ -564,6 +627,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = Traži ili upiši adresu
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = Upiši adresu
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -606,7 +673,7 @@ urlbar-placeholder-with-name =
 urlbar-remote-control-notification-anchor2 =
     .tooltiptext = Preglednik je pod daljinskim upravljanjem (razlog: { $component })
 urlbar-permissions-granted =
-    .tooltiptext = Ovoj stranici odobrene su dodatne dozvole.
+    .tooltiptext = Ovoj su stranici odobrene dodatne dozvole.
 urlbar-switch-to-tab =
     .value = Prijeđi na karticu:
 # Used to indicate that a selected autocomplete entry is provided by an extension.
@@ -643,6 +710,8 @@ urlbar-result-action-visit = Posjeti
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = Prijeđi na karticu · <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = Neimenovana grupa
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Posjeti web stranicu iz međuspremnika
 # Directs a user to press the Tab key to perform a search with the specified
@@ -672,6 +741,130 @@ urlbar-result-action-copy-to-clipboard = Kopiraj
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = nedefinirano
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong>, { $city }, { $region }
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature }°{ $unit }</strong>, { $city }, { $region }, { $country }
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong>, { $city }
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } · Sponzorirano
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = Prikaži prijedloge
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = Ne sada
+urlbar-result-realtime-opt-in-dismiss = Odbaci
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = Ne prikazuj ove prijedloge
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = Ne prikazuj tržišne prijedloge
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = Hvala Vam na povratnim informacijama. Više nećete vidjeti tržišne prijedloge.
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = Hvala Vam na povratnim informacijama. Više nećete vidjeti ove prijedloge.
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown =
+    { $daysUntilStart ->
+        [one] { $name } · Za { $daysUntilStart } dan
+        [few] { $name } · Za { $daysUntilStart } dana
+       *[other] { $name } · Za { $daysUntilStart } dana
+    }
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range =
+    { $daysUntilStart ->
+        [one] { $name } · Započinje za { $daysUntilStart } dan
+        [few] { $name } · Započinje za { $daysUntilStart } dana
+       *[other] { $name } · Započinje za { $daysUntilStart } dana
+    }
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing =
+    { $daysUntilEnd ->
+        [one] { $name } · Završava za { $daysUntilEnd } dan
+        [few] { $name } · Završava za { $daysUntilEnd } dana
+       *[other] { $name } · Završava za { $daysUntilEnd } dana
+    }
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · Danas
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · Završava danas
 
 ## Strings used for buttons in the urlbar
 
@@ -699,8 +892,15 @@ urlbar-searchmode-actions =
     .label = Radnje
 urlbar-searchmode-exit-button =
     .tooltiptext = Zatvori
+urlbar-searchmode-default =
+    .tooltiptext = Standardna tražilica
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Ovaj put traži pomoću:
-urlbar-searchmode-popup-search-settings = Postavke pretrage
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Postavke pretrage
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = Novo
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -751,6 +951,9 @@ urlbar-group-recent-searches =
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
     .label = U trendu na { $engine }
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = Sponzorirano
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = Ne prikazuj popularna pretraživanja
@@ -947,6 +1150,9 @@ panel-save-update-password = Lozinka
 # "More" item in macOS share menu
 menu-share-more =
     .label = Više…
+menu-share-copy-link =
+    .label = Kopiraj poveznicu
+    .accesskey = K
 ui-tour-info-panel-close =
     .tooltiptext = Zatvori
 
@@ -994,6 +1200,8 @@ navbar-accessible =
     .aria-label = Navigacija
 navbar-downloads =
     .label = Preuzimanja
+navbar-overflow-2 =
+    .tooltiptext = Više alata
 navbar-overflow =
     .tooltiptext = Više alata…
 # Variables:
@@ -1020,6 +1228,10 @@ tabs-toolbar-list-all-tabs =
     .label = Popis svih kartica
     .tooltiptext = Popis svih kartica
 
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = Za prikvačivanje kartice ispusti karticu ovdje
+
 ## Infobar shown at startup to suggest session-restore
 
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
@@ -1032,7 +1244,7 @@ filepicker-blocked-infobar = Tvoja je organizacija blokirala pristup lokalnim da
 
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
-data-reporting-notification-message = { -brand-short-name } automatski šalje određene podatke kako bi { -vendor-short-name } poboljšala tvoje iskustvo.
+data-reporting-notification-message = { -brand-short-name } automatski šalje određene podatke kako bi { -vendor-short-name } poboljšao tvoje iskustvo.
 data-reporting-notification-button =
     .label = Odaberi što dijelim
     .accesskey = O
@@ -1124,10 +1336,15 @@ popup-notification-addon-install-unsigned =
     .value = (Nepotvrđeno)
 popup-notification-xpinstall-prompt-learn-more = Naučite više o sigurnom instaliranju dodataka
 popup-notification-xpinstall-prompt-block-url = Pogledaj detalje
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = Pokreni u privatnim prozorima
-    .accesskey = P
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = Dozvoli proširenju da radi u privatnom prozoru
+    .accesskey = p
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = Dijeli tehničke podatke i podatke o interakciji s programerom proširenja
+    .accesskey = D
 
 ## Pop-up warning
 
@@ -1184,3 +1401,69 @@ file-picker-crashed-save-nowhere = Windows dijaloški okvir za odabir datoteke s
 file-picker-crashed-show-in-folder =
     .label = Prikaži u mapi
     .accessKey = m
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = Dovrši postavljanje
+onboarding-aw-finish-setup-button =
+    .label = Završi postavljanje
+    .tooltiptext = Završi s postavljanjem { -brand-short-name }a
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = Poboljšana zaštita od praćenja je uključena
+trustpanel-etp-label-disabled = Poboljšana zaštita od praćenja je isključena
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = Poboljšana zaštita od praćenja: Uključena za { $host }
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = Poboljšana zaštita od praćenja: Isključena za { $host }
+trustpanel-etp-description-enabled = Ako nešto na ovoj stranici izgleda neispravno, pokušaj isključiti zaštite.
+trustpanel-etp-description-disabled = { -brand-product-name } smatra da bi te tvrtke trebale manje pratiti. Blokiramo što više programa za praćenje kad uključiš zaštite.
+trustpanel-connection-label-secure = Veza je sigurna
+trustpanel-connection-label-insecure = Veza nije sigurna
+trustpanel-clear-cookies-button = Izbriši kolačiće i podatke stranica
+trustpanel-privacy-link = Postavke privatnosti
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = Izbriši kolačiće i podatke stranica za { $host }
+trustpanel-clear-cookies-description = Uklanjanje kolačića i podataka web stranice će te možda odjaviti s web stranice i isprazniti košaricu.
+trustpanel-clear-cookies-subview-button-clear = Izbriši
+trustpanel-clear-cookies-subview-button-cancel = Odustani
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = Zaštite veze za { $host }
+trustpanel-siteinformation-morelink = Više informacija o web stranici
+trustpanel-blocker-see-all = Pogledaj sve
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = Zaštite od praćenja za { $host }
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header =
+    { $count ->
+        [one] <span>{ $count }</span> program za praćenje blokiran na ovoj web stranici
+        [few] <span>{ $count }</span> programa za praćenje blokirani na ovoj web stranici
+       *[other] <span>{ $count }</span> programa za praćenje blokirani na ovoj web stranici
+    }
+trustpanel-blocker-description = { -brand-product-name } smatra da bi te tvrtke trebale manje pratiti. Stoga blokiramo što više možemo.
+trustpanel-blocked-header = { -brand-product-name } je blokirao sljedeće stvari:
+trustpanel-tracking-header = { -brand-product-name } je dopustio sljedeće stvart kako bi web stranice ispravno radile:
+trustpanel-tracking-description = Neki gumbi, obrasci i polja za prijavu možda neće raditi bez programa za praćenje.
+trustpanel-insecure-section-header = Tvoja veza nije sigurna
+trustpanel-insecure-description = Podaci koje šalješ na ovu web stranicu nisu šifrirani. Mogu se pregledati, ukrasti ili promijeniti.
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [one] { $count } međustranični kolačić za praćenje
+        [few] { $count } međustranična kolačića za praćenje
+       *[other] { $count } međustraničnih kolačića za praćenje
+    }
+trustpanel-list-label-tracking-content = Sadržaj praćenja

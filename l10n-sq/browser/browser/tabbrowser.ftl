@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Mbylleni Skedën
 tabbrowser-menuitem-close =
     .label = Mbylleni
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -74,6 +87,13 @@ tabbrowser-unblock-tab-audio-tooltip =
 
 ## Tooltips for tab audio control
 
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Hapjani zërin skedës
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Mbylljani zërin skedës
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Luani lëndën e skedës
 
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
@@ -142,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Mos ma shfaq më këtë kuti dialogu
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Kujdes
-tabbrowser-confirm-close-duplicate-tabs-text = Do të mbajmë të hapur skedën e fundit aktive
 tabbrowser-confirm-close-all-duplicate-tabs-title = Të mbyllen skeda të përsëdytura?
 tabbrowser-confirm-close-all-duplicate-tabs-text = Do të mbyllim skeda të përsëdytura në këtë dritare. Skeda e fundit aktive do të mbesë hapur.
 tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Mbylli skedat
@@ -183,6 +201,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Shfaqi Që Të { $tabCount } Skedat
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Mbylljani zërin skedës
@@ -190,8 +211,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Hapjani zërin skedës
 tabbrowser-manager-close-tab =
     .tooltiptext = Mbylleni skedën
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — E mbyllur
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Dritarja e tanishme
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Krijoni grup skedash
 tab-group-editor-title-edit = Administroni grup skedash
@@ -201,13 +230,40 @@ tab-group-editor-name-field =
 tab-group-editor-cancel =
     .label = Anuloje
     .accesskey = A
-tab-group-menu-header = Grupe skedash
+tab-group-editor-color-selector =
+    .aria-label = Ngjyrë grupi skedash
+tab-group-editor-color-selector2-blue = Blu
+    .title = Blu
+tab-group-editor-color-selector2-purple = E purpurt
+    .title = E purpurt
+tab-group-editor-color-selector2-orange = Portokalli
+    .title = Portokalli
+tab-group-editor-color-selector2-yellow = E verdhë
+    .title = E verdhë
+tab-group-editor-color-selector2-pink = Rozë
+    .title = Rozë
+tab-group-editor-color-selector2-green = E gjelbër
+    .title = E gjelbër
+tab-group-editor-color-selector2-gray = Gri
+    .title = Gri
+tab-group-editor-color-selector2-red = E kuqe
+    .title = E kuqe
+tab-group-description = { $tabGroupName } — Grup Skedash
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Të palosura
+tab-group-label-tooltip-expanded = { $tabGroupName } — Të shpalosura
+tab-group-preview-name =
+    .aria-label = Skeda në një grup të palosur
 tab-context-unnamed-group =
     .label = Grup i paemër
 tab-group-name-default = Grup i Paemër
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Listë skedash e hapur
+tab-group-preview-closed-description = Listë skedash e mbyllur
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -223,6 +279,8 @@ tab-context-move-tab-to-group =
            *[other] Add Tabs to Group
         }
     .accesskey = Shtoji Skedat te Grup
+tab-context-move-tab-to-group-saved-groups =
+    .label = Grupe të Mbyllur
 tab-group-editor-action-new-tab =
     .label = Skedë e re në grup
 tab-group-editor-action-new-window =
@@ -247,6 +305,16 @@ tab-context-ungroup-tab =
            *[other] Remove from Groups
         }
     .accesskey = H
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } më tepër
+       *[other] { $tabCount } më tepër
+    }
 
 ## Open/saved tab group context menu
 
@@ -272,3 +340,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Hape Grupin në Dritare të Re
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Pamje krah për krah
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Shtoni pamje krah për krah
+    .accesskey = t
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Hape në Pamje Krah Për Krah
+    .accesskey = H
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Ndaje Pamjen Krah Për Krah
+    .accesskey = N
+tab-context-badge-new = E re

@@ -25,6 +25,8 @@ return-to-amo-subtitle = 좋습니다. { -brand-short-name }를 설치했네요.
 return-to-amo-addon-title = 이제 <img data-l10n-name="icon"/> <b>{ $addon-name }</b> 부가 기능을 설치하겠습니다.
 return-to-amo-add-extension-label = 확장 기능 추가
 return-to-amo-add-theme-label = 테마 추가
+return-to-amo-theme-install-complete-label = 테마 설치됨
+return-to-amo-extension-install-complete-label = 확장 기능 설치됨
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous }에서 가
 mr1-onboarding-theme-header = 나만의 것으로 만드세요
 mr1-onboarding-theme-subtitle = 테마로 { -brand-short-name }를 개인화하세요.
 mr1-onboarding-theme-secondary-button-label = 나중에
-newtab-wallpaper-onboarding-title = 배경 화면 사용해보기
-newtab-wallpaper-onboarding-subtitle = 새 탭에 새로운 모습을 더할 배경 화면을 선택하세요.
-newtab-wallpaper-onboarding-primary-button-label = 배경 화면 설정
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = 시스템 테마
 mr1-onboarding-theme-label-light = 밝게
@@ -445,6 +444,18 @@ onboarding-checklist-sign-up = 계정 가입 또는 로그인
 
 tab-groups-onboarding-feature-callout-title = 덜 복잡하고 더 집중할 수 있도록 탭 그룹을 사용해 보세요
 tab-groups-onboarding-feature-callout-subtitle = 하나의 탭을 다른 탭 위에 드래그하여 첫 번째 그룹을 만들어 정리하세요.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = 탭 전체 목록 메뉴에서 탭 그룹을 찾을 수 있습니다.
+tab-groups-onboarding-create-group-title-2 = 언제든지 여기에서 탭 그룹을 찾으세요.
+tab-groups-onboarding-create-group-no-alltabs-button-title = 주소 표시줄에서 그룹을 검색하여 찾으세요.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = 탭 그룹을 닫으면 언제든지 탭 전체 목록 메뉴에서 다시 열 수 있습니다.
+tab-groups-onboarding-saved-groups-title-2 = 탭 그룹을 닫으면, 언제든지 여기서 다시 열 수 있습니다.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = 주소 표시줄에서 검색하여 닫힌 그룹을 찾으세요.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = 탭 전체 목록 메뉴에서 언제든지 탭 그룹을 다시열 수 있습니다.
+tab-groups-onboarding-session-restore-title = 언제든지 여기에서 탭 그룹을 다시 열 수 있습니다.
+tab-groups-onboarding-dismiss = 확인
 
 ## Multi Profiles feature onboarding messages
 
@@ -454,3 +465,107 @@ multi-profile-spotlight-cta = 프로필 만들기
 multi-profile-callout-title = 업무와 여가를 위한 다양한 프로필 만들기
 multi-profile-callout-subtitle = 프로필을 사용하면 검색 기록이나 비밀번호와 같은 탐색 정보를 완전히 분리할 수 있습니다.
 multi-profile-callout-cta = 프로필 만들기
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = 모바일용 Firefox와 탐색을 동기화하세요.
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = QR 코드를 스캔하여 모바일용 { -brand-product-name }를 다운로드하세요. 설치가 완료되면, "모바일에 동기화"를 선택해서 이동 중에도 비밀번호, 북마크 등에 접근할 수 있습니다.
+dismiss-button-label = 닫기
+sync-to-mobile-button-label = 모바일에 동기화
+desktop-to-mobile-qr-code-alt =
+    .aria-label = 모바일용 { -brand-product-name } 다운로드를 위한 QR 코드
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Windows 11로 업그레이드하십니까?
+    { -brand-product-name } 데이터를 백업하세요.
+create-backup-screen-1-subtitle = 비밀번호, 북마크 등을 1~2분 안에 자동으로 보호합니다.
+create-backup-screen-1-flair = 권장
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">더 알아보기</a>
+create-backup-screen-1-sync-label = { -brand-product-name } 동기화
+create-backup-screen-1-sync-body = 로그인한 모든 기기 백업
+create-backup-screen-1-backup-label = PC에 백업
+create-backup-screen-1-backup-body = 기기 또는 OneDrive에 저장
+create-backup-select-tile-button-label = 선택
+create-backup-back-button-label = 뒤로
+create-backup-show-fewer =
+    .label = 이처럼 간단히 보기
+create-backup-screen-2-title = 백업할 { -brand-product-name } 데이터 선택
+create-backup-screen-2-subtitle = 1분밖에 걸리지 않습니다. 사용자의 데이터는 하루에 한번 백업됩니다.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = 쉬운 설정
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = 북마크, 기록, 설정 등
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = 비밀번호 및 결제는 포함하지 않음
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = 암호화되지 않음
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = 모든 데이터
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = 비밀번호 및 결제 포함
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = 비밀번호로 암호화됨
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = 어디에 백업을 저장하시겠습니까?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = 백업 파일 비밀번호 생성
+create-backup-screen-3-subtitle = 데이터를 암호화하는 데 필요합니다. 기억할 수 있는 장소에 보관하세요.
+fx-backup-opt-in-header = 파일 위치 선택
+fx-backup-opt-in-filepath-label = OneDrive와 같은 새 기기로 전송하고자 하는 곳을 선택하세요.
+fx-backup-opt-in-create-password-label = 비밀번호 입력
+fx-backup-opt-in-confirm-btn-label = 계속
+fx-backup-opt-in-cancel-btn-label = 뒤로
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = 백업이 예약됨
+fx-backup-confirmation-screen-close-button = 닫기
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = 모든 탐색 데이터 포함됨
+fx-backup-confirmation-screen-all-data-item-text-2 = 기기에 저장됨
+fx-backup-confirmation-screen-all-data-item-text-3 = 암호화 및 비밀번호로 보호됨
+fx-backup-confirmation-screen-easy-setup-item-text-1 = 북마크, 기록, 설정 및 기타 데이터가 포함됨
+fx-backup-confirmation-screen-easy-setup-item-text-2 = 기기에 저장됨
+fx-backup-confirmation-screen-easy-setup-item-text-3 = 비밀번호와 결제는 포함되지 않음
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = 민감한 데이터를 포함하려면 <a data-l10n-name="settings">설정</a>으로 이동하세요.
+fx-backup-confirmation-screen-item-subtext-1 = 몇 분 후에 백업이 시작되며, 하루에 한번씩 실행됩니다. <a data-l10n-name="settings">설정</a>에서 진행 상황을 확인할 수 있습니다.
+fx-backup-confirmation-screen-item-subtext-2 = 다시 설치해야 하는 경우 { -brand-short-name }가 백업을 찾습니다.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = 백업에서 복원
+restore-from-backup-title = { -brand-short-name }를 원하는 대로 되돌려 드립니다
+restore-from-backup-subtitle = 탐색을 재개하기 위해 모든 북마크, 방문 기록 및 기타 데이터를 복구하세요.
+restore-from-backup-secondary-button = 복원하지 않음
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = 돌아왔습니다! { -brand-short-name } 데이터가 복원되었습니다.
+restored-from-backup-success-with-checklist-subtitle = 가장 좋아하는 개인 정보 보호에 중점을 둔 브라우저를 한 번의 클릭으로 바로 사용할 수 있게 하고 싶으신가요?
+restored-from-backup-success-no-checklist-subtitle = <a data-l10n-name="settings">설정</a>에서 기기의 백업을 켤 수 있습니다.
+restored-from-backup-success-with-checklist-primary-button = 저장하고 계속
+restored-from-backup-success-with-checklist-secondary-button = 이 단계 건너뛰기
+restored-from-backup-success-no-checklist-primary-button = 계속
+restored-from-backup-error-title = 백업 파일에 문제가 있습니다.
+restored-from-backup-error-subtitle = 다른 { -brand-short-name } 백업 파일이 있는 경우, 그 파일로 복원을 시도하세요. <a data-l10n-name="restore-problems">여전히 문제가 있나요?</a>
+restored-from-backup-error-primary-button = 닫기
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = { -brand-short-name } 경험 사용자 지정
+onboarding-personalization-subtitle = 몇 가지 질문에 답변하시면 { -brand-short-name } 사용을 향상시킬 수 있는 기능 및 확장 기능을 추천해 드립니다.
+onboarding-personalization-use-case-title = 무엇에 { -brand-short-name }를 사용하시겠습니까?
+onboarding-personalization-use-case-personal-option = 개인
+onboarding-personalization-use-case-school-option = 학교
+onboarding-personalization-use-case-work-option = 직장
+onboarding-personalization-motivation-title = 가장 중요하게 생각하는 { -brand-short-name }의 기능은 무엇입니까?
+onboarding-personalization-motivation-privacy-option = 개인 정보 및 보안
+onboarding-personalization-motivation-productivity-option = 생산성
+onboarding-personalization-motivation-other-option = 기타

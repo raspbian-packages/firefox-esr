@@ -10,6 +10,7 @@
 #ifndef XP_WIN
 #  include <unistd.h>
 #endif
+#include "mozilla/AppShutdown.h"
 #include "mozilla/ArrayUtils.h"
 #include "mozilla/BasePrincipal.h"
 #include "mozilla/CheckedInt.h"
@@ -52,9 +53,11 @@
 #include "nsIBaseChannel.h"
 #include "nsIJARChannel.h"
 #include "nsIJARURI.h"
+#include "nsGlobalWindowInner.h"
 #include "nsReadableUtils.h"
 #include "nsSandboxFlags.h"
 
+#include "nsIContentPolicy.h"
 #include "nsIURI.h"
 #include "nsIURIMutator.h"
 #include "nsILoadGroup.h"
@@ -84,7 +87,7 @@
 #include "nsIConsoleService.h"
 #include "nsAsyncRedirectVerifyHelper.h"
 #include "nsIFileChannel.h"
-#include "mozilla/Telemetry.h"
+#include "mozilla/glean/DomMetrics.h"
 #include "js/ArrayBuffer.h"  // JS::{Create,Release}MappedArrayBufferContents,New{,Mapped}ArrayBufferWithContents
 #include "js/JSON.h"         // JS_ParseJSON
 #include "js/MemoryFunctions.h"
@@ -132,13 +135,14 @@ const uint32_t XML_HTTP_REQUEST_ARRAYBUFFER_MIN_SIZE = 32 * 1024;
 const int32_t XML_HTTP_REQUEST_MAX_CONTENT_LENGTH_PREALLOCATE =
     1 * 1024 * 1024 * 1024LL;
 
-namespace {
-const nsString kLiteralString_readystatechange = u"readystatechange"_ns;
-const nsString kLiteralString_xmlhttprequest = u"xmlhttprequest"_ns;
-const nsString kLiteralString_DOMContentLoaded = u"DOMContentLoaded"_ns;
-const nsCString kLiteralString_charset = "charset"_ns;
-const nsCString kLiteralString_UTF_8 = "UTF-8"_ns;
-}  // namespace
+constexpr nsLiteralString kLiteralString_readystatechange =
+    u"readystatechange"_ns;
+// constexpr nsLiteralString kLiteralString_xmlhttprequest =
+// u"xmlhttprequest"_ns;
+constexpr nsLiteralString kLiteralString_DOMContentLoaded =
+    u"DOMContentLoaded"_ns;
+constexpr nsLiteralCString kLiteralString_charset = "charset"_ns;
+constexpr nsLiteralCString kLiteralString_UTF_8 = "UTF-8"_ns;
 
 #define NS_PROGRESS_EVENT_INTERVAL 50
 #define MAX_SYNC_TIMEOUT_WHEN_UNLOADING 10000 /* 10 secs */
@@ -468,7 +472,14 @@ NS_IMPL_RELEASE_INHERITED(XMLHttpRequestMainThread, XMLHttpRequestEventTarget)
 
 void XMLHttpRequestMainThread::DisconnectFromOwner() {
   XMLHttpRequestEventTarget::DisconnectFromOwner();
-  Abort();
+  // Worker-owned XHRs have their own complicated state machine that does not
+  // expect Abort() to be called here.  The worker state machine cleanup will
+  // take care of ensuring the XHR is aborted in a timely fashion since the
+  // worker itself will inherently be canceled at the same time this is
+  // happening.
+  if (!mForWorker) {
+    Abort();
+  }
 }
 
 size_t XMLHttpRequestMainThread::SizeOfEventTargetIncludingThis(
@@ -517,7 +528,7 @@ Document* XMLHttpRequestMainThread::GetResponseXML(ErrorResult& aRv) {
   }
   if (mWarnAboutSyncHtml) {
     mWarnAboutSyncHtml = false;
-    LogMessage("HTMLSyncXHRWarning", GetOwner());
+    LogMessage("HTMLSyncXHRWarning", GetOwnerWindow());
   }
   if (mState != XMLHttpRequest_Binding::DONE) {
     return nullptr;
@@ -551,7 +562,7 @@ nsresult XMLHttpRequestMainThread::DetectCharset() {
   if (mResponseType == XMLHttpRequestResponseType::Json &&
       encoding != UTF_8_ENCODING) {
     // The XHR spec says only UTF-8 is supported for responseType == "json"
-    LogMessage("JSONCharsetWarning", GetOwner());
+    LogMessage("JSONCharsetWarning", GetOwnerWindow());
     encoding = UTF_8_ENCODING;
   }
 
@@ -718,9 +729,9 @@ void XMLHttpRequestMainThread::SetResponseType(
   }
 
   // sync request is not allowed setting responseType in window context
-  if (HasOrHasHadOwner() && mState != XMLHttpRequest_Binding::UNSENT &&
+  if (HasOrHasHadOwnerWindow() && mState != XMLHttpRequest_Binding::UNSENT &&
       mFlagSynchronous) {
-    LogMessage("ResponseTypeSyncXHRWarning", GetOwner());
+    LogMessage("ResponseTypeSyncXHRWarning", GetOwnerWindow());
     aRv.ThrowInvalidAccessError(
         "synchronous XMLHttpRequests do not support timeout and responseType");
     return;
@@ -919,7 +930,7 @@ void XMLHttpRequestMainThread::GetContentRangeHeader(nsACString& out) const {
   }
 }
 
-void XMLHttpRequestMainThread::GetResponseURL(nsAString& aUrl) {
+void XMLHttpRequestMainThread::GetResponseURL(nsACString& aUrl) {
   aUrl.Truncate();
 
   if ((mState == XMLHttpRequest_Binding::UNSENT ||
@@ -939,9 +950,7 @@ void XMLHttpRequestMainThread::GetResponseURL(nsAString& aUrl) {
     return;
   }
 
-  nsAutoCString temp;
-  responseUrl->GetSpecIgnoringRef(temp);
-  CopyUTF8toUTF16(temp, aUrl);
+  responseUrl->GetSpecIgnoringRef(aUrl);
 }
 
 uint32_t XMLHttpRequestMainThread::GetStatus(ErrorResult& aRv) {
@@ -1193,7 +1202,7 @@ bool XMLHttpRequestMainThread::IsSafeHeader(
   const char* kCrossOriginSafeHeaders[] = {
       "cache-control", "content-language", "content-type", "content-length",
       "expires",       "last-modified",    "pragma"};
-  for (uint32_t i = 0; i < ArrayLength(kCrossOriginSafeHeaders); ++i) {
+  for (uint32_t i = 0; i < std::size(kCrossOriginSafeHeaders); ++i) {
     if (aHeader.LowerCaseEqualsASCII(kCrossOriginSafeHeaders[i])) {
       return true;
     }
@@ -1510,38 +1519,32 @@ bool XMLHttpRequestMainThread::InUploadPhase() const {
 // This case is hit when the async parameter is outright omitted, which
 // should set it to true (and the username and password to null).
 void XMLHttpRequestMainThread::Open(const nsACString& aMethod,
-                                    const nsAString& aUrl, ErrorResult& aRv) {
-  Open(aMethod, aUrl, true, VoidString(), VoidString(), aRv);
+                                    const nsACString& aUrl, ErrorResult& aRv) {
+  Open(aMethod, aUrl, true, VoidCString(), VoidCString(), aRv);
 }
 
 // This case is hit when the async parameter is specified, even if the
 // JS value was "undefined" (which due to legacy reasons should be
 // treated as true, which is how it will already be passed in here).
 void XMLHttpRequestMainThread::Open(const nsACString& aMethod,
-                                    const nsAString& aUrl, bool aAsync,
-                                    const nsAString& aUsername,
-                                    const nsAString& aPassword,
-                                    ErrorResult& aRv) {
-  Open(aMethod, NS_ConvertUTF16toUTF8(aUrl), aAsync, aUsername, aPassword, aRv);
-}
-
-void XMLHttpRequestMainThread::Open(const nsACString& aMethod,
                                     const nsACString& aUrl, bool aAsync,
-                                    const nsAString& aUsername,
-                                    const nsAString& aPassword,
+                                    const nsACString& aUsername,
+                                    const nsACString& aPassword,
                                     ErrorResult& aRv) {
   DEBUG_WORKERREFS1(aMethod << " " << aUrl);
   NOT_CALLABLE_IN_SYNC_SEND_RV
 
   // Gecko-specific
-  if (!aAsync && !DontWarnAboutSyncXHR() && GetOwner() &&
-      GetOwner()->GetExtantDoc()) {
-    GetOwner()->GetExtantDoc()->WarnOnceAbout(
+  if (!aAsync && !DontWarnAboutSyncXHR() && GetOwnerWindow() &&
+      GetOwnerWindow()->GetExtantDoc()) {
+    GetOwnerWindow()->GetExtantDoc()->WarnOnceAbout(
         DeprecatedOperations::eSyncXMLHttpRequestDeprecated);
   }
 
-  Telemetry::Accumulate(Telemetry::XMLHTTPREQUEST_ASYNC_OR_SYNC,
-                        aAsync ? 0 : 1);
+  glean::dom::xmlhttprequest_async_or_sync
+      .EnumGet(static_cast<glean::dom::XmlhttprequestAsyncOrSyncLabel>(
+          aAsync ? 0 : 1))
+      .Add();
 
   // Step 1
   nsCOMPtr<Document> responsibleDocument = GetDocumentIfCurrent();
@@ -1558,8 +1561,13 @@ void XMLHttpRequestMainThread::Open(const nsACString& aMethod,
     return;
   }
 
+  if (AppShutdown::IsInOrBeyond(ShutdownPhase::AppShutdownConfirmed)) {
+    aRv.Throw(NS_ERROR_ILLEGAL_DURING_SHUTDOWN);
+    return;
+  }
+
   // Gecko-specific
-  if (!aAsync && responsibleDocument && GetOwner()) {
+  if (!aAsync && responsibleDocument && GetOwnerWindow()) {
     // We have no extant document during unload, so the above general
     // syncXHR warning will not display. But we do want to display a
     // recommendation to use sendBeacon instead of syncXHR during unload.
@@ -1568,7 +1576,8 @@ void XMLHttpRequestMainThread::Open(const nsACString& aMethod,
       bool inUnload = false;
       shell->GetIsInUnload(&inUnload);
       if (inUnload) {
-        LogMessage("UseSendBeaconDuringUnloadAndPagehideWarning", GetOwner());
+        LogMessage("UseSendBeaconDuringUnloadAndPagehideWarning",
+                   GetOwnerWindow());
       }
     }
   }
@@ -1618,23 +1627,23 @@ void XMLHttpRequestMainThread::Open(const nsACString& aMethod,
   if (!host.IsEmpty() && (!aUsername.IsVoid() || !aPassword.IsVoid())) {
     auto mutator = NS_MutateURI(parsedURL);
     if (!aUsername.IsVoid()) {
-      mutator.SetUsername(NS_ConvertUTF16toUTF8(aUsername));
+      mutator.SetUsername(aUsername);
     }
     if (!aPassword.IsVoid()) {
-      mutator.SetPassword(NS_ConvertUTF16toUTF8(aPassword));
+      mutator.SetPassword(aPassword);
     }
     Unused << mutator.Finalize(parsedURL);
   }
 
   // Step 9
-  if (!aAsync && HasOrHasHadOwner() &&
+  if (!aAsync && HasOrHasHadOwnerWindow() &&
       (mTimeoutMilliseconds ||
        mResponseType != XMLHttpRequestResponseType::_empty)) {
     if (mTimeoutMilliseconds) {
-      LogMessage("TimeoutSyncXHRWarning", GetOwner());
+      LogMessage("TimeoutSyncXHRWarning", GetOwnerWindow());
     }
     if (mResponseType != XMLHttpRequestResponseType::_empty) {
-      LogMessage("ResponseTypeSyncXHRWarning", GetOwner());
+      LogMessage("ResponseTypeSyncXHRWarning", GetOwnerWindow());
     }
     aRv.ThrowInvalidAccessError(
         "synchronous XMLHttpRequests do not support timeout and responseType");
@@ -2173,7 +2182,7 @@ XMLHttpRequestMainThread::OnStartRequest(nsIRequest* request) {
     rv = NS_NewDOMDocument(
         getter_AddRefs(mResponseXML), emptyStr, emptyStr, nullptr, docURI,
         baseURI, requestingPrincipal, true, global,
-        mIsHtml ? DocumentFlavorHTML : DocumentFlavorLegacyGuess);
+        mIsHtml ? DocumentFlavor::HTML : DocumentFlavor::LegacyGuess);
     NS_ENSURE_SUCCESS(rv, rv);
     mResponseXML->SetChromeXHRDocURI(chromeXHRDocURI);
     mResponseXML->SetChromeXHRDocBaseURI(chromeXHRDocBaseURI);
@@ -2479,7 +2488,7 @@ void XMLHttpRequestMainThread::ChangeStateToDone(bool aWasSync) {
     nsLoadFlags loadFlags = 0;
     mChannel->GetLoadFlags(&loadFlags);
     if (loadFlags & nsIRequest::LOAD_BACKGROUND) {
-      nsPIDOMWindowInner* owner = GetOwner();
+      nsPIDOMWindowInner* owner = GetOwnerWindow();
       BrowsingContext* bc = owner ? owner->GetBrowsingContext() : nullptr;
       bc = bc ? bc->Top() : nullptr;
       if (bc && bc->IsLoading()) {
@@ -2685,6 +2694,12 @@ nsresult XMLHttpRequestMainThread::InitiateFetch(
   nsresult rv;
   nsCOMPtr<nsIInputStream> uploadStream = std::move(aUploadStream);
 
+  if (IsSystemXHR() && mFlagSynchronous &&
+      StaticPrefs::network_xhr_block_sync_system_requests()) {
+    mState = XMLHttpRequest_Binding::DONE;
+    return NS_ERROR_DOM_NETWORK_ERR;
+  }
+
   if (!uploadStream) {
     RefPtr<PreloaderBase> preload = FindPreload();
     if (preload) {
@@ -2733,7 +2748,7 @@ nsresult XMLHttpRequestMainThread::InitiateFetch(
     mAuthorRequestHeaders.ApplyToChannel(httpChannel, false, false);
 
     if (!IsSystemXHR()) {
-      nsCOMPtr<nsPIDOMWindowInner> owner = GetOwner();
+      nsCOMPtr<nsPIDOMWindowInner> owner = GetOwnerWindow();
       nsCOMPtr<Document> doc = owner ? owner->GetExtantDoc() : nullptr;
       nsCOMPtr<nsIReferrerInfo> referrerInfo =
           ReferrerInfo::CreateForFetch(mPrincipal, doc);
@@ -3233,9 +3248,9 @@ void XMLHttpRequestMainThread::SendInternal(const BodyExtractorBase* aBody,
 
     mFlagSyncLooping = true;
 
-    if (GetOwner()) {
+    if (GetOwnerWindow()) {
       if (nsCOMPtr<nsPIDOMWindowOuter> topWindow =
-              GetOwner()->GetOuterWindow()->GetInProcessTop()) {
+              GetOwnerWindow()->GetOuterWindow()->GetInProcessTop()) {
         if (nsCOMPtr<nsPIDOMWindowInner> topInner =
                 topWindow->GetCurrentInnerWindow()) {
           suspendedDoc = topWindow->GetExtantDoc();
@@ -3328,7 +3343,7 @@ void XMLHttpRequestMainThread::SetRequestHeader(const nsACString& aName,
   if (!isPrivilegedCaller && isForbiddenHeader) {
     AutoTArray<nsString, 1> params;
     CopyUTF8toUTF16(aName, *params.AppendElement());
-    LogMessage("ForbiddenHeaderWarning", GetOwner(), params);
+    LogMessage("ForbiddenHeaderWarning", GetOwnerWindow(), params);
     return;
   }
 
@@ -3350,10 +3365,10 @@ void XMLHttpRequestMainThread::SetTimeout(uint32_t aTimeout, ErrorResult& aRv) {
   NOT_CALLABLE_IN_SYNC_SEND_RV
 
   if (mFlagSynchronous && mState != XMLHttpRequest_Binding::UNSENT &&
-      HasOrHasHadOwner()) {
+      HasOrHasHadOwnerWindow()) {
     /* Timeout is not supported for synchronous requests with an owning window,
        per XHR2 spec. */
-    LogMessage("TimeoutSyncXHRWarning", GetOwner());
+    LogMessage("TimeoutSyncXHRWarning", GetOwnerWindow());
     aRv.ThrowInvalidAccessError(
         "synchronous XMLHttpRequests do not support timeout and responseType");
     return;
@@ -3679,8 +3694,8 @@ XMLHttpRequestMainThread::GetInterface(const nsIID& aIID, void** aResult) {
     // Get the an auth prompter for our window so that the parenting
     // of the dialogs works as it should when using tabs.
     nsCOMPtr<nsPIDOMWindowOuter> window;
-    if (GetOwner()) {
-      window = GetOwner()->GetOuterWindow();
+    if (nsGlobalWindowInner* inner = GetOwnerWindow()) {
+      window = inner->GetOuterWindow();
     }
     return wwatch->GetPrompt(window, aIID, reinterpret_cast<void**>(aResult));
   }

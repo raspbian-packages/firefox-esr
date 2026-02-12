@@ -6,13 +6,14 @@
 ## Error page titles
 
 neterror-page-title = 頁面載入發生問題
-certerror-page-title = 警告: 本網站可能有安全性風險
-certerror-sts-page-title = 未連線: 潛在的安全性問題
+certerror-page-title = 警告：本網站可能有安全性風險
+certerror-sts-page-title = 未連線：可能有安全性問題
 neterror-blocked-by-policy-page-title = 已封鎖頁面
 neterror-captive-portal-page-title = 登入到網路
 neterror-dns-not-found-title = 找不到伺服器
 neterror-malformed-uri-page-title = 網址無效
 general-body-title = 請小心，有些東西不對勁。
+problem-with-this-site-title = 看來此網站有點問題
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = 若無法載入任何網站，請檢查您的�
 neterror-load-error-firewall = 若電腦或網路被防火牆或 Proxy 保護，請確定 { -brand-short-name } 被允許存取網路。
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = 若您要開啟的本地區域網路頁面，請確認已經在 macOS 的「隱私權與安全性」選項當中，授權 { -brand-short-name } 存取本地網路權限。
+neterror-http-error-page = 請檢查是否正確輸入網址。
 neterror-captive-portal = 您必須先登入才能存取網際網路。
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>若您確認輸入的網址是正�
 neterror-dns-not-found-hint-try-again = 稍後再試
 neterror-dns-not-found-hint-check-network = 檢查網際網路連線是否正常
 neterror-dns-not-found-hint-firewall = 檢查 { -brand-short-name } 是否有權限開啟網頁（可能已經連上網路，但被防火牆阻擋）
+neterror-dns-not-found-offline-hint-header = <strong>您可以做什麼？</strong>
+neterror-dns-not-found-offline-hint-different-device = 嘗試改連線到其他裝置。
+neterror-dns-not-found-offline-hint-modem = 檢查您的數據機或路由器。
+neterror-dns-not-found-offline-hint-reconnect = 中斷，然後重新連線到 Wi-Fi 網路。
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = 發生未預期的問題。
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } 無法透過信任的 DNS 解析器保護您對本網址的瀏覽請求。原因如下：
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } 無法透過我們的安全 DNS 業者來保護您對本網址的瀏覽請求。原因如下：
 neterror-dns-not-found-native-fallback-heuristic = 您的網路已停用 DNS over HTTPS。
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } 無法連線到 { $trrDomain }。
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = 請檢查 Proxy 設定是否正確。
 neterror-proxy-connect-failure-contact-admin = 與您的網路管理員聯絡，確定 Proxy 伺服器正常運作。
 neterror-content-encoding-error = 請向網站擁有者回報此問題。
 neterror-unsafe-content-type = 請向網站擁有者回報此問題。
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = 由於連線不安全，{ -brand-short-name } 無法信任 { $hostname }。可將網址更改為 HTTPS 網址再試試看。
 neterror-nss-failure-not-verified = 因為無法驗證已接收資料的真實性，無法顯示您嘗試檢視的頁面。
 neterror-nss-failure-contact-website = 請向網站擁有者回報此問題。
 # Variables:
@@ -117,12 +125,12 @@ certerror-mitm = <b>{ $hostname }</b> 應該是一個安全的網站，但無法
 neterror-corrupted-content-intro = 因為在資料傳輸過程當中偵測到錯誤，無法顯示您正要檢視的頁面。
 neterror-corrupted-content-contact-website = 請向網站擁有者回報此問題。
 # Do not translate "SSL_ERROR_UNSUPPORTED_VERSION".
-neterror-sslv3-used = 進階資訊: SSL_ERROR_UNSUPPORTED_VERSION
+neterror-sslv3-used = 進階資訊：SSL_ERROR_UNSUPPORTED_VERSION
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 neterror-inadequate-security-intro = <b>{ $hostname }</b> 使用過時的安全性技術，容易遭受攻擊。攻擊者可以簡單地得知您認為安全的資訊。網站管理員修正伺服器設定後您才能連線至此網站。
 # Do not translate "NS_ERROR_NET_INADEQUATE_SECURITY".
-neterror-inadequate-security-code = 錯誤代碼: NS_ERROR_NET_INADEQUATE_SECURITY
+neterror-inadequate-security-code = 錯誤代碼：NS_ERROR_NET_INADEQUATE_SECURITY
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 # $now (Date) - The current datetime, to be formatted as a date
@@ -159,3 +167,13 @@ certerror-coep-learn-more = 了解 Cross Origin Embedder Policies（COEP）的�
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = 錯誤代碼：{ $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } 無法與伺服器 { $hostname } 建立安全連線。
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = 看來此網站仍在使用已知有安全性漏洞的舊版軟體。
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = 請確認您使用的是最新版的 { -brand-short-name }。可前往選單中的「說明 > 關於 { -brand-short-name }」確認。若您已經使用最新版的 { -brand-short-name }，那麼最有可能是網站本身的問題。

@@ -167,6 +167,8 @@ extensions-warning-update-security-button = ਚਾਲੂ
 extensions-warning-imported-addons2 =
     .message = { -brand-short-name } ਲਈ ਦਰਾਮਦ ਕੀਤੀਆਂ ਇਕਸਟੈਨਸ਼ਨਾਂ ਦੀ ਇੰਸਟਾਲੇਸ਼ਨ ਪੂਰੀ ਕਰੋ।
 extensions-warning-imported-addons-button = ਇਕਸਟੈਨਸ਼ਨਾਂ ਇੰਸਟਾਲ ਕਰੋ
+extensions-warning-safe-mode3 =
+    .message = ਸਮੱਸਿਆ ਨਿਪਟਾਰੇ ਦੌਰਾਨ ਸਾਰੀਆਂ ਐਡ-ਆਨਾਂ ਨੂੰ ਅਸਮਰੱਥ ਕੀਤਾ ਗਿਆ ਹੈ।
 
 ## Strings connected to add-on updates
 
@@ -202,6 +204,10 @@ addon-updates-manual-updates-found = ਉਪਲੱਬਧ ਅੱਪਡੇਟ ਵ�
 ## Add-on install/debug strings for page options menu
 
 addon-install-from-file = …ਐਡ-ਆਨ ਫਾਈਲ ਤੋਂ ਇੰਸਟਾਲ ਕਰੋ
+    .accesskey = I
+# Like `addon-install-from-file` but used when the `extensions.webextensions.prefer-update-over-install-for-existing-addon`
+# pref is set.
+addon-install-or-update-from-file = …ਫ਼ਾਇਲ ਤੋਂ ਐਡ-ਆਨ ਨੂੰ ਇੰਸਟਾਲ ਜਾਂ ਅੱਪਡੇਟ ਕਰੋ
     .accesskey = I
 addon-install-from-file-dialog-title = ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਐਡ-ਆਨ ਚੁਣੋ
 addon-install-from-file-filter-name = ਐਡ-ਆਨ
@@ -271,6 +277,8 @@ discopane-notice-recommendations2 =
         ਇਹਨਾਂ ਸਿਫਾਰਸ਼ਾਂ ਵਿੱਚੋਂ ਕੁਝ ਨਿੱਜੀ ਬਣਾਈਆਂ ਹਨ। ਇਹ ਤੁਹਾਡੇ ਵਲੋਂ ਇੰਸਟਾਲ ਇਕਸਟੈਨਸ਼ਨਾਂ, ਪਰੋਫਾਈਲ ਪਸੰਦਾਂ
          ਅਤੇ ਵਰਤੋਂ ਅੰਕੜਿਆਂ ਦੇ ਉੱਤੇ ਅਧਾਰਿਤ ਹਨ।
 discopane-notice-learn-more = ਹੋਰ ਸਿੱਖੋ
+colorway-removal-notice-learn-more = ਹੋਰ ਜਾਣੋ
+colorway-removal-notice-button = ਅੱਪਡੇਟ ਕੀਤੇ ਰੰਗ-ਢੰਗ ਥੀਮਾਂ ਨੂੰ ਲਵੋ
 privacy-policy = ਪਰਦੇਦਾਰੀ ਨੀਤੀ
 # Refers to the author of an add-on, shown below the name of the add-on.
 # Variables:
@@ -293,7 +301,9 @@ addon-options-button =
     .aria-label = ਹੋਰ ਚੋਣਾਂ
 # Explanatory introduction to the list of recommended add-ons. The action word
 # ("recommends") in the final sentence is a link to external documentation.
-discopane-intro2 = ਇਕਸਟੈਨਸ਼ਨ ਅਤੇ ਥੀਮ ਤੁਹਾਨੂੰ { -brand-product-name } ਕਸਟਮਾਈਜ਼ ਕਰਨ ਦਿੰਦੇ ਹਨ। ਇਹ ਪਰਦੇਦਾਰੀ ਵਧਾਉਣ, ਕਾਰਗੁਜ਼ਾਰੀ ਵਿੱਚ ਵਾਧਾ, ਮੀਡੀਏ ਨੂੰ ਵਧੀਆ ਬਣਾਉਣ, { -brand-product-name } ਦੀ ਦਿੱਖ ਨੂੰ ਬਦਲਣ, ਅਤੇ ਕੋਈ ਕੁਝ ਹੋਰ ਕਰਨ ਸਕਦੇ ਹਨ। ਇਹਨਾਂ ਛੋਟੇ ਸਾਫਟਵੇਅਰਾਂ ਨੂੰ ਅਕਸਰ ਸੁਤੰਤਰ ਧਿਰਾਂ ਵਲੋਂ ਤਿਆਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸ਼ਾਨਦਾਰ ਸੁਰੱਖਿਆ, ਕਾਰਗੁਜ਼ਾਰੀ ਅਤੇ ਕਾਰਜ ਸਮਰੱਥਾ ਲਈ { -brand-product-name } <a data-l10n-name="learn-more-trigger">ਸਿਫਾਰਸ਼ਾਂ</a> ਇਹ ਹਨ।
+# We hard code "Firefox" because we do not want to imply that a Firefox fork is
+# making this recommendation.
+discopane-intro3 = ਇਕਸਟੈਨਸ਼ਨ ਅਤੇ ਥੀਮ ਤੁਹਾਨੂੰ { -brand-product-name } ਕਸਟਮਾਈਜ਼ ਕਰਨ ਦਿੰਦੇ ਹਨ। ਇਹ ਪਰਦੇਦਾਰੀ ਵਧਾਉਣ, ਕਾਰਗੁਜ਼ਾਰੀ ਵਿੱਚ ਵਾਧਾ, ਮੀਡੀਏ ਨੂੰ ਵਧੀਆ ਬਣਾਉਣ, { -brand-product-name } ਦੀ ਦਿੱਖ ਨੂੰ ਬਦਲਣ, ਅਤੇ ਕੋਈ ਕੁਝ ਹੋਰ ਕਰਨ ਸਕਦੇ ਹਨ। ਇਹਨਾਂ ਛੋਟੇ ਸਾਫਟਵੇਅਰਾਂ ਨੂੰ ਅਕਸਰ ਸੁਤੰਤਰ ਧਿਰਾਂ ਵਲੋਂ ਤਿਆਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸ਼ਾਨਦਾਰ ਸੁਰੱਖਿਆ, ਕਾਰਗੁਜ਼ਾਰੀ ਅਤੇ ਕਾਰਜ ਸਮਰੱਥਾ ਲਈ Firefox <a data-l10n-name="learn-more-trigger">ਸਿਫਾਰਸ਼ਾਂ</a> ਇਹ ਹਨ।
 
 ## Add-on actions
 
@@ -380,6 +390,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ ਵਿੱਚ ਇਜਾਜ਼ਤ ਦਿਓ
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ ਵਿੱਚ ਇਜਾਜ਼ਤ ਦਿਓ
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -419,6 +433,24 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਲਈ ਸਾਡੇ ਮਿਆਰਾਂ ਉੱਤੇ ਖ਼ਰ੍ਹਾ ਉਤਰਨ ਲਈ ਇਸ ਇਕਸਟੈਨਸ਼ਨ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਚੁੱਕੀ ਹੈ
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = ਅਧਿਕਾਰਿਤ ਇਕਸਟੈਨਸ਼ਨ Mozilla ਵਲੋਂ ਬਣਾਈ ਹੈ। ਸਾਰੇ ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਮਿਆਰਾਂ ਉੱਤੇ ਖ਼ਰਾ ਉਤਰਦੀ ਹੈ।
+# This string needs to work in the context of other forks that are not Firefox
+# or built by Mozilla. In particular, we do not want to imply that an
+# organisation other than Mozilla or the Firefox team are performing the
+# security or performance reviews. As such, we avoid personalising language
+# like the words "our" or "we".
+addon-badge-verified4 =
+    .title = ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਲਈ ਮਿਆਰਾਂ ਉੱਤੇ ਖ਼ਰ੍ਹਾ ਉਤਰਨ ਲਈ ਇਸ ਇਕਸਟੈਨਸ਼ਨ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਚੁੱਕੀ ਹੈ
+# This string needs to work in the context of other forks that are not Firefox
+# or built by Mozilla. In particular, we do not want to imply that an
+# organisation other than Mozilla or the Firefox team are making the
+# recommendation. As such, we hard code "Firefox" and avoid personalising
+# language like the words "our" or "we".
+addon-badge-recommended4 =
+    .title = Firefox ਉਹ ਇਕਸਟੈਨਸ਼ਨਾਂ ਦੀ ਸਿਫਾਰਸ਼ ਕਰਦਾ ਹੈ, ਜੋ ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਲਈ ਮਿਆਰ ਉੱਤੇ ਖ਼ਰ੍ਹਾਂ ਉੱਤਰਦੀਆਂ ਹਨ।
 
 ##
 
@@ -426,7 +458,10 @@ available-updates-heading = ਉਪਲੱਬਧ ਅੱਪਡੇਟ
 recent-updates-heading = ਤਾਜ਼ਾ ਅੱਪਡੇਟ
 release-notes-loading = …ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ
 release-notes-error = ਅਫਸੋਸ, ਪਰ ਰੀਲਿਜ਼ ਨੋਟਿਸ ਡਾਊਨਲੋਡ ਕਰਨ ਦੌਰਾਨ ਸਮੱਸਿਆ ਆਈ ਹੈ।
+addon-permissions-heading = ਇਜਾਜ਼ਤਾਂ
 addon-permissions-empty2 = ਇਸ ਇਕਸਟੈਨਸ਼ਨ ਲਈ ਕਿਸੇ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।
+addon-permissions-required-label = ਲੋੜੀਂਦੇ:
+addon-permissions-optional-label = ਚੋਣਵੇਂ:
 addon-permissions-empty = ਇਸ ਇਕਸਟੈਨਸ਼ਨ ਲਈ ਕਿਸੇ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ
 addon-permissions-required = ਮੂਲ ਕੰਮਾਂ ਲਈ ਚਾਹੀਦੀਆਂ ਇਜਾਜ਼ਤਾਂ:
 addon-permissions-optional = ਵਾਧੂ ਕੰਮਾਂ ਲਈ ਚੋਣਵੀਆਂ ਇਜਾਜ਼ਤਾਂ:
@@ -454,6 +489,9 @@ shortcuts-heading = ਇਕਸਟੈਨਸ਼ਨ ਸ਼ਾਰਟਕੱਟਾਂ ਦਾ 
 default-heading-search-label = ਹੋਰ ਐਡ-ਆਨ ਲੱਭੋ
 addons-heading-search-input =
     .placeholder = addons.mozilla.org ਨੂੰ ਖੋਜੋ
+addons-heading-search-button =
+    .title = addons.mozilla.org ਉੱਤੇ ਖੋਜੋ
+    .aria-label = addons.mozilla.org ਉੱਤੇ ਖੋਜੋ
 addon-page-options-button =
     .title = ਸਭ ਐਡ-ਆਨ ਲਈ ਟੂਲ
 
@@ -482,8 +520,6 @@ details-notification-hard-blocked-other =
     .message = ਇਸ ਐਡ-ਆਨ ਨੂੰ Mozilla ਦੀਆਂ ਪਾਲਸੀਆਂ ਦਾ ਉਲੰਘਣ ਕਰਨ ਕਰਕੇ ਪਾਬੰਦੀ ਲਾਈ ਹੈ ਅਤੇ ਅਸਮਰੱਥ ਕੀਤਾ ਗਿਆ ਹੈ।
 details-notification-unsigned-link = ਹੋਰ ਜਾਣਕਾਰੀ
 details-notification-blocked = { $name } ਨੂੰ ਸੁਰੱਖਿਆ ਜਾਂ ਸਥਿਰਤਾ ਸਮੱਸਿਆਵਾਂ ਕਰਕੇ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ।
-details-notification-blocked2 =
-    .message = { $name } ਨੂੰ ਸੁਰੱਖਿਆ ਜਾਂ ਸਥਿਰਤਾ ਸਮੱਸਿਆਵਾਂ ਕਰਕੇ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ।
 details-notification-blocked-link2 = ਵੇਰਵੇ ਵੇਖੋ
 details-notification-soft-blocked-extension-disabled =
     .message = ਇਸ ਇਕਸਟੈਨਸ਼ਨ ਨੂੰ Mozilla ਦੀਆਂ ਪਾਲਸੀਆਂ ਦਾ ਉਲੰਘਣ ਕਰਕੇ ਸੀਮਿਤ ਅਤੇ ਅਸਮਰੱਥ ਕੀਤਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ, ਪਰ ਇਸ ਖ਼ਤਰਾ ਹੋ ਸਕਦਾ ਹੈ।
@@ -496,8 +532,6 @@ details-notification-soft-blocked-other-enabled =
 details-notification-softblocked-link2 = ਵੇਰਵੇ ਵੇਖੋ
 details-notification-blocked-link = ਹੋਰ ਜਾਣਕਾਰੀ
 details-notification-softblocked = { $name } ਨੂੰ ਸੁਰੱਖਿਆ ਜਾਂ ਸਥਿਰਤਾ ਸਮੱਸਿਆ ਦਾ ਕਾਰਨ ਮੰਨਿਆ ਗਿਆ ਹੈ।
-details-notification-softblocked2 =
-    .message = { $name } ਨੂੰ ਸੁਰੱਖਿਆ ਜਾਂ ਸਥਿਰਤਾ ਸਮੱਸਿਆ ਦਾ ਕਾਰਨ ਮੰਨਿਆ ਗਿਆ ਹੈ।
 details-notification-softblocked-link = ਹੋਰ ਜਾਣਕਾਰੀ
 details-notification-gmp-pending = { $name } ਨੂੰ ਛੇਤੀ ਹੀ ਇੰਸਟਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।
 details-notification-gmp-pending2 =
@@ -511,3 +545,44 @@ plugins-openh264-name = OpenH264 ਵਿਡੀਓ ਕੋਡਕ Cisco Systems, Inc
 plugins-openh264-description = ਇਹ ਪਲੱਗਇਨ ਨੂੰ ਮੋਜ਼ੀਲਾ ਵਲੋਂ WebRTC ਸੇਦਾਂ ਦੇ ਮੁਤਾਬਕ ਤਿਆਰ ਕਰਕੇ ਆਪਣੇ-ਆਪ ਇੰਸਟਾਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਡਿਵਾਈਸਾਂ ਨਾਲ WebRTC ਕਾਲਾਂ ਲਈ ਸਮਰੱਥ ਕਰਦੀ ਹੈ, ਜਿਨਾਂ ਨੂੰ H.264 ਵਿਡੀਓ ਕੋਡਕ ਚਾਹੀਦਾ ਹੈ। ਕੋਡਕ ਸਰੋਤ ਕੋਡ ਵੇਖਣ ਅਤੇ ਸਥਾਪਤ ਕਰਨ ਲਈ ਹੋਰ ਸਿੱਖਣ ਵਾਸਤੇ https://www.openh264.org/ ਨੂੰ ਵੇਖੋ।
 plugins-widevine-name = Widevine ਸਮੱਗਰੀ ਡਿਕ੍ਰਿਪਸ਼ਨ ਮੋਡੀਊਲ ਨੂੰ Google Inc ਵਲੋਂ ਦਿੱਤਾ ਗਿਆ ਹੈ।
 plugins-widevine-description = ਇਹ ਪਲੱਗਇਨ ਇੰਕ੍ਰਿਪਟਡ ਮੀਡਿਆ ਇਕਸਟੈਨਸ਼ਨਾਂ ਸੇਧਾਂ ਨਾਲ ਅਨੁਕੂਲ ਇੰਕ੍ਰਿਪਟ ਕੀਤੇ ਮੀਡਿਆ ਨੂੰ ਚਲਾਉਣ ਦੇ ਸਮਰੱਥ ਕਰਦੀ ਹੈ। ਇੰਕ੍ਰਿਪਟ ਕੀਤੇ ਮੀਡਿਆ ਨੂੰ ਅਕਸਰ ਪ੍ਰੀਮੀਅਮ ਮੀਡਿਆ ਸਮੱਗਰੀ ਨੂੰ ਕਾਪੀ ਕਰਨ ਤੋਂ ਰੋਕਣ ਲਈ ਸੁਰੱਖਿਆ ਵਾਸਤੇ ਅਕਸਰ ਸਾਈਟਾਂ ਵਲੋਂ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ। ਇੰਕ੍ਰਿਪਟ ਕੀਤੀਆਂ ਮੀਡਿਆ ਇਕਸਟੈਨਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ https://www.w3.org/TR/encrypted-media/ ਵੇਖੋ।
+
+## Headings for the Permissions tab in `about:addons` when the data collection
+## feature is enabled.
+
+addon-permissions-required-data-collection = ਲੋੜੀਂਦੀ ਡਾਟਾ ਇਕੱਤਰਤਾ:
+addon-permissions-optional-data-collection = ਚੋਣਵੀਂ ਡਾਟਾ ਇਕੱਤਰਤਾ:
+# Name of the Permissions tab in `about:addons` when the data collection feature is enabled.
+permissions-data-addon-button = ਇਜਾਜ਼ਤਾਂ ਅਤੇ ਡਾਟਾ
+# This is a description for extension that use this AI model
+# Variables:
+#   $extensionName (String) - Name of the extension
+mlmodel-extension-label = { $extensionName } ਇਕਸਟੈਨਸ਼ਨ ਵਲੋਂ ਵਰਤਿਆ
+addon-permissions-data-collection-heading = ਡਾਟਾ ਇਕੱਤਰ ਕਰਨਾ
+addon-permissions-data-collection-empty = ਡਿਵੈਲਪਰ ਮੁਤਾਬਕ ਇਹ ਇਕਸਟੈਨਸ਼ਨ ਨੂੰ ਕੋਈ ਡਾਟਾ ਇਕੱਤਰ ਕਰਨ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।
+addon-data-collection-provided = ਇਕਸਟੈਨਸ਼ਨ ਡਿਵੈਲਪਰ ਵਜੋਂ ਦਿੱਤੀ ਗਈ ਜਾਣਕਾਰੀ
+addon-data-collection-learnmore = ਡਾਟਾ ਇਕੱਤਰ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ
+
+## Mapping Engine IDs from AI models to how that feature represented by the engine Id is described in the used by section in local model management
+
+mlmodel-about-inference = { -brand-short-name } ਇਸ ਨੂੰ about:inference ਉੱਤੇ ਵਰਤਦਾ ਹੈ
+mlmodel-link-preview = ਜਦੋਂ ਤੁਸੀਂ ਲਿੰਕਾਂ ਦੀ ਝਲਕ ਵੇਖਦੇ ਹੋ ਤਾਂ { -brand-short-name } ਇਸ ਨੂੰ ਪ੍ਰਮੁੱਖ ਨੁਕਤੇ ਤਿਆਰ ਕਰਨ ਲਈ ਵਰਤਦਾ ਹੈ
+mlmodel-pdfjs = ਤੁਹਾਡੇ ਵਲੋਂ PDF ਵਿੱਚ ਜੋੜੇ ਗਏ ਚਿੱਤਰਾਂ ਲਈ ਬਦਲਵੀਂ ਲਿਖਤ ਲਈ { -brand-short-name } ਇਸ ਨੂੰ ਵਰਤਦਾ ਹੈ
+mlmodel-smart-tab-topic-engine = { -brand-short-name } ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪਾਂ ਲਈ ਨਾਂ ਦਾ ਸੁਝਾਅ ਦੇਣ ਲਈ ਵਰਤਦਾ ਹੈ
+mlmodel-smart-tab-embedding-engine = { -brand-short-name } ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪਾਂ ਲਈ ਟੈਬਾਂ ਦਾ ਸੁਝਾਅ ਦੇਣ ਲਈ ਵਰਤਦਾ ਹੈ
+# AI Model will be downloaded on the users device and used locally
+addon-category-mlmodel = ਡਿਵਾਈਸ ਉੱਤੇ AI
+addon-category-mlmodel-title =
+    .title = ਡਿਵਾਈਸ ਉੱਤੇ AI
+mlmodel-heading = ਡਿਵਾਈਸ ਉੱਤੇ AI ਮਾਡਲਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+# Label for button that when clicked removed local model
+mlmodel-remove-addon-button =
+    .aria-label = ਹਟਾਓ
+# Label for the aggregated value of all files for a model
+mlmodel-addon-detail-totalsize-label = ਫ਼ਾਇਲ ਦਾ ਆਕਾਰ
+mlmodel-addon-detail-last-used-label = ਆਖਰੀ ਵਰਤੋਂ
+# This is a section label to describe what extensions or features use a specific local AI model
+mlmodel-addon-detail-used-by-label = ਵਲੋਂ ਵਰਤਿਆ
+# This is a section label to describe the link to the model card on the Hugging Face website
+mlmodel-addon-detail-model-card = ਮਾਡਲ ਕਾਰਡ
+# This is a label for the Model Card link to Hugging face
+mlmodel-addon-detail-model-card-link-label = Hugging Face ਉੱਤੇ ਵੇਖੋ

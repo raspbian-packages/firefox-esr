@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Serrar il tab
 tabbrowser-menuitem-close =
     .label = Serrar
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } – { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -149,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Betg pli ma mussar quest dialog.
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Attenziun
-tabbrowser-confirm-close-duplicate-tabs-text = Nus laschain avert l’ultim tab activ
 tabbrowser-confirm-close-all-duplicate-tabs-title = Serrar tabs duplitgads?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Nus vegnin a serrar ils tabs duplitgads en questa fanestra. L’ultim
@@ -189,9 +200,12 @@ tabbrowser-tab-audio-playing-description = Reproducziun dad audio
 # Variables:
 #   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
 tabbrowser-ctrl-tab-list-all-tabs =
-    .label = Enumerar tut ils { $tabCount } tabs
+    .label = Glista da tut ils { $tabCount } tabs
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Deactivar il tun dal tab
@@ -199,8 +213,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Reactivar il tun dal tab
 tabbrowser-manager-close-tab =
     .tooltiptext = Serrar il tab
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Serrà
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Fanestra actuala
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Crear ina gruppa da tabs
 tab-group-editor-title-edit = Administrar la gruppa da tabs
@@ -212,22 +234,32 @@ tab-group-editor-cancel =
     .accesskey = I
 tab-group-editor-color-selector =
     .aria-label = Colur da la gruppa da tabs
-tab-group-editor-color-selector-blue = Blau
-tab-group-editor-color-selector-purple = Violet
-tab-group-editor-color-selector-cyan = Cian
-tab-group-editor-color-selector-orange = Oransch
-tab-group-editor-color-selector-yellow = Mellen
-tab-group-editor-color-selector-pink = Rosa
-tab-group-editor-color-selector-green = Verd
-tab-group-editor-color-selector-gray = Grisch
-tab-group-editor-color-selector-red = Cotschen
-tab-group-menu-header = Gruppas da tabs
+tab-group-editor-color-selector2-blue = Blau
+    .title = Blau
+tab-group-editor-color-selector2-purple = Violet
+    .title = Violet
+tab-group-editor-color-selector2-cyan = Cian
+    .title = Cian
+tab-group-editor-color-selector2-orange = Oransch
+    .title = Oransch
+tab-group-editor-color-selector2-yellow = Mellen
+    .title = Mellen
+tab-group-editor-color-selector2-pink = Rosa
+    .title = Rosa
+tab-group-editor-color-selector2-green = Verd
+    .title = Verd
+tab-group-editor-color-selector2-gray = Grisch
+    .title = Grisch
+tab-group-editor-color-selector2-red = Cotschen
+    .title = Cotschen
+tab-group-description = { $tabGroupName } – Gruppa da tabs
+tab-group-label-tooltip-collapsed = { $tabGroupName } — reducì
+tab-group-label-tooltip-expanded = { $tabGroupName } — extendì
 tab-context-unnamed-group =
     .label = Gruppa senza num
 tab-group-name-default = Gruppa senza num
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -243,6 +275,8 @@ tab-context-move-tab-to-group =
            *[other] Agiuntar ils tabs a la gruppa
         }
     .accesskey = g
+tab-context-move-tab-to-group-saved-groups =
+    .label = Gruppas serradas
 tab-group-editor-action-new-tab =
     .label = Nov tab en la gruppa
 tab-group-editor-action-new-window =
@@ -267,6 +301,16 @@ tab-context-ungroup-tab =
            *[other] Allontanar da las gruppas
         }
     .accesskey = A
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } ulteriur tab
+       *[other] { $tabCount } ulteriurs tabs
+    }
 
 ## Open/saved tab group context menu
 

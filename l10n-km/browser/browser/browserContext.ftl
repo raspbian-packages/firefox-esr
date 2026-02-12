@@ -72,12 +72,6 @@ toolbar-button-stop =
 toolbar-button-stop-reload =
     .title = { main-context-menu-reload.aria-label }
 
-## Firefox Account Button
-
-
-## Account toolbar Button
-
-
 ## Save Page
 
 main-context-menu-page-save =
@@ -108,9 +102,7 @@ main-context-menu-save-link-to-pocket =
     .label = រក្សាទុកតំណទៅ { -pocket-brand-name }
     .accesskey = ទ
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = ចម្លង​អាសយដ្ឋានអ៊ីមែល
@@ -192,9 +184,6 @@ main-context-menu-audio-email =
 main-context-menu-send-to-device =
     .label = ផ្ញើ​ទំព័រ​ទៅ​ឧបករណ៍
     .accesskey = D
-
-##
-
 
 ##
 

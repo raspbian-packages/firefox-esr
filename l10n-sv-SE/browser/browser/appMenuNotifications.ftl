@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Ignorera
     .secondarybuttonaccesskey = g
 appmenu-update-restart-message2 = Hämta den senaste versionen av { -brand-shorter-name }. Öppna flikar och fönster återställs.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Ångra
+    .secondarybuttonaccesskey = n
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } kan inte uppdateras automatiskt till den senaste versionen.
     .buttonlabel = Uppdatera { -brand-shorter-name } ändå
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = Okej
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = Hantera dina tillägg och teman via applikationsmenyn.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Uppdatera behörigheter och datainställningar när som helst i <a data-l10n-name="settings-link">tilläggsinställningarna</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Fäst tillägg till verktygsfältet
+    .accesskey = F
 appmenu-addon-post-install-incognito-checkbox =
     .label = Tillåt att detta tillägg körs i privata fönster
     .accesskey = T

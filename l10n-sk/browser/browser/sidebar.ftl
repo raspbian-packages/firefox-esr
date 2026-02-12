@@ -4,8 +4,8 @@
 
 menu-view-genai-chat =
     .label = AI Chatbot
-menu-view-review-checker =
-    .label = Kontrola recenzií
+menu-view-contextual-password-manager =
+    .label = Heslá
 sidebar-options-menu-button =
     .title = Otvoriť ponuku
 
@@ -21,14 +21,24 @@ sidebar-history-date-this-month =
     .heading = { DATETIME($date, dateStyle: "full") }
 sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+sidebar-history-site-localhost =
+    .heading = (lokálne súbory)
 sidebar-history-delete =
     .title = Odstrániť z histórie
-sidebar-history-sort-by-date =
-    .label = Usporiadať podľa dátumu
-sidebar-history-sort-by-site =
-    .label = Usporiadať podľa lokality
 sidebar-history-clear =
     .label = Vymazať históriu
+sidebar-history-sort-by-heading = Zoradiť podľa:
+sidebar-history-sort-option-date =
+    .label = Dátum
+sidebar-history-sort-option-site =
+    .label = Stránka
+sidebar-history-sort-option-date-and-site =
+    .label = Dátum a názov stránky
+sidebar-history-sort-option-last-visited =
+    .label = Dátum poslednej návštevy
 
 ## Labels for sidebar search
 
@@ -44,24 +54,21 @@ sidebar-customize-extensions-header = Rozšírenia pre bočný panel
 sidebar-customize-firefox-tools-header =
     .label = Nástroje { -brand-product-name(case: "gen") }
 sidebar-customize-firefox-settings = Spravovať nastavenia { -brand-short-name(case: "gen") }
-sidebar-position-left =
-    .label = Zobraziť vľavo
-sidebar-position-right =
-    .label = Zobraziť vpravo
 sidebar-vertical-tabs =
     .label = Vertikálne karty
-sidebar-horizontal-tabs =
-    .label = Karty v hornej časti
-sidebar-customize-tabs-header =
-    .label = Nastavenia kariet
-sidebar-customize-button-header =
-    .label = Tlačidlo na bočnom paneli
-sidebar-customize-position-header =
-    .label = Umiestnenie bočného panela
-sidebar-visibility-setting-always-show =
-    .label = Rozbaliť a zbaliť bočný panel
-sidebar-visibility-setting-hide-sidebar =
-    .label = Zobraziť a skryť bočný panel
+sidebar-settings =
+    .label = Nastavenia bočného panela
+sidebar-hide-tabs-and-sidebar =
+    .label = Skryť karty a bočný panel
+sidebar-show-on-the-right =
+    .label = Presunúť bočný panel doprava
+sidebar-show-on-the-left =
+    .label = Presunúť bočný panel doľava
+# Option to automatically expand the collapsed sidebar when the mouse pointer
+# hovers over it.
+expand-sidebar-on-hover =
+    .label = Po umiestnení kurzora myši rozbaliť bočný panel
+sidebar-manage-extensions = Spravovať rozšírenia
 
 ## Labels for sidebar context menu items
 
@@ -71,23 +78,43 @@ sidebar-context-menu-remove-extension =
     .label = Odstrániť rozšírenie
 sidebar-context-menu-report-extension =
     .label = Nahlásiť rozšírenie
+sidebar-context-menu-open-in-tab =
+    .label = Otvoriť na novej karte
+sidebar-context-menu-open-in-container-tab =
+    .label = Otvoriť na novej kontajnerovej karte
 sidebar-context-menu-open-in-window =
     .label = Otvoriť v novom okne
 sidebar-context-menu-open-in-private-window =
     .label = Otvoriť v novom súkromnom okne
+sidebar-context-menu-forget-site =
+    .label = Vymazať všetky údaje pre webovú stránku…
 sidebar-context-menu-bookmark-tab =
     .label = Pridať kartu medzi záložky…
 sidebar-context-menu-copy-link =
     .label = Kopírovať odkaz
+sidebar-context-menu-hide-sidebar =
+    .label = Skryť bočný panel
+sidebar-context-menu-enable-vertical-tabs =
+    .label = Zapnúť vertikálne karty
+sidebar-context-menu-customize-sidebar =
+    .label = Prispôsobiť bočný panel
 # Variables:
 #   $deviceName (String) - The name of the device the user is closing a tab for
 sidebar-context-menu-close-remote-tab =
     .label = Zavrieť kartu v zariadení { $deviceName }
+sidebar-context-menu-remove-extension2 =
+    .label = Odstrániť z { -brand-short-name(case: "gen") }
+sidebar-context-menu-unpin-extension =
+    .label = Odstrániť z bočného panela
 
 ## Labels for sidebar history context menu items
 
-sidebar-history-context-menu-delete-page =
-    .label = Odstrániť z histórie
+sidebar-history-context-menu-delete-page-2 =
+    .label = Odstrániť stránku z histórie
+sidebar-history-context-menu-bookmark-page =
+    .label = Pridať stránku medzi záložky…
+sidebar-history-context-menu-delete-pages =
+    .label = Odstrániť stránky z histórie
 
 ## Labels for sidebar menu items.
 
@@ -101,8 +128,10 @@ sidebar-menu-bookmarks-label =
     .label = Záložky
 sidebar-menu-customize-label =
     .label = Prispôsobiť bočný panel
-sidebar-menu-review-checker-label =
-    .label = Kontrola recenzií
+sidebar-menu-contextual-password-manager-label =
+    .label = Heslá
+sidebar-menu-more-tools-label =
+    .label = Ďalšie nástroje
 
 ## Tooltips for sidebar menu items.
 
@@ -122,19 +151,27 @@ sidebar-menu-open-bookmarks-tooltip = Otvoriť záložky ({ $shortcut })
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Zavrieť záložky ({ $shortcut })
-sidebar-menu-open-ai-chatbot-tooltip = Otvoriť AI chatbota
-sidebar-menu-close-ai-chatbot-tooltip = Zavrieť AI chatbota
+
+## Tooltips displayed over the AI chatbot icon.
+## Variables:
+##   $shortcut (String) - The OS specific keyboard shortcut.
+##   $provider (String) - The name of the AI chatbot provider (if available).
+
+sidebar-menu-open-ai-chatbot-tooltip-generic = Otvoriť AI chatbota ({ $shortcut })
+sidebar-menu-open-ai-chatbot-provider-tooltip = Otvoriť { $provider } ({ $shortcut })
+sidebar-menu-close-ai-chatbot-tooltip-generic = Zavrieť AI chatbota ({ $shortcut })
+sidebar-menu-close-ai-chatbot-provider-tooltip = Zavrieť { $provider } ({ $shortcut })
 
 ## Headings for sidebar menu panels.
 
 sidebar-menu-customize-header =
-    .heading = Prispôsobiť bočný panel
+    .heading = Prispôsobenie bočného panela
 sidebar-menu-history-header =
     .heading = História
 sidebar-menu-syncedtabs-header =
     .heading = Karty z ďalších zariadení
-sidebar-menu-bookmarks-header =
-    .heading = Záložky
+sidebar-menu-cpm-header =
+    .heading = Heslá
 sidebar-panel-header-close-button =
     .tooltiptext = Zavrieť
 
@@ -158,18 +195,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Rozbaliť bočný panel
-    .label = Bočné panely
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Zbaliť bočný panel
-    .label = Bočné panely
-sidebar-widget-show-sidebar =
-    .tooltiptext = Zobraziť bočný panel
-    .label = Bočné panely
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Skryť bočný panel
-    .label = Bočné panely
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =
@@ -190,3 +215,7 @@ sidebar-widget-show-sidebar2 =
 sidebar-widget-hide-sidebar2 =
     .tooltiptext = Skryť bočný panel ({ $shortcut })
     .label = Bočné panely
+# Promotional message displayed in the expanded sidebar state for Vertical Tabs
+# users who do not have any pinned tabs. Indicates that they can drop tabs in
+# this area to pin them.
+sidebar-pins-promo-text = Presuňte sem dôležité karty, aby ste ich mali vždy poruke

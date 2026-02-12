@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Geschlossene Tabs wieder öffnen
         }
     .accesskey = G
+toolbar-context-turn-on-vertical-tabs =
+    .label = Vertikale Tabs aktivieren
+toolbar-context-turn-off-vertical-tabs =
+    .label = Vertikale Tabs deaktivieren
+toolbar-context-customize-sidebar =
+    .label = Sidebar anpassen
 toolbar-context-menu-manage-extension =
     .label = Erweiterung verwalten
     .accesskey = w
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Liste beim Download-Start anzeigen
     .accesskey = a
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Immer in Symbolleiste anzeigen
+    .accesskey = I
 toolbar-context-menu-remove-from-toolbar =
     .label = Aus Symbolleiste entfernen
     .accesskey = e

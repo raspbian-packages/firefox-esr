@@ -110,6 +110,13 @@ migration-bookmarks-from-file-progress-header = استيراد العلامات
 migration-bookmarks-from-file = العلامات
 migration-bookmarks-from-file-success-header = استوردت العلامات بنجاح
 migration-bookmarks-from-file-no-valid-data = لا يحتوي الملف على أي بيانات علامة. أختر ملفا آخر.
+# A description for the .html file format that may be shown as the file type
+# filter by the operating system.
+migration-bookmarks-from-file-html-filter-title =
+    { PLATFORM() ->
+        [macos] مستند HTML
+       *[other] ملف HTML
+    }
 # A description for the .json file format that may be shown as the file type
 # filter by the operating system.
 migration-bookmarks-from-file-json-filter-title = ملف JSON
@@ -120,6 +127,7 @@ migration-cancel-button-label = ألغِ
 migration-done-button-label = تمّ
 migration-continue-button-label = واصِل
 migration-wizard-import-browser-no-browsers = تعذر على { -brand-short-name } إيجاد أي برامج تحتوي على بيانات أو علامات أو تأريخ أو كلمات سر.
+migration-wizard-import-browser-no-resources = حدث خطأ. لا يمكن لـ { -brand-short-name } العثور على أي بيانات لاستيرادها من ملف شخصي المتصفح هذا.
 
 ## These strings will be used to create a dynamic list of items that can be
 ## imported. The list will be created using Intl.ListFormat(), so it will
@@ -154,7 +162,12 @@ migration-wizard-progress-icon-completed =
     .aria-label = اكتمل
 migration-safari-password-import-header = استورد كلمات السر من Safari
 migration-safari-password-import-steps-header = لاستيراد كلمات سر Safari:
+migration-safari-password-import-step1 = في Safari، افتح قائمة "Safari" وانتقل إلى التفضيلات > كلمات المرور
+migration-safari-password-import-step2 = حدد زر <img data-l10n-name="safari-icon-3dots"/> واختر "تصدير جميع كلمات المرور"
 migration-safari-password-import-step3 = احفظ ملف كلمات السر
+migration-safari-password-import-step4 = استخدم "تحديد الملف" أدناه لاختيار ملف كلمات المرور التي حفظتها
+migration-manual-password-import-skip-button = تخطَّ
+migration-manual-password-import-select-button = اختر ملفًا
 migration-safari-password-import-skip-button = تخطَّ
 migration-safari-password-import-select-button = اختر ملفًا
 
@@ -170,4 +183,5 @@ migration-wizard-progress-extensions-addons-link = تصفح الامتدادات
 ##
 
 migration-wizard-progress-success-formdata = تأريخ الاستمارات
+migration-wizard-safari-permissions-sub-header = لاستيراد علامات Safari وتأريخ التصفح:
 migration-wizard-safari-instructions-continue = اختر "واصِل"

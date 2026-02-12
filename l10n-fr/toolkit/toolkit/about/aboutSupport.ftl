@@ -18,6 +18,10 @@ support-addons-type = Type
 support-addons-enabled = Activé
 support-addons-version = Version
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Emplacement
 legacy-user-stylesheets-title = Anciennes feuilles de style utilisateur
 legacy-user-stylesheets-enabled = Activées
 legacy-user-stylesheets-stylesheet-types = Feuilles de style
@@ -184,6 +188,8 @@ media-capabilities-enumerate = Parcourir la base de données
 
 media-codec-support-sw-decoding = Décodage logiciel
 media-codec-support-hw-decoding = Décodage matériel
+media-codec-support-sw-encoding = Encodage logiciel
+media-codec-support-hw-encoding = Encodage matériel
 media-codec-support-codec-name = Nom du codec
 media-codec-support-supported = Pris en charge
 media-codec-support-unsupported = Non pris en charge

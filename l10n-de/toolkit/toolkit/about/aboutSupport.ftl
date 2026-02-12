@@ -18,6 +18,10 @@ support-addons-type = Typ
 support-addons-enabled = Aktiviert
 support-addons-version = Version
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Ort
 legacy-user-stylesheets-title = Ältere Benutzer-Stylesheets
 legacy-user-stylesheets-enabled = Aktiv
 legacy-user-stylesheets-stylesheet-types = Stylesheets
@@ -184,6 +188,8 @@ media-capabilities-enumerate = Datenbankeinträge auflisten
 
 media-codec-support-sw-decoding = Software-Dekodierung
 media-codec-support-hw-decoding = Hardware-Dekodierung
+media-codec-support-sw-encoding = Software-Dekodierung
+media-codec-support-hw-encoding = Hardware-Dekodierung
 media-codec-support-codec-name = Codec-Name
 media-codec-support-supported = Unterstützt
 media-codec-support-unsupported = Nicht unterstützt
@@ -331,7 +337,7 @@ support-blocklisted-bug = Aufgrund bekannter Probleme blockiert: <a data-l10n-na
 unknown-failure = Blockiert; Fehlercode { $failureCode }
 d3d11layers-crash-guard = D3D11-Compositor
 glcontext-crash-guard = OpenGL
-wmfvpxvideo-crash-guard = WMF-VPX-Videodekoder
+wmfvpxvideo-crash-guard = WMF-VPX-Videodecoder
 reset-on-next-restart = Bei nächstem Neustart zurücksetzen
 gpu-process-kill-button = GPU-Prozess beenden
 gpu-device-reset = Gerät zurücksetzen
@@ -359,7 +365,7 @@ support-sandbox-gpu-level = Ebene der isolierten Umgebung des GPU-Prozesses
 sandbox-proc-type-content = Inhalt
 sandbox-proc-type-file = Dateiinhalt
 sandbox-proc-type-media-plugin = Medienplugin
-sandbox-proc-type-data-decoder = Datendekoder
+sandbox-proc-type-data-decoder = Datendecoder
 startup-cache-title = Start-Cache
 startup-cache-disk-cache-path = Festplatten-Cache-Ordner
 startup-cache-ignore-disk-cache = Festplatten-Cache ignorieren
@@ -400,7 +406,7 @@ zooming-enabled = sanftes Zoomen durch Antippen aktiviert
 ## Variables
 ## $preferenceKey (string) - String ID of preference
 
-wheel-warning = Asynchone Mausrad-Eingabe deaktiviert auf Grund nicht unterstützter Einstellung: { $preferenceKey }
+wheel-warning = Asynchrone Mausrad-Eingabe deaktiviert auf Grund nicht unterstützter Einstellung: { $preferenceKey }
 touch-warning = Asynchrone Berührungs-Eingabe deaktiviert auf Grund nicht unterstützter Einstellung: { $preferenceKey }
 
 ## Strings representing the status of the Enterprise Policies engine.

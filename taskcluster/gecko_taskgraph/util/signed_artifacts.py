@@ -78,11 +78,7 @@ def generate_specifications_of_artifacts_to_sign(
                     "artifacts": [
                         get_artifact_path(job, f"{{locale}}/target.{extension}")
                     ],
-                    "formats": [
-                        "macapp",
-                        "gcp_prod_autograph_widevine",
-                        "gcp_prod_autograph_omnija",
-                    ],
+                    "formats": ["macapp", "gcp_prod_autograph_widevine"],
                 }
             ]
             langpack_formats = ["gcp_prod_autograph_langpack"]
@@ -111,7 +107,6 @@ def generate_specifications_of_artifacts_to_sign(
                 "formats": [
                     "gcp_prod_autograph_authenticode_202412",
                     "gcp_prod_autograph_widevine",
-                    "gcp_prod_autograph_omnija",
                 ],
             },
         ]
@@ -123,15 +118,14 @@ def generate_specifications_of_artifacts_to_sign(
     elif "linux" in build_platform:
         artifacts_specifications = [
             {
-                "artifacts": [get_artifact_path(job, "{locale}/target.tar.bz2")],
-                "formats": [
-                    "gcp_prod_autograph_gpg",
-                    "gcp_prod_autograph_widevine",
-                    "gcp_prod_autograph_omnija",
-                ],
+                "artifacts": [get_artifact_path(job, "{locale}/target.tar.xz")],
+                "formats": ["gcp_prod_autograph_gpg", "gcp_prod_autograph_widevine"],
             }
         ]
-        if build_platform in LANGPACK_SIGN_PLATFORMS:
+        dep_job = config.kind_dependencies_tasks[job["dependencies"][dep_kind]]
+        if build_platform in LANGPACK_SIGN_PLATFORMS and not dep_job.attributes.get(
+            "artifact-build"
+        ):
             artifacts_specifications += [
                 {
                     "artifacts": [
@@ -171,8 +165,6 @@ def _strip_widevine_for_partners(artifacts_specifications):
     for spec in artifacts_specifications:
         if "gcp_prod_autograph_widevine" in spec["formats"]:
             spec["formats"].remove("gcp_prod_autograph_widevine")
-        if "gcp_prod_autograph_omnija" in spec["formats"]:
-            spec["formats"].remove("gcp_prod_autograph_omnija")
 
     return artifacts_specifications
 

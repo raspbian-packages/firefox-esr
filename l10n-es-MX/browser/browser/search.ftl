@@ -34,6 +34,12 @@ removed-search-engine-message = <strong>Tu motor de búsqueda predeterminado ha 
 removed-search-engine-message2 = <strong>Tu motor de búsqueda predeterminado ha sido cambiado.</strong> { $oldEngine } ya no está disponible como motor de búsqueda predeterminado en { -brand-short-name }. { $newEngine } es ahora tu motor de búsqueda predeterminado. Para cambiar a otro motor de búsqueda predeterminado, ve a los ajustes.
 remove-search-engine-button = Aceptar
 
+## Infobar shown when default search engine is reset due to an issue reading the settings file.
+## Variables
+## $newEngine (String) - the name of the new default search engine.
+
+reset-search-settings-button = Aceptar
+
 ## Infobar shown when user is prompted to install search engine.
 ## Variables
 ## $engineName (String) - the name of the search engine to install.
@@ -41,3 +47,16 @@ remove-search-engine-button = Aceptar
 install-search-engine = ¿Agregar { $engineName } como buscador?
 install-search-engine-add = Agregar
 install-search-engine-no = No
+
+## The following strings are used as input labels.
+
+add-engine-window =
+    .title = Agregar motor de búsqueda
+    .style = min-width: 32em;
+add-engine-button = Agregar motor de búsqueda personalizado
+add-engine-name = Nombre del motor de búsqueda
+
+## The following placeholders are shown in the inputs when adding a new engine.
+
+add-engine-url-placeholder =
+    .placeholder = por ejemplo, https://developer.mozilla.com/search?q=%s

@@ -30,6 +30,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[many] Восстановить закрытые вкладки
         }
     .accesskey = н
+toolbar-context-turn-on-vertical-tabs =
+    .label = Включить вертикальные вкладки
+toolbar-context-turn-off-vertical-tabs =
+    .label = Отключить вертикальные вкладки
+toolbar-context-customize-sidebar =
+    .label = Настроить боковую панель
 toolbar-context-menu-manage-extension =
     .label = Управление расширением
     .accesskey = р
@@ -54,6 +60,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Показывать панель при начале загрузки
     .accesskey = П
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Всегда показывать на панели инструментов
+    .accesskey = Ф
 toolbar-context-menu-remove-from-toolbar =
     .label = Убрать с панели инструментов
     .accesskey = У

@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Thẻ mới
     .accesskey = w
@@ -75,6 +79,10 @@ move-to-end =
 move-to-new-window =
     .label = Di chuyển sang cửa sổ mới
     .accesskey = W
+# Variables
+#  $profileName (string): The name of the profile to move tab to
+move-to-new-profile =
+    .label = Di chuyển sang { $profileName }
 tab-context-close-multiple-tabs =
     .label = Đóng nhiều thẻ
     .accesskey = M
@@ -122,3 +130,10 @@ tab-context-move-tabs =
 tab-context-send-tabs-to-device =
     .label = Gửi { $tabCount } thẻ đến thiết bị
     .accesskey = n
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] Giải phóng thẻ
+           *[other] Giải phóng { $tabCount } thẻ
+        }
+    .accesskey = U

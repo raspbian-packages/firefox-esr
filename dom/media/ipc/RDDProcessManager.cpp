@@ -129,17 +129,18 @@ RefPtr<GenericNonExclusivePromise> RDDProcessManager::LaunchRDDProcess() {
                                                        __func__);
   }
 
-  if (mLaunchRDDPromise && mProcess) {
+  if (mProcess) {
+    MOZ_DIAGNOSTIC_ASSERT(mLaunchRDDPromise);
     return mLaunchRDDPromise;
   }
 
-  std::vector<std::string> extraArgs;
+  geckoargs::ChildProcessArgs extraArgs;
   ipc::ProcessChild::AddPlatformBuildID(extraArgs);
 
   // The subprocess is launched asynchronously, so we
   // wait for the promise to be resolved to acquire the IPDL actor.
   mProcess = new RDDProcessHost(this);
-  if (!mProcess->Launch(extraArgs)) {
+  if (!mProcess->Launch(std::move(extraArgs))) {
     mNumProcessAttempts++;
     DestroyProcess();
     return GenericNonExclusivePromise::CreateAndReject(NS_ERROR_NOT_AVAILABLE,
@@ -154,7 +155,7 @@ RefPtr<GenericNonExclusivePromise> RDDProcessManager::LaunchRDDProcess() {
               NS_ERROR_NOT_AVAILABLE, __func__);
         }
 
-        if (IsRDDProcessDestroyed()) {
+        if (NS_WARN_IF(!IsRDDProcessLaunching())) {
           return GenericNonExclusivePromise::CreateAndReject(
               NS_ERROR_NOT_AVAILABLE, __func__);
         }
@@ -192,7 +193,7 @@ RefPtr<GenericNonExclusivePromise> RDDProcessManager::LaunchRDDProcess() {
 }
 
 auto RDDProcessManager::EnsureRDDProcessAndCreateBridge(
-    base::ProcessId aOtherProcess, dom::ContentParentId aParentId)
+    ipc::EndpointProcInfo aOtherProcess, dom::ContentParentId aParentId)
     -> RefPtr<EnsureRDDPromise> {
   return InvokeAsync(
       GetMainThreadSerialEventTarget(), __func__,
@@ -219,14 +220,14 @@ auto RDDProcessManager::EnsureRDDProcessAndCreateBridge(
       });
 }
 
-bool RDDProcessManager::IsRDDProcessLaunching() {
+bool RDDProcessManager::IsRDDProcessLaunching() const {
   MOZ_ASSERT(NS_IsMainThread());
   return !!mProcess && !mRDDChild;
 }
 
-bool RDDProcessManager::IsRDDProcessDestroyed() const {
+bool RDDProcessManager::IsRDDProcessAlive() const {
   MOZ_ASSERT(NS_IsMainThread());
-  return !mRDDChild && !mProcess;
+  return mRDDChild && mRDDChild->CanSend() && mProcess;
 }
 
 void RDDProcessManager::OnProcessUnexpectedShutdown(RDDProcessHost* aHost) {
@@ -261,14 +262,20 @@ void RDDProcessManager::NotifyRemoteActorDestroyed(
 
 void RDDProcessManager::DestroyProcess() {
   MOZ_ASSERT(NS_IsMainThread());
+
   if (!mProcess) {
     return;
   }
 
-  mProcess->Shutdown();
-  mProcessToken = 0;
+  // Move onto the stack to ensure we don't re-enter from a chained promise
+  // rejection on the process shutdown.
+  RDDProcessHost* process = mProcess;
   mProcess = nullptr;
+
+  process->Shutdown();
+  mProcessToken = 0;
   mRDDChild = nullptr;
+  mLaunchRDDPromise = nullptr;
   mQueuedPrefs.Clear();
 
   CrashReporter::RecordAnnotationCString(
@@ -276,11 +283,11 @@ void RDDProcessManager::DestroyProcess() {
 }
 
 bool RDDProcessManager::CreateContentBridge(
-    base::ProcessId aOtherProcess, dom::ContentParentId aParentId,
+    ipc::EndpointProcInfo aOtherProcess, dom::ContentParentId aParentId,
     ipc::Endpoint<PRemoteDecoderManagerChild>* aOutRemoteDecoderManager) {
   MOZ_ASSERT(NS_IsMainThread());
 
-  if (IsRDDProcessDestroyed()) {
+  if (NS_WARN_IF(!IsRDDProcessAlive())) {
     MOZ_LOG(sPDMLog, LogLevel::Debug,
             ("RDD shutdown before creating content bridge"));
     return false;
@@ -290,7 +297,8 @@ bool RDDProcessManager::CreateContentBridge(
   ipc::Endpoint<PRemoteDecoderManagerChild> childPipe;
 
   nsresult rv = PRemoteDecoderManager::CreateEndpoints(
-      mRDDChild->OtherPid(), aOtherProcess, &parentPipe, &childPipe);
+      mRDDChild->OtherEndpointProcInfo(), aOtherProcess, &parentPipe,
+      &childPipe);
   if (NS_FAILED(rv)) {
     MOZ_LOG(sPDMLog, LogLevel::Debug,
             ("Could not create content remote decoder: %d", int(rv)));
@@ -309,9 +317,16 @@ bool RDDProcessManager::CreateVideoBridge() {
   ipc::Endpoint<PVideoBridgeParent> parentPipe;
   ipc::Endpoint<PVideoBridgeChild> childPipe;
 
+  if (NS_WARN_IF(!IsRDDProcessAlive())) {
+    MOZ_LOG(sPDMLog, LogLevel::Debug,
+            ("RDD shutdown before creating video bridge"));
+    return false;
+  }
+
   GPUProcessManager* gpuManager = GPUProcessManager::Get();
-  base::ProcessId gpuProcessPid =
-      gpuManager ? gpuManager->GPUProcessPid() : base::kInvalidProcessId;
+  ipc::EndpointProcInfo gpuProcessInfo = gpuManager
+                                             ? gpuManager->GPUEndpointProcInfo()
+                                             : ipc::EndpointProcInfo::Invalid();
 
   // Build content device data first; this ensure that the GPU process is fully
   // ready.
@@ -320,13 +335,14 @@ bool RDDProcessManager::CreateVideoBridge() {
 
   // The child end is the producer of video frames; the parent end is the
   // consumer.
-  base::ProcessId childPid = RDDProcessPid();
-  base::ProcessId parentPid = gpuProcessPid != base::kInvalidProcessId
-                                  ? gpuProcessPid
-                                  : base::GetCurrentProcId();
+  ipc::EndpointProcInfo childInfo = RDDEndpointProcInfo();
+  ipc::EndpointProcInfo parentInfo =
+      gpuProcessInfo != ipc::EndpointProcInfo::Invalid()
+          ? gpuProcessInfo
+          : ipc::EndpointProcInfo::Current();
 
-  nsresult rv = PVideoBridge::CreateEndpoints(parentPid, childPid, &parentPipe,
-                                              &childPipe);
+  nsresult rv = PVideoBridge::CreateEndpoints(parentInfo, childInfo,
+                                              &parentPipe, &childPipe);
   if (NS_FAILED(rv)) {
     MOZ_LOG(sPDMLog, LogLevel::Debug,
             ("Could not create video bridge: %d", int(rv)));
@@ -335,7 +351,7 @@ bool RDDProcessManager::CreateVideoBridge() {
 
   mRDDChild->SendInitVideoBridge(std::move(childPipe),
                                  mNumUnexpectedCrashes == 0, contentDeviceData);
-  if (gpuProcessPid != base::kInvalidProcessId) {
+  if (gpuProcessInfo != ipc::EndpointProcInfo::Invalid()) {
     gpuManager->InitVideoBridge(std::move(parentPipe),
                                 VideoBridgeSource::RddProcess);
   } else {
@@ -351,6 +367,12 @@ base::ProcessId RDDProcessManager::RDDProcessPid() {
   base::ProcessId rddPid =
       mRDDChild ? mRDDChild->OtherPid() : base::kInvalidProcessId;
   return rddPid;
+}
+
+ipc::EndpointProcInfo RDDProcessManager::RDDEndpointProcInfo() {
+  MOZ_ASSERT(NS_IsMainThread());
+  return mRDDChild ? mRDDChild->OtherEndpointProcInfo()
+                   : ipc::EndpointProcInfo::Invalid();
 }
 
 class RDDMemoryReporter : public MemoryReportingProcess {

@@ -107,9 +107,35 @@ fp-cert-error-code = Код памылкі: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } не давярае { $hostname }, бо ён не змог даказаць, што адпавядае патрабаванням празрыстасці публічных сертыфікатаў.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Хутчэй за ўсё, нічога, таму што, выглядае на тое, праблема з самім сайтам.
 fp-learn-more-about-secure-connection-failures = Падрабязней пра памылкі бяспечнага злучэння
 fp-learn-more-about-cert-issues = Падрабязней пра падобныя праблемы з сертыфікатамі
 fp-learn-more-about-time-related-errors = Падрабязней пра вырашэнне праблем, звязаных з часам
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } заблакаваў наведванне гэтага сайта, бо сертыфікат, прадстаўлены для { $hostname }, быў адкліканы і больш не з'яўляецца давераным.
+cert-error-bad-signature = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што подпіс на сертыфікаце, прадстаўленым для { $hostname }, несапраўдны.
+cert-error-key-pinning-failure = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што сертыфікат, прадстаўлены для { $hostname }, выкарыстоўвае іншы адкрыты ключ, чым чакалася.
+cert-error-bad-der = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што сертыфікат, прадстаўлены для { $hostname }, не закадаваны належным чынам.
+cert-error-cert-not-in-name-space = { -brand-short-name } заблакаваў наведванне гэтага сайт, таму што сертыфікат, прадстаўлены для { $hostname }, не адпавядае абмежаванням назвы ад сертыфіката, які яго выдаў.
+cert-error-inadequate-cert-type = { -brand-short-name } заблакаваў наведванне гэтага сайта, бо сертыфікат, прадстаўлены для { $hostname }, не дазволены для выкарыстання вэб-серверам.
+cert-error-path-len-constraint-invalid = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што сертыфікат, прадстаўлены для { $hostname }, мае занадта шмат прамежкавых сертыфікатаў на шляху да каранёвага сертыфіката.
+cert-error-invalid-key = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што сертыфікат, прадстаўлены для { $hostname }, мае нядзейсны ключ. Хутчэй за ўсё, ён занадта малы, каб быць бяспечным.
+cert-error-unknown-critical-extension = { -brand-short-name } заблакаваў наведванне гэтага сайта, бо сертыфікат, прадстаўлены для { $hostname }, змяшчае непадтрыманае крытычнае пашырэнне.
+cert-error-extension-value-invalid = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што сертыфікат, прадстаўлены для { $hostname }, змяшчае нядзейснае пашырэнне.
+cert-error-untrusted-issuer = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што сертыфікат, прадстаўлены для { $hostname }, быў выдадзены органам сертыфікацыі, якому больш не давяраюць.
+cert-error-untrusted-cert = { -brand-short-name } заблакаваў наведванне гэтага сайта, бо сертыфікат, прадстаўлены для { $hostname }, пазначаны як ненадзейны.
+cert-error-invalid-integer-encoding = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што сертыфікат, прадстаўлены для { $hostname }, змяшчае няправільнае кадаванне цэлага ліку. Распаўсюджаныя прычыны ўключаюць адмоўныя серыйныя нумары, адмоўныя модулі RSA і кадаванні даўжэйшыя, чым неабходна.
+cert-error-unsupported-keyalg = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што сертыфікат, прадстаўлены для { $hostname }, мае непадтрыманы тып ключа.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } заблакаваў наведванне гэтага сайта, бо орган сертыфікацыі, які выдаў сертыфікат, прадстаўлены для { $hostname }, больш не з'яўляецца давераным.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } заблакаваў наведванне гэтага сайта, таму што алгарытм подпісу сертыфіката, прадстаўленага для { $hostname }, не адпавядае яго полю алгарытму подпісу.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Гэты адрас абмежаваны
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Хм. Ніяк не выходзіць знайсці гэты сайт.
+internet-connection-offline-title = Здаецца, ёсць праблема з інтэрнэт-злучэннем
 dns-not-found-trr-only-title2 = Магчымая рызыка бяспекі пры пошуку гэтага дамена
 dns-not-found-native-fallback-title2 = Магчымая рызыка бяспекі пры пошуку гэтага дамена
 fileNotFound-title = Файл не знойдзены
@@ -134,6 +161,7 @@ contentEncodingError-title = Памылка кадавання змесціва
 unsafeContentType-title = Небяспечны тып файла
 netReset-title = Злучэнне скінута
 netTimeout-title = Час чакання злучэння выйшаў
+httpErrorPage-title = Здаецца, з гэтым сайтам ёсць праблема
 serverError-title = Здаецца, з гэтым сайтам ёсць праблема
 unknownProtocolFound-title = Немагчыма распазнаць адрас
 proxyConnectFailure-title = Проксі-сервер адмовіўся злучацца
@@ -142,6 +170,7 @@ redirectLoop-title = Старонка няправільна перанакір�
 unknownSocketType-title = Нечаканы адказ сервера
 nssFailure2-title = Няўдача бяспечнага злучэння
 csp-xfo-error-title = { -brand-short-name } не можа адкрыць гэту старонку
+corruptedContentErrorv2-title = Памылка пашкоджанага змесціва
 corruptedContentError-title = Памылка пашкоджанага змесціва
 sslv3Used-title = Немагчыма злучыцца бяспечна
 inadequateSecurityError-title = Ваша злучэнне не бяспечнае
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Схаваць падрабязнасці
 fp-certerror-override-exception-button = Перайсці на { $hostname } (рызыкоўна)
 fp-certerror-intro = { -brand-short-name } выявіў патэнцыйна сур'ёзную праблему з бяспекай <strong>{ $hostname }</strong>. Нехта, хто выдае сябе за гэты сайт, можа паспрабаваць скрасці такія рэчы, як дадзеныя крэдытнай карты, паролі або электронную пошту.
 fp-certerror-expired-into = { -brand-short-name } выявіў праблему бяспекі на <strong>{ $hostname }</strong>. Або сайт настроены няправільна, або на гадзінніку вашай прылады ўстаноўлена няправільна дата/час.
+fp-certerror-transparency-intro = Нехта, выдаючы сябе за <strong>{ $hostname }</strong>, можа паспрабаваць скрасці такія рэчы, як інфармацыю крэдытных карт, паролі або электронную пошту.

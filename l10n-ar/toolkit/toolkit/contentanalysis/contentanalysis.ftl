@@ -7,8 +7,6 @@ contentanalysis-slow-agent-dialog-header = جارِ المسح
 contentanalysis-operationtype-clipboard = الحافظة
 contentanalysis-operationtype-dropped-text = النص المُسقط
 contentanalysis-operationtype-print = اطبع
-#   $filename - The filename associated with the request, such as "aFile.txt"
-contentanalysis-customdisplaystring-description = رفع ”{ $filename }“
 contentanalysis-warndialogtitle = قد يكون هذا المحتوى غير آمن
 contentanalysis-warndialog-response-allow = استخدم المحتوى
 contentanalysis-warndialog-response-deny = ألغِ
@@ -19,6 +17,10 @@ contentanalysis-error-message-upload-file = رُفِض رفع "{ $filename }".
 contentanalysis-error-message-dropped-text = رُفِض السحب والإفلات.
 contentanalysis-error-message-clipboard = رُفِض اللصق.
 contentanalysis-error-message-print = رُفِضت الطباعة.
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
+#   $contentName - Description of the content, such as "clipboard" or "aFile.txt"
+contentanalysis-timeout-block-error-message-content = انتهت مهلة الاتصال بـ { $agent }. حُظر { $contentName }.
 contentanalysis-block-dialog-title-upload-file = لا يسمح لك برفع هذا الملف
 contentanalysis-block-dialog-title-clipboard = لا يسمح لك بلصق هذا المحتوى
 contentanalysis-block-dialog-title-dropped-text = لا يسمح لك بإسقاط هذا المحتوى

@@ -17,7 +17,7 @@ list-empty-get-language-packs-message = احصل على حزم اللغات عل
 ##
 
 list-empty-installed =
-    .value = ليس لديك أي إضافات منصّبة من هذا النوع
+    .value = ليس لديك أي إضافات مثبتة من هذا النوع
 list-empty-available-updates =
     .value = لا تحديثات متوفرة
 list-empty-recent-updates =
@@ -258,12 +258,19 @@ header-back-button =
 
 ## Recommended add-ons page
 
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro =
+    الامتدادات والسمات هي كالتطبيقات لمتصفحك، وهي ستدعك:
+    تحمي كلمات السر، تُنزل مقاطع الفيديو، تجد العروض، تحجب الإعلانات المزعجة، تغيّر كيف يبدو متصفحك، وغيرها الكثير.
+    هذه البرمجيات الصغيرة غالبا ما تطور من قِبل جهة ثالثة. ها هي مختارات <a data-l10n-name="learn-more-trigger">انتقاها</a> { -brand-product-name } لأمن وأداء وتوظيف استثنائي.
 # Notice to make user aware that the recommendations are personalized.
 discopane-notice-recommendations = بعض هذه المُقترحات مخصّصة لك، إذ تعتمد على الامتدادات التي ثبّتها وتفضيلات الملف الشخصي وإحصاءات الاستخدام.
 # Notice to make user aware that the recommendations are personalized.
 discopane-notice-recommendations2 =
     .message = بعض هذه المُقترحات مخصّصة لك، إذ تعتمد على الامتدادات التي ثبّتها وتفضيلات الملف الشخصي وإحصاءات الاستخدام.
 discopane-notice-learn-more = اطّلع على المزيد
+colorway-removal-notice-learn-more = اطّلع على المزيد
 privacy-policy = سياسة الخصوصية
 # Refers to the author of an add-on, shown below the name of the add-on.
 # Variables:
@@ -374,6 +381,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = مسموح بها في النوافذ الخاصة
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = مسموح بها في النوافذ الخاصة
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -405,6 +416,18 @@ addon-detail-group-label-quarantined-domains =
 addon-badge-recommended2 =
     .title = يوصي { -brand-product-name } ويقترح فقط الامتدادات التي تلبي معاييرنا للأمان والأداء.
     .aria-label = { addon-badge-recommended2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line3 =
+    .title = الامتدادات الرسمية التي أنشأتها موزيلا. يستوفي معايير الأمن والأداء
+    .aria-label = { addon-badge-line3.title }
+addon-badge-verified2 =
+    .title = جرت مراجعة هذا الامتداد ليفي بمعاييرنا للأمن والأداء
+    .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = الامتدادات الرسمية التي أنشأتها موزيلا. يستوفي معايير الأمن والأداء
 
 ##
 
@@ -412,7 +435,10 @@ available-updates-heading = التحديثات المتاحة
 recent-updates-heading = التحديثات الأخيرة
 release-notes-loading = يحمّل…
 release-notes-error = المعذرة، ولكن حصل خطأ أثناء تحميل ملاحظات الإصدار.
+addon-permissions-empty2 = لا يطلب هذا الامتداد أيّ صلاحيات.
 addon-permissions-empty = لا يطلب هذا الامتداد أيّ صلاحيات
+addon-permissions-required = الصلاحيات المطلوبة للوظيفة الجوهرية:
+addon-permissions-optional = صلاحيات اختيارية للوظائف المضافة:
 addon-permissions-learnmore = اطّلع على المزيد عن التصاريح
 recommended-extensions-heading = الامتدادات المقترحة
 recommended-themes-heading = السمات المقترحة
@@ -465,8 +491,6 @@ details-notification-hard-blocked-other =
     .message = حُظرت هذه الإضافة بسبب انتهاكه لسياسات Mozilla وعُطّلت.
 details-notification-unsigned-link = المزيد من المعلومات
 details-notification-blocked = عُطّلت { $name } لأسباب تتعلق بالأمن أو الثبات.
-details-notification-blocked2 =
-    .message = عُطّلت { $name } لأسباب تتعلق بالأمن أو الثبات.
 details-notification-blocked-link2 = اعرض التفاصيل
 details-notification-soft-blocked-extension-disabled =
     .message = حُظر هذا الامتداد بسبب انتهاكه لسياسات Mozilla وعُطّل. يمكنك تفعيله، ولكن هذا قد يكون محفوفًا بالمخاطر.
@@ -479,8 +503,6 @@ details-notification-soft-blocked-other-enabled =
 details-notification-softblocked-link2 = اعرض التفاصيل
 details-notification-blocked-link = مزيد من المعلومات
 details-notification-softblocked = { $name } معروفة بتسببها لمشاكل في الأمن أو الثبات.
-details-notification-softblocked2 =
-    .message = { $name } معروفة بتسببها لمشاكل في الأمن أو الثبات.
 details-notification-softblocked-link = مزيد من المعلومات
 details-notification-gmp-pending = سينصّب { $name } حالًا.
 details-notification-gmp-pending2 =
@@ -494,3 +516,16 @@ plugins-openh264-name = مرماز الڤديو OpenH264 من سيسكو سيس�
 plugins-openh264-description = تنصّب Mozilla هذه الملحقة تلقائيا للتوافق مع معيار WebRTC و لتفعيل مكالمات WebRTC على الأجهزة التي تحتاج مرماز لڤديو H.264. انتقل إلى ‪http://www.openh264.org/‬ للاطلاع على المصدر البرمجي للمرماز و للاطلاع أكثر على التطبيق.
 plugins-widevine-name = وحدة Widevine لتعمية المحتوى من جوجل.
 plugins-widevine-description = تتيح هذه الملحقة تشغيل الوسائط المعمّاة لتتوافق ومواصفات امتدادات الوسائط المعمّاة. تستعمل المواقع عادةً الوسائط المعمّاة لتحميل محتواها الممتاز من النسخ. زُر https://www.w3.org/TR/encrypted-media/ لمزيد من المعلومات حول امتدادات الوسائط المعمّاة.
+
+## Mapping Engine IDs from AI models to how that feature represented by the engine Id is described in the used by section in local model management
+
+# Label for button that when clicked removed local model
+mlmodel-remove-addon-button =
+    .aria-label = أزِل
+# Label for the aggregated value of all files for a model
+mlmodel-addon-detail-totalsize-label = حجم الملف
+mlmodel-addon-detail-last-used-label = آخر استخدام
+# This is a section label to describe what extensions or features use a specific local AI model
+mlmodel-addon-detail-used-by-label = يستخدمُها
+# This is a section label to describe the link to the model card on the Hugging Face website
+mlmodel-addon-detail-model-card = بطاقة نموذجية

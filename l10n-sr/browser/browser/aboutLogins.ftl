@@ -83,11 +83,9 @@ login-list-last-used-option = последњем коришћењу
 login-list-intro-title = Нема пронађених пријава
 login-list-intro-title2 = Нема сачуваних лозинки
 login-list-intro-description =
-    { -brand-product-name.gender ->
-        [masculine] Овде ће се појавити лозинке које сачувате у { -brand-product-name(case: "loc") }.
-        [feminine] Овде ће се појавити лозинке које сачувате у { -brand-product-name(case: "loc") }.
-        [neuter] Овде ће се појавити лозинке које сачувате у { -brand-product-name(case: "loc") }.
-       *[other] Овде ће се појавити лозинке које сачувате у програму { -brand-product-name }.
+    { -brand-product-name.declinable ->
+        [true] Овде ће се појавити лозинке које сачувате у { -brand-product-name(case: "loc") }.
+       *[false] Овде ће се појавити лозинке које сачувате у програму { -brand-product-name }.
     }
 about-logins-login-list-empty-search-title = Пријаве нису пронађене
 about-logins-login-list-empty-search-title2 = Нема пронађених лозинки
@@ -112,13 +110,11 @@ about-logins-list-section-week = Последњих 7 дана
 about-logins-login-intro-heading-logged-out2 = Тражите сачуване лозинке? Увезите их или укључите синхронизацију.
 about-logins-login-intro-heading-logged-in = Синхронизоване пријаве нису пронађене.
 login-intro-description =
-    { -brand-product-name.gender ->
-        [masculine] Ако сте сачували лозинке у { -brand-product-name(case: "loc") } на другом уређају, ево како их можете преузети:
-        [feminine] Ако сте сачували лозинке у { -brand-product-name(case: "loc") } на другом уређају, ево како их можете преузети:
-        [neuter] Ако сте сачували лозинке у { -brand-product-name(case: "loc") } на другом уређају, ево како их можете преузети:
-       *[other] Ако сте сачували лозинке у програму { -brand-product-name } на другом уређају, ево како их можете преузети:
+    { -brand-product-name.declinable ->
+        [true] Ако сте сачували лозинке у { -brand-product-name(case: "loc") } на другом уређају, ево како им можете приступити:
+       *[false] Ако сте сачували лозинке у програму { -brand-product-name } на другом уређају, ево како им можете приступити:
     }
-login-intro-instructions-fxa = Региструјте се или се пријавите на { -fxaccount-brand-name(case: "acc") } на уређају на ком сте сачували лозинке.
+login-intro-instructions-fxa = Отворите { -fxaccount-brand-name(case: "acc") } или се пријавите на њега на уређају на ком сте сачували лозинке.
 about-logins-login-intro-heading-message = Сачувај своје лозинке на безбедном месту
 login-intro-description2 = Све лозинке које сачуваш у { -brand-product-name } су шифроване. Ми пратимо цурења података и обавестићемо вас ако сте у њима. <a data-l10n-name="breach-alert-link">Сазнај више</a>
 login-intro-instructions-fxa2 = Направите или се пријавите на ваш налог, на уређају где су сачуване ваше пријаве.
@@ -285,32 +281,14 @@ about-logins-confirm-remove-all-sync-dialog-title =
 about-logins-confirm-remove-all-sync-dialog-message =
     { $count ->
         [1]
-            { -brand-short-name.gender ->
-                [masculine] Овим ћете уклонити лозинку коју сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-                [feminine] Овим ћете уклонити лозинку коју сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-                [neuter] Овим ћете уклонити лозинку коју сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-               *[other] Овим ћете уклонити лозинку коју сте сачували у програму { -brand-short-name } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-            }
-        [one]
-            { -brand-short-name.gender ->
-                [masculine] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-                [feminine] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-                [neuter] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-               *[other] Овим ћете уклонити све лозинке које сте сачували у програму { -brand-short-name } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-            }
-        [few]
-            { -brand-short-name.gender ->
-                [masculine] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-                [feminine] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-                [neuter] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-               *[other] Овим ћете уклонити све лозинке које сте сачували у програму { -brand-short-name } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
+            { -brand-short-name.declinable ->
+                [true] Овим ћете уклонити лозинку коју сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
+               *[false] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
             }
        *[other]
-            { -brand-short-name.gender ->
-                [masculine] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-                [feminine] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-                [neuter] Овим ћете уклонити све лозинке које сте сачували у { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
-               *[other] Овим ћете уклонити све лозинке које сте сачували у програму { -brand-short-name } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
+            { -brand-short-name.declinable ->
+                [true] Овим ћете уклонити лозинку коју сте сачували у програму { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
+               *[false] Овим ћете уклонити све лозинке које сте сачували у програму { -brand-short-name(case: "loc") } на свим уређајима синхронизованим са { -fxaccount-brand-name(case: "ins") }, као и упозорења о цурењу података која се појављују овде. Ова радња се не може опозвати.
             }
     }
 # Checkbox for modal to confirm the removal of saved passwords

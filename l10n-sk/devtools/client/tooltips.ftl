@@ -10,14 +10,6 @@ learn-more = <span data-l10n-name="link">Ďalšie informácie</span>
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain why
 ## the property is not applied.
-## Variables:
-##   $property (string) - A CSS property name e.g. "color".
-##   $display (string) - A CSS display value e.g. "inline-block".
-
-
-## In the Rule View when a CSS property cannot be successfully applied we display
-## an icon. When this icon is hovered this message is displayed to explain why
-## the property is not applied.
 ## The variables are all passed from the same place, in `InactiveCssTooltipHelper#getTemplate`
 ## (devtools/client/shared/widgets/tooltip/inactive-css-tooltip-helper.js#95)
 ## Variables:
@@ -42,6 +34,8 @@ inactive-css-not-display-block-on-floated = Hodnota vlastnosti <strong>display</
 inactive-css-not-display-block-on-floated-2 = Hodnota vlastnosti <strong>display</strong> bola vykresľovačom zmenená na <strong>{ $display }</strong>, pretože prvok je <strong>plávajúci</strong>.
 inactive-css-only-non-grid-or-flex-item = Vlastnosť <strong>{ $property }</strong> nemá na tento prvok žiadny vplyv, pretože ju nemožno použiť na položky typu flex alebo grid.
 inactive-css-not-block = Vlastnosť <strong>{ $property }</strong> nemá na tento prvok žiadny vplyv, pretože sa vzťahuje iba na prvky na úrovni bloku.
+inactive-css-not-block-container = Vlastnosť <strong>{ $property }</strong> nemá na tento prvok žiadny vplyv, pretože sa vzťahuje iba na prvky blokového kontajnera.
+inactive-css-not-block-flex-grid-container = Vlastnosť <strong>{ $property }</strong> nemá na tento prvok žiadny vplyv, pretože sa vzťahuje iba na kontajnerové prvky typu block, flex a grid.
 inactive-css-not-floated = Vlastnosť <strong>{ $property }</strong> nemá žiadny vplyv, pretože sa vzťahuje iba na pohyblivé prvky.
 inactive-css-property-is-impossible-to-override-in-visited = Nie je možné prepísať vlastnosť <strong>{ $property }</strong> z dôvodu obmedzenia selektorom <strong>:visited</strong>.
 inactive-css-position-property-on-unpositioned-box = Vlastnosť <strong>{ $property }</strong> nemá na tento prvok žiadny vplyv, pretože nejde o prvok s definovanou pozíciou.
@@ -80,6 +74,7 @@ inactive-css-text-wrap-balance-lines-exceeded =
     }
 inactive-css-text-wrap-balance-fragmented = Vlastnosť <strong>{ $property }</strong> nemá na tento prvok žiadny vplyv, pretože tento je fragmentovaný, t. j. jeho obsah je rozdelený do viacerých stĺpcov alebo stránok.
 inactive-css-no-width-height = Vlastnosť <strong>{ $property }</strong> nemá na tento prvok žiadny vplyv, pretože jeho šírku a výšku nemožno nastaviť.
+inactive-css-no-principal-box = Vlastnosť <strong>{ $property }</strong> nemá na tento prvok žiadny vplyv, pretože nevytvára hlavný box.
 
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain how
@@ -102,6 +97,8 @@ inactive-css-non-replaced-inline-or-table-column-or-column-group-fix = Skúste p
 inactive-css-not-display-block-on-floated-fix = Skúste odstrániť <strong>float</strong> alebo pridať <strong>display:block</strong>. { learn-more }
 inactive-css-only-non-grid-or-flex-item-fix = Skúste zmeniť hodnotu <strong>display</strong> kontajnera prvku na niečo iné ako <strong>flex</strong>, <strong>grid</strong>, <strong>inline-flex</strong>, alebo <strong>inline-grid</strong> alebo odstráňte <strong>float</strong>. { learn-more }
 inactive-css-not-block-fix = Skúste pridať vlastnosti ako <strong>display:block</strong> alebo <strong>float:left</strong>. { learn-more }
+inactive-css-not-block-container-fix = Skúste pridať <strong>display:block</strong>, <strong>display:inline-block</strong> alebo <strong>display:flow-root</strong>. { learn-more }
+inactive-css-not-block-flex-grid-container-fix = Skúste pridať <strong>display:block</strong>, <strong>display:inline-block</strong>, <strong>display:flex</strong>, <strong>display:inline-flex</strong>, <strong>display:grid</strong>, <strong>display:inline-grid</strong> alebo <strong>display:flow-root</strong>. { learn-more }
 inactive-css-not-floated-fix = Skúste pridať vlastnosť <strong>float</strong> s inou hodnotou ako <strong>none</strong>. { learn-more }
 inactive-css-position-property-on-unpositioned-box-fix = Skúste nastaviť vlastnosť <strong>position</strong> na inú hodnotu ako <strong>static</strong>. { learn-more }
 inactive-css-only-replaced-elements-fix = Uistite sa, že vlastnosť pridávate do nahradeného prvku. { learn-more }
@@ -118,6 +115,7 @@ inactive-css-resize-fix = Skúste nastaviť <strong>overflow</strong> na inú ho
 inactive-css-ruby-element-fix = Skúste zmeniť <strong>veľkosť písma</strong> textu prvku ruby. { learn-more }
 inactive-css-text-wrap-balance-lines-exceeded-fix = Skúste znížiť počet riadkov. { learn-more }
 inactive-css-text-wrap-balance-fragmented-fix = Vyhnite sa rozdeleniu obsahu prvku, napr. odstránením stĺpcov alebo použitím <strong>page-break-inside:avoid</strong>. { learn-more }
+inactive-css-no-principal-box-fix = Skúste pridať hodnotu <strong>display</strong>, ktorá vytvorí hlavný box, napríklad <strong>block</strong>, <strong>inline-block</strong>, <strong>flex</strong> alebo <strong>grid</strong>. { learn-more }
 
 ## In the Rule View when a CSS property may have compatibility issues with other browsers
 ## we display an icon. When this icon is hovered this message is displayed to explain why

@@ -29,6 +29,8 @@ return-to-amo-subtitle =
 return-to-amo-addon-title = Teď zpět k doplňku <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Přidat rozšíření
 return-to-amo-add-theme-label = Přidat motiv vzhledu
+return-to-amo-theme-install-complete-label = Vzhled nainstalován
+return-to-amo-extension-install-complete-label = Rozšíření nainstalováno
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -69,9 +71,6 @@ mr1-onboarding-theme-subtitle =
        *[no-cases] Přizpůsobte si vzhled aplikace { -brand-short-name }
     }
 mr1-onboarding-theme-secondary-button-label = Teď ne
-newtab-wallpaper-onboarding-title = Zkuste barevný nádech
-newtab-wallpaper-onboarding-subtitle = Vyberte si tapetu, která dodá každému novému panelu nový vzhled.
-newtab-wallpaper-onboarding-primary-button-label = Nastavit tapetu
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Podle systému
 mr1-onboarding-theme-label-light = Světlý
@@ -629,6 +628,18 @@ onboarding-checklist-sign-up = Zaregistrujte se nebo se přihlaste ke svému ú�
 
 tab-groups-onboarding-feature-callout-title = Vyzkoušejte skupiny karet, abyste měli méně nepořádku a více se soustředili.
 tab-groups-onboarding-feature-callout-subtitle = Vytvořte si pořádek přesunutím jednoho panelu na druhý, čímž vytvoříte svoji první skupinu.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Skupiny panelů najdete vždy v nabídce Seznam všech panelů.
+tab-groups-onboarding-create-group-title-2 = Kdykoli zde najdete své skupiny panelů.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Skupiny najdete vyhledáním v adresním řádku.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Když skupinu panelů zavřete, můžete ji kdykoli znovu otevřít z nabídky Seznam všech panelů.
+tab-groups-onboarding-saved-groups-title-2 = Když skupinu panelů zavřete, můžete ji zde kdykoli znovu otevřít.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Uzavřené skupiny najdete vyhledáním v adresním řádku.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Skupiny panelů můžete kdykoli znovu otevřít z nabídky Seznam všech panelů.
+tab-groups-onboarding-session-restore-title = Zde můžete kdykoli znovu otevřít skupiny panelů.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -642,3 +653,151 @@ multi-profile-spotlight-cta = Vytvořit profil
 multi-profile-callout-title = Vytvořte si různé profily pro práci a zábavu
 multi-profile-callout-subtitle = Profily umožňují uchovávat informace o procházení, jako je historie vyhledávání a hesla, zcela odděleně.
 multi-profile-callout-cta = Vytvořit profil
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Stáhněte, synchronizujte a vyrazte na cesty!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle =
+    { -brand-product-name.case-status ->
+        [with-cases] Naskenujte QR kód a stáhněte si { -brand-product-name(case: "acc") } pro mobilní zařízení. Po instalaci vyberte možnost "Synchronizovat s mobilním telefonem" a získejte přístup ke svým heslům, záložkám a dalším údajům na cestách.
+       *[no-cases] Naskenujte QR kód a stáhněte si aplikaci { -brand-product-name } pro mobilní zařízení. Po instalaci vyberte možnost "Synchronizovat s mobilním telefonem" a získejte přístup ke svým heslům, záložkám a dalším údajům na cestách.
+    }
+dismiss-button-label = Zavřít
+sync-to-mobile-button-label = Synchronizace s mobilem
+desktop-to-mobile-qr-code-alt =
+    .aria-label =
+        { -brand-product-name.case-status ->
+            [with-cases] QR kód pro stažení { -brand-product-name(case: "gen") } pro mobilní zařízení
+           *[no-cases] QR kód pro stažení aplikace { -brand-product-name } pro mobilní zařízení
+        }
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Chcete aktualizovat na Windows 11?
+    Pojďme zazálohovat data aplikace { -brand-product-name }.
+create-backup-screen-1-subtitle = Automaticky chraňte svá hesla, záložky a další data během 1–2 minut.
+create-backup-screen-1-flair = Doporučeno
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Zjistit více</a>
+create-backup-screen-1-sync-label =
+    { -brand-product-name.case-status ->
+        [with-cases] Synchronizace s { -brand-product-name(case: "ins") }
+       *[no-cases] Synchronizace s aplikací { -brand-product-name }
+    }
+create-backup-screen-1-sync-body = Zálohuje všechna přihlášená zařízení
+create-backup-screen-1-backup-label = Zálohovat do PC
+create-backup-screen-1-backup-body = Uloží na vaše zařízení nebo na OneDrive
+create-backup-select-tile-button-label = Vybrat
+create-backup-back-button-label = Zpět
+create-backup-show-fewer =
+    .label = Zobrazovat méně podobných
+create-backup-screen-2-title =
+    { -brand-product-name.case-status ->
+        [with-cases] Vyberte údaje { -brand-product-name(case: "gen") }, které chcete zálohovat
+       *[no-cases] Vyberte údaje aplikace { -brand-product-name }, které chcete zálohovat
+    }
+create-backup-screen-2-subtitle = Trvá to jen minutku. Vaše data jsou zálohována jednou denně.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Snadné nastavení
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Záložky, historie, nastavení a další
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Nezahrnuje hesla a platební metody
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Není zašifrováno
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Všechna data
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Zahrnuje hesla a platební metody
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Zašifrováno heslem
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Kam chcete zálohu uložit?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Vytvoření hesla pro soubor se zálohou
+create-backup-screen-3-subtitle = Vyžadováno pro šifrování vašich dat. Uložte si ho na místo, které si budete pamatovat.
+fx-backup-opt-in-header = Vyberte umístění souboru
+fx-backup-opt-in-filepath-label = Vyberte místo, které plánujete přenést do nového zařízení, například OneDrive.
+fx-backup-opt-in-create-password-label = Zadejte heslo
+fx-backup-opt-in-confirm-btn-label = Pokračovat
+fx-backup-opt-in-cancel-btn-label = Zpět
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Vaše záloha je naplánována
+fx-backup-confirmation-screen-close-button = Zavřít
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Všechna data o prohlížení jsou zahrnuta
+fx-backup-confirmation-screen-all-data-item-text-2 = Uloženo do vašeho zařízení
+fx-backup-confirmation-screen-all-data-item-text-3 = Zašifrováno a chráněno heslem
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Obsahuje záložky, historii, nastavení a další data.
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Uloženo do vašeho zařízení
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Hesla a platební metody nejsou zahrnuty
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Přejděte do <a data-l10n-name="settings">Nastavení</a> a zahrňte svá důvěrná data.
+fx-backup-confirmation-screen-item-subtext-1 = Zálohování začne za několik minut a bude probíhat jednou denně. Stav můžete zkontrolovat v <a data-l10n-name="settings">Nastavení</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } vyhledá vaši zálohu, pokud budete potřebovat přeinstalovat.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Obnova ze zálohy
+restore-from-backup-title =
+    { -brand-short-name.case-status ->
+        [with-cases] Získejte { -brand-short-name(case: "acc") } podle svých představ
+       *[no-cases] Získejte aplikaci { -brand-short-name } podle svých představ
+    }
+restore-from-backup-subtitle = Obnovte všechny své záložky, historii a další data, abyste se mohli vrátit k prohlížení.
+restore-from-backup-secondary-button = Neobnovovat
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title =
+    { -brand-short-name.case-status ->
+        [with-cases] Jsme zpět! Vaše data { -brand-short-name(case: "gen") } byla obnovena.
+       *[no-cases] Jsme zpět! Vaše data aplikace { -brand-short-name } byla obnovena.
+    }
+restored-from-backup-success-with-checklist-subtitle = Chcete mít svůj oblíbený prohlížeč zaměřený na ochranu soukromí po ruce?
+restored-from-backup-success-no-checklist-subtitle = Zálohování pro toto zařízení můžete zapnout v <a data-l10n-name="settings">Nastavení</a>.
+restored-from-backup-success-with-checklist-primary-button = Uložit a pokračovat
+restored-from-backup-success-with-checklist-secondary-button = Přeskočit tento krok
+restored-from-backup-success-no-checklist-primary-button = Pokračovat
+restored-from-backup-error-title = Hmm, vyskytl se problém se záložním souborem.
+restored-from-backup-error-subtitle =
+    { -brand-short-name.case-status ->
+        [with-cases] Pokud máte další zálohu { -brand-short-name(case: "gen") }, zkuste provést obnovu z tohoto souboru. <a data-l10n-name="restore-problems">Stále přetrvávají problémy?</a>
+       *[no-cases] Pokud máte další zálohu aplikace { -brand-short-name }, zkuste provést obnovu z tohoto souboru. <a data-l10n-name="restore-problems">Stále přetrvávají problémy?</a>
+    }
+restored-from-backup-error-primary-button = Zavřít
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title =
+    { -brand-short-name.case-status ->
+        [with-cases] Přizpůsobte si svůj zážitek z { -brand-short-name(case: "gen") }
+       *[no-cases] Přizpůsobte si svůj zážitek z aplikace { -brand-short-name }
+    }
+onboarding-personalization-subtitle =
+    { -brand-short-name.case-status ->
+        [with-cases] Odpovězte na několik otázek a my vám odporučíme funkce a rozšíření, které vám { -brand-short-name(case: "acc") } vylepší.
+       *[no-cases] Odpovězte na několik otázek a my vám odporučíme funkce a rozšíření, které vám aplikaci { -brand-short-name } vylepší.
+    }
+onboarding-personalization-use-case-title =
+    { -brand-short-name.case-status ->
+        [with-cases] K čemu budete { -brand-short-name(case: "acc") } používat?
+       *[no-cases] K čemu budete aplikaci { -brand-short-name } používat?
+    }
+onboarding-personalization-use-case-personal-option = Osobní
+onboarding-personalization-use-case-school-option = Škola
+onboarding-personalization-use-case-work-option = Práce
+onboarding-personalization-motivation-title =
+    { -brand-short-name.case-status ->
+        [with-cases] Které funkce { -brand-short-name(case: "gen") } jsou pro vás nejdůležitější?
+       *[no-cases] Které funkce aplikace { -brand-short-name } jsou pro vás nejdůležitější?
+    }
+onboarding-personalization-motivation-privacy-option = Soukromí a zabezpečení
+onboarding-personalization-motivation-productivity-option = Produktivita
+onboarding-personalization-motivation-other-option = Jiné

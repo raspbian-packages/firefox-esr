@@ -68,6 +68,14 @@ perftools-button-add-directory = Tambahkan direktori
 perftools-button-remove-directory = Hapus yang dipilih
 perftools-button-edit-settings = Edit Pengaturan…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = Tindakan lainnya
+perftools-menu-more-actions-restart-with-profiling = Mulai ulang { -brand-shorter-name } dengan profil awal diaktifkan
+perftools-menu-more-actions-copy-for-startup = Salin variabel lingkungan untuk profil startup
+perftools-menu-more-actions-copy-for-perf-tests = Salin parameter untuk pengujian kinerja
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -148,6 +156,3 @@ perftools-presets-power-description = Prasetel untuk menyelidiki bug penggunaan 
 perftools-presets-debug-label = Debug
 perftools-presets-debug-description = Prasetel untuk debugging di { -brand-shorter-name }. Profiler ini memiliki overhead tinggi, jangan gunakan untuk pekerjaan kinerja tetapi gunakan untuk fokus pada pemahaman perilaku peramban.
 perftools-presets-custom-label = Khusus
-
-##
-

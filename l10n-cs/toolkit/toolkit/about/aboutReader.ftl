@@ -75,17 +75,22 @@ about-reader-customtheme-tab = Vlastní
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Text
-    .title = Upravit barvu
-about-reader-custom-colors-background = Pozadí
-    .title = Upravit barvu
-about-reader-custom-colors-unvisited-links = Nenavštívené odkazy
-    .title = Upravit barvu
-about-reader-custom-colors-visited-links = Navštívené odkazy
-    .title = Upravit barvu
-about-reader-custom-colors-selection-highlight = Zvýrazňovač pro čtení nahlas
-    .title = Upravit barvu
 about-reader-reset-button = Obnovit výchozí
+about-reader-custom-colors-foreground2 =
+    .label = Text
+    .title = Upravit barvu
+about-reader-custom-colors-background2 =
+    .label = Pozadí
+    .title = Upravit barvu
+about-reader-custom-colors-unvisited-links2 =
+    .label = Nenavštívené odkazy
+    .title = Upravit barvu
+about-reader-custom-colors-visited-links2 =
+    .label = Navštívené odkazy
+    .title = Upravit barvu
+about-reader-custom-colors-selection-highlight2 =
+    .label = Zvýrazňovač pro čtení nahlas
+    .title = Upravit barvu
 
 ## Reader View text and layout menu
 
@@ -115,3 +120,5 @@ about-reader-text-alignment-center =
     .title = Zarovnání textu na střed
 about-reader-text-alignment-right =
     .title = Zarovnání textu doprava
+about-reader-text-alignment-justify =
+    .title = Zarovnat text

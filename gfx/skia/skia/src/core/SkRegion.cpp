@@ -60,7 +60,7 @@ public:
     /** Resize the array to a size greater-than-or-equal-to count. */
     void resizeToAtLeast(int count) {
         if (count > fCount) {
-            // leave at least 50% extra space for future growth.
+            // leave at least 50% extra space for future growth (unless adding would overflow)
             SkSafeMath safe;
             int newCount = safe.addInt(count, count >> 1);
             count = safe ? newCount : SK_MaxS32;

@@ -20,6 +20,16 @@ fxa-menu-connect-another-device =
     .label = Başka bir cihaz bağla…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] Cihaza gönder
+            [one] { $tabCount } sekmeyi cihaza gönder
+           *[other] { $tabCount } sekmeyi cihaza gönder
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label =
         { $tabCount ->
@@ -33,8 +43,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Giriş yaptığınız her cihaza anında sekme gönderin.
 fxa-menu-sign-out =
     .label = Çıkış yap…
-fxa-menu-sync-title = Eşitle
 fxa-menu-sync-description = Web’inize her yerden erişin
+fxa-avatar-sign-in = Giriş yap
+fxa-avatar-sign-up = Kaydol
+fxa-avatar-tooltip =
+    .tooltiptext = Hesabınıza giriş yapın
 sync-setup-verify-continue = İleri
 sync-setup-verify-title = Birleştirme Uyarısı
 sync-setup-verify-heading = Eşitleme için giriş yapmak istediğinizden emin misiniz?
@@ -49,8 +62,15 @@ sync-setup-verify-description = Bu bilgisayarda farklı bir kullanıcı daha ön
 # Dialog 1 - different account signing in without option to merge
 sync-profile-different-account-title = Bu profil için hesap sınırına ulaşıldı
 sync-profile-different-account-header = Bu profil daha önce farklı bir hesapla eşitlenmiş
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+sync-profile-different-account-description = Verilerinizi düzenli ve güvenli tutmak için her { -brand-product-name } profilini yalnızca bir hesapla eşitleyebilirsiniz. { $acctEmail } hesabıyla giriş yapmak için yeni bir profil oluşturun.
 # Dialog 1 - different account signing in with merge option
 sync-profile-different-account-title-merge = Bu profil farklı bir hesapla eşitlenmiş
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+#   $profileName (String) - Name of the current profile
+sync-profile-different-account-description-merge = Verilerinizi düzenli ve güvende tutmak için { $acctEmail } ile giriş yapacağınız yeni bir profil oluşturmanızı öneririz. Bu profili eşitlemeye devam ederseniz her iki hesaptaki veriler “{ $profileName }” profilinde kalıcı olarak birleştirilecektir.
 # Dialog 2 - account signed in on another profile without option to merge
 sync-account-in-use-header = Hesap zaten kullanımda
 # Variables:
@@ -60,6 +80,11 @@ sync-account-in-use-header-merge = { $acctEmail } hesabı “{ $otherProfile }�
 sync-account-in-use-description = Bu hesabı bu bilgisayardaki yalnızca bir profille ilişkilendirebilirsiniz.
 # Dialog 2 - account signed in on another profile with merge option
 sync-account-already-signed-in-header = Bu hesap başka bir profile giriş yapmış. Her iki profil de eşitlensin mi?
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+#   $currentProfile (String): Name of the current profile signing in
+#   $otherProfile (String): Name of the profile that is already signed in
+sync-account-in-use-description-merge = { $acctEmail } bu bilgisayardaki “{ $otherProfile }” profiline giriş yapmış. “{ $currentProfile }” profilini eşitlerseniz her iki profildeki veriler (örn. parolalar ve yer imleri) kalıcı olarak birleştirecektir.
 # Variables:
 #   $profileName (String) - Name of the profile to switch to
 sync-button-switch-profile = “{ $profileName }” profiline geç

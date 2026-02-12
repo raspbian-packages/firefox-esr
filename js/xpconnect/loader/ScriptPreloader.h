@@ -9,6 +9,7 @@
 #include "mozilla/Atomics.h"
 #include "mozilla/CheckedInt.h"
 #include "mozilla/EnumSet.h"
+#include "mozilla/EventTargetAndLockCapability.h"
 #include "mozilla/LinkedList.h"
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/Maybe.h"
@@ -66,12 +67,13 @@ struct Matcher {
 
 using namespace mozilla::loader;
 
+struct CachedStencilRefAndTime;
+
 class ScriptPreloader : public nsIObserver,
                         public nsIMemoryReporter,
                         public nsIRunnable,
                         public nsINamed,
-                        public nsIAsyncShutdownBlocker,
-                        public SingleWriterLockOwner {
+                        public nsIAsyncShutdownBlocker {
   MOZ_DEFINE_MALLOC_SIZE_OF(MallocSizeOf)
 
   friend class mozilla::loader::ScriptCacheChild;
@@ -104,8 +106,6 @@ class ScriptPreloader : public nsIObserver,
   static void FillCompileOptionsForCachedStencil(JS::CompileOptions& options);
   static void FillDecodeOptionsForCachedStencil(JS::DecodeOptions& options);
 
-  bool OnWritingThread() const override { return NS_IsMainThread(); }
-
   // Retrieves the stencil with the given cache key from the cache.
   // Returns null if the stencil is not cached.
   already_AddRefed<JS::Stencil> GetCachedStencil(
@@ -129,10 +129,12 @@ class ScriptPreloader : public nsIObserver,
                    TimeStamp loadTime);
 
   // Initializes the script cache from the startup script cache file.
-  Result<Ok, nsresult> InitCache(const nsAString& = u"scriptCache"_ns);
+  Result<Ok, nsresult> InitCache(const nsAString& = u"scriptCache"_ns)
+      MOZ_REQUIRES(sMainThreadCapability);
 
   Result<Ok, nsresult> InitCache(const Maybe<ipc::FileDescriptor>& cacheFile,
-                                 ScriptCacheChild* cacheChild);
+                                 ScriptCacheChild* cacheChild)
+      MOZ_REQUIRES(sMainThreadCapability);
 
   bool Active() const { return mCacheInitialized && !mStartupFinished; }
 
@@ -215,21 +217,6 @@ class ScriptPreloader : public nsIObserver,
       return mProcessTypes.isEmpty() ? ScriptStatus::Restored
                                      : ScriptStatus::Saved;
     }
-
-    // For use with nsTArray::Sort.
-    //
-    // Orders scripts by script load time, so that scripts which are needed
-    // earlier are stored earlier, and scripts needed at approximately the
-    // same time are stored approximately contiguously.
-    struct Comparator {
-      bool Equals(const CachedStencil* a, const CachedStencil* b) const {
-        return a->mLoadTime == b->mLoadTime;
-      }
-
-      bool LessThan(const CachedStencil* a, const CachedStencil* b) const {
-        return a->mLoadTime < b->mLoadTime;
-      }
-    };
 
     struct StatusMatcher final : public Matcher<CachedStencil*> {
       explicit StatusMatcher(ScriptStatus status) : mStatus(status) {}
@@ -388,6 +375,8 @@ class ScriptPreloader : public nsIObserver,
     MaybeOneOf<JS::TranscodeBuffer, nsTArray<uint8_t>> mXDRData;
   } JS_HAZ_NON_GC_POINTER;
 
+  friend struct CachedStencilRefAndTime;
+
   template <ScriptStatus status>
   static Matcher<CachedStencil*>* Match() {
     static CachedStencil::StatusMatcher matcher{status};
@@ -406,13 +395,13 @@ class ScriptPreloader : public nsIObserver,
   void Cleanup();
 
   void FinishPendingParses(MonitorAutoLock& aMal);
-  void InvalidateCache();
+  void InvalidateCache() MOZ_REQUIRES(sMainThreadCapability);
 
   // Opens the cache file for reading.
   Result<Ok, nsresult> OpenCache();
 
   // Writes a new cache file to disk. Must not be called on the main thread.
-  Result<Ok, nsresult> WriteCache() MOZ_REQUIRES(mSaveMonitor);
+  Result<Ok, nsresult> WriteCache() MOZ_REQUIRES(mSaveMonitor.Lock());
 
   void StartCacheWrite();
 
@@ -505,7 +494,8 @@ class ScriptPreloader : public nsIObserver,
   bool mCacheInitialized = false;
   bool mSaveComplete = false;
   bool mDataPrepared = false;
-  // May only be changed on the main thread, while `mSaveMonitor` is held.
+  // May only be changed on the main thread, while `mSaveMonitor.Lock()` is
+  // held.
   bool mCacheInvalidated MOZ_GUARDED_BY(mSaveMonitor) = false;
 
   // The list of scripts currently being decoded in a background thread.
@@ -546,8 +536,8 @@ class ScriptPreloader : public nsIObserver,
   // instance.
   AutoMemMap* mCacheData;
 
-  Monitor mMonitor;
-  MonitorSingleWriter mSaveMonitor MOZ_ACQUIRED_BEFORE(mMonitor);
+  Monitor mMonitor MOZ_ACQUIRED_AFTER(mSaveMonitor.Lock());
+  MainThreadAndLockCapability<Monitor> mSaveMonitor;
 };
 
 }  // namespace mozilla

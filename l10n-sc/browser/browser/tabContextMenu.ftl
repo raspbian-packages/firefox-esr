@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Ischeda noa
     .accesskey = n
@@ -126,3 +130,11 @@ tab-context-send-tabs-to-device =
            *[other] Imbia { $tabCount } ischedas a unu dispositivu
         }
     .accesskey = m
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] Iscàrriga s’ischeda dae sa memòria
+            [one] Iscàrriga s’ischeda dae sa memòria
+           *[other] Iscàrriga { $tabCount } ischedas dae sa memòria
+        }
+    .accesskey = I

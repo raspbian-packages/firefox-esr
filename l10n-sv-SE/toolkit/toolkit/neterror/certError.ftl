@@ -107,9 +107,35 @@ fp-cert-error-code = Felkod: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } litar inte på { $hostname } eftersom det inte kunde bevisa att det uppfyller kraven på publika certifikat.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Förmodligen ingenting, eftersom det troligtvis finns ett problem med själva webbplatsen.
 fp-learn-more-about-secure-connection-failures = Läs mer om säkra anslutningsfel
 fp-learn-more-about-cert-issues = Läs mer om dessa typer av certifikatfrågor
 fp-learn-more-about-time-related-errors = Läs mer om felsökning av tidsrelaterade fel
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } har återkallats och inte är tillförlitligt längre.
+cert-error-bad-signature = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom signaturen på certifikatet som tillhandahålls för { $hostname } inte är giltig.
+cert-error-key-pinning-failure = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } använder en annan publik nyckel än förväntat.
+cert-error-bad-der = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet för { $hostname } inte är korrekt kodat.
+cert-error-cert-not-in-name-space = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } inte följer namnbegränsningarna för ett certifikat som utfärdade det.
+cert-error-inadequate-cert-type = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } inte får användas av en webbserver.
+cert-error-path-len-constraint-invalid = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } har för många mellanliggande certifikat i sökvägen till rotcertifikatet.
+cert-error-invalid-key = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } har en ogiltig nyckel. Troligtvis är den för kort för att vara säker.
+cert-error-unknown-critical-extension = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } innehåller ett kritiskt tillägg som inte stöds.
+cert-error-extension-value-invalid = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } innehåller ett ogiltigt tillägg.
+cert-error-untrusted-issuer = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } utfärdades av en certifikatutfärdare som inte är tillförlitlig längre.
+cert-error-untrusted-cert = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } är markerat som icke betrott.
+cert-error-invalid-integer-encoding = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } innehåller en ogiltig kodning av ett heltal. Vanliga orsaker är negativa serienummer, negativa RSA-moduler och kodning som är längre än nödvändigt.
+cert-error-unsupported-keyalg = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatet som tillhandahålls för { $hostname } har en nyckeltyp som inte stöds.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom certifikatutfärdaren som utfärdade certifikatet som tillhandahålls för { $hostname } inte är tillförlitlig längre.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } blockerade ditt besök på den här webbplatsen eftersom signaturalgoritmen för certifikatet som tillhandahålls för { $hostname } inte matchar dess signaturalgoritmfält.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Adressen har säkerhetsrestriktioner
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Vi har problem med att hitta den webbplatsen.
+internet-connection-offline-title = Det verkar finnas ett problem med din internetanslutning.
 dns-not-found-trr-only-title2 = Potentiell säkerhetsrisk vid sökning efter denna domän
 dns-not-found-native-fallback-title2 = Möjlig säkerhetsrisk att leta upp den här domänen
 fileNotFound-title = Filen hittades inte
@@ -134,6 +161,7 @@ contentEncodingError-title = Kodningsfel av innehållet
 unsafeContentType-title = Osäker filtyp
 netReset-title = Anslutningen avbröts
 netTimeout-title = Anslutningen avbröts
+httpErrorPage-title = Det verkar finnas ett problem med den här sidan
 serverError-title = Det verkar finnas ett problem med den här sidan
 unknownProtocolFound-title = Adressen kan inte tolkas
 proxyConnectFailure-title = Proxyservern avvisar anslutningen
@@ -142,6 +170,7 @@ redirectLoop-title = Sidan dirigeras om felaktigt
 unknownSocketType-title = Oväntat svar från servern
 nssFailure2-title = Säker anslutning misslyckades
 csp-xfo-error-title = { -brand-short-name } Kan inte öppna den här sidan
+corruptedContentErrorv2-title = Korrupt innehållsfel
 corruptedContentError-title = Skadat innehåll
 sslv3Used-title = Kan inte ansluta säkert
 inadequateSecurityError-title = Din anslutning är inte säker
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Dölj avancerat
 fp-certerror-override-exception-button = Fortsätt till { $hostname } (riskfullt)
 fp-certerror-intro = { -brand-short-name } upptäckte ett potentiellt allvarligt säkerhetsproblem med <strong>{ $hostname }</strong>. Någon som utger sig för att vara webbplatsen kan försöka stjäla saker som kreditkortsinformation, lösenord eller e-postmeddelanden.
 fp-certerror-expired-into = { -brand-short-name } upptäckte ett säkerhetsproblem med <strong>{ $hostname }</strong>. Antingen är webbplatsen inte rätt inställd eller så är din enhets klocka inställd på fel datum/tid.
+fp-certerror-transparency-intro = Någon som låtsas vara <strong>{ $hostname }</strong> kan försöka stjäla saker som kreditkortsinformation, lösenord eller e-post.

@@ -9,6 +9,7 @@
 #   $addon-name (string) - Name of the add-on being reported
 abuse-report-dialog-title = Raport pentru { $addon-name }
 abuse-report-title-extension = Raportează această extensie la { -vendor-short-name }
+abuse-report-title-sitepermission = Raportează acest supliment de permisiuni pentru site-uri la { -vendor-short-name }
 abuse-report-title-theme = Raportează această temă la { -vendor-short-name }
 abuse-report-subtitle = Care e problema?
 # Variables:
@@ -37,6 +38,7 @@ abuse-report-messagebar-submitting = Se transmite raportarea pentru <span data-l
 abuse-report-messagebar-submitted = Îți mulțumim că ai trimis raportarea. Vrei să elimini <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Îți mulțumim că ai transmis o raportare.
 abuse-report-messagebar-removed-extension = Îți mulțumim că ai trimis o raportare. Ai eliminat extensia <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Îți mulțumim pentru raport. Ai eliminat suplimentul de permisiuni pentru site-uri <<span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Îți mulțumim că ai trimis o raportare. Ai eliminat tema <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = A apărut o problemă la transmiterea raportării pentru <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Raportarea pentru <span data-l10n-name="addon-name">{ $addon-name }</span> nu a fost transmisă deoarece a mai fost depusă recent altă raportare.
@@ -45,6 +47,8 @@ abuse-report-messagebar-error-recent-submit = Raportarea pentru <span data-l10n-
 
 abuse-report-messagebar-action-remove-extension = Da, elimin-o
 abuse-report-messagebar-action-keep-extension = Nu, păstreaz-o
+abuse-report-messagebar-action-remove-sitepermission = Da, elimină-l
+abuse-report-messagebar-action-keep-sitepermission = Nu, păstrează-l
 abuse-report-messagebar-action-remove-theme = Da, elimin-o
 abuse-report-messagebar-action-keep-theme = Nu, păstreaz-o
 abuse-report-messagebar-action-retry = Reîncearcă
@@ -63,9 +67,14 @@ abuse-report-settings-suggestions-homepage = Schimbă pagina de start și de fil
 abuse-report-deceptive-reason-v2 = Pretinde că e ceva ce nu este
 abuse-report-deceptive-example = Exemplu: Descriere sau grafică ce induce în eroare
 abuse-report-broken-reason-extension-v2 = Nu funcționează, produce defecțiuni pe site-uri web sau înceteinește { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Nu funcționează, produce defecțiuni pe site-uri web sau încetinește { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Nu funcționează sau face inutilizabil afișajul în browser
 abuse-report-broken-example = Exemplu: Funcționalitățile sunt lente, greu de utilizat sau nu funcționează; nu se încarcă părți din site-uri sau arată straniu
 abuse-report-broken-suggestions-extension = Pare că ai identificat o defecțiune. În plus față de transmiterea unei raportări aici, cea mai bună cale de rezolvare a unei probleme de funcționalitate este să contactezi dezvoltatorul extensiei. <a data-l10n-name="support-link">Intră pe site-ul extensiei</a> pentru a obține datele de contact ale dezvoltatorului.
+abuse-report-broken-suggestions-sitepermission =
+    Se pare că ai identificat o defecțiune. În plus față de transmiterea unui raport aici, cea mai bună cale 
+    de rezolvare a unei probleme de funcționalitate este să contactezi dezvoltatorul site-ului.
+    <a data-l10n-name="support-link">Intră pe site</a> ca să găsești datele de contact ale dezvoltatorului.
 abuse-report-broken-suggestions-theme = Pare că ai identificat o defecțiune. În plus față de transmiterea unei raportări aici, cea mai bună cale de rezolvare a unei probleme de funcționalitate este să contactezi dezvoltatorul temei. <a data-l10n-name="support-link">Intră pe site-ul temei</a> pentru a obține datele de contact ale dezvoltatorului.
 abuse-report-policy-reason-v2 = Are conținut de ură, violent sau ilegal
 abuse-report-policy-suggestions = Notă: Aspectele legate de drepturile de reproducere și mărcile comerciale trebuie raportate printr-o procedură separată. <a data-l10n-name="report-infringement-link">Folosește aceste instrucțiuni</a> ca să raportezi problema.

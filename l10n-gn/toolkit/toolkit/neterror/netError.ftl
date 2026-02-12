@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = Kuatiarogue jokopyre
 neterror-captive-portal-page-title = Eñepyrũ tembiapo ñandutípe
 neterror-dns-not-found-title = Mohendahavusu ndojejuhúiva
 neterror-malformed-uri-page-title = URL ndoikóiva
+general-body-title = Ema’ẽke. Oĩvaicha iporãmba’ỹva.
+problem-with-this-site-title = Ha’eténte ku oĩva apañuái ko tenda ndive
 
 ## Error page actions
 
@@ -41,6 +43,9 @@ neterror-generic-error = { -brand-short-name } ndaikatúi omyanyhẽ ko kuatiaro
 neterror-load-error-try-again = Pe tenda ikatu hína ndojeporukuaái sapy’aitemi térã ojeporuetereihína. Eha’ãjey ag̃amieve.
 neterror-load-error-connection = Ndaikatúiramo emyanyhẽ mba’eveichagua kuatiarogue, ehechajey ijeikekatu nemohendaha ñanduti peguápe.
 neterror-load-error-firewall = Nemohendaha térã ñanduti omo’ã chupe tatakytĩha térã proxy, ehecháke { -brand-short-name } oguerekópa moneĩ oike hag̃ua ñandutípe.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Oñeha’ãramo oñemyanyhẽ peteĩ kuatiarogue upepegua, ehechajey oñemoneĩpa pe ñanduti upepeguágui { -brand-short-name }-pe macOS Privacy ha Security ñembohekorãme.
+neterror-http-error-page = Ehechajey ehai porãpa ñanduti renda réra.
 neterror-captive-portal = Eñepyrũ tembiapo ko ñandutípe eike mboyve ambue ñandutípe.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -49,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Ahaiporãvo kundaharape, ikatu:</st
 neterror-dns-not-found-hint-try-again = Eha’ãjey ag̃ave
 neterror-dns-not-found-hint-check-network = Ehechajey og̃uahẽ porãpa ñanduti
 neterror-dns-not-found-hint-firewall = Ehechajey { -brand-short-name } oguerekópa ñemoneĩ oike hag̃ua ñandutípe (ikatuhína oike firewall rapykuéguivo)
+neterror-dns-not-found-offline-hint-header = <strong>¿Mba’épa ejapóta upévare?</strong>
+neterror-dns-not-found-offline-hint-different-device = Eñeha’ã eike ambue mba’e’okápe.
+neterror-dns-not-found-offline-hint-modem = Ehechajey ne módem térã mbojuajuha.
+neterror-dns-not-found-offline-hint-reconnect = Esẽte ha upéi eikejey Wi-Fi rupive.
 
 ## TRR-only specific messages
 ## Variables:
@@ -72,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Jejavy eha’ãrõ’ỹva.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } nomo’ãkuaái ne mba’ejerure ko tenda kundaharape ore DNS jeroviaha apopyvusu. Ápe oĩ mba’érepa:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } nomo’ãkuaái ne mba’ejerure tenda kundaharape ore DNS me’ẽhára hekorosãva rupi. Ápe oĩ mba’érepa:
 neterror-dns-not-found-native-fallback-heuristic = DNS HTTPS rehegua ojepe’áma nde pyhágui.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } ndoikekuaái { $trrDomain } ndive.
 
@@ -96,6 +104,9 @@ neterror-proxy-connect-failure-settings = Ehechajey proxy ñemboheko eikuaaite h
 neterror-proxy-connect-failure-contact-admin = Eñe’ẽ ñanduti ñangarekohára ndive eikuaaite hag̃ua mohendahavusu proxy oiko porãiteha.
 neterror-content-encoding-error = Eñe’ẽ ñanduti renda jára ndive emomarandu hag̃ua chupe ko apañuái.
 neterror-unsafe-content-type = Eñe’ẽ ñanduti renda jára ndive emomarandu hag̃ua chupekuéra ko apañuái rehegua.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } ndojeroviái { $hostname } rehe ijeiképe nahekorosãi rupi. Eñeha’ã emoambue pe URL HTTPS-pe.
 neterror-nss-failure-not-verified = Kuatiarogue eikeseha ndaikatúi ehecha mba’ekuaarã og̃uahẽva ndaijeroviakatúi ndojehechajeýi rupi.
 neterror-nss-failure-contact-website = Ikatúpiko, eñe’ẽmi ñanduti renda jára ndive ha emombe’umi chupekuéra ko apañuái rehegua.
 # Variables:
@@ -149,3 +160,18 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Ndereikuaa porãiramo ko <b
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> oguereko tekorosã porureko hérava HTTP Strict transporte Security (HSTS), he’iséva { -brand-short-name } oiketaha hendive tekorosãme. Ndaikatúi embojuaju oĩ’ỹva eike hag̃ua ko tendápe.
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = Ikatuhína ndaha’éi mba’evete, oikokuaa haguére apañuái upe tenda ndive.
+certerror-blocked-by-corp-headers-description = Sapy’ánte, umi ñanduti renda omboheko ñemo’ã ijupe ha tapichakuérape g̃uarã ani hag̃ua ojoaju ambue ñanduti renda ndive.
+certerror-coop-learn-more = Eikuaave teñoiha juasáva porureko rehegua (COOP)
+certerror-coep-learn-more = Eikuaave teñoiha juasáva porureko oñondivegua rehegua (COOP)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Ayvu jejavy: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } ndaikatúi omoheñói jeike hekorosãva { $hostname } mba’e’oka ndive.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Amalisia ko tenda oiporu software itujáva orekóva apañuái tekorosã rehegua.

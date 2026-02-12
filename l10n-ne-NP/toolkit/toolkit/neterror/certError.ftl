@@ -99,10 +99,3 @@ networkProtocolError-title = नेटवर्क प्रोटोकल त�
 nssBadCert-title = चेतावनी: अगाडि सम्भावित सुरक्षा जोखिम छ
 nssBadCert-sts-title = जडान भएन: सम्भावित सुरक्षा कारक
 certerror-mitm-title = सफ्टवेयरले { -brand-short-name } लाई यस साइटमा सुरक्षित रूपमा जोडिनबाट रोक्दै छ।
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

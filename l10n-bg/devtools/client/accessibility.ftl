@@ -38,10 +38,8 @@ accessibility-best-practices =
 ## with its text label or accessible name.
 
 accessibility-text-label-issue-dialog = Диалозите трябва да имат етикет. <a>Научете повече</a>
+accessibility-text-label-issue-embed = Вграденото съдържание трябва да имат етикет. <a>Научете повече</a>
+accessibility-text-label-issue-figure = Илюстрациите с допълнителни надписи трябва да имат етикет. <a>Научете повече</a>
+accessibility-text-label-issue-form = Елементите от формуляр трябва да бъдат етикетирани. <a>Научете повече</a>
 accessibility-text-label-issue-image = Съдържанието с изображения трябва да има етикет. <a>Научете повече</a>
 accessibility-text-label-issue-interactive = Интерактивните елементи трябва да имат етикет. <a>Научете повече</a>
-
-## Text entries for a paragraph used in the accessibility panel sidebar's checks section
-## that describe that currently selected accessible object has a keyboard accessibility
-## issue.
-

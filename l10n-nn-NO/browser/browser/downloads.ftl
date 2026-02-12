@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Nedlastingsdetaljar
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Filene blir verande på eininga di
+downloads-private-browsing-message = Alle som brukar denne eininga kan sjå nedlastinger, sjølv når du lèt att alle private vindauge.
+downloads-private-browsing-delete-button =
+    .label = Slett filer automatisk
+    .accesskey = S
+downloads-private-browsing-accept-button =
+    .label = Eg forstår
+    .accesskey = E
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.
@@ -194,7 +206,7 @@ downloads-files-not-downloaded =
        *[other] { $num } filer ble ikke lastet ned.
     }
 downloads-blocked-from-url = Nedlastingar frå { $url } blokkerte.
-downloads-blocked-download-detailed-info = { $url } forsøkte å laste ned flere filer automatisk. Nettstaden kan væere øydelagd eller prøver å lagre spam-filer på eininga di.
+downloads-blocked-download-detailed-info = { $url } forsøkte å laste ned flere filer automatisk. Nettstaden kan væere øydelagd eller prøver å lagre søppelpost-filer på eininga di.
 
 ##
 

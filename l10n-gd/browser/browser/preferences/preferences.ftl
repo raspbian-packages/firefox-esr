@@ -111,6 +111,10 @@ startup-header = Aig an toiseach
 always-check-default =
     .label = Dèan cinnteach an-còmhnaidh an e { -brand-short-name } fhèin do roghainn brabhsair
     .accesskey = D
+is-default-browser =
+    .message = 'S e { -brand-short-name } am brabhsair bunaiteach agad an-dràsta
+is-not-default-browser =
+    .message = Chan e { -brand-short-name } am brabhsair bunaiteach agad an-dràsta
 is-default = 'S e { -brand-short-name } am brabhsair bunaiteach agad an-dràsta
 is-not-default = Chan e { -brand-short-name } am brabhsair bunaiteach agad an-dràsta
 set-as-my-default-browser =
@@ -203,6 +207,15 @@ containers-remove-cancel-button = Na thoir an soitheach seo air falbh
 language-and-appearance-header = Cànan is coltas
 preferences-web-appearance-header = Coltas nan làrach
 preferences-web-appearance-description = Cuiridh cuid a làraichean-lìn gleus air sgeama an dathan a-rèir nan roghainnean agad-sa. Tagh an sgeama dhathan a bu mhiann leat dha na làraichean ud.
+preferences-web-appearance-choice-auto2 =
+    .label = Fèin-obrachail
+    .title = Cuir na cùlaibhean aig làraichean-lìn is aig susbaint air gleus a-rèir roghainnean an t-siostaim agad agus an ùrlair aig { -brand-short-name }.
+preferences-web-appearance-choice-light2 =
+    .label = Soilleir
+    .title = Cleachd coltas soilleir airson cùlaibhean is susbaint làraichean-lìn.
+preferences-web-appearance-choice-dark2 =
+    .label = Dorcha
+    .title = Cleachd coltas dorcha airson cùlaibhean is susbaint làraichean-lìn.
 preferences-web-appearance-choice-auto = Fèin-obrachail
 preferences-web-appearance-choice-light = Soilleir
 preferences-web-appearance-choice-dark = Dorcha
@@ -218,13 +231,11 @@ preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-web-appearance-link =
+    .label = Stiùirich ùrlaran { -brand-short-name } ann an roghainnean nan leudachan ⁊ ùrlaran
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Tha na dathan a thagh thu a’ tar-àithn coltas na làraich-lìn. <a data-l10n-name="colors-link">Stiùirich na dathan</a>
-# This can appear when using windows HCM or "Override colors: always" without
-# system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Tha na dathan a thagh thu a’ tar-àithn coltas na làraich-lìn.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Stiùirich ùrlaran { -brand-short-name } ann an roghainnean nan <a data-l10n-name="themes-link">leudachan ⁊ ùrlaran</a>
@@ -284,6 +295,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Faidhlichean is aplacaidean
+downloads-header-2 =
+    .label = Luchdaidhean a-nuas
+download-save-where-2 =
+    .label = Sàbhail faidhlichean ann an
+    .accesskey = S
 download-header = Luchdaidhean a-nuas
 download-save-where = Sàbhail faidhlichean ann an
     .accesskey = S
@@ -503,7 +519,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Uinneagan is tabaichean ùra
 home-new-windows-tabs-description2 = Tagh na chì thu nuair a dh’fhosglas tu an duilleag-dhachaigh agad no uinneag no taba ùr.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = An duilleag-dhachaigh is uinneagan ùra
 home-newtabs-mode-label = Tabaichean ùra
@@ -653,6 +669,8 @@ search-keyword-warning-bookmark = Tagh thu facal-luirg a tha 'ga chleachdadh ann
 containers-back-button2 =
     .aria-label = Till dha na roghainnean
 containers-header = Tabaichean soithich
+containers-section-header =
+    .heading = Tabaichean soithich
 containers-add-button =
     .label = Cuir soitheach ùr ris
     .accesskey = a
@@ -790,6 +808,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Ainm an uidheim
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Ainm an uidheim
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Atharraich ainm an uidheim
+    .accesskey = h
 sync-device-name-change =
     .label = Atharraich ainm an uidheim...
     .accesskey = h
@@ -880,9 +906,6 @@ primary-password-os-auth-dialog-message-win = Airson prìomh fhacal-faire a chru
 primary-password-os-auth-dialog-message-macosx = prìomh fhacal-faire a chruthachadh
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Eachdraidh
@@ -903,6 +926,10 @@ history-remember-option-never =
     .label = Na cuimhnich an eachdraidh idir
 history-remember-option-custom =
     .label = Cleachd roghainnean gnàthaichte airson na h-eachdraidh
+history-remember-description2 =
+    .description = Cuimhnichidh { -brand-short-name } eachdraidh a’ bhrabhsaidh, nam foirm, nan lorg is nan rudan a luchdaich thu a-nuas.
+history-dontremember-description2 =
+    .description = Cleachdaidh { -brand-short-name } na dearbh roghainnean 's a tha agad ann an brabhsadh prìobhaideach agus cha chuimhnich e eachdraidh sam bith 's tu a' brabhsadh an lìn.
 history-remember-description = Cuimhnichidh { -brand-short-name } eachdraidh a’ bhrabhsaidh, nam foirm, nan lorg is nan rudan a luchdaich thu a-nuas.
 history-dontremember-description = Cleachdaidh { -brand-short-name } na dearbh roghainnean 's a tha agad ann an brabhsadh prìobhaideach agus cha chuimhnich e eachdraidh sam bith 's tu a' brabhsadh an lìn.
 history-private-browsing-permanent =
@@ -1125,6 +1152,8 @@ permissions-notification-link = Barrachd fiosrachaidh
 permissions-notification-pause =
     .label = Cuir am brath ’na stad gus an ath-thòisich { -brand-short-name }
     .accesskey = n
+permissions-autoplay2 =
+    .label = Fèin-chluich
 permissions-autoplay = Fèin-chluich
 permissions-autoplay-settings =
     .label = Roghainnean…
@@ -1144,6 +1173,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Eisgeachdan…
     .accesskey = E
+permissions-location2 =
+    .label = Ionad
+permissions-xr2 =
+    .label = Fìorachd bhiortail
+permissions-camera2 =
+    .label = Camara
+permissions-microphone2 =
+    .label = Micreofon
+permissions-notification2 =
+    .label = Brathan
 
 ## Privacy Section - Data Collection
 
@@ -1167,17 +1206,12 @@ addon-recommendations-link = Barrachd fiosrachaidh
 collection-health-report-disabled = Tha aithriseadh dàta à comas airson rèiteachadh a’ bhuild seo
 collection-backlogged-crash-reports-with-link = Leig le { -brand-short-name } aithisgean tuislidh a chàirn roimhe a chur às do leth <a data-l10n-name="crash-reports-link">Barrachd fiosrachaidh</a>
     .accesskey = c
-collection-backlogged-crash-reports = Leig le { -brand-short-name } aithisgean tuislidh a chàirn roimhe a chur às do leth
-    .accesskey = c
 privacy-segmentation-section-header = Gleusan ùra a leasaicheas am brabhsadh a nì thu
 privacy-segmentation-section-description = Ma bhios gleusan againn a chleachdas an dàta agad airson àrainneachd nas pearsantaiche:
 privacy-segmentation-radio-off =
     .label = Cleachd molaidhean { -brand-product-name }
 privacy-segmentation-radio-on =
     .label = Seall am mion-fhiosrachadh
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -1209,6 +1243,7 @@ certs-view =
 certs-devices =
     .label = Uidheaman tèarainteachd...
     .accesskey = n
+certs-devices-enable-fips = Cuir FIPS an comas
 space-alert-over-5gb-settings-button =
     .label = Fosgail na roghainnean
     .accesskey = o

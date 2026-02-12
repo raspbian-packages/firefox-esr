@@ -82,7 +82,7 @@
             ? `<stack class="wizard-header-stack" flex="1">
            <vbox class="wizard-header-box-1">
              <vbox class="wizard-header-box-text">
-               <label class="wizard-header-label"/>
+               <label id="wizard-header-label" class="wizard-header-label"/>
              </vbox>
            </vbox>
            <hbox class="wizard-header-box-icon">
@@ -92,7 +92,7 @@
          </stack>`
             : `<hbox class="wizard-header-box-1" flex="1">
            <vbox class="wizard-header-box-text" flex="1">
-             <label class="wizard-header-label"/>
+             <label id="wizard-header-label" class="wizard-header-label"/>
              <label class="wizard-header-description"/>
            </vbox>
            <image class="wizard-header-icon"/>
@@ -567,7 +567,6 @@
       <button data-l10n-id="wizard-linux-button-cancel"
               class="wizard-button"
               dlgtype="cancel"/>
-      <spacer style="width: 24px;"/>
       <button data-l10n-id="wizard-linux-button-back"
               class="wizard-button" dlgtype="back"/>
       <deck class="wizard-next-deck">
@@ -607,7 +606,7 @@
         <hbox class="wizard-buttons-box-2">
           <button class="wizard-button" dlgtype="extra1" hidden="true"/>
           <button class="wizard-button" dlgtype="extra2" hidden="true"/>
-          <spacer flex="1" anonid="spacer"/>
+          <spacer flex="1"/>
           ${buttons}
         </hbox>
       </vbox>`;

@@ -93,6 +93,13 @@ permissions-exceptions-https-only-window2 =
 permissions-exceptions-https-only-desc = Az egyes webhelyeknél kikapcsolhatja a Csak HTTPS módot. A { -brand-short-name } nem próbálja meg biztonságos HTTPS-re frissíteni a kapcsolatot ezeknél a webhelyeknél. A kivételek nem vonatkoznak a privát ablakokra.
 permissions-exceptions-https-only-desc2 = Az egyes webhelyeknél kikapcsolhatja a Csak HTTPS módot. A { -brand-short-name } nem próbálja meg biztonságos HTTPS-re frissíteni a kapcsolatot ezeknél a webhelyeknél.
 
+## Exceptions - Pop-ups And Third-Party Redirects
+
+permissions-exceptions-popup-window3 =
+    .title = Engedélyezett webhelyek – Felugró ablakok és harmadik féltől származó átirányítások
+    .style = { permissions-window2.style }
+permissions-exceptions-popup-desc2 = Megadhatja, hogy mely weboldalak nyithatnak felugró ablakokat, és melyeket irányíthatják át a harmadik féltől származó keretek.
+
 ## Exceptions - Pop-ups
 
 permissions-exceptions-popup-window2 =
@@ -167,6 +174,26 @@ permissions-site-camera-desc = A következő weboldalak kérték, hogy hozzáfé
 permissions-site-camera-disable-label =
     .label = Új kérések blokkolása, melyek hozzáférést kérnek a kamerájához
 permissions-site-camera-disable-desc = Ez megakadályozza, hogy a fent fel nem sorolt weboldalak kamera hozzáférést kérjenek. A kamera hozzáférés blokkolása működésképtelenné tehet néhány weboldal-funkciót.
+
+## Site Permissions - Local host
+
+permissions-site-localhost-window =
+    .title = Beállítások – Eszközalkalmazások és -szolgáltatások
+    .style = { permissions-window2.style }
+permissions-site-localhost-desc = Ezek a webhelyek alkalmazásokhoz és szolgáltatásokhoz kértek hozzáférést ezen az eszközön. Kiválaszthatja, hogy engedélyezi vagy letiltja ezt a webhelyek számára.
+permissions-site-localhost-disable-label =
+    .label = Alkalmazások és szolgáltatások elérésére vonatkozó új kérések blokkolása ezen az eszközön
+permissions-site-localhost-disable-desc = Ez megakadályozza, hogy a fent fel nem sorolt weboldalak alkalmazásokhoz és szolgáltatásokhoz kérjenek hozzáférést ezen az eszközön. Emiatt előfordulhat, hogy egyes weboldalfunkciók nem fognak működni.
+
+## Site Permissions - Local network
+
+permissions-site-local-network-window =
+    .title = Beállítások –Helyi hálózati eszközök
+    .style = { permissions-window2.style }
+permissions-site-local-network-desc = Ezek a webhelyek alkalmazásokhoz és szolgáltatásokhoz kértek hozzáférést a Wi-Fi-jéhez vagy helyi hálózatához csatlakoztatott eszközökön. Kiválaszthatja, hogy engedélyezi vagy letiltja ezt a webhelyek számára.
+permissions-site-local-network-disable-label =
+    .label = A helyi hálózatra csatlakozó eszközök alkalmazásainak és szolgáltatásainak elérésére vonatkozó új kérések blokkolása.
+permissions-site-local-network-disable-desc = Ez megakadályozza, hogy a fent fel nem sorolt weboldalak alkalmazásokhoz és szolgáltatásokhoz kérjenek hozzáférést az Ön Wi-Fi-jéhez csatlakoztatott vagy helyi hálózati eszközökön. Emiatt előfordulhat, hogy egyes weboldalfunkciók nem fognak működni.
 
 ## Site Permissions - Microphone
 

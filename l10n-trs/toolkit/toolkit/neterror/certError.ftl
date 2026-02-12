@@ -105,10 +105,3 @@ networkProtocolError-title = Gire' si protokolo red
 nssBadCert-title = Gadadut: Nū 'ngò yi'ì nukuaj
 nssBadCert-sts-title = Nu ga'ue gida'aj: Siruaj ni hua ahī ma
 certerror-mitm-title = Na’uēj Software ga’nïn riña { -brand-short-name } da’ gatū sa’àj riña sitiô nan
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

@@ -36,17 +36,6 @@ should-restart-ok = { -brand-short-name } तत्काल पुनःसु�
 cancel-no-restart-button = रद्द गर्नुहोस्
 restart-later = केहि समयपछि पुनःसुरु गर्नुहोस्
 
-## Extension Control Notifications
-##
-## These strings are used to inform the user
-## about changes made by extensions to browser settings.
-##
-## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
-##
-## Variables:
-##   $name (string) - Name of the extension
-
-
 ## Preferences UI Search Results
 
 search-results-header = खोजी परिणामहरू
@@ -58,6 +47,10 @@ startup-header = सुरुवात
 always-check-default =
     .label = सधैं { -brand-short-name } आफ्नो पूर्वनिर्धारित ब्राउजर हो भन्ने बारे जाँच गर्नुहोस्
     .accesskey = y
+is-default-browser =
+    .message = तपाईँको हालको निर्धारित ब्राउजर { -brand-short-name }
+is-not-default-browser =
+    .message = तपाईँको हालको निर्धारित ब्राउजर { -brand-short-name }
 is-default = तपाईँको हालको निर्धारित ब्राउजर { -brand-short-name }
 is-not-default = तपाईँको हालको निर्धारित ब्राउजर { -brand-short-name }
 set-as-my-default-browser =
@@ -146,6 +139,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = फाइलहरू र अनुप्रयोगहरू
+downloads-header-2 =
+    .label = डाउनलोडहरू
+download-save-where-2 =
+    .label = फाइलहरू यहाँ सङ्ग्रह गर्नुहोस्
+    .accesskey = v
 download-header = डाउनलोडहरू
 download-save-where = फाइलहरू यहाँ सङ्ग्रह गर्नुहोस्
     .accesskey = v
@@ -300,7 +298,7 @@ network-proxy-connection-settings =
 
 home-new-windows-tabs-header = नयाँ संझ्याल तथा ट्याबहरू
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = गृहपृष्ठ तथा नयाँ संझ्यालहरु
 home-newtabs-mode-label = नयाँ ट्याबहरु
@@ -403,6 +401,8 @@ search-keyword-warning-bookmark = तपाईँले चयन गर्न�
 ## Containers Section
 
 containers-header = कन्टेनर ट्याबहरू
+containers-section-header =
+    .heading = कन्टेनर ट्याबहरू
 containers-add-button =
     .label = नयाँ कन्टेनर थप्नुहोस्
     .accesskey = A
@@ -445,12 +445,6 @@ sync-sign-in =
     .label = साइन इन गर्नुहोस्
     .accesskey = g
 
-## Sync section - enabling or disabling sync.
-
-
-## The list of things currently syncing.
-
-
 ## The "Choose what to sync" dialog.
 
 sync-engine-bookmarks =
@@ -463,6 +457,14 @@ sync-engine-history =
 ## The device name controls.
 
 sync-device-name-header = यन्त्रको नामः
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = यन्त्रको नामः
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = उपकरणको नाम परिवर्तन गर्नुहोस्
+    .accesskey = h
 sync-device-name-change =
     .label = उपकरणको नाम परिवर्तन गर्नुहोस्…
     .accesskey = h
@@ -487,9 +489,6 @@ sync-verification-not-sent-body = हामी यस समय प्रमा�
 
 privacy-header = ब्राउजर गोपनीयता
 
-## Privacy Section - Logins and Passwords
-
-
 ## Privacy Section - Passwords
 
 forms-exceptions =
@@ -505,12 +504,6 @@ forms-master-pw-change =
     .label = मुल गोप्यशब्द परिवर्तन गर्नुहोस्...
     .accesskey = M
 forms-master-pw-fips-desc = गोप्यशब्द परिवर्तन असफल
-
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
 
 ## Privacy Section - History
 
@@ -532,6 +525,8 @@ history-remember-option-never =
     .label = इतिहास कहिल्यै नसम्झिनुहोस्
 history-remember-option-custom =
     .label = इतिहासको लागि परिस्कृत ढाँचाहरू प्रयोग गर्नुहोस्
+history-dontremember-description2 =
+    .description = { -brand-short-name } ले तपाईँको निजी ब्राउजिङ्गको सेटिङ्हरू प्रयोग गर्छ र तपाईँ को कुनै पनि ब्राउजिङ्गको कुनै पनि इतिहास सुरक्षित गर्दैन
 history-dontremember-description = { -brand-short-name } ले तपाईँको निजी ब्राउजिङ्गको सेटिङ्हरू प्रयोग गर्छ र तपाईँ को कुनै पनि ब्राउजिङ्गको कुनै पनि इतिहास सुरक्षित गर्दैन
 history-private-browsing-permanent =
     .label = सधैं निजी ब्राउजिङ्ग ढाँचा प्रयोग गर्नुहोस्
@@ -564,12 +559,6 @@ sitedata-settings =
     .label = डेटा व्यवस्थापन गर्नुहोस्…
     .accesskey = M
 
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
-
 ## Privacy Section - Address Bar
 
 addressbar-header = ठेगानापट्टि
@@ -588,19 +577,6 @@ addressbar-suggestions-settings = खोज इन्जिन सुझाव�
 ## Privacy Section - Content Blocking
 
 content-blocking-learn-more = थप जान्नुहोस्
-
-## These strings are used to define the different levels of
-## Enhanced Tracking Protection.
-
-
-##
-
-
-# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
-
-
-## Privacy Section - Tracking
-
 
 ## Privacy Section - Permissions
 
@@ -634,6 +610,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = अपवादहरू...
     .accesskey = E
+permissions-location2 =
+    .label = स्थान
+permissions-camera2 =
+    .label = क्यामरा
+permissions-microphone2 =
+    .label = माइक्रोफोन
+permissions-notification2 =
+    .label = सूचनाहरू
 
 ## Privacy Section - Data Collection
 
@@ -647,9 +631,6 @@ collection-health-report-link = अझ जान्नुहोस्
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = यस निर्माण कन्फिगरेसनको लागि डाटा रिपोर्टिङ अक्षम गरिएको छ
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -681,12 +662,7 @@ certs-view =
 certs-devices =
     .label = सुरक्षा उपकरणहरू…
     .accesskey = D
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPS सक्षम पार्नुहोस्
 
 ## The following strings are used in the Download section of settings
 

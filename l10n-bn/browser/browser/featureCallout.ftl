@@ -43,15 +43,3 @@ callout-pdfjs-draw-body-a = PDFs চিহ্নিত করুন, তার�
 # “Mark up” refers to the process of “annotating” or adding free hand text or diagramming to the document.
 callout-pdfjs-draw-body-b = আর মুদ্রণ এবং স্ক্যানিং নেই। PDFs চিহ্নিত করুন, তারপরে আপনার পরিবর্তনগুলি সংরক্ষণ করুন৷
 callout-pdfjs-draw-button = পেয়েছি!
-
-## Firefox View Discoverability Strings
-
-
-## Split Dismiss Button Labels
-
-
-## Sidebar Strings
-
-
-## Sidebar Callout Survey Strings
-

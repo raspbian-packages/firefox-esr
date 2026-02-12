@@ -36,10 +36,3 @@ nssFailure2-title = Unxibelelwano Ukhuseleko Aluphumelelanga
 corruptedContentError-title = Imposiso yomxholo owonakalisiweyo
 sslv3Used-title = Akunxibelelani ngokukhuselekileyo
 inadequateSecurityError-title = Uqhagamshelo lwakho alukhuselekanga
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

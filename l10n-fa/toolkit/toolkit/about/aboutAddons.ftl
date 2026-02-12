@@ -358,6 +358,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = در پنجره‌های ناشناس مجاز است
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = در پنجره‌های ناشناس مجاز است
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -437,12 +441,8 @@ details-notification-unsigned2 =
     .message = { $name } برای استفاده در { -brand-short-name } تایید نشد. با احتیاط ادامه دهید.
 details-notification-unsigned-link = اطلاعات بیشتر
 details-notification-blocked = { $name } به دلیل مشکلات امنیتی یا پایداری غیر فعال گردیده است.
-details-notification-blocked2 =
-    .message = { $name } به دلیل مشکلات امنیتی یا پایداری غیر فعال گردیده است.
 details-notification-blocked-link = اطلاعات بیشتر
 details-notification-softblocked = { $name } مشکلات امنیتی یا پایداری ایجاد می‌کند.
-details-notification-softblocked2 =
-    .message = { $name } مشکلات امنیتی یا پایداری ایجاد می‌کند.
 details-notification-softblocked-link = اطلاعات بیشتر
 details-notification-gmp-pending = { $name } به زودی نصب میشود.
 details-notification-gmp-pending2 =

@@ -106,10 +106,3 @@ networkProtocolError-title = Võrguprotokolli viga
 nssBadCert-title = Hoiatus: ees on ootamas võimalik turvarisk
 nssBadCert-sts-title = Ühendust ei loodud: võimalik turvarisk
 certerror-mitm-title = Tarkvara takistab { -brand-short-name }il selle saidiga turvalise ühenduse loomist
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

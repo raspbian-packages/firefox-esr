@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Zaćisnyć
     .secondarybuttonaccesskey = i
 appmenu-update-restart-message2 = Wobstarajće sej najnowšu wersiju { -brand-shorter-name }. Wočinjene rajtarki a wokna so wobnowja.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Cofnyć
+    .secondarybuttonaccesskey = C
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } njemóže na najnowšu wersiju awtomatisce aktualizować.
     .buttonlabel = { -brand-shorter-name } najebać toho aktualizować
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = W porjadku
     .buttonaccesskey = o
 appmenu-addon-post-install-message3 = Rjadujće swoje přidatki a drasty z menijom nałoženjow.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Aktualizujće prawa a daty kóždy čas w <a data-l10n-name="settings-link">nastajenjach rozšěrjenja</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Rozšěrjenje k symbolowej lajsće připjeć
+    .accesskey = R
 appmenu-addon-post-install-incognito-checkbox =
     .label = Tute rozšěrjenje w priwatnych woknach dowolić
     .accesskey = T

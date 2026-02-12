@@ -3,18 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't re-use these strings outside of the menubar.
-
-
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't reuse these strings outside of the menubar.
-
-
 ## Application Menu (macOS only)
 
 menu-application-preferences =
@@ -138,7 +126,7 @@ menu-view-customize-toolbar2 =
     .label = Հարմարեցնել Գործիքագոտին…
     .accesskey = C
 menu-view-sidebar =
-    .label = Կողային վահանակ
+    .label = Կողագոտի
     .accesskey = վ
 menu-view-bookmarks =
     .label = Էջանիշեր
@@ -146,8 +134,6 @@ menu-view-history-button =
     .label = Պատմություն
 menu-view-synced-tabs-sidebar =
     .label = Համաժամեցված ներդիրներ
-menu-view-megalist-sidebar =
-    .label = Գաղտնաբառեր
 menu-view-full-zoom =
     .label = Դիտափոխում
     .accesskey = Մ
@@ -247,7 +233,7 @@ menu-edit-bookmark =
 menu-bookmarks-search =
     .label = Որոնել էջանիշեր
 menu-bookmarks-all-tabs =
-    .label = Էջանշել Բոլոր Ներդիրները…
+    .label = Էջանշել բոլոր ներդիրները…
 menu-bookmarks-toolbar =
     .label = Էջանիշերի Վահանակ
 menu-bookmarks-other =
@@ -263,6 +249,13 @@ menu-profiles-manage-profiles =
     .label = Կառավարել պրոֆիլները
 menu-profiles-new-profile =
     .label = Նոր պրոֆիլ
+# Variables:
+#  $profileName (String): the name of the users profile
+menu-profiles-current =
+    .label = { $profileName } (ընթացիկ)
+menu-profiles-menu =
+    .label = Պրոֆիլներ
+    .accesskey = P
 
 ## Tools Menu
 
@@ -272,6 +265,9 @@ menu-tools =
 menu-tools-downloads =
     .label = Ներբեռնումներ
     .accesskey = Ն
+menu-tools-extensions-and-themes =
+    .label = Ընդլայնումներ և ոճեր
+    .accesskey = E
 menu-tools-addons-and-themes =
     .label = Հավելումներ և ոճեր
     .accesskey = A

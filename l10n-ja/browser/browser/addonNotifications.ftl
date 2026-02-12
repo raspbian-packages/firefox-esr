@@ -81,6 +81,8 @@ addon-removal-title = { $name } を削除しますか？
 addon-removal-message = { -brand-shorter-name } から { $name } を削除しますか？
 addon-removal-button = 削除
 addon-removal-abuse-report-checkbox = この拡張機能を { -vendor-short-name } に報告する
+# "it" refers to the local AI model that is paired to the AI feature
+addon-mlmodel-removal-body = このモデルを利用する機能や拡張機能を使用している場合は再び追加されます。
 # Variables:
 #   $addonCount (Number): the number of add-ons being downloaded
 addon-downloading-and-verifying =
@@ -126,11 +128,13 @@ addon-install-error-corrupt-file = このサイトからダウンロードした
 addon-install-error-file-access = { -brand-short-name } が必要なファイルを変更できなかったため、{ $addonName } をインストールできませんでした。
 addon-install-error-not-signed = { -brand-short-name } はこのサイトからの未検証のアドオンのインストールをブロックしています。
 addon-install-error-invalid-domain = この場所からは { $addonName } アドオンをインストールできません。
+addon-install-error-no-addon-name-file-access = 必要なファイルを { -brand-short-name } が変更できないため、アドオンをインストールできませんでした。
 addon-local-install-error-network-failure = ファイルシステムエラーのため、アドオンをインストールできませんでした。
 addon-local-install-error-incorrect-hash = アドオンのハッシュ値が { -brand-short-name } に読み込んだものと一致しないため、インストールできませんでした。
 addon-local-install-error-corrupt-file = このアドオンは壊れているため、インストールできませんでした。
 addon-local-install-error-file-access = { -brand-short-name } が必要なファイルが変更できなかったため、{ $addonName } をインストールできませんでした。
 addon-local-install-error-not-signed = このアドオンは検証されていないため、インストールできませんでした。
+addon-local-install-no-addon-name-error-file-access = 必要なファイルを { -brand-short-name } が変更できないため、アドオンをインストールできませんでした。
 # Variables:
 #   $appVersion (String): the application version.
 addon-install-error-incompatible = { -brand-short-name } { $appVersion } と互換性がないため、{ $addonName } をインストールできませんでした。

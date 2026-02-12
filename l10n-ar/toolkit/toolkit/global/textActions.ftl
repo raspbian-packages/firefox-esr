@@ -22,11 +22,6 @@ text-action-copy =
     .accesskey = ن
 text-action-copy-shortcut =
     .key = C
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = انسخ دون تعقب الموقع
-    .accesskey = م
 text-action-paste =
     .label = ألصق
     .accesskey = ل
@@ -64,3 +59,11 @@ text-action-search-text-box-clear =
     .title = امسح
 text-action-highlight-selection =
     .label = لون التحديد
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = أزِل الإبراز
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = أزِل كل الإبرازات

@@ -32,7 +32,9 @@ searchbar-icon =
 
 remove-search-engine-button = Во ред
 
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
+## The following strings are used as input labels.
 
+add-engine-window =
+    .title = Додај сервис за пребарување
+    .style = min-width: 32em;
+add-engine-name = Име на пребарувачот

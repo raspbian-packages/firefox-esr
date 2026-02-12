@@ -39,7 +39,7 @@ webext-perms-update-text = Laiendus { $extension } on uuendatud. Uuendatud versi
 webext-perms-update-accept =
     .label = Uuenda
     .accesskey = U
-webext-perms-optional-perms-list-intro = Nõutavad õigused:
+webext-perms-optional-perms-list-intro = Nõutud õigused:
 webext-perms-optional-perms-allow =
     .label = Luba
     .accesskey = L
@@ -69,17 +69,6 @@ webext-perms-host-description-too-many-sites =
         [one] ligipääs veel ühe saidi andmetele
        *[other] ligipääs veel { $domainCount } saidi andmetele
     }
-
-## Headers used in the webextension permissions dialog for synthetic add-ons.
-## The part of the string describing what privileges the extension gives should be consistent
-## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
-## Note, this string will be used as raw markup. Avoid characters like <, >, &
-## Variables:
-##   $hostname (String): the hostname of the site the add-on is being installed from.
-
-
-##
-
 
 ## Headers used in the webextension permissions dialog.
 ## Note: This string will be used as raw markup. Avoid characters like <, >, &

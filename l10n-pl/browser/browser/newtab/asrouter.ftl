@@ -63,7 +63,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } użytkowników
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Synchronizuj zakładki na każdym urządzeniu.
 cfr-doorhanger-bookmark-fxa-body = Wspaniałe odkrycie! Fajnie byłoby mieć tę zakładkę także na telefonie, prawda? Zacznij korzystać z { -fxaccount-brand-name(case: "gen", capitalization: "lower") }.
@@ -72,6 +72,11 @@ cfr-doorhanger-bookmark-fxa-link-text = Synchronizuj zakładki…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Przycisk zamknięcia
     .title = Zamknij
+fxa-adoption-addresses-backup-title = Utwórz kopię zapasową zachowanych adresów
+fxa-adoption-addresses-backup-subtitle = Chroń swoje zachowane adresy, synchronizując je ze swoimi urządzeniami za pomocą szyfrowania.
+fxa-adoption-credit-cards-backup-title = Utwórz kopię zapasową metod płatności
+fxa-adoption-credit-cards-backup-subtitle = Chroń swoje metody płatności, synchronizując je ze swoimi urządzeniami za pomocą szyfrowania.
+fxa-adoption-primary-button-label = Utwórz konto
 
 ## Protections panel
 
@@ -231,6 +236,22 @@ fox-doodle-pin-secondary = Nie teraz
 set-default-pdf-handler-headline = <strong>Dokumenty PDF są teraz otwierane w { -brand-short-name(case: "loc") }.</strong> Edytuj i podpisuj formularze bez wychodzenia z przeglądarki. Aby to zmienić, wyszukaj „PDF” w ustawieniach.
 set-default-pdf-handler-primary = OK
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Złóż podpis w odpowiednim polu — lub gdzie chcesz!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Narysuj, napisz lub prześlij swój podpis, a następnie umieść go dokładnie tam, gdzie potrzebujesz. Zachowaj swoje podpisy na różne okazje.
+annotations-make-default-pdf-handler-title = Czy ustawić { -brand-short-name(case: "acc") } jako domyślny edytor plików PDF?
+annotations-make-default-pdf-handler-subtitle = Korzystaj z naszych narzędzi za każdym razem, gdy otwierasz plik PDF.
+annotations-make-default-pdf-primary-cta =
+    .label = Ustaw jako domyślny
+annotations-make-default-pdf-next =
+    .label = Dalej
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Będziesz mieć nowe urządzenie?
@@ -316,8 +337,11 @@ fxa-menu-message-close-button =
     .title = Zamknij
     .aria-label = Zamknij
 fxa-menu-message-sign-up-button = Utwórz konto
+fxa-menu-message-sign-in-button = Zaloguj się
+fxa-menu-message-sync-button = Zacznij synchronizować
 fxa-menu-message-sync-devices-primary-text = Synchronizuj wszystkie swoje urządzenia
 fxa-menu-message-sync-devices-secondary-text = Miej błyskawiczny dostęp do swoich informacji — takich jak zakładki i hasła — wszędzie tam, gdzie używasz { -brand-short-name(case: "gen") }.
+fxa-menu-message-sync-devices-secondary-text2 = Miej błyskawiczny dostęp do swoich zakładek, haseł i nie tylko wszędzie tam, gdzie zalogujesz się do { -brand-short-name(case: "gen") }.
 fxa-menu-message-sync-devices-collapsed-text = Synchronizuj wszystkie swoje urządzenia
 fxa-menu-message-backup-data-primary-text = Utwórz kopię zapasową danych przeglądarki
 fxa-menu-message-backup-data-secondary-text = Automatycznie chroń zakładki, hasła i inne informacje na wszystkich urządzeniach.
@@ -348,3 +372,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Miej swoją ulubioną przeglądarkę dbającą o prywatność pod jednym kliknięciem. Ustaw { -brand-short-name(case: "acc") } jako domyślną przeglądarkę do otwierania odnośników i przypnij go do paska zadań.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Miej swoją ulubioną przeglądarkę dbającą o prywatność pod jednym kliknięciem. Ustaw { -brand-short-name(case: "acc") } jako domyślną przeglądarkę do otwierania odnośników oraz przypnij go do paska zadań i menu Start.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Planujesz wkrótce zaktualizować system Windows 10?
+windows-10-eos-sync-spotlight-subtitle = Zrób kopię zapasową swoich haseł i zakładek, aby móc przejść na dowolne urządzenie.
+windows-10-eos-sync-spotlight-primary-label = Utwórz kopię zapasową { -brand-short-name(case: "gen") }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Aktualizujesz system do Windows 11? Nie trać zakładek i haseł.
+windows-10-eos-sync-toast-subtitle = Zrób kopię zapasową swoich danych, aby { -brand-short-name } był zawsze gotowy do użycia, na tym komputerze lub nowym.
+windows-10-eos-sync-toast-primary-label = Zacznij teraz
+windows-10-eos-sync-toast-secondary-label = Przypomnij później
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } nie jest preinstalowany jak inne przeglądarki wielkich korporacji. O to właśnie chodzi.
+windows-10-eos-challenger-sync-callout-subtitle = Jeśli zrobisz kopię zapasową swoich zakładek i haseł { -brand-product-name(case: "gen") }, łatwiej Ci będzie zabrać wybraną przez Ciebie przeglądarkę ze sobą na nowe urządzenie.
+windows-10-eos-challenger-pin-callout-subtitle = Przypnij { -brand-shorter-name(case: "acc") } do paska zadań, aby wybrana przez Ciebie przeglądarka była zawsze dostępna, kiedy jej potrzebujesz.
+windows-10-eos-challenger-sync-primary-button = Utwórz kopię zapasową { -brand-shorter-name(case: "gen") }
+windows-10-eos-challenger-pin-primary-button = Przypnij { -brand-shorter-name(case: "acc") }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } blokuje generatory kryptowalut, elementy śledzące serwisów społecznościowych i elementy zbierające informacje o konfiguracji.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Elementy śledzące nie mogą zidentyfikować Twojego urządzenia ani śledzić Cię w sieci — ponieważ im na to nie pozwalamy.
+windows-10-eos-sync-callout-privacy-screen-2-title = Zabezpiecz swoje hasła i zakładki, zanim przejdziesz na nowe urządzenie.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Utworzenie kopii zapasowej { -brand-shorter-name(case: "gen") } ułatwia zabranie ze sobą swoich danych i ustawień prywatności.
+windows-10-eos-sync-callout-privacy-info-button = Zobacz, co jest blokowane
+windows-10-eos-callout-addons-title = Wypróbuj dodatki: proste ulepszenia, duże efekty
+windows-10-eos-callout-addons-subtitle = Wybraliśmy te rozszerzenia, aby pomóc Ci zachować produktywność, bezpieczeństwo i koncentrację.
+windows-10-eos-callout-addons-primary-button = Zobacz, co wybraliśmy
+windows-10-eos-sync-callout-addons-title = Nie strać dodatków podczas aktualizacji systemu Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Synchronizuj teraz, aby dodatki { -brand-product-name(case: "gen") } były zawsze dostępne, nawet po zmianie urządzenia.
+windows-10-eos-sync-callout-next-button = Dalej
+windows-10-eos-sync-callout-get-started-button = Zacznij teraz
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Pionowe karty i grupy kart już są dostępne!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = W odpowiedzi na liczne prośby { -brand-product-name } właśnie wypuścił nowe funkcje, dzięki którym przeglądanie Internetu jest prostsze i bez rozproszeń.
+windows-10-eos-feature-toast-whats-new-button = Zobacz co nowego
+windows-10-eos-feature-toast-dismiss-button = Zamknij
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Ścisła ochrona przed śledzeniem może powodować niepoprawne działanie stron.</strong> Napraw najczęstsze problemy przez odblokowanie niezbędnych rzeczy, które mogą zawierać elementy śledzące.
+etp-strict-exceptions-infobar-learn-more = Więcej informacji
+etp-strict-exceptions-infobar-button = Napraw stronę
+    .accesskey = w
+etp-strict-exceptions-infobar-not-now = Nie teraz
+    .accesskey = N

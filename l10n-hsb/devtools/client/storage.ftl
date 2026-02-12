@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Płaćiwy do / maksimalna płaćiwosć
 storage-table-headers-cookies-size = Wulkosć
 storage-table-headers-cookies-last-accessed = Posledni přistup
 storage-table-headers-cookies-creation-time = Wutworjeny
+storage-table-headers-cookies-update-time = Zaktualizowany
 storage-table-headers-cache-status = Status
 storage-table-headers-extension-storage-area = Składowanski wobwod
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = Datowa banka “{ $dbName }' so zhaša, po tym zo w
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = Datowa banka “{ $dbName }” njeda so zhašeć.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = Plack njeda so wutworić: „{ $errorString }“.
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = Plack njeda so aktualizować: „{ $errorString }“.

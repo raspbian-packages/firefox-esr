@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Deskargaren xehetasunak
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Fitxategiak zure gailuan mantentzen dira
+downloads-private-browsing-message = Gailu hau erabiltzen duen edonork ikus ditzake deskargak, baita leiho pribatu guztiak itxita ere.
+downloads-private-browsing-delete-button =
+    .label = Ezabatu fitxategiak automatikoki
+    .accesskey = z
+downloads-private-browsing-accept-button =
+    .label = Ulertuta
+    .accesskey = U
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

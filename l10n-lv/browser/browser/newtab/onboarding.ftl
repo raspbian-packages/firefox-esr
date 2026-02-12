@@ -53,9 +53,6 @@ mr1-onboarding-import-primary-button-label-attribution = Importēt no { $previou
 mr1-onboarding-theme-header = Padariet to par savu
 mr1-onboarding-theme-subtitle = Personalizējiet { -brand-short-name } ar motīvu.
 mr1-onboarding-theme-secondary-button-label = Ne tagad
-newtab-wallpaper-onboarding-title = Izmēģiniet krāsu akcentu
-newtab-wallpaper-onboarding-subtitle = Izvēlieties tapeti, lai jaunajai cilnei piešķirtu jaunu izskatu.
-newtab-wallpaper-onboarding-primary-button-label = Iestatīt tapeti
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Sistēmas motīvs
 mr1-onboarding-theme-label-light = Gaišs
@@ -116,7 +113,7 @@ mr2022-onboarding-live-language-text = { -brand-short-name } runā jūsu valodā
 mr2022-language-mismatch-subtitle = Pateicoties mūsu kopienai, { -brand-short-name } ir tulkots vairāk nekā 90 valodās. Izskatās, ka jūsu sistēma izmanto { $systemLanguage }, bet { -brand-short-name } izmanto { $appLanguage }.
 onboarding-live-language-button-label-downloading = Lejupielādē valodas pakotni valodai { $negotiatedLanguage }…
 onboarding-live-language-waiting-button = Iegūst pieejamās valodas…
-onboarding-live-language-installing = Instalē valodas pakotni valodai { $negotiatedLanguage }…
+onboarding-live-language-installing = Instalē { $negotiatedLanguage } valodas pakotni…
 mr2022-onboarding-live-language-switch-to = Pārslēgties uz { $negotiatedLanguage }
 mr2022-onboarding-live-language-continue-in = Turpināt valodā { $appLanguage }
 onboarding-live-language-secondary-cancel-download = Atcelt
@@ -362,15 +359,3 @@ onboarding-new-user-survey-familiarity-based-option-1 = Esmu jauniņais
 onboarding-new-user-survey-familiarity-based-option-2 = Esmu to izmantojis
 onboarding-new-user-survey-familiarity-based-option-3 = Esmu ar to ļoti pazīstams
 onboarding-new-user-survey-familiarity-based-option-4 = Esmu to izmantojis, bet tas bija sen
-
-## UI strings for the sidebar and vertical tabs
-
-
-## New user onboarding checklist
-
-
-## Tab Groups feature onboarding strings
-
-
-## Multi Profiles feature onboarding messages
-

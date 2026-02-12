@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = رد
     .secondarybuttonaccesskey = ر
 appmenu-update-restart-message2 = آخرین نگارش از { -brand-shorter-name } را دریافت کنید. زبانه‌ها و پنجره‌های باز، بازیابی خواهند شد.
+appmenu-theme-installed =
+    .secondarybuttonlabel = برگردان
+    .secondarybuttonaccesskey = ب
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } نمی‌تواند بطور خودکار به آخرین نگارش به‌روزرسانی شود.
     .buttonlabel = به هر حال به‌روزرسانی { -brand-shorter-name } انجام شود
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = تایید
     .buttonaccesskey = ت
 appmenu-addon-post-install-message3 = افزونه‌ها و تم‌های خود را از طریق منو برنامه مدیریت کنید.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = هر زمان که خواستید، مجوزها و ترجیحات مربوط به داده را در <a data-l10n-name="settings-link">تنظیمات افزونه</a> به‌روز کنید.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = سنجاق کردن افزونه به نوار ابزار
+    .accesskey = س
 appmenu-addon-post-install-incognito-checkbox =
     .label = به این افزونه اجازه‌ی اجرا در پنجره خصوصی را بده
     .accesskey = ب

@@ -62,6 +62,14 @@ perftools-button-add-directory = 新增目錄
 perftools-button-remove-directory = 移除選擇項目
 perftools-button-edit-settings = 編輯設定值…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = 更多操作
+perftools-menu-more-actions-restart-with-profiling = 重新啟動 { -brand-shorter-name } 並開啟啟動效能檢測
+perftools-menu-more-actions-copy-for-startup = 複製用於啟動效能監測的環境變數
+perftools-menu-more-actions-copy-for-perf-tests = 複製用於效能測試的參數
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -134,6 +142,8 @@ perftools-presets-graphics-label = 圖形
 perftools-presets-graphics-description = 於 { -brand-shorter-name } 診斷圖形 Bug 時的預設值。
 perftools-presets-media-label = 媒體
 perftools-presets-media-description2 = 於 { -brand-shorter-name } 診斷影音 Bug 時的預設值。
+perftools-presets-ml-label = 機器學習
+perftools-presets-ml-description2 = 於 { -brand-shorter-name } 診斷機器學習 Bug 時的預設值。
 perftools-presets-networking-label = 網路連線
 perftools-presets-networking-description = 於 { -brand-shorter-name } 診斷網路連線 Bug 時的預設值。
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -142,6 +152,3 @@ perftools-presets-power-description = 於 { -brand-shorter-name } 診斷耗電�
 perftools-presets-debug-label = 除錯
 perftools-presets-debug-description = { -brand-shorter-name } 的預設除錯選項。額外負荷較高，請只在需要了解瀏覽器行為時使用，勿用於需要較高效能的情境。
 perftools-presets-custom-label = 自訂
-
-##
-

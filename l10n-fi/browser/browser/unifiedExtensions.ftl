@@ -11,6 +11,15 @@
 unified-extensions-header-title = Laajennukset
 unified-extensions-manage-extensions =
     .label = Hallitse laajennuksia
+unified-extensions-discover-extensions =
+    .label = Löydä laajennuksia
+unified-extensions-empty-reason-private-browsing-not-allowed = Sinulla on asennettuna laajennuksia, mutta ne eivät ole käytössä yksityisissä ikkunoissa
+unified-extensions-empty-reason-extension-not-enabled = Sinulla on asennettuja laajennuksia, mutta ne eivät ole käytössä
+# In this headline, “Level up” means to enhance your browsing experience.
+unified-extensions-empty-reason-zero-extensions-onboarding = Nosta selaamisen tasoa laajennuksilla
+unified-extensions-empty-content-explain-enable2 = Ota ne käyttöön valitsemalla ”{ unified-extensions-manage-extensions.label }” asetuksista.
+unified-extensions-empty-content-explain-manage2 = Hallitse niitä valitsemalla ”{ unified-extensions-manage-extensions.label }” asetuksista.
+unified-extensions-empty-content-explain-extensions-onboarding = Mukauta { -brand-short-name }ia muuttamalla sen ulkoasua ja suorituskykyä tai parantamalla yksityisyyttä sekä turvallisuutta.
 
 ## An extension in the main list
 
@@ -79,3 +88,5 @@ unified-extensions-mb-blocklist-error-multiple =
            *[other] { $extensionsCount } extensions disabled
         }
     .message = { $extensionsCount } laajennusta poistettu käytöstä
+unified-extensions-notice-safe-mode =
+    .message = Kaikki laajennukset on poistettu käytöstä vianmääritystilan toimesta.

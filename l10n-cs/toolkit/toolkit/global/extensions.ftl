@@ -15,7 +15,25 @@ webext-perms-header-with-perms = Chcete nainstalovat { $extension }? Toto rozš�
 webext-perms-header-unsigned = Chcete nainstalovat { $extension }? Toto rozšíření není ověřené. Škodlivá rozšíření mohou ukrást vaše osobní informace nebo nakazit váš počítač. Nainstalujte toto rozšíření jen pokud pochází z důvěryhodného zdroje.
 webext-perms-header-unsigned-with-perms = Chcete nainstalovat { $extension }? Toto rozšíření není ověřené. Škodlivá rozšíření mohou ukrást vaše osobní informace nebo nakazit váš počítač. Nainstalujte toto rozšíření jen pokud pochází z důvěryhodného zdroje. Toto rozšíření získá následující oprávnění:
 webext-perms-sideload-header = Doplněk { $extension } byl přidán
+webext-perms-optional-perms-header2 = Rozšíření { $extension } požaduje dodatečná oprávnění
 webext-perms-optional-perms-header = Doplněk { $extension } požaduje dodatečná oprávnění.
+webext-perms-header2 = Přidat { $extension }
+webext-perms-list-intro-unsigned = Toto neověřené rozšíření může ohrozit vaše soukromí nebo vaše zařízení. Přidejte jej jen pokud pochází z důvěryhodného zdroje.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Požadovaná oprávnění:
+webext-perms-header-optional-settings = Volitelná nastavení:
+webext-perms-header-update-required-perms = Nová požadovaná oprávnění:
+webext-perms-header-optional-required-perms = Nová oprávnění:
+webext-perms-header-data-collection-perms = Požadovaný sběr dat:
+webext-perms-header-data-collection-is-none = Sběr dat:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Nový požadovaný sběr dat:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Nový sběr dat:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Zrušit
     .accesskey = Z
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = Rozšíření { $extension } bylo aktualizováno. Před instalací aktuální verze musíte schválit nová oprávnění. Zvolením “Zrušit” bude zachována stávající verze rozšíření.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = Rozšíření { $extension } bylo aktualizováno. Před instalací aktualizované verze je potřeba schválit nová oprávnění. Zvolením „Zrušit“ bude zachována stávající verze rozšíření. Toto rozšíření získá následující oprávnění:
@@ -74,7 +95,7 @@ webext-perms-host-description-too-many-sites =
 # Variables:
 #   $domain (String): will be replaced by the DNS host name for which a webextension is requesting access (e.g., mozilla.org),
 #     $domain should be treated as plural (because it may also include all subdomains, e.g www.mozilla.org, ftp.mozilla.org).
-webext-perms-host-description-one-domain = Přistupovat k údajům webových stránek v doménách { $domain }
+webext-perms-host-description-one-domain = Přistupovat k vašim datům pro webové stránky na doménách { $domain }
 # Permission string used for webextensions requesting access to 2 or more domains (and so $domainCount is expected to always
 # be >= 2, for webextensions requesting access to only one domain the `webext-perms-host-description-one-domain` string is
 # used instead).
@@ -83,11 +104,34 @@ webext-perms-host-description-one-domain = Přistupovat k údajům webových str
 #     (the list of domains will follow this string).
 webext-perms-host-description-multiple-domains =
     { $domainCount ->
-        [one] Přistupovat k údajům webových stránek v { $domainCount } doméně
-        [few] Přistupovat k údajům webových stránek v { $domainCount } doménách
-        [many] Přistupovat k údajům webových stránek v { $domainCount } doménách
-       *[other] Přistupovat k údajům webových stránek v { $domainCount } doménách
+        [one] Přistupovat k vašim datům pro webové stránky na { $domainCount } doméně
+        [few] Přistupovat k vašim datům pro webové stránky na { $domainCount } doménách
+        [many] Přistupovat k vašim datům pro webové stránky na { $domainCount } doménách
+       *[other] Přistupovat k vašim datům pro webové stránky na { $domainCount } doménách
     }
+
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Vývojář uvádí, že toto rozšíření nevyžaduje sběr dat.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Vývojář uvádí, že toto rozšíření shromažďuje: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Vývojář uvádí, že rozšíření bude shromažďovat: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = Vývojář tvrdí, že rozšíření chce shromažďovat: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = Rozšíření { $extension } vyžaduje k aktualizaci nové nastavení
+webext-perms-update-list-intro-with-data-collection = Zrušit pro zachování aktuální verze a nastavení, nebo aktualizaci pro získání nové verze a schválení změn.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = Rozšíření { $extension } požaduje dodatečná nastavení
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = Rozšíření { $extension } požaduje další sběr dat
 
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
@@ -122,3 +166,8 @@ webext-site-perms-header-unsigned-with-perms = Chcete nainstalovat { $extension 
 
 webext-site-perms-midi = Přistupovat k MIDI zařízením
 webext-site-perms-midi-sysex = Přistupovat k MIDI zařízením s podporou SysEx
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Vaše paleta barev byla odebrána.</b> { -brand-shorter-name } aktualizoval svou sbírku palet barev. Nejnovější verze najdete na webu s doplňky.
+webext-colorway-theme-migration-notification-button = Získat aktualizované palety barev

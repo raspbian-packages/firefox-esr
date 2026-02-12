@@ -54,7 +54,7 @@ cert-error-code-prefix-link = Codice de error: <a data-l10n-name="error-code-lin
 # Variables:
 #   $hostname (string) - Hostname of the website with SSL error.
 #   $errorMessage (string) - Error message corresponding to the type of error we are experiencing.
-cert-error-ssl-connection-error = Un error occurreva durante un connexion a { $hostname }. { $errorMessage }
+cert-error-ssl-connection-error = Un error ha occurrite durante un connexion a { $hostname }. { $errorMessage }
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Le sitos web garanti lor identitate per certificatos, le quales es emittite per autoritates de certification. Le major parte del navigatores non confide plus in le certificatos emittite per GeoTrust, RapidSSL, Symantec, Thawte e VeriSign. { $hostname } usa un certificato de un de iste autoritates. Consequentemente, le identitate del sito web non pote esser garantite.
@@ -107,9 +107,35 @@ fp-cert-error-code = Codice de error: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } non confide in { $hostname } perque illo non poteva provar que illo satisface le public requisitos de transparentia del certificato.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Probabilemente nihil, pois que il es probabile que il ha un problema con le sito mesme.
 fp-learn-more-about-secure-connection-failures = Pro saper plus re insuccessos de connexion secur
 fp-learn-more-about-cert-issues = Pro saper plus re iste sortas de problemas de certificato
 fp-learn-more-about-time-related-errors = Saper plus sur le resolution de problemas relative al data e hora
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } ha essite revocate e non es plus digne de fide.
+cert-error-bad-signature = { -brand-short-name } ha blocate tu visita a iste sito perque le signatura sur le certificato fornite pro { $hostname } non es valide.
+cert-error-key-pinning-failure = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } usa un clave public altere que le clave expectate.
+cert-error-bad-der = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } non es correctemente codificate.
+cert-error-cert-not-in-name-space = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } non seque le limitationes de nomine imponite per un certificato que lo ha emittite.
+cert-error-inadequate-cert-type = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } non es autorisate a esser usate per un servitor web.
+cert-error-path-len-constraint-invalid = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } ha troppo de certificatos intermedie in le percurso al certificato radice.
+cert-error-invalid-key = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } ha un clave que es non valide. Multo probabilemente, illo es troppo micre pro esser secur.
+cert-error-unknown-critical-extension = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } contine un extension critic non supportate.
+cert-error-extension-value-invalid = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } contine un extension non valide.
+cert-error-untrusted-issuer = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } ha essite publicate per un autoritate de certification que non es plus digne de fide.
+cert-error-untrusted-cert = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } es marcate como non digne de fide.
+cert-error-invalid-integer-encoding = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } contine un codification de un numero integre non valide. Le causas le plus commun es numeros de serie negative, modulos RSA negative, e codificationes plus longe que necessari.
+cert-error-unsupported-keyalg = { -brand-short-name } ha blocate tu visita a iste sito perque le certificato fornite pro { $hostname } ha un typo de clave non supportate.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } ha blocate tu visita a iste sito perque le autoritate de certification que ha emittite le certificato fornite pro { $hostname } non es plus digne de fide.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } ha blocate tu visita a iste sito perque le algorithmo de signatura del certificato fornite pro { $hostname } non concorda con su campo de algorithmo de signatura.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Iste adresse es restringite
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Nos ha problemas a trovar iste sito.
+internet-connection-offline-title = Il pare haber un problema con tu connexion a internet.
 dns-not-found-trr-only-title2 = Possible risco de securitate cercante iste dominio
 dns-not-found-native-fallback-title2 = Possibile risco de securitate cercante in iste dominio
 fileNotFound-title = File non trovate
@@ -134,6 +161,7 @@ contentEncodingError-title = Error de codification del contento
 unsafeContentType-title = Typo de file non secur
 netReset-title = Le connexion ha essite interrumpite
 netTimeout-title = Le connexion ha expirate
+httpErrorPage-title = Il pare que il ha un problema con iste sito
 serverError-title = Il pare que il ha un problema con iste sito
 unknownProtocolFound-title = Le adresse non ha essite comprendite
 proxyConnectFailure-title = Le servitor proxy refusa connexiones
@@ -142,6 +170,7 @@ redirectLoop-title = Le pagina non redirige correctemente
 unknownSocketType-title = Responsa inexpectate del servitor
 nssFailure2-title = Connexion secur fallite
 csp-xfo-error-title = { -brand-short-name } non pote aperir iste pagina
+corruptedContentErrorv2-title = Error de contento corrupte
 corruptedContentError-title = Error de contento corrumpite
 sslv3Used-title = Incapace de connecter se securmente
 inadequateSecurityError-title = Tu connexion non es secur
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Celar avantiate
 fp-certerror-override-exception-button = Continuar a { $hostname } (Riscose)
 fp-certerror-intro = { -brand-short-name } individuava un problema de securitate potentialmente serie con <strong>{ $hostname }</strong>. Alcuno que finge de esser le sito poterea tentar de robar cosas como info carta de credito, contrasignos, o emails.
 fp-certerror-expired-into = { -brand-short-name } individuava un problema de securitate con <strong>{ $hostname }</strong>. O le sito non es implementate correctemente o le horologio de tu apparato es regulate al data/tempore errate.
+fp-certerror-transparency-intro = Alcuno que finge de esser <strong>{ $hostname }</strong> poterea tentar de robar cosas como informationes de carta de credito, contrasignos, o emails.

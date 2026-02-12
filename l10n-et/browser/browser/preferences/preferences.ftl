@@ -111,6 +111,10 @@ startup-header = Käivitamine
 always-check-default =
     .label = Alati kontrollitakse, kas { -brand-short-name } on vaikebrauser
     .accesskey = a
+is-default-browser =
+    .message = { -brand-short-name } on määratud vaikebrauseriks
+is-not-default-browser =
+    .message = { -brand-short-name } pole vaikebrauseriks määratud
 is-default = { -brand-short-name } on määratud vaikebrauseriks
 is-not-default = { -brand-short-name } pole vaikebrauseriks määratud
 set-as-my-default-browser =
@@ -196,6 +200,12 @@ containers-remove-cancel-button = Ära eemalda seda konteinerit
 language-and-appearance-header = Keel ja välimus
 preferences-web-appearance-header = Veebilehe välimus
 preferences-web-appearance-description = Mõned saidid kohandavad oma värviskeemi vastavalt sinu sätetele. Vali, millist värviskeemi soovite nende saitide jaoks kasutada.
+preferences-web-appearance-choice-light2 =
+    .label = Hele
+    .title = Kasutatakse heledat teemat saidi tausta ja sisu jaoks.
+preferences-web-appearance-choice-dark2 =
+    .label = Tume
+    .title = Kasutatakse tumedat teemat saidi tausta ja sisu jaoks.
 preferences-web-appearance-choice-light = Hele
 preferences-web-appearance-choice-dark = Tume
 preferences-web-appearance-choice-tooltip-light =
@@ -206,13 +216,11 @@ preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-web-appearance-link =
+    .label = Halda { -brand-short-name }i teemasid sektsioonis Laiendused ja teemad
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Sinu värvivalik on saidi välimusele ülemuslik. <a data-l10n-name="colors-link">Halda värve</a>
-# This can appear when using windows HCM or "Override colors: always" without
-# system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Sinu värvivalik on saidi välimusele ülemuslik.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Halda { -brand-short-name }i teemasid sektsioonis <a data-l10n-name="themes-link">Laiendused ja teemad</a>
@@ -272,6 +280,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Failid ja rakendused
+downloads-header-2 =
+    .label = Allalaadimised
+download-save-where-2 =
+    .label = Failid salvestatakse asukohta
+    .accesskey = v
 download-header = Allalaadimised
 download-save-where = Failid salvestatakse asukohta
     .accesskey = v
@@ -491,7 +504,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Uued aknad ja kaardid
 home-new-windows-tabs-description2 = Vali avalehe, uute akende ja uute kaartide avamisel kuvatavad asjad.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Avaleht ja uued aknad
 home-newtabs-mode-label = Uued kaardid
@@ -630,6 +643,8 @@ search-keyword-warning-bookmark = Sa valisid võtmesõna, mis on kasutusel järj
 containers-back-button2 =
     .aria-label = Tagasi sätetesse
 containers-header = Konteinerkaardid
+containers-section-header =
+    .heading = Konteinerkaardid
 containers-add-button =
     .label = Lisa uus konteiner
     .accesskey = L
@@ -765,6 +780,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Seadme nimi
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Seadme nimi
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Muuda seadme nime
+    .accesskey = M
 sync-device-name-change =
     .label = Muuda seadme nime…
     .accesskey = M
@@ -854,9 +877,6 @@ primary-password-os-auth-dialog-message-win = Ülemparooli loomiseks sisesta Win
 primary-password-os-auth-dialog-message-macosx = create a Primary Password
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Ajalugu
@@ -877,6 +897,10 @@ history-remember-option-never =
     .label = ei säilita ajalugu
 history-remember-option-custom =
     .label = kasutab ajaloo säilitamiseks kohandatud sätteid
+history-remember-description2 =
+    .description = { -brand-short-name } peab meeles sinu veebilehitsemise ajaloo, allalaadimised ning vormide ja otsingu ajaloo.
+history-dontremember-description2 =
+    .description = { -brand-short-name } kasutab samu sätteid, mida kasutatakse privaatse veebilehitsemise korral, veebilehitsemise ajalugu ei säilitata.
 history-remember-description = { -brand-short-name } peab meeles sinu veebilehitsemise ajaloo, allalaadimised ning vormide ja otsingu ajaloo.
 history-dontremember-description = { -brand-short-name } kasutab samu sätteid, mida kasutatakse privaatse veebilehitsemise korral, veebilehitsemise ajalugu ei säilitata.
 history-private-browsing-permanent =
@@ -941,12 +965,6 @@ sitedata-cookies-exceptions =
     .label = Halda erandeid…
     .accesskey = H
 
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
-
 ## Privacy Section - Address Bar
 
 addressbar-header = Aadressiriba
@@ -1004,7 +1022,7 @@ content-blocking-cross-site-cookies-in-all-windows2 = saitideülesed küpsised k
 content-blocking-cross-site-tracking-cookies = saitideülesed jälitamisküpsised
 content-blocking-all-cross-site-cookies-private-windows = saitideülesed küpsised privaatsetes akendes
 content-blocking-cross-site-tracking-cookies-plus-isolate = saitideülesed jälitavad küpsised, ülejäänud küpsised isoleeritakse
-content-blocking-social-media-trackers = Sotsiaalmeedia jälitajad
+content-blocking-social-media-trackers = sotsiaalmeedia jälitajad
 content-blocking-all-cookies = Kõik küpsised
 content-blocking-unvisited-cookies = küpsised külastamata saitidelt
 content-blocking-all-windows-tracking-content = Jälitav sisu kõigis akendes
@@ -1082,6 +1100,8 @@ permissions-notification-link = Rohkem teavet
 permissions-notification-pause =
     .label = Pane teavitused { -brand-short-name }i taaskäivitumiseni pausile
     .accesskey = P
+permissions-autoplay2 =
+    .label = Automaatne esitamine
 permissions-autoplay = Automaatne esitamine
 permissions-autoplay-settings =
     .label = Sätted…
@@ -1101,6 +1121,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Erandid…
     .accesskey = E
+permissions-location2 =
+    .label = Asukoht
+permissions-xr2 =
+    .label = Virtuaalreaalsus
+permissions-camera2 =
+    .label = Kaamera
+permissions-microphone2 =
+    .label = Mikrofon
+permissions-notification2 =
+    .label = Teavitused
 
 ## Privacy Section - Data Collection
 
@@ -1124,11 +1154,6 @@ addon-recommendations-link = Rohkem teavet
 collection-health-report-disabled = Selle kompileerimise konfiguratsiooniga on andmete raporteerimine keelatud
 collection-backlogged-crash-reports-with-link = Luba { -brand-short-name }il sinu eest saata varasemad vearaportid <a data-l10n-name="crash-reports-link">Rohkem teavet</a>
     .accesskey = L
-collection-backlogged-crash-reports = Luba { -brand-short-name }il sinu eest saata varasemad vearaportid
-    .accesskey = L
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -1160,6 +1185,7 @@ certs-view =
 certs-devices =
     .label = Turvaseadmed…
     .accesskey = T
+certs-devices-enable-fips = Luba FIPS
 space-alert-over-5gb-settings-button =
     .label = Ava sätted
     .accesskey = v
@@ -1177,9 +1203,6 @@ httpsonly-radio-enabled-pbm =
     .label = Ainult HTTPS-režiimi kasutatakse ainult privaatsetes akendes
 httpsonly-radio-disabled =
     .label = Ainult HTTPS-režiimi ei lubata
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

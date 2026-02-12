@@ -78,7 +78,7 @@ webrtc-indicator-sharing-browser =
 ## These strings are only used on Mac for menus attached to icons
 ## near the clock on the mac menubar.
 ## Variables:
-##   $streamTitle (String): the title of the tab using the share.
+##   $streamTitle (String): the host of the tab using the share.
 ##   $tabCount (Number): the title of the tab using the share.
 
 webrtc-indicator-menuitem-control-sharing =
@@ -145,15 +145,15 @@ webrtc-indicator-menuitem-sharing-browser-with-n-tabs =
 ## Variables:
 ##   $origin (String): the website origin (e.g. www.mozilla.org).
 
-webrtc-allow-share-audio-capture = Dopustiti stranici { $origin } slušanje zvuka ove kartice?
-webrtc-allow-share-camera = Dopustiti stranici { $origin } korištenje tvoje kamere?
-webrtc-allow-share-microphone = Dopustiti stranici { $origin } korištenje tvojeg mikrofona?
+webrtc-allow-share-audio-capture = Dopustiti stranici { $origin } da sluša zvukove ove kartice?
+webrtc-allow-share-camera = Dopustiti da { $origin } koristi tvoju kameru?
+webrtc-allow-share-microphone = Dopustiti da { $origin } koristi tvoj mikrofon?
 webrtc-allow-share-screen = Dozvoliti stranici { $origin } da vidi tvoj ekran?
 # "Speakers" is used in a general sense that might include headphones or
 # another audio output connection.
 webrtc-allow-share-speaker = Dozvoliti { $origin } da koristi druge zvučnike?
-webrtc-allow-share-camera-and-microphone = Dopustiti stranici { $origin } korištenje kamere i mikrofona?
-webrtc-allow-share-camera-and-audio-capture = Dopustiti stranici { $origin } korištenje kamere i slušanje zvuka ove kartice?
+webrtc-allow-share-camera-and-microphone = Dopustiti da { $origin } koristi tvoju kameru i mikrofon?
+webrtc-allow-share-camera-and-audio-capture = Dopustiti da { $origin } koristi tvoju kameru i sluša zvuk ove kartice?
 webrtc-allow-share-screen-and-microphone = Dozvoliti stranici { $origin } da koristi tvoj mikrofon i da vidi tvo ekran?
 webrtc-allow-share-screen-and-audio-capture = Dozvoliti stranici { $origin } da sluša zvuk ove kartice i da vidi tvoj ekran?
 
@@ -229,7 +229,7 @@ webrtc-remember-allow-checkbox = Zapamti moju odluku
 webrtc-remember-allow-checkbox-camera = Zapamti za sve kamere
 webrtc-remember-allow-checkbox-microphone = Zapamti za sve mikrofone
 webrtc-remember-allow-checkbox-camera-and-microphone = Zapamti za sve kamere i mikrofone
-webrtc-mute-notifications-checkbox = Utišaj obavijesti web-stranice tijekom dijeljenja
+webrtc-mute-notifications-checkbox = Utišaj obavijesti web stranice tijekom dijeljenja
 webrtc-reason-for-no-permanent-allow-screen = { -brand-short-name } ne može dozvoliti trajni pristup tvom ekranu.
 webrtc-reason-for-no-permanent-allow-audio = { -brand-short-name } ne može trajno dozvoliti pristup zvuku kartice, jer mora pitati koju karticu želiš dijeliti.
 webrtc-reason-for-no-permanent-allow-insecure = Veza s ovom stranicom nije sigurna. Kako bismo te zaštitili, { -brand-short-name } će dozvoliti pristup samo za trajanja ove sesije.

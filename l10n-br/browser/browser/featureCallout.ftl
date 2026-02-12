@@ -53,16 +53,62 @@ fx-view-discoverability-secondary-button-label = Argas
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = Arabat diskouez ar erbedadenn-mañ adarre
+split-dismiss-button-dont-show-option =
+    .label = Arabat diskouez ar erbedadenn-mañ adarre
+# Dismisses message and reduces frequency of message
+split-dismiss-button-show-fewer-option =
+    .label = Diskouez nebeutoc'h a erbedadennoù
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = Merañ an arventennoù
+split-dismiss-button-manage-settings-option =
+    .label = Merañ an arventennoù
+# Accessibility label for dropdown menu button
+split-dismiss-button-default-label =
+    .title = Dibarzhioù ouzhpenn
 
-## Sidebar Strings
+## Bookmarks toolbar callout strings
 
+bookmarks-toolbar-callout-1-primary-button-label = Ouzhpennañ ur sined
+bookmarks-toolbar-callout-1-secondary-button-label = Ket, trugarez
+bookmarks-toolbar-callout-2a-primary-button-label = Komprenet am eus
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2a-secondary-button-label = Kuzhat ar varrenn ostilhoù
+bookmarks-toolbar-callout-2b-primary-button-label = Derc’hel digor
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2b-secondary-button-label = Ket, trugarez
+
+## Perplexity callout strings
+
+perplexity-callout-secondary-label-1 = Argas
+perplexity-callout-secondary-label-2 = Komprenet am eus
+
+## Account Adoption Passwords callout strings
+
+# Opens Mozilla accounts sign-up page
+fxa-adoption-passwords-primary-button-label = Krouiñ ur gont
+
+## Sidebar Vertical Tabs Strings
+
+vertical-tabs-callout-1-cta-button = Esaeit an ivinelloù a-serzh
+vertical-tabs-callout-2-cta-button = Esaeañ bremañ
+
+## Sidebar Vertical Tabs Pinning Strings
+
+sidebar-pins-callout-cta-button = Spilhennañ an ivinell-mañ
+
+## Pinning Tabs Strings
+
+pin-tabs-callout-cta-1-button = Spilhennañ an ivinell-mañ
+pin-tabs-callout-cta-2-button = Spilhennañ an ivinell-mañ
+
+## Sidebar Onboarding Strings
+
+sidebar-customization-callout-callout-button = Personelaat ar varrenn gostez
+sidebar-customization-callout-dismiss-button = Kuzhat ar varrenn gostez
 
 ## Sidebar Callout Survey Strings
 
 sidebar-callout-survey-title = Sikourit da wellaat { -brand-short-name }
+sidebar-callout-survey-privacy-notice-link = Evezhiadennoù a-fet buhez prevez
 sidebar-callout-survey-very-satisfied = Plijet-tre
 sidebar-callout-survey-satisfied = Plijet
 sidebar-callout-survey-neutral = Ali ebet
@@ -73,3 +119,7 @@ sidebar-callout-survey-strongly-agree = A-du krenn
 sidebar-callout-survey-agree = A-du
 sidebar-callout-survey-submit = Kas
 sidebar-callout-survey-thank-you = Trugarez da vezañ roet hoc’h ali!
+unified-search-callout-primary-label = War-lerc’h
+unified-search-callout-secondary-label = Argas
+unified-search-engines-callout-title = Klask gant ur verradenn
+unified-search-engines-callout-primary-label = Komprenet am eus

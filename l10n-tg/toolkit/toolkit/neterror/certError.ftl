@@ -111,6 +111,26 @@ fp-learn-more-about-secure-connection-failures = Маълумоти бештар
 fp-learn-more-about-cert-issues = Маълумоти бештар дар бораи ин намудҳои мушкилиҳои гувоҳинома
 fp-learn-more-about-time-related-errors = Маълумоти бештар дар бораи ислоҳ кардани хатоҳои марбут ба вақт
 
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» бекор карда шудааст ва дигар эътимод надорад.
+cert-error-bad-signature = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки имзои гувоҳиномаи таъминшуда барои «{ $hostname }» беэътибор аст.
+cert-error-key-pinning-failure = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» аз калиди ҷамъиятие истифода мебарад, ки аз калиди лозима фарқ мекунад.
+cert-error-bad-der = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» ба таври дуруст рамзгузорӣ нашудааст.
+cert-error-cert-not-in-name-space = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» маҳдудиятҳои номи гувоҳиномаеро, ки он баровардааст, риоя намекунад.
+cert-error-inadequate-cert-type = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» аз тарафи сервери веб барои истифода иҷозат дода намешавад.
+cert-error-path-len-constraint-invalid = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» дар масири гувоҳиномаи решагӣ дорои аз ҳад зиёд гувоҳиномаҳои миёнагӣ мебошад.
+cert-error-invalid-key = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» дорои калиде мебошад, ки беэътибор аст. Эҳтимол аст, ки он барои чораҳои бехатарӣ хеле хурд аст.
+cert-error-unknown-critical-extension = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» дорои васеъшавии танқидие мебошад, ки дастгирӣ намешавад.
+cert-error-extension-value-invalid = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» дорои васеъшавии беэътибор мебошад.
+cert-error-untrusted-issuer = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» аз ҷониби мақомоти иҷозатномадиҳандае бароварда шудааст, ки дигар эътимод надорад.
+cert-error-untrusted-cert = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» ҳамчун беэътибор қайд карда шудааст.
+cert-error-invalid-integer-encoding = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» дорои ададе мебошад, ки ба таври нодуруст рамзгузорӣ карда шудааст. Сабабҳои умумие, ки чунин мушкилиҳоро ба вуҷуд меоранд, аз рақамҳои силсилавии манфӣ, модулҳои «RSA»-и манфӣ ва рамзгузорие, ки дарозиаш аз ҳад дароз мебошад, иборатанд.
+cert-error-unsupported-keyalg = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки гувоҳиномаи таъминшуда барои «{ $hostname }» дорои навъи калиде мебошад, ки дастгирӣ намешавад.
+cert-error-issuer-no-longer-trusted = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки мақомоти иҷозатномадиҳандае, ки гувоҳиномаи таъминшударо барои «{ $hostname }» бароварда шудааст, ки дигар эътимод надорад.
+cert-error-signature-algorithm-mismatch = «{ -brand-short-name }» воридшавии шуморо ба ин сомона манъ кард, зеро ки алгоритми имзои гувоҳиномаи таъминшуда барои «{ $hostname }» ба майдони алгоритми имзои он мувофиқат намекунад.
+
 ## Messages used for certificate error titles
 
 connectionFailure-title = Пайваст ғайриимкон аст
@@ -118,6 +138,7 @@ deniedPortAccess-title = Нишонии ҷорӣ маҳдуд шудааст
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Мутаассифона, ин сомона кушода нашуд.
+internet-connection-offline-title = Чунин ба назар мерасад, ки дар пайвасти Интернети шумо мушкилӣ ба миён омад.
 dns-not-found-trr-only-title2 = Ҳавфи амният ҳангоми ҷустуҷӯи ин домен имконпазир аст
 dns-not-found-native-fallback-title2 = Ҳавфи амният ҳангоми ҷустуҷӯи ин домен имконпазир аст
 fileNotFound-title = Файл ёфт нашуд
@@ -134,6 +155,7 @@ contentEncodingError-title = Хатои рамзгузории муҳтаво
 unsafeContentType-title = Навъи файли беэътимод
 netReset-title = Пайвастшавӣ аз нав танзим карда шуд
 netTimeout-title = Вақти пайвастшавӣ ба анҷом расид
+httpErrorPage-title = Чунин ба назар мерасад, ки дар ин сомона мушкилӣ вуҷуд дорад
 serverError-title = Чунин ба назар мерасад, ки дар ин сомона мушкилӣ вуҷуд дорад
 unknownProtocolFound-title = Нишонӣ фаҳмида нашудааст
 proxyConnectFailure-title = Сервери прокси пайвастҳоро рад мекунад
@@ -142,6 +164,7 @@ redirectLoop-title = Саҳифа ба таври дуруст равона ка
 unknownSocketType-title = Ҷавоби ногаҳон аз сервер
 nssFailure2-title = Пайвасти бехатар иҷро нашуд
 csp-xfo-error-title = «{ -brand-short-name }» ин саҳифаро кушода наметавонад
+corruptedContentErrorv2-title = Хатои муҳтавои вайроншуда
 corruptedContentError-title = Хатои муҳтавои вайроншуда
 sslv3Used-title = Пайвасти бехатар ғайриимкон аст
 inadequateSecurityError-title = Пайвасти шумо бехатар нест

@@ -20,6 +20,7 @@
 #include "mozilla/ProfilerThreadSleep.h"
 #include "mozilla/Unused.h"
 #include "mozilla/GUniquePtr.h"
+#include "mozilla/StaticPrefs_widget.h"
 #include "mozilla/WidgetUtils.h"
 #include "nsIPowerManagerService.h"
 #ifdef MOZ_ENABLE_DBUS
@@ -51,8 +52,9 @@ LazyLogModule gWidgetLog("Widget");
 LazyLogModule gWidgetDragLog("WidgetDrag");
 LazyLogModule gWidgetWaylandLog("WidgetWayland");
 LazyLogModule gWidgetPopupLog("WidgetPopup");
-LazyLogModule gWidgetVsync("WidgetVsync");
+LazyLogModule gWidgetVsync("WidgetVSync");
 LazyLogModule gDmabufLog("Dmabuf");
+LazyLogModule gWidgetCompositorLog("WidgetCompositor");
 
 static GPollFunc sPollFunc;
 

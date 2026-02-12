@@ -40,3 +40,36 @@ webext-perms-description-webNavigation = Дастрас кардани фаъо�
 webext-perms-extra-warning-userScripts-long = Скриптҳои тасдиқнашуда метавонанд ба амният ва махфияти шумо ҳар гуна хатарҳоро, ба монанди иҷро кардани рамзи зараровар ё пайгирии фаъолияти шумо дар сомона, ба вуҷуд оранд. Танҳо скриптҳоро аз васеъшавиҳо ё манбаъҳое, ки шумо ба он эътимод доред, иҷро кунед.
 # A shorter warning is displayed in UI surfaces with little room, such as a permission prompt.
 webext-perms-extra-warning-userScripts-short = Скриптҳои тасдиқнашуда метавонанд ба амният ва махфияти шумо ҳар гуна хатарҳоро ба вуҷуд оранд. Танҳо скриптҳоро аз васеъшавиҳо ё манбаъҳое, ки шумо ба он эътимод доред, иҷро кунед.
+
+## Short form to be used in lists or in a string (`webext-perms-description-data-some`)
+## that formats some of the data collection permissions below using `Intl.ListFormat`.
+##
+## This is used when the data collection permissions are required.
+
+webext-perms-description-data-short-authenticationInfo = маълумоти санҷиши ҳаққоният
+webext-perms-description-data-short-bookmarksInfo = хатбаракҳо
+webext-perms-description-data-short-browsingActivity = фаъолияти тамошобинӣ
+webext-perms-description-data-short-financialAndPaymentInfo = маълумоти молиявӣ ва пардохт
+webext-perms-description-data-short-healthInfo = маълумоти саломатӣ
+webext-perms-description-data-short-locationInfo = ҷойгиршавӣ
+webext-perms-description-data-short-personalCommunications = муоширати шахсӣ
+webext-perms-description-data-short-personallyIdentifyingInfo = маълумоти шахсии қобили шиносоӣ
+webext-perms-description-data-short-searchTerms = вожаҳои ҷустуҷӯӣ
+webext-perms-description-data-short-technicalAndInteraction = маълумоти техникӣ ва ҳамкорӣ
+webext-perms-description-data-short-websiteActivity = фаъолият дар сомонаҳо
+webext-perms-description-data-short-websiteContent = муҳтавои сомона
+
+## Long form to be used in `about:addons` when these data collection permissions are optional.
+
+webext-perms-description-data-long-authenticationInfo = Мубодилаи маълумоти санҷиши ҳаққоният бо барномасози васеъшавӣ
+webext-perms-description-data-long-bookmarksInfo = Мубодилаи маълумоти хатбаракҳо бо барномасози васеъшавӣ
+webext-perms-description-data-long-browsingActivity = Мубодилаи фаъолияти тамошобинӣ бо барномасози васеъшавӣ
+webext-perms-description-data-long-financialAndPaymentInfo = Мубодилаи маълумоти молиявӣ ва пардохт бо барномасози васеъшавӣ
+webext-perms-description-data-long-healthInfo = Мубодилаи маълумоти саломатӣ бо барномасози васеъшавӣ
+webext-perms-description-data-long-locationInfo = Мубодилаи маълумоти ҷойгиршавӣ бо барномасози васеъшавӣ
+webext-perms-description-data-long-personalCommunications = Мубодилаи маълумоти паёмҳои шахсӣ бо барномасози васеъшавӣ
+webext-perms-description-data-long-personallyIdentifyingInfo = Мубодилаи маълумоти шахсии қобили шиносоӣ бо барномасози васеъшавӣ
+webext-perms-description-data-long-searchTerms = Мубодилаи вожаҳои ҷустуҷӯӣ бо барномасози васеъшавӣ
+webext-perms-description-data-long-technicalAndInteraction = Мубодилаи маълумоти техникӣ ва ҳамкорӣ бо барномасози васеъшавӣ
+webext-perms-description-data-long-websiteActivity = Мубодилаи фаъолияти сомонаҳо бо барномасози васеъшавӣ
+webext-perms-description-data-long-websiteContent = Мубодилаи муҳтавои сомонаҳо бо барномасози васеъшавӣ

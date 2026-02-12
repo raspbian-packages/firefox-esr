@@ -151,7 +151,7 @@ def make_task(config, jobs):
             "worker-type": "b-linux-gcp",
             "worker": {
                 "chain-of-trust": True,
-                "docker-image": {"in-tree": "fetch"},
+                "docker-image": {"in-tree": job.get("docker-image", "fetch")},
                 "env": env,
                 "max-run-time": 900,
                 "artifacts": [
@@ -202,6 +202,7 @@ def make_task(config, jobs):
             # download.
             Required("key-path"): str,
         },
+        Optional("headers"): [str],
         # The name to give to the generated artifact. Defaults to the file
         # portion of the URL. Using a different extension converts the
         # archive to the given type. Only conversion to .tar.zst is
@@ -252,7 +253,7 @@ def create_fetch_url_task(config, name, fetch):
             gecko_taskgraph.GECKO, fetch["gpg-signature"]["key-path"]
         )
 
-        with open(key_path, "r") as fh:
+        with open(key_path) as fh:
             gpg_key = fh.read()
 
         env["FETCH_GPG_KEY"] = gpg_key
@@ -264,6 +265,9 @@ def create_fetch_url_task(config, name, fetch):
                 "FETCH_GPG_KEY",
             ]
         )
+
+    for header in fetch.get("headers", []):
+        command.extend(["--header", header])
 
     command.extend(
         [
@@ -380,6 +384,7 @@ def create_chromium_fetch_task(config, name, fetch):
     return {
         "command": cmd,
         "artifact_name": artifact_name,
+        "docker-image": "fetch-more",
         "digest_data": [
             f"revision={revision}",
             f"platform={platform}",
@@ -396,6 +401,12 @@ def create_chromium_fetch_task(config, name, fetch):
         Required("platform"): str,
         # The name to give to the generated artifact.
         Required("artifact-name"): str,
+        # The chrome channel to download from.
+        Optional("channel"): str,
+        # Determine if we are fetching a backup (stable version - 1) driver.
+        Optional("backup"): bool,
+        # Pin a stable version of chrome to download from. To be used together with `backup`.
+        Optional("version"): str,
     },
 )
 def create_cft_canary_fetch_task(config, name, fetch):
@@ -404,8 +415,19 @@ def create_cft_canary_fetch_task(config, name, fetch):
     workdir = "/builds/worker"
 
     platform = fetch.get("platform")
+    channel = fetch.get("channel")
+    version = fetch.get("version")
+    backup = fetch.get("backup", False)
 
     args = "--platform " + shell_quote(platform)
+    if channel:
+        args += " --channel " + shell_quote(channel)
+
+    if backup:
+        args += " --backup"
+        # only allow pinning version with backup
+        if version:
+            args += " --version " + shell_quote(version)
 
     cmd = [
         "bash",
@@ -416,6 +438,7 @@ def create_cft_canary_fetch_task(config, name, fetch):
     return {
         "command": cmd,
         "artifact_name": artifact_name,
+        "docker-image": "fetch-more",
         "digest_data": [
             f"platform={platform}",
             f"artifact_name={artifact_name}",

@@ -108,6 +108,8 @@ about-logins-login-intro-heading-logged-in = సింక్రనిత ప్�
 login-intro-description = మరో పరికరంలో మీ ప్రవేశాలను { -brand-product-name }‌లో భద్రపరచుకొని ఉంటే, వాటిని ఇక్కడకు తెచ్చుకోవడం ఇలా:
 login-intro-instructions-fxa = మీ ప్రవేశాలు ఉన్న పరికరంలో { -fxaccount-brand-name } సృష్టించుకోండి లేదా మీ ఖాతా లోనికి ప్రవేశించండి.
 about-logins-login-intro-heading-message = మీ సంకేతపదాలను ఒక సురక్షిత ప్రదేశంలో భద్రపరచండి
+login-intro-description2 = { -brand-product-name }లో మీరు భద్రపరిచే అన్ని సంకేతపదాలు గుప్తీకరించబడతాయి. అదనంగా, మేము ఉల్లంఘనల విషయంలో జాగ్రత్తగా ఉంటాము, మీరు ప్రభావితులైతే మిమ్మల్ని హెచ్చరిస్తాము. <a data-l10n-name="breach-alert-link">మరింత తెలుసుకోండి</a>
+login-intro-instructions-fxa2 = మీ ప్రవేశాలు ఉన్న పరికరంలో మీ ఖాతా లోనికి ప్రవేశించండి లేదా సృష్టించుకోండి.
 login-intro-instructions-fxa-passwords-help = మరింత సహాయం కోసం <a data-l10n-name="passwords-help-link">సంకేతపదాల తోడ్పాటు</a>ను చూడండి.
 
 ## Login
@@ -158,7 +160,7 @@ about-logins-os-auth-dialog-caption = { -brand-full-name }
 ## notes are only valid for English. Please test in your respected locale.
 
 # This message can be seen when attempting to edit a login in about:logins on Windows.
-about-logins-edit-login-os-auth-dialog-message-win = మీ ప్రవేశ వివరాలను మార్చడానికి, మీ విండోస్ ప్రవేశ వివరాలను ఇవ్వండి. ఇది మా ఖాతాల భద్రతను కాపాడడంలో ఉపయోగపడుతుంది.
+about-logins-edit-login-os-auth-dialog-message-win = మీ ప్రవేశ వివరాలను మార్చడానికి, మీ విండోస్ ప్రవేశ వివరాలను ఇవ్వండి. ఇది మీ ఖాతాల భద్రతను కాపాడడంలో ఉపయోగపడుతుంది.
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message-macosx = భద్రపరచిన ప్రవేశాన్ని సవరించు
@@ -238,6 +240,12 @@ about-logins-confirm-remove-all-dialog-title2 =
     { $count ->
         [one] { $count } సంకేతపదాన్ని తొలగించాలా?
        *[other] { $count } సంకేతపదాలనూ తొలగించాలా?
+    }
+# Title for modal to confirm the removal of all saved passwords when user IS SYNCED
+about-logins-confirm-remove-all-sync-dialog-title2 =
+    { $count ->
+        [one] { $count } సంకేతపదాన్ని పరికరాలన్నిటి నుండి తొలగించాలా?
+       *[other] { $count } సంకేతపదాలను పరికరాలన్నిటి నుండి తొలగించాలా?
     }
 
 ##
@@ -323,6 +331,7 @@ about-logins-import-dialog-error-title = దిగుమతి లోపం
 about-logins-import-dialog-error-conflicting-values-description = ఉదాహరణకు: ఒకే ప్రవేశానికి పలు వాడుకరి పేర్లు, సంకేతపదాలు, చిరునామాలు, మొదలైనవి.
 about-logins-import-dialog-error-file-format-title = ఫైలు ఫార్మాటు సమస్య
 about-logins-import-dialog-error-file-permission-title = ఫైలును చదవలేకపోతున్నాం
+about-logins-import-dialog-error-unable-to-read-description = మీరు ఏదైనా CSV లేదా TSV ఫైల్‌ని ఎంచుకున్నారని నిర్ధారించుకోండి.
 about-logins-import-dialog-error-no-logins-imported = ప్రవేశాలేమీ దిగుమతి కాలేదు
 about-logins-import-dialog-error-learn-more = ఇంకా తెలుసుకోండి
 about-logins-import-dialog-error-try-import-again = దిగుమతిని మళ్ళీ ప్రయత్నించండి…
@@ -332,13 +341,9 @@ about-logins-import-report-title = దిగుమతి సారాంశం
 # Variables:
 #  $number (number) - The number of the row
 about-logins-import-report-row-index = అడ్డువరుస{ $number }
+about-logins-import-report-row-description-modified = ఇప్పటికే ఉన్న ప్రవేశం నవీకరించబడింది
 about-logins-import-report-row-description-added = కొత్త ప్రవేశం చేర్చబడింది
 about-logins-import-report-row-description-added2 = కొత్త సంకేతపదం చేర్చబడింది
-
-##
-## Variables:
-##  $field (String) - The name of the field from the CSV file for example url, username or password
-
 
 ##
 ## Variables:

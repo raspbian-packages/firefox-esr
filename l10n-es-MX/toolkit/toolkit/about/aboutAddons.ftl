@@ -294,14 +294,6 @@ find-more-themes = Encontrar más temas
 # used for screen readers.
 addon-options-button =
     .aria-label = Más opciones
-# Explanatory introduction to the list of recommended add-ons. The action word
-# ("recommends") in the final sentence is a link to external documentation.
-discopane-intro2 =
-    Las extensiones y los temas te permiten personalizar { -brand-product-name }. Pueden mejorar la privacidad,
-    aumentar la productividad, mejorar contenido multimedia, cambiar la apariencia de { -brand-product-name } y
-    mucho más. Estos pequeños programas de software a menudo son desarrollados por terceros. Aquí tienes
-    una selección que { -brand-product-name } <a data-l10n-name="learn-more-trigger">recomienda</a>
-    para una seguridad, rendimiento y funcionalidad excepcionales.
 
 ## Add-on actions
 
@@ -388,6 +380,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = Permitido en ventanas privadas
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = Permitido en ventanas privadas
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -427,6 +423,10 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = Esta extensión ha sido revisada para cumplir con nuestros estándares de seguridad y rendimiento.
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = Extensión oficial hecha por Mozilla. Cumple con los estándares de seguridad y rendimiento
 
 ##
 
@@ -434,7 +434,10 @@ available-updates-heading = Actualizaciones disponibles
 recent-updates-heading = Actualizaciones recientes
 release-notes-loading = Cargando…
 release-notes-error = Lo sentimos, pero ha sucedido un error al cargar las notas de versión.
+addon-permissions-heading = Permisos
 addon-permissions-empty2 = Esta extensión no requiere ningún permiso.
+addon-permissions-required-label = Requerido:
+addon-permissions-optional-label = Opcional:
 addon-permissions-empty = Esta extensión no requiere ningún permiso
 addon-permissions-required = Permisos necesarios para la funcionalidad principal:
 addon-permissions-optional = Permisos opcionales para funciones adicionales:
@@ -462,6 +465,9 @@ shortcuts-heading = Administrar atajos de extensiones
 default-heading-search-label = Encontrar más complementos
 addons-heading-search-input =
     .placeholder = Buscar en addons.mozilla.org
+addons-heading-search-button =
+    .title = Buscar en addons.mozilla.org
+    .aria-label = Buscar en addons.mozilla.org
 addon-page-options-button =
     .title = Herramientas para todos los complementos
 
@@ -490,8 +496,6 @@ details-notification-hard-blocked-other =
     .message = Este complemento está bloqueado por infringir las políticas de Mozilla y ha sido deshabilitado.
 details-notification-unsigned-link = Más información
 details-notification-blocked = { $name } ha sido deshabilitado debido a problemas de seguridad o estabilidad.
-details-notification-blocked2 =
-    .message = { $name } ha sido deshabilitado debido a problemas de seguridad o estabilidad.
 details-notification-blocked-link2 = Ver Detalles
 details-notification-soft-blocked-extension-disabled =
     .message = Esta extensión está restringida por violar las políticas de Mozilla y ha sido desactivada. Se puede activar, pero podría ser arriesgado.
@@ -504,8 +508,6 @@ details-notification-soft-blocked-other-enabled =
 details-notification-softblocked-link2 = Ver Detalles
 details-notification-blocked-link = Más información
 details-notification-softblocked = { $name } se sabe que causa problemas de seguridad o estabilidad.
-details-notification-softblocked2 =
-    .message = { $name } se sabe que causa problemas de seguridad o estabilidad.
 details-notification-softblocked-link = Más información
 details-notification-gmp-pending = { $name } se instalará en breve.
 details-notification-gmp-pending2 =
@@ -519,3 +521,21 @@ plugins-openh264-name = Codificador de video OpenH264 proporcionado por Cisco Sy
 plugins-openh264-description = Este plugin ha sido instalado automáticamente por Mozilla para compilarse con la especificación WebRTC y para habilitar llamadas WebRTC con dispositivos que requieren el codec de video H.264. Visita http://www.openh264.org/ para ver el codec, la fuente del codec y cómo saber más acerca de la implementación.
 plugins-widevine-name = Módulo de desencriptación de contenido Widevine proveído por Google Inc.
 plugins-widevine-description = Este plugin habilita la reproducción multimedia encriptada, en conformidad con la especificación Encrypted Media Extensions. Multimedia encriptada es usada típicamente por sitios para proteger contra copias de contenido multimedia premium. Visita https://www.w3.org/TR/encrypted-media/ para más información sobre Escrypted Media Extensions.
+
+## Headings for the Permissions tab in `about:addons` when the data collection
+## feature is enabled.
+
+addon-permissions-data-collection-heading = Recopilación de datos
+
+## Mapping Engine IDs from AI models to how that feature represented by the engine Id is described in the used by section in local model management
+
+# Label for button that when clicked removed local model
+mlmodel-remove-addon-button =
+    .aria-label = Eliminar
+# Label for the aggregated value of all files for a model
+mlmodel-addon-detail-totalsize-label = Tamaño del archivo
+mlmodel-addon-detail-last-used-label = Último uso
+# This is a section label to describe what extensions or features use a specific local AI model
+mlmodel-addon-detail-used-by-label = Utilizado por
+# This is a section label to describe the link to the model card on the Hugging Face website
+mlmodel-addon-detail-model-card = Tarjeta modelo

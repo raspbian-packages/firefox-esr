@@ -43,7 +43,7 @@ void OffscreenCanvasDisplayHelper::DestroyElement() {
 
   MutexAutoLock lock(mMutex);
   if (mImageContainer) {
-    mImageContainer->ClearAllImages();
+    mImageContainer->ClearImagesInHost(layers::ClearImagesType::All);
     mImageContainer = nullptr;
   }
   mFrontBufferSurface = nullptr;
@@ -57,7 +57,7 @@ void OffscreenCanvasDisplayHelper::DestroyCanvas() {
 
   MutexAutoLock lock(mMutex);
   if (mImageContainer) {
-    mImageContainer->ClearAllImages();
+    mImageContainer->ClearImagesInHost(layers::ClearImagesType::All);
     mImageContainer = nullptr;
   }
   mFrontBufferSurface = nullptr;
@@ -120,7 +120,7 @@ RefPtr<layers::ImageContainer> OffscreenCanvasDisplayHelper::GetImageContainer()
 
 void OffscreenCanvasDisplayHelper::UpdateContext(
     OffscreenCanvas* aOffscreenCanvas, RefPtr<ThreadSafeWorkerRef>&& aWorkerRef,
-    CanvasContextType aType, const Maybe<int32_t>& aChildId) {
+    CanvasContextType aType, const Maybe<mozilla::ipc::ActorId>& aChildId) {
   RefPtr<layers::ImageContainer> imageContainer =
       MakeRefPtr<layers::ImageContainer>(
           layers::ImageUsageType::OffscreenCanvas,
@@ -164,11 +164,10 @@ void OffscreenCanvasDisplayHelper::FlushForDisplay() {
     return;
   }
 
-  class FlushWorkerRunnable final : public WorkerThreadRunnable {
+  class FlushWorkerRunnable final : public MainThreadWorkerRunnable {
    public:
-    FlushWorkerRunnable(WorkerPrivate* aWorkerPrivate,
-                        OffscreenCanvasDisplayHelper* aDisplayHelper)
-        : WorkerThreadRunnable("FlushWorkerRunnable"),
+    explicit FlushWorkerRunnable(OffscreenCanvasDisplayHelper* aDisplayHelper)
+        : MainThreadWorkerRunnable("FlushWorkerRunnable"),
           mDisplayHelper(aDisplayHelper) {}
 
     bool WorkerRun(JSContext*, WorkerPrivate*) override {
@@ -195,13 +194,12 @@ void OffscreenCanvasDisplayHelper::FlushForDisplay() {
 
   // Otherwise we are calling from the main thread during painting to a canvas
   // on a worker thread.
-  auto task = MakeRefPtr<FlushWorkerRunnable>(mWorkerRef->Private(), this);
+  auto task = MakeRefPtr<FlushWorkerRunnable>(this);
   task->Dispatch(mWorkerRef->Private());
 }
 
 bool OffscreenCanvasDisplayHelper::CommitFrameToCompositor(
     nsICanvasRenderingContextInternal* aContext,
-    layers::TextureType aTextureType,
     const Maybe<OffscreenCanvasDisplayData>& aData) {
   auto endTransaction = MakeScopeExit([&]() {
     if (auto* cm = gfx::CanvasManagerChild::Get()) {
@@ -223,12 +221,6 @@ bool OffscreenCanvasDisplayHelper::CommitFrameToCompositor(
   if (aData) {
     mData = aData.ref();
     MaybeQueueInvalidateElement();
-  }
-
-  if (mData.mOwnerId.isSome()) {
-    // No need to update the ImageContainer as the presentation itself is
-    // handled in the compositor process.
-    return true;
   }
 
   if (!mImageContainer) {
@@ -272,7 +264,7 @@ bool OffscreenCanvasDisplayHelper::CommitFrameToCompositor(
       aContext->OnBeforePaintTransaction();
     }
 
-    desc = aContext->PresentFrontBuffer(nullptr, aTextureType);
+    desc = aContext->PresentFrontBuffer(nullptr);
     if (desc) {
       hasRemoteTextureDesc =
           desc->type() ==
@@ -347,7 +339,7 @@ bool OffscreenCanvasDisplayHelper::CommitFrameToCompositor(
         image, TimeStamp(), mLastFrameID++, mImageProducerID));
     mImageContainer->SetCurrentImages(imageList);
   } else {
-    mImageContainer->ClearAllImages();
+    mImageContainer->ClearImagesInHost(layers::ClearImagesType::All);
   }
 
   return true;
@@ -464,8 +456,8 @@ OffscreenCanvasDisplayHelper::GetSurfaceSnapshot() {
 
   class SnapshotWorkerRunnable final : public MainThreadWorkerRunnable {
    public:
-    SnapshotWorkerRunnable(WorkerPrivate* aWorkerPrivate,
-                           OffscreenCanvasDisplayHelper* aDisplayHelper)
+    explicit SnapshotWorkerRunnable(
+        OffscreenCanvasDisplayHelper* aDisplayHelper)
         : MainThreadWorkerRunnable("SnapshotWorkerRunnable"),
           mMonitor("SnapshotWorkerRunnable::mMonitor"),
           mDisplayHelper(aDisplayHelper) {}
@@ -544,8 +536,7 @@ OffscreenCanvasDisplayHelper::GetSurfaceSnapshot() {
     originPos = mData.mOriginPos;
     canvasElement = mCanvasElement;
     if (mWorkerRef) {
-      workerRunnable =
-          MakeRefPtr<SnapshotWorkerRunnable>(mWorkerRef->Private(), this);
+      workerRunnable = MakeRefPtr<SnapshotWorkerRunnable>(this);
       workerRunnable->Dispatch(mWorkerRef->Private());
     }
   }
@@ -616,9 +607,21 @@ UniquePtr<uint8_t[]> OffscreenCanvasDisplayHelper::GetImageBuffer(
   }
 
   if (resistFingerprinting) {
+    nsIPrincipal* principal = nullptr;
+    {
+      MutexAutoLock lock(mMutex);
+      if (mCanvasElement) {
+        principal = mCanvasElement->NodePrincipal();
+      }
+      if (mOffscreenCanvas) {
+        principal = mOffscreenCanvas->GetParentObject()
+                        ? mOffscreenCanvas->GetParentObject()->PrincipalOrNull()
+                        : nullptr;
+      }
+    }
     nsRFPService::RandomizePixels(
-        cookieJarSettings, imageBuffer.get(), dataSurface->GetSize().width,
-        dataSurface->GetSize().height,
+        cookieJarSettings, principal, imageBuffer.get(),
+        dataSurface->GetSize().width, dataSurface->GetSize().height,
         dataSurface->GetSize().width * dataSurface->GetSize().height * 4,
         gfx::SurfaceFormat::A8R8G8B8_UINT32);
   }

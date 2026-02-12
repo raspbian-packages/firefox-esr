@@ -69,6 +69,14 @@ perftools-button-add-directory = Embojuaju marandurenda’aty
 perftools-button-remove-directory = Emboguete jeporavo
 perftools-button-edit-settings = Embosako’i ñemboheko…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = Jeku’eve
+perftools-menu-more-actions-restart-with-profiling = Emoñepyrũjey { -brand-shorter-name } pe ñepyrũha mbojurujapyre ndive
+perftools-menu-more-actions-copy-for-startup = Emonguatia umi jeregua pe perfilado ñepyrũgua
+perftools-menu-more-actions-copy-for-perf-tests = Emonguatia ñeha’ãpy tembiapokue rehegua
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -141,6 +149,8 @@ perftools-presets-graphics-label = Ta’ãnga
 perftools-presets-graphics-description = Oñemoĩva ohapykuerereka hag̃ua mba’epu ha ta’ãngamýi { -brand-shorter-name }.
 perftools-presets-media-label = Momaranduha
 perftools-presets-media-description2 = Oñemoĩva ohapykuerereka hag̃ua mba’epu ha ta’ãngamýi { -brand-shorter-name }.
+perftools-presets-ml-label = Kuaarã Ijeheguíva
+perftools-presets-ml-description2 = Oĩva ohapykuereka hag̃ua kuaarã ijeheguíva jejavy { -brand-shorter-name } ndive.
 perftools-presets-networking-label = Pyha
 perftools-presets-networking-description = Oñemoĩva ohapykuereka hag̃ua pyha apañuái { -brand-shorter-name }-pe.
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -149,6 +159,3 @@ perftools-presets-power-description = Oñemoĩva ohapykuerereka hag̃ua tendyry 
 perftools-presets-debug-label = Mopotĩ
 perftools-presets-debug-description = Oĩva oñemopotĩ hag̃uáicha { -brand-shorter-name } ndive. Ojehechaiterei, ani eiporu oiko porãve hag̃ua katu eikumby hag̃ua mba’éichapa omba’apo kundahára.
 perftools-presets-custom-label = Mboavapyre
-
-##
-

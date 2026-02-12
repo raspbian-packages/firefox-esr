@@ -15,6 +15,7 @@ about-logging-set-log-file = Журналдау файлын орнату
 about-logging-set-log-modules = Журналдау модульдерін орнату
 about-logging-start-logging = Журналдауды бастау
 about-logging-stop-logging = Журналдауды аяқтау
+about-logging-copy-as-url = Ағымдағы параметрлерді URL ретінде көшіру
 about-logging-buttons-disabled = Журналдау қоршам айнымалылары арқылы бапталған, динамикалық конфигурация қолжетімсіз.
 about-logging-some-elements-disabled = Журналдау URL арқылы бапталған, кейбір конфигурация опциялары қолжетімді емес
 about-logging-info = Ақпарат:
@@ -27,6 +28,8 @@ about-logging-no-log-modules = Ешнәрсе
 about-logging-no-log-file = Ешнәрсе
 about-logging-logging-preset-selector-text = Журналдаудың алдын ала орнатуы:
 about-logging-with-profiler-stacks-checkbox = Журнал хабарламалары үшін стек трассировкасын іске қосу
+about-logging-menu =
+    .title = Қосымша опциялар
 
 ## Logging presets
 
@@ -44,6 +47,8 @@ about-logging-preset-media-playback-label = Медианы ойнату
 about-logging-preset-media-playback-description = Медиа ойнату мәселелерін диагностикалау үшін журналдау модульдері (видео конференция мәселелері емес)
 about-logging-preset-webrtc-label = WebRTC
 about-logging-preset-webrtc-description = WebRTC қоңырауларын диагностикалау үшін журналдау модульдері
+about-logging-preset-webcodecs-label = WebCodecs
+about-logging-preset-ml-label = Машиналық оқыту
 about-logging-preset-webgpu-label = WebGPU
 about-logging-preset-webgpu-description = WebGPU мәселелерін диагностикалау үшін журналдау модульдері
 about-logging-preset-gfx-label = Графика
@@ -56,9 +61,7 @@ about-logging-preset-custom-description = Журналдау модульдер�
 # Error handling
 about-logging-error = Қате:
 
-## Variables:
-##   $k (String) - Variable name
-##   $v (String) - Variable value
+##
 
 about-logging-invalid-output = "{ $k }" кілті үшін "{ $v }" мәні жарамсыз
 about-logging-unknown-logging-preset = Журналдаудың белгісіз алдын ала орнатуы "{ $v }"
@@ -67,3 +70,21 @@ about-logging-unknown-option = Белгісіз about:logging опциясы "{ 
 about-logging-configuration-url-ignored = Баптаудың URL адресі еленбеді
 about-logging-file-and-profiler-override = Бір уақытта файлға шығаруды мәжбүрлеу және профиль жасау опцияларын қайта анықтау мүмкін емес
 about-logging-configured-via-url = Опция URL арқылы бапталған
+
+## The upload interface is shown only with the preference toolkit.aboutLogging.uploadProfileToCloud
+## set to true. It is false by default, except on Android.
+
+about-logging-save-button = Сақтау
+about-logging-upload-button = Жүктеп жіберу
+# Variables:
+#   $path (string) - The path where the profile can be found.
+about-logging-saved = { $path } ішіне сақталды
+
+## Uploaded Profiles section
+
+about-logging-uploaded-profiles-title = Жүктеп салынған профильдер
+about-logging-no-uploaded-profiles = Профильдер әлі жүктеп салынбаған.
+about-logging-delete-uploaded-profile = Өшіру
+about-logging-view-uploaded-profile = Профильді қарау
+about-logging-delete-profile-confirm-title = Профильді өшіру
+about-logging-deleting-profile = Өшіру…

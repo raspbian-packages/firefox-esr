@@ -34,6 +34,35 @@ webext-perms-description-trialML = Құрылғыңызға ЖИ модельд�
 webext-perms-description-userScripts = Тексерілмеген үшінші тарап скрипттеріне деректеріңізге қол жеткізуге рұқсат беру
 webext-perms-description-webNavigation = Навигация кезіндегі браузер белсенділігіне қатынау
 
-## The userScripts permission includes an additional explanation that is
-## displayed prominently near the usual permission description.
+## Short form to be used in lists or in a string (`webext-perms-description-data-some`)
+## that formats some of the data collection permissions below using `Intl.ListFormat`.
+##
+## This is used when the data collection permissions are required.
 
+webext-perms-description-data-short-authenticationInfo = аутентификация ақпараты
+webext-perms-description-data-short-bookmarksInfo = бетбелгілер
+webext-perms-description-data-short-browsingActivity = шолу әрекеті
+webext-perms-description-data-short-financialAndPaymentInfo = қаржылық және төлем туралы ақпарат
+webext-perms-description-data-short-healthInfo = денсаулық туралы ақпарат
+webext-perms-description-data-short-locationInfo = орналасуы
+webext-perms-description-data-short-personalCommunications = жеке хабарламалар
+webext-perms-description-data-short-personallyIdentifyingInfo = жеке басын анықтайтын ақпарат
+webext-perms-description-data-short-searchTerms = ізделген кілт сөздер
+webext-perms-description-data-short-technicalAndInteraction = техникалық және өзара әрекеттесу деректері
+webext-perms-description-data-short-websiteActivity = веб-сайттардағы белсенділік
+webext-perms-description-data-short-websiteContent = веб-сайттар мазмұны
+
+## Long form to be used in `about:addons` when these data collection permissions are optional.
+
+webext-perms-description-data-long-authenticationInfo = Кеңейту әзірлеушісімен аутентификация ақпаратын бөлісу
+webext-perms-description-data-long-bookmarksInfo = Кеңейту әзірлеушісімен бетбелгілер ақпаратын бөлісу
+webext-perms-description-data-long-browsingActivity = Кеңейту әзірлеушісімен шолу әрекеттерін бөлісу
+webext-perms-description-data-long-financialAndPaymentInfo = Кеңейту әзірлеушісімен қаржылық пен төлемдер ақпаратын бөлісу
+webext-perms-description-data-long-healthInfo = Кеңейту әзірлеушісімен денсаулық ақпаратын бөлісу
+webext-perms-description-data-long-locationInfo = Кеңейту әзірлеушісімен орналасу ақпаратын бөлісу
+webext-perms-description-data-long-personalCommunications = Кеңейту әзірлеушісімен жеке хабарламалар алмасуын бөлісу
+webext-perms-description-data-long-personallyIdentifyingInfo = Кеңейту әзірлеушісімен жеке басын анықтайтын ақпаратын бөлісу
+webext-perms-description-data-long-searchTerms = Кеңейту әзірлеушісімен ізделген кілт сөздер ақпаратын бөлісу
+webext-perms-description-data-long-technicalAndInteraction = Кеңейту әзірлеушісімен техникалық және өзара әрекеттесу деректерін бөлісу
+webext-perms-description-data-long-websiteActivity = Кеңейту әзірлеушісімен веб-сайттар белсенділігін бөлісу
+webext-perms-description-data-long-websiteContent = Кеңейту әзірлеушісімен веб-сайттар мазмұнын бөлісу

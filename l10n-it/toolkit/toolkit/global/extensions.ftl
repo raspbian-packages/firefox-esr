@@ -12,10 +12,28 @@
 
 webext-perms-header = Installare { $extension }?
 webext-perms-header-with-perms = Aggiungere { $extension }? Questa estensione avrà il permesso di:
-webext-perms-header-unsigned = Aggiungere { $extension }? Questa estensione non è verificata. Un’estensione realizzata con intento doloso è in grado di sottrarre informazioni personali o compromettere l’intero computer. Installarla solo se si ritiene la fonte affidabile.
-webext-perms-header-unsigned-with-perms = Aggiungere { $extension }? Questa estensione non è verificata. Un’estensione realizzata con intento doloso è in grado di sottrarre informazioni personali o compromettere l’intero computer. Installarla solo se si ritiene la fonte affidabile. Questa estensione avrà il permesso di:
+webext-perms-header-unsigned = Aggiungere { $extension }? Questa estensione non è verificata. Un’estensione realizzata con intento doloso è in grado di sottrarre informazioni personali o compromettere l’intero computer. Installarla solo se si ritiene la fonte attendibile.
+webext-perms-header-unsigned-with-perms = Aggiungere { $extension }? Questa estensione non è verificata. Un’estensione realizzata con intento doloso è in grado di sottrarre informazioni personali o compromettere l’intero computer. Installarla solo se si ritiene la fonte attendibile. Questa estensione avrà il permesso di:
 webext-perms-sideload-header = { $extension } è stato installato
+webext-perms-optional-perms-header2 = Sono richiesti dei permessi aggiuntivi per { $extension }
 webext-perms-optional-perms-header = Sono richiesti dei permessi aggiuntivi per { $extension }.
+webext-perms-header2 = Aggiungi { $extension }
+webext-perms-list-intro-unsigned = Questa estensione non verificata potrebbe mettere a rischio la tua privacy o compromettere il tuo dispositivo. Installarla solo se si ritiene la fonte attendibile.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Permessi obbligatori:
+webext-perms-header-optional-settings = Permessi facoltativi:
+webext-perms-header-update-required-perms = Nuovi permessi obbligatori:
+webext-perms-header-optional-required-perms = Nuovi permessi:
+webext-perms-header-data-collection-perms = Raccolta dati obbligatoria:
+webext-perms-header-data-collection-is-none = Raccolta dati:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Nuova raccolta dati obbligatoria:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Nuova raccolta dati:
 
 ##
 
@@ -35,7 +53,10 @@ webext-perms-sideload-cancel =
     .accesskey = n
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
-webext-perms-update-text = { $extension } è stata aggiornata. È necessario accettare i nuovi permessi prima di installare la nuova versione. Selezionare “Annulla” per mantenere la versione in uso dell’estensione. Questa estensione avrà il permesso di:
+webext-perms-update-text2 = È disponibile un aggiornamento per { $extension }. Per poter installare la nuova versione è necessario garantire i nuovi permessi. Selezionando “Annulla” verrà mantenuta la versione in uso dell’estensione.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text = È disponibile un aggiornamento per { $extension }. Per poter installare la nuova versione è necessario garantire i nuovi permessi. Selezionando “Annulla” verrà mantenuta la versione in uso dell’estensione. Questa estensione avrà il permesso di:
 webext-perms-update-accept =
     .label = Aggiorna
     .accesskey = A
@@ -81,6 +102,29 @@ webext-perms-host-description-one-domain = Accedere ai dati per siti nei domini 
 #     (the list of domains will follow this string).
 webext-perms-host-description-multiple-domains = Accedere ai dati per siti in { $domainCount } domini
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = Lo sviluppatore dichiara che questa estensione non richiede la raccolta di dati.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = Lo sviluppatore dichiara che questa estensione raccoglie: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = Lo sviluppatore dichiara che l’estensione raccoglierà: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = Lo sviluppatore dichiara che l’estensione vuole raccogliere: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = { $extension } richiede nuove impostazioni per l’aggiornamento
+webext-perms-update-list-intro-with-data-collection = Seleziona Annulla per mantenere la versione e le impostazioni correnti, oppure aggiorna per approvare le modifiche e ottenere la nuova versione.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = Sono richieste impostazioni aggiuntive per { $extension }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = Sono richieste raccolte dati aggiuntive per { $extension }
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -108,9 +152,14 @@ webext-site-perms-description-gated-perms-midi =
 ##   $hostname (String): will be replaced by the DNS host name for which a webextension enables permissions.
 
 webext-site-perms-header-with-perms = Aggiungere { $extension }? Questa estensione consente a { $hostname } di utilizzare le seguenti funzionalità:
-webext-site-perms-header-unsigned-with-perms = Aggiungere { $extension }? Questa estensione non è verificata. Un’estensione realizzata con intento doloso è in grado di sottrarre informazioni personali o compromettere l’intero computer. Installarla solo se si ritiene la fonte affidabile. Questa estensione consente a { $hostname } di utilizzare le seguenti funzionalità:
+webext-site-perms-header-unsigned-with-perms = Aggiungere { $extension }? Questa estensione non è verificata. Un’estensione realizzata con intento doloso è in grado di sottrarre informazioni personali o compromettere l’intero computer. Installarla solo se si ritiene la fonte attendibile. Questa estensione consente a { $hostname } di utilizzare le seguenti funzionalità:
 
 ## These should remain in sync with permissions.NAME.label in sitePermissions.properties
 
 webext-site-perms-midi = Accedere a dispositivi MIDI
 webext-site-perms-midi-sysex = Accedere a dispositivi MIDI con supporto SysEx
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>La tonalità è stata rimossa.</b> { -brand-shorter-name } ha aggiornato la sua collezione di tonalità. Puoi trovare le ultime versioni sul sito dei componenti aggiuntivi.
+webext-colorway-theme-migration-notification-button = Ottieni tonalità aggiornate

@@ -8,12 +8,21 @@ export var SandboxUtils = {
   /**
    * Show a notification bar if user is running without unprivileged namespace
    *
-   * @param {NotificationBox} aNotificationBox
-   *        The target notification box where notification will be added
+   * @param {Window} aWindow
+   *        The window where the notification will be displayed.
    */
   maybeWarnAboutMissingUserNamespaces:
-    function SU_maybeWarnAboutMissingUserNamespaces(aNotificationBox) {
+    function SU_maybeWarnAboutMissingUserNamespaces(aWindow) {
       if (AppConstants.platform !== "linux") {
+        return;
+      }
+
+      // This would cover Flatpak, Snap or any "Packaged App" (e.g., Debian package)
+      // Showing the notification on Flatpak would not be correct because of
+      // existing Flatpak isolation (see Bug 1882881). And for Snap and
+      // Debian packages it would be irrelevant as well.
+      const isPackagedApp = Services.sysinfo.getPropertyAsBool("isPackagedApp");
+      if (isPackagedApp) {
         return;
       }
 
@@ -32,12 +41,13 @@ export var SandboxUtils = {
         return;
       }
 
-      const mozXulElement = aNotificationBox.stack.ownerGlobal.MozXULElement;
+      let box = aWindow.gNotificationBox;
+      const mozXulElement = box.stack.ownerGlobal.MozXULElement;
       mozXulElement.insertFTLIfNeeded("toolkit/updates/elevation.ftl");
 
       let buttons = [
         {
-          supportPage: "install-firefox-linux",
+          supportPage: "linux-security-warning",
           "l10n-id": "sandbox-unprivileged-namespaces-howtofix",
         },
         {
@@ -49,11 +59,11 @@ export var SandboxUtils = {
       ];
 
       // Now actually create the notification
-      aNotificationBox.appendNotification(
+      box.appendNotification(
         "sandbox-unprivileged-namespaces",
         {
           label: { "l10n-id": "sandbox-missing-unprivileged-namespaces" },
-          priority: aNotificationBox.PRIORITY_WARNING_HIGH,
+          priority: box.PRIORITY_WARNING_HIGH,
         },
         buttons
       );

@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = Pori Preifat { -brand-shortcut-name }
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,25 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } —Pori Preifat
     .data-content-title-default-with-profile = { $content-title } — { $profile-name }
     .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Pori Preifat
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — Pori Preifat
+       *[other] Pori Preifat { -brand-full-name }
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = Pori Preifat
+popups-infobar-dont-show-message2 =
+    .label = Peidiwch â dangos y neges hon pan fydd llamlenni neu ailgyfeiriadau trydydd parti yn cael eu rhwystro
+    .accesskey = P
+edit-popup-settings2 =
+    .label = Rheoli gosodiadau llamlenni ac ailgyfeirio trydydd parti…
+    .accesskey = R
 
 ##
 
@@ -135,6 +152,10 @@ urlbar-default-notification-anchor =
     .tooltiptext = Agor y panel negesu
 urlbar-geolocation-notification-anchor =
     .tooltiptext = Agor panel cais y lleoliad
+urlbar-localhost-notification-anchor =
+    .tooltiptext = Rheoli mynediad dyfais lleol ar gyfer y wefan hon
+urlbar-local-network-notification-anchor =
+    .tooltiptext = Rheoli rhannu eich mynediad rhwydwaith lleol gyda'r wefan hon
 urlbar-xr-notification-anchor =
     .tooltiptext = Agor panel caniatâd rhithrealaeth
 urlbar-storage-access-anchor =
@@ -181,6 +202,35 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = Derbyn cymorth
     .accesskey = D
+urlbar-result-menu-dismiss-suggestion =
+    .label = Cau'r awgrym hwn
+    .accesskey = a
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = Dysgu rhagor am { -firefox-suggest-brand-name }
+    .accesskey = r
+urlbar-result-menu-manage-firefox-suggest =
+    .label = Rheoli { -firefox-suggest-brand-name }
+    .accesskey = R
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = Rhoi gwybod am leoliad anghywir
+urlbar-result-menu-show-less-frequently =
+    .label = Dangos yn llai aml
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = Peidio â dangos awgrymiadau tywydd
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = Agor dewislen
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = Diolch am eich adborth!
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = Diolch am eich adborth. Fyddwch chi ddim yn gweld awgrymiadau tywydd bellach.
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -206,6 +256,10 @@ urlbar-search-mode-actions = Gweithredoedd
 
 urlbar-geolocation-blocked =
     .tooltiptext = Rydych wedi rhwystro'r manylion lleoliad ar gyfer y wefan hon.
+urlbar-localhost-blocked =
+    .tooltiptext = Rydych wedi rhwystro cysylltiadau dyfais leol ar gyfer y wefan hon.
+urlbar-local-network-blocked =
+    .tooltiptext = Rydych wedi rhwystro cysylltiadau rhwydwaith lleol ar gyfer y wefan hon.
 urlbar-xr-blocked =
     .tooltiptext = Rydych wedi rhwystro mynediad dyfais rhithrealaeth ar gyfer y wefan hon.
 urlbar-web-notifications-blocked =
@@ -218,6 +272,8 @@ urlbar-screen-blocked =
     .tooltiptext = Rydych wedi rhwystro'r wefan rhag rhannu eich sgrin.
 urlbar-persistent-storage-blocked =
     .tooltiptext = Rydych wedi rhwystro storio data parhaus ar gyfer y wefan hon.
+urlbar-popup-blocked2 =
+    .tooltiptext = Rydych wedi rhwystro llamlenni ac ailgyfeiriadau trydydd parti ar y wefan hon.
 urlbar-popup-blocked =
     .tooltiptext = Rydych wedi rhwystro llamlenni ar gyfer y wefan hon.
 urlbar-autoplay-media-blocked =
@@ -312,10 +368,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Gweld Ychwanegion
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = estyniadau, themâu, ategion, ychwanegion
 quickactions-cmd-addons2 = ychwanegion
 # Opens the bookmarks library window
 quickactions-bookmarks2 = Rheoli nodau tudalen
 quickactions-cmd-bookmarks = nodau tudalen
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = Clirio hanes diweddar
+quickactions-cmd-clearrecenthistory = clirio hanes diweddar, hanes
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Clirio Hanes
 quickactions-cmd-clearhistory = clirio hanes
@@ -324,9 +387,20 @@ quickactions-downloads2 = Gweld llwythi
 quickactions-cmd-downloads = llwythi i lawr
 # Opens about:addons page in the extensions section
 quickactions-extensions = Rheoli estyniadau
+quickactions-cmd-extensions2 = estyniadau, ategion, ychwanegion
 quickactions-cmd-extensions = estyniadau
+# Opens Firefox View
+quickactions-firefoxview = Agor { -firefoxview-brand-name }
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = agor { -firefoxview-brand-name }, { -firefoxview-brand-name }, agor golwg, gweld
+# Opens SUMO home page
+quickactions-help = Cymorth { -brand-product-name }
+quickactions-cmd-help = cymorth, cefnogaeth
 # Opens the devtools web inspector
 quickactions-inspector2 = Agor Offer Datblygwyr
+quickactions-cmd-inspector2 = arolygydd, devtools, offer datblygwr
 quickactions-cmd-inspector = arolygydd, devtools
 # Opens about:logins
 quickactions-logins2 = Rheoli cyfrineiriau
@@ -339,7 +413,7 @@ quickactions-print2 = Argraffu tudalen
 quickactions-cmd-print = argraffu
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Cadw tudalen fel PDF
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, cadw tudalen
 # Opens a new private browsing window
 quickactions-private2 = Agor ffenestr breifat
 quickactions-cmd-private = pori preifat
@@ -351,18 +425,26 @@ quickactions-restart = Ailgychwyn { -brand-short-name }
 quickactions-cmd-restart = ailgychwyn
 # Opens the screenshot tool
 quickactions-screenshot3 = Cymryd llun sgrin
+quickactions-cmd-screenshot2 = llun sgrin, cymryd llun sgrin
 quickactions-cmd-screenshot = llun sgrin
 # Opens about:preferences
 quickactions-settings2 = Rheoli gosodiadau
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = gosodiadau, dewisiadau, opsiynau, rheoli
 quickactions-cmd-settings = gosodiadau, dewisiadau, opsiynau
 # Opens about:addons page in the themes section
 quickactions-themes = Rheoli themâu
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = themâu, ychwanegion, ategion
 quickactions-cmd-themes = themâu
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = Diweddaru { -brand-short-name }
 quickactions-cmd-update = diweddaru
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = Darllen Cod Gwreiddiol y Dudalen
+quickactions-cmd-viewsource2 = gweld y ffynhonnell, ffynhonnell, ffynhonnell dudalen
 quickactions-cmd-viewsource = gweld ffynhonnell, ffynhonnell
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
@@ -576,6 +658,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = Chwilio neu gyfeiriad gwe
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = Rhowch gyfeiriad
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -655,6 +741,8 @@ urlbar-result-action-visit = Ymweld â
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = Newid i Tab · <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = Grŵp heb ei enwi
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Ymweld o'ch clipfwrdd
 # Directs a user to press the Tab key to perform a search with the specified
@@ -684,6 +772,143 @@ urlbar-result-action-copy-to-clipboard = Copïo
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = heb ei ddiffinio
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong> yn { $city }, { $region }
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature }°{ $unit }</strong> yn { $city }, { $region }, { $country }
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong> yn { $city }
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } · Wedi'i noddi
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = Cael data'r farchnad stoc yn syth i'ch bar chwilio
+# This string is shown as description when Market suggestion are disabled.
+urlbar-result-market-opt-in-description = Dangos diweddariadau'r farchnad a mwy gan ein partneriaid pan fyddwch yn rhannu data ymholiad chwilio gyda { -vendor-short-name }. <a data-l10n-name="learn-more-link">Dysgu rhagor</a>
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = Dangos awgrymiadau
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = Nid nawr
+urlbar-result-realtime-opt-in-dismiss = Cau
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = Peidio dangos yr awgrymiadau hyn
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = Peidio dangos awgrymiadau marchnad
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = Diolch am eich adborth. Fyddwch chi ddim yn gweld awgrymiadau'r farchnad bellach.
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = Diolch am eich adborth. Fyddwch chi ddim yn gweld yr awgrymiadau hyn bellach.
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown =
+    { $daysUntilStart ->
+        [zero] { $name } · Ymhen { $daysUntilStart } diwrnodau
+        [one] { $name } · Ymhen { $daysUntilStart } diwrnod
+        [two] { $name } · Ymhen { $daysUntilStart } ddiwrnod
+        [few] { $name } · Ymhen { $daysUntilStart } diwrnod
+        [many] { $name } · Ymhen { $daysUntilStart } niwrnod
+       *[other] { $name } · Ymhen { $daysUntilStart } diwrnod
+    }
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range =
+    { $daysUntilStart ->
+        [zero] { $name } · Yn dechrau ymhen { $daysUntilStart } diwrnodau
+        [one] { $name } · Yn dechrau ymhen { $daysUntilStart } diwrnod
+        [two] { $name } · Yn dechrau ymhen { $daysUntilStart } ddiwrnod
+        [few] { $name } · Yn dechrau ymhen { $daysUntilStart } diwrnod
+        [many] { $name } · Yn dechrau ymhen { $daysUntilStart } niwrnod
+       *[other] { $name } · Yn dechrau ymhen { $daysUntilStart } diwrnod
+    }
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing =
+    { $daysUntilEnd ->
+        [zero] { $name } · Yn dod i ben ymhen { $daysUntilEnd } diwrnodau
+        [one] { $name } · Yn dod i ben ymhen { $daysUntilEnd } diwrnod
+        [two] { $name } · Yn dod i ben ymhen { $daysUntilEnd } ddiwrnod
+        [few] { $name } · Yn dod i ben ymhen { $daysUntilEnd } diwrnod
+        [many] { $name } · Yn dod i ben ymhen { $daysUntilEnd } niwrnod
+       *[other] { $name } · Yn dod i ben ymhen { $daysUntilEnd } diwrnod
+    }
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · Heddiw
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · Yn gorffen heddiw
 
 ## Strings used for buttons in the urlbar
 
@@ -711,8 +936,15 @@ urlbar-searchmode-actions =
     .label = Gweithredoedd
 urlbar-searchmode-exit-button =
     .tooltiptext = Cau
+urlbar-searchmode-default =
+    .tooltiptext = Peiriant chwilio rhagosodedig
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Y tro hwn, chwilio gyda:
-urlbar-searchmode-popup-search-settings = Gosodiadau chwilio
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Gosodiadau chwilio
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = Newydd
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -763,6 +995,9 @@ urlbar-group-recent-searches =
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
     .label = Yn tueddu ar { $engine }
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = Noddwyd
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = Peidio â dangos chwiliadau tuedd
@@ -959,6 +1194,9 @@ panel-save-update-password = Cyfrinair
 # "More" item in macOS share menu
 menu-share-more =
     .label = Rhagor…
+menu-share-copy-link =
+    .label = Copïo'r Ddolen
+    .accesskey = D
 ui-tour-info-panel-close =
     .tooltiptext = Cau
 
@@ -971,6 +1209,9 @@ popups-infobar-allow =
 popups-infobar-block =
     .label = Rhwystro llamlenni ar gyfer { $uriHost }
     .accesskey = l
+popups-infobar-allow2 =
+    .label = Caniatáu llamlenni ac ailgyfeirio trydydd parti ar { $uriHost }
+    .accesskey = C
 
 ##
 
@@ -1006,6 +1247,8 @@ navbar-accessible =
     .aria-label = Llywio
 navbar-downloads =
     .label = Llwythi i lawr
+navbar-overflow-2 =
+    .tooltiptext = Rhagor o offer
 navbar-overflow =
     .tooltiptext = Rhagor o offer…
 # Variables:
@@ -1031,6 +1274,10 @@ tabs-toolbar-new-tab =
 tabs-toolbar-list-all-tabs =
     .label = Rhestru pob tab
     .tooltiptext = Rhestru pob tab
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = Gollwng tab yma i binio
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1129,6 +1376,7 @@ firefox-relay-offer-why-to-use-relay = Mae ein arallenwau diogel, hawdd eu defny
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = Bydd pob e-bost sy'n cael eu hanfon at eich arallenwau e-bost yn cael eu hanfon ymlaen at <strong>{ $useremail }</strong> (oni bai eich bod yn penderfynu eu rhwystro).
 firefox-relay-offer-legal-notice = Drwy glicio “Defnyddio arallenw e-bost”, rydych yn cytuno i'r <label data-l10n-name="tos-url">Amodau Gwasanaeth</label> a <label data-l10n-name="privacy-url">Hysbysiad Preifatrwydd </label>.
+firefox-relay-offer-legal-notice-1 = Drwy gofrestru a chreu e-bost enwarall, rydych yn cytuno i'r <label data-l10n-name="tos-url">Amodau Gwasanaeth</label> a'r <label data-l10n-name="privacy-url">Hysbysiad Preifatrwydd</label>.
 
 ## Add-on Pop-up Notifications
 
@@ -1136,10 +1384,15 @@ popup-notification-addon-install-unsigned =
     .value = (Heb eu gwirio)
 popup-notification-xpinstall-prompt-learn-more = Rhagor am osod ategion yn ddiogel
 popup-notification-xpinstall-prompt-block-url = Gweld manylion
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = Rhedeg mewn Ffenestri Preifat
-    .accesskey = P
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = Caniatáu i estyniad redeg mewn ffenestri preifat
+    .accesskey = e
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = Rhannwch ddata technegol a rhyngweithio â datblygwr yr estyniad
+    .accesskey = R
 
 ## Pop-up warning
 
@@ -1154,6 +1407,19 @@ popup-warning-message =
         [many] Rhwystrodd { -brand-short-name } y wefan rhag agor { $popupCount } llamlen.
        *[other] Rhwystrodd { -brand-short-name } y wefan rhag agor { $popupCount } llamlen.
     }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] Rhwystrodd { -brand-short-name } y wefan hon rhag agor { $popupCount } llamlenni ac ailgyfeirio.
+        [1] Rhwystrodd { -brand-short-name } y wefan hon rhag agor { $popupCount } llamlen ac ailgyfeirio.
+        [zero] Rhwystrodd { -brand-short-name } y wefan hon rhag agor { $popupCount } llamlenni ac ailgyfeirio.
+        [one] Rhwystrodd { -brand-short-name } y wefan hon rhag agor { $popupCount } llamlen ac ailgyfeirio.
+        [two] Rhwystrodd { -brand-short-name } y wefan hon rhag agor { $popupCount } lamlen ac ailgyfeirio.
+        [few] Rhwystrodd { -brand-short-name } y wefan hon rhag agor { $popupCount } llamlen ac ailgyfeirio.
+        [many] Rhwystrodd { -brand-short-name } y wefan hon rhag agor { $popupCount } llamlen ac ailgyfeirio.
+       *[other] Rhwystrodd { -brand-short-name } y wefan hon rhag agor { $popupCount } llamlen ac ailgyfeirio.
+    }
 # The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
 # Variables:
 #   $popupCount (Number): the number of pop-ups blocked.
@@ -1165,6 +1431,17 @@ popup-warning-exceeded-message =
         [few] Rhwystrodd { -brand-short-name } y wefan hon rhag agor mwy na { $popupCount } llamlen.
         [many] Rhwystrodd { -brand-short-name } y wefan hon rhag agor mwy na { $popupCount } llamlen.
        *[other] Rhwystrodd { -brand-short-name } y wefan hon rhag agor mwy na { $popupCount } llamlen.
+    }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-with-redirect-message =
+    { $popupCount ->
+        [zero] Rhwystrodd { -brand-short-name } y wefan hon rhag agor { $popupCount } llamlenni ac ailgyfeirio.
+        [one] Rhwystrodd { -brand-short-name } y wefan hon rhag agor mwy na { $popupCount } llamlen ac ailgyfeirio.
+        [two] Rhwystrodd { -brand-short-name } y wefan hon rhag agor mwy na { $popupCount } lamlen ac ailgyfeirio.
+        [few] Rhwystrodd { -brand-short-name } y wefan hon rhag agor mwy na { $popupCount } llamlen ac ailgyfeirio.
+        [many] Rhwystrodd { -brand-short-name } y wefan hon rhag agor mwy na { $popupCount } llamlen ac ailgyfeirio.
+       *[other] Rhwystrodd { -brand-short-name } y wefan hon rhag agor mwy na { $popupCount } llamlen ac ailgyfeirio.
     }
 popup-warning-button =
     .label =
@@ -1181,6 +1458,10 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = Dangos '{ $popupURI }'
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = Dangos “ { $redirectURI } ”
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
@@ -1202,3 +1483,208 @@ file-picker-crashed-save-nowhere = Mae deialog ffeil Windows wedi chwalu. Nid oe
 file-picker-crashed-show-in-folder =
     .label = Dangos mewn Ffolder
     .accessKey = F
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = Gorffen gosod
+onboarding-aw-finish-setup-button =
+    .label = Gorffen gosod
+    .tooltiptext = Gorffen gosod { -brand-short-name }
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = Mae Diogelwch Uwch Rhag Tracio ymlaen
+trustpanel-etp-label-disabled = Mae Diogelwch Uwch Rhag Tracio i ffwrdd
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = Mae Diogelwch Uwch Rhag Tracio: Ymlaen ar gyfer { $host }
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = Mae Diogelwch Uwch Rhag Tracio: I ffwrdd ar gyfer { $host }
+trustpanel-etp-description-enabled = Os yw rhywbeth yn edrych fel ei fod wedi torri ar y wefan hon, ceisiwch ddiffodd yr amddiffyniadau.
+trustpanel-etp-description-disabled = Mae { -brand-product-name } yn meddwl y dylai cwmnïau eich dilyn llai. Rydyn ni'n rhwystro cymaint o dracwyr ag y gallwn pan fyddwch chi'n troi amddiffyniadau ymlaen.
+trustpanel-connection-label-secure = Cysylltiad yn ddiogel
+trustpanel-connection-label-insecure = Nid yw’r cysylltiad yn ddiogel
+trustpanel-header-enabled = Mae { -brand-product-name } yn diogelu
+trustpanel-description-enabled2 = Rydych chi wedi'ch diogelu. Os byddwn yn sylwi ar rywbeth, byddwn yn rhoi gwybod ichi.
+trustpanel-header-enabled-insecure = Byddwch yn ofalus ar y wefan hon
+trustpanel-description-enabled-insecure = Sylwodd { -brand-product-name } ar rywbeth amheus.
+trustpanel-header-disabled = Rydych wedi diffodd eich diogelu
+trustpanel-description-disabled = Nid yw { -brand-product-name } ar waith. Rydym yn awgrymu troi eich diogelwch yn ôl ymlaen.
+trustpanel-clear-cookies-button = Clirio cwcis a data gwefan
+trustpanel-privacy-link = Gosodiadau Preifatrwydd
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = Clirio cwcis a data gwefan ar gyfer { $host }
+trustpanel-clear-cookies-description = Gall dileu cwcis a data gwefan eich allgofnodi o wefannau a gwagio cartiau siopa.
+trustpanel-clear-cookies-subview-button-clear = Clirio
+trustpanel-clear-cookies-subview-button-cancel = Diddymu
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = Diogelu cysylltiadau ar gyfer { $host }
+trustpanel-siteinformation-morelink = Rhagor o fanylion y wefan
+trustpanel-blocker-see-all = Gweld y Cyfan
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = Diogelwch tracio ar gyfer  { $host }
+
+## The urlbar trust icon & panel
+
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = Dim yn Ddiogel
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header =
+    { $count ->
+        [zero] Mae <span>{ $count }</span> traciwr wedi'u rhwystro ar y wefan hon
+        [one] Mae <span>{ $count }</span> traciwr wedi'i rwystro ar y wefan hon
+        [two] Mae <span>{ $count }</span> draciwr wedi'u rwystro ar y wefan hon
+        [few] Mae <span>{ $count }</span> traciwr wedi'u rwystro ar y wefan hon
+        [many] Mae <span>{ $count }</span> traciwr wedi'u rwystro ar y wefan hon
+       *[other] Mae <span>{ $count }</span> traciwr wedi'u rwystro ar y wefan hon
+    }
+trustpanel-blocker-description = Mae { -brand-product-name } yn meddwl y dylai cwmnïau eich dilyn llai. Felly rydym yn rhwystro cymaint ag y gallwn.
+trustpanel-blocked-header = Mae { -brand-product-name } wedi rhwystro'r pethau hyn ar eich rhan:
+trustpanel-tracking-header = Mae { -brand-product-name } wedi caniatáu'r pethau hyn fel nad yw gwefannau'n torri:
+trustpanel-tracking-description = Heb dracwyr, efallai na fydd rhai botymau, ffurflenni a meysydd mewngofnodi yn gweithio.
+trustpanel-insecure-section-header = Nid yw eich cysylltiad yn ddiogel
+trustpanel-insecure-description = Nid yw'r data rydych yn ei anfon i'r wefan hon wedi'i amgryptio. Mae modd ei weld, ei ddwyn, neu ei newid.
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [zero] { $count } Cwcis tracio traws-gwefan
+        [one] { $count } Cwci tracio traws-gwefan
+        [two] { $count } Gwci tracio traws-gwefan
+        [few] { $count } Cwci tracio traws-gwefan
+        [many] { $count } Cwci tracio traws-gwefan
+       *[other] { $count } Cwci tracio traws-gwefan
+    }
+trustpanel-list-label-tracking-content = Cynnwys tracio
+trustpanel-list-label-fingerprinter =
+    { $count ->
+        [zero] { $count } Bysbrintwyr
+        [one] { $count } Bysbrintiwr
+        [two] { $count } Bysbrintiwr
+        [few] { $count } Bysbrintiwr
+        [many] { $count } Bysbrintiwr
+       *[other] { $count } Bysbrintiwr
+    }
+trustpanel-list-label-social-tracking =
+    { $count ->
+        [zero] { $count } Tracwyr cyfryngau cymdeithasol
+        [one] { $count } Traciwr cyfryngau cymdeithasol
+        [two] { $count } Traciwr cyfryngau cymdeithasol
+        [few] { $count } Traciwr cyfryngau cymdeithasol
+        [many] { $count } Traciwr cyfryngau cymdeithasol
+       *[other] { $count } Traciwr cyfryngau cymdeithasol
+    }
+trustpanel-list-label-cryptominer =
+    { $count ->
+        [zero] { $count } Cryptogloddwyr
+        [one] { $count } Cryptogloddiwr
+        [two] { $count } Cryptogloddiwr
+        [few] { $count } Cryptogloddiwr
+        [many] { $count } Cryptogloddiwr
+       *[other] { $count } Cryptogloddiwr
+    }
+trustpanel-social-tracking-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi rhwystro { $count } tracwyr cyfryngau cymdeithasol
+        [one] Mae { -brand-product-name } wedi rhwystro { $count } traciwr cyfryngau cymdeithasol
+        [two] Mae { -brand-product-name } wedi rhwystro { $count } draciwr cyfryngau cymdeithasol
+        [few] Mae { -brand-product-name } wedi rhwystro { $count } traciwr cyfryngau cymdeithasol
+        [many] Mae { -brand-product-name } wedi rhwystro { $count } thraciwr cyfryngau cymdeithasol
+       *[other] Mae { -brand-product-name } wedi rhwystro { $count } traciwr cyfryngau cymdeithasol
+    }
+trustpanel-social-tracking-not-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi caniatáu { $count } traciwyr cyfryngau cymdeithasol
+        [one] Mae { -brand-product-name } wedi caniatáu { $count } traciwr cyfryngau cymdeithasol
+        [two] Mae { -brand-product-name } wedi caniatáu { $count } draciwr cyfryngau cymdeithasol
+        [few] Mae { -brand-product-name } wedi caniatáu { $count } traciwr cyfryngau cymdeithasol
+        [many] Mae { -brand-product-name } wedi caniatáu { $count } thraciwr cyfryngau cymdeithasol
+       *[other] Mae { -brand-product-name } wedi caniatáu { $count } traciwr cyfryngau cymdeithasol
+    }
+trustpanel-tracking-cookies-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi rhwystro { $count } cwcis tracio traws-gwefan
+        [one] Mae { -brand-product-name } wedi rhwystro { $count } cwci tracio traws-gwefan
+        [two] Mae { -brand-product-name } wedi rhwystro { $count } gwci tracio traws-gwefan
+        [few] Mae { -brand-product-name } wedi rhwystro { $count } chwci tracio traws-gwefan
+        [many] Mae { -brand-product-name } wedi rhwystro { $count } chwci tracio traws-gwefan
+       *[other] Mae { -brand-product-name } wedi rhwystro { $count } cwci tracio traws-gwefan
+    }
+trustpanel-tracking-cookies-not-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi caniatáu { $count } cwcis tracio traws-gwefan
+        [one] Mae { -brand-product-name } wedi caniatáu { $count } cwci tracio traws-gwefan
+        [two] Mae { -brand-product-name } wedi caniatáu { $count } gwci tracio traws-gwefan
+        [few] Mae { -brand-product-name } wedi caniatáu { $count } chwci tracio traws-gwefan
+        [many] Mae { -brand-product-name } wedi caniatáu { $count } chwci tracio traws-gwefan
+       *[other] Mae { -brand-product-name } wedi caniatáu { $count } cwci tracio traws-gwefan
+    }
+trustpanel-tracking-content-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi rhwystro { $count } tracwyr
+        [one] Mae { -brand-product-name } wedi rhwystro { $count } traciwr
+        [two] Mae { -brand-product-name } wedi rhwystro { $count } draciwr
+        [few] Mae { -brand-product-name } wedi rhwystro { $count } traciwr
+        [many] Mae { -brand-product-name } wedi rhwystro { $count } thraciwr
+       *[other] Mae { -brand-product-name } wedi rhwystro { $count } traciwr
+    }
+trustpanel-tracking-content-not-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi caniatáu { $count } tracwyr
+        [one] Mae { -brand-product-name } wedi caniatáu { $count } traciwr
+        [two] Mae { -brand-product-name } wedi caniatáu { $count } draciwr
+        [few] Mae { -brand-product-name } wedi caniatáu { $count } traciwr
+        [many] Mae { -brand-product-name } wedi caniatáu { $count } thraciwr
+       *[other] Mae { -brand-product-name } wedi caniatáu { $count } traciwr
+    }
+trustpanel-tracking-content-tab-list-header = Mae'r gwefannau hyn yn ceisio'ch tracio chi:
+trustpanel-fingerprinter-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi rhwystro { $count } bysbrintwyr
+        [one] Mae { -brand-product-name } wedi rhwystro { $count } bysbrintiwr
+        [two] Mae { -brand-product-name } wedi rhwystro { $count } bysbrintiwr
+        [few] Mae { -brand-product-name } wedi rhwystro { $count } bysbrintiwr
+        [many] Mae { -brand-product-name } wedi rhwystro { $count } bysbrintiwr
+       *[other] Mae { -brand-product-name } wedi rhwystro { $count } bysbrintiwr
+    }
+trustpanel-fingerprinter-not-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi caniatáu { $count } bysbrintwyr
+        [one] Mae { -brand-product-name } wedi caniatáu { $count } bysbrintiwr
+        [two] Mae { -brand-product-name } wedi caniatáu { $count } bysbrintiwr
+        [few] Mae { -brand-product-name } wedi caniatáu { $count } bysbrintiwr
+        [many] Mae { -brand-product-name } wedi caniatáu { $count } bysbrintiwr
+       *[other] Mae { -brand-product-name } wedi caniatáu { $count } bysbrintiwrMae { -brand-product-name } wedi caniatáu { $count } bysbrintiwr
+    }
+trustpanel-fingerprinter-list-header = Mae'r gwefannau hyn yn ceisio'ch bysbrintio chi:
+trustpanel-cryptominer-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi rhwystro { $count } cryptogloddwyr
+        [one] Mae { -brand-product-name } wedi rhwystro { $count } cryptogloddwr
+        [two] Mae { -brand-product-name } wedi rhwystro { $count } gryptogloddwr
+        [few] Mae { -brand-product-name } wedi rhwystro { $count } cryptogloddwr
+        [many] Mae { -brand-product-name } wedi rhwystro { $count } chryptogloddwr
+       *[other] Mae { -brand-product-name } wedi rhwystro { $count } cryptogloddwr
+    }
+trustpanel-cryptominer-not-blocking-tab-header =
+    { $count ->
+        [zero] Mae { -brand-product-name } wedi caniatáu { $count } cryptogloddwyr
+        [one] Mae { -brand-product-name } wedi caniatáu { $count } cryptogloddwr
+        [two] Mae { -brand-product-name } wedi caniatáu { $count } gryptogloddwr
+        [few] Mae { -brand-product-name } wedi caniatáu { $count } cryptogloddwr
+        [many] Mae { -brand-product-name } wedi caniatáu { $count } chryptogloddwr
+       *[other] Mae { -brand-product-name } wedi caniatáu { $count } cryptogloddwr
+    }
+trustpanel-cryptominer-tab-list-header = Mae'r gwefannau hyn yn ceisio cryptogloddio:

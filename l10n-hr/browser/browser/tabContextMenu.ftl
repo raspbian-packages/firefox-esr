@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Nova kartica
     .accesskey = t
@@ -46,16 +50,16 @@ reload-tabs =
     .label = Ponovo učitaj kartice
     .accesskey = r
 pin-tab =
-    .label = Zakači karticu
+    .label = Prikvači karticu
     .accesskey = k
 unpin-tab =
-    .label = Otkači karticu
+    .label = Otkvači karticu
     .accesskey = O
 pin-selected-tabs =
-    .label = Zakači kartice
+    .label = Prikvači kartice
     .accesskey = a
 unpin-selected-tabs =
-    .label = Otkači kartice
+    .label = Otkvači kartice
     .accesskey = t
 bookmark-selected-tabs =
     .label = Zabilježi kartice…
@@ -133,3 +137,12 @@ tab-context-send-tabs-to-device =
            *[other] Pošalji { $tabCount } kartica na uređaj
         }
     .accesskey = o
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] Isključi { $tabCount } karticu
+            [one] Isključi { $tabCount } karticu
+            [few] Isključi { $tabCount } kartice
+           *[other] Isključi { $tabCount } kartica
+        }
+    .accesskey = I

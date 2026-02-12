@@ -4,7 +4,7 @@
 
 
 ## Error messages for failed HTTP web requests.
-## https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+## https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
@@ -20,9 +20,12 @@ firefox-relay-get-unlimited-masks =
     .accesskey = M
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
 firefox-relay-opt-in-title-1 = 保护您的邮箱地址：
+firefox-relay-opt-in-title-2 = 免费获取马甲邮箱
 # This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
 # ends with a colon. You might need to adapt the capitalization of this string.
 firefox-relay-opt-in-subtitle-1 = 使用 { -relay-brand-name } 马甲邮箱
+firefox-relay-use-mask-title-1 = 使用马甲邮箱
+firefox-relay-opt-in-subtitle-2 = 保护收件箱免受垃圾邮件侵扰
 firefox-relay-use-mask-title = 使用 { -relay-brand-name } 马甲邮箱
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-a
 firefox-relay-opt-in-title-a = 使用免费马甲邮箱，免受垃圾邮件侵扰
@@ -72,6 +75,8 @@ firefox-relay-and-fxa-opt-in-confirmation-enable-button-basic-info =
 
 firefox-relay-and-fxa-popup-notification-header-with-domain = 获取免费马甲邮箱
 firefox-relay-and-fxa-popup-notification-first-sentence-with-domain = 使用免费<label data-l10n-name="firefox-relay-learn-more-url">马甲邮箱</label>，隐藏真实邮箱地址，保护收件箱免受垃圾邮件侵扰。<label data-l10n-name="firefox-fxa-and-relay-offer-domain">此网站</label>无法得知您的真实邮箱地址，而您仍能收到其发来的邮件。
+firefox-relay-and-fxa-popup-notification-first-sentence = 使用免费的 <label data-l10n-name="firefox-relay-learn-more-url">{ -relay-brand-name } 马甲邮箱</label>，隐藏真实邮箱地址，保护收件箱免受垃圾邮件侵扰。<label data-l10n-name="firefox-fxa-and-relay-offer-domain">此网站</label>无法得知您的真实邮箱地址，而您仍能收到其发来的邮件。
+firefox-relay-offer-why-to-use-relay-1 = 使用免费的 <label data-l10n-name="firefox-relay-learn-more-url">{ -relay-brand-name } 马甲邮箱</label>，隐藏真实邮箱地址，保护收件箱免受垃圾邮件侵扰。<label data-l10n-name="firefox-fxa-and-relay-offer-domain">此网站</label>无法得知您的真实邮箱地址，而您仍能收到其发来的邮件。
 firefox-relay-and-fxa-popup-notification-second-sentence-with-domain = 请先注册或登录账户，以使用马甲邮箱
 firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain =
     .label = 注册

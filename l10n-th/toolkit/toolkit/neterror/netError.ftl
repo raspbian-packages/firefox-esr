@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = หน้าที่ถูกปิด�
 neterror-captive-portal-page-title = เข้าสู่ระบบเครือข่าย
 neterror-dns-not-found-title = ไม่พบเซิร์ฟเวอร์
 neterror-malformed-uri-page-title = URL ไม่ถูกต้อง
+general-body-title = โปรดระวัง มีบางอย่างผิดปกติ
+problem-with-this-site-title = ดูเหมือนว่าไซต์นี้จะมีปัญหา
 
 ## Error page actions
 
@@ -43,6 +45,7 @@ neterror-load-error-connection = หากคุณไม่สามารถ�
 neterror-load-error-firewall = หากคอมพิวเตอร์หรือเครือข่ายของคุณถูกปกป้องด้วยไฟร์วอลล์หรือพร็อกซี ตรวจสอบให้แน่ใจว่า { -brand-short-name } ได้รับอนุญาตให้เข้าถึงเว็บ
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = ถ้าคุณกำลังพยายามโหลดหน้าเครือข่ายเฉพาะที่ โปรดตรวจสอบว่า { -brand-short-name } ได้รับสิทธิ์อนุญาตการเข้าถึงเครือข่ายในพื้นที่ในการตั้งค่า “ความเป็นส่วนตัวและความปลอดภัย” ใน macOS
+neterror-http-error-page = ตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ถูกต้อง
 neterror-captive-portal = คุณต้องเข้าสู่ระบบเครือข่ายนี้ก่อนที่คุณจะสามารถเข้าถึงอินเทอร์เน็ต
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -51,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>หากคุณป้อนท�
 neterror-dns-not-found-hint-try-again = ลองอีกครั้งในภายหลัง
 neterror-dns-not-found-hint-check-network = ตรวจสอบการเชื่อมต่อเครือข่ายของคุณ
 neterror-dns-not-found-hint-firewall = ตรวจสอบว่า { -brand-short-name } ได้รับอนุญาตให้เข้าถึงเว็บ (คุณอาจเชื่อมต่ออยู่แต่ไม่ผ่านไฟร์วอลล์)
+neterror-dns-not-found-offline-hint-header = <strong>คุณสามารถทำอะไรได้บ้าง?</strong>
+neterror-dns-not-found-offline-hint-different-device = ลองเชื่อมต่อบนอุปกรณ์อื่น
+neterror-dns-not-found-offline-hint-modem = ตรวจสอบโมเด็มหรือเราเตอร์ของคุณ
+neterror-dns-not-found-offline-hint-reconnect = ตัดการเชื่อมต่อแล้วเชื่อมต่อกับ Wi-Fi อีกครั้ง
 
 ## TRR-only specific messages
 ## Variables:
@@ -74,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = เกิดปัญหาที�
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } ไม่สามารถปกป้องคำขอของคุณสำหรับที่อยู่ของไซต์นี้ผ่านตัวแก้ไข DNS ที่เชื่อถือได้ของเราได้ นี่คือเหตุผล:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } ไม่สามารถปกป้องคำขอของคุณสำหรับที่อยู่ของไซต์นี้ผ่านผู้ให้บริการ DNS ที่ปลอดภัยของเราได้ ด้วยเหตุผลต่อไปนี้:
 neterror-dns-not-found-native-fallback-heuristic = DNS over HTTPS ถูกปิดใช้งานบนเครือข่ายของคุณ
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } ไม่สามารถเชื่อมต่อไปยัง { $trrDomain } ได้
 
@@ -98,6 +104,9 @@ neterror-proxy-connect-failure-settings = ตรวจสอบให้แน�
 neterror-proxy-connect-failure-contact-admin = ติดต่อผู้ดูแลเครือข่ายของคุณเพื่อให้แน่ใจว่าเซิร์ฟเวอร์พร็อกซีกำลังทำงานอยู่
 neterror-content-encoding-error = โปรดติดต่อเจ้าของเว็บไซต์เพื่อแจ้งพวกเขาให้ทราบถึงปัญหานี้
 neterror-unsafe-content-type = โปรดติดต่อเจ้าของเว็บไซต์เพื่อแจ้งพวกเขาให้ทราบถึงปัญหานี้
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } ไม่เชื่อถือ { $hostname } เนื่องจากการเชื่อมต่อไม่ปลอดภัย โปรดลองเปลี่ยน URL เป็น HTTPS
 neterror-nss-failure-not-verified = ไม่สามารถแสดงหน้าที่คุณกำลังพยายามจะดูเนื่องจากไม่สามารถยืนยันความถูกต้องของข้อมูลที่ได้รับ
 neterror-nss-failure-contact-website = โปรดติดต่อเจ้าของเว็บไซต์เพื่อแจ้งพวกเขาให้ทราบถึงปัญหานี้
 # Variables:
@@ -151,6 +160,9 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = ถ้าคุณไม่
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> มีนโยบายการรักษาความปลอดภัยที่เรียกว่า HTTP Strict Transport Security (HSTS) ซึ่งหมายความว่า { -brand-short-name } สามารถทำการเชื่อมต่อได้อย่างปลอดภัยเท่านั้น คุณไม่สามารถเพิ่มข้อยกเว้นเพื่อเยี่ยมชมไซต์นี้ได้
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = น่าจะไม่ต้องทำอะไร เนื่องจากน่าจะเป็นเพราะมีปัญหากับตัวไซต์มากกว่า
+certerror-blocked-by-corp-headers-description = บางครั้งเว็บไซต์จะตั้งค่าการป้องกันการโต้ตอบที่ไม่พึงประสงค์กับไซต์อื่นๆ ให้กับตนเองและบุคคลอื่นเช่นคุณ
+certerror-coop-learn-more = เรียนรู้เพิ่มเติมเกี่ยวกับ Cross Origin Opener Policies (COOP)
+certerror-coep-learn-more = เรียนรู้เพิ่มเติมเกี่ยวกับ Cross Origin Embedder Policies (COEP)
 # Variables:
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").

@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = ダウンロード
 appmenuitem-passwords =
     .label = パスワード
+appmenuitem-extensions-and-themes =
+    .label = 拡張機能とテーマ
+appmenuitem-extensions =
+    .label = 拡張機能
 appmenuitem-addons-and-themes =
     .label = アドオンとテーマ
 appmenuitem-print =
@@ -162,6 +166,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = プロファイラーパネルを開く
+    .tooltiptext = プロファイラーパネルを開きます
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -188,6 +195,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = { -brand-shorter-name } の音声と動画のバグを調査するための推奨プリセットです。
 profiler-popup-presets-media-label =
     .label = メディア
+profiler-popup-presets-ml-description = { -brand-shorter-name } の機械学習のバグを調査するための推奨プリセットです。
+profiler-popup-presets-ml-label =
+    .label = 機械学習
 profiler-popup-presets-networking-description = { -brand-shorter-name } のネットワークバグを調査するための推奨プリセットです。
 profiler-popup-presets-networking-label =
     .label = ネットワーク
@@ -280,11 +290,14 @@ appmenuitem-services-relay-description = メールマスクダッシュボード
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = ユーザーのオンラインプライバシーを保護します
 appmenu-services-header = マイサービス
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Mozilla が提供する他の保護ツールをお試しください:
 appmenu-other-protection-header = { -vendor-short-name } が提供する他の保護ツールをお試しください:
 
 ## Profiles panel
 
-appmenu-profiles = プロファイル
 appmenu-other-profiles = 他のプロファイル
 appmenu-manage-profiles =
     .label = プロファイルを管理
@@ -292,3 +305,5 @@ appmenu-create-profile =
     .label = 新しいプロファイル
 appmenu-edit-profile =
     .aria-label = プロファイルを編集
+appmenu-profiles-2 =
+    .label = プロファイル

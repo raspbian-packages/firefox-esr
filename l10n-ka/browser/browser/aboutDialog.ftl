@@ -43,14 +43,16 @@ update-internal-error2 = ვერ მოწმდება განახლ�
 
 # Variables:
 #   $channel (String): description of the update channel (e.g. "release", "beta", "nightly" etc.)
-aboutdialog-channel-description = თქვენ ამჟამად იყენებთ განახლების <label data-l10n-name="current-channel">{ $channel }</label>-არხს.
+aboutdialog-channel-description = ამჟამად თქვენი განახლების არხია <label data-l10n-name="current-channel">{ $channel }</label>.
 warningDesc-version = { -brand-short-name } საცდელია და შესაძლოა, არამდგრადი იყოს.
 aboutdialog-help-user = { -brand-product-name } – დახმარება
 aboutdialog-submit-feedback = გამოხმაურების გაგზავნა
 community-exp = <label data-l10n-name="community-exp-mozillaLink">{ -vendor-short-name }</label> არის <label data-l10n-name="community-exp-creditsLink">საერთაშორისო ერთობა</label>, რომელიც მუშაობს იმისთვის, რომ ინტერნეტი დარჩეს გახსნილი, საჯარო და საყოველთაოდ ხელმისაწვდომი.
-community-2 = { -brand-short-name }, შექმნილი <label data-l10n-name="community-mozillaLink">{ -vendor-short-name }</label>-ს მიერ, <label data-l10n-name="community-creditsLink">საერთაშორისო ერთობასთან</label> თანამშრომლობით, არის იმ ძალისხმევის ნაწილი, რომელიც მიმართულია ინტერნეტის გახსნილობის, საჯაროობისა და საყოველთაო ხელმისაწვდომის შესანარჩუნებლად.
-helpus = გსურთ დახმარება? <label data-l10n-name="helpus-donateLink">გააკეთეთ შემოწირულება</label> ან <label data-l10n-name="helpus-getInvolvedLink">შემოგვიერთდით!</label>
+community-2 = { -brand-short-name }, რომელსაც ქმნის <label data-l10n-name="community-mozillaLink">{ -vendor-short-name }</label> <label data-l10n-name="community-creditsLink">საერთაშორისო ერთობასთან</label> თანამშრომლობით, იმ ძალისხმევის ნაწილია, რომელიც მიმართულია ინტერნეტის გახსნილობის, საჯაროობისა და საყოველთაო ხელმისაწვდომის შესანარჩუნებლად.
+helpus = გსურთ დახმარება? <label data-l10n-name="helpus-donateLink">გაიღეთ შემოწირულება</label> ან <label data-l10n-name="helpus-getInvolvedLink">შემოგვიერთდით!</label>
 bottomLinks-license = ლიცენზირების შესახებ
+bottom-links-terms = გამოყენების პირობები
+bottom-links-privacy = პირადულობის განაცხადი
 bottomLinks-rights = მომხმარებლის უფლებები
 bottomLinks-privacy = პირადი მონაცემების დაცვის დებულება
 # Example of resulting string: 66.0.1 (64-bit)

@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Ireki berriro itxitako fitxak
         }
     .accesskey = k
+toolbar-context-turn-on-vertical-tabs =
+    .label = Aktibatu fitxa bertikalak
+toolbar-context-turn-off-vertical-tabs =
+    .label = Desaktibatu fitxa bertikalak
+toolbar-context-customize-sidebar =
+    .label = Pertsonalizatu alboko barra
 toolbar-context-menu-manage-extension =
     .label = Kudeatu hedapena
     .accesskey = h
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Erakutsi panela deskarga hastean
     .accesskey = s
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Erakutsi beti tresna-barran
+    .accesskey = E
 toolbar-context-menu-remove-from-toolbar =
     .label = Kendu tresna-barratik
     .accesskey = K

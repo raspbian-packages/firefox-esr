@@ -46,10 +46,3 @@ corruptedContentError-title = ವಿಷಯ ಹಾಳಾದ ದೋಷ
 sslv3Used-title = ಸುರಕ್ಷಿತವಾಗಿ ಸಂಪರ್ಕ ಸಾಧಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ
 inadequateSecurityError-title = ನಿಮ್ಮ ಸಂಪರ್ಕವು ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ‍
 blockedByPolicy-title = ನಿರ್ಬಂಧಿಸಿದ ಪುಟ
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

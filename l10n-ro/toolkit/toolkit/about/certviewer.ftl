@@ -36,6 +36,9 @@ certificate-viewer-key-size = Mărime cheie
 certificate-viewer-inc-locality = Sediu social
 certificate-viewer-locality = Localitate
 certificate-viewer-location = Loc
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = Denumire jurnal
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = ID de jurnal
 certificate-viewer-method = Metodă
 certificate-viewer-modulus = Modul
@@ -108,6 +111,10 @@ certificate-viewer-export = Exportă
 
 ##
 
+# Label for a tab where we haven't found a better label:
+certificate-viewer-unknown-group-label = (necunoscut)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = certificat
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

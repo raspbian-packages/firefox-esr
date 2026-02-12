@@ -80,6 +80,9 @@ toolbar-button-fxaccount =
 
 ## Account toolbar Button
 
+toolbar-button-account =
+    .label = Konto
+    .tooltiptext = Konto
 
 ## Save Page
 
@@ -89,6 +92,38 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
+main-context-menu-bookmark-page =
+    .aria-label = Lisa leht järjehoidjatesse...
+    .accesskey = m
+    .tooltiptext = Lisa leht järjehoidjatesse
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-edit-bookmark-mac,
+# so should probably have the same access key if possible.
+main-context-menu-bookmark-page-mac =
+    .label = Lisa leht järjehoidjatesse...
+    .accesskey = m
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-bookmark-page-mac,
+# so should probably have the same access key if possible.
+main-context-menu-edit-bookmark-mac =
+    .label = Muuda järjehoidjat…
+    .accesskey = M
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
+main-context-menu-bookmark-page-with-shortcut =
+    .aria-label = Lisa leht järjehoidjatesse...
+    .accesskey = m
+    .tooltiptext = Lisa leht järjehoidjatesse ({ $shortcut })
+main-context-menu-edit-bookmark =
+    .aria-label = Muuda järjehoidjat…
+    .accesskey = M
+    .tooltiptext = Muuda järjehoidjat
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
+main-context-menu-edit-bookmark-with-shortcut =
+    .aria-label = Muuda järjehoidjat…
+    .accesskey = M
+    .tooltiptext = Muuda järjehoidjat ({ $shortcut })
 main-context-menu-open-link =
     .label = Ava link
     .accesskey = v
@@ -104,6 +139,9 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Ava link uues privaatses aknas
     .accesskey = k
+main-context-menu-bookmark-link-2 =
+    .label = Lisa link järjehoidjatesse...
+    .accesskey = i
 main-context-menu-save-link =
     .label = Salvesta link kui…
     .accesskey = k
@@ -111,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Salvesta link { -pocket-brand-name }isse
     .accesskey = l
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Kopeeri e-posti aadress
@@ -123,6 +159,12 @@ main-context-menu-copy-phone =
     .accesskey = K
 main-context-menu-copy-link-simple =
     .label = Kopeeri link
+    .accesskey = K
+# "Copy Clean Link" means that Firefox will remove things from the link you
+# copied, like items that identify you for advertising purposes, and other items
+# sites add into URLs to help them deliver a certain browsing experience.
+main-context-menu-copy-clean-link =
+    .label = Kopeeri lisadeta link
     .accesskey = K
 
 ## Media (video/audio) controls
@@ -216,6 +258,9 @@ main-context-menu-image-email =
 main-context-menu-image-set-image-as-background =
     .label = Määra pilt töölaua taustaks…
     .accesskey = M
+main-context-menu-image-copy-text =
+    .label = Kopeeri pildi tekst
+    .accesskey = t
 main-context-menu-image-info =
     .label = Vaata pildi teavet
     .accesskey = V
@@ -256,15 +301,24 @@ main-context-menu-use-saved-password =
 
 ##
 
+main-context-menu-use-relay-mask =
+    .label = Kasuta { -relay-brand-short-name } e-posti peitmist
+    .accesskey = e
 main-context-menu-suggest-strong-password =
     .label = Soovita tugevat parooli…
     .accesskey = S
 main-context-menu-manage-logins2 =
     .label = Halda kasutajakontosid
     .accesskey = H
+main-context-menu-manage-passwords =
+    .label = Halda paroole
+    .accesskey = p
 main-context-menu-keyword =
     .label = Lisa võti sellele otsingule...
     .accesskey = v
+main-context-menu-add-engine =
+    .label = Lisa otsingumootor
+    .accesskey = o
 main-context-menu-link-send-to-device =
     .label = Saada link seadmesse
     .accesskey = i
@@ -283,6 +337,9 @@ main-context-menu-frame-open-window =
 main-context-menu-frame-reload =
     .label = Laadi paneeli sisu uuesti
     .accesskey = L
+main-context-menu-frame-add-bookmark =
+    .label = Lisa paneel järjehoidjatesse
+    .accesskey = p
 main-context-menu-frame-save-as =
     .label = Salvesta paneel kui…
     .accesskey = v
@@ -295,6 +352,9 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Vaata paneeli teavet
     .accesskey = i
+main-context-menu-print-selection-2 =
+    .label = Valiku printimine...
+    .accesskey = r
 main-context-menu-view-selection-source =
     .label = Vaata valiku lähtekoodi
     .accesskey = e

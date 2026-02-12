@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Avaa uudelleen suljetut välilehdet
         }
     .accesskey = d
+toolbar-context-turn-on-vertical-tabs =
+    .label = Ota pystysuuntaiset välilehdet käyttöön
+toolbar-context-turn-off-vertical-tabs =
+    .label = Poista pystysuuntaiset välilehdet käytöstä
+toolbar-context-customize-sidebar =
+    .label = Mukauta sivupalkkia
 toolbar-context-menu-manage-extension =
     .label = Hallitse laajennusta
     .accesskey = a
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Näytä paneeli, kun lataus alkaa
     .accesskey = ä
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Näytä aina työkalupalkissa
+    .accesskey = A
 toolbar-context-menu-remove-from-toolbar =
     .label = Poista työkalupalkista
     .accesskey = P

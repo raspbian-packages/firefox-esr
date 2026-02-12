@@ -106,7 +106,7 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
       uint64_t aInnerWindowId, bool* aRetry);
 
   bool CreateContentBridges(
-      base::ProcessId aOtherProcess,
+      mozilla::ipc::EndpointProcInfo aOtherProcess,
       mozilla::ipc::Endpoint<PCompositorManagerChild>* aOutCompositor,
       mozilla::ipc::Endpoint<PImageBridgeChild>* aOutImageBridge,
       mozilla::ipc::Endpoint<PVRManagerChild>* aOutVRBridge,
@@ -188,11 +188,18 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
   // as well as for tests and diagnostics.
   void KillProcess(bool aGenerateMinidump = false);
 
+  // Invoked when we know we will shutdown (but before shutdown begins), to
+  // avoid races with other shutdown observers.
+  void StopBatteryObserving();
+
   // Causes the GPU process to crash. Used for tests and diagnostics
   void CrashProcess();
 
   // Returns -1 if there is no GPU process, or the platform pid for it.
   base::ProcessId GPUProcessPid();
+
+  // Returns Invalid() if there is no GPU process, or the proc info for it.
+  mozilla::ipc::EndpointProcInfo GPUEndpointProcInfo();
 
   // If a GPU process is present, create a MemoryReportingProcess object.
   // Otherwise, return null.
@@ -219,23 +226,24 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
   RefPtr<PGPUChild::TestTriggerMetricsPromise> TestTriggerMetrics();
 
  private:
-  // Called from our xpcom-shutdown observer.
-  void OnXPCOMShutdown();
   void OnPreferenceChange(const char16_t* aData);
   void ScreenInformationChanged();
 
   bool CreateContentCompositorManager(
-      base::ProcessId aOtherProcess, dom::ContentParentId aChildId,
-      uint32_t aNamespace,
+      mozilla::ipc::EndpointProcInfo aOtherProcess,
+      dom::ContentParentId aChildId, uint32_t aNamespace,
       mozilla::ipc::Endpoint<PCompositorManagerChild>* aOutEndpoint);
   bool CreateContentImageBridge(
-      base::ProcessId aOtherProcess, dom::ContentParentId aChildId,
+      mozilla::ipc::EndpointProcInfo aOtherProcess,
+      dom::ContentParentId aChildId,
       mozilla::ipc::Endpoint<PImageBridgeChild>* aOutEndpoint);
   bool CreateContentVRManager(
-      base::ProcessId aOtherProcess, dom::ContentParentId aChildId,
+      mozilla::ipc::EndpointProcInfo aOtherProcess,
+      dom::ContentParentId aChildId,
       mozilla::ipc::Endpoint<PVRManagerChild>* aOutEndpoint);
   void CreateContentRemoteDecoderManager(
-      base::ProcessId aOtherProcess, dom::ContentParentId aChildId,
+      mozilla::ipc::EndpointProcInfo aOtherProcess,
+      dom::ContentParentId aChildId,
       mozilla::ipc::Endpoint<PRemoteDecoderManagerChild>* aOutEndPoint);
 
   // Called from RemoteCompositorSession. We track remote sessions so we can
@@ -250,8 +258,6 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
 
   void DestroyRemoteCompositorSessions();
   void DestroyInProcessCompositorSessions();
-
-  void OnBlockingProcessUnexpectedShutdown();
 
   // Returns true if we crossed the threshold such that we should disable
   // acceleration.
@@ -282,7 +288,7 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
   bool IsProcessStable(const TimeStamp& aNow);
 
   // Shutdown the GPU process.
-  void CleanShutdown();
+  void ShutdownInternal();
   // Destroy the process and clean up resources.
   // Setting aUnexpectedShutdown = true indicates that this is being called to
   // clean up resources in response to an unexpected shutdown having been
@@ -318,33 +324,32 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
 
   DISALLOW_COPY_AND_ASSIGN(GPUProcessManager);
 
+  void NotifyObserve(const char* aTopic, const char16_t* aData);
   void NotifyBatteryInfo(const hal::BatteryInformation& aBatteryInfo);
 
   class Observer final : public nsIObserver {
    public:
     NS_DECL_ISUPPORTS
     NS_DECL_NSIOBSERVER
-    explicit Observer(GPUProcessManager* aManager);
+
+    Observer();
+    void Shutdown();
 
    protected:
     virtual ~Observer() = default;
-
-    GPUProcessManager* mManager;
   };
   friend class Observer;
 
   class BatteryObserver final : public hal::BatteryObserver {
    public:
     NS_INLINE_DECL_REFCOUNTING(BatteryObserver)
-    explicit BatteryObserver(GPUProcessManager* aManager);
 
+    BatteryObserver();
     void Notify(const hal::BatteryInformation& aBatteryInfo) override;
-    void ShutDown();
+    void Shutdown();
 
    protected:
-    virtual ~BatteryObserver();
-
-    GPUProcessManager* mManager;
+    ~BatteryObserver() override = default;
   };
 
  private:

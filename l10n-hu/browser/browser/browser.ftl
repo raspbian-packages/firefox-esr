@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = { -brand-shortcut-name } privát böngészés
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,25 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } – privát böngészés
     .data-content-title-default-with-profile = { $content-title } – { $profile-name }
     .data-content-title-private-with-profile = { $content-title } – { $profile-name } – privát böngészés
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } – privát böngészés
+       *[other] { -brand-full-name } privát böngészés
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = Privát böngészés
+popups-infobar-dont-show-message2 =
+    .label = Ne jelenjen meg ez az üzenet, ha a felugró ablakok vagy a harmadik féltől származó átirányítások blokkolva vannak
+    .accesskey = N
+edit-popup-settings2 =
+    .label = Felugró ablakok és harmadik féltől származó átirányítási beállítások kezelése…
+    .accesskey = F
 
 ##
 
@@ -135,6 +152,10 @@ urlbar-default-notification-anchor =
     .tooltiptext = Üzenetpanel megnyitása
 urlbar-geolocation-notification-anchor =
     .tooltiptext = Helymeghatározási kérés panel megnyitása
+urlbar-localhost-notification-anchor =
+    .tooltiptext = Webhely helyi eszközökre vonatkozó hozzáférésének kezelése
+urlbar-local-network-notification-anchor =
+    .tooltiptext = Webhely helyi hálózati hozzáférés-megosztásának kezelése
 urlbar-xr-notification-anchor =
     .tooltiptext = A virtuális valóság engedélyek panel megnyitása
 urlbar-storage-access-anchor =
@@ -181,6 +202,35 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = Segítség kérése
     .accesskey = S
+urlbar-result-menu-dismiss-suggestion =
+    .label = Javaslat elvetése
+    .accesskey = e
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = Tudjon meg többet a { -firefox-suggest-brand-name }ről
+    .accesskey = T
+urlbar-result-menu-manage-firefox-suggest =
+    .label = A { -firefox-suggest-brand-name } kezelése
+    .accesskey = k
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = Pontatlan hely jelentése
+urlbar-result-menu-show-less-frequently =
+    .label = Megjelenítés ritkábban
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = Ne jelenítsen meg időjárási javaslatokat
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = Menü megnyitása
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = Köszönjük a visszajelzését
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = Köszönjük a visszajelzését. Többé nem fogja látni az időjárási javaslatokat.
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -206,6 +256,10 @@ urlbar-search-mode-actions = Műveletek
 
 urlbar-geolocation-blocked =
     .tooltiptext = Blokkolta a helymeghatározási információkat ezen az oldalon.
+urlbar-localhost-blocked =
+    .tooltiptext = Blokkolta a webhely helyi eszközökre vonatkozó hozzáférését.
+urlbar-local-network-blocked =
+    .tooltiptext = Blokkolta a webhely helyi hálózati hozzáférését.
 urlbar-xr-blocked =
     .tooltiptext = Blokkolta a virtuális valóság eszköz elérését ezen az oldalon.
 urlbar-web-notifications-blocked =
@@ -218,6 +272,8 @@ urlbar-screen-blocked =
     .tooltiptext = Blokkolta a képernyőmegosztást ezen az oldalon.
 urlbar-persistent-storage-blocked =
     .tooltiptext = Blokkolta az állandó adattárolást ezen az oldalon.
+urlbar-popup-blocked2 =
+    .tooltiptext = Blokkolta a felugró ablakokat és a harmadik féltől származó átirányításokat ezen az oldalon.
 urlbar-popup-blocked =
     .tooltiptext = Blokkolta a felugró ablakokat ezen az oldalon.
 urlbar-autoplay-media-blocked =
@@ -312,10 +368,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Kiegészítők megjelenítése
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = kiegészítők, témák
 quickactions-cmd-addons2 = kiegészítők
 # Opens the bookmarks library window
 quickactions-bookmarks2 = Könyvjelzők kezelése
 quickactions-cmd-bookmarks = könyvjelzők
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = Előzmények törlése
+quickactions-cmd-clearrecenthistory = előzmények törlése, előzmények
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Előzmények törlése
 quickactions-cmd-clearhistory = előzmények törlése
@@ -324,9 +387,20 @@ quickactions-downloads2 = Letöltések megtekintése
 quickactions-cmd-downloads = letöltések
 # Opens about:addons page in the extensions section
 quickactions-extensions = Kiegészítők kezelése
+quickactions-cmd-extensions2 = kiegészítők
 quickactions-cmd-extensions = kiegészítők
+# Opens Firefox View
+quickactions-firefoxview = { -firefoxview-brand-name } megnyitása
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = { -firefoxview-brand-name } megnyitása, { -firefoxview-brand-name }, nézet megnyitása, nézet
+# Opens SUMO home page
+quickactions-help = { -brand-product-name } súgó
+quickactions-cmd-help = súgó, támogatás
 # Opens the devtools web inspector
 quickactions-inspector2 = Fejlesztői eszközök megnyitása
+quickactions-cmd-inspector2 = inspector, vizsgáló, devtools, fejlesztői eszközök
 quickactions-cmd-inspector = vizsgáló, fejlesztői eszközök
 # Opens about:logins
 quickactions-logins2 = Jelszavak kezelése
@@ -339,7 +413,7 @@ quickactions-print2 = Oldal nyomtatása
 quickactions-cmd-print = nyomtatás
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Oldal mentése PDF-ként
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, lap mentése, oldal mentése
 # Opens a new private browsing window
 quickactions-private2 = Privát ablak megnyitása
 quickactions-cmd-private = privát böngészés
@@ -351,18 +425,26 @@ quickactions-restart = A { -brand-short-name } újraindítása
 quickactions-cmd-restart = újraindítás
 # Opens the screenshot tool
 quickactions-screenshot3 = Képernyőkép készítése
+quickactions-cmd-screenshot2 = screenshot, képernyőkép, képernyőkép készítése
 quickactions-cmd-screenshot = képernyőkép
 # Opens about:preferences
 quickactions-settings2 = Beállítások kezelése
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = beállítások, lehetőségek, kezelés
 quickactions-cmd-settings = beállítások, lehetőségek, kapcsolók
 # Opens about:addons page in the themes section
 quickactions-themes = Témák kezelése
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = témák, kiegészítők
 quickactions-cmd-themes = témák
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = A { -brand-short-name } frissítése
 quickactions-cmd-update = frissítés
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = Oldal forrásának megtekintése
+quickactions-cmd-viewsource2 = source, forrás megtekintése, forrás, oldal forrása
 quickactions-cmd-viewsource = forrás megtekintése, forrás, forráskód
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
@@ -540,7 +622,7 @@ popup-all-windows-shared = A képernyő minden látható ablaka meg lesz osztva.
 
 ## WebRTC window or screen share tab switch warning
 
-sharing-warning-window = Ön megosztja a { -brand-short-name(case: "accusative") }. Mások is láthatják, ha új lapra vált.
+sharing-warning-window = Ön megosztja a { -brand-short-name }ot. Mások is láthatják, ha új lapra vált.
 sharing-warning-screen = Ön megosztja a teljes képernyőjét. Mások is láthatják, ha új lapra vált.
 sharing-warning-proceed-to-tab =
     .label = Tovább a laphoz
@@ -560,6 +642,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = Keresés vagy cím
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = Cím megadása
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -639,6 +725,8 @@ urlbar-result-action-visit = Keresse fel:
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = Váltás erre a lapra: <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = Névtelen csoport
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Felkeresés a vágólapról
 # Directs a user to press the Tab key to perform a search with the specified
@@ -668,6 +756,131 @@ urlbar-result-action-copy-to-clipboard = Másolás
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = meghatározatlan
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature } °{ $unit }</strong> itt: { $city }, { $region }
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature } °{ $unit }</strong> itt: { $city }, { $region }, { $country }
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature } °{ $unit }</strong> itt: { $city }
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } ∙ Szponzorálva
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = Szerezzen tőzsdei adatokat közvetlenül a keresősávban
+# This string is shown as description when Market suggestion are disabled.
+urlbar-result-market-opt-in-description = Pénzpiaci hírek és egyebek megjelenítése a partnereinktől, ha megosztja a keresési adatokat a { -vendor-short-name(ending: "accented") }val. <a data-l10n-name="learn-more-link">További tudnivalók</a>
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = Javaslatok megjelenítése
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = Most nem
+urlbar-result-realtime-opt-in-dismiss = Eltüntetés
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = Ne jelenítse meg ezeket a javaslatokat
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = Ne jelenítsen meg pénzpiaci javaslatokat
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = Köszönjük a visszajelzését. Többé nem fogja látni az pénzpiaci javaslatokat.
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = Köszönjük a visszajelzését. Többé nem fogja látni ezeket a javaslatokat.
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown =
+    { $daysUntilStart ->
+        [one] { $name } · { $daysUntilStart } nap múlva
+       *[other] { $name } · { $daysUntilStart } nap múlva
+    }
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range =
+    { $daysUntilStart ->
+        [one] { $name } · { $daysUntilStart } nap múlva kezdődik
+       *[other] { $name } · { $daysUntilStart } nap múlva kezdődik
+    }
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing =
+    { $daysUntilEnd ->
+        [one] { $name } · { $daysUntilEnd } nap múlva ér véget
+       *[other] { $name } · { $daysUntilEnd } nap múlva ér véget
+    }
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · Ma
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · Ma ér véget
 
 ## Strings used for buttons in the urlbar
 
@@ -695,8 +908,15 @@ urlbar-searchmode-actions =
     .label = Műveletek
 urlbar-searchmode-exit-button =
     .tooltiptext = Bezárás
+urlbar-searchmode-default =
+    .tooltiptext = Alapértelmezett keresőszolgáltatás
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Ezúttal keressen a következővel:
-urlbar-searchmode-popup-search-settings = Keresési beállítások
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Keresési beállítások
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = Új
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -747,6 +967,9 @@ urlbar-group-recent-searches =
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
     .label = Felkapott ebben: { $engine }
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = Szponzorált
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = Ne jelenítse meg a felkapott kereséseket
@@ -943,6 +1166,9 @@ panel-save-update-password = Jelszó
 # "More" item in macOS share menu
 menu-share-more =
     .label = Továbbiak…
+menu-share-copy-link =
+    .label = Hivatkozás másolása
+    .accesskey = H
 ui-tour-info-panel-close =
     .tooltiptext = Bezárás
 
@@ -951,10 +1177,13 @@ ui-tour-info-panel-close =
 
 popups-infobar-allow =
     .label = Felugró ablakok engedélyezése innen: { $uriHost }
-    .accesskey = m
+    .accesskey = u
 popups-infobar-block =
     .label = Felugró ablakok tiltása innen: { $uriHost }
-    .accesskey = m
+    .accesskey = u
+popups-infobar-allow2 =
+    .label = Felugró ablakok és harmadik féltől származó átirányítások engedélyezése itt: { $uriHost }
+    .accesskey = e
 
 ##
 
@@ -990,6 +1219,8 @@ navbar-accessible =
     .aria-label = Navigáció
 navbar-downloads =
     .label = Letöltések
+navbar-overflow-2 =
+    .tooltiptext = További eszközök
 navbar-overflow =
     .tooltiptext = További eszközök…
 # Variables:
@@ -1013,8 +1244,12 @@ tabs-toolbar =
 tabs-toolbar-new-tab =
     .label = Új lap
 tabs-toolbar-list-all-tabs =
-    .label = Minden lap felsorolása
-    .tooltiptext = Minden lap felsorolása
+    .label = Összes lap felsorolása
+    .tooltiptext = Összes lap felsorolása
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = Húzza ide a lapot a rögzítéshez
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1113,6 +1348,7 @@ firefox-relay-offer-why-to-use-relay = Biztonságos, könnyen használható masz
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = Az e-mail-maszkjaira küldött levelek a(z) <strong>{ $useremail }</strong> címre lesznek továbbítva (hacsak nem dönt úgy, hogy letiltja őket).
 firefox-relay-offer-legal-notice = Az „E-mail-maszk használata” gombra kattintással elfogadja a <label data-l10n-name="tos-url">Szolgáltatási feltételeket</label> és az <label data-l10n-name="privacy-url">Adatvédelmi nyilatkozatot</label>.
+firefox-relay-offer-legal-notice-1 = A regisztrációval és az e-mail-maszk létrehozásával elfogadja a <label data-l10n-name="tos-url">Szolgáltatási feltételeket</label> és az <label data-l10n-name="privacy-url">Adatvédelmi nyilatkozatot</label>.
 
 ## Add-on Pop-up Notifications
 
@@ -1120,10 +1356,15 @@ popup-notification-addon-install-unsigned =
     .value = (Ellenőrizetlen)
 popup-notification-xpinstall-prompt-learn-more = Tudjon meg többet a bővítmények biztonságos telepítéséről
 popup-notification-xpinstall-prompt-block-url = Részletek megtekintése
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = Futtatás privát ablakokban
-    .accesskey = F
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = A kiegészítő futtatásának engedélyezése privát ablakokban
+    .accesskey = p
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = Műszaki és interakciós adatok megosztása a kiegészítőfejlesztőkkel
+    .accesskey = M
 
 ## Pop-up warning
 
@@ -1134,10 +1375,26 @@ popup-warning-message =
         [one] A { -brand-short-name } megakadályozta, hogy ez a webhely felugró ablakot nyisson meg.
        *[other] A { -brand-short-name } megakadályozta, hogy ez a webhely { $popupCount } felugró ablakot nyisson meg.
     }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] A { -brand-short-name } megakadályozta, hogy a webhely átirányítsa.
+        [1] A { -brand-short-name } megakadályozta, hogy a webhely egy felugró ablakot nyisson meg és átirányítsa.
+        [one] A { -brand-short-name } megakadályozta, hogy a webhely egy felugró ablakot nyisson meg és átirányítsa.
+       *[other] A { -brand-short-name } megakadályozta, hogy a webhely { $popupCount } felugró ablakot nyisson meg és átirányítsa.
+    }
 # The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
 # Variables:
 #   $popupCount (Number): the number of pop-ups blocked.
 popup-warning-exceeded-message = A { -brand-short-name } megakadályozta, hogy ez a webhely több mint { $popupCount } felugró ablakot nyisson meg.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-with-redirect-message =
+    { $popupCount ->
+        [one] A { -brand-short-name } megakadályozta, hogy a webhely több mint { $popupCount } felugró ablakot nyisson meg és átirányítsa.
+       *[other] A { -brand-short-name } megakadályozta, hogy a webhely több mint { $popupCount } felugró ablakot nyisson meg és átirányítsa.
+    }
 popup-warning-button =
     .label =
         { PLATFORM() ->
@@ -1153,6 +1410,10 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = „{ $popupURI }” megjelenítése
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = „{ $redirectURI }” megjelenítése
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
@@ -1174,3 +1435,148 @@ file-picker-crashed-save-nowhere = A Windows fájlválasztó párbeszédablaka �
 file-picker-crashed-show-in-folder =
     .label = Megjelenítés mappában
     .accessKey = m
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = Beállítás befejezése
+onboarding-aw-finish-setup-button =
+    .label = Beállítás befejezése
+    .tooltiptext = A { -brand-short-name } beállításának befejezése
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = A fokozott követés elleni védelem be van kapcsolva
+trustpanel-etp-label-disabled = A fokozott követés elleni védelem ki van kapcsolva
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = Fokozott követés elleni védelem: a(z) { $host } helyen be
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = Fokozott követés elleni védelem: a(z) { $host } helyen ki
+trustpanel-etp-description-enabled = Ha valami nem működik ezen az oldalon, próbálja meg kikapcsolni.
+trustpanel-etp-description-disabled = A { -brand-product-name } úgy gondolja, hogy a cégeknek kevésbé kellene Önt követniük. A lehető legtöbb követőt blokkoljuk, amikor bekapcsolja a védelmet.
+trustpanel-connection-label-secure = A kapcsolat biztonságos
+trustpanel-connection-label-insecure = A kapcsolat nem biztonságos
+trustpanel-header-enabled = A { -brand-product-name } résen van
+trustpanel-description-enabled2 = Védve van. Ha látunk valamit, értesíteni fogjuk.
+trustpanel-header-enabled-insecure = Legyen óvatos ezen az oldalon
+trustpanel-description-enabled-insecure = A { -brand-product-name } valami gyanúsat észlelt.
+trustpanel-header-disabled = Kikapcsolta a védelmeket
+trustpanel-description-disabled = A { -brand-product-name } szolgálaton kívül van. Javasoljuk a védelmek ismételt bekapcsolását.
+trustpanel-clear-cookies-button = Sütik és oldaladatok törlése
+trustpanel-privacy-link = Adatvédelmi beállítások
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = A(z) { $host } sütijeinek és webhelyadatainak törlése
+trustpanel-clear-cookies-description = A sütik és webhelyadatok eltávolítása kijelentkeztetheti a webhelyekről, és törölheti a kosarait.
+trustpanel-clear-cookies-subview-button-clear = Törlés
+trustpanel-clear-cookies-subview-button-cancel = Mégse
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = A(z) { $host } kapcsolatának védelmei
+trustpanel-siteinformation-morelink = További webhely-információk
+trustpanel-blocker-see-all = Összes megjelenítése
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = A(z) { $host } követés elleni védelmei
+
+## The urlbar trust icon & panel
+
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = Nem biztonságos
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header =
+    { $count ->
+        [one] <span>{ $count }</span> nyomkövető blokkolva ezen az oldalon
+       *[other] <span>{ $count }</span> nyomkövető blokkolva ezen az oldalon
+    }
+trustpanel-blocker-description = A { -brand-product-name } úgy gondolja, hogy a cégeknek kevésbé kellene Önt követniük. Ezért a lehető legtöbbet blokkoljuk.
+trustpanel-blocked-header = A { -brand-product-name } ezeket a dolgokat blokkolta Önnek:
+trustpanel-tracking-header = A { -brand-product-name } engedélyezte ezeket a dolgokat, hogy az oldalak ne legyenek hibásak:
+trustpanel-tracking-description = Nyomkövetők nélkül egyes gombok, űrlapok és bejelentkezési mezők lehet, hogy nem fognak működni.
+trustpanel-insecure-section-header = A kapcsolat nem biztonságos
+trustpanel-insecure-description = A webhelynek küldött adatok nem titkosítottak. Megtekinthetőek, ellophatóak vagy megváltoztathatóak.
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [one] { $count } webhelyek közötti nyomkövető süti
+       *[other] { $count } webhelyek közötti nyomkövető süti
+    }
+trustpanel-list-label-tracking-content = Nyomkövető tartalom
+trustpanel-list-label-fingerprinter =
+    { $count ->
+        [one] { $count } ujjlenyomat-készítő
+       *[other] { $count } ujjlenyomat-készítő
+    }
+trustpanel-list-label-social-tracking =
+    { $count ->
+        [one] { $count } közösségimédia-követő
+       *[other] { $count } közösségimédia-követő
+    }
+trustpanel-list-label-cryptominer =
+    { $count ->
+        [one] { $count } kriptobányász
+       *[other] { $count } kriptobányász
+    }
+trustpanel-social-tracking-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } blokkolt { $count } közösségimédia-követőt
+       *[other] A { -brand-product-name } blokkolt { $count } közösségimédia-követőt
+    }
+trustpanel-social-tracking-not-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } engedélyezett { $count } közösségimédia-követőt
+       *[other] A { -brand-product-name } engedélyezett { $count } közösségimédia-követőt
+    }
+trustpanel-tracking-cookies-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } blokkolt { $count } webhelyek közötti nyomkövető sütit
+       *[other] A { -brand-product-name } blokkolt { $count } webhelyek közötti nyomkövető sütit
+    }
+trustpanel-tracking-cookies-not-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } engedélyezett { $count } webhelyek közötti nyomkövető sütit
+       *[other] A { -brand-product-name } engedélyezett { $count } webhelyek közötti nyomkövető sütit
+    }
+trustpanel-tracking-content-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } blokkolt { $count } követőt
+       *[other] A { -brand-product-name } blokkolt { $count } követőt
+    }
+trustpanel-tracking-content-not-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } engedélyezett { $count } követőt
+       *[other] A { -brand-product-name } engedélyezett { $count } követőt
+    }
+trustpanel-tracking-content-tab-list-header = Ezek a webhelyek próbálják követni Önt:
+trustpanel-fingerprinter-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } blokkolt { $count } ujjlenyomat-készítőt
+       *[other] A { -brand-product-name } blokkolt { $count } ujjlenyomat-készítőt
+    }
+trustpanel-fingerprinter-not-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } engedélyezett { $count } ujjlenyomat-készítőt
+       *[other] A { -brand-product-name } engedélyezett { $count } ujjlenyomat-készítőt
+    }
+trustpanel-fingerprinter-list-header = Ezek a webhelyek ujjlenyomatot próbálnak készíteni Önről:
+trustpanel-cryptominer-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } blokkolt { $count } kriptobányászt
+       *[other] A { -brand-product-name } blokkolt { $count } kriptobányászt
+    }
+trustpanel-cryptominer-not-blocking-tab-header =
+    { $count ->
+        [one] A { -brand-product-name } engedélyezett { $count } kriptobányászt
+       *[other] A { -brand-product-name } engedélyezett { $count } kriptobányászt
+    }
+trustpanel-cryptominer-tab-list-header = Ezek a webhelyek próbálnak meg kriptovalutát bányászni:

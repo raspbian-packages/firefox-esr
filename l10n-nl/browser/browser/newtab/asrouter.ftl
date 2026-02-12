@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } gebruikers
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Synchroniseer uw bladwijzers overal.
 cfr-doorhanger-bookmark-fxa-body = Goed gevonden! Zorg er nu voor dat u niet zonder bladwijzers zit op uw mobiele apparaten. Ga van start met { -fxaccount-brand-name }.
@@ -68,6 +68,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Bladwijzers nu synchroniseren…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Knop Sluiten
     .title = Sluiten
+fxa-adoption-addresses-backup-title = Laten we een reservekopie van uw opgeslagen adressen maken
+fxa-adoption-addresses-backup-subtitle = Bescherm uw opgeslagen wachtwoorden door ze versleuteld met uw apparaten te synchroniseren.
+fxa-adoption-credit-cards-backup-title = Laten we een reservekopie van uw betalingsmethoden maken
+fxa-adoption-credit-cards-backup-subtitle = Bescherm uw betalingsmethoden door ze versleuteld met uw apparaten te synchroniseren.
+fxa-adoption-bookmarks-treatment-backup-title = Laten we een reservekopie van uw bladwijzers maken
+fxa-adoption-bookmarks-treatment-backup-subtitle = Bescherm uw bladwijzers door ze versleuteld met uw apparaten te synchroniseren.
+fxa-adoption-primary-button-label = Registreren
 
 ## Protections panel
 
@@ -226,6 +233,22 @@ fox-doodle-pin-secondary = Niet nu
 set-default-pdf-handler-headline = <strong>Uw PDF’s worden nu geopend in { -brand-short-name }.</strong> Bewerk of onderteken formulieren rechtstreeks in uw browser. Zoek naar ‘PDF’ in instellingen om te wijzigen.
 set-default-pdf-handler-primary = Begrepen
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Onderteken op de stippellijn – of waar dan ook!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Teken, typ of upload uw handtekening en plaats deze vervolgens precies waar u wilt. Bewaar uw favoriete handtekeningen voor de volgende keer.
+annotations-make-default-pdf-handler-title = { -brand-short-name } uw standaard PDF-bewerker maken?
+annotations-make-default-pdf-handler-subtitle = Telkens als u een PDF opent, hebt u toegang tot onze hulpmiddelen.
+annotations-make-default-pdf-primary-cta =
+    .label = Instellen als standaard
+annotations-make-default-pdf-next =
+    .label = Volgende
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Nieuw apparaat in de toekomst?
@@ -311,8 +334,11 @@ fxa-menu-message-close-button =
     .title = Sluiten
     .aria-label = Sluiten
 fxa-menu-message-sign-up-button = Registreren
+fxa-menu-message-sign-in-button = Aanmelden
+fxa-menu-message-sync-button = Beginnen met synchroniseren
 fxa-menu-message-sync-devices-primary-text = Al uw apparaten synchroniseren
 fxa-menu-message-sync-devices-secondary-text = Ontvang direct uw gegevens – zoals bladwijzers en wachtwoorden – overal waar u { -brand-short-name } gebruikt.
+fxa-menu-message-sync-devices-secondary-text2 = Ontvang direct uw bladwijzers, wachtwoorden en meer – overal waar u bent aangemeld bij { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Al uw apparaten synchroniseren
 fxa-menu-message-backup-data-primary-text = Een reservekopie van uw browsergegevens maken
 fxa-menu-message-backup-data-secondary-text = Bescherm automatisch bladwijzers, wachtwoorden en andere gegevens op al uw apparaten.
@@ -343,3 +369,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Houd uw favoriete op privacy gerichte browser op slechts één klik afstand. Stel { -brand-short-name } in als uw standaardbrowser voor het openen van koppelingen en zet het programma vast op uw taakbalk.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Houd uw favoriete op privacy gerichte browser op slechts één klik afstand. Stel { -brand-short-name } in als uw standaardbrowser voor het openen van koppelingen en zet het programma vast aan uw taakbalk en startmenu.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Binnenkort upgraden vanaf Windows 10?
+windows-10-eos-sync-spotlight-subtitle = Maak een reservekopie van uw wachtwoorden en bladwijzers, zodat u klaar bent om de sprong naar elk apparaat te maken.
+windows-10-eos-sync-spotlight-primary-label = Een reservekopie van uw { -brand-short-name } maken
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Upgraden naar Windows 11? Verlies geen bladwijzers en wachtwoorden.
+windows-10-eos-sync-toast-subtitle = Maak een reservekopie van uw gegevens, zodat { -brand-short-name } altijd klaar is voor gebruik, op deze pc of de volgende.
+windows-10-eos-sync-toast-primary-label = Beginnen
+windows-10-eos-sync-toast-secondary-label = Later herinneren
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } wordt niet vooraf geladen zoals andere Big Tech-browsers. Dat is het punt.
+windows-10-eos-challenger-sync-callout-subtitle = Wanneer u een reservekopie maakt van uw { -brand-product-name }-bladwijzers en -wachtwoorden, is het gemakkelijker om de gekozen browser mee te nemen naar uw volgende apparaat.
+windows-10-eos-challenger-pin-callout-subtitle = Zet { -brand-shorter-name } vast op uw taakbalk, zodat de gekozen browser er altijd is wanneer u hem nodig hebt.
+windows-10-eos-challenger-sync-primary-button = Een reservekopie van { -brand-shorter-name } maken
+windows-10-eos-challenger-pin-primary-button = { -brand-shorter-name } vastmaken
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } blokkeert cryptominers, sociale-mediatrackers en fingerprinters.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Trackers kunnen uw apparaat niet identificeren of u op het web volgen – omdat we dat niet toestaan.
+windows-10-eos-sync-callout-privacy-screen-2-title = Beveilig uw wachtwoorden en bladwijzers voor uw volgende apparaat.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Een reservekopie van { -brand-shorter-name } maakt het gemakkelijk om uw gegevens- en privacyinstellingen mee te nemen.
+windows-10-eos-sync-callout-privacy-info-button = Bekijk wat er geblokkeerd wordt
+windows-10-eos-callout-addons-title = Probeer add-ons: eenvoudige upgrades, groot effect
+windows-10-eos-callout-addons-subtitle = Deze extensies zijn gekozen om u te helpen productief, beschermd en vrij van afleiding te blijven.
+windows-10-eos-callout-addons-primary-button = Onze keuzes
+windows-10-eos-sync-callout-addons-title = Verlies uw add-ons niet wanneer u upgradet vanaf Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Synchroniseer nu, zodat uw { -brand-product-name }-add-ons altijd beschikbaar zijn, zelfs na een apparaatwissel.
+windows-10-eos-sync-callout-next-button = Volgende
+windows-10-eos-sync-callout-get-started-button = Beginnen
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Er zijn verticale tabbladen en tabbladgroepen!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Op veler verzoek heeft { -brand-product-name } nieuwe functies verwijderd om uw navigatie gestroomlijnd en gefocust te houden.
+windows-10-eos-feature-toast-whats-new-button = Zie wat er nieuw is
+windows-10-eos-feature-toast-dismiss-button = Sluiten
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Strenge bescherming tegen volgen kan ervoor zorgen dat websites niet goed werken.</strong> Los veelvoorkomende problemen op door essentiële elementen die trackers kunnen bevatten te deblokkeren.
+etp-strict-exceptions-infobar-learn-more = Meer info
+etp-strict-exceptions-infobar-button = Oplossingen toepassen
+    .accesskey = t
+etp-strict-exceptions-infobar-not-now = Niet nu
+    .accesskey = N

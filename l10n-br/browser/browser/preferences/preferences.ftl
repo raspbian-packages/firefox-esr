@@ -113,6 +113,10 @@ startup-header = Loc'hañ
 always-check-default =
     .label = Gwiriañ atav ma'z eo { -brand-short-name } ho merdeer dre ziouer
     .accesskey = w
+is-default-browser =
+    .message = Ho merdeer dre ziouer eo { -brand-short-name }
+is-not-default-browser =
+    .message = N'eo ket { -brand-short-name } ho merdeer dre ziouer
 is-default = Ho merdeer dre ziouer eo { -brand-short-name }
 is-not-default = N'eo ket { -brand-short-name } ho merdeer dre ziouer
 set-as-my-default-browser =
@@ -133,6 +137,10 @@ preferences-data-migration-description = Enporzhiañ sinedoù, gerioù-tremen, a
 preferences-data-migration-button =
     .label = Enporzhiañ roadennoù
     .accesskey = E
+preferences-profiles-header = Profiloù
+preferences-manage-profiles-learn-more = Gouzout hiroc’h
+preferences-manage-profiles-button =
+    .label = Merañ ar profiloù
 tabs-group-header = Ivinelloù
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab evit mont d'an ivinell implijet da ziwezhañ
@@ -205,6 +213,12 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Dilemel an Endalc'her-mañ
 containers-remove-cancel-button = Chom hep dilemel an Endalc'her-mañ
+browser-layout-horizontal-tabs =
+    .label = Ivinelloù a-blaen
+browser-layout-vertical-tabs =
+    .label = Ivinelloù a-serzh
+browser-layout-show-sidebar =
+    .label = Diskouez ar varrenn gostez
 
 ## General Section - Language & Appearance
 
@@ -219,6 +233,8 @@ preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-web-appearance-link =
+    .label = Merañ neuzioù eus { -brand-short-name } e-barzh Askouezhioù ha neuzioù
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Merañ neuzioù eus { -brand-short-name } e-barzh <a data-l10n-name="themes-link">Askouezhioù ha neuzioù</a>
@@ -277,6 +293,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Restroù hag arloadoù
+downloads-header-2 =
+    .label = Pellgargadurioù
+download-save-where-2 =
+    .label = Enrollañ restroù e-barzh
+    .accesskey = o
 download-header = Pellgargadurioù
 download-save-where = Enrollañ restroù e-barzh
     .accesskey = o
@@ -457,7 +478,7 @@ browsing-use-onscreen-keyboard =
     .label = Diskouez ur c'hlavier stokañ pa vez ezhomm
     .accesskey = c
 browsing-use-cursor-navigation =
-    .label = Atav arverañ ar stokelloù bir da vageal er bajennadoù
+    .label = Arverañ ar biroù evit merdeiñ dre ar pajennadoù atav
     .accesskey = A
 browsing-search-on-start-typing =
     .label = Klask an destenn pa grogan da skrivañ
@@ -492,7 +513,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Prenestroù hag ivinelloù nevez
 home-new-windows-tabs-description2 = Dibabit petra vo gwelet ganeoc'h pa vezot o tigeriñ ho pennbajenn, prenestroù, pe ivinelloù nevez.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Pennbajenn ha prenestroù nevez
 home-newtabs-mode-label = Ivinelloù nevez
@@ -566,6 +587,9 @@ home-prefs-snippets-description-new = Tunioù ha nevezinti gant { -vendor-short-
 home-prefs-weather-header =
     .label = Liv an amzer
 home-prefs-weather-learn-more-link = Gouzout hiroc’h
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = Skoazellit { -brand-product-name }
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -642,6 +666,8 @@ search-keyword-warning-bookmark = Dibabet hoc'h eus ur ger alc'hwez war arver ev
 containers-back-button2 =
     .aria-label = Distreiñ d’an arventennoù
 containers-header = Ivinelloù endalc'her
+containers-section-header =
+    .heading = Ivinelloù endalc'her
 containers-add-button =
     .label = Ouzhpennañ un endalc'her nevez
     .accesskey = O
@@ -794,6 +820,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Anv an trevnad
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Anv an trevnad
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Kemmañ anv an trevnad
+    .accesskey = a
 sync-device-name-change =
     .label = Kemmañ anv an trevnad…
     .accesskey = a
@@ -935,6 +969,10 @@ history-remember-option-never =
     .label = Ne zerc'hel ket soñj ar roll istor
 history-remember-option-custom =
     .label = Implijout arventennoù personelaet evit ar roll istor
+history-remember-description2 =
+    .description = { -brand-short-name } a zalc'ho soñj eus ho roll istor, ho pellgargadennoù, ho furmskridoù hag ho klaskoù.
+history-dontremember-description2 =
+    .description = { -brand-short-name } a implijo ar memes arventennoù hag ar merdeiñ prevez, ha ne zalc'ho ket soñj ar roll istor.
 history-remember-description = { -brand-short-name } a zalc'ho soñj eus ho roll istor, ho pellgargadennoù, ho furmskridoù hag ho klaskoù.
 history-dontremember-description = { -brand-short-name } a implijo ar memes arventennoù hag ar merdeiñ prevez, ha ne zalc'ho ket soñj ar roll istor.
 history-private-browsing-permanent =
@@ -999,9 +1037,6 @@ sitedata-cookies-exceptions =
     .label = Merañ an nemedennoù…
     .accesskey = M
 
-## Privacy Section - Cookie Banner Handling
-
-
 ## Privacy Section - Cookie Banner Blocking
 
 cookie-banner-learn-more = Gouzout hiroc’h
@@ -1010,6 +1045,11 @@ cookie-banner-learn-more = Gouzout hiroc’h
 
 addressbar-header = Barrenn chomlec'hioù
 addressbar-suggest = Pa ran gant ar varrenn chomlec'hioù, aliañ
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = Barrenn chomlec’h — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = Gouzout hiroc’h
 addressbar-locbar-history-option =
     .label = Roll istor merdeiñ
     .accesskey = R
@@ -1154,6 +1194,8 @@ permissions-notification-link = Gouzout hiroc’h
 permissions-notification-pause =
     .label = Ehanañ ar rebuzadurioù betek ma vefe adloc'het { -brand-short-name }
     .accesskey = E
+permissions-autoplay2 =
+    .label = Lenn emgefreek
 permissions-autoplay = Lenn emgefreek
 permissions-autoplay-settings =
     .label = Arventennoù...
@@ -1173,6 +1215,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Nemedennoù
     .accesskey = N
+permissions-location2 =
+    .label = Lec'hiadur
+permissions-xr2 =
+    .label = Gwirionez niverel
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Klevell
+permissions-notification2 =
+    .label = Rebuzadurioù
 
 ## Privacy Section - Data Collection
 
@@ -1198,15 +1250,10 @@ addon-recommendations-link = Gouzout hiroc’h
 collection-health-report-disabled = Diweredekaet eo an danevelliñ roadennoù evit kefluniadur ar c'hempunadur-mañ
 collection-backlogged-crash-reports-with-link = Aotren { -brand-short-name } da gas danevelloù sac’hadennoù en ho plas. <a data-l10n-name="crash-reports-link">Gouzout hiroc’h</a>
     .accesskey = g
-collection-backlogged-crash-reports = Aotren { -brand-short-name } da gas danevelloù sac’hadennoù en ho plas.
-    .accesskey = g
 privacy-segmentation-radio-off =
     .label = Ober gant alioù { -brand-product-name }
 privacy-segmentation-radio-on =
     .label = Diskouez an titouroù dre ar munud
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -1238,6 +1285,7 @@ certs-view =
 certs-devices =
     .label = Trevnadoù diogelroez…
     .accesskey = T
+certs-devices-enable-fips = Gweredekaat FIPS
 space-alert-over-5gb-settings-button =
     .label = Digeriñ an arventennoù
     .accesskey = D

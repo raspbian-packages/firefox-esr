@@ -25,6 +25,8 @@ return-to-amo-subtitle = Чудово, ви отримали { -brand-short-name
 return-to-amo-addon-title = Тепер перейдімо до <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Додати розширення
 return-to-amo-add-theme-label = Додайте тему
+return-to-amo-theme-install-complete-label = Тему встановлено
+return-to-amo-extension-install-complete-label = Розширення встановлено
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Імпортувати 
 mr1-onboarding-theme-header = Зробіть його своїм
 mr1-onboarding-theme-subtitle = Персоналізуйте { -brand-short-name } за допомогою теми.
 mr1-onboarding-theme-secondary-button-label = Не зараз
-newtab-wallpaper-onboarding-title = Спробуйте сплеск кольорів
-newtab-wallpaper-onboarding-subtitle = Оберіть шпалери, щоб освіжити вигляд нової вкладки.
-newtab-wallpaper-onboarding-primary-button-label = Налаштувати шпалери
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Системна тема
 mr1-onboarding-theme-label-light = Світла
@@ -428,7 +427,7 @@ onboarding-horizontal-tabs-description =
 # Additional setup card for setting up aichatbot in the sidebar
 onboarding-genai-sidebar-title = Спробуйте чат-бота ШІ на бічній панелі
 # Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
-onboarding-genai-sidebar-subtitle = Узагальнюйте вебвміст, обмірковуйте ідеї, чернетки повідомлень — і все це під час перегляду. Виберіть з кількох постачальників та перемикайтеся будь-коли. <a data-l10n-name="learn-more">Докладніше</a>
+onboarding-genai-sidebar-subtitle = Узагальнюйте вебвміст, обмірковуйте ідеї, чернетки повідомлень – і все це під час перегляду. Виберіть з кількох постачальників та перемикайтеся будь-коли. <a data-l10n-name="learn-more">Докладніше</a>
 onboarding-genai-sidebar-primary-button = Виберіть чат-бота
 onboarding-genai-sidebar-secondary-button = Почати перегляд
 
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Зареєструйте обліковий за�
 
 tab-groups-onboarding-feature-callout-title = Спробуйте групи вкладок – менше безладу й більше уваги
 tab-groups-onboarding-feature-callout-subtitle = Впорядкуйте свою роботу, перетягнувши одну вкладку на іншу, щоб створити групу.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Будь-коли знаходьте свої групи вкладок у меню "Список усіх вкладок".
+tab-groups-onboarding-create-group-title-2 = Знайдіть свої групи вкладок тут будь-коли.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Знайдіть свої групи за допомогою пошуку в панелі адреси.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Закриваючи групу вкладок, ви зможете будь-коли знову відкрити її з меню "Список усіх вкладок".
+tab-groups-onboarding-saved-groups-title-2 = Коли ви закриєте групу вкладок, то зможете будь-коли знову відкрити її тут.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Знайдіть закриті групи за допомогою пошуку в панелі адреси.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Повторно відкривайте свої групи вкладок з меню "Список усіх вкладок" коли завгодно.
+tab-groups-onboarding-session-restore-title = Повторно відкривайте свої групи вкладок тут будь-коли.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,33 @@ multi-profile-spotlight-cta = Створити профіль
 multi-profile-callout-title = Створюйте різні профілі для роботи й розваг
 multi-profile-callout-subtitle = У профілях зберігається інформація вашого перегляду, як-от історія та паролі, цілком окремо.
 multi-profile-callout-cta = Створити профіль
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Завантажте, синхронізуйте і користуйтесь!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Скануйте QR-код, щоб завантажити { -brand-product-name } для мобільного пристрою. Після встановлення виберіть “Синхронізувати з мобільним”, щоб отримати доступ до своїх паролів, закладок та інших даних.
+dismiss-button-label = Відхилити
+sync-to-mobile-button-label = Синхронізувати з мобільним
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-код для завантаження { -brand-product-name } для мобільних пристроїв
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Відновлення з резервної копії
+restore-from-backup-title = Відновіть усі дані { -brand-short-name }
+restore-from-backup-subtitle = Відновіть усі свої закладки, історію та інші дані, щоб безперебійно продовжити роботу.
+restore-from-backup-secondary-button = Не відновлювати
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Все готово! Ваші дані { -brand-short-name } відновлено.
+restored-from-backup-success-with-checklist-subtitle = Хочете завжди мати під рукою свій улюблений, приватний браузер?
+restored-from-backup-success-no-checklist-subtitle = Активуйте резервне копіювання для цього пристрою в <a data-l10n-name="settings">Налаштуваннях</a>.
+restored-from-backup-success-with-checklist-primary-button = Зберегти й продовжити
+restored-from-backup-success-with-checklist-secondary-button = Пропустити цей крок
+restored-from-backup-success-no-checklist-primary-button = Продовжити
+restored-from-backup-error-title = От халепа... Виникла проблема з вашою резервною копією.
+restored-from-backup-error-subtitle = Якщо у вас є інший файл резервної копії { -brand-short-name }, спробуйте відновити дані з нього. <a data-l10n-name="restore-problems">Не вдається усунути проблему?</a>
+restored-from-backup-error-primary-button = Закрити

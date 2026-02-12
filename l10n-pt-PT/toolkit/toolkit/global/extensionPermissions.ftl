@@ -40,3 +40,36 @@ webext-perms-description-webNavigation = Aceder à atividade do navegador durant
 webext-perms-extra-warning-userScripts-long = Os scripts não verificados podem apresentar riscos de segurança e de privacidade, tais como executar código prejudicial ou monitorizar a atividade de sites. Apenas execute scripts de extensões ou fontes em que confia.
 # A shorter warning is displayed in UI surfaces with little room, such as a permission prompt.
 webext-perms-extra-warning-userScripts-short = Os scripts não verificados podem apresentar riscos de segurança e de privacidade. Apenas execute scripts de extensões ou fontes em que confia.
+
+## Short form to be used in lists or in a string (`webext-perms-description-data-some`)
+## that formats some of the data collection permissions below using `Intl.ListFormat`.
+##
+## This is used when the data collection permissions are required.
+
+webext-perms-description-data-short-authenticationInfo = informação de autenticação
+webext-perms-description-data-short-bookmarksInfo = marcadores
+webext-perms-description-data-short-browsingActivity = atividade de navegação
+webext-perms-description-data-short-financialAndPaymentInfo = informação financeira e de pagamento
+webext-perms-description-data-short-healthInfo = informação de saúde
+webext-perms-description-data-short-locationInfo = localização
+webext-perms-description-data-short-personalCommunications = comunicações pessoais
+webext-perms-description-data-short-personallyIdentifyingInfo = informação de identificação pessoal
+webext-perms-description-data-short-searchTerms = termos de pesquisa
+webext-perms-description-data-short-technicalAndInteraction = dados técnicos e de interação
+webext-perms-description-data-short-websiteActivity = atividade de website
+webext-perms-description-data-short-websiteContent = conteúdo do website
+
+## Long form to be used in `about:addons` when these data collection permissions are optional.
+
+webext-perms-description-data-long-authenticationInfo = Partilhar a informação de autenticação com o programador da extensão
+webext-perms-description-data-long-bookmarksInfo = Partilha de informação de marcadores com o programador da extensão
+webext-perms-description-data-long-browsingActivity = Partilhar a atividade de navegação com o programador da extensão
+webext-perms-description-data-long-financialAndPaymentInfo = Partilhar informações financeiras e de pagamento com o programador da extensão
+webext-perms-description-data-long-healthInfo = Partilhar informações de saúde com o programador da extensão
+webext-perms-description-data-long-locationInfo = Partilhar a informação de localização com o programador da extensão
+webext-perms-description-data-long-personalCommunications = Partilhar comunicações pessoais com o programador da extensão
+webext-perms-description-data-long-personallyIdentifyingInfo = Partilhar informações de identificação pessoal com o programador da extensão
+webext-perms-description-data-long-searchTerms = Partilhar termos de pesquisa com o programador da extensão
+webext-perms-description-data-long-technicalAndInteraction = Partilhar dados técnicos e de interação com o programador da extensão
+webext-perms-description-data-long-websiteActivity = Partilhar a atividade do website com o programador da extensão
+webext-perms-description-data-long-websiteContent = Partilhar o conteúdo do website com o programador da extensão

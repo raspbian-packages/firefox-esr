@@ -42,9 +42,6 @@ options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-name = வண்ணங்களின் பெயர்கள்
 
-## Web Console section
-
-
 ## Style Editor section
 
 # The heading
@@ -53,9 +50,6 @@ options-styleeditor-label = ஸ்டைல் எடிட்டர்
 options-stylesheet-autocompletion-label = தன்னியல்பாக முடியும் CSS
 options-stylesheet-autocompletion-tooltip =
     .title = CSS பண்புகள், மதிப்புகள் மற்றும் தேர்வுகளை அசத்தலான திருத்தியில் நீங்கள் தட்டவதற்க்கினங்க தன்னியல்பாக முடியும்
-
-## Screenshot section
-
 
 ## Editor section
 
@@ -90,5 +84,5 @@ options-enable-service-workers-http-tooltip =
     .title = இந்த விருப்பத்தை இயக்கினால் கருவிப்பெட்டி திறந்துள்ள கீற்றுகள் அனைத்திற்கும் HTTP சேவைப் பணியாளர்களைச் செயற்படுத்தும்.
 # The label for the checkbox that toggles source maps in all tools.
 options-source-maps-label = மூல வரைபடங்களைச் செயற்படுத்த
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * நடப்பு அமர்வில் மட்டும், பக்கத்தை மீளேற்றுகிறது

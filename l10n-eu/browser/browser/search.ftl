@@ -34,7 +34,36 @@ removed-search-engine-message = <strong>Zure bilaketa-motor lehenetsia aldatu eg
 removed-search-engine-message2 = <strong>Zure bilaketa-motor lehenetsia aldatu egin da.</strong> Hemendik aurrera { $oldEngine } ez dago erabilgarri { -brand-short-name }(r)en bilaketa-motor lehenetsi gisa. { $newEngine } da zure bilaketa-motor lehenetsia orain. Beste bilaketa-motor lehenetsi batera aldatzeko, zoaz ezarpenetara.
 remove-search-engine-button = Ados
 
+## Infobar shown when default search engine is reset due to an issue reading the settings file.
+## Variables
+## $newEngine (String) - the name of the new default search engine.
+
+reset-search-settings-button = Ados
+
 ## Infobar shown when user is prompted to install search engine.
 ## Variables
 ## $engineName (String) - the name of the search engine to install.
 
+install-search-engine-add = Gehitu
+install-search-engine-no = Ez
+
+## The following strings are used as input labels.
+
+add-engine-window =
+    .title = Gehitu bilaketa-motorra
+    .style = min-width: 32em;
+edit-engine-window =
+    .title = Editatu bilaketa-motorra
+    .style = min-width: 32em;
+add-engine-button = Gehitu bilaketa-motor pertsonalizatua
+add-engine-name = Bilaketa-motorraren izena
+add-engine-keyword2 = Gako-hitza (aukerakoa)
+
+## The following placeholders are shown in the inputs when adding a new engine.
+
+add-engine-name-placeholder =
+    .placeholder = adib., Mozilla Developer Network
+add-engine-url-placeholder =
+    .placeholder = adib., https://developer.mozilla.com/search?q=%s
+add-engine-keyword-placeholder =
+    .placeholder = adib., @mdn

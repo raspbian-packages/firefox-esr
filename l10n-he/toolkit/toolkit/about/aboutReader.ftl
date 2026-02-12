@@ -74,17 +74,22 @@ about-reader-customtheme-tab = התאמה אישית
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = טקסט
-    .title = עריכת צבע
-about-reader-custom-colors-background = רקע
-    .title = עריכת צבע
-about-reader-custom-colors-unvisited-links = קישורים שלא ביקרת בהם
-    .title = עריכת צבע
-about-reader-custom-colors-visited-links = קישורים שביקרת בהם
-    .title = עריכת צבע
-about-reader-custom-colors-selection-highlight = מדגיש להקראה בקול
-    .title = עריכת צבע
 about-reader-reset-button = איפוס לברירות המחדל
+about-reader-custom-colors-foreground2 =
+    .label = טקסט
+    .title = עריכת צבע
+about-reader-custom-colors-background2 =
+    .label = רקע
+    .title = עריכת צבע
+about-reader-custom-colors-unvisited-links2 =
+    .label = קישורים שלא ביקרת בהם
+    .title = עריכת צבע
+about-reader-custom-colors-visited-links2 =
+    .label = קישורים שביקרת בהם
+    .title = עריכת צבע
+about-reader-custom-colors-selection-highlight2 =
+    .label = מדגיש להקראה בקול
+    .title = עריכת צבע
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = יישור טקסט למרכז
 about-reader-text-alignment-right =
     .title = יישור טקסט לצד ימין
+about-reader-text-alignment-justify =
+    .title = יישור טקסט לשני הצדדים

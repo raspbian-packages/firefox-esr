@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Preuzimanja
 appmenuitem-passwords =
     .label = Lozinke
+appmenuitem-extensions-and-themes =
+    .label = Proširenja i teme
+appmenuitem-extensions =
+    .label = Proširenja
 appmenuitem-addons-and-themes =
     .label = Dodaci i teme
 appmenuitem-print =
@@ -34,7 +38,7 @@ appmenuitem-print =
 appmenuitem-find-in-page =
     .label = Pronađi na stranici …
 appmenuitem-translate =
-    .label = Prevedi stranicu…
+    .label = Prevedi stranicu …
 appmenuitem-zoom =
     .value = Zumiraj
 appmenuitem-more-tools =
@@ -128,14 +132,14 @@ whatsnew-panel-footer-checkbox =
 ## "Enable Profiler Menu Button".
 
 profiler-popup-button-idle =
-    .label = Alat za profiliranje
+    .label = Profiler
     .tooltiptext = Snimi profil performanse
 profiler-popup-button-recording =
-    .label = Alat za profiliranje
-    .tooltiptext = Alat za profiliranje zapisuje profil
+    .label = Profiler
+    .tooltiptext = Profiler snima jedan profil
 profiler-popup-button-capturing =
-    .label = Alat za profiliranje
-    .tooltiptext = Alat za profiliranje snima profil
+    .label = Profiler
+    .tooltiptext = Profiler snima jedan profil
 profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Otkrij više informacija
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Otvori ploču profilera
+    .tooltiptext = Otvori ploču profilera
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -180,7 +187,7 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/shared/background.sys.mjs
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
-profiler-popup-presets-web-developer-description = Preporučene postavke za većinu otklanjanja pogrešaka u web aplikacijama s malim opterećenjem.
+profiler-popup-presets-web-developer-description = Preporučena unaprijed postavljena postavka za otklanjanje grešaka u većini web aplikacija, s niskom potrošnjom resursa.
 profiler-popup-presets-web-developer-label =
     .label = Web programer
 profiler-popup-presets-firefox-description = Preporučena zadana postavka za profiliranje { -brand-shorter-name(case: "gen") }.
@@ -198,7 +205,7 @@ profiler-popup-presets-networking-label =
 profiler-popup-presets-power-description = Zadana postavka za istraživanje grešaka potrošnje energije u { -brand-shorter-name(case: "loc") }.
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
-    .label = Struja
+    .label = Energija
 profiler-popup-presets-debug-description = Preporučene postavke za otklanjanje grešaka u { -brand-shorter-name(case: "loc") }. Visoko opterećenje, nemoj koristiti za rad koji zahtijeva performanse, već za fokusiranje na razumijevanje ponašanja preglednika.
 profiler-popup-presets-debug-label =
     .label = Otklanjanje grešaka
@@ -257,7 +264,7 @@ appmenu-help-exit-troubleshoot-mode =
 ## are mutually exclusive, so it's possible to use the same accesskey for both.
 
 appmenu-help-report-deceptive-site =
-    .label = Prijavi obmanjujuću stranicu…
+    .label = Prijavi obmanjujuću stranicu …
     .accesskey = b
 appmenu-help-not-deceptive =
     .label = Ovo nije obmanjujuća stranica…
@@ -288,7 +295,6 @@ appmenu-other-protection-header = Isprobaj druge { -vendor-short-name } alate za
 
 ## Profiles panel
 
-appmenu-profiles = Profili
 appmenu-other-profiles = Drugi profili
 appmenu-manage-profiles =
     .label = Upravljaj profilima
@@ -296,3 +302,5 @@ appmenu-create-profile =
     .label = Novi profil
 appmenu-edit-profile =
     .aria-label = Uredi profil
+appmenu-profiles-2 =
+    .label = Profili

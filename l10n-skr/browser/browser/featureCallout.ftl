@@ -53,14 +53,14 @@ fx-view-discoverability-secondary-button-label = فارغ کرو
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = ایہ سفارش دوبارہ نہ ݙکھاؤ
+split-dismiss-button-dont-show-option =
+    .label = ایہ سفارش دوبارہ نہ ݙکھاؤ
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = تھوڑیاں سفارشاں ݙکھاؤ
+split-dismiss-button-show-fewer-option =
+    .label = تھوڑیاں سفارشاں ݙکھاؤ
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = ترتیباں دا بندوبست کرو
-
-## Sidebar Strings
-
+split-dismiss-button-manage-settings-option =
+    .label = ترتیباں دا بندوبست کرو
 
 ## Sidebar Callout Survey Strings
 
@@ -77,3 +77,5 @@ sidebar-callout-survey-disagree = اختلاف
 sidebar-callout-survey-strongly-disagree = ݙاڈھا اختلاف
 sidebar-callout-survey-submit = جمع کرواؤ
 sidebar-callout-survey-thank-you = تہاݙے فیڈبیک تے تھورائت ہیں!
+unified-search-callout-primary-label = اڳلا
+unified-search-callout-secondary-label = فارغ کرو

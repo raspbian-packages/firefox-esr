@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Niðurhöl
 appmenuitem-passwords =
     .label = Lykilorð
+appmenuitem-extensions-and-themes =
+    .label = Forritsaukar og þemu
+appmenuitem-extensions =
+    .label = Forritsaukar
 appmenuitem-addons-and-themes =
     .label = Viðbætur og þemu
 appmenuitem-print =
@@ -143,7 +147,7 @@ profiler-popup-description-title =
     .value = Skrá, greina, deila
 profiler-popup-description = Vertu í samstarfi um afkastavandamál með því að birta afkastasnið til að deila með teyminu þínu.
 profiler-popup-learn-more-button =
-    .label = Fræðast meira
+    .label = Kanna nánar
 profiler-popup-settings =
     .value = Stillingar
 # This link takes the user to about:profiling, and is only visible with the Custom preset.
@@ -192,6 +196,8 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Sú forstilling sem mælt er með til að rannsaka hljóð- og myndvandamál í { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Margmiðlunargögn
+profiler-popup-presets-ml-label =
+    .label = Vélnám
 profiler-popup-presets-networking-description = Sú forstilling sem mælt er með til að rannsaka netkerfisvillur í { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Netvinnsla
@@ -288,7 +294,6 @@ appmenu-other-protection-header = Prófa önnur verndunarverkfæri frá { -vendo
 
 ## Profiles panel
 
-appmenu-profiles = Notkunarsnið
 appmenu-other-profiles = Önnur notkunarsnið
 appmenu-manage-profiles =
     .label = Sýsla með notkunarsnið
@@ -296,3 +301,5 @@ appmenu-create-profile =
     .label = Nýtt notkunarsnið
 appmenu-edit-profile =
     .aria-label = Breyta notkunarsniði
+appmenu-profiles-2 =
+    .label = Notkunarsnið

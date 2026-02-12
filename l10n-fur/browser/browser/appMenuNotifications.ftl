@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Ignore
     .secondarybuttonaccesskey = n
 appmenu-update-restart-message2 = Oten la ultime version di { -brand-shorter-name }. Lis schedis e i barcons vierts a vignaran ripristinâts.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Anule
+    .secondarybuttonaccesskey = u
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } nol rive a inzornâsi in automatic ae ultime version.
     .buttonlabel = Inzorne { -brand-shorter-name } distès
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = Va ben
     .buttonaccesskey = V
 appmenu-addon-post-install-message3 = Gjestìs i tiei components adizionâi e i temis midiant il menù aplicazion.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Inzorne i permès e lis preferencis sui dâts cuant che tu vûs tes <a data-l10n-name="settings-link">impostazions de estension</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Fisse estension te sbare dai struments
+    .accesskey = F
 appmenu-addon-post-install-incognito-checkbox =
     .label = Permet a cheste estension di zirâ tai barcons privâts
     .accesskey = P

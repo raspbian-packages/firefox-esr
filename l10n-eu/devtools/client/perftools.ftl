@@ -147,6 +147,3 @@ perftools-presets-networking-description = { -brand-shorter-name }(r)en sareko p
 perftools-presets-power-label = Energia
 perftools-presets-power-description = { -brand-shorter-name }(r)en energia-erabilpenaren arazoak ikertzeko aurrezarpena, eragin negatibo txikiarekin.
 perftools-presets-custom-label = Pertsonalizatua
-
-##
-

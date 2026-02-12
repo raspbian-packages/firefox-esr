@@ -13,7 +13,7 @@ toolbar-context-menu-reload-selected-tabs =
     .accesskey = R
 toolbar-context-menu-bookmark-selected-tab =
     .label = Kijelölt lap könyvjelzőbe…
-    .accesskey = F
+    .accesskey = K
 toolbar-context-menu-bookmark-selected-tabs =
     .label = Kijelölt lapok könyvjelzőbe…
     .accesskey = l
@@ -30,6 +30,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Bezárt lapok újranyitása
         }
     .accesskey = r
+toolbar-context-turn-on-vertical-tabs =
+    .label = Függőleges lapok bekapcsolása
+toolbar-context-turn-off-vertical-tabs =
+    .label = Függőleges lapok kikapcsolása
+toolbar-context-customize-sidebar =
+    .label = Oldalsáv testreszabása
 toolbar-context-menu-manage-extension =
     .label = Kiegészítő kezelése
     .accesskey = K
@@ -54,6 +60,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Panel megjelenítése, amikor a letöltés kezdődik
     .accesskey = P
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Megjelenítés az Eszköztárban mindig
+    .accesskey = m
 toolbar-context-menu-remove-from-toolbar =
     .label = Eltávolítás az eszköztárról
     .accesskey = e

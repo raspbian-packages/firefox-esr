@@ -13,6 +13,15 @@ contentanalysis-slow-agent-dialog-header = Scansione in corso
 contentanalysis-slow-agent-dialog-body-file = { $agent } sta verificando “{ $filename }” in base ai criteri per i dati della tua organizzazione. Potrebbe richiedere alcuni istanti.
 # Variables:
 #   $agent - The name of the DLP agent doing the analysis
+#   $filename - Name of a file being analyzed, such as "aFile.txt"
+#   $count (number) - The number of additional items in the request for analysis
+contentanalysis-slow-agent-dialog-body-file-and-more =
+    { $count ->
+        [one] { $agent } sta verificando “{ $filename }” e { $count } altro elemento in base ai criteri per i dati della tua organizzazione. L’operazione potrebbe richiedere alcuni istanti.
+       *[other] { $agent } sta verificando “{ $filename }” e { $count } altri elementi in base ai criteri per i dati della tua organizzazione. L’operazione potrebbe richiedere alcuni istanti.
+    }
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
 contentanalysis-slow-agent-dialog-body-clipboard = { $agent } sta verificando il contenuto incollato in base ai criteri per i dati della tua organizzazione. Potrebbe richiedere alcuni istanti.
 # Note that this is shown when the user drag and drops text into the browser.
 # Variables:
@@ -25,7 +34,9 @@ contentanalysis-operationtype-clipboard = appunti
 contentanalysis-operationtype-dropped-text = testo trascinato
 contentanalysis-operationtype-print = stampa
 #   $filename - The filename associated with the request, such as "aFile.txt"
-contentanalysis-customdisplaystring-description = caricamento di “{ $filename }”
+contentanalysis-upload-description = caricamento di “{ $filename }”
+#   $filename - The filename associated with the request, such as "aFile.txt"
+contentanalysis-download-description = download di “{ $filename }”
 contentanalysis-warndialogtitle = Questi contenuti potrebbero essere non sicuri
 # Variables:
 #   $content - Description of the content being warned about, such as "clipboard" or "aFile.txt"
@@ -58,10 +69,18 @@ contentanalysis-error-message-upload-file = Il caricamento di “{ $filename }�
 contentanalysis-error-message-dropped-text = Il trascinamento è stato rifiutato.
 contentanalysis-error-message-clipboard = L’incollatura è stata rifiutata.
 contentanalysis-error-message-print = La stampa è stata rifiutata.
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
+#   $contentName - Description of the content, such as "clipboard" or "aFile.txt"
+contentanalysis-timeout-block-error-message-content = La connessione a { $agent } è terminata per timeout. { $contentName } è stato bloccato.
 contentanalysis-block-dialog-title-upload-file = Non hai il permesso di caricare questo file
 # Variables:
 #   $filename - Name of the file that was blocked, such as "aFile.txt"
 contentanalysis-block-dialog-body-upload-file = I criteri per la protezione dei dati stabiliti dalla tua organizzazione non consentono di caricare il file “{ $filename }”. Contatta il tuo amministratore per ulteriori informazioni.
+contentanalysis-block-dialog-title-download-file = Non hai il permesso di scaricare questo file
+# Variables:
+#   $filename - Name of the file that was blocked, such as "aFile.txt"
+contentanalysis-block-dialog-body-download-file = I criteri per la protezione dei dati stabiliti dalla tua organizzazione non consentono di scaricare il file “{ $filename }”. Contatta il tuo amministratore per ulteriori informazioni.
 contentanalysis-block-dialog-title-clipboard = Non hai il permesso di incollare questo contenuto
 contentanalysis-block-dialog-body-clipboard = I criteri per la protezione dei dati stabiliti dalla tua organizzazione non consentono di incollare questo contenuto. Contatta il tuo amministratore per ulteriori informazioni.
 contentanalysis-block-dialog-title-dropped-text = Non hai il permesso di trascinare questo contenuto

@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Zavrieť kartu
 tabbrowser-menuitem-close =
     .label = Zavrieť
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -126,8 +139,8 @@ tabbrowser-confirm-close-windows-button =
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
 ## Windows does not show a prompt on quit when using the keyboard shortcut by default.
 
-tabbrowser-confirm-close-tabs-with-key-title = Zavrieť okno a ukončiť { -brand-short-name }?
-tabbrowser-confirm-close-tabs-with-key-button = Ukončiť { -brand-short-name }
+tabbrowser-confirm-close-tabs-with-key-title = Zavrieť okno a ukončiť { -brand-short-name(case: "acc") }?
+tabbrowser-confirm-close-tabs-with-key-button = Ukončiť { -brand-short-name(case: "acc") }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-ask-close-tabs-with-key-checkbox = Opýtať sa pred ukončením pomocou skratky { $quitKey }
@@ -138,11 +151,11 @@ tabbrowser-confirm-close-tabs-with-key-checkbox = Vyžadovať potvrdenie pred uk
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
 ## and browser.warnOnQuitShortcut is true.
 
-tabbrowser-confirm-close-warn-shortcut-title = Ukončiť { -brand-short-name } alebo zatvoriť aktuálnu kartu?
+tabbrowser-confirm-close-warn-shortcut-title = Ukončiť { -brand-short-name(case: "acc") } alebo zatvoriť aktuálnu kartu?
 tabbrowser-confirm-close-windows-warn-shortcut-button =
     { PLATFORM() ->
-        [windows] Ukončiť { -brand-short-name }
-       *[other] Ukončiť { -brand-short-name }
+        [windows] Ukončiť { -brand-short-name(case: "acc") }
+       *[other] Ukončiť { -brand-short-name(case: "acc") }
     }
 tabbrowser-confirm-close-tab-only-button = Zavrieť aktuálnu kartu
 
@@ -153,12 +166,12 @@ tabbrowser-confirm-open-multiple-tabs-title = Potvrdenie otvorenia
 #   $tabCount (Number): The number of tabs that will be opened.
 tabbrowser-confirm-open-multiple-tabs-message =
     { $tabCount ->
-        [one] Chystáte sa naraz otvoriť { $tabCount } kartu. Toto môže spomaliť { -brand-short-name } počas ich načítavania. Naozaj chcete pokračovať?
-        [few] Chystáte sa naraz otvoriť { $tabCount } karty. Toto môže spomaliť { -brand-short-name } počas ich načítavania. Naozaj chcete pokračovať?
-       *[other] Chystáte sa naraz otvoriť { $tabCount } kariet. Toto môže spomaliť { -brand-short-name } počas ich načítavania. Naozaj chcete pokračovať?
+        [one] Chystáte sa naraz otvoriť { $tabCount } kartu. Toto môže spomaliť { -brand-short-name(case: "acc") } počas ich načítavania. Naozaj chcete pokračovať?
+        [few] Chystáte sa naraz otvoriť { $tabCount } karty. Toto môže spomaliť { -brand-short-name(case: "acc") } počas ich načítavania. Naozaj chcete pokračovať?
+       *[other] Chystáte sa naraz otvoriť { $tabCount } kariet. Toto môže spomaliť { -brand-short-name(case: "acc") } počas ich načítavania. Naozaj chcete pokračovať?
     }
 tabbrowser-confirm-open-multiple-tabs-button = Otvoriť karty
-tabbrowser-confirm-open-multiple-tabs-checkbox = Upozorniť ma v prípade, že otvorenie viacerých kariet by mohlo spomaliť { -brand-short-name }
+tabbrowser-confirm-open-multiple-tabs-checkbox = Upozorniť ma v prípade, že otvorenie viacerých kariet by mohlo spomaliť { -brand-short-name(case: "acc") }
 
 ## Confirmation dialog for enabling caret browsing
 
@@ -168,8 +181,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Nabudúce toto okno nezobrazovať
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Pozor
-tabbrowser-confirm-close-duplicate-tabs-text = Poslednú aktívnu kartu ponecháme otvorenú
 tabbrowser-confirm-close-all-duplicate-tabs-title = Zavrieť duplicitné karty?
 tabbrowser-confirm-close-all-duplicate-tabs-text = V tomto okne zatvoríme duplicitné karty. Posledná aktívna karta zostane otvorená.
 tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Zavrieť karty
@@ -214,6 +225,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Stlmiť zvuk na tejto karte
@@ -221,8 +235,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Zapnúť zvuk na tejto karte
 tabbrowser-manager-close-tab =
     .tooltiptext = Zavrieť kartu
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — zatvorená
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — aktuálne okno
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Vytvoriť skupinu kariet
 tab-group-editor-title-edit = Spravovať skupinu kariet
@@ -234,22 +256,40 @@ tab-group-editor-cancel =
     .accesskey = Z
 tab-group-editor-color-selector =
     .aria-label = Farba skupiny kariet
-tab-group-editor-color-selector-blue = Modrá
-tab-group-editor-color-selector-purple = Fialová
-tab-group-editor-color-selector-cyan = Azúrová
-tab-group-editor-color-selector-orange = Oranžová
-tab-group-editor-color-selector-yellow = Žltá
-tab-group-editor-color-selector-pink = Ružová
-tab-group-editor-color-selector-green = Zelená
-tab-group-editor-color-selector-gray = Sivá
-tab-group-editor-color-selector-red = Červená
-tab-group-menu-header = Skupiny kariet
+tab-group-editor-color-selector2-blue = Modrá
+    .title = Modrá
+tab-group-editor-color-selector2-purple = Fialová
+    .title = Fialová
+tab-group-editor-color-selector2-cyan = Azúrová
+    .title = Azúrová
+tab-group-editor-color-selector2-orange = Oranžová
+    .title = Oranžová
+tab-group-editor-color-selector2-yellow = Žltá
+    .title = Žltá
+tab-group-editor-color-selector2-pink = Ružová
+    .title = Ružová
+tab-group-editor-color-selector2-green = Zelená
+    .title = Zelená
+tab-group-editor-color-selector2-gray = Sivá
+    .title = Sivá
+tab-group-editor-color-selector2-red = Červená
+    .title = Červená
+tab-group-description = { $tabGroupName } — Skupina kariet
+tab-group-label-tooltip-collapsed = { $tabGroupName } — zbalené
+tab-group-label-tooltip-expanded = { $tabGroupName } — rozbalené
+tab-group-preview-name =
+    .aria-label = Karty v zbalenej skupine
 tab-context-unnamed-group =
     .label = Nepomenovaná skupina
 tab-group-name-default = Nepomenovaná skupina
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Zoznam kariet otvorený
+tab-group-preview-closed-description = Zoznam kariet zatvorený
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -271,6 +311,8 @@ tab-context-move-tab-to-group =
            *[other] Pridať karty do skupiny
         }
     .accesskey = r
+tab-context-move-tab-to-group-saved-groups =
+    .label = Zatvorené skupiny
 tab-group-editor-action-new-tab =
     .label = Nová karta v skupine
 tab-group-editor-action-new-window =
@@ -298,6 +340,18 @@ tab-context-ungroup-tab =
            *[other] Odstrániť zo skupín
         }
     .accesskey = d
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = + { $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } ďalšia karta
+        [few] { $tabCount } ďalšie karty
+        [many] { $tabCount } ďalších kariet
+       *[other] { $tabCount } ďalších kariet
+    }
 
 ## Open/saved tab group context menu
 
@@ -323,3 +377,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Otvoriť skupinu v novom okne
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Rozdelené zobrazenie
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Pridať rozdelené zobrazenie
+    .accesskey = d
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Otvoriť v rozdelenom zobrazení
+    .accesskey = t
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Samostatné rozdelené zobrazenie
+    .accesskey = S
+tab-context-badge-new = Nové

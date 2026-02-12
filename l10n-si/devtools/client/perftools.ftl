@@ -17,9 +17,6 @@ perftools-heading-features-disabled = ආබල කළ විශේෂාංග
 perftools-heading-features-experimental = පරීක්‍ෂාත්මක
 perftools-heading-local-build = ස්ථානීය තැනුම
 
-##
-
-
 ## The controls for the interval at which the profiler samples the code.
 
 perftools-range-interval-milliseconds = මි.ත. { NUMBER($interval, maxFractionalUnits: 2) }
@@ -33,6 +30,7 @@ perftools-devtools-settings-label = සැකසුම්
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
+perftools-status-restart-required = මෙම විශේෂාංගය සබල කිරීමට අතිරික්සුව යළි ඇරඹිය යුතුයි.
 
 ## These are shown briefly when the user is waiting for the profiler to respond.
 
@@ -48,12 +46,6 @@ perftools-button-restart = යළි අරඹන්න
 perftools-button-add-directory = නාමාවලියක් එක් කරන්න
 perftools-button-remove-directory = තේරූ දෑ ඉවත් කරන්න
 perftools-button-edit-settings = සැකසුම් සංස්කරණය...
-
-## These messages are descriptions of the threads that can be enabled for the profiler.
-
-
-##
-
 
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## devtools.performance.new-panel-onboarding preference is true.
@@ -80,6 +72,3 @@ perftools-presets-networking-label = ජාලකරණය
 # "Power" is used in the sense of energy (electricity used by the computer).
 perftools-presets-power-label = බලය
 perftools-presets-custom-label = අභිරුචි
-
-##
-

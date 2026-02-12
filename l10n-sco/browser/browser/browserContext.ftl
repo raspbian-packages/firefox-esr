@@ -78,9 +78,6 @@ toolbar-button-fxaccount =
     .label = { -fxaccount-brand-name(capitalization: "sentence") }
     .tooltiptext = { -fxaccount-brand-name(capitalization: "sentence") }
 
-## Account toolbar Button
-
-
 ## Save Page
 
 main-context-menu-page-save =
@@ -111,9 +108,7 @@ main-context-menu-save-link-to-pocket =
     .label = Save Link tae { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Copy Email Address

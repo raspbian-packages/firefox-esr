@@ -59,11 +59,7 @@ history-section-label = Geçmiş
 item-history-and-downloads =
     .label = Gezinti ve indirme geçmişi
     .accesskey = T
-item-history-and-downloads-description = Arama, site ve indirme geçmişini temizler
-item-history-form-data-downloads =
-    .label = Geçmiş
-    .accesskey = G
-item-history-form-data-downloads-description = Site ve indirme geçmişini, kayıtlı form bilgilerini ve aramaları temizler
+item-history-and-downloads-description2 = Site ve indirme geçmişini temizler
 item-cookies =
     .label = Çerezler
     .accesskey = z
@@ -131,4 +127,4 @@ sanitize-everything-warning = Tüm geçmiş silinecek.
 # Warning that appears when "Time range to clear" is set to "Everything" in Clear
 # Recent History dialog, provided that the user has modified the default set of
 # history items to clear.
-sanitize-selected-warning = Tüm seçili nesneler temizlenecektir.
+sanitize-selected-warning = Seçili nesnelerin hepsi temizlenecektir.

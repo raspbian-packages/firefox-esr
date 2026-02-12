@@ -20,6 +20,15 @@ fxa-menu-connect-another-device =
     .label = სხვა მოწყობილობის დაკავშირება…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] მოწყობილობაზე გაგზავნა
+           *[other] გაგზავნეთ { $tabCount } ჩანართი სხვა მოწყობილობაზე
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label =
         { $tabCount ->
@@ -33,8 +42,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = გაგზავნეთ ჩანართი მყისიერად ნებისმიერ მოწყობილობაზე, რომელზეც შესული ხართ.
 fxa-menu-sign-out =
     .label = გამოსვლა…
-fxa-menu-sync-title = დასინქ.
 fxa-menu-sync-description = თქვენი ვებსივრცე ყველგან
+fxa-avatar-sign-in = შესვლა
+fxa-avatar-sign-up = შექმნა
+fxa-avatar-tooltip =
+    .tooltiptext = შედით თქვენს ანგარიშზე
 sync-setup-verify-continue = განაგრძეთ
 sync-setup-verify-title = გაერთიანების გაფრთხილება
 sync-setup-verify-heading = ნამდვილად გსურთ სინქრონიზაციაში შესვლა?

@@ -158,7 +158,7 @@ downloading-file-opens-in-minutes-and-seconds-2 =
 downloading-file-opens-in-seconds-2 =
     .value = Digeriñ a raio a-benn { $seconds }eil…
 downloading-file-opens-in-some-time-2 =
-    .value = Digeriñ pa va leuniet…
+    .value = Digeriñ pa vo leuniet…
 downloading-file-click-to-open =
     .value = Digeriñ pa vo echuet
 
@@ -182,6 +182,12 @@ downloads-history =
 # that we are showing the details of a single download.
 downloads-details =
     .title = Munudoù ar bellgargardenn
+
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-accept-button =
+    .label = Komprenet am eus
+    .accesskey = K
 
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:

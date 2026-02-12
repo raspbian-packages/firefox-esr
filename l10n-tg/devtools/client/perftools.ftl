@@ -65,6 +65,14 @@ perftools-button-add-directory = Илова кардани ҷузвдон
 perftools-button-remove-directory = Тоза кардани маводи интихобшуда
 perftools-button-edit-settings = Таҳрир кардани танзимот…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = Амалҳои бештар
+perftools-menu-more-actions-restart-with-profiling = Аз нав оғоз кардани «{ -brand-shorter-name }» дар якҷоягӣ бо профилсозии оғози кори фаъолшуда
+perftools-menu-more-actions-copy-for-startup = Нусха бардоштани тағйирёбандаҳои муҳит барои профилсозии оғози кор
+perftools-menu-more-actions-copy-for-perf-tests = Нусха бардоштани танзимот барои санҷишҳои самаранокии низом
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -137,6 +145,8 @@ perftools-presets-graphics-label = Графика
 perftools-presets-graphics-description = Танзимот барои тафтиши хатоҳои графикӣ дар { -brand-shorter-name }.
 perftools-presets-media-label = Расона
 perftools-presets-media-description2 = Танзимот барои тафтиши хатоҳои аудио ва видео дар { -brand-shorter-name }.
+perftools-presets-ml-label = Омӯзиши мошинӣ
+perftools-presets-ml-description2 = Танзимот барои тафтиши хатоҳои омӯзиши мошинӣ дар «{ -brand-shorter-name }».
 perftools-presets-networking-label = Шабакасозӣ
 perftools-presets-networking-description = Танзимот барои тафтиши хатоҳои шабакасозӣ дар { -brand-shorter-name }.
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -145,6 +155,3 @@ perftools-presets-power-description = Танзимот барои тафтиши
 perftools-presets-debug-label = Ислоҳ кардани хатоҳо
 perftools-presets-debug-description = Танзими пешбинишуда барои ислоҳ кардани хатоҳо дар «{ -brand-shorter-name }». Ба сабаби хароҷоти изофӣ, аз он барои кори самаранок истифода набаред, аммо аз он барои таваҷҷуҳ ба фаҳмидани рафтори браузер истифода баред.
 perftools-presets-custom-label = Фармоишӣ
-
-##
-

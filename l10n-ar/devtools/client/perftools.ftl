@@ -21,9 +21,6 @@ perftools-heading-features-disabled = الميزات المعطّلة
 perftools-heading-features-experimental = الميزات التجريبية
 perftools-heading-threads = الخيوط
 
-##
-
-
 ## The controls for the interval at which the profiler samples the code.
 
 perftools-range-interval-milliseconds = { NUMBER($interval, maxFractionalUnits: 2) } م‌ث
@@ -53,16 +50,6 @@ perftools-button-restart = أعِد التشغيل
 perftools-button-remove-directory = أزِل المحدد
 perftools-button-edit-settings = عدّل الإعدادات…
 
-## These messages are descriptions of the threads that can be enabled for the profiler.
-
-
-##
-
-
-## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
-## devtools.performance.new-panel-onboarding preference is true.
-
-
 ## Profiler presets
 
 
@@ -75,6 +62,4 @@ perftools-button-edit-settings = عدّل الإعدادات…
 # devtools/client/performance-new/shared/background.sys.mjs
 # The same labels and descriptions are also defined in appmenu.ftl.
 
-
-##
-
+perftools-presets-custom-label = مخصّص

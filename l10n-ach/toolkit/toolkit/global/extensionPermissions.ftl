@@ -28,7 +28,3 @@ webext-perms-description-tabs = Nong dirica matino pa layeny
 webext-perms-description-tabHide = Kan ki nyut dirica matino me layent
 webext-perms-description-topSites = Nong gin mukato me yeny
 webext-perms-description-webNavigation = Nong tic pa layeny ikare me wot
-
-## The userScripts permission includes an additional explanation that is
-## displayed prominently near the usual permission description.
-

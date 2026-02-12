@@ -246,9 +246,9 @@ nsJAR::GetEntry(const nsACString& aEntryName, nsIZipEntry** result) {
   nsZipItem* zipItem = mZip->GetItem(aEntryName);
   NS_ENSURE_TRUE(zipItem, NS_ERROR_FILE_NOT_FOUND);
 
-  nsJARItem* jarItem = new nsJARItem(zipItem);
+  RefPtr<nsJARItem> jarItem = new nsJARItem(zipItem);
 
-  NS_ADDREF(*result = jarItem);
+  *result = jarItem.forget().take();
   return NS_OK;
 }
 
@@ -278,9 +278,10 @@ nsJAR::FindEntries(const nsACString& aPattern,
       aPattern.IsEmpty() ? nullptr : PromiseFlatCString(aPattern).get(), &find);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsIUTF8StringEnumerator* zipEnum = new nsJAREnumerator(find);
+  RefPtr<nsIUTF8StringEnumerator> zipEnum = new nsJAREnumerator(find);
 
-  NS_ADDREF(*result = zipEnum);
+  // Callers use getter_addrefs
+  *result = zipEnum.forget().take();
   return NS_OK;
 }
 
@@ -301,9 +302,7 @@ nsJAR::GetInputStream(const nsACString& aEntryName, nsIInputStream** result) {
     item = mZip->GetItem(entry);
     if (!item) return NS_ERROR_FILE_NOT_FOUND;
   }
-  nsJARInputStream* jis = new nsJARInputStream();
-  // addref now so we can call InitFile/InitDirectory()
-  NS_ADDREF(*result = jis);
+  RefPtr<nsJARInputStream> jis = new nsJARInputStream();
 
   nsresult rv = NS_OK;
   if (!item || item->IsDirectory()) {
@@ -312,8 +311,9 @@ nsJAR::GetInputStream(const nsACString& aEntryName, nsIInputStream** result) {
     RefPtr<nsZipHandle> fd = mZip->GetFD();
     rv = jis->InitFile(fd, mZip->GetData(item), item);
   }
-  if (NS_FAILED(rv)) {
-    NS_RELEASE(*result);
+  if (NS_SUCCEEDED(rv)) {
+    // Callers use getter_addrefs
+    *result = jis.forget().take();
   }
   return rv;
 }
@@ -859,7 +859,7 @@ nsZipReaderCache::Observe(nsISupports* aSubject, const char* aTopic,
       file = do_QueryInterface(aSubject);
     } else if (aSomeData) {
       nsDependentString fileName(aSomeData);
-      Unused << NS_NewLocalFile(fileName, false, getter_AddRefs(file));
+      Unused << NS_NewLocalFile(fileName, getter_AddRefs(file));
     }
 
     if (!file) return NS_OK;

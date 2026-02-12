@@ -5,11 +5,6 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = Fügt den Chatbot Ihrer Wahl in der Sidebar hinzu, für schnellen Zugriff beim Surfen. <a data-l10n-name="connect">Feedback teilen</a>
-genai-settings-chat-choose = Wählen Sie einen Chatbot
-genai-settings-chat-choose-one-menuitem =
-    .label = Auswählen
-genai-settings-chat-links = Wenn Sie einen Chatbot auswählen, stimmen Sie den Nutzungsbedingungen und der Datenschutzrichtlinie des Anbieters zu.
 genai-settings-chat-chatgpt-links = Indem Sie ChatGPT wählen, stimmen Sie den <a data-l10n-name="link1">Nutzungsbedingungen</a> und der <a data-l10n-name="link2">Datenschutzerklärung</a>von OpenAI zu.
 genai-settings-chat-claude-links = Indem Sie Anthropic Claude wählen, stimmen Sie den <a data-l10n-name="link1">Verbraucher-Nutzungsbedingungen</a>, der <a data-l10n-name="link2">Nutzungsrichtlinie</a> und der<a data-l10n-name="link3">Datenschutzerklärung</a> von Anthropic zu.
 genai-settings-chat-copilot-links = Indem Sie Copilot wählen, stimmen Sie den <a data-l10n-name="link1">Bestimmungen für KI-Erfahrungen in Copilot</a> und den <a data-l10n-name="link2">Microsoft-Datenschutzbestimmungen</a> zu.
@@ -17,9 +12,6 @@ genai-settings-chat-gemini-links = Indem Sie Google Gemini wählen, stimmen Sie 
 genai-settings-chat-huggingchat-links = Indem Sie HuggingChat wählen, stimmen Sie dem <a data-l10n-name="link1">Datenschutzhinweis für HuggingChat</a> und der <a data-l10n-name="link2">Datenschutzrichtlinie von Hugging Face</a> zu.
 genai-settings-chat-lechat-links = Indem Sie Le Chat Mistral wählen, stimmen Sie den <a data-l10n-name="link1">Nutzungsbedingungen</a> und der <a data-l10n-name="link2">Datenschutzrichtlinie</a> von Mistral AI zu.
 genai-settings-chat-localhost-links = Bringen Sie Ihren eigenen privaten lokalen Chatbot wie <a data-l10n-name="link1">llamafile</a> aus der Innovationsgruppe von { -vendor-short-name } mit.
-genai-settings-chat-shortcuts =
-    .description = Zeigt eine Verknüpfung zu Prompts an, wenn Sie Text auswählen. { -brand-short-name } sendet den Text, den Seitentitel und den Prompt an den Chatbot.
-    .label = Zeigt Prompts für ausgewählten Text
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -59,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = { $provider } fragen
+genai-menu-open-generic =
+    .label = KI-Chatbot öffnen
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = { $provider } öffnen
+genai-menu-remove-generic =
+    .label = KI-Chatbot entfernen
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = { $provider } entfernen
+genai-menu-remove-sidebar =
+    .label = Aus Sidebar entfernen
+genai-menu-new-badge = Neu
+genai-menu-summarize-page = Seite zusammenfassen
 genai-input-ask-generic =
     .placeholder = KI-Chatbot fragen…
 # $provider (string) - name of the provider
@@ -85,6 +91,18 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = Chatbot-Verknüpfung ausblenden
+genai-menu-choose-chatbot =
+    .label = Wählen Sie einen KI-Chatbot
+genai-menu-ask-generic-2 =
+    .label = KI-Chatbot fragen
+    .accesskey = K
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = { $provider } fragen
+    .accesskey = f
+genai-menu-no-provider-2 =
+    .label = Einen KI-Chatbot fragen
+    .accesskey = K
 
 ## Chatbot header
 
@@ -97,8 +115,6 @@ genai-header-close-button =
     .title = Schließen
 genai-provider-view-details =
     .label = Details des Chatbots ansehen
-genai-provider-about-chatbots =
-    .label = Über diese Chatbots
 genai-options-reload-generic =
     .label = KI-Chatbot neu laden
 # $provider (string) - name of the provider
@@ -111,11 +127,23 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = Über KI-Chatbots in { -brand-short-name }
 
+## Chatbot message
+
+genai-page-warning =
+    .message = Da die Seite lang ist, ist dies eine teilweise Zusammenfassung.
+
+## Chatbot footer
+
+genai-page-button-summarize = Seite zusammenfassen
+
 ## Chatbot onboarding
 
 genai-onboarding-header = Zusammenfassen, Brainstorming und mehr, während Sie surfen
+genai-onboarding-choose-header = Wählen Sie einen KI-Chatbot aus, der in der { -brand-short-name }-Sidebar verwendet werden soll
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = Wählen Sie einen KI-Chatbot aus, der in der { -brand-short-name }-Sidebar verwendet werden soll. Wir zeigen Details zu jedem Chatbot, wenn Sie ihn auswählen. Sie können jederzeit wechseln. <a data-l10n-name="learn-more">Weitere Informationen</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Jederzeit wechseln. Für Hilfe bei der Auswahl lesen Sie <a data-l10n-name="learn-more">weitere Informationen zu den einzelnen Chatbots</a>.
 genai-onboarding-primary = Weiter
 genai-onboarding-secondary = Schließen
 genai-onboarding-claude-tooltip =
@@ -139,6 +167,18 @@ genai-onboarding-lechat-learn = Mehr über Le Chat erfahren
 genai-onboarding-select-header = Wählen Sie Text aus, um Vorschläge zu sehen
 genai-onboarding-select-description = Wenn Sie Text auswählen, schlagen wir Ihnen Prompts vor, die Sie an den Chatbot senden können. Sie können auch Ihre eigenen Prompts schreiben.
 genai-onboarding-select-primary = Chat starten
+genai-chatbot-contextual-title = Verwenden Sie einen KI-Chatbot, ohne Tabs zu wechseln
+genai-chatbot-contextual-subtitle = Chatten und surfen Sie Seite an Seite, wenn Sie einen KI-Chatbot in der { -brand-short-name }-Sidebar hinzufügen.
+genai-chatbot-contextual-button = Wählen Sie einen Chatbot
+genai-chatbot-summarize-title = Neu! Fassen Sie Seiten mit einem Klick zusammen
+genai-chatbot-summarize-button = Seite zusammenfassen
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = Klicken Sie mit der rechten Maustaste auf Ihren KI-Chatbot in der Sidebar und wählen Sie "Seite zusammenfassen".
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = Klicken Sie mit der rechten Maustaste auf die Glitzer-Schaltfläche in der Sidebar und wählen Sie "Seite zusammenfassen". Beim ersten Mal wählen Sie auch einen KI-Chatbot.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = Öffnen Sie Ihren KI-Chatbot in der Sidebar und wählen Sie unten "Seite zusammenfassen".
+genai-chatbot-summarize-footer-generic-subtitle = Fügen Sie einen KI-Chatbot in der { -brand-short-name }-Sidebar hinzu, um Seiten schnell zusammenzufassen.
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -160,3 +200,72 @@ genai-onboarding-huggingchat-switch = Wechseln Sie zwischen einer Vielzahl offen
 genai-onboarding-huggingchat-price-2 = Kostenlos; Konto nach einer bestimmten Anzahl von Anfragen erforderlich
 genai-onboarding-lechat-generate = Text und Code erzeugen
 genai-onboarding-lechat-price = Kostenlos; Konto erforderlich
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Weiter
+genai-model-optin-optout =
+    .label = Abbrechen
+genai-model-optin-cancel =
+    .label = Abbrechen
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] { $range } Minute Lesezeit
+       *[other] { $range } Minuten Lesezeit
+    }
+# Error message displayed when a link preview cannot be generated
+link-preview-error-message = Die Vorschau dieses Links kann nicht angezeigt werden
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = Link besuchen
+# Error message when we can't generate key points (summary highlights or main ideas of page content) for a page
+link-preview-generation-error-missing-data = Wir können keine Stichpunkte für diese Webseite erzeugen.
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Irgendetwas ist schiefgegangen.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Erneut versuchen
+# Button that opens the Link Preview settings
+link-preview-settings-button =
+    .title = Einstellungen für die Link-Vorschau
+link-preview-settings-enable =
+    .label = Link-Vorschau aktivieren
+    .description = Sehen Sie den Seitentitel, die Beschreibung und mehr, wenn Sie die Tastenkombination verwenden oder mit der rechten Maustaste auf einen Link klicken.
+link-preview-settings-key-points =
+    .label = Der KI erlauben, den Anfang der Seite zu lesen und Stichpunkte daraus zu generieren
+link-preview-settings-long-press =
+    .label = Verknüpfung: Klicken und halten Sie den Link 1 Sekunde lang (lang drücken)
+# Title that appears when user is shown the opt-in flow for link previews
+link-preview-optin-title = Mehr sehen mit KI?
+# Message that appears when user is shown the opt-in flow for link previews
+link-preview-optin-message = { -brand-short-name } verwendet KI, um den Anfang der Seite zu lesen und ein paar Stichpunkte zu generieren. Um den Schutz Ihrer Daten zu gewährleisten, erfolgt dies auf Ihrem Gerät.
+# Onboarding card title for long press
+link-preview-onboarding-title-long-press = Neu: Klicken Sie auf einen Link und halten Sie ihn gedrückt, um eine Vorschau anzuzeigen
+# Onboarding card description for long press
+link-preview-onboarding-description-long-press = Sehen Sie sich eine kurze Beschreibung, die Lesezeit und mehr an, um zu entscheiden, ob der Link geöffnet wird. Auch verfügbar mit Rechtsklick.
+# Header for the key points section
+link-preview-key-points-header = Stichpunkte
+# Disclaimer for AI-generated key points
+link-preview-key-points-disclaimer = Stichpunkte werden KI-generiert und können Fehler enthalten.
+# Progress message for the first-time setup
+# $progress (number) - The percentage value 1-100 indicating the progress of the setup.
+link-preview-setup = Erstmalige Einrichtung • <strong>{ $progress }%</strong>
+# Message indicating faster performance after initial setup
+link-preview-setup-faster-next-time = Stichpunkte werden Ihnen beim nächsten Mal schneller angezeigt.
+# Onboarding card See a preview button
+link-preview-onboarding-button = Vorschau ansehen
+# Onboarding card Close button
+link-preview-onboarding-close = Schließen
+# Title for the first-time setup modal
+link-preview-first-time-setup-title = Ersteinrichtung
+# Message for the first-time setup modal
+link-preview-first-time-setup-message = Dies kann einen Moment dauern. Wichtige Punkte werden Ihnen beim nächsten Mal schneller angezeigt.

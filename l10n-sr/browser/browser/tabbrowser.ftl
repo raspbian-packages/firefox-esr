@@ -79,9 +79,6 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Пусти { $tabCount } картица
         }
 
-## Tooltips for tab audio control
-
-
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -124,10 +121,6 @@ tabbrowser-confirm-close-tabs-with-key-button = Изађи из { -brand-short-n
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Тражи потврду пре затварања са пречицом { $quitKey }
 
-## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
-## and browser.warnOnQuitShortcut is true.
-
-
 ## Confirmation dialog when opening multiple tabs simultaneously
 
 tabbrowser-confirm-open-multiple-tabs-title = Потврди отварање
@@ -148,6 +141,10 @@ tabbrowser-confirm-caretbrowsing-checkbox = Не показуј поново о�
 
 ## Confirmation dialog for closing all duplicate tabs
 
+tabbrowser-confirm-close-all-duplicate-tabs-title = Затворити дупле картице?
+tabbrowser-confirm-close-all-duplicate-tabs-text =
+    Затворићемо дупле картице у овом прозору. Последње
+    покренут језичак остаће отворен.
 
 ##
 
@@ -189,6 +186,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Искључи звук картице
@@ -196,13 +196,3 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Укључи звук картице
 tabbrowser-manager-close-tab =
     .tooltiptext = Затвори картицу
-
-## Tab Groups
-
-
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
-
-
-## Open/saved tab group context menu
-

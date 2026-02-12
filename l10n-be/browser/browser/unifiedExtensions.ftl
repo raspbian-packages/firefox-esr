@@ -11,6 +11,15 @@
 unified-extensions-header-title = Пашырэнні
 unified-extensions-manage-extensions =
     .label = Кіраваць пашырэннямі
+unified-extensions-discover-extensions =
+    .label = Адкрыйце для сябе пашырэнні
+unified-extensions-empty-reason-private-browsing-not-allowed = У вас усталяваныя пашырэнні, але яны не ўключаны ў прыватным рэжыме
+unified-extensions-empty-reason-extension-not-enabled = У вас усталяваныя пашырэнні, але яны не ўключаны
+# In this headline, “Level up” means to enhance your browsing experience.
+unified-extensions-empty-reason-zero-extensions-onboarding = Палепшыце сваё агляданне з дапамогай пашырэнняў
+unified-extensions-empty-content-explain-enable2 = Выберыце «{ unified-extensions-manage-extensions.label }», каб уключыць іх у наладах.
+unified-extensions-empty-content-explain-manage2 = Выберыце «{ unified-extensions-manage-extensions.label }», каб кіраваць імі ў наладах.
+unified-extensions-empty-content-explain-extensions-onboarding = Персаналізуйце { -brand-short-name }, змяніўшы яго выгляд і прадукцыйнасць або павысіўшы прыватнасць і бяспеку.
 
 ## An extension in the main list
 
@@ -21,6 +30,9 @@ unified-extensions-manage-extensions =
 unified-extensions-item-open-menu =
     .aria-label = Адкрыць меню для { $extensionName }
 unified-extensions-item-message-manage = Кіраваць пашырэннем
+# Variables:
+#   $extensionName (String) - Name of the user-enabled soft-blocked extension.
+unified-extensions-item-messagebar-softblocked2 = { $extensionName } абмежаванае. Яго выкарыстанне можа быць рызыкоўным.
 # Variables:
 #   $extensionName (String) - Name of the user-enabled soft-blocked extension.
 unified-extensions-item-messagebar-softblocked = { $extensionName } парушае палітыку Mozilla. Яго выкарыстанне можа быць рызыкоўным.
@@ -53,6 +65,13 @@ unified-extensions-mb-quarantined-domain-learn-more = Даведацца бол�
 unified-extensions-mb-about-addons-link = Перайсці ў налады пашырэння
 # Variables:
 #   $extensionName (String) - Name of the extension disabled through a soft-block.
+unified-extensions-mb-blocklist-warning-single2 =
+    .heading = { $extensionName } адключана
+    .message =
+        Гэта пашырэнне абмежаванае і было адключана.
+        Вы можаце ўключыць яго ў наладах, але гэта можа быць рызыкоўна.
+# Variables:
+#   $extensionName (String) - Name of the extension disabled through a soft-block.
 unified-extensions-mb-blocklist-warning-single =
     .heading = { $extensionName } адключана
     .message =
@@ -63,6 +82,18 @@ unified-extensions-mb-blocklist-warning-single =
 unified-extensions-mb-blocklist-error-single =
     .heading = { $extensionName } адключана
     .message = Гэта пашырэнне парушае палітыку Mozilla і было адключана.
+# Variables:
+#   $extensionsCount (Number) - Number of extensions disabled through both soft and hard-blocks (always going to be greater than 1)
+unified-extensions-mb-blocklist-warning-multiple2 =
+    .heading =
+        { $extensionsCount ->
+            [one] { $extensionsCount } пашырэнне адключана
+            [few] { $extensionsCount } пашырэнні адключана
+           *[many] { $extensionsCount } пашырэнняў адключана
+        }
+    .message =
+        Некаторыя з вашых пашырэнняў абмежаваныя і былі адключаны.
+        Вы можаце ўключыць іх у наладах, але гэта можа быць рызыкоўна.
 # Variables:
 #   $extensionsCount (Number) - Number of extensions disabled through both soft and hard-blocks (always going to be greater than 1)
 unified-extensions-mb-blocklist-warning-multiple =
@@ -85,3 +116,5 @@ unified-extensions-mb-blocklist-error-multiple =
            *[many] { $extensionsCount } пашырэнняў адключана
         }
     .message = Некаторыя з вашых пашырэнняў былі адключаны за парушэнне палітык Mozilla.
+unified-extensions-notice-safe-mode =
+    .message = Усе пашырэнні былі адключаны ў рэжыме вырашэння праблем.

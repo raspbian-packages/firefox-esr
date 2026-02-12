@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Iscarrigamentos
 appmenuitem-passwords =
     .label = Craes
+appmenuitem-extensions-and-themes =
+    .label = Estensiones e temas
+appmenuitem-extensions =
+    .label = Estensiones
 appmenuitem-addons-and-themes =
     .label = Cumplementos e temas
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Majùsc+2
     }
+profiler-button-dropmarker =
+    .label = Aberi su pannellu de s’analizadore de rendimentu
+    .tooltiptext = Aberi su pannellu de s’analizadore de rendimentu
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Profilu pro compidare faddinas de àudio e vìdeu in { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Multimediale
+profiler-popup-presets-ml-description = Profilu pro compidare faddinas de aprendimentu automàticu in { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Aprendimentu automàticu
 profiler-popup-presets-networking-description = Profilu pro compidare faddinas de rete in { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Rete
@@ -280,16 +290,26 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Retzi avisos a subra de violatziones de datos
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Cua s'indiritzu de posta eletrònica e su nùmeru de telèfonu tuos reales
+appmenuitem-services-relay-description = Avia su pannellu de is alias de posta eletrònica
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Ampara sa faina tua in lìnia
+appmenu-services-header = Is servìtzios mios
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Proa àteras ainas de protetzione dae Mozilla:
+appmenu-other-protection-header = Proa àteras ainas de amparu dae { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Profilos
 appmenu-other-profiles = Àteros profilos
 appmenu-manage-profiles =
     .label = Gesti is profilos
+appmenu-copy-profile =
+    .label = Còpia custu profilu
 appmenu-create-profile =
     .label = Profilu nou
 appmenu-edit-profile =
     .aria-label = Modifica su profilu
+appmenu-profiles-2 =
+    .label = Profilos

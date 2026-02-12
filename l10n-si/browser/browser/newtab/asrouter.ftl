@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] පරිශ්‍රීලකයින් { $total }
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = පොත්යොමු ඕනෑම තැනකට සමමුහූර්ත කරන්න.
 cfr-doorhanger-bookmark-fxa-body = කදිම සොයා ගැනීමක්! ඔබගේ ජංගම උපාංගවල මෙම පොත්යොමුව රහිතව නොසිටින්න. { -fxaccount-brand-name } සමඟ පටන් ගන්න.
@@ -267,15 +267,9 @@ root-certificate-succession-infobar-primary-button =
     .label = යාවත්කාල කරන්න
     .accesskey = U
 
-## Root Certificate Succession Windows Background Notification
-
-
 ## FxA Menu Message variants
 
 fxa-menu-message-close-button =
     .title = වසන්න
     .aria-label = වසන්න
 fxa-menu-message-mobile-primary-text = ඔබගේ දුරකථනයට පටිති යවන්න
-
-## Multi-CTA Fox Doodle Spotlight
-

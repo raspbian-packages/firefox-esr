@@ -36,6 +36,7 @@ certificate-viewer-key-size = Key Size
 certificate-viewer-inc-locality = Inc. Locality
 certificate-viewer-locality = Locality
 certificate-viewer-location = Lokasyon
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = Log ID
 certificate-viewer-method = Method
 certificate-viewer-modulus = Modulus
@@ -105,9 +106,6 @@ certificate-viewer-critical-extension =
     .title = Markado ang extension na ito bilang kritikal, ibig sabihin, dapat tanggihan ng mga client ang sertipiko kung hindi ito naintindihan.
 certificate-viewer-export = Export
     .download = { $fileName }.pem
-
-##
-
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

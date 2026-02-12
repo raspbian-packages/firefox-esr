@@ -8,6 +8,9 @@
 newtab-page-title = 新分頁
 newtab-settings-button =
     .title = 自訂您的新分頁頁面
+newtab-customize-panel-icon-button =
+    .title = 自訂此頁面
+newtab-customize-panel-icon-button-label = 自訂
 newtab-personalize-settings-icon-label =
     .title = 個人化新分頁
     .aria-label = 設定
@@ -53,6 +56,9 @@ newtab-topsites-add-shortcut-header = 新增捷徑
 newtab-topsites-edit-topsites-header = 編輯熱門網站
 newtab-topsites-edit-shortcut-header = 編輯捷徑
 newtab-topsites-add-shortcut-label = 新增捷徑
+newtab-topsites-add-shortcut-title =
+    .title = 新增捷徑
+    .aria-label = 新增捷徑
 newtab-topsites-title-label = 標題
 newtab-topsites-title-input =
     .placeholder = 輸入標題
@@ -81,6 +87,14 @@ newtab-confirm-delete-history-p2 = 此動作無法復原。
 ## Top Sites - Sponsored label
 
 newtab-topsite-sponsored = 贊助項目
+
+## Label used by screen readers for pinned top sites
+
+# Variables:
+#   $title (string) - The label or hostname of the site.
+topsite-label-pinned =
+    .aria-label = { $title }（已釘選）
+    .title = { $title }
 
 ## Context Menu - Action Tooltips.
 
@@ -117,12 +131,20 @@ newtab-menu-delete-pocket = 從 { -pocket-brand-name } 刪除
 newtab-menu-archive-pocket = 在 { -pocket-brand-name } 裡封存
 newtab-menu-show-privacy-info = 我們的贊助商與您的隱私權
 newtab-menu-about-fakespot = 關於 { -fakespot-brand-name }
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = 回報
 # Context menu option to personalize New Tab recommended stories by blocking a section of stories,
 # e.g. "Sports". "Block" is a verb here.
 newtab-menu-section-block = 封鎖
 # "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
 # e.g. Following the travel section of stories.
 newtab-menu-section-unfollow = 取消追蹤主題
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = 管理贊助內容
+newtab-menu-our-sponsors-and-your-privacy = 我們的贊助商與您的隱私權
+newtab-menu-report-this-ad = 回報此廣告
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -180,6 +202,8 @@ newtab-label-sponsored-by = 由 { $sponsor } 贊助
 #   $source (string) - The name of a company or their domain
 #   $timeToRead (number) - The estimated number of minutes to read this story
 newtab-label-source-read-time = { $source } · { $timeToRead } 分鐘
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = 贊助項目
 
 ## Section Menu: These strings are displayed in the section context menu and are
 ## meant as a call to action for the given section.
@@ -242,9 +266,6 @@ newtab-pocket-learn-more = 了解更多
 newtab-pocket-cta-button = 取得 { -pocket-brand-name }
 newtab-pocket-cta-text = 將您喜愛的故事儲存到 { -pocket-brand-name }，閱讀一篇篇好文章。
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } 是 { -brand-product-name } 產品家族的一部份
-# A save to Pocket button that shows over the card thumbnail on hover.
-newtab-pocket-image =
-    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = 儲存
 newtab-pocket-saved = 已儲存
 
@@ -259,7 +280,6 @@ newtab-pocket-thumbs-down-tooltip =
 # Used to show the user a message upon clicking the thumbs up or down buttons
 newtab-toast-thumbs-up-or-down2 =
     .message = 感謝您。您的意見可幫助我們改善顯示的內容。
-newtab-toast-thumbs-up-or-down = 感謝您。您的意見可幫助我們改善顯示的內容。
 newtab-toast-dismiss-button =
     .title = 知道了！
     .aria-label = 知道了！
@@ -295,16 +315,32 @@ newtab-custom-pocket-subtitle = 由 { -brand-product-name } 的姊妹作 { -pock
 newtab-custom-stories-toggle =
     .label = 推薦的文章
     .description = 由 { -brand-product-name } 產品家族精選的內容文章
+newtab-custom-stories-personalized-toggle =
+    .label = 文章
+newtab-custom-stories-personalized-checkbox-label = 依照您的上網行為，提供個人化文章推薦
 newtab-custom-pocket-sponsored = 贊助內容
 newtab-custom-pocket-show-recent-saves = 顯示近期儲存項目
 newtab-custom-recent-title = 近期動態
 newtab-custom-recent-subtitle = 近期造訪過的網站與內容精選
-newtab-custom-recent-toggle =
-    .label = 近期動態
-    .description = 近期造訪過的網站與內容精選
 newtab-custom-weather-toggle =
     .label = 天氣
     .description = 快速了解本日天氣
+newtab-custom-trending-search-toggle =
+    .label = 熱門搜尋
+    .description = 熱門與常見搜尋主題
+newtab-custom-widget-weather-toggle =
+    .label = 天氣
+newtab-custom-widget-trending-search-toggle =
+    .label = 熱門搜尋
+newtab-custom-widget-lists-toggle =
+    .label = 清單
+newtab-custom-widget-timer-toggle =
+    .label = 計時器
+newtab-custom-widget-section-title = 小工具
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .title = 關閉
+    .aria-label = 關閉選單
 newtab-custom-close-button = 關閉
 newtab-custom-settings = 管理更多設定
 
@@ -312,6 +348,13 @@ newtab-custom-settings = 管理更多設定
 
 newtab-wallpaper-title = 背景圖
 newtab-wallpaper-reset = 還原為預設值
+newtab-wallpaper-upload-image = 上傳圖片
+newtab-wallpaper-custom-color = 選擇一種色彩
+# Variables
+#   $file_size (number) - The number of the maximum image file size (in MB) that may be uploaded
+newtab-wallpaper-error-max-file-size = 圖片超過 { $file_size }MB 的檔案大小限制。請嘗試上傳小一點的檔案。
+newtab-wallpaper-error-upload-file-type = 無法上傳您的檔案，請稍後再重新上傳圖片。
+newtab-wallpaper-error-file-type = 無法上傳您的檔案，請稍後再以不同格式檔案上傳。
 newtab-wallpaper-light-red-panda = 小貓熊
 newtab-wallpaper-light-mountain = 白色山脈
 newtab-wallpaper-light-sky = 紫色與粉紅色的天空
@@ -348,15 +391,19 @@ newtab-wallpaper-brown = 棕色
 
 ## Abstract
 
-newtab-wallpaper-category-title-abstract = 抽象派
+newtab-wallpaper-category-title-abstract = 抽象圖片
 newtab-wallpaper-abstract-green = 綠色造型
 newtab-wallpaper-abstract-blue = 藍色造型
 newtab-wallpaper-abstract-purple = 紫色造型
 newtab-wallpaper-abstract-orange = 橘色造型
 newtab-wallpaper-gradient-orange = 橘色粉紅色漸層
 newtab-wallpaper-abstract-blue-purple = 藍色紫色造型
+newtab-wallpaper-abstract-white-curves = 白色的曲線圖案
+newtab-wallpaper-abstract-purple-green = 紫色與綠色漸層
+newtab-wallpaper-abstract-blue-purple-waves = 藍色與紫色波浪圖
+newtab-wallpaper-abstract-black-waves = 黑色波浪圖
 
-## Photographs
+## Firefox
 
 newtab-wallpaper-category-title-photographs = 相片
 newtab-wallpaper-beach-at-sunrise = 海邊日出
@@ -365,6 +412,12 @@ newtab-wallpaper-storm-sky = 暴風雨的天空
 newtab-wallpaper-sky-with-pink-clouds = 有粉紅色雲朵的天空
 newtab-wallpaper-red-panda-yawns-in-a-tree = 在樹上打呵欠的小貓熊
 newtab-wallpaper-white-mountains = 白色山脈
+newtab-wallpaper-hot-air-balloons = 於白天有各種色彩的熱氣球
+newtab-wallpaper-starry-canyon = 藍色星空
+newtab-wallpaper-suspension-bridge = 白天的灰色吊橋照片
+newtab-wallpaper-sand-dunes = 白色沙丘
+newtab-wallpaper-palm-trees = 在魔術光下的椰子樹剪影
+newtab-wallpaper-blue-flowers = 盛開的藍色花朵特寫
 # Variables
 #   $author_string (String) - The name of the creator of the photo.
 #   $webpage_string (String) - The name of the webpage where the photo is located.
@@ -380,6 +433,23 @@ feature-highlight-wallpaper =
     .title = { -newtab-wallpaper-feature-highlight-header }
     .aria-label = { -newtab-wallpaper-feature-highlight-content }
 
+## Firefox
+
+newtab-wallpaper-category-title-firefox = { -brand-product-name }
+
+## Celestial
+
+# “Celestial” referring to astronomy; positioned in or relating to the sky,
+# or outer space as observed in astronomy.
+# Not to be confused with religious definition of the word.
+newtab-wallpaper-category-title-celestial = 天空
+newtab-wallpaper-celestial-lunar-eclipse = 月食
+newtab-wallpaper-celestial-earth-night = 從低地球軌道拍攝的夜晚照片
+newtab-wallpaper-celestial-starry-sky = 星空
+newtab-wallpaper-celestial-eclipse-time-lapse = 月食縮時攝影
+newtab-wallpaper-celestial-black-hole = 黑洞銀河插圖
+newtab-wallpaper-celestial-river = 河流的衛星照片
+
 ## New Tab Weather
 
 # Variables:
@@ -393,7 +463,6 @@ newtab-weather-menu-change-location = 更改位置
 newtab-weather-change-location-search-input-placeholder =
     .placeholder = 搜尋位置
     .aria-label = 搜尋位置
-newtab-weather-change-location-search-input = 搜尋位置
 newtab-weather-menu-weather-display = 顯示天氣
 # Display options are:
 # - Simple: Displays a current weather condition icon and the current temperature
@@ -409,8 +478,16 @@ newtab-weather-menu-change-temperature-units-fahrenheit = 切換為華氏溫度
 newtab-weather-menu-change-temperature-units-celsius = 切換為攝氏溫度
 newtab-weather-menu-hide-weather = 隱藏新分頁的天氣資訊
 newtab-weather-menu-learn-more = 更多資訊
+newtab-weather-menu-detect-my-location = 偵測我的所在位置
 # This message is shown if user is working offline
 newtab-weather-error-not-available = 目前暫時無法提供天氣資訊。
+newtab-weather-opt-in-see-weather = 您想看到目前所在位置的天氣資訊嗎？
+newtab-weather-opt-in-not-now =
+    .label = 現在不要
+newtab-weather-opt-in-yes =
+    .label = 好的
+# We'll be showing static (fake) weather data if the user has not opted in to using their location
+newtab-weather-static-city = 紐約市
 
 ## Topic Labels
 
@@ -459,6 +536,9 @@ newtab-topic-selection-button-pick-interests = 挑選您有興趣的項目
 newtab-section-follow-button = 追蹤
 newtab-section-following-button = 追蹤中
 newtab-section-unfollow-button = 取消追蹤
+# A modal may appear next to the Follow button, directing users to try out the feature
+newtab-section-follow-highlight-title = 微調您的資訊來源
+newtab-section-follow-highlight-subtitle = 追蹤您有興趣的項目，看更多想看的內容。
 
 ## Button to block/unblock listed topics
 ## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
@@ -470,17 +550,150 @@ newtab-section-unblock-button = 解除封鎖
 
 ## Confirmation modal for blocking a section
 
-newtab-section-confirm-block-section-p1 = 您確定要封鎖這個段落嗎？
-newtab-section-confirm-block-section-p2 = 將從資訊來源隱藏封鎖的段落。
-newtab-section-block-section-button = 封鎖此段落
 newtab-section-cancel-button = 現在不要
+newtab-section-confirm-block-topic-p1 = 您確定要封鎖這個主題的內容嗎？
+newtab-section-confirm-block-topic-p2 = 將主題封鎖後就不會再顯示於資訊來源中。
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = 封鎖 { $topic }
 
-## Panel in the Customize menu section to manage followed and blocked topics
+## Strings for custom wallpaper highlight
 
 newtab-section-mangage-topics-title = 主題
-newtab-section-mangage-topics-button =
-    .label = 已關注並封鎖的主題
-newtab-section-mangage-topics-followed-topics-subtitle = 關注的主題
+newtab-section-manage-topics-button-v2 =
+    .label = 管理主題
+newtab-section-mangage-topics-followed-topics = 已追蹤
 newtab-section-mangage-topics-followed-topics-empty-state = 您並未關注任何主題。
-newtab-section-mangage-topics-blocked-topics-subtitle = 封鎖的主題
+newtab-section-mangage-topics-blocked-topics = 已封鎖
 newtab-section-mangage-topics-blocked-topics-empty-state = 您並未封鎖任何主題。
+newtab-custom-wallpaper-title = 可以在這裡自訂背景圖片
+# 'Make firefox yours" means to customize or personalize
+newtab-custom-wallpaper-subtitle = 上傳您自己的背景圖，或挑選一組色彩，讓 { -brand-product-name } 有您的風格。
+newtab-custom-wallpaper-cta = 試試看
+
+## Strings for new user activation custom wallpaper highlight
+
+newtab-new-user-custom-wallpaper-title = 挑選一套背景圖，讓 { -brand-product-name } 有您的風格
+newtab-new-user-custom-wallpaper-subtitle = 使用自訂背景圖與色彩，讓每個新分頁感覺都像在家一樣習慣。
+newtab-new-user-custom-wallpaper-cta = 立刻試試
+
+## Strings for download mobile highlight
+
+newtab-download-mobile-highlight-title = 下載 { -brand-product-name } 行動版
+# "Scan the code" refers to scanning the QR code that appears above the body text that leads to Firefox for mobile download.
+newtab-download-mobile-highlight-body-variant-a = 掃描 QR Code 隨時隨地安全上網。
+newtab-download-mobile-highlight-body-variant-b = 同步分頁標籤、網站密碼與更多資訊，讓您隨時切換裝置繼續上網。
+newtab-download-mobile-highlight-body-variant-c = 您知道 { -brand-product-name } 可以隨身帶著走嗎？把同一套瀏覽器，放進口袋。
+newtab-download-mobile-highlight-image =
+    .aria-label = { -brand-product-name } 行動版的下載 QR Code
+
+## Strings for shortcuts highlight
+
+newtab-shortcuts-highlight-title = 手指輕鬆一點就開啟最愛網站
+newtab-shortcuts-highlight-subtitle = 新增捷徑，輕鬆一點就能開啟您的最愛網站。
+
+## Strings for reporting ads and content
+
+newtab-report-content-why-reporting-this =
+    .label = 為什麼您會如此回報？
+newtab-report-ads-reason-not-interested =
+    .label = 我對此資訊沒興趣
+newtab-report-ads-reason-inappropriate =
+    .label = 此資訊不適當
+newtab-report-ads-reason-seen-it-too-many-times =
+    .label = 我看到此資訊太多次
+newtab-report-content-wrong-category =
+    .label = 分類不正確
+newtab-report-content-outdated =
+    .label = 已過時
+newtab-report-content-inappropriate-offensive =
+    .label = 不正當或者冒犯人
+newtab-report-content-spam-misleading =
+    .label = 是垃圾內容或誤導性內容
+newtab-report-cancel = 取消
+newtab-report-submit = 送出
+newtab-toast-thanks-for-reporting =
+    .message = 感謝您回報此問題。
+
+## Strings for trending searches
+
+newtab-trending-searches-show-trending =
+    .title = 顯示熱門搜尋主題
+newtab-trending-searches-hide-trending =
+    .title = 隱藏熱門搜尋主題
+newtab-trending-searches-learn-more = 更多資訊
+newtab-trending-searches-dismiss = 隱藏熱門搜尋主題
+# "Trending searches refers to popular searches from search engines
+newtab-trending-searches-title = 熱門搜尋
+
+## Strings for task / to-do list productivity widget
+
+# "Add one" means adding a new task to the list (e.g., "Walk the dog")
+newtab-widget-lists-empty-cta = 有無限可能，請新增看看。
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = 新功能
+newtab-widget-lists-label-beta =
+    .label = Beta
+# When tasks have been previous marked as complete, they will appear in their own separate list beneath incomplete items
+# Variables:
+#   $number (number) - Amount of list items marked complete
+newtab-widget-lists-completed-list = 已完成（{ $number }）
+newtab-widget-task-list-menu-copy = 複製
+newtab-widget-lists-menu-edit = 編輯清單名稱
+newtab-widget-lists-menu-create = 新增清單
+newtab-widget-lists-menu-delete = 刪除此清單
+newtab-widget-lists-menu-copy = 複製清單到剪貼簿
+newtab-widget-lists-menu-hide = 隱藏所有清單
+newtab-widget-lists-menu-learn-more = 更多資訊
+newtab-widget-lists-input-add-an-item =
+    .placeholder = 新增項目
+newtab-widget-lists-input-error = 請加入文字來新增項目。
+newtab-widget-lists-input-menu-open-link = 開啟鏈結
+newtab-widget-lists-input-menu-move-up = 上移
+newtab-widget-lists-input-menu-move-down = 下移
+newtab-widget-lists-input-menu-delete = 刪除
+newtab-widget-lists-input-menu-edit = 編輯
+# the + symbol emphasises the functionality of adding a new list
+newtab-widget-lists-dropdown-create =
+    .label = + 新增清單
+newtab-widget-lists-name-label-default =
+    .label = 任務清單
+newtab-widget-lists-name-placeholder-default =
+    .placeholder = 任務清單
+# The placeholder value of the name field for a newly created list
+newtab-widget-lists-name-placeholder-new =
+    .placeholder = 新增清單
+
+## Strings for timer productivity widget
+## When the timer ends, a system notification may be shown. Depending on which mode the timer is in, that message would be shown
+
+newtab-widget-timer-notification-title = 計時器
+newtab-widget-timer-notification-focus = 專注時間已結束，做得好！要休息一下嗎？
+newtab-widget-timer-notification-break = 休息時間結束，準備好繼續專注了嗎？
+newtab-widget-timer-notification-warning = 通知已關閉
+newtab-widget-timer-mode-focus =
+    .label = 專注
+newtab-widget-timer-mode-break =
+    .label = 休息
+newtab-widget-timer-label-play =
+    .label = 播放
+newtab-widget-timer-label-pause =
+    .label = 暫停
+newtab-widget-timer-reset =
+    .title = 重設
+newtab-widget-timer-menu-notifications = 關閉通知
+newtab-widget-timer-menu-notifications-on = 開啟通知
+newtab-widget-timer-menu-hide = 隱藏計時器
+newtab-widget-timer-menu-learn-more = 更多資訊
+# Message that appears when widgets are full-height. This reminds users that there is more New Tab content to see if they scroll
+newtab-widget-keep-scrolling = 滾動顯示更多
+newtab-widget-message-title = 使用清單與內建的計時器，讓您保持專注
+# to-dos stands for "things to do".
+newtab-widget-message-copy = 從快速提醒到每日待辦事項，或是在專注時間之後休息一下伸伸懶腰，讓您及時完成工作。
+newtab-promo-card-title = 支持 { -brand-product-name }
+newtab-promo-card-body = 贊助商支持我們打造出一個更好的網路環境的使命
+newtab-promo-card-cta = 更多資訊
+newtab-promo-card-dismiss-button =
+    .title = 知道了！
+    .aria-label = 知道了！

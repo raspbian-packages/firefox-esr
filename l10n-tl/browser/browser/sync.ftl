@@ -6,6 +6,7 @@ fxa-toolbar-sync-syncing2 = Nagsi-Sync…
 sync-disconnect-dialog-body = Hindi na magsi-sync ang { -brand-product-name } sa account mo pero hindi nito buburahin ang kahit anong browsing data sa device na ito.
 sync-disconnect-dialog-button = Mag-disconnect
 fxa-signout-dialog-body = Mananatili ang naka-sync na data sa iyong account.
+fxa-signout-dialog2-checkbox = Magbura ng data mula sa device na ito (mga password, kasaysayan, bookmark, atbp.)
 fxa-menu-connect-another-device =
     .label = Magkonekta ng Isa Pang Device…
 # Variables:
@@ -23,6 +24,3 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Magpadala agad ng tab sa device na naka-sign in ka.
 fxa-menu-sign-out =
     .label = Sign Out…
-
-## Sync warning strings that support the browser profiles feature, these will be shown when the user might be merging data
-

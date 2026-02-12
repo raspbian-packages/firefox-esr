@@ -25,6 +25,8 @@ return-to-amo-subtitle = Thật tuyệt, bạn đã có { -brand-short-name }
 return-to-amo-addon-title = Bây giờ, bạn có thể cài đặt <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Thêm tiện ích mở rộng
 return-to-amo-add-theme-label = Thêm chủ đề
+return-to-amo-theme-install-complete-label = Đã cài đặt chủ đề
+return-to-amo-extension-install-complete-label = Đã cài đặt tiện ích
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Nhập từ { $previous
 mr1-onboarding-theme-header = Biến nó thành của riêng bạn
 mr1-onboarding-theme-subtitle = Cá nhân hóa { -brand-short-name } với một chủ đề.
 mr1-onboarding-theme-secondary-button-label = Không phải bây giờ
-newtab-wallpaper-onboarding-title = Thử một chút màu sắc
-newtab-wallpaper-onboarding-subtitle = Chọn hình nền để mang lại diện mạo mới cho thẻ mới của bạn.
-newtab-wallpaper-onboarding-primary-button-label = Đặt hình nền
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Chủ đề hệ thống
 mr1-onboarding-theme-label-light = Sáng
@@ -445,6 +444,18 @@ onboarding-checklist-sign-up = Đăng ký hoặc đăng nhập vào tài khoản
 
 tab-groups-onboarding-feature-callout-title = Hãy thử nhóm thẻ để bớt lộn xộn hơn, tập trung hơn
 tab-groups-onboarding-feature-callout-subtitle = Sắp xếp gọn gàng bằng cách kéo thẻ này lên trên thẻ khác để tạo nhóm đầu tiên của bạn.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Tìm nhóm thẻ của bạn trong menu Liệt kê tất cả thẻ bất cứ lúc nào.
+tab-groups-onboarding-create-group-title-2 = Tìm nhóm thẻ của bạn tại đây bất cứ lúc nào.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Tìm nhóm của bạn bằng cách tìm kiếm nhóm trong thanh địa chỉ.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Khi bạn đóng một nhóm thẻ, hãy mở lại nhóm đó bất cứ lúc nào từ menu Liệt kê tất cả các thẻ.
+tab-groups-onboarding-saved-groups-title-2 = Khi đóng một nhóm thẻ, bạn có thể mở lại nhóm đó tại đây bất cứ lúc nào.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Tìm các nhóm mà bạn đã đóng bằng cách tìm kiếm chúng trong thanh địa chỉ.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Mở lại nhóm thẻ của bạn từ menu Liệt kê tất cả thẻ bất cứ lúc nào.
+tab-groups-onboarding-session-restore-title = Mở lại các nhóm thẻ của bạn tại đây bất cứ lúc nào.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -454,3 +465,107 @@ multi-profile-spotlight-cta = Tạo hồ sơ
 multi-profile-callout-title = Tạo các hồ sơ khác nhau cho công việc và giải trí
 multi-profile-callout-subtitle = Hồ sơ cho phép bạn giữ thông tin duyệt web của mình, như lịch sử tìm kiếm và mật khẩu, hoàn toàn riêng biệt.
 multi-profile-callout-cta = Tạo hồ sơ
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Tải xuống, đồng bộ hoá và sử dụng!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Quét mã QR để tải xuống { -brand-product-name } cho di động. Sau khi cài đặt, chọn “Đồng bộ trên di động” để truy cập mật khẩu, dấu trang của bạn và nhiều hơn nữa để sử dụng.
+dismiss-button-label = Bỏ qua
+sync-to-mobile-button-label = Đồng bộ trên di động
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Mã QR để tải xuống { -brand-product-name } dành cho di động
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Nâng cấp lên Windows 11?
+    Hãy sao lưu dữ liệu { -brand-product-name } của bạn.
+create-backup-screen-1-subtitle = Tự động bảo vệ mật khẩu, dấu trang và nhiều thứ khác của bạn trong vòng 1–2 phút.
+create-backup-screen-1-flair = Được đề xuất
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Tìm hiểu thêm</a>
+create-backup-screen-1-sync-label = Đồng bộ với { -brand-product-name }
+create-backup-screen-1-sync-body = Sao lưu tất cả các thiết bị đã đăng nhập
+create-backup-screen-1-backup-label = Sao lưu vào PC
+create-backup-screen-1-backup-body = Lưu vào thiết bị của bạn hoặc OneDrive
+create-backup-select-tile-button-label = Chọn
+create-backup-back-button-label = Quay lại
+create-backup-show-fewer =
+    .label = Hiển thị ít nội dung như thế này hơn
+create-backup-screen-2-title = Chọn dữ liệu { -brand-product-name } để sao lưu
+create-backup-screen-2-subtitle = Chỉ mất một phút. Dữ liệu của bạn được sao lưu mỗi ngày một lần.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Thiết lập dễ dàng
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Dấu trang, lịch sử, cài đặt và nhiều hơn nữa
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Không bao gồm mật khẩu và thanh toán
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Không được mã hóa
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Tất cả dữ liệu
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Bao gồm mật khẩu và thanh toán
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Được mã hóa bằng mật khẩu
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Bạn muốn lưu bản sao lưu ở đâu?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Tạo mật khẩu cho tập tin sao lưu
+create-backup-screen-3-subtitle = Cần mã hóa dữ liệu của bạn. Lưu trữ nó ở nơi bạn dễ nhớ.
+fx-backup-opt-in-header = Chọn vị trí tập tin
+fx-backup-opt-in-filepath-label = Chọn vị trí mà bạn dự định sẽ lấy nó để chuyển sang thiết bị mới, như OneDrive.
+fx-backup-opt-in-create-password-label = Nhập mật khẩu
+fx-backup-opt-in-confirm-btn-label = Tiếp tục
+fx-backup-opt-in-cancel-btn-label = Quay lại
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Sao lưu của bạn đã được lên lịch
+fx-backup-confirmation-screen-close-button = Đóng
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Bao gồm tất cả dữ liệu duyệt web
+fx-backup-confirmation-screen-all-data-item-text-2 = Đã lưu vào thiết bị của bạn
+fx-backup-confirmation-screen-all-data-item-text-3 = Được mã hóa và bảo vệ bằng mật khẩu
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Bao gồm dấu trang, lịch sử, cài đặt và dữ liệu khác
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Đã lưu vào thiết bị của bạn
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Không bao gồm mật khẩu và thanh toán
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Đi đến <a data-l10n-name="settings">Cài đặt</a> để bao gồm dữ liệu nhạy cảm.
+fx-backup-confirmation-screen-item-subtext-1 = Quá trình sao lưu của bạn sẽ bắt đầu sau vài phút và sẽ chạy mỗi ngày một lần. Bạn có thể kiểm tra tiến trình trong <a data-l10n-name="settings">Cài đặt</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } sẽ tìm kiếm bản sao lưu của bạn nếu bạn cần cài đặt lại.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Khôi phục từ bản sao lưu
+restore-from-backup-title = Hãy để { -brand-short-name } trở lại theo cách bạn muốn
+restore-from-backup-subtitle = Khôi phục tất cả dấu trang, lịch sử và dữ liệu khác để tiếp tục duyệt web.
+restore-from-backup-secondary-button = Không khôi phục
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Chúng tôi đã trở lại! Dữ liệu { -brand-short-name } của bạn đã được khôi phục.
+restored-from-backup-success-with-checklist-subtitle = Bạn có muốn giữ trình duyệt yêu thích của mình tập trung vào quyền riêng tư chỉ bằng một cú nhấp chuột không?
+restored-from-backup-success-no-checklist-subtitle = Bạn có thể bật sao lưu cho thiết bị này trong <a data-l10n-name="settings">Cài đặt</a>.
+restored-from-backup-success-with-checklist-primary-button = Lưu và tiếp tục
+restored-from-backup-success-with-checklist-secondary-button = Bỏ qua bước này
+restored-from-backup-success-no-checklist-primary-button = Tiếp tục
+restored-from-backup-error-title = Hmm, có vẻ như tập tin sao lưu bạn đã có vấn đề.
+restored-from-backup-error-subtitle = Nếu bạn có tập tin sao lưu { -brand-short-name } khác, hãy thử khôi phục tập tin đó. <a data-l10n-name="restore-problems">Bạn vẫn gặp sự cố?</a>
+restored-from-backup-error-primary-button = Đóng
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Tùy chỉnh trải nghiệm { -brand-short-name } của bạn
+onboarding-personalization-subtitle = Trả lời một vài câu hỏi và chúng tôi sẽ đề xuất các tính năng và tiện ích mở rộng để nâng cao khả năng sử dụng { -brand-short-name } của bạn.
+onboarding-personalization-use-case-title = Bạn sẽ sử dụng { -brand-short-name } để làm gì?
+onboarding-personalization-use-case-personal-option = Cá nhân
+onboarding-personalization-use-case-school-option = Trường học
+onboarding-personalization-use-case-work-option = Công việc
+onboarding-personalization-motivation-title = Những tính năng nào của { -brand-short-name } là quan trọng nhất đối với bạn?
+onboarding-personalization-motivation-privacy-option = Riêng tư và bảo mật
+onboarding-personalization-motivation-productivity-option = Năng suất
+onboarding-personalization-motivation-other-option = Khác

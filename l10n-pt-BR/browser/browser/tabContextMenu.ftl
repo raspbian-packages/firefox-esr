@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Nova aba
     .accesskey = N
@@ -75,6 +79,10 @@ move-to-end =
 move-to-new-window =
     .label = Mover para nova janela
     .accesskey = n
+# Variables
+#  $profileName (string): The name of the profile to move tab to
+move-to-new-profile =
+    .label = Mover para { $profileName }
 tab-context-close-multiple-tabs =
     .label = Fechar várias abas
     .accesskey = v
@@ -127,3 +135,10 @@ tab-context-send-tabs-to-device =
            *[other] Enviar { $tabCount } abas para dispositivo
         }
     .accesskey = n
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] Descarregar aba
+           *[other] Descarregar { $tabCount } abas
+        }
+    .accesskey = D

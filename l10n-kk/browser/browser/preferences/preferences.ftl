@@ -4,9 +4,6 @@
 
 do-not-track-description = Сайттарға "Мені бақыламау" сигналын жіберу арқылы сіз өзіңізді бақыламауды қалайтыныңыз туралы хабарлау
 do-not-track-removal = Біз енді «Мені бақыламау» сигналын қолдамаймыз
-do-not-track-description2 =
-    .label = Веб-сайттарға "Мені бақыламау" сұранымын жіберу
-    .accesskey = л
 do-not-track-learn-more = Көбірек білу
 do-not-track-option-default-content-blocking-known =
     .label = Тек { -brand-short-name } белгілі трекерлерді бұғаттауға бапталғанда
@@ -16,6 +13,8 @@ global-privacy-control-description =
     .label = Веб-сайттарға менің деректерімді сатпауды немесе олармен бөліспеуді айту
     .accesskey = с
 non-technical-privacy-header = Веб-сайттың жекелік баптаулары
+non-technical-privacy-label =
+    .aria-label = { non-technical-privacy-header }
 # Do not translate.
 # "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
 # included to facilitate power-user search of the about:preferences page.
@@ -71,6 +70,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = Жабу
+do-not-track-removal2 =
+    .label = Біз енді «Мені бақыламау» сигналын қолдамаймыз
 
 ## Browser Restart Dialog
 
@@ -126,6 +127,10 @@ startup-header = Іске қосылу
 always-check-default =
     .label = Әр қосылған кезде { -brand-short-name } жүйедегі негізгі браузер екенін тексеру
     .accesskey = н
+is-default-browser =
+    .message = { -brand-short-name } сіздің ағымдағы негізгі браузеріңіз
+is-not-default-browser =
+    .message = { -brand-short-name } негізгі браузер емес
 is-default = { -brand-short-name } сіздің ағымдағы негізгі браузеріңіз
 is-not-default = { -brand-short-name } негізгі браузер емес
 set-as-my-default-browser =
@@ -134,6 +139,8 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = Алдыңғы терезелер мен беттерді ашу
     .accesskey = д
+startup-windows-launch-on-login-profile-disabled =
+    .message = "Пайдаланушы профилін таңдау" терезесіндегі "{ profile-manager-use-selected.label }" жалаушасын орнату арқылы бұл баптауды іске қосыңыз.
 windows-launch-on-login =
     .label = Компьютеріңіз іске қосылғанда { -brand-short-name } қолданбасын автоматты түрде іске қосу
     .accesskey = о
@@ -148,6 +155,11 @@ preferences-data-migration-description = Бетбелгілер, парольд�
 preferences-data-migration-button =
     .label = Деректерді импорттау
     .accesskey = м
+preferences-profiles-header = Профильдер
+preferences-manage-profiles-description = Әрбір профильде бөлек шолу деректері мен параметрлері, соның ішінде тарих, парольдер және т.б. бар.
+preferences-manage-profiles-learn-more = Көбірек білу
+preferences-manage-profiles-button =
+    .label = Профильдерді басқару
 tabs-group-header = Беттер
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab беттер арасында соңғы қолданылу реті бойынша ауысады
@@ -225,12 +237,33 @@ containers-remove-cancel-button = Бұл контейнерді өшірмеу
 settings-tabs-show-image-in-preview =
     .label = Бетке курсорды апарған кезде суреттің алдын ала қарауын көрсету
     .accessKey = с
+browser-layout-header = Браузер жаймасы
+browser-layout-horizontal-tabs =
+    .label = Горизонталды беттер
+browser-layout-horizontal-tabs-desc = Браузердің жоғарғы жағында көрсету
+browser-layout-vertical-tabs =
+    .label = Вертикалды беттер
+browser-layout-vertical-tabs-desc = Жанында, бүйірлік панельде көрсету
+browser-layout-show-sidebar =
+    .label = Бүйір панелін көрсету
+browser-layout-show-sidebar-desc = Бетбелгілерге, телефоннан беттерге, ЖИ чат-боттарына және т.б. негізгі көріністен шықпай-ақ жылдам қол жеткізіңіз.
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Тіл және сыртқы түрі
 preferences-web-appearance-header = Веб-сайттың сыртқы түрі
 preferences-web-appearance-description = Кейбір веб-сайттар түс схемасын сіздің қалауыңызға қарай бейімдейді. Сол сайттар үшін қандай түс схемасын пайдаланғыңыз келетінін таңдаңыз.
+preferences-web-appearance-choice-auto2 =
+    .label = Автоматты түрде
+    .title = Жүйе баптаулары мен { -brand-short-name } темасы негізінде веб-сайттың фоны мен мазмұнын автоматты түрде өзгертіңіз.
+preferences-web-appearance-choice-light2 =
+    .label = Ашық түсті
+    .title = Веб-сайттар фоны мен мазмұны үшін ашық түсті көріністі пайдалану.
+preferences-web-appearance-choice-dark2 =
+    .label = Күңгірт түсті
+    .title = Веб-сайттар фоны мен мазмұны үшін күңгірт түсті көріністі пайдалану.
+web-appearance-group =
+    .aria-label = Веб-сайттың сыртқы түрі
 preferences-web-appearance-choice-auto = Автоматты түрде
 preferences-web-appearance-choice-light = Ашық түсті
 preferences-web-appearance-choice-dark = Күңгірт түсті
@@ -248,14 +281,26 @@ preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning = Сіздің түс таңдауларыңыз веб-сайттың сыртқы көрінісін үстінен басады. <a data-l10n-name="colors-link">Түстерді басқару</a>
+preferences-web-appearance-override-warning3 =
+    .message = Сіздің контрастты басқару параметрлері веб-сайттың сыртқы көрінісін үстінен басады.
+preferences-web-appearance-link =
+    .label = { -brand-short-name } темаларын Кеңейтулер және темалар ішінен басқарыңыз
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Сіздің түс таңдауларыңыз веб-сайттың сыртқы көрінісін үстінен басады.
+preferences-web-appearance-override-warning = Сіздің түс таңдауларыңыз веб-сайттың сыртқы көрінісін үстінен басады. <a data-l10n-name="colors-link">Түстерді басқару</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = { -brand-short-name } темаларын <a data-l10n-name="themes-link">Кеңейтулер және темалар</a> ішінен басқарыңыз
+preferences-contrast-control-header = Контрастты басқару
+preferences-contrast-control-use-platform-settings =
+    .label = Автоматты (жүйе параметрлерін пайдалану)
+    .accesskey = А
+preferences-contrast-control-off =
+    .label = Сөндірулі
+    .accesskey = С
+preferences-contrast-control-custom =
+    .label = Таңдауыңызша
+    .accesskey = Т
 preferences-colors-header = Түстер
 preferences-colors-description = Мәтін, веб-сайттар фоны және сілтемелер үшін { -brand-short-name } үнсіз келісім бойынша түстерін үстінен басу.
 preferences-colors-manage-button =
@@ -314,6 +359,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Файлдар және қолданбалар
+downloads-header-2 =
+    .label = Жүктемелер
+download-save-where-2 =
+    .label = Файлдарды келесі жерге сақтау
+    .accesskey = д
 download-header = Жүктемелер
 download-save-where = Файлдарды келесі жерге сақтау
     .accesskey = д
@@ -485,6 +535,8 @@ performance-default-content-process-count =
 ## General Section - Browsing
 
 browsing-title = Сайттарды қарау
+browsing-group-label =
+    .aria-label = Сайттарды қарау
 browsing-use-autoscroll =
     .label = Автоматты айналдыруды қолдану
     .accesskey = в
@@ -539,7 +591,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Жаңа терезелер мен беттер
 home-new-windows-tabs-description2 = Үй парағын, жаңа терезелер және беттерді ашқан кезде көретін нәрселерді таңдаңыз.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Үй парағы және жаңа терезелер
 home-newtabs-mode-label = Жаңа беттер
@@ -569,12 +621,21 @@ choose-bookmark =
     .label = Бетбелгіні қолдану…
     .accesskey = Б
 
+## Custom Homepage subpage
+
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-bookmarks-button =
+    .label = Бетбелгілер…
+
 ## Home Section - Firefox Home Content Customization
 
 home-prefs-content-header2 = { -firefox-home-brand-name } мазмұны
+home-prefs-content-header3 = { -firefox-home-brand-name }
 home-prefs-content-description2 = { -firefox-home-brand-name } үй парағында қандай құраманы көргіңіз келетінді таңдаңыз.
 home-prefs-search-header =
     .label = Интернеттен іздеу
+home-prefs-search-header2 =
+    .label = Іздеу
 home-prefs-shortcuts-header =
     .label = Жарлықтар
 home-prefs-shortcuts-description = Сіз сақтайтын немесе шолатын сайттар
@@ -619,6 +680,13 @@ home-prefs-weather-header =
     .label = Ауа райы
 home-prefs-weather-description = Бүгінгі қысқаша болжам
 home-prefs-weather-learn-more-link = Көбірек білу
+home-prefs-trending-search-header =
+    .label = Трендтік іздеулер
+home-prefs-trending-search-description = Танымал және жиі ізделетін тақырыптар
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = { -brand-product-name } қолдау
+home-prefs-mission-message-learn-more-link = Қалай екенін білу
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -687,6 +755,9 @@ search-remove-engine =
 search-add-engine =
     .label = Қосу
     .accesskey = о
+search-edit-engine =
+    .label = Түзету
+    .accesskey = е
 search-find-more-link = Көбірек іздеу қызметтерін қосу
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
@@ -695,12 +766,17 @@ search-keyword-warning-title = Қысқаша атау қазір қолдану
 #   $name (string) - Name of a search engine.
 search-keyword-warning-engine = Сіз таңдаған қысқаша атау қазір "{ $name }" қолдануда. Басқасын таңдаңыз.
 search-keyword-warning-bookmark = Сіз таңдаған қысқаша атауды қазір бетбелгілердің біреуі қолданады. Басқасын таңдаңыз.
+remove-engine-confirmation = Бұл іздеу жүйесін өшіруді шынымен қалайсыз ба?
+remove-engine-remove = Өшіру
+remove-addon-engine-alert = Бұл іздеу жүйесін өшіру үшін онымен байланысты қосымшаны өшіріңіз.
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = Баптауларға оралу
 containers-header = Контейнер беттері
+containers-section-header =
+    .heading = Контейнер беттері
 containers-add-button =
     .label = Жаңа контейнерді қосу
     .accesskey = а
@@ -865,6 +941,14 @@ sync-choose-what-to-sync-dialog4 =
 ## The device name controls.
 
 sync-device-name-header = Құрылғы аты
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Құрылғы аты
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Құрылғы атын өзгерту
+    .accesskey = з
 sync-device-name-change =
     .label = Құрылғы атын өзгерту…
     .accesskey = з
@@ -1005,6 +1089,25 @@ autofill-saved-payment-methods-button = Сақталған төлем әдіст
 # This operation requires the user to authenticate with the operating system (device sign-in)
 autofill-reauth-payment-methods-checkbox = Төлем әдістерін толтыру және басқару үшін құрылғыға кіруді талап ету
     .accesskey = д
+autofill-payment-methods-title = Төлем әдістері
+autofill-payment-methods-header =
+    .aria-label = Төлем әдістері
+autofill-payment-methods-checkbox-message-2 =
+    .label = Төлем әдістерін сақтау және автотолтыру
+    .accesskey = Т
+autofill-payment-methods-manage-payments-button =
+    .label = Төлем әдістерін басқару
+    .accesskey = б
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox-2 =
+    .label = Төлем әдістерін автотолтыру және басқару үшін құрылғыға кіруді талап ету
+    .accesskey = о
+autofill-addresses-title = Адрестер және т.б
+autofill-addresses-header =
+    .aria-label = Адрестер және т.б
+autofill-addresses-checkbox-message =
+    .label = Адрестерді сақтау және автотолтыру
+    .accesskey = с
 
 ## Privacy Section - History
 
@@ -1026,6 +1129,10 @@ history-remember-option-never =
     .label = тарихты ешқашан сақтамайды
 history-remember-option-custom =
     .label = қолдан көрсетілген тарих баптауын қолданады
+history-remember-description2 =
+    .description = { -brand-short-name } сіздің шолу, жүктемелер, формалар және іздеулер тарихын сақтайтын болады.
+history-dontremember-description2 =
+    .description = { -brand-short-name } жекелік шолу режимінің баптауын пайдаланады, яғни браузер тарихына ешқандай мәлімет сақталмайды.
 history-remember-description = { -brand-short-name } сіздің шолу, жүктемелер, формалар және іздеулер тарихын сақтайтын болады.
 history-dontremember-description = { -brand-short-name } жекелік шолу режимінің баптауын пайдаланады, яғни браузер тарихына ешқандай мәлімет сақталмайды.
 history-private-browsing-permanent =
@@ -1050,6 +1157,8 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookies файлдары және сайт деректері
+sitedata-label =
+    .aria-label = { sitedata-header }
 sitedata-total-size-calculating = Сайттар деректері және кэш өлшемін есептеу…
 # Variables:
 #   $value (number) - Value of the unit (for example: 4.6, 500)
@@ -1059,6 +1168,8 @@ sitedata-learn-more = Көбірек білу
 sitedata-delete-on-close =
     .label = { -brand-short-name } жабылған кезде cookies және сайттар деректерін өшіру
     .accesskey = ш
+sitedata-delete-on-close-private-browsing3 =
+    .message = Сіздің тарих баптаулары негізінде { -brand-short-name } браузерді жапқан кезде сеансыңыздан cookie файлдары мен сайт деректерін өшіреді.
 sitedata-delete-on-close-private-browsing = Тұрақты жекелік шолу режимінде { -brand-short-name } жабылған кезде cookie файлдары және сайт деректері әрқашан өшірілетін болады.
 sitedata-delete-on-close-private-browsing2 = Сіздің тарих баптаулары негізінде { -brand-short-name } браузерді жапқан кезде сеансыңыздан cookie файлдары мен сайт деректерін өшіреді.
 sitedata-allow-cookies-option =
@@ -1075,6 +1186,8 @@ sitedata-option-block-cross-site-trackers =
     .label = Сайтаралық трекерлер
 sitedata-option-block-cross-site-tracking-cookies =
     .label = Сайтаралық бақылайтын cookie файлдары
+sitedata-option-block-cross-site-cookies2 =
+    .label = Сайтаралық cookie файлдарын оқшаулау
 sitedata-option-block-cross-site-cookies =
     .label = Сайтаралық бақылау трекерлері, және қалған сайтаралық cookie файлдарын оқшаулау
 sitedata-option-block-unvisited =
@@ -1083,6 +1196,12 @@ sitedata-option-block-all-cross-site-cookies =
     .label = Барлық сайтаралық cookies файлдары (веб-сайттар сынуына әкеп соғуы мүмкін)
 sitedata-option-block-all =
     .label = Барлық cookies файлдары (веб-сайттар жұмысының бұзылуына себеп болады)
+sitedata-clear2 =
+    .label = Шолу деректерін тазарту
+    .accesskey = з
+sitedata-settings2 =
+    .label = Шолу деректерін басқару
+    .accesskey = б
 sitedata-clear =
     .label = Деректерді өшіру…
     .accesskey = ш
@@ -1092,6 +1211,10 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Ережеден тыс жағдайларды басқару…
     .accesskey = ж
+sitedata-cookies-exceptions2 =
+    .label = Ережеден тыс жағдайларды басқару
+    .accesskey = ы
+    .description = Қай веб-сайттарға cookie файлдары мен сайт деректерін әрқашан немесе ешқашан қолдануға рұқсат етілетінін көрсете аласыз.
 
 ## Privacy Section - Cookie Banner Handling
 
@@ -1112,6 +1235,11 @@ cookie-banner-blocker-checkbox-label =
 
 addressbar-header = Адрес жолағы
 addressbar-suggest = Адрес жолағын қолдану кезінде, ұсыну
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = Адрестік жолақ — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = Көбірек білу
 addressbar-locbar-history-option =
     .label = Шолулар тарихы
     .accesskey = Ш
@@ -1144,7 +1272,22 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = Танымал іздеу ұсыныстарын көрсету
     .accesskey = т
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = { -brand-short-name } ұсыныстары
+addressbar-locbar-suggest-all-option-desc = Сіздің іздеуіңізге қатысты интернеттен ұсыныстар алыңыз.
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = { -brand-short-name } ұсыныстары
+addressbar-locbar-suggest-nonsponsored-desc = Сіздің іздеуіңізге қатысты интернеттен ұсыныстар алыңыз.
+addressbar-locbar-suggest-sponsored-option =
+    .label = Демеушілердің ұсыныстары
+addressbar-locbar-suggest-sponsored-desc = Кездейсоқ демеушілік ұсыныстармен { -brand-short-name } өніміне қолдау көрсету.
 addressbar-quickactions-learn-more = Көбірек білу
+addressbar-dismissed-suggestions-label = Қабылданбаған ұсыныстар
+addressbar-restore-dismissed-suggestions-description = Демеушілер мен { -brand-short-name } жіберген қабылданбаған ұсыныстарды қалпына келтіру.
+addressbar-restore-dismissed-suggestions-button =
+    .label = Қалпына келтіру
 
 ## Privacy Section - Content Blocking
 
@@ -1181,6 +1324,7 @@ content-blocking-private-windows = Жекелік шолу терезелері�
 content-blocking-cross-site-cookies-in-all-windows2 = Барлық терезелердегі сайтаралық cookie файлдары
 content-blocking-cross-site-tracking-cookies = Сайтаралық бақылайтын cookie файлдары
 content-blocking-all-cross-site-cookies-private-windows = Жекелік шолу терезелеріндегі сайтаралық cookie файлдары
+content-blocking-isolate-cross-site-cookies = Сайтаралық cookie файлдарын оқшаулау
 content-blocking-cross-site-tracking-cookies-plus-isolate = Сайтаралық бақылау трекерлері, және қалған cookie файлдарын оқшаулау
 content-blocking-social-media-trackers = Әлеуметтік желілер трекерлері
 content-blocking-all-cookies = Барлық cookie файлдары
@@ -1203,6 +1347,7 @@ content-blocking-etp-standard-tcp-title = Құрамында енді cookie ф�
 content-blocking-warning-title = Ескерту!
 content-blocking-and-isolating-etp-warning-description-2 = Бұл баптау кейбір веб-сайттардың мазмұнын көрсетілмеуіне немесе дұрыс жұмыс жасамауына әкелуі мүмкін. Егер сайт сынған болып көрінсе, сайттың барлық мазмұның жүктеу үшін сол сайт үшін бақылаудан қорғанысты сөндіру керек болуы мүмкін.
 content-blocking-warning-learn-how = Көбірек білу
+content-blocking-baseline-uncheck-warning-dialog-title = Түзетулерді шынымен сөндіргіңіз келе ме?
 content-blocking-reload-description = Бұл өзгерістер іске асуы үшін беттерді қайта жүктеу керек болады.
 content-blocking-reload-tabs-button =
     .label = Барлық беттерді қайта жүктеу
@@ -1257,6 +1402,14 @@ permissions-location = Орналасу
 permissions-location-settings =
     .label = Баптаулар…
     .accesskey = л
+permissions-localhost = Құрылғы қолданбалары мен қызметтері
+permissions-localhost-settings =
+    .label = Баптаулар…
+    .accesskey = т
+permissions-local-network = Жергілікті желі құрылғылары
+permissions-local-network-settings =
+    .label = Баптаулар…
+    .accesskey = т
 permissions-xr = Виртуалды шынайылық
 permissions-xr-settings =
     .label = Баптаулар…
@@ -1282,6 +1435,8 @@ permissions-notification-link = Көбірек білу
 permissions-notification-pause =
     .label = Хабарламаларды { -brand-short-name } қайта іске қосылғанша дейін аялдату
     .accesskey = д
+permissions-autoplay2 =
+    .label = Автоойнату
 permissions-autoplay = Автоойнату
 permissions-autoplay-settings =
     .label = Баптаулар…
@@ -1301,23 +1456,57 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Ережелерден бөлек…
     .accesskey = Е
+permissions-location2 =
+    .label = Орналасу
+permissions-localhost2 =
+    .label = Құрылғы қолданбалары мен қызметтері
+permissions-local-network2 =
+    .label = Жергілікті желі құрылғылары
+permissions-xr2 =
+    .label = Виртуалды шынайылық
+permissions-camera2 =
+    .label = Камера
+permissions-microphone2 =
+    .label = Микрофон
+permissions-notification2 =
+    .label = Хабарламалар
 
 ## Privacy Section - Data Collection
 
 collection-header = { -brand-short-name } деректер жинауы және қолдануы
 collection-header2 = { -brand-short-name } деректер жинауы және қолдануы
     .searchkeywords = телеметрия
+preferences-collection-description = Біз сізге таңдау беруге және { -brand-product-name } өнімін барлығы үшін жақсарту мақсатында қажетті минималды деректерді ғана жинауға тырысамыз.
+preferences-collection-privacy-notice = Жекелік ескертуін қарау
+preferences-view-profiles = Барлық профильдерді қарау
 collection-description = Біз сізге таңдауды қолыңызға беріп, тек әркім үшін { -brand-short-name } өнімін ұсыну және жақсарту мақсатында керек деректерді жинаймыз. Жеке ақпаратты алу алдында біз әрқашан рұқсатты сұраймыз.
 collection-privacy-notice = Жекелік ескертуі
 collection-health-report-telemetry-disabled = Сіз { -vendor-short-name } үшін ешбір техникалық және әрекеттесу мәліметтерін жинауға енді рұқсат етпейсіз. Барлық бұрыңғы деректер 30 күннің ішінде өшірілетін болады.
 collection-health-report-telemetry-disabled-link = Көбірек білу
+collection-health-report2 =
+    .label = Техникалық және өзара әрекеттесу деректерін { -vendor-short-name } адресіне жіберу
+    .accesskey = р
 collection-health-report =
     .label = { -brand-short-name } үшін { -vendor-short-name } адресіне техникалық және әрекеттесу деректерін жіберуді рұқсат ету
     .accesskey = р
 collection-health-report-link = Көбірек білу
+collection-health-report-description = Бұл { -brand-product-name } мүмкіндіктерін, өнімділігін және тұрақтылығын жақсартуға көмектеседі.
+collection-studies2 =
+    .label = Зерттеулерді орнату және жөнелту
+collection-studies-description = Мүмкіндіктер мен идеяларды барлығына шығарар алдында қолданып көріңіз.
 collection-studies =
     .label = { -brand-short-name } үшін зерттеулерді орнатып, орындауды рұқсат ету
 collection-studies-link = { -brand-short-name } зерттеулерін қарау
+addon-recommendations2 =
+    .label = Жекелендірілген кеңейу ұсыныстарына рұқсат ету
+addon-recommendations-description = Шолу тәжірибесін жақсарту үшін кеңейтулер ұсыныстарын алыңыз.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Деректер есептемесін беру бұл жинақта сөндірілген.
+collection-backlogged-crash-reports2 =
+    .label = Құлау хабарламаларын автоматты түрде жіберу
+    .accesskey = л
+collection-backlogged-crash-reports-description = Бұл { -vendor-short-name } үшін браузердегі ақауларды диагностикалауға және түзетуге мүмкіндік береді. Есептемелер жеке немесе сезімтал деректерді қамтуы мүмкін.
 addon-recommendations =
     .label = { -brand-short-name } үшін жекеленген кеңейтулер ұсыныстарын жасауға рұқсат ету
 addon-recommendations-link = Көбірек білу
@@ -1325,8 +1514,6 @@ addon-recommendations-link = Көбірек білу
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Деректер есептемесін беру бұл жинақта сөндірілген
 collection-backlogged-crash-reports-with-link = { -brand-short-name } үшін сіздің атыңыздан жиналған құлаулар хабарламаларын жіберуді рұқсат ету <a data-l10n-name="crash-reports-link">Көбірек білу</a>
-    .accesskey = с
-collection-backlogged-crash-reports = { -brand-short-name } үшін сіздің атыңыздан жиналған құлаулар хабарламаларын жіберуді рұқсат ету
     .accesskey = с
 privacy-segmentation-section-header = Шолуыңызды жақсартатын жаңа мүмкіндіктер
 privacy-segmentation-section-description = Сізге жеке тәжірибе беру үшін деректеріңізді пайдаланатын мүмкіндіктерді ұсынғанда:
@@ -1376,6 +1563,7 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = { -brand-short-name } қолданбасына сіз орнатқан үшінші жақты түбірлік сертификаттарына автоматты түрде сенуге рұқсат беру
     .accesskey = т
+certs-devices-enable-fips = FIPS қолдану
 space-alert-over-5gb-settings-button =
     .label = Баптауларды ашу
     .accesskey = Б
@@ -1385,21 +1573,18 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } үшін бос �
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = Тек-HTTPS режимі
+httpsonly-learn-more2 = Тек-HTTPS режимі қалай жұмыс істейді
 httpsonly-description = HTTPS { -brand-short-name } және сіз кіретін веб-сайттар арасында қауіпсіз, шифрленген байланысты ұсынады. Веб-сайттардың көбі HTTPS қолдайды, тек-HTTPS режимі іске қосылған болса, { -brand-short-name } барлық байланыстарды HTTPS-ке дейін жаңартады.
-httpsonly-description2 = { -brand-short-name } сіз кіретін сайттарға қауіпсіз және шифрленген байланыстарды жасайды. { -brand-short-name } "Тек-HTTPS" режимі іске қосулы кезде байланыс қауіпсіз болмаса, ескертеді.
 httpsonly-learn-more = Көбірек білу
 httpsonly-radio-enabled =
     .label = Барлық терезелерде тек-HTTPS режимін іске қосу
-httpsonly-radio-enabled2 =
-    .label = Барлық терезелерде тек HTTPS пайдалану
 httpsonly-radio-enabled-pbm =
     .label = Тек-HTTPS режимін тек жекелік терезелерде іске қосу
-httpsonly-radio-enabled-pbm2 =
-    .label = Барлық жекелік терезелерде тек HTTPS пайдалану
+httpsonly-radio-disabled3 =
+    .label = Тек-HTTPS режимін іске қоспау
+    .description = { -brand-short-name } кейбір қосылымдарды жаңарта алады
 httpsonly-radio-disabled =
     .label = Тек-HTTPS режимін іске қоспау
-httpsonly-radio-disabled2 =
-    .label = Алдымен HTTPS қолданып көру, бірақ қауіпсіз емес байланыстарға рұқсат беру
 
 ## DoH Section
 

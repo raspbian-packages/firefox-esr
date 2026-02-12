@@ -40,3 +40,36 @@ webext-perms-description-webNavigation = Skoða vafranotkun við að fara um
 webext-perms-extra-warning-userScripts-long = Óstaðfestar skriftur geta valdið öryggis- og persónuverndaráhættu, svo sem það að keyra skaðlegan kóða eða rekja virkni vefsvæðis. Keyrðu aðeins skriftur frá viðbótum eða uppruna sem þú treystir.
 # A shorter warning is displayed in UI surfaces with little room, such as a permission prompt.
 webext-perms-extra-warning-userScripts-short = Óstaðfestar skriftur geta valdið öryggis- og persónuverndaráhættu. Keyrðu aðeins skriftur frá viðbótum eða uppruna sem þú treystir.
+
+## Short form to be used in lists or in a string (`webext-perms-description-data-some`)
+## that formats some of the data collection permissions below using `Intl.ListFormat`.
+##
+## This is used when the data collection permissions are required.
+
+webext-perms-description-data-short-authenticationInfo = upplýsingar um auðkenningu
+webext-perms-description-data-short-bookmarksInfo = bókamerki
+webext-perms-description-data-short-browsingActivity = vafurvirkni
+webext-perms-description-data-short-financialAndPaymentInfo = fjárhagslegar og greiðsluupplýsingar
+webext-perms-description-data-short-healthInfo = upplýsingar um heilsufar
+webext-perms-description-data-short-locationInfo = staðsetning
+webext-perms-description-data-short-personalCommunications = persónuleg samskipti
+webext-perms-description-data-short-personallyIdentifyingInfo = persónugreinanlegar upplýsingar
+webext-perms-description-data-short-searchTerms = leitarorð
+webext-perms-description-data-short-technicalAndInteraction = tækni- og gagnvirknigögn
+webext-perms-description-data-short-websiteActivity = virkni á vefsvæðum
+webext-perms-description-data-short-websiteContent = efni vefsvæða
+
+## Long form to be used in `about:addons` when these data collection permissions are optional.
+
+webext-perms-description-data-long-authenticationInfo = Deila auðkenningarupplýsingum með höfundi forritsaukans
+webext-perms-description-data-long-bookmarksInfo = Deila bókamerkjaupplýsingum með höfundi forritsaukans
+webext-perms-description-data-long-browsingActivity = Deila vafurvirkni með höfundi forritsaukans
+webext-perms-description-data-long-financialAndPaymentInfo = Deila fjárhags- og greiðsluupplýsingum með höfundi forritsaukans
+webext-perms-description-data-long-healthInfo = Deila heilsufarsupplýsingum með höfundi forritsaukans
+webext-perms-description-data-long-locationInfo = Deila staðsetningarupplýsingum með höfundi forritsaukans
+webext-perms-description-data-long-personalCommunications = Deila persónulegum samskiptum með höfundi forritsaukans
+webext-perms-description-data-long-personallyIdentifyingInfo = Deila persónugreinanlegum upplýsingum með höfundi forritsaukans
+webext-perms-description-data-long-searchTerms = Deila leitarorðum með höfundi forritsaukans
+webext-perms-description-data-long-technicalAndInteraction = Deila tæknilegum gögnum og gagnvirknigögnum með höfundi forritsaukans
+webext-perms-description-data-long-websiteActivity = Deila virkni vefsvæða með höfundi forritsaukans
+webext-perms-description-data-long-websiteContent = Deila efni vefsvæða með höfundi forritsaukans

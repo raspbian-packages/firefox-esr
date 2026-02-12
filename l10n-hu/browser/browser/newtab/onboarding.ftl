@@ -25,6 +25,8 @@ return-to-amo-subtitle = Nagyszerű, már van { -brand-short-name }a
 return-to-amo-addon-title = Most pedig szerezze be a(z) <img data-l10n-name="icon"/> <b>{ $addon-name } kiegészítőt.</b>
 return-to-amo-add-extension-label = Kiegészítő hozzáadása
 return-to-amo-add-theme-label = Téma hozzáadása
+return-to-amo-theme-install-complete-label = Téma telepítve
+return-to-amo-extension-install-complete-label = Kiegészítő telepítve
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Importálás innen: { $
 mr1-onboarding-theme-header = Tegye a sajátjává
 mr1-onboarding-theme-subtitle = A { -brand-short-name } személyre szabása egy témával.
 mr1-onboarding-theme-secondary-button-label = Most nem
-newtab-wallpaper-onboarding-title = Próbáljon ki egy kis színt
-newtab-wallpaper-onboarding-subtitle = Válasszon háttérképet, hogy az Új lap friss külsőt kapjon.
-newtab-wallpaper-onboarding-primary-button-label = Háttérkép beállítása
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Rendszertéma
 mr1-onboarding-theme-label-light = Világos
@@ -161,7 +160,7 @@ fx100-upgrade-thanks-header = 100 köszönet
 # but "Thank" can be used instead if there's no "you" in the translation.
 fx100-upgrade-thank-you-body = Ez a { -brand-short-name } 100. kiadása. Köszönjük <em>Önnek</em>, hogy segít nekünk egy jobb, egészségesebb internet felépítésében.
 # Message shown with either a pin-to-taskbar or set-default button.
-fx100-upgrade-thanks-keep-body = Ez a 100. kiadásunk! Köszönjük, hogy segít a közösségünk tagja. Tartsa egy kattintásnyira a { -brand-short-name(case: "accusative") } a következő 100-hoz.
+fx100-upgrade-thanks-keep-body = Ez a 100. kiadásunk! Köszönjük, hogy segít a közösségünk tagja. Tartsa egy kattintásnyira a { -brand-short-name }ot a következő 100-hoz.
 mr2022-onboarding-secondary-skip-button-label = Lépés kihagyása
 
 ## MR2022 New User Easy Setup screen strings
@@ -181,7 +180,7 @@ mr2022-onboarding-easy-setup-import-checkbox-label = Importálás az előző bö
 # If this translation does not make sense in your language, feel free to use the word "discover."
 mr2022-onboarding-welcome-pin-header = Fedezzen fel egy csodálatos internetet
 # Subtitle is used on onboarding page for new users page when Firefox is not pinned
-mr2022-onboarding-welcome-pin-subtitle = Indítsa el a { -brand-short-name(case: "accusative") } bárhonnan egyetlen kattintással. Minden alkalommal, amikor ezt teszi, egy nyitottabb és függetlenebb internetet választ.
+mr2022-onboarding-welcome-pin-subtitle = Indítsa el a { -brand-short-name }ot bárhonnan egyetlen kattintással. Minden alkalommal, amikor ezt teszi, egy nyitottabb és függetlenebb internetet választ.
 # Primary button string used on welcome page for when Firefox is not pinned.
 mr2022-onboarding-pin-primary-button-label =
     { PLATFORM() ->
@@ -230,7 +229,7 @@ mr2022-onboarding-get-started-primary-button-label = Beállítás másodpercek a
 ## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Villámgyors beállítás
-mr2022-onboarding-import-subtitle = Állítsa be úgy a { -brand-short-name(case: "accusative") }, ahogy Önnek tetszik. Adja hozzá könyvjelzőit, jelszavait és egyebeket a régi böngészőjéből.
+mr2022-onboarding-import-subtitle = Állítsa be úgy a { -brand-short-name }ot, ahogy Önnek tetszik. Adja hozzá könyvjelzőit, jelszavait és egyebeket a régi böngészőjéből.
 mr2022-onboarding-import-primary-button-label-no-attribution = Importálás az előző böngészőből
 
 ## If your language uses grammatical genders, in the description for the
@@ -300,7 +299,7 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Részletes infor
 ## MR2022 Multistage Gratitude screen strings
 
 mr2022-onboarding-gratitude-title = Segít nekünk egy jobb világháló felépítésében
-mr2022-onboarding-gratitude-subtitle = Köszönjük, hogy a { -brand-short-name(case: "accusative") } használja, amelyet a Mozilla Alapítvány támogat. Az Ön támogatásával azon dolgozunk, hogy az internetet mindenki számára nyitottabbá, hozzáférhetőbbé és jobbá tegyük.
+mr2022-onboarding-gratitude-subtitle = Köszönjük, hogy a { -brand-short-name }ot használja, amelyet a Mozilla Alapítvány támogat. Az Ön támogatásával azon dolgozunk, hogy az internetet mindenki számára nyitottabbá, hozzáférhetőbbé és jobbá tegyük.
 mr2022-onboarding-gratitude-primary-button-label = Nézze meg az újdonságokat
 mr2022-onboarding-gratitude-secondary-button-label = Böngészés megkezdése
 
@@ -343,7 +342,7 @@ onboarding-device-migration-primary-button-label = Bejelentkezés
 
 amo-picker-title = A { -brand-short-name } testreszabása
 amo-picker-subtitle = A kiegészítők olyanok, mintha alkalmazások lennének a böngészőhöz, és lehetővé teszik a jelszavak védelmét, videók letöltését, akciók megtalálását, a bosszantó hirdetések blokkolását, a böngésző kinézetének módosítását, és még sok minden mást.
-amo-picker-install-button-label = Hozzáadás a { -brand-short-name(case: "allative") }
+amo-picker-install-button-label = Hozzáadás a { -brand-short-name }hoz
 amo-picker-install-complete-label = Telepítve
 amo-picker-collection-link = További kiegészítők felfedezése
 
@@ -357,7 +356,7 @@ onboarding-mobile-download-security-and-privacy-title = Maradjon titkosítva, am
 onboarding-mobile-download-security-and-privacy-subtitle = Ha befejeződik a szinkronizálás, akkor a { -brand-short-name } titkosítja jelszavait, könyvjelzőit és egyebeit. Továbbá átvehet lapokat a többi eszközéről.
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = Számíthat a { -brand-short-name }ra
-onboarding-gratitude-security-and-privacy-subtitle = Köszönjük, hogy a { -brand-short-name(case: "accusative") } használja, amelyet a Mozilla Alapítvány támogat. Az Ön támogatásával azon dolgozunk, hogy az internetet mindenki számára biztonságosabbá, és mindenki számára hozzáférhetőbbé tegyük.
+onboarding-gratitude-security-and-privacy-subtitle = Köszönjük, hogy a { -brand-short-name }ot használja, amelyet a Mozilla Alapítvány támogat. Az Ön támogatásával azon dolgozunk, hogy az internetet mindenki számára biztonságosabbá, és mindenki számára hozzáférhetőbbé tegyük.
 # Sign up or Sign in screen
 onboarding-sign-up-title = Adatok szinkronizálása az eszközök közt
 onboarding-sign-up-description = Regisztráljon egy fiókot, és minden fontos információja – jelszavak, könyvjelzők és egyeket – biztonságosan lesz tárolva, és elérhető lesz, ha bejelentkezik bármely eszközön.
@@ -366,8 +365,8 @@ onboarding-sign-up-secondary-button = Böngészés megkezdése
 
 ## New user time and familiarity survey strings
 
-onboarding-new-user-time-based-survey-title = Mióta használja a { -brand-short-name(case: "accusative") }?
-onboarding-new-user-familiarity-based-survey-title = Mennyire ismeri jól a { -brand-short-name(case: "accusative") }?
+onboarding-new-user-time-based-survey-title = Mióta használja a { -brand-short-name }ot?
+onboarding-new-user-familiarity-based-survey-title = Mennyire ismeri jól a { -brand-short-name }ot?
 onboarding-new-user-survey-subtitle = Visszajelzése segít, hogy a { -brand-short-name } még jobb legyen.
 # When translating "next" it means the next screen in onboarding.
 onboarding-new-user-survey-next-button-label = Tovább
@@ -445,6 +444,18 @@ onboarding-checklist-sign-up = Regisztráljon vagy jelentkezzen be a fiókjába
 
 tab-groups-onboarding-feature-callout-title = Próbálja ki a lapcsoportokat a kisebb zsúfoltság és a nagyobb fókusz érdekében
 tab-groups-onboarding-feature-callout-subtitle = Rendszerezzen a lapok egymásra húzásával, hozzon létre így csoportokat.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Bármikor megtalálja a lapcsoportját az Összes lap felsorolása menüben.
+tab-groups-onboarding-create-group-title-2 = Itt bármikor megtalálja a lapcsoportjait.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Találja meg a csoportjait a címsorban keresve.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Ha bezár egy lapcsoportot, akkor bármikor újranyithatja az Összes lap felsorolása menüből.
+tab-groups-onboarding-saved-groups-title-2 = Ha bezár egy lapcsoportot, itt bármikor újra megnyithatja.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Találja meg a bezárt csoportjait a címsorban keresve.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Nyissa meg újra a lapcsoportokat az Összes lap felsorolása menüből.
+tab-groups-onboarding-session-restore-title = Nyissa meg újra a lapcsoportjait itt.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -454,3 +465,107 @@ multi-profile-spotlight-cta = Profil létrehozása
 multi-profile-callout-title = Hozzon létre különböző profilokat a munkához és a szórakozáshoz
 multi-profile-callout-subtitle = A profilok segítségével teljesen külön tárolhatja a böngészési adatait, mint a keresési előzményeket és a jelszavakat.
 multi-profile-callout-cta = Profil létrehozása
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Töltse le, szinkronizáljon és hajrá!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Olvassa le a QR-kódot a mobilos { -brand-product-name } letöltéséhez. A telepítés után válassza a „Szinkronizálás mobilra” lehetőséget, hogy útközben is elérje jelszavait, könyvjelzőit és egyebeit.
+dismiss-button-label = Eltüntetés
+sync-to-mobile-button-label = Szinkronizálás mobilra
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-kód a mobilos { -brand-product-name } letöltéséhez
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Windows 11-re frissít?
+    Készítsen biztonsági mentést a { -brand-product-name } adatairól.
+create-backup-screen-1-subtitle = Védje meg automatikusan a jelszavait, könyvjelzőit és egyebeit 1-2 perc alatt.
+create-backup-screen-1-flair = Ajánlott
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">További tudnivalók</a>
+create-backup-screen-1-sync-label = Szinkronizálás a { -brand-product-name }szal
+create-backup-screen-1-sync-body = Biztonsági mentést készít az összes bejelentkezett eszközről
+create-backup-screen-1-backup-label = Biztonsági mentés a PC-re
+create-backup-screen-1-backup-body = Az eszközére vagy a OneDrive-ra ment
+create-backup-select-tile-button-label = Kiválasztás
+create-backup-back-button-label = Vissza
+create-backup-show-fewer =
+    .label = Kevesebb ilyen megjelenítése
+create-backup-screen-2-title = Válassza ki a { -brand-product-name } mentendő adatait
+create-backup-screen-2-subtitle = Csak egy percig tart. Az adatokról naponta egyszer készül biztonsági mentés.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Könnyű beállítás
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Könyvjelzők, előzmények, beállítások és egyebek
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Nem tartalmazza a jelszavakat és a fizetési módokat
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Nincs titkosítva
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Összes adat
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Tartalmazza a jelszavakat és a fizetési módokat
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Jelszóval titkosítva
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Hová szeretné menteni a biztonsági mentést?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Jelszó létrehozása a biztonsági mentéshez
+create-backup-screen-3-subtitle = Az adatai titkosításához szükséges. Tárolja olyan helyen, amelyre emlékezni fog.
+fx-backup-opt-in-header = Válassza ki a fájl helyét
+fx-backup-opt-in-filepath-label = Válasszon egy helyet, amelyet tervez átmásolni egy új eszközre, például a OneDrive-re.
+fx-backup-opt-in-create-password-label = Adja meg a jelszót
+fx-backup-opt-in-confirm-btn-label = Folytatás
+fx-backup-opt-in-cancel-btn-label = Vissza
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = A biztonsági mentés be van ütemezve
+fx-backup-confirmation-screen-close-button = Bezárás
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Az összes böngészési adatot tartalmazza
+fx-backup-confirmation-screen-all-data-item-text-2 = Az eszközére mentve
+fx-backup-confirmation-screen-all-data-item-text-3 = Titkosított és jelszóval védett
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Könyvjelzőket, előzményeket, beállításokat és egyéb adatokat tartalmaz
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Az eszközére mentve
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Jelszavakat és fizetési módokat nem tartalmaz
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Ugorjon a <a data-l10n-name="settings">Beállításokhoz</a> az érzékeny adatok belevételéhez.
+fx-backup-confirmation-screen-item-subtext-1 = A biztonsági mentés néhány perc múlva elindul, és naponta egyszer fog futni. Az előrehaladást a <a data-l10n-name="settings">Beállítások</a> alatt ellenőrizheti.
+fx-backup-confirmation-screen-item-subtext-2 = A { -brand-short-name } megkeresi a biztonsági mentést, ha újra kell telepítenie.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Helyreállítás biztonsági mentésből
+restore-from-backup-title = Kapja vissza a { -brand-short-name }ot, ahogy Önnek tetszik
+restore-from-backup-subtitle = Állítsa helyre az összes könyvjelzőjét, előzményét és egyéb adatait, hogy visszatérjen a böngészéshez.
+restore-from-backup-secondary-button = Ne állítsa helyre
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Visszatértünk! A { -brand-short-name } adatai helyre lettek állítva.
+restored-from-backup-success-with-checklist-subtitle = Szeretné egy kattintásnyira tartani a kedvenc adatvédelem-központú böngészőjét?
+restored-from-backup-success-no-checklist-subtitle = A mentést ezen az eszközön a <a data-l10n-name="settings">Beállításokban</a> kapcsolhatja be.
+restored-from-backup-success-with-checklist-primary-button = Mentés és folytatás
+restored-from-backup-success-with-checklist-secondary-button = Lépés kihagyása
+restored-from-backup-success-no-checklist-primary-button = Folytatás
+restored-from-backup-error-title = Hmm, probléma volt a biztonsági mentési fájljával.
+restored-from-backup-error-subtitle = Ha van másik { -brand-short-name } biztonsági mentési fájlja, akkor próbálja meg abból a fájlból helyreállítani. <a data-l10n-name="restore-problems">Továbbra is fennáll a problémája?</a>
+restored-from-backup-error-primary-button = Bezárás
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Szabja testre a { -brand-short-name }-élményét
+onboarding-personalization-subtitle = Válaszoljon néhány kérdésre, és mi olyan funkciókat és kiegészítőket ajánlunk, amelyek javítják a { -brand-short-name }-élményét.
+onboarding-personalization-use-case-title = Mire használja a { -brand-short-name }ot?
+onboarding-personalization-use-case-personal-option = Személyes
+onboarding-personalization-use-case-school-option = Iskola
+onboarding-personalization-use-case-work-option = Munka
+onboarding-personalization-motivation-title = A { -brand-short-name } mely funkciói a legfontosabbak az Ön számára?
+onboarding-personalization-motivation-privacy-option = Adatvédelem és biztonság
+onboarding-personalization-motivation-productivity-option = Produktivitás
+onboarding-personalization-motivation-other-option = Egyéb

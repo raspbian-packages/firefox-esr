@@ -28,11 +28,11 @@ cert-error-domain-mismatch = ウェブサイトは証明書で同一性を証明
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $alt-name (string) - Alternate domain name for which the cert is valid.
-cert-error-domain-mismatch-single = ウェブサイトは証明書で同一性を証明します。{ $hostname } は無効な証明書を使用しているため、{ -brand-short-name } はこのサイトを信頼しません。 この証明書は <a data-l10n-name="domain-mismatch-link">{ $alt-name }</a> にだけ有効なものです。
+cert-error-domain-mismatch-single = ウェブサイトは証明書で同一性を証明します。{ $hostname } は無効な証明書を使用しているため、{ -brand-short-name } はこのサイトを信頼しません。この証明書は <a data-l10n-name="domain-mismatch-link">{ $alt-name }</a> にだけ有効なものです。
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $alt-name (string) - Alternate domain name for which the cert is valid.
-cert-error-domain-mismatch-single-nolink = ウェブサイトは証明書で同一性を証明します。{ $hostname } は無効な証明書を使用しているため、{ -brand-short-name } はこのサイトを信頼しません。 この証明書は { $alt-name } にだけ有効なものです。
+cert-error-domain-mismatch-single-nolink = ウェブサイトは証明書で同一性を証明します。{ $hostname } は無効な証明書を使用しているため、{ -brand-short-name } はこのサイトを信頼しません。この証明書は { $alt-name } にだけ有効なものです。
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $subject-alt-names (string) - Alternate domain names for which the cert is valid.
@@ -107,9 +107,35 @@ fp-cert-error-code = エラーコード: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } は { $hostname } を信頼しません。このサイトが証明書の透明性の要件を満たしていることを立証できません。
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = おそらくサイト側に問題があるため、あなたにできることはないでしょう。
 fp-learn-more-about-secure-connection-failures = 安全な接続の失敗についての詳細情報
 fp-learn-more-about-cert-issues = このような証明書の問題についての詳細情報
 fp-learn-more-about-time-related-errors = 時刻関連エラーのトラブルシューティングについての詳細情報
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書が破棄されているため信頼できません。
+cert-error-bad-signature = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書の署名が正しくありません。
+cert-error-key-pinning-failure = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書が指定されたものとは異なる公開鍵を使用しています。
+cert-error-bad-der = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書が正しくエンコードされていません。
+cert-error-cert-not-in-name-space = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書が証明書発行時の名前制約に従っていません。
+cert-error-inadequate-cert-type = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書がウェブサーバーでの使用を許可されていません。
+cert-error-path-len-constraint-invalid = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書のルート証明書へのパス内に中間証明書が多すぎます。
+cert-error-invalid-key = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書に不正な鍵が使用されています。多くの場合、鍵が短すぎて安全でないかもしれません。
+cert-error-unknown-critical-extension = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書にサポートされていない致命的な拡張が含まれています。
+cert-error-extension-value-invalid = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書に不正な拡張が含まれています。
+cert-error-untrusted-issuer = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書は信頼されていない認証局により発行されたものです。
+cert-error-untrusted-cert = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書は信頼されていないマークが付けられています。
+cert-error-invalid-integer-encoding = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書に整数型の不正なエンコーディングが含まれています。よくある原因として負のシリアル番号、負の RSA モジュール、必要以上に長いエンコーディングなどが考えられます。
+cert-error-unsupported-keyalg = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書にサポートされていない形式の鍵が使用されています。
+cert-error-issuer-no-longer-trusted = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書を発行した認証局が信頼されていません。
+cert-error-signature-algorithm-mismatch = { -brand-short-name } がこのサイトへの訪問をブロックしました。{ $hostname } の証明書の署名アルゴリズムが署名アルゴリズムフィールドに記載されたものと一致しません。
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = このアドレスへの接続は制限されていま�
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = アクセスしようとしているサイトを見つけられません
+internet-connection-offline-title = インターネット接続に問題があるようです
 dns-not-found-trr-only-title2 = このドメインの検索にはセキュリティ上の危険性があります
 dns-not-found-native-fallback-title2 = このドメインの検索にはセキュリティ上の危険性があります
 fileNotFound-title = ファイルが見つかりませんでした
@@ -134,6 +161,7 @@ contentEncodingError-title = 内容符号化 (Content-Encoding) に問題があ�
 unsafeContentType-title = 安全でないファイルタイプ
 netReset-title = 接続がリセットされました
 netTimeout-title = 接続がタイムアウトしました
+httpErrorPage-title = このサイトに問題があるようです
 serverError-title = このサイトに問題があるようです
 unknownProtocolFound-title = アドレスのプロトコルが不明です
 proxyConnectFailure-title = プロキシーサーバーへの接続を拒否されました
@@ -142,6 +170,7 @@ redirectLoop-title = ページの自動転送設定が正しくありません
 unknownSocketType-title = サーバーの応答が不正です
 nssFailure2-title = 安全な接続ができませんでした
 csp-xfo-error-title = { -brand-short-name } はこのページを開けません
+corruptedContentErrorv2-title = コンテンツデータ破損エラー
 corruptedContentError-title = コンテンツデータ破損エラー
 sslv3Used-title = 安全な接続を確保できません
 inadequateSecurityError-title = 接続が安全ではありません
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = 上級者向けの情報を隠す
 fp-certerror-override-exception-button = { $hostname } へ進む (危険)
 fp-certerror-intro = { -brand-short-name } が <strong>{ $hostname }</strong> に潜在的に深刻なセキュリティの問題があることを検知しました。悪意のある者がサイトを偽装してクレジットカード情報やパスワード、メールアドレスなどの個人情報を盗めるようにしています。
 fp-certerror-expired-into = { -brand-short-name } が <strong>{ $hostname }</strong> にセキュリティの問題があることを検知しました。サイトが正しく設定されていないか、ユーザーの端末の時計が誤った日時に設定されています。
+fp-certerror-transparency-intro = 何者かが偽の <strong>{ $hostname }</strong> サイトを装ってあなたのクレジットカード情報やパスワード、メールアドレスを盗み出そうとする可能性があります。

@@ -10,14 +10,6 @@ learn-more = <span data-l10n-name="link">Saiba mais</span>
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain why
 ## the property is not applied.
-## Variables:
-##   $property (string) - A CSS property name e.g. "color".
-##   $display (string) - A CSS display value e.g. "inline-block".
-
-
-## In the Rule View when a CSS property cannot be successfully applied we display
-## an icon. When this icon is hovered this message is displayed to explain why
-## the property is not applied.
 ## The variables are all passed from the same place, in `InactiveCssTooltipHelper#getTemplate`
 ## (devtools/client/shared/widgets/tooltip/inactive-css-tooltip-helper.js#95)
 ## Variables:
@@ -42,6 +34,8 @@ inactive-css-not-display-block-on-floated = O valor de <strong>display</strong> 
 inactive-css-not-display-block-on-floated-2 = O valor de <strong>display</strong> foi alterado pelo mecanismo para <strong>{ $display }</strong> porque o elemento é <strong>floated</strong>.
 inactive-css-only-non-grid-or-flex-item = <strong>{ $property }</strong> não tem efeito porque não pode ser usado em itens de grid ou flex.
 inactive-css-not-block = <strong>{ $property }</strong> não tem efeito neste elemento porque só se aplica a elementos a nível de bloco.
+inactive-css-not-block-container = <strong>{ $property }</strong> não tem efeito neste elemento porque só se aplica a elementos block container.
+inactive-css-not-block-flex-grid-container = <strong>{ $property }</strong> não tem efeito neste elemento porque só se aplica a elementos block, flex e grid container.
 inactive-css-not-floated = <strong>{ $property }</strong> não tem efeito porque só se aplica a elementos flutuantes.
 inactive-css-property-is-impossible-to-override-in-visited = Não é possível substituir <strong>{ $property }</strong> devido à restrição <strong>:visited</strong>.
 inactive-css-position-property-on-unpositioned-box = <strong>{ $property }</strong> não tem efeito neste elemento, pois não é um elemento posicionado.
@@ -78,6 +72,7 @@ inactive-css-text-wrap-balance-lines-exceeded =
     }
 inactive-css-text-wrap-balance-fragmented = <strong>{ $property }</strong> não tem efeito neste elemento, pois está fragmentado, ou seja, seu conteúdo está separado em várias colunas ou páginas.
 inactive-css-no-width-height = <strong>{ $property }</strong> não tem efeito neste elemento, pois sua largura e altura não podem ser definidas.
+inactive-css-no-principal-box = <strong>{ $property }</strong> não tem efeito neste elemento porque ele não cria uma caixa principal.
 
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain how
@@ -100,6 +95,8 @@ inactive-css-non-replaced-inline-or-table-column-or-column-group-fix = Experimen
 inactive-css-not-display-block-on-floated-fix = Experimente remover <strong>float</strong> ou adicionar <strong>display:block</strong>. { learn-more }
 inactive-css-only-non-grid-or-flex-item-fix = Experimente alterar o valor de <strong>display</strong> do contêiner do elemento para algo diferente de <strong>flex</strong>, <strong>grid</strong>, <strong>inline-flex</strong> ou <strong>inline-grid</strong>, ou remover <strong>float</strong>. { learn-more }
 inactive-css-not-block-fix = Experimente adicionar propriedades como <strong>display:block</strong> ou <strong>float:left</strong>. { learn-more }
+inactive-css-not-block-container-fix = Experimente adicionar <strong>display:block</strong>, <strong>display:inline-block</strong> ou <strong>display:flow-root</strong>. { learn-more }
+inactive-css-not-block-flex-grid-container-fix = Experimente adicionar <strong>display:block</strong>, <strong>display:inline-block</strong>, <strong>display:flex</strong>, <strong>display:inline-flex</strong>, <strong>display:grid</strong>, <strong>display:inline-grid</strong> ou <strong>display:flow-root</strong>. { learn-more }
 inactive-css-not-floated-fix = Experimente adicionar a propriedade <strong>float</strong> com um valor diferente de <strong>none</strong>. { learn-more }
 inactive-css-position-property-on-unpositioned-box-fix = Experimente definir sua propriedade <strong>position</strong> com algo diferente de <strong>static</strong>. { learn-more }
 inactive-css-only-replaced-elements-fix = Assegure estar adicionando a propriedade a um elemento substituído. { learn-more }
@@ -116,6 +113,7 @@ inactive-css-resize-fix = Experimente definir <strong>overflow</strong> com um v
 inactive-css-ruby-element-fix = Experimente alterar o <strong>font-size</strong> do texto ruby. { learn-more }
 inactive-css-text-wrap-balance-lines-exceeded-fix = Experimente reduzir o número de linhas. { learn-more }
 inactive-css-text-wrap-balance-fragmented-fix = Evite a separação do conteúdo do elemento, por exemplo. removendo colunas ou usando <strong>page-break-inside:avoid</strong>. { learn-more }
+inactive-css-no-principal-box-fix = Experimente adicionar um valor de <strong>display</strong> que crie uma caixa principal, como <strong>block</strong>, <strong>inline-block</strong>, <strong>flex</strong> ou <strong>grid</strong>. { learn-more }
 
 ## In the Rule View when a CSS property may have compatibility issues with other browsers
 ## we display an icon. When this icon is hovered this message is displayed to explain why

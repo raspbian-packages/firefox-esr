@@ -78,9 +78,6 @@ toolbar-button-fxaccount =
     .label = { -fxaccount-brand-name }
     .tooltiptext = { -fxaccount-brand-name }
 
-## Account toolbar Button
-
-
 ## Save Page
 
 main-context-menu-page-save =
@@ -146,9 +143,7 @@ main-context-menu-save-link-to-pocket =
     .label = Tiyak Ximonel pa { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Tiwachib'ëx rochochib'al taqoya'l
@@ -159,11 +154,6 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Tiwachib'ëx Ximoj
     .accesskey = X
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Tiwachib'ëx Ximoj rik'in majun Rojqanem Ruxaq
-    .accesskey = x
 
 ## Media (video/audio) controls
 ##

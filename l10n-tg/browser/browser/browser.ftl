@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = Тамошобинии хусусӣ бо «{ 
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,25 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } — Тамошобинии хусусӣ
     .data-content-title-default-with-profile = { $content-title } — { $profile-name }
     .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Тамошобинии хусусӣ
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — Тамошобинии хусусӣ
+       *[other] Тамошобинии хусусии «{ -brand-full-name }»
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = Тамошобинии махфӣ
+popups-infobar-dont-show-message2 =
+    .label = Ин паёмро нишон надиҳед вақте ки равзанаҳои зоҳиршаванда ва тағйири масир аз тарафҳои сеюм манъ карда мешаванд
+    .accesskey = И
+edit-popup-settings2 =
+    .label = Идоракунии танзимоти равзанаҳои зоҳиршаванда ва тағйири масир аз тарафҳои сеюм…
+    .accesskey = И
 
 ##
 
@@ -135,6 +152,10 @@ urlbar-default-notification-anchor =
     .tooltiptext = Кушодани лавҳаи паёмҳо
 urlbar-geolocation-notification-anchor =
     .tooltiptext = Кушодани лавҳаи дархости маконҳо
+urlbar-localhost-notification-anchor =
+    .tooltiptext = Идора кардани дастрасии маҳаллии дастгоҳ ба ин сомона
+urlbar-local-network-notification-anchor =
+    .tooltiptext = Идора кардани мубодилаи дастрасии шабакаи маҳаллии худ бо ин сомона
 urlbar-xr-notification-anchor =
     .tooltiptext = Кушодани лавҳаи иҷозатҳои ҳақиқати виртуалӣ
 urlbar-storage-access-anchor =
@@ -181,6 +202,35 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = Гирифтани кумак
     .accesskey = Г
+urlbar-result-menu-dismiss-suggestion =
+    .label = Нодида гузарондани ин пешниҳод
+    .accesskey = Н
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = Маълумоти бештар дар бораи «{ -firefox-suggest-brand-name }»
+    .accesskey = М
+urlbar-result-menu-manage-firefox-suggest =
+    .label = Идоракунии «{ -firefox-suggest-brand-name }»
+    .accesskey = И
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = Фиристодани гузориш дар бораи ҷойгиршавии нодуруст
+urlbar-result-menu-show-less-frequently =
+    .label = Бисёр маротиба нишон дода нашавад
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = Пешниҳодҳои обу ҳаво нишон дода нашаванд
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = Кушодани меню
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = Ташаккур барои изҳори назари шумо
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = Ташаккур барои изҳори назари шумо. Ба шумо дигар пешниҳодҳои обу ҳаво нишон дода намешаванд.
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -206,6 +256,10 @@ urlbar-search-mode-actions = Амалҳо
 
 urlbar-geolocation-blocked =
     .tooltiptext = Шумо барои ин сомона маълумоти ҷойгиршавиро манъ кардед.
+urlbar-localhost-blocked =
+    .tooltiptext = Шумо барои ин сомона пайвастҳои дастгоҳҳои маҳаллиро манъ кардед.
+urlbar-local-network-blocked =
+    .tooltiptext = Шумо барои ин сомона пайвастҳои шабакаи маҳаллиро манъ кардед.
 urlbar-xr-blocked =
     .tooltiptext = Шумо барои ин сомона дастрасии дастгоҳи воқеияти виртуалиро манъ кардед.
 urlbar-web-notifications-blocked =
@@ -218,6 +272,8 @@ urlbar-screen-blocked =
     .tooltiptext = Шумо барои ин сомона мубодилаи экрани худро манъ кардед.
 urlbar-persistent-storage-blocked =
     .tooltiptext = Шумо барои ин сомона захирагоҳи доимии худро манъ кардед.
+urlbar-popup-blocked2 =
+    .tooltiptext = Шумо барои ин сомона равзанаҳои зоҳиршаванда ва тағйири масирро аз тарафҳои сеюм манъ кардед.
 urlbar-popup-blocked =
     .tooltiptext = Шумо барои ин сомона равзанаҳои зоҳиршавандаро манъ кардед.
 urlbar-autoplay-media-blocked =
@@ -312,10 +368,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Намоиши ҷузъҳои иловагӣ
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = васеъшавиҳо, мавзуъҳо, ҷузъҳои иловагӣ, ҷузъи иловагӣ, extensions, themes, addons, add-ons
 quickactions-cmd-addons2 = ҷузъҳои иловагӣ
 # Opens the bookmarks library window
 quickactions-bookmarks2 = Идоракунии хатбаракҳо
 quickactions-cmd-bookmarks = хатбаракҳо
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = Пок кардани таърихи охирин
+quickactions-cmd-clearrecenthistory = пок кардани таърихи охирин, таърих
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Пок кардани таърих
 quickactions-cmd-clearhistory = пок кардани таърих
@@ -324,9 +387,20 @@ quickactions-downloads2 = Дидани боргириҳо
 quickactions-cmd-downloads = боргириҳо
 # Opens about:addons page in the extensions section
 quickactions-extensions = Идоракунии васеъшавиҳо
+quickactions-cmd-extensions2 = васеъшавиҳо, ҷузъҳои иловагӣ, ҷузъи иловагӣ, extensions, addons, add-ons
 quickactions-cmd-extensions = васеъшавиҳо
+# Opens Firefox View
+quickactions-firefoxview = Кушодани «{ -firefoxview-brand-name }»
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = кушодани «{ -firefoxview-brand-name }», «{ -firefoxview-brand-name }», кушодани намоиш, намоиш
+# Opens SUMO home page
+quickactions-help = Кумаки «{ -brand-product-name }»
+quickactions-cmd-help = кумак, дастгирӣ
 # Opens the devtools web inspector
 quickactions-inspector2 = Кушодани абзорҳои барномарезӣ
+quickactions-cmd-inspector2 = тафтишкунанда, абзорҳои барномарезӣ, inspector, devtools, dev tools
 quickactions-cmd-inspector = тафтишкунанда, абзорҳои барномарезӣ
 # Opens about:logins
 quickactions-logins2 = Идоракунии ниҳонвожаҳо
@@ -339,7 +413,7 @@ quickactions-print2 = Чоп кардани саҳифа
 quickactions-cmd-print = чоп кардан
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Нигоҳ доштани саҳифа ҳамчун PDF
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, нигоҳ доштани саҳифа
 # Opens a new private browsing window
 quickactions-private2 = Кушодани равзанаи хусусӣ
 quickactions-cmd-private = тамошобинии хусусӣ
@@ -351,18 +425,26 @@ quickactions-restart = Аз нав оғоз кардани «{ -brand-short-name
 quickactions-cmd-restart = аз нав оғоз кардан
 # Opens the screenshot tool
 quickactions-screenshot3 = Гирифтани акси экран
+quickactions-cmd-screenshot2 = акси экран, гирифтани акси экран, screenshot, take a screenshot
 quickactions-cmd-screenshot = акси экран
 # Opens about:preferences
 quickactions-settings2 = Идоракунии танзимот
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = танзимот, хусусиятҳо, имконот, идоракунӣ
 quickactions-cmd-settings = танзимот, хусусиятҳо, имконот
 # Opens about:addons page in the themes section
 quickactions-themes = Идоракунии мавзуъҳо
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = мавзуъҳо, ҷузъҳои иловагӣ
 quickactions-cmd-themes = мавзуъҳо
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = Навсозӣ кардани «{ -brand-short-name }»
 quickactions-cmd-update = навсозӣ кардан
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = Дидани манбаи саҳифа
+quickactions-cmd-viewsource2 = дидани манбаъ, манбаъ, манбаи саҳифа, view source, source, page source
 quickactions-cmd-viewsource = намоиши манбаъ, манбаъ
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
@@ -557,6 +639,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = Нишониеро ҷустуҷӯ кунед ё ворид намоед
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = Нишониеро ворид намоед
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -592,7 +678,7 @@ urlbar-placeholder-search-mode-other-actions =
 # Variables
 #  $name (String): the name of the user's default search engine
 urlbar-placeholder-with-name =
-    .placeholder = Нишониеро тавассути { $name } ҷустуҷӯ кунед ё ворид намоед
+    .placeholder = Ба воситаи «{ $name }» ҷустуҷӯ кунед ё нишониеро ворид намоед
 # Variables
 #  $component (String): the name of the component which forces remote control.
 #    Example: "DevTools", "Marionette", "RemoteAgent".
@@ -636,6 +722,8 @@ urlbar-result-action-visit = Боздид
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = Гузариш ба варақаи · <span>«{ $container }»</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = Гурӯҳи беном
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Тавассути ҳофизаи муваққатӣ боздид кунед
 # Directs a user to press the Tab key to perform a search with the specified
@@ -665,6 +753,131 @@ urlbar-result-action-copy-to-clipboard = Нусха бардоштан
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = номуайян
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong> дар { $city }, { $region }
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature }°{ $unit }</strong> дар { $city }, { $region }, { $country }
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong> дар { $city }
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } · Сарпарастӣ
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = Маълумотро дар бораи бозори коғазҳои қиматнок бевосита аз навори ҷустуҷӯ гиред
+# This string is shown as description when Market suggestion are disabled.
+urlbar-result-market-opt-in-description = Навсозиҳои бозоршиносӣ ва маълумоти дигар аз шарикони мо нишон додо мешавад вақте ки шумо маълумоти дархости ҷустуҷӯро бо «{ -vendor-short-name }» мубодила мекунед. <a data-l10n-name="learn-more-link">Маълумоти бештар</a>
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = Нишон додани пешниҳодҳо
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = Ҳоло не
+urlbar-result-realtime-opt-in-dismiss = Нодида гузарондан
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = Пешниҳодҳои зерин нишон дода нашаванд
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = Пешниҳодҳои бозоршиносӣ нишон дода нашаванд
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = Ташаккур барои изҳори назари шумо. Ба шумо дигар пешниҳодҳои бозоршиносӣ нишон дода намешаванд.
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = Ташаккур барои изҳори назари шумо. Ба шумо дигар пешниҳодҳои зерин нишон дода намешаванд.
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown =
+    { $daysUntilStart ->
+        [one] { $name } · Пас аз { $daysUntilStart } рӯз
+       *[other] { $name } · Пас аз { $daysUntilStart } рӯз
+    }
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range =
+    { $daysUntilStart ->
+        [one] { $name } · Пас аз { $daysUntilStart } рӯз оғоз мешавад
+       *[other] { $name } · Пас аз { $daysUntilStart } рӯз оғоз мешавад
+    }
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing =
+    { $daysUntilEnd ->
+        [one] { $name } · Пас аз { $daysUntilEnd } рӯз ба анҷом мерасад
+       *[other] { $name } · Пас аз { $daysUntilEnd } рӯз ба анҷом мерасад
+    }
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · Имрӯз
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · Имрӯз ба анҷом мерасад
 
 ## Strings used for buttons in the urlbar
 
@@ -692,8 +905,15 @@ urlbar-searchmode-actions =
     .label = Амалҳо
 urlbar-searchmode-exit-button =
     .tooltiptext = Пӯшидан
+urlbar-searchmode-default =
+    .tooltiptext = Низоми ҷустуҷӯии пешфарз
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Ин дафъа бо зерин ҷустуҷӯ кунед:
-urlbar-searchmode-popup-search-settings = Танзимоти ҷустуҷӯ
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Танзимоти ҷустуҷӯ
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = Нав
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -743,17 +963,20 @@ urlbar-group-recent-searches =
 # Variables:
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
-    .label = Тамоюл дар «{ $engine }»
+    .label = Ҳавасангез дар «{ $engine }»
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = Сарпарастӣ
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
-    .label = Ҷустуҷӯҳои тамоюл дигар нишон дода нашаванд
+    .label = Ҷустуҷӯҳои ҳавасангез дигар нишон дода нашаванд
     .accesskey = D
 urlbar-result-menu-trending-why =
     .label = Чаро ман инро дида истодаам?
     .accesskey = Ч
 # A message that replaces a result when the user dismisses all suggestions of a
 # particular type.
-urlbar-trending-dismissal-acknowledgment = Ташаккур барои фикру мулоҳизаи шумо. Ба шумо дигар ҷустуҷӯҳои тамоюл нишон дода намешаванд.
+urlbar-trending-dismissal-acknowledgment = Ташаккур барои фикру мулоҳизаи шумо. Ба шумо дигар ҷустуҷӯҳои ҳавасангез нишон дода намешаванд.
 
 ## Reader View toolbar buttons
 
@@ -940,6 +1163,9 @@ panel-save-update-password = Ниҳонвожа
 # "More" item in macOS share menu
 menu-share-more =
     .label = Бештар…
+menu-share-copy-link =
+    .label = Нусха бардоштани пайванд
+    .accesskey = Н
 ui-tour-info-panel-close =
     .tooltiptext = Пӯшидан
 
@@ -952,6 +1178,9 @@ popups-infobar-allow =
 popups-infobar-block =
     .label = Манъ кардани равзанаҳои зоҳиршаванда барои { $uriHost }
     .accesskey = М
+popups-infobar-allow2 =
+    .label = Иҷозат додани равзанаҳои зоҳиршаванда ва тағйири масир аз тарафҳои сеюм барои { $uriHost }
+    .accesskey = И
 
 ##
 
@@ -987,6 +1216,8 @@ navbar-accessible =
     .aria-label = Паймоиш
 navbar-downloads =
     .label = Боргириҳо
+navbar-overflow-2 =
+    .tooltiptext = Абзорҳои бештар
 navbar-overflow =
     .tooltiptext = Абзорҳои бештар…
 # Variables:
@@ -1012,6 +1243,10 @@ tabs-toolbar-new-tab =
 tabs-toolbar-list-all-tabs =
     .label = Рӯйхати ҳамаи варақаҳо
     .tooltiptext = Рӯйхати ҳамаи варақаҳо
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = Барои васл кардани варақа, онро дар ин ҷой гузоред
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1110,6 +1345,7 @@ firefox-relay-offer-why-to-use-relay = Ниқобҳои муҳофизатии �
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = Ҳамаи паёмҳои электроние, ки ба ниқобҳои муҳофизатии почтаи электронии шумо фиристода мешаванд, дарҳол ба <strong>{ $useremail }</strong> интиқол дода мешаванд (агар шумо онҳоро барҳам надиҳед).
 firefox-relay-offer-legal-notice = Вақте ки шумо имкони «Истифодаи ниқоби муҳофизатии почтаи электронӣ»-ро зер мекунед, шумо ҳамзамон бо <label data-l10n-name="tos-url">Шартҳои хизматрасонӣ</label> ва <label data-l10n-name="privacy-url">Огоҳномаи махфият</label> розӣ мешавед.
+firefox-relay-offer-legal-notice-1 = Вақте ки шумо сабти ном карда, ниқоби почтаи электрониро эҷод мекунед, шумо ҳамзамон бо <label data-l10n-name="tos-url">Шартҳои хизматрасонӣ</label> ва <label data-l10n-name="privacy-url">Огоҳномаи махфият</label> розӣ мешавед.
 
 ## Add-on Pop-up Notifications
 
@@ -1117,10 +1353,15 @@ popup-notification-addon-install-unsigned =
     .value = (Тасдиқнашуда)
 popup-notification-xpinstall-prompt-learn-more = Маълумоти бештар дар бораи насбкунии бехатари ҷузъи иловагӣ
 popup-notification-xpinstall-prompt-block-url = Дидани тафсилот
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = Иҷро кардан дар равзанаҳои махфӣ
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = Иҷозат додани иҷрокунии васеъшавӣ дар равзанаи махфӣ
     .accesskey = И
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = Мубодилаи маълумоти техникӣ ва ҳамкорӣ бо барномасози васеъшавӣ
+    .accesskey = М
 
 ## Pop-up warning
 
@@ -1131,10 +1372,24 @@ popup-warning-message =
         [one] { -brand-short-name } ин сомонаро аз кушодани равзанаи зоҳиршаванда манъ кард.
        *[other] { -brand-short-name } ин сомонаро аз кушодани { $popupCount } равзанаи зоҳиршаванда манъ кард.
     }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] Браузери «{ -brand-short-name }» ин сомонаро аз тағйири масир пешгирӣ кард.
+        [1] Браузери «{ -brand-short-name }» ин сомонаро аз кушодани равзанаи зоҳиршаванда ва тағйири масир пешгирӣ кард.
+       *[other] Браузери «{ -brand-short-name }» ин сомонаро аз кушодани { $popupCount } равзанаи зоҳиршаванда ва тағйири масир пешгирӣ кард.
+    }
 # The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
 # Variables:
 #   $popupCount (Number): the number of pop-ups blocked.
 popup-warning-exceeded-message = { -brand-short-name } ин сомонаро аз кушодани зиёда аз { $popupCount } равзанаи зоҳиршаванда манъ кард.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-with-redirect-message =
+    { $popupCount ->
+       *[other] Браузери «{ -brand-short-name }» ин сомонаро аз кушодани зиёда аз { $popupCount } равзанаи зоҳиршаванда ва тағйири масир пешгирӣ кард.
+    }
 popup-warning-button =
     .label =
         { PLATFORM() ->
@@ -1150,6 +1405,10 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = Намоиш додани “{ $popupURI }”
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = Намоиши «{ $redirectURI }»
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
@@ -1171,3 +1430,148 @@ file-picker-crashed-save-nowhere = Равзанаи «Файл» дар «Window
 file-picker-crashed-show-in-folder =
     .label = Намоиш додан дар ҷузвдон
     .accessKey = Н
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = Ба анҷом расонидани танзимот
+onboarding-aw-finish-setup-button =
+    .label = Ба анҷом расонидани танзимот
+    .tooltiptext = Ба анҷом расонидани танзимоти «{ -brand-short-name }»
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = Муҳофизати такмилёфта аз пайгирӣ фаъол аст
+trustpanel-etp-label-disabled = Муҳофизати такмилёфта аз пайгирӣ ғайрифаъол аст
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = Муҳофизати такмилёфта аз пайгирӣ: Фаъол барои { $host }
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = Муҳофизати такмилёфта аз пайгирӣ: Ғайрифаъол барои { $host }
+trustpanel-etp-description-enabled = Агар ягон чиз дар ин сомона вайрон бошад, кӯшиш кунед, ки воситаи муҳофизатро хомӯш намоед.
+trustpanel-etp-description-disabled = «{ -brand-product-name }» фикр мекунад, ки ширкатҳо бояд шуморо камтар пайгирӣ кунанд. Вақте ки шумо воситаҳои муҳофизи маълумоти шахсиро фаъол мекунед, мо ҳарчи бештар ҳар гуна васоити пайгириро манъ мекунем.
+trustpanel-connection-label-secure = Пайвастшавӣ бехатар аст
+trustpanel-connection-label-insecure = Пайвастшавӣ бехатар нест
+trustpanel-header-enabled = «{ -brand-product-name }» таҳти муҳофизат аст
+trustpanel-description-enabled2 = Мо шуморо муҳофизат кардем. Агар ягон чизеро пайдо кунем, мо ба шумо хабар медиҳем.
+trustpanel-header-enabled-insecure = Дар ин сомона эҳтиёт шавед
+trustpanel-description-enabled-insecure = «{ -brand-product-name }» чизе шубҳанокро ошкор кард.
+trustpanel-header-disabled = Шумо воситаҳои муҳофизатро хомӯш кардед
+trustpanel-description-disabled = Айни ҳол «{ -brand-product-name }» дар бефаъолиятӣ қарор дорад. Мо тавсия медиҳем, ки шумо воситаҳои муҳофизатро аз нав фаъол созед.
+trustpanel-clear-cookies-button = Пок кардани кукиҳо ва иттилооти сомона
+trustpanel-privacy-link = Танзимоти махфият
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = Пок кардани кукиҳо ва иттилооти сомона барои { $host }
+trustpanel-clear-cookies-description = Агар шумо барои сомонаи асосӣ кукиҳо ва маълумоти сомонаро тоза кунед, ин амал метавонад шуморо аз низомҳои сомонаҳои алоқаманд берун барорад ва сабадҳои харидории шуморо тоза намояд.
+trustpanel-clear-cookies-subview-button-clear = Пок кардан
+trustpanel-clear-cookies-subview-button-cancel = Бекор кардан
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = Муҳофизати пайваст бо { $host }
+trustpanel-siteinformation-morelink = Маълумоти бештар дар бораи сомона
+trustpanel-blocker-see-all = Ҳамаро дидан
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = Воситаҳои муҳофизат аз пайгирӣ барои { $host } фаъол аст
+
+## The urlbar trust icon & panel
+
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = Бехатар нест
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header =
+    { $count ->
+        [one] <span>{ $count }</span> воситаи пайгирӣ дар ин сомона манъ шуд
+       *[other] <span>{ $count }</span> воситаи пайгирӣ дар ин сомона манъ шуданд
+    }
+trustpanel-blocker-description = «{ -brand-product-name }» фикр мекунад, ки ширкатҳо бояд шуморо камтар пайгирӣ кунанд. Бинобар ин, мо ҳарчи бештар ҳар гуна васоити пайгириро манъ мекунем.
+trustpanel-blocked-header = «{ -brand-product-name }» барои шумо зеринро манъ кард:
+trustpanel-tracking-header = «{ -brand-product-name }» зеринро иҷозат медиҳад, то сомона вайрон нашавад:
+trustpanel-tracking-description = Агар шумо ҳар гуна васоити пайгириро манъ кунед, баъзеи тугмаҳо, шаклҳо ва майдонҳои воридшавӣ метавонанд бе онҳо кор накунанд.
+trustpanel-insecure-section-header = Пайвасти шумо бехатар нест
+trustpanel-insecure-description = Маълумоте, ки шумо ба ин сомона ирсол карда истодаед рамзгузорӣ нашудааст. Дар ин марвид, он метавонад дида шавад, дуздида шавад ё ҳатто тағйир дода шавад.
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [one] { $count } кукии васоити пайгирии байнисомонавӣ
+       *[other] { $count } кукии васоити пайгирии байнисомонавӣ
+    }
+trustpanel-list-label-tracking-content = Муҳтавои пайгирикунанда
+trustpanel-list-label-fingerprinter =
+    { $count ->
+        [one] { $count } хонандаи нақши ангуштон
+       *[other] { $count } хонандаи нақши ангуштон
+    }
+trustpanel-list-label-social-tracking =
+    { $count ->
+        [one] { $count } воситаи пайгирии шабакаҳои иҷтимоӣ
+       *[other] { $count } воситаи пайгирии шабакаҳои иҷтимоӣ
+    }
+trustpanel-list-label-cryptominer =
+    { $count ->
+        [one] { $count } криптомайнер
+       *[other] { $count } криптомайнер
+    }
+trustpanel-social-tracking-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } воситаи пайгирии шабакаҳои иҷтимоиро манъ кард
+       *[other] «{ -brand-product-name }» { $count } воситаи пайгирии шабакаҳои иҷтимоиро манъ кард
+    }
+trustpanel-social-tracking-not-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } воситаи пайгирии шабакаҳои иҷтимоиро иҷозат медиҳад
+       *[other] «{ -brand-product-name }» { $count } воситаи пайгирии шабакаҳои иҷтимоиро иҷозат медиҳад
+    }
+trustpanel-tracking-cookies-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } кукии васоити пайгирии байнисомонавиро манъ кард
+       *[other] «{ -brand-product-name }» { $count } кукии васоити пайгирии байнисомонавиро манъ кард
+    }
+trustpanel-tracking-cookies-not-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } кукии васоити пайгирии байнисомонавиро иҷозат медиҳад
+       *[other] «{ -brand-product-name }» { $count } кукии васоити пайгирии байнисомонавиро иҷозат медиҳад
+    }
+trustpanel-tracking-content-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } воситаи пайгириро манъ кард
+       *[other] «{ -brand-product-name }» { $count } воситаи пайгириро манъ кард
+    }
+trustpanel-tracking-content-not-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } воситаи пайгириро иҷозат медиҳад
+       *[other] «{ -brand-product-name }» { $count } воситаи пайгириро иҷозат медиҳад
+    }
+trustpanel-tracking-content-tab-list-header = Сомонаҳои зерин кӯшиш мекунанд, ки шуморо пайгирӣ кунанд:
+trustpanel-fingerprinter-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } хонандаи нақши ангуштонро манъ кард
+       *[other] «{ -brand-product-name }» { $count } хонандаи нақши ангуштонро манъ кард
+    }
+trustpanel-fingerprinter-not-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } хонандаи нақши ангуштонро иҷозат медиҳад
+       *[other] «{ -brand-product-name }» { $count } хонандаи нақши ангуштонро иҷозат медиҳад
+    }
+trustpanel-fingerprinter-list-header = Сомонаҳои зерин кӯшиш мекунанд, ки нақши ангуштони рқамии шуморо ҷамъ кунанд:
+trustpanel-cryptominer-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } криптомайнерро манъ кард
+       *[other] «{ -brand-product-name }» { $count } криптомайнерро манъ кард
+    }
+trustpanel-cryptominer-not-blocking-tab-header =
+    { $count ->
+        [one] «{ -brand-product-name }» { $count } криптомайнерро иҷозат медиҳад
+       *[other] «{ -brand-product-name }» { $count } криптомайнерро иҷозат медиҳад
+    }
+trustpanel-cryptominer-tab-list-header = Сомонаҳои зерин фаъолияти криптомайнингро кӯшиш мекунанд:

@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } përdorues
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Njëkohësoni faqerojtësit tuaj kudo.
 cfr-doorhanger-bookmark-fxa-body = Gjetje e fortë! Tani, mos rrini pa këtë faqerojtës në pajisjet tuaja celulare. Fillojani me një { -fxaccount-brand-name }.
@@ -68,6 +68,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Njëkohësoni faqerojtës që tani…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Buton mbylljeje
     .title = Mbylle
+fxa-adoption-addresses-backup-title = Le të kopjeruajmë adresat që keni ruajtur
+fxa-adoption-addresses-backup-subtitle = Mbroni adresat që keni ruajtur, fjalëkalimet tuaja duke i njëkohësuar me fshehtëzim nëpër pajisjet tuaja.
+fxa-adoption-credit-cards-backup-title = Le të kopjeruajmë metodat tuaja të pagesave
+fxa-adoption-credit-cards-backup-subtitle = Mbroni metodat tuaja të pagesave duke i njëkohësuar me fshehtëzim nëpër pajisjet tuaja.
+fxa-adoption-bookmarks-treatment-backup-title = Le të kopjeruajmë faqerojtësit tuaj
+fxa-adoption-bookmarks-treatment-backup-subtitle = Mbroni faqerojtësit tuaj duke i njëkohësuar me fshehtëzim nëpër pajisjet tuaja.
+fxa-adoption-primary-button-label = Regjistrohuni
 
 ## Protections panel
 
@@ -225,6 +232,22 @@ fox-doodle-pin-secondary = Jo tani
 set-default-pdf-handler-headline = <strong>PDF-të tuaja tanimë hapen në { -brand-short-name }.</strong> Përpunoni ose nënshkruani formularë drejt e në shfletuesin tuaj. Për ta ndryshuar, kërkoni për  “PDF” te rregullimet.
 set-default-pdf-handler-primary = E mora vesh
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Nënshkruani te vendi përkatës — ose kudo!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Vizatojeni, shkruajeni në tastierë, ose ngarkoni nënshkrimin tuaj, mandej vendoseni mu atje ku doni. Ruajini nënshkrimet tuaja për herë tjetër.
+annotations-make-default-pdf-handler-title = Të bëhet { -brand-short-name }-i përpunuesi juaj parazgjedhje për PDF-të?
+annotations-make-default-pdf-handler-subtitle = Do të mund të përdorni mjetet tona sa herë që hapni një PDF.
+annotations-make-default-pdf-primary-cta =
+    .label = Vëre si parazgjedhje
+annotations-make-default-pdf-next =
+    .label = Pasuesi
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Pajisje e re e juaj në të ardhmen?
@@ -310,8 +333,11 @@ fxa-menu-message-close-button =
     .title = Mbylle
     .aria-label = Mbylleni
 fxa-menu-message-sign-up-button = Regjistrohuni
+fxa-menu-message-sign-in-button = Hyni
+fxa-menu-message-sync-button = Fillo njëkohësim
 fxa-menu-message-sync-devices-primary-text = Njëkohësoni krejt pajisjet tuaja
 fxa-menu-message-sync-devices-secondary-text = Merrni në çast informacion tuajin — fjala vjen, faqerojtës dhe fjalëkalime — kudo që përdorni { -brand-short-name }-in.
+fxa-menu-message-sync-devices-secondary-text2 = Kini në çast faqerojtësit tuaj, fjalëkalime, etj — kudo ku keni bërë hyrjen në llogarinë tuaj { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Njëkohësoni krejt pajisjet tuaja
 fxa-menu-message-backup-data-primary-text = Kopjeruani të dhënat e shfetuesit tuaj
 fxa-menu-message-backup-data-secondary-text = Mbroni në mënyrë të automatizuar faqerojtësit, fjalëkalimet dhe të tjera hollësi në krejt pajisjet tuaja.
@@ -342,3 +368,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Mbajeni shfletuesin tuaj të parapëlqyer, të përqendruar te privatësia, vetëm një klikim larg. Vëren { -brand-short-name }-in si shfletuesin tuaj parazgjedhje për hapje lidhjesh dhe fiksojeni te shtylla juaj e punëve.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Mbajeni shfletuesin tuaj të parapëlqyer, të përqendruar te privatësia, vetëm një klikim larg. Vëren { -brand-short-name }-in si shfletuesin tuaj parazgjedhje për hapje lidhjesh dhe fiksojeni te shtylla juaj e punëve dhe menuja e Nisjes.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Do të bëni së shpejti përmirësim Windows 10?
+windows-10-eos-sync-spotlight-subtitle = Kopjeruani fjalëkalimet dhe faqerojtësit tuaj, që të jeni gati të hidheni te cilado pajisje.
+windows-10-eos-sync-spotlight-primary-label = Bëni një kopjeruajtje të { -brand-short-name }-it tuaj
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Po e përmirësoni me Windows 11? Mos humbni faqerojtës dhe fjalëkalime.
+windows-10-eos-sync-toast-subtitle = Kopjeruani të dhënat tuaja, që kështu { -brand-short-name }-i të jetë gati në çfarëdo kohe, në këtë PC, ose te pasuesi.
+windows-10-eos-sync-toast-primary-label = Fillojani
+windows-10-eos-sync-toast-secondary-label = Kujtoma më vonë
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name }-i s’vjen i kurdisur, si shfletues të tjera nga Big Tech. Këtu është puna.
+windows-10-eos-challenger-sync-callout-subtitle = Kur bëni kopjeruajtje të faqerojtësve dhe fjalëkalimeve tuaj { -brand-product-name }, është e kollajtë të sillet te pajisja juaj e radhës shfletuesi që zgjodhët.
+windows-10-eos-challenger-pin-callout-subtitle = Fiksojeni { -brand-shorter-name }-in te shtylla juaj e punëve, që shfletuesi që zgjodhët te jetë përherë atje ku ju duhet.
+windows-10-eos-challenger-sync-primary-button = Kopjeruani { -brand-shorter-name }-in
+windows-10-eos-challenger-pin-primary-button = Fiksoje { -brand-shorter-name }-in
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name }-i bllokon nxjerrësh kriptomonedhash, gjurmues mediash shoqërore dhe krijues shenjash gishtash.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Gjurmuesit s’mund të krijojnë një ID për pajisjen tuaj, apo t’ju gjurmojnë nëpër internet — ngaqë s’i lëmë ne.
+windows-10-eos-sync-callout-privacy-screen-2-title = Siguroni fjalëkalimet dhe faqerojtësit, për pajisjen tuaj pasuese.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Kopjeruajtja e { -brand-shorter-name }-it e bën të kollajtë të sillni me ju të dhënat tuaja dhe rregullimet për privatësinë.
+windows-10-eos-sync-callout-privacy-info-button = Shihni ç’është bllokuar
+windows-10-eos-callout-addons-title = Provoni shtesat: përmirësime të vockla, ndikim i madh
+windows-10-eos-callout-addons-subtitle = Këto zgjerime u zgjodhën për t’ju ndihmuar të mbeteni prodhimtar, i mbrojtur dhe pa shpërqendrim.
+windows-10-eos-callout-addons-primary-button = Shihni ç’kemi zgjedhur
+windows-10-eos-sync-callout-addons-title = Mos humbni shtesat tuaja, kur e përmirësoni që nga Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Njëkohësojini tani, që shtesat tuaj për { -brand-product-name } të jenë përherë gati, edhe pasi ndryshuat pajisje.
+windows-10-eos-sync-callout-next-button = Pasuesja
+windows-10-eos-sync-callout-get-started-button = Fillojani
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Mbërritën skeda vertikale dhe grupe skedash!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Duke u nisur nga kërkesa të shumta përdoruesish, { -brand-product-name }-i sapo hodhi në qarkullim veçori të reja, për ta mbajtur shfletimin tuaj më të hajthët dhe të përqendruar.
+windows-10-eos-feature-toast-whats-new-button = Shihni ç’ka të re
+windows-10-eos-feature-toast-dismiss-button = Hidhe tej
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Mbrojtja strikte nga gjurmimet mund të bëjë të mos funksionojnë si duhet sajte.</strong> Ndreqni probleme të rëndomtë duke zhbllokuar elementë thelbësorë që mund të përmbajnë gjurmues.
+etp-strict-exceptions-infobar-learn-more = Mësoni më tepër
+etp-strict-exceptions-infobar-button = Aplikoji ndreqjet
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Jo tani
+    .accesskey = J

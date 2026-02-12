@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = 새 탭
     .accesskey = w
@@ -75,6 +79,10 @@ move-to-end =
 move-to-new-window =
     .label = 새 창으로 이동
     .accesskey = W
+# Variables
+#  $profileName (string): The name of the profile to move tab to
+move-to-new-profile =
+    .label = { $profileName } 프로필로 이동
 tab-context-close-multiple-tabs =
     .label = 여러 탭 닫기
     .accesskey = M
@@ -119,6 +127,21 @@ tab-context-move-tabs =
            *[other] 탭 이동
         }
     .accesskey = v
+# The following string intentionally omits the word "Tab" from the singular and includes it in the plural.
+tab-context-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] 기기로 보내기
+           *[other] 탭 { $tabCount }개를 기기로 보내기
+        }
+    .accesskey = n
 tab-context-send-tabs-to-device =
     .label = 탭 { $tabCount }개를 기기로 보내기
     .accesskey = n
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] 탭 언로드
+           *[other] 탭 { $tabCount }개 언로드
+        }
+    .accesskey = U

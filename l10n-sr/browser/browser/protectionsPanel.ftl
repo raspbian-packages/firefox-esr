@@ -58,12 +58,12 @@ protections-panel-not-blocking-why-etp-off-tooltip-label =
 
 protections-panel-no-trackers-found =
     { -brand-short-name.gender ->
-        [masculine] { -brand-short-name } на овој страници није пронашао
-        [feminine] { -brand-short-name } на овој страници није пронашла
-        [neuter] { -brand-short-name } на овој страници није пронашло
-       *[other] Програм { -brand-short-name } на овој страници није пронашао
-    } познате елементе за праћење.
-protections-panel-content-blocking-tracking-protection = Садржаји који прате
+        [masculine] { -brand-short-name } на овој страници није пронашао познате елементе за праћење.
+        [feminine] { -brand-short-name } на овој страници није пронашла познате елементе за праћење.
+        [neuter] { -brand-short-name } на овој страници није пронашло познате елементе за праћење.
+       *[other] Програм { -brand-short-name } на овој страници није пронашао познате елементе за праћење.
+    }
+protections-panel-content-blocking-tracking-protection = Садржај са елементима за праћење
 protections-panel-content-blocking-socialblock = Елементи за праћење са друштвених мрежа
 protections-panel-content-blocking-cryptominers-label = Крипто-рудари
 protections-panel-content-blocking-fingerprinters-label = Хватачи отиска
@@ -77,9 +77,6 @@ protections-panel-content-blocking-fingerprinters-label = Хватачи оти�
 protections-panel-blocking-label = Блокирано
 protections-panel-not-blocking-label = Дозвољено
 protections-panel-not-found-label = Нису уочени
-
-## Smartblock strings
-
 
 ##
 

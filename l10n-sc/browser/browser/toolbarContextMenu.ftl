@@ -30,6 +30,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Torra a abèrrere is ischedas serradas
         }
     .accesskey = o
+toolbar-context-turn-on-vertical-tabs =
+    .label = Ativa is ischedas verticales
+toolbar-context-turn-off-vertical-tabs =
+    .label = Disativa is ischedas verticales
+toolbar-context-customize-sidebar =
+    .label = Personaliza sa barra laterale
 toolbar-context-menu-manage-extension =
     .label = Gesti s'estensione
     .accesskey = G
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
     .accesskey = C
 toolbar-context-menu-always-open-downloads-panel =
     .label = Ammustra su pannellu cando cumintzat s'iscarrigamentu
+    .accesskey = A
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Ammustra semper in sa barra de ainas
     .accesskey = A
 toolbar-context-menu-remove-from-toolbar =
     .label = Boga dae sa barra de ainas

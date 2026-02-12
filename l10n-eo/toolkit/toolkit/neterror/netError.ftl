@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Komenci seancon en tiu ĉi reto
 neterror-dns-not-found-title = Servilo ne trovita
 neterror-malformed-uri-page-title = Nevalida retadreso
 general-body-title = Estu singarda. Io ne ĝustas.
+problem-with-this-site-title = Ŝajne estas problemo kun tiu ĉi retejo
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = Se vi ne sukcesas ŝargi iun ajn paĝon, kontro
 neterror-load-error-firewall = Se via komputilo aŭ reto estas protektataj de retbarilo aŭ retperanto, certiĝu ke { -brand-short-name } rajtas aliri la TTT-n.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Se vi klopodas ŝargi paĝon el la loka reto, bonvolu kontroli ĉu { -brand-short-name } ricevis la permesojn por la loka reto en la agordoj de privateco kaj sekureco de de macOS.
+neterror-http-error-page = Certiĝu esti ĝuste tajpinta la adreson de la retejo.
 neterror-captive-portal = Vi devas komenci seancon en tiu ĉi reto antaŭ ol vi povos aliri la Interreton.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Se vi tajpis la ĝustan adreson, vi
 neterror-dns-not-found-hint-try-again = klopodi denove poste
 neterror-dns-not-found-hint-check-network = kontroli vian retaliron
 neterror-dns-not-found-hint-firewall = kontroli ĉu { -brand-short-name } rajtas aliri la reton (vi eble estas konektita, sed malantaŭ retbarilo).
+neterror-dns-not-found-offline-hint-header = <strong>Kion vi povus fari tio tio?</strong>
+neterror-dns-not-found-offline-hint-different-device = Provu konektiĝi el alia aparato.
+neterror-dns-not-found-offline-hint-modem = Kontrolu vian modemon aŭ retalirilon.
+neterror-dns-not-found-offline-hint-reconnect = Malkonektu kaj rekonektu la sendratan reton (Wi-Fi).
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Neatendita problemo.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } ne povas protekti vian peton pri la adreso de tiu ĉi retejo uzante niajn fidatajn serĉilojn DNS. Jen la kialo:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } ne povas protekti vian peton pri la adreso de tiu ĉi retejo per nia sekura provizanto de DNS. Jen la kialo:
 neterror-dns-not-found-native-fallback-heuristic = DNS per HTTPS estis malaktivigita en via reto.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } ne povis konektiĝi al { $trrDomain }.
 
@@ -88,7 +93,7 @@ neterror-unknown-protocol = Vi eble bezonos instali alian programon por malfermi
 neterror-redirect-loop = Tiu ĉi problemo povas okazi pro malaktivigo aŭ rifuzo de kuketoj.
 neterror-unknown-socket-type-psm-installed = Kontrolu kaj certiĝu ke via sistemo havas la Administranton de persona sekureco instalita.
 neterror-unknown-socket-type-server-config = Tiu povus okazi pro nenorma agordado de la servilo.
-neterror-not-cached-intro = La petita dokumento ne ekzistas en la staplo de { -brand-short-name }.
+neterror-not-cached-intro = La petita dokumento ne ekzistas en la stokejo de { -brand-short-name }.
 neterror-not-cached-sensitive = Pro sekureca singardo, { -brand-short-name } aŭtomate ne repetas delikatajn dokumentojn.
 neterror-not-cached-try-again = Alklaku 'Klopodi denove' por peti denove la dokumenton al la retejo.
 neterror-net-offline = Premu “Klopodi denove” por baskuli al la konektita reĝimo kaj reŝargi la paĝon.
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = Kontrolu la agordojn de la retperanto 
 neterror-proxy-connect-failure-contact-admin = Kontaktu vian retan administranton por certiĝi ke la retperanto nuntempe funkcias.
 neterror-content-encoding-error = Bonvolu kontakti la retejajn posedantojn por raporti al ili tiun ĉi problemon.
 neterror-unsafe-content-type = Bonvolu kontakti la retejajn posedantojn por raporti al ili tiun ĉi problemon.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } ne fidas { $hostname } ĉar la konekto ne estas sekura. Provu ŝanĝi la retadreson al HTTPS.
 neterror-nss-failure-not-verified = La paĝo, kiun vi klopodas vidi, ne povas esti montrita ĉar la aŭtentikeco de la ricevitaj datumoj ne povis esti kontrolita.
 neterror-nss-failure-contact-website = Bonvolu kontakti la posedantojn de la retejo por raporti al ili tiun ĉi problemon.
 # Variables:
@@ -159,3 +167,13 @@ certerror-coep-learn-more = Pli da informo pri la politikoj de inkrusto el malsa
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Erarkodo: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } ne povas krei sekuran konekton al la servilo ĉe { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Tiu retejo ŝajne uzas malnovan programaron kun konataj sekurecaj problemoj.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Certu havi la lastan version de { -brand-short-name }. Iru al Helpo > Pri { -brand-short-name } en la menuo. Se vi jam uzas la lastan version de { -brand-short-name }, la problemo tre verŝajne rilatas la retejon mem.

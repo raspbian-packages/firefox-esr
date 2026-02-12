@@ -54,16 +54,146 @@ fx-view-discoverability-secondary-button-label = Ocultar
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = No volver a mostrar esta recomendación
+split-dismiss-button-dont-show-option =
+    .label = No volver a mostrar esta recomendación
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = Mostrar menos recomendaciones
+split-dismiss-button-show-fewer-option =
+    .label = Mostrar menos recomendaciones
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = Administrar ajustes
+split-dismiss-button-manage-settings-option =
+    .label = Administrar ajustes
+# Accessibility label for dropdown menu button
+split-dismiss-button-default-label =
+    .title = Más opciones
+
+## Login Status Advisory Callout (points to the account icon)
+
+# The 'account icon' is the toolbar button with a 'profile' icon of a human
+# head/shoulders. It's for dealing with your Mozilla account. When hovering the
+# icon, the tooltip says 'Account'.
+login-status-advisory-title = Te has desconectado. Haz clic en el icono de la cuenta para conectarte.
+
+## Bookmarks toolbar callout strings
+
+bookmarks-toolbar-callout-1-title = ¿Añadir este sitio a tu barra de marcadores?
+bookmarks-toolbar-callout-1-subtitle = Tu marcador se guardará justo debajo de la barra de direcciones para un acceso rápido.
+bookmarks-toolbar-callout-1-primary-button-label = Añadir marcador
+bookmarks-toolbar-callout-1-secondary-button-label = No, gracias
+# Visible if user adds a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2a-title = Añade fácilmente más marcadores
+bookmarks-toolbar-callout-2a-subtitle = Puedes arrastrar y soltar pestañas aquí para tener más de tus sitios favoritos a tu alcance.
+bookmarks-toolbar-callout-2a-primary-button-label = Entendido
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2a-secondary-button-label = Ocultar barra de herramientas
+# Visible if user declines to add a bookmark in callout 1, bookmarks toolbar is set to always show when this message renders
+bookmarks-toolbar-callout-2b-title = ¿Mantener abierta la barra de marcadores?
+bookmarks-toolbar-callout-2b-subtitle = Puedes agregar otros sitios que visites con más frecuencia. Simplemente arrastra y suelta las pestañas aquí para tener tus sitios web favoritos a mano.
+bookmarks-toolbar-callout-2b-primary-button-label = Mantener abierto
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2b-secondary-button-label = No, gracias
+
+## Perplexity callout strings
+
+perplexity-callout-theme-1-title = ¿Necesitas la respuesta correcta, de inmediato?
+perplexity-callout-theme-2-title = Prueba Perplexity: una nueva forma de buscar
+perplexity-callout-theme-1-subtitle-1 = Prueba Perplexity. Selecciónalo en el botón de búsqueda cuando quieras respuestas completas, incluidas las fuentes.
+perplexity-callout-theme-1-subtitle-2 = Haz preguntas. Obtén respuestas completas y bien citadas. Para probar Perplexity, selecciónalo en el botón de búsqueda.
+perplexity-callout-theme-2-subtitle-1 = Pregúntale a Perplexity. Recibirás respuestas completas, con fuentes incluidas.
+perplexity-callout-theme-2-subtitle-2 = Haz preguntas. Obtén respuestas completas y bien citadas.
+perplexity-callout-primary-label = Pregúntale a Perplexity
+perplexity-callout-secondary-label-1 = Ocultar
+perplexity-callout-secondary-label-2 = Entendido
+
+## Account Adoption Passwords callout strings
+
+# Suggestion to backup passwords by signing up for Mozilla account and using sync
+fxa-adoption-passwords-title = Contraseña guardada. Ahora hagamos una copia de seguridad.
+fxa-adoption-passwords-subtitle = Protege tus contraseñas sincronizándolas con tus dispositivos cifradas.
+# Opens Mozilla accounts sign-up page
+fxa-adoption-passwords-primary-button-label = Registrarse
+
+## Taskbar Tabs callout strings
+
+taskbar-tabs-social-callout-title = Mantén tus feeds favoritos en tu barra de tareas
+taskbar-tabs-social-callout-subtitle = Lanza tus sitios sociales como una aplicación en una ventana optimizada protegida por { -brand-short-name }.
+taskbar-tabs-chat-callout-title = Chatea desde tu barra de tareas
+taskbar-tabs-chat-callout-subtitle = Lanza tus sitios de chat como una aplicación en una ventana optimizada protegida por { -brand-short-name }.
+taskbar-tabs-email-callout-title = Mantén tu correo electrónico en la barra de tareas
+taskbar-tabs-email-callout-subtitle = Lanza tus sitios de correo electrónico como una aplicación en una ventana optimizada protegida por { -brand-short-name }.
+taskbar-tabs-media-callout-title = Regresa a transmitir desde tu barra de tareas
+taskbar-tabs-media-callout-subtitle = Lanza tus sitios de streaming como una aplicación en una ventana optimizada protegida por { -brand-short-name }.
+taskbar-tabs-value-prop-callout-title = Añade este sitio a tu barra de tareas
+taskbar-tabs-value-prop-callout-subtitle = Ejecútalo en su propia ventana y en una interfaz simplificada con un solo clic.
+
+## Windows 10 EoS Sync messages group 1 callouts
+
+windows-10-eos-sync-urgency-title-1 = No pierdas todo lo que hayas guardado al migrar a Windows 11.
+windows-10-eos-sync-urgency-subtitle-1 = Sincroniza ahora para mantener tus marcadores, contraseñas y ajustes de { -brand-short-name } seguros y fáciles de restaurar.
+windows-10-eos-sync-urgency-title-2 = ¿Te despides de Windows 10? Protege tus datos al cambiar.
+windows-10-eos-sync-urgency-subtitle-2 = Incluso si no usas { -brand-short-name } a diario, sincroniza para mantener los marcadores y las contraseñas seguros y accesibles.
+windows-10-eos-sync-new-device-title-1 = No te arriesgues a empezar de nuevo en tu próximo dispositivo.
+windows-10-eos-sync-new-device-subtitle-1 = Sincroniza para llevar contigo tus marcadores, contraseñas y configuraciones preferidas de { -brand-short-name } cuando te mudes.
+windows-10-eos-sync-new-device-title-2 = ¿Te cambias de dispositivo? No pierdas lo que importa.
+windows-10-eos-sync-new-device-subtitle-2 = No importa con qué frecuencia uses { -brand-short-name }, la sincronización protege tus marcadores, contraseñas y ajustes.
+windows-10-eos-sync-new-device-primary-label = Sincronizar ahora
+windows-10-eos-sync-general-title-1 = Protege el { -brand-short-name } que has hecho tuyo.
+windows-10-eos-sync-general-subtitle-1 = Realiza copias de seguridad y sincroniza tus contraseñas, marcadores, ajustes y otros datos para preservar aquello que valoras.
+windows-10-eos-sync-general-title-2 = Ahora es un buen momento para hacer una copia de seguridad de tus contraseñas y marcadores.
+windows-10-eos-sync-general-subtitle-2 = Sincroniza ahora para proteger las cosas que confías a { -brand-short-name } y recupéralas en cualquier lugar y momento.
+windows-10-eos-sync-tour-title-1 = ¿Demasiadas pestañas? Ordénalas con grupos de pestañas.
+windows-10-eos-sync-tour-subtitle-1 = Arrastra una pestaña sobre otra para crear un grupo y mantener las cosas organizadas.
+windows-10-eos-sync-tour-title-2 = Organízate para Windows 11.
+windows-10-eos-sync-tour-subtitle-2 = Sincroniza tus marcadores, contraseñas y ajustes para hacer una copia de seguridad de ellos antes de cambiar.
+windows-10-eos-sync-split-dismiss-button-show-fewer-option =
+    .label = Mostrar menos recomendaciones
+windows-10-eos-sync-dismiss-button-label = Ocultar
+windows-10-eos-sync-callout-primary-advance-button-label = Siguiente
+
+## Link Preview Onboarding message callout strings
+
+link-preview-onboarding-callout-title = Nuevo: Haz clic y mantén presionado para obtener una vista previa de los enlaces
+link-preview-onboarding-callout-description = Consulta una breve descripción, el tiempo de lectura y más información para decidir si vale la pena hacer clic en el enlace. También disponible con el botón derecho del ratón.
 
 ## Sidebar Strings
 
 sidebar-button-callout-title = Mostrar títulos de pestañas en la barra lateral
 sidebar-button-callout-subtitle = Utiliza el botón de la barra lateral para expandir la barra lateral, de modo que puedas ver los títulos de las pestañas.
+sidebar-button-callout-vertical-tabs = Para mostrar tus pestañas, selecciona el botón de la barra lateral en la barra de herramientas.
+
+## Sidebar Vertical Tabs Strings
+
+vertical-tabs-callout-1-title = ¿Te abrumas con tantas pestañas?
+vertical-tabs-callout-1-subtitle = Prueba nuestro nuevo diseño de pestañas verticales para explorar rápidamente tu lista de pestañas. Los primeros evaluadores informan que este diseño les ayuda a sentirse más organizados. Cambia en cualquier momento.
+vertical-tabs-callout-1-cta-button = Prueba las pestañas verticales
+vertical-tabs-callout-2-cta-button = Probar ahora
+vertical-tabs-callout-2-title = ¿Mantienes muchas pestañas abiertas? Prueba las pestañas verticales
+vertical-tabs-callout-2-subtitle = Este diseño hace que sea fácil escanear tu lista de pestañas. Además, puedes ajustar el ancho para ver más o menos de los títulos de tus pestañas
+
+## Sidebar Vertical Tabs Pinning Strings
+
+sidebar-pins-callout-title = ¿Le estás perdiendo el rastro a tus pestañas importantes?
+sidebar-pins-callout-subtitle = Intenta fijarlas para que se mantengan en la parte superior de la lista de pestañas. Haz clic derecho en la pestaña que desees fijar y luego selecciona Fijar pestaña.
+sidebar-pins-callout-cta-button = Fijar pestaña
+
+## Pinning Tabs Strings
+
+pin-tabs-callout-1-title = Mantén las pestañas importantes a tu alcance
+pin-tabs-callout-1-subtitle = Arrastra una pestaña al inicio de la barra de pestañas para fijarla. O haz clic derecho y selecciona "Fijar pestaña".
+pin-tabs-callout-cta-1-button = Fijar esta pestaña
+pin-tabs-callout-2-title = Fija las pestañas que visitas con más frecuencia
+pin-tabs-callout-2-subtitle = Para fijar una pestaña, arrástrala al inicio de la barra de pestañas. O haz clic derecho y selecciona "Fijar pestaña".
+pin-tabs-callout-cta-2-button = Fijar esta pestaña
+pin-tabs-callout-3-title = Mantén los sitios importantes a tu alcance
+pin-tabs-callout-4-title = Fija los sitios que visitas con más frecuencia
+
+## Sidebar Onboarding Strings
+
+sidebar-customization-callout-1-title = Barra lateral: tu lugar para herramientas y pestañas
+sidebar-customization-callout-1-subtitle = La barra lateral de { -brand-product-name } te brinda acceso rápido a tu historial de navegación, pestañas de otros dispositivos y un chatbot de IA, todo sin salir de tu vista principal.
+sidebar-customization-callout-callout-button = Personalizar barra lateral
+sidebar-customization-callout-dismiss-button = Ocultar barra lateral
+sidebar-customization-callout-2-title = Haz tuya la barra lateral de { -brand-product-name }
+sidebar-customization-callout-2-subtitle = Añade y quita herramientas. Coloca tus pestañas en la barra lateral. Prueba un chatbot con inteligencia artificial. La forma en que personalizas tu barra lateral depende de ti.
 
 ## Sidebar Callout Survey Strings
 
@@ -94,3 +224,19 @@ sidebar-genai-survey-satisfaction-question = ¿Qué tan satisfecho estás con te
 sidebar-genai-survey-productive-question =
     ¿En qué medida estás de acuerdo o en desacuerdo con esta afirmación:<br/>
     “El chatbot de IA me ayuda a aumentar mi productividad”?
+unified-search-callout-title = Cambiar entre motores de búsqueda
+unified-search-callout-subtitle = Elije el que funcione mejor para tu búsqueda específica.
+unified-search-callout-primary-label = Siguiente
+unified-search-callout-secondary-label = Ocultar
+unified-search-engines-callout-title = Búsqueda con un atajo
+unified-search-engines-callout-subtitle = Escribe “@” seguido de una palabra clave para buscar en tu historial, marcadores, pestañas o con otro motor de búsqueda.
+unified-search-engines-callout-primary-label = Entendido
+actions-callout-title = Realiza tareas comunes o accede a ajustes básicos
+# The user can type "print" and "clear" and a button will appear in the
+# search bar (e.g. Print page) the user can click to initiate the action.
+# These example text inputs correlate to the the following strings
+# (either matching the whole string, or the first word of the string).
+# "print" - quickactions-cmd-print
+# "clear" - quickactions-cmd-clearrecenthistory
+# When localizing, ensure the translations match to ensure the action button appears as expected.
+actions-callout-subtitle = Prueba a escribir una acción como “imprimir” para imprimir una página o “borrar” para borrar tu historial.

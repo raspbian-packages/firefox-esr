@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Закрыть вкладку
 tabbrowser-menuitem-close =
     .label = Закрыть
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -166,8 +179,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Больше не показыват
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Внимание
-tabbrowser-confirm-close-duplicate-tabs-text = Мы будем держать открытой последнюю активную вкладку
 tabbrowser-confirm-close-all-duplicate-tabs-title = Закрыть дублирующиеся вкладки?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Мы закроем дублирующиеся вкладки в этом окне. Последняя активная
@@ -214,6 +225,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Убрать звук во вкладке
@@ -221,8 +235,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Восстановить звук во вкладке
 tabbrowser-manager-close-tab =
     .tooltiptext = Закрыть вкладку
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Закрыта
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Текущее окно
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Создать группу вкладок
 tab-group-editor-title-edit = Управление группой вкладок
@@ -234,22 +256,40 @@ tab-group-editor-cancel =
     .accesskey = С
 tab-group-editor-color-selector =
     .aria-label = Цвет группы вкладок
-tab-group-editor-color-selector-blue = Синий
-tab-group-editor-color-selector-purple = Фиолетовый
-tab-group-editor-color-selector-cyan = Бирюзовый
-tab-group-editor-color-selector-orange = Оранжевый
-tab-group-editor-color-selector-yellow = Жёлтый
-tab-group-editor-color-selector-pink = Розовый
-tab-group-editor-color-selector-green = Зелёный
-tab-group-editor-color-selector-gray = Серый
-tab-group-editor-color-selector-red = Красный
-tab-group-menu-header = Группы вкладок
+tab-group-editor-color-selector2-blue = Синий
+    .title = Синий
+tab-group-editor-color-selector2-purple = Фиолетовый
+    .title = Фиолетовый
+tab-group-editor-color-selector2-cyan = Бирюзовый
+    .title = Бирюзовый
+tab-group-editor-color-selector2-orange = Оранжевый
+    .title = Оранжевый
+tab-group-editor-color-selector2-yellow = Жёлтый
+    .title = Жёлтый
+tab-group-editor-color-selector2-pink = Розовый
+    .title = Розовый
+tab-group-editor-color-selector2-green = Зелёный
+    .title = Зелёный
+tab-group-editor-color-selector2-gray = Серый
+    .title = Серый
+tab-group-editor-color-selector2-red = Красный
+    .title = Красный
+tab-group-description = { $tabGroupName } — Группа вкладок
+tab-group-label-tooltip-collapsed = { $tabGroupName } — свернута
+tab-group-label-tooltip-expanded = { $tabGroupName } — развернута
+tab-group-preview-name =
+    .aria-label = Вкладки в свёрнутой группе
 tab-context-unnamed-group =
     .label = Безымянная группа
 tab-group-name-default = Безымянная группа
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Список вкладок открыт
+tab-group-preview-closed-description = Список вкладок закрыт
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -269,6 +309,8 @@ tab-context-move-tab-to-group =
            *[many] Добавить вкладки в группу
         }
     .accesskey = п
+tab-context-move-tab-to-group-saved-groups =
+    .label = Закрытые группы
 tab-group-editor-action-new-tab =
     .label = Новая вкладка в группе
 tab-group-editor-action-new-window =
@@ -295,6 +337,17 @@ tab-context-ungroup-tab =
            *[many] Удалить из групп
         }
     .accesskey = к
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] Ещё { $tabCount } вкладка
+        [few] Ещё { $tabCount } вкладки
+       *[many] Ещё { $tabCount } вкладок
+    }
 
 ## Open/saved tab group context menu
 
@@ -320,3 +373,33 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Открыть группу в новом окне
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Разделить вид
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Добавить раздельный вид
+    .accesskey = е
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Открыть в раздельном виде
+    .accesskey = е
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Разъединить раздельный вид
+    .accesskey = е
+tab-context-badge-new = Новый
+
+## Manage Split View (icon in the address bar & three-dot menu in the footer)
+
+# "Separate" is a verb, as in "separate the split view tabs and display them normally".
+split-view-menuitem-separate-tabs =
+    .label = Разделить вкладки
+# "Reverse" is a verb, as in "reverse the order of split view tabs".
+split-view-menuitem-reverse-tabs =
+    .label = Переставить вкладки
+split-view-menuitem-close-both-tabs =
+    .label = Закрыть обе вкладки

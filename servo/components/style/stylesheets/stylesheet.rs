@@ -6,7 +6,7 @@ use crate::context::QuirksMode;
 use crate::error_reporting::{ContextualParseError, ParseErrorReporter};
 use crate::media_queries::{Device, MediaList};
 use crate::parser::ParserContext;
-use crate::shared_lock::{DeepCloneParams, DeepCloneWithLock, Locked};
+use crate::shared_lock::{DeepCloneWithLock, Locked};
 use crate::shared_lock::{SharedRwLock, SharedRwLockReadGuard};
 use crate::stylesheets::loader::StylesheetLoader;
 use crate::stylesheets::rule_parser::{State, TopLevelRuleParser};
@@ -65,6 +65,8 @@ pub struct StylesheetContents {
     pub source_map_url: RwLock<Option<String>>,
     /// This stylesheet's source URL.
     pub source_url: RwLock<Option<String>>,
+    /// The use counters of the original stylesheet.
+    pub use_counters: UseCounters,
 
     /// We don't want to allow construction outside of this file, to guarantee
     /// that all contents are created with Arc<>.
@@ -82,10 +84,10 @@ impl StylesheetContents {
         stylesheet_loader: Option<&dyn StylesheetLoader>,
         error_reporter: Option<&dyn ParseErrorReporter>,
         quirks_mode: QuirksMode,
-        use_counters: Option<&UseCounters>,
         allow_import_rules: AllowImportRules,
         sanitization_data: Option<&mut SanitizationData>,
     ) -> Arc<Self> {
+        let use_counters = UseCounters::default();
         let (namespaces, rules, source_map_url, source_url) = Stylesheet::parse_rules(
             css,
             &url_data,
@@ -94,7 +96,7 @@ impl StylesheetContents {
             stylesheet_loader,
             error_reporter,
             quirks_mode,
-            use_counters,
+            Some(&use_counters),
             allow_import_rules,
             sanitization_data,
         );
@@ -107,6 +109,7 @@ impl StylesheetContents {
             quirks_mode,
             source_map_url: RwLock::new(source_map_url),
             source_url: RwLock::new(source_url),
+            use_counters,
             _forbid_construction: (),
         })
     }
@@ -137,6 +140,7 @@ impl StylesheetContents {
             quirks_mode,
             source_map_url: RwLock::new(None),
             source_url: RwLock::new(None),
+            use_counters: UseCounters::default(),
             _forbid_construction: (),
         })
     }
@@ -164,13 +168,12 @@ impl DeepCloneWithLock for StylesheetContents {
         &self,
         lock: &SharedRwLock,
         guard: &SharedRwLockReadGuard,
-        params: &DeepCloneParams,
     ) -> Self {
         // Make a deep clone of the rules, using the new lock.
         let rules = self
             .rules
             .read_with(guard)
-            .deep_clone_with_lock(lock, guard, params);
+            .deep_clone_with_lock(lock, guard);
 
         Self {
             rules: Arc::new(lock.wrap(rules)),
@@ -180,6 +183,7 @@ impl DeepCloneWithLock for StylesheetContents {
             namespaces: RwLock::new((*self.namespaces.read()).clone()),
             source_map_url: RwLock::new((*self.source_map_url.read()).clone()),
             source_url: RwLock::new((*self.source_url.read()).clone()),
+            use_counters: self.use_counters.clone(),
             _forbid_construction: (),
         }
     }
@@ -352,7 +356,11 @@ impl SanitizationKind {
             CssRule::Scope(..) |
             CssRule::StartingStyle(..) => false,
 
-            CssRule::FontFace(..) | CssRule::Namespace(..) | CssRule::Style(..) => true,
+            CssRule::FontFace(..) |
+            CssRule::Namespace(..) |
+            CssRule::Style(..) |
+            CssRule::NestedDeclarations(..) |
+            CssRule::PositionTry(..) => true,
 
             CssRule::Keyframes(..) |
             CssRule::Page(..) |
@@ -402,7 +410,7 @@ impl Stylesheet {
         error_reporter: Option<&dyn ParseErrorReporter>,
         allow_import_rules: AllowImportRules,
     ) {
-        // FIXME: Consider adding use counters to Servo?
+        let use_counters = UseCounters::default();
         let (namespaces, rules, source_map_url, source_url) = Self::parse_rules(
             css,
             &url_data,
@@ -411,7 +419,7 @@ impl Stylesheet {
             stylesheet_loader,
             error_reporter,
             existing.contents.quirks_mode,
-            /* use_counters = */ None,
+            Some(&use_counters),
             allow_import_rules,
             /* sanitization_data = */ None,
         );
@@ -424,6 +432,7 @@ impl Stylesheet {
         *existing.contents.rules.write_with(&mut guard) = CssRules(rules);
         *existing.contents.source_map_url.write() = source_map_url;
         *existing.contents.source_url.write() = source_url;
+        existing.contents.use_counters.merge(&use_counters);
     }
 
     fn parse_rules(
@@ -461,6 +470,8 @@ impl Stylesheet {
             insert_rule_context: None,
             allow_import_rules,
             declaration_parser_state: Default::default(),
+            first_declaration_block: Default::default(),
+            wants_first_declaration_block: false,
             error_reporting_state: Default::default(),
             rules: Vec::new(),
         };
@@ -526,7 +537,6 @@ impl Stylesheet {
             stylesheet_loader,
             error_reporter,
             quirks_mode,
-            /* use_counters = */ None,
             allow_import_rules,
             /* sanitized_output = */ None,
         );
@@ -567,11 +577,7 @@ impl Clone for Stylesheet {
         // Make a deep clone of the media, using the new lock.
         let media = self.media.read_with(&guard).clone();
         let media = Arc::new(lock.wrap(media));
-        let contents = Arc::new(self.contents.deep_clone_with_lock(
-            &lock,
-            &guard,
-            &DeepCloneParams,
-        ));
+        let contents = Arc::new(self.contents.deep_clone_with_lock(&lock, &guard));
 
         Stylesheet {
             contents,

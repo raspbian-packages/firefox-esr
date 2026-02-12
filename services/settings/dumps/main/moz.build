@@ -9,6 +9,7 @@ if CONFIG["MOZ_BUILD_APP"] == "browser":
         "search-telemetry-v2.json",
         "sites-classification.json",
         "top-sites.json",
+        "urlbar-persisted-search-terms.json",
    ]
 
 # These collections are referenced in toolkit/ or other core code, however
@@ -21,16 +22,16 @@ if not CONFIG["MOZ_BUILD_APP"].startswith("mobile/"):
         "devtools-devices.json",
         "example.json",
         "hijack-blocklists.json",
+        "moz-essential-domain-fallbacks.json",
         "password-rules.json",
         "search-config-icons.json",
         "search-config-overrides-v2.json",
-        "search-config-overrides.json",
         "search-config-v2.json",
-        "search-config.json",
         "search-default-override-allowlist.json",
         "translations-models.json",
         "translations-wasm.json",
         "url-classifier-skip-urls.json",
+        "url-parser-default-unknown-schemes-interventions.json",
         "websites-with-shared-credential-backends.json",
     ]
 
@@ -102,6 +103,8 @@ if CONFIG["MOZ_BUILD_APP"] == "browser":
         "search-config-icons/96327a73-c433-5eb4-a16d-b090cadfb80b.meta.json",
         "search-config-icons/9802e63d-05ec-48ba-93f9-746e0981ad98",
         "search-config-icons/9802e63d-05ec-48ba-93f9-746e0981ad98.meta.json",
+        "search-config-icons/9d96547d-7575-49ca-8908-1e046b8ea90e",
+        "search-config-icons/9d96547d-7575-49ca-8908-1e046b8ea90e.meta.json",
         "search-config-icons/a06db97d-1210-ea2e-5474-0e2f7d295bfd",
         "search-config-icons/a06db97d-1210-ea2e-5474-0e2f7d295bfd.meta.json",
         "search-config-icons/a06dc3fd-4bdb-41f3-2ebc-4cbed06a9bd3",

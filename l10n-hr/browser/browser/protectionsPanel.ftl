@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-protections-panel-sendreportview-error = Došlo je do greške prilikom slanja izvještaja. Pokušaj ponovo kasnije.
+protections-panel-sendreportview-error = Došlo je do greške prilikom slanja izvještaja. Pokušaj kasnije ponovo.
 # A link shown when ETP is disabled for a site. Opens the breakage report subview when clicked.
 protections-panel-sitefixedsendreport-label = Stranica je ispravljena? Pošalji izvještaj
 
@@ -48,17 +48,17 @@ protections-panel-etp-toggle-off =
 
 protections-panel-not-blocking-why-label = Zašto?
 protections-panel-not-blocking-why-etp-on-tooltip = Blokiranjem ovih elemenata mogu se pokvariti elementi nekih web stranica. Bez programa za praćenje, neki gumbi, obrasci i polja za prijavu možda neće funkcionirati.
-protections-panel-not-blocking-why-etp-off-tooltip = Svi pratitelji na ovoj stranici su učitani iz razloga što su zaštite isključene.
+protections-panel-not-blocking-why-etp-off-tooltip = Svi programi za praćenje na ovoj stranici su učitani jer su zaštite isključene.
 protections-panel-not-blocking-why-etp-on-tooltip-label =
     .label = Blokiranjem ovih elemenata mogu se pokvariti elementi nekih web stranica. Bez programa za praćenje, neki gumbi, obrasci i polja za prijavu možda neće funkcionirati.
 protections-panel-not-blocking-why-etp-off-tooltip-label =
-    .label = Svi pratitelji na ovoj stranici su učitani iz razloga što su zaštite isključene.
+    .label = Svi programi za praćenje na ovoj stranici su učitani jer su zaštite isključene.
 
 ##
 
 protections-panel-no-trackers-found = Programi za praćenje koje { -brand-short-name } pozna nisu otkriveni na ovoj stranici.
-protections-panel-content-blocking-tracking-protection = Praćenje sadržaja
-protections-panel-content-blocking-socialblock = Programi za praćenje s društvenih mreža
+protections-panel-content-blocking-tracking-protection = Sadržaj za praćenje
+protections-panel-content-blocking-socialblock = Programi za praćenje od društvenih mreža
 protections-panel-content-blocking-cryptominers-label = Kripto-rudari
 protections-panel-content-blocking-fingerprinters-label = Prikupljači digitalnih otisaka
 
@@ -74,6 +74,7 @@ protections-panel-not-found-label = Ništa otkriveno
 
 ## Smartblock strings
 
+protections-panel-smartblock-desc-label = { -brand-short-name } blokira sadržaj za praćenje dok si na ovoj stranici osim ako to dozvoliš.
 # Variables
 #  $trackername (String): the name of the tracker that is currently being blocked.
 protections-panel-smartblock-blocking-toggle =
@@ -108,7 +109,7 @@ protections-panel-site-not-working-view-send-report = Pošalji izvještaj
 protections-panel-cross-site-tracking-cookies = Ovi kolačići te prate od stranice do stranice i prikupljaju podatke o tome što radiš na internetu. Postavljeni su od trećih strana kao što su oglašivači i analitičke tvrtke.
 protections-panel-cryptominers = Kripto rudari koriste računalnu snagu tvog sustava kako bi rudarili digitalni novac. Skripte za kripto rudarenje troše bateriju, usporavaju računalo i povećavaju račun za struju.
 protections-panel-fingerprinters = Prikupljači digitalnih otisaka prikupljaju postavke tvog preglednika i računala kako bi stvorili tvoj profil. Pomoću ovog digitalnog otiska mogu te pratiti na različitim web stranicama.
-protections-panel-tracking-content = Web stranice mogu učitati vanjske reklame, video materijal i drugi sadržaj koji sadržava kȏd za praćenje. Blokiranje praćenja sadržaja može ubrzati učitavanje stranica, ali neke tipke, obrasci ili polja za prijavu možda neće raditi.
+protections-panel-tracking-content = Web stranice mogu učitati vanjske reklame, video materijal i drugi sadržaj koji sadržava kod za praćenje. Blokiranje sadržaja za praćenje može ubrzati učitavanje stranica, ali neke tipke, obrasci ili polja za prijavu možda neće raditi.
 protections-panel-social-media-trackers = Društvene mreže postavljaju programe za praćenje na druge web stranice kako bi pratili što radiš, pregledavaš i vidiš na internetu. Ovo omogućava tvrtkama društvenih mreža o tebi saznati više od onoga što dijeliš na svom profilu.
 protections-panel-description-shim-allowed = Neki programi za praćenje označeni ispod djelomično su deblokirani na ovoj stranici jer ste bili u interakciji s njima.
 protections-panel-description-shim-allowed-learn-more = Saznaj više

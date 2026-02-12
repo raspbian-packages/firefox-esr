@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Discargamentos
 appmenuitem-passwords =
     .label = Contrasignos
+appmenuitem-extensions-and-themes =
+    .label = Extensiones e themas
+appmenuitem-extensions =
+    .label = Extensiones
 appmenuitem-addons-and-themes =
     .label = Additivos e themas
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Aperir le quadro de profilator
+    .tooltiptext = Aperir le quadro de profilator
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Pre-configuration pro investigar errores audio e video in { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Multimedia
+profiler-popup-presets-ml-description = Pre-configuration pro investigar errores de apprendimento automatic in { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Apprendimento automatic
 profiler-popup-presets-networking-description = Pre-configuration pro investigar errores de rete in { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Rete
@@ -280,19 +290,26 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Obtener alertas de violation de datos
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Masca tu email e numero de telephono real
-appmenuitem-services-relay-description = Lancear le pannello de controlo del aliases email
+appmenuitem-services-relay-description = Lancear le pannello de controlo del mascas de e-mail
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Protege tu activitate online
 appmenu-services-header = Mi servicios
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Tenta altere utensiles de protection de Mozilla:
 appmenu-other-protection-header = Tentar altere utensiles de protection de { -vendor-short-name }
 
 ## Profiles panel
 
-appmenu-profiles = Profilos
 appmenu-other-profiles = Altere profilos
 appmenu-manage-profiles =
     .label = Gerer le profilos
+appmenu-copy-profile =
+    .label = Copiar iste profilo
 appmenu-create-profile =
     .label = Nove profilo
 appmenu-edit-profile =
     .aria-label = Rediger le profilo
+appmenu-profiles-2 =
+    .label = Profilos

@@ -34,7 +34,7 @@ xpinstall-prompt-install =
 
 # These messages are shown when a website invokes navigator.requestMIDIAccess.
 
-site-permission-install-first-prompt-midi-header = Ova stranica zahtjeva pristup vašim MIDI (Musical Instrument Digital Interface) uređajima. Pristup uređajima se može omogućiti instaliranjem dodatka.
+site-permission-install-first-prompt-midi-header = Ova stranica zahtijeva pristup tvojim MIDI (Musical Instrument Digital Interface) uređajima. Pristup uređajima se može omogućiti instaliranjem dodatka.
 site-permission-install-first-prompt-midi-message = Ovaj pristup nije zajamčeno siguran. Nastavi samo ako vjeruješ ovoj stranici.
 
 ##
@@ -80,7 +80,9 @@ addon-removal-title = Ukloniti { $name }?
 #   $name (String): the name of the extension which is about to be removed.
 addon-removal-message = Ukloniti { $name } iz { -brand-shorter-name(case: "gen") }?
 addon-removal-button = Ukloni
-addon-removal-abuse-report-checkbox = Prijavi ovaj dodatak prodavaču { -vendor-short-name }
+addon-removal-abuse-report-checkbox = Prijavi ovaj dodatak proizvođaču { -vendor-short-name }
+# "it" refers to the local AI model that is paired to the AI feature
+addon-mlmodel-removal-body = Ako koristiš funkcije ili proširenja koja koriste ovaj model, on će se ponovo dodati.
 # Variables:
 #   $addonCount (Number): the number of add-ons being downloaded
 addon-downloading-and-verifying =

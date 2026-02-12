@@ -44,9 +44,6 @@ options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-name = ಬಣ್ಣದ ಹೆಸರುಗಳು
 
-## Web Console section
-
-
 ## Style Editor section
 
 # The heading
@@ -55,9 +52,6 @@ options-styleeditor-label = ಶೈಲಿ ಸಂಪಾದಕ
 options-stylesheet-autocompletion-label = CSS ಅನ್ನು ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸು
 options-stylesheet-autocompletion-tooltip =
     .title = ನೀವು ನಮೂದಿಸಿದಂತೆಲ್ಲಾ, ಶೈಲಿ ಸಂಪಾದಕದಲ್ಲಿ CSS ಗುಣಗಳು, ಮೌಲ್ಯಗಳು ಮತ್ತು ಆಯ್ಕೆಗಾರಗಳನ್ನು ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸಲಾಗುತ್ತದೆ
-
-## Screenshot section
-
 
 ## Editor section
 
@@ -100,5 +94,5 @@ options-enable-service-workers-http-tooltip =
     .title = ಈ ಆಯ್ಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುವುದರಿಂದ ಉಪಕರಣಪೆಟ್ಟಿಗೆಯನ್ನು ಯಾವ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆಯೊ ಅವುಗಳಿಗೆ HTTP ಮೂಲಕ ಸೇವಾ ವರ್ಕರ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.
 # The label for the checkbox that toggles source maps in all tools.
 options-source-maps-label = ಮೂಲ ನಕ್ಷೆಗಳನ್ನು ಸಕ್ರಿಯಗಳಿಸು
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * ಪ್ರಸಕ್ತ ಅಧಿವೇಶನ ಮಾತ್ರ, ಪುಟವನ್ನು ಮರಳಿ ಲೋಡ್ ಮಾಡುತ್ತದೆ

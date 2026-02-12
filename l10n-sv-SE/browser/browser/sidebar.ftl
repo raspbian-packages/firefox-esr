@@ -4,8 +4,8 @@
 
 menu-view-genai-chat =
     .label = AI Chatbot
-menu-view-review-checker =
-    .label = Recensionsgranskare
+menu-view-contextual-password-manager =
+    .label = Lösenord
 sidebar-options-menu-button =
     .title = Öppna meny
 
@@ -21,14 +21,24 @@ sidebar-history-date-this-month =
     .heading = { DATETIME($date, dateStyle: "full") }
 sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+sidebar-history-site-localhost =
+    .heading = (lokala filer)
 sidebar-history-delete =
     .title = Ta bort från historik
-sidebar-history-sort-by-date =
-    .label = Sortera efter datum
-sidebar-history-sort-by-site =
-    .label = Sortera efter webbplats
 sidebar-history-clear =
     .label = Rensa historik
+sidebar-history-sort-by-heading = Sortera efter:
+sidebar-history-sort-option-date =
+    .label = Datum
+sidebar-history-sort-option-site =
+    .label = Webbplats
+sidebar-history-sort-option-date-and-site =
+    .label = Datum och plats
+sidebar-history-sort-option-last-visited =
+    .label = Senast besökt
 
 ## Labels for sidebar search
 
@@ -44,24 +54,21 @@ sidebar-customize-extensions-header = Sidofältstillägg
 sidebar-customize-firefox-tools-header =
     .label = { -brand-product-name } verktyg
 sidebar-customize-firefox-settings = Hantera inställningar för { -brand-short-name }
-sidebar-position-left =
-    .label = Visa till vänster
-sidebar-position-right =
-    .label = Visa till höger
 sidebar-vertical-tabs =
     .label = Vertikala flikar
-sidebar-horizontal-tabs =
-    .label = Horisontella flikar
-sidebar-customize-tabs-header =
-    .label = Tabbinställningar
-sidebar-customize-button-header =
-    .label = Knapp för sidofält
-sidebar-customize-position-header =
-    .label = Sidofältets position
-sidebar-visibility-setting-always-show =
-    .label = Expandera och komprimera sidofältet
-sidebar-visibility-setting-hide-sidebar =
-    .label = Visa och dölj sidofält
+sidebar-settings =
+    .label = Inställningar för sidofält
+sidebar-hide-tabs-and-sidebar =
+    .label = Dölj flikar och sidofält
+sidebar-show-on-the-right =
+    .label = Flytta sidofältet till höger
+sidebar-show-on-the-left =
+    .label = Flytta sidofältet till vänster
+# Option to automatically expand the collapsed sidebar when the mouse pointer
+# hovers over it.
+expand-sidebar-on-hover =
+    .label = Expandera sidofält vid hovring
+sidebar-manage-extensions = Hantera tillägg
 
 ## Labels for sidebar context menu items
 
@@ -71,23 +78,43 @@ sidebar-context-menu-remove-extension =
     .label = Ta bort tillägg
 sidebar-context-menu-report-extension =
     .label = Rapportera tillägg
+sidebar-context-menu-open-in-tab =
+    .label = Öppna i ny flik
+sidebar-context-menu-open-in-container-tab =
+    .label = Öppna i ny innehållsflik
 sidebar-context-menu-open-in-window =
     .label = Öppna i nytt fönster
 sidebar-context-menu-open-in-private-window =
     .label = Öppna i nytt privat fönster
+sidebar-context-menu-forget-site =
+    .label = Rensa all data för webbplatsen…
 sidebar-context-menu-bookmark-tab =
     .label = Bokmärk flik…
 sidebar-context-menu-copy-link =
     .label = Kopiera länk
+sidebar-context-menu-hide-sidebar =
+    .label = Dölj sidofält
+sidebar-context-menu-enable-vertical-tabs =
+    .label = Aktivera vertikala flikar
+sidebar-context-menu-customize-sidebar =
+    .label = Anpassa sidofält
 # Variables:
 #   $deviceName (String) - The name of the device the user is closing a tab for
 sidebar-context-menu-close-remote-tab =
     .label = Stäng fliken på { $deviceName }
+sidebar-context-menu-remove-extension2 =
+    .label = Ta bort från { -brand-short-name }
+sidebar-context-menu-unpin-extension =
+    .label = Ta bort från sidofält
 
 ## Labels for sidebar history context menu items
 
-sidebar-history-context-menu-delete-page =
-    .label = Ta bort från historik
+sidebar-history-context-menu-delete-page-2 =
+    .label = Ta bort sida från historiken
+sidebar-history-context-menu-bookmark-page =
+    .label = Bokmärk sida…
+sidebar-history-context-menu-delete-pages =
+    .label = Ta bort sidor från historiken
 
 ## Labels for sidebar menu items.
 
@@ -101,8 +128,10 @@ sidebar-menu-bookmarks-label =
     .label = Bokmärken
 sidebar-menu-customize-label =
     .label = Anpassa sidofält
-sidebar-menu-review-checker-label =
-    .label = Recensionsgranskare
+sidebar-menu-contextual-password-manager-label =
+    .label = Lösenord
+sidebar-menu-more-tools-label =
+    .label = Fler verktyg
 
 ## Tooltips for sidebar menu items.
 
@@ -122,8 +151,16 @@ sidebar-menu-open-bookmarks-tooltip = Öppna bokmärken ({ $shortcut })
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Stäng bokmärken ({ $shortcut })
-sidebar-menu-open-ai-chatbot-tooltip = Öppna AI chatbot
-sidebar-menu-close-ai-chatbot-tooltip = Stäng AI chatbot
+
+## Tooltips displayed over the AI chatbot icon.
+## Variables:
+##   $shortcut (String) - The OS specific keyboard shortcut.
+##   $provider (String) - The name of the AI chatbot provider (if available).
+
+sidebar-menu-open-ai-chatbot-tooltip-generic = Öppna AI chatbot ({ $shortcut })
+sidebar-menu-open-ai-chatbot-provider-tooltip = Öppna { $provider } ({ $shortcut })
+sidebar-menu-close-ai-chatbot-tooltip-generic = Stäng AI chatbot ({ $shortcut })
+sidebar-menu-close-ai-chatbot-provider-tooltip = Stäng { $provider } ({ $shortcut })
 
 ## Headings for sidebar menu panels.
 
@@ -133,8 +170,8 @@ sidebar-menu-history-header =
     .heading = Historik
 sidebar-menu-syncedtabs-header =
     .heading = Flikar från andra enheter
-sidebar-menu-bookmarks-header =
-    .heading = Bokmärken
+sidebar-menu-cpm-header =
+    .heading = Lösenord
 sidebar-panel-header-close-button =
     .tooltiptext = Stäng
 
@@ -158,18 +195,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Expandera sidofältet
-    .label = Sidofält
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Komprimera sidofältet
-    .label = Sidofält
-sidebar-widget-show-sidebar =
-    .tooltiptext = Visa sidofält
-    .label = Sidofält
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Dölj sidofält
-    .label = Sidofält
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =
@@ -190,3 +215,7 @@ sidebar-widget-show-sidebar2 =
 sidebar-widget-hide-sidebar2 =
     .tooltiptext = Dölj sidofält ({ $shortcut })
     .label = Sidofält
+# Promotional message displayed in the expanded sidebar state for Vertical Tabs
+# users who do not have any pinned tabs. Indicates that they can drop tabs in
+# this area to pin them.
+sidebar-pins-promo-text = Dra viktiga flikar hit för att hålla dem inom räckhåll

@@ -97,7 +97,7 @@ struct RangeItem final {
 class SelectionState final {
  public:
   SelectionState() = default;
-  explicit SelectionState(const AutoRangeArray& aRanges);
+  explicit SelectionState(const AutoClonedSelectionRangeArray& aRanges);
 
   /**
    * Same as the API as dom::Selection
@@ -130,7 +130,7 @@ class SelectionState final {
   /**
    * Setting aRanges to have all ranges stored by this instance.
    */
-  void ApplyTo(AutoRangeArray& aRanges);
+  void ApplyTo(AutoClonedSelectionRangeArray& aRanges);
 
   /**
    * HasOnlyCollapsedRange() returns true only when there is a positioned range
@@ -284,6 +284,8 @@ class MOZ_STACK_CLASS RangeUpdater final {
   bool mLocked;
 };
 
+enum class StopTracking : bool { No, Yes };
+
 /**
  * Helper class for using SelectionState.  Stack based class for doing
  * preservation of dom points across editor actions.
@@ -292,6 +294,9 @@ class MOZ_STACK_CLASS RangeUpdater final {
 class MOZ_STACK_CLASS AutoTrackDOMPoint final {
  public:
   AutoTrackDOMPoint() = delete;
+
+  AutoTrackDOMPoint(RangeUpdater& aRangeUpdater, CaretPoint* aCaretPoint);
+
   AutoTrackDOMPoint(RangeUpdater& aRangeUpdater, nsCOMPtr<nsINode>* aNode,
                     uint32_t* aOffset)
       : mRangeUpdater(aRangeUpdater),
@@ -328,11 +333,13 @@ class MOZ_STACK_CLASS AutoTrackDOMPoint final {
 
   ~AutoTrackDOMPoint() { FlushAndStopTracking(); }
 
-  void FlushAndStopTracking() {
+  void Flush(StopTracking aStopTracking) {
     if (!mIsTracking) {
       return;
     }
-    mIsTracking = false;
+    if (static_cast<bool>(aStopTracking)) {
+      mIsTracking = false;
+    }
     if (mPoint.isSome()) {
       mRangeUpdater.DropRangeItem(mRangeItem);
       // Setting `mPoint` with invalid DOM point causes hitting `NS_ASSERTION()`
@@ -375,6 +382,8 @@ class MOZ_STACK_CLASS AutoTrackDOMPoint final {
     }
   }
 
+  void FlushAndStopTracking() { Flush(StopTracking::Yes); }
+
   void StopTracking() { mIsTracking = false; }
 
  private:
@@ -405,7 +414,7 @@ class MOZ_STACK_CLASS AutoTrackDOMRange final {
     mEndPointTracker.emplace(aRangeUpdater,
                              const_cast<EditorDOMPoint*>(&aRange->EndRef()));
   }
-  AutoTrackDOMRange(RangeUpdater& aRangeUpdater, RefPtr<nsRange>* aRange)
+  AutoTrackDOMRange(RangeUpdater& aRangeUpdater, const RefPtr<nsRange>* aRange)
       : mStartPoint((*aRange)->StartRef()),
         mEndPoint((*aRange)->EndRef()),
         mRangeRefPtr(aRange),
@@ -413,7 +422,8 @@ class MOZ_STACK_CLASS AutoTrackDOMRange final {
     mStartPointTracker.emplace(aRangeUpdater, &mStartPoint);
     mEndPointTracker.emplace(aRangeUpdater, &mEndPoint);
   }
-  AutoTrackDOMRange(RangeUpdater& aRangeUpdater, OwningNonNull<nsRange>* aRange)
+  AutoTrackDOMRange(RangeUpdater& aRangeUpdater,
+                    const OwningNonNull<nsRange>* aRange)
       : mStartPoint((*aRange)->StartRef()),
         mEndPoint((*aRange)->EndRef()),
         mRangeRefPtr(nullptr),
@@ -496,8 +506,65 @@ class MOZ_STACK_CLASS AutoTrackDOMRange final {
   Maybe<AutoTrackDOMPoint> mEndPointTracker;
   EditorDOMPoint mStartPoint;
   EditorDOMPoint mEndPoint;
-  RefPtr<nsRange>* mRangeRefPtr;
-  OwningNonNull<nsRange>* mRangeOwningNonNull;
+  const RefPtr<nsRange>* mRangeRefPtr;
+  const OwningNonNull<nsRange>* mRangeOwningNonNull;
+};
+
+class MOZ_STACK_CLASS AutoTrackDOMMoveNodeResult final {
+ public:
+  AutoTrackDOMMoveNodeResult() = delete;
+  AutoTrackDOMMoveNodeResult(RangeUpdater& aRangeUpdater,
+                             MoveNodeResult* aMoveNodeResult);
+
+  void FlushAndStopTracking() {
+    mTrackCaretPoint.FlushAndStopTracking();
+    mTrackNextInsertionPoint.FlushAndStopTracking();
+    mTrackMovedContentRange.FlushAndStopTracking();
+  }
+  void StopTracking() {
+    mTrackCaretPoint.StopTracking();
+    mTrackNextInsertionPoint.StopTracking();
+    mTrackMovedContentRange.StopTracking();
+  }
+
+ private:
+  AutoTrackDOMPoint mTrackCaretPoint;
+  AutoTrackDOMPoint mTrackNextInsertionPoint;
+  AutoTrackDOMRange mTrackMovedContentRange;
+};
+
+class MOZ_STACK_CLASS AutoTrackDOMDeleteRangeResult final {
+ public:
+  AutoTrackDOMDeleteRangeResult() = delete;
+  AutoTrackDOMDeleteRangeResult(RangeUpdater& aRangeUpdater,
+                                DeleteRangeResult* aDeleteRangeResult);
+
+  void FlushAndStopTracking() {
+    mTrackCaretPoint.FlushAndStopTracking();
+    mTrackDeleteRange.FlushAndStopTracking();
+  }
+  void StopTracking() {
+    mTrackCaretPoint.StopTracking();
+    mTrackDeleteRange.StopTracking();
+  }
+
+ private:
+  AutoTrackDOMPoint mTrackCaretPoint;
+  AutoTrackDOMRange mTrackDeleteRange;
+};
+
+class MOZ_STACK_CLASS AutoTrackLineBreak final {
+ public:
+  AutoTrackLineBreak() = delete;
+  AutoTrackLineBreak(RangeUpdater& aRangeUpdater, EditorLineBreak* aLineBreak);
+
+  void FlushAndStopTracking();
+  void StopTracking() { mTracker.StopTracking(); }
+
+ private:
+  EditorLineBreak* mLineBreak;
+  EditorDOMPoint mPoint;
+  AutoTrackDOMPoint mTracker;
 };
 
 /**

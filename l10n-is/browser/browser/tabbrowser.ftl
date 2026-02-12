@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Loka flipa
 tabbrowser-menuitem-close =
     .label = Loka
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } - { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -149,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ekki sýna þennan glugga aftur.
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Gættu þín
-tabbrowser-confirm-close-duplicate-tabs-text = Við munum halda síðasta virka flipanum opnum
 tabbrowser-confirm-close-all-duplicate-tabs-title = Loka tvíteknum flipum?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Við munum loka tvíteknum flipum í þessum glugga. Síðasti
@@ -196,6 +207,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Slökkva á hljóði í flipa
@@ -203,8 +217,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Kveikja á hljóði í flipa
 tabbrowser-manager-close-tab =
     .tooltiptext = Loka flipa
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } - Lokað
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } - Þessi gluggi
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Búa til flipahóp
 tab-group-editor-title-edit = Sýsla með flipahóp
@@ -216,22 +238,32 @@ tab-group-editor-cancel =
     .accesskey = H
 tab-group-editor-color-selector =
     .aria-label = Litur flipahóps
-tab-group-editor-color-selector-blue = Blátt
-tab-group-editor-color-selector-purple = Fjólublátt
-tab-group-editor-color-selector-cyan = Blágrænt
-tab-group-editor-color-selector-orange = Appelsínugult
-tab-group-editor-color-selector-yellow = Gult
-tab-group-editor-color-selector-pink = Bleikt
-tab-group-editor-color-selector-green = Grænt
-tab-group-editor-color-selector-gray = Grátt
-tab-group-editor-color-selector-red = Rautt
-tab-group-menu-header = Flipahópar
+tab-group-editor-color-selector2-blue = Blátt
+    .title = Blátt
+tab-group-editor-color-selector2-purple = Fjólublátt
+    .title = Fjólublátt
+tab-group-editor-color-selector2-cyan = Blágrænt
+    .title = Blágrænt
+tab-group-editor-color-selector2-orange = Appelsínugult
+    .title = Appelsínugult
+tab-group-editor-color-selector2-yellow = Gult
+    .title = Gult
+tab-group-editor-color-selector2-pink = Bleikt
+    .title = Bleikt
+tab-group-editor-color-selector2-green = Grænt
+    .title = Grænt
+tab-group-editor-color-selector2-gray = Grátt
+    .title = Grátt
+tab-group-editor-color-selector2-red = Rautt
+    .title = Rautt
+tab-group-description = { $tabGroupName } - flipahópur
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Fellt saman
+tab-group-label-tooltip-expanded = { $tabGroupName } — Útflett
 tab-context-unnamed-group =
     .label = Ónefndur hópur
 tab-group-name-default = Ónefndur hópur
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -249,6 +281,8 @@ tab-context-move-tab-to-group =
            *[other] Bæta flipum við hóp
         }
     .accesskey = h
+tab-context-move-tab-to-group-saved-groups =
+    .label = Lokaðir hópar
 tab-group-editor-action-new-tab =
     .label = Nýr flipi í hópnum
 tab-group-editor-action-new-window =
@@ -274,6 +308,16 @@ tab-context-ungroup-tab =
            *[other] Fjarlægja úr hópum
         }
     .accesskey = r
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } flipi í viðbót
+       *[other] { $tabCount } flipar í viðbót
+    }
 
 ## Open/saved tab group context menu
 

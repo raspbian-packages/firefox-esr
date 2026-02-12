@@ -30,6 +30,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Åbn lukkede faneblade igen
         }
     .accesskey = d
+toolbar-context-turn-on-vertical-tabs =
+    .label = Slå lodrette faneblade til
+toolbar-context-turn-off-vertical-tabs =
+    .label = Slå lodrette fanebade fra
+toolbar-context-customize-sidebar =
+    .label = Tilpas sidepanel
 toolbar-context-menu-manage-extension =
     .label = Håndter udvidelse
     .accesskey = H
@@ -54,6 +60,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Vis panel når filhentning starter
     .accesskey = p
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Vis altid i værktøjslinjen
+    .accesskey = t
 toolbar-context-menu-remove-from-toolbar =
     .label = Fjern fra værktøjslinje
     .accesskey = j

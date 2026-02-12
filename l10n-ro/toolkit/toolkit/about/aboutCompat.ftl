@@ -11,6 +11,7 @@ label-more-information = Mai multe informații: Bug { $bug }
 label-overrides = Suprascrieri ale agentului utilizator
 text-disabled-in-about-config = Această funcționalitate a fost dezactivată în about:config
 text-no-interventions = Nu a fost folosită nicio intervenție
+text-page-title = Compatibilitate web
 text-no-overrides = Nu a fost folosită nicio suprascriere a agentului utilizator
 text-title = about:compat
 
@@ -20,3 +21,5 @@ text-title = about:compat
 ## breakage. SmartBlock also contains special fixes for sites broken by
 ## Firefox's Total Cookie Protection feature.
 
+label-smartblock = Corecturi SmartBlock
+text-no-smartblock = Nu se utilizează nicio corecție SmartBlock

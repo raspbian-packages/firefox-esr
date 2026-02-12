@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Logga in till nätverk
 neterror-dns-not-found-title = Servern hittades inte
 neterror-malformed-uri-page-title = Ogiltig URL
 general-body-title = Var försiktig. Något ser inte rätt ut.
+problem-with-this-site-title = Det verkar finnas ett problem med den här sidan
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = Om du inte kan öppna sidor, kontrollera datorn
 neterror-load-error-firewall = Om datorn eller nätverket skyddas av en brandvägg eller proxy, kontrollera att { -brand-short-name } har tillstånd att ansluta till webben.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Om du försöker ladda en lokal nätverkssida, kontrollera att { -brand-short-name } har beviljats lokala nätverksbehörigheter i inställningarna för macOS sekretess och säkerhet.
+neterror-http-error-page = Kontrollera att du har skrivit in webbplatsadressen korrekt.
 neterror-captive-portal = Du måste logga in på nätverket innan du kan ansluta till Internet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Om du har angett rätt adress kan d
 neterror-dns-not-found-hint-try-again = Försök igen senare
 neterror-dns-not-found-hint-check-network = Kontrollera din nätverksanslutning
 neterror-dns-not-found-hint-firewall = Kontrollera att { -brand-short-name } har behörighet att komma åt webben (du kan vara ansluten men bakom en brandvägg)
+neterror-dns-not-found-offline-hint-header = <strong>Vad kan du göra åt det?</strong>
+neterror-dns-not-found-offline-hint-different-device = Försök att ansluta på en annan enhet.
+neterror-dns-not-found-offline-hint-modem = Kontrollera ditt modem eller router.
+neterror-dns-not-found-offline-hint-reconnect = Koppla ner och återanslut till Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Oväntat problem.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } kan inte skydda din begäran om den här webbplatsens adress genom vår betrodda DNS-lösare. Här är varför:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } kan inte skydda din begäran om den här webbplatsens adress via vår säkra DNS-leverantör. Här är varför:
 neterror-dns-not-found-native-fallback-heuristic = DNS över HTTPS har inaktiverats i ditt nätverk.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } kunde inte ansluta till { $trrDomain }.
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = Kontrollera att proxyinställningarna 
 neterror-proxy-connect-failure-contact-admin = Kontakta nätverksadministratören för att säkerställa att proxyservern fungerar.
 neterror-content-encoding-error = Kontakta webbplatsens ägare och informera dem om detta problem.
 neterror-unsafe-content-type = Kontakta webbplatsens ägare för att informera dem om detta problem.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } litar inte på { $hostname } eftersom anslutningen inte är säker. Prova att ändra webbadressen till HTTPS.
 neterror-nss-failure-not-verified = Sidan du försöker se kan inte visas eftersom autenticiteten för mottagen data inte kan verifieras.
 neterror-nss-failure-contact-website = Kontakta webbplatsens ägare och informera dem om detta problem.
 # Variables:
@@ -159,3 +167,13 @@ certerror-coep-learn-more = Läs mer om Cross Origin Embedder Policies (COEP)
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Felkod: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } kan inte skapa en säker anslutning till servern på { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Det ser ut som att den här webbplatsen använder gammal programvara med kända säkerhetsproblem.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Se till att du använder den senaste versionen av { -brand-short-name }. Gå till Hjälp > Om { -brand-short-name } i menyn. Om du använder den senaste { -brand-short-name }, ligger problemet troligtvis på själva webbplatsen.

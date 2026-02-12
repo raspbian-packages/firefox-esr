@@ -15,6 +15,10 @@ support-addons-type = Mota
 support-addons-enabled = Gaituta
 support-addons-version = Bertsioa
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = Kokalekua
 legacy-user-stylesheets-title = Erabiltzaileen legatu estilo-orriak
 legacy-user-stylesheets-enabled = Aktibo
 legacy-user-stylesheets-stylesheet-types = Estilo-orriak
@@ -181,6 +185,8 @@ media-capabilities-enumerate = Zerrendatu datu-basea
 
 media-codec-support-sw-decoding = Software deskodeketa
 media-codec-support-hw-decoding = Hardware deskodeketa
+media-codec-support-sw-encoding = Software kodeketa
+media-codec-support-hw-encoding = Hardware kodeketa
 media-codec-support-codec-name = Codec-aren izena
 media-codec-support-supported = Euskarria du
 media-codec-support-unsupported = Ez du euskarririk

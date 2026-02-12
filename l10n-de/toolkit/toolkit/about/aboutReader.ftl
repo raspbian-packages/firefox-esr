@@ -74,17 +74,22 @@ about-reader-customtheme-tab = Benutzerdefiniert
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Text
-    .title = Farbe bearbeiten
-about-reader-custom-colors-background = Hintergrund
-    .title = Farbe bearbeiten
-about-reader-custom-colors-unvisited-links = Unbesuchte Links
-    .title = Farbe bearbeiten
-about-reader-custom-colors-visited-links = Besuchte Links
-    .title = Farbe bearbeiten
-about-reader-custom-colors-selection-highlight = Textmarker zum Vorlesen
-    .title = Farbe bearbeiten
 about-reader-reset-button = Auf Standard zurücksetzen
+about-reader-custom-colors-foreground2 =
+    .label = Text
+    .title = Farbe bearbeiten
+about-reader-custom-colors-background2 =
+    .label = Hintergrund
+    .title = Farbe bearbeiten
+about-reader-custom-colors-unvisited-links2 =
+    .label = Unbesuchte Links
+    .title = Farbe bearbeiten
+about-reader-custom-colors-visited-links2 =
+    .label = Besuchte Links
+    .title = Farbe bearbeiten
+about-reader-custom-colors-selection-highlight2 =
+    .label = Textmarker zum Vorlesen
+    .title = Farbe bearbeiten
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = Text zentriert ausrichten
 about-reader-text-alignment-right =
     .title = Text rechts ausrichten
+about-reader-text-alignment-justify =
+    .title = Text ausrichten

@@ -12,10 +12,10 @@ toolbar-context-menu-reload-selected-tabs =
     .label = ਚੁਣੀ ਟੈਬਾਂ ਮੁੜ-ਲੋਡ ਕਰੋ
     .accesskey = R
 toolbar-context-menu-bookmark-selected-tab =
-    .label = …ਚੁਣੀ ਟੈਬ ਬੁੱਕਮਾਰਕ ਕਰੋ
+    .label = …ਚੁਣੀ ਟੈਬ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ
     .accesskey = T
 toolbar-context-menu-bookmark-selected-tabs =
-    .label = …ਚੁਣੀਆਂ ਟੈਬਾਂ ਬੁੱਕਮਾਰਕ ਕਰੋ
+    .label = …ਚੁਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ
     .accesskey = T
 toolbar-context-menu-select-all-tabs =
     .label = ਸਾਰੀਆਂ ਟੈਬਾਂ ਚੁਣੋ
@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] ਬੰਦ ਕੀਤੀਆਂ ਟੈਬਾਂ ਮੁੜ-ਖੋਲ੍ਹੋ
         }
     .accesskey = o
+toolbar-context-turn-on-vertical-tabs =
+    .label = ਖੜ੍ਹਵੀਆਂ ਟੈਬਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ
+toolbar-context-turn-off-vertical-tabs =
+    .label = ਖੜ੍ਹਵੀਆਂ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰੋ
+toolbar-context-customize-sidebar =
+    .label = ਬਾਹੀ ਨੂੰ ਕਸਟਮਾਈਜ਼ ਕਰੋ
 toolbar-context-menu-manage-extension =
     .label = ਇਕਸਟੈਨਸ਼ਨਾਂ ਦਾ ਬੰਦੋਬਸਤ
     .accesskey = E
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = ਜਦੋਂ ਡਾਊਨਲੋਡ ਸ਼ੁਰੂ ਹੋਵੇ ਤਾਂ ਪੈਨਲ ਦਿਖਾਓ
     .accesskey = S
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = ਹਮੇਸ਼ਾਂ ਟੂਲਬਾਰ ਵਿੱਚ ਵੇਖਾਓ
+    .accesskey = A
 toolbar-context-menu-remove-from-toolbar =
     .label = ਟੂਲਬਾਰ 'ਚੋਂ ਹਟਾਓ
     .accesskey = R

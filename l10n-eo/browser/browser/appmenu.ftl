@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Elŝutoj
 appmenuitem-passwords =
     .label = Pasvortoj
+appmenuitem-extensions-and-themes =
+    .label = Etendaĵoj kaj etosoj
+appmenuitem-extensions =
+    .label = Etendaĵoj
 appmenuitem-addons-and-themes =
     .label = Aldonaĵoj kaj etosoj
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Stir+Maj+2
     }
+profiler-button-dropmarker =
+    .label = Malfermi la rulanalizilon
+    .tooltiptext = Malfermi la rulanalizilon
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Rekomendita agordaro por senerarigo de sono kaj video en { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Aŭdvidaĵo
+profiler-popup-presets-ml-description = Agordoj por senerarigo de aŭtomata lernado en { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Aŭtomata lernado
 profiler-popup-presets-networking-description = Rekomendita agordaro por esploro de retaj eraroj en { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Reto
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Malfermi la panelon pri retpoŝtaj mask
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Protektu vian retumon
 appmenu-services-header = Miaj servoj
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Provu aliajn protektajn ilojn de Mozilla:
 appmenu-other-protection-header = Testu aliajn protektajn ilojn de { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Profiloj
 appmenu-other-profiles = Aliaj profiloj
 appmenu-manage-profiles =
     .label = Administri profilojn
+appmenu-copy-profile =
+    .label = Kopii tiun ĉi profilon
 appmenu-create-profile =
     .label = Nova profilo
 appmenu-edit-profile =
     .aria-label = Modifi profilon
+appmenu-profiles-2 =
+    .label = Profiloj

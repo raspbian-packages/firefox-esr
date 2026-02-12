@@ -181,7 +181,7 @@ about-debugging-runtime-processes =
     .name = Процеси
 # Label of the button opening the performance profiler panel in runtime pages for remote
 # runtimes.
-about-debugging-runtime-profile-button2 = Профіль швидкодії
+about-debugging-runtime-profile-button2 = Профіль продуктивності
 # This string is displayed in the runtime page if the current configuration of the
 # target runtime is incompatible with service workers. "Learn more" points to:
 # https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/index.html#service-workers-not-compatible
@@ -215,7 +215,7 @@ about-debugging-connection-prompt-enable-button = Увімкнути запит 
 # "devtools.debugger.prompt-connection" is true on the target runtime.
 about-debugging-connection-prompt-disable-button = Вимкнути запит на під'єднання
 # Title of a modal dialog displayed on remote runtime pages after clicking on the Profile Runtime button.
-about-debugging-profiler-dialog-title2 = Profiler
+about-debugging-profiler-dialog-title2 = Профайлер
 # Clicking on the header of a debug target category will expand or collapse the debug
 # target items in the category. This text is used as ’title’ attribute of the header,
 # to describe this feature.

@@ -10,14 +10,6 @@ learn-more = <span data-l10n-name="link">Маълумоти бештар</span>
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain why
 ## the property is not applied.
-## Variables:
-##   $property (string) - A CSS property name e.g. "color".
-##   $display (string) - A CSS display value e.g. "inline-block".
-
-
-## In the Rule View when a CSS property cannot be successfully applied we display
-## an icon. When this icon is hovered this message is displayed to explain why
-## the property is not applied.
 ## The variables are all passed from the same place, in `InactiveCssTooltipHelper#getTemplate`
 ## (devtools/client/shared/widgets/tooltip/inactive-css-tooltip-helper.js#95)
 ## Variables:
@@ -42,6 +34,8 @@ inactive-css-not-display-block-on-floated = Қимати хусусияти <str
 inactive-css-not-display-block-on-floated-2 = Қимати хусусияти <strong>display</strong> аз тарафи низом ба <strong>{ $display }</strong> иваз карда шуд, зеро ки унсур дорои қимати <strong>floated</strong> мебошад.
 inactive-css-only-non-grid-or-flex-item = <strong>{ $property }</strong> ягон таъсир надорад, зеро ки он наметавонад дар унсурҳои «grid» ё «flex» истифода карда шавад.
 inactive-css-not-block = Хусусияти <strong>{ $property }</strong> нисбат ба ин унсур таъсир намерасонад, зеро ки он метавонад танҳо ба унсурҳои дар сатҳи блок татбиқ карда шавад.
+inactive-css-not-block-container = Хусусияти <strong>{ $property }</strong> нисбат ба ин унсур таъсир намерасонад, зеро ки он метавонад танҳо ба унсурҳои дарбаргирандаи блок татбиқ карда шавад.
+inactive-css-not-block-flex-grid-container = Хусусияти <strong>{ $property }</strong> нисбат ба ин унсур таъсир намерасонад, зеро ки он метавонад танҳо ба унсурҳои дарбаргирандаи «block», «flex» ва «grid» татбиқ карда шавад.
 inactive-css-not-floated = Хусусияти <strong>{ $property }</strong> ягон таъсир надорад, зеро ки он метавонад танҳо ба унсурҳои шинокунанда татбиқ карда шавад.
 inactive-css-property-is-impossible-to-override-in-visited = Хусусияти <strong>{ $property }</strong> ба сабаби маҳдудияти <strong>:visited</strong> иваз карда намешавад.
 inactive-css-position-property-on-unpositioned-box = Хусусияти <strong>{ $property }</strong> нисбат ба ин унсур таъсир намерасонад, зеро ки он унсури ҷойгиршавӣ мебошад.
@@ -78,6 +72,7 @@ inactive-css-text-wrap-balance-lines-exceeded =
     }
 inactive-css-text-wrap-balance-fragmented = <strong>{ $property }</strong> ба ин унсур таъсир намерасонад, зеро ки он ба қисмҳо тақсим шудааст, яъне муҳтавои он ба сутунҳо ё саҳифаҳои сершумор тақсим шудааст.
 inactive-css-no-width-height = Хусусияти <strong>{ $property }</strong> нисбат ба ин унсур таъсир намерасонад, зеро ки дар он қиматҳои «width» ва «height» танзим карда намешаванд.
+inactive-css-no-principal-box = Хусусияти <strong>{ $property }</strong> нисбат ба ин унсур таъсир намерасонад, зеро ки он қуттии асосиро эҷод намекунад.
 
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain how
@@ -100,6 +95,8 @@ inactive-css-non-replaced-inline-or-table-column-or-column-group-fix = Кӯши�
 inactive-css-not-display-block-on-floated-fix = Кӯшиш кунед, ки <strong>float</strong>-ро тоза кунед ё <strong>display:block</strong>-ро илова намоед. { learn-more }
 inactive-css-only-non-grid-or-flex-item-fix = Кӯшиш кунед, ки қимати <strong>display</strong>-ро барои дарбаргирандаи унсур ба ягон қимати дигар, ба ғайр аз <strong>flex</strong>, <strong>grid</strong>, <strong>inline-flex</strong> ё <strong>inline-grid</strong> иваз намоед ё <strong>float</strong>-ро тоза намоед. { learn-more }
 inactive-css-not-block-fix = Кӯшиш кунед, ки <strong>display:block</strong> ё <strong>float:left</strong>-ро илова намоед. { learn-more }
+inactive-css-not-block-container-fix = Кӯшиш кунед, ки <strong>display:block</strong>, <strong>display:inline-block</strong> ё <strong>display:flow-root</strong>-ро илова намоед. { learn-more }
+inactive-css-not-block-flex-grid-container-fix = Кӯшиш кунед, ки зеринро илова намоед: <strong>display:block</strong>, <strong>display:inline-block</strong>, <strong>display:flex</strong>, <strong>display:inline-flex</strong>, <strong>display:grid</strong>, <strong>display:inline-grid</strong> or <strong>display:flow-root</strong>. { learn-more }
 inactive-css-not-floated-fix = Кӯшиш кунед, ки хусусияти <strong>float</strong>-ро бо қимати ғайр аз <strong>none</strong> илова намоед. { learn-more }
 inactive-css-position-property-on-unpositioned-box-fix = Кӯшиш кунед, ки хусусияти <strong>position</strong>-и онро ба хусусияте танзим кунед, ки аз <strong>static</strong> фарқ мекунад. { learn-more }
 inactive-css-only-replaced-elements-fix = Боварӣ ҳосил кунед, ки шумо хусусиятро ба унсури ивазшуда илова мекунед. { learn-more }
@@ -116,6 +113,7 @@ inactive-css-resize-fix = Кӯшиш кунед, ки <strong>overflow</strong>-
 inactive-css-ruby-element-fix = Кӯшиш кунед, ки <strong>font-size</strong>-ро дар матни «ruby» иваз намоед. { learn-more }
 inactive-css-text-wrap-balance-lines-exceeded-fix = Кӯшиш кунед, ки шумораи сатрҳоро кам кунед. { learn-more }
 inactive-css-text-wrap-balance-fragmented-fix = Аз тақсимшавии муҳтавои унсур худдорӣ намоед, масалан, бо нест кардани сутунҳо ё бо истифода аз қимати <strong>page-break-inside:avoid</strong>. { learn-more }
+inactive-css-no-principal-box-fix = Кӯшиш кунед, ки қимати «<strong>display</strong>»-ро, ки қуттии асосиро ба монанди <strong>block</strong>, <strong>inline-block</strong>, <strong>flex</strong> ё <strong>grid</strong> месозад, илова намоед. { learn-more }
 
 ## In the Rule View when a CSS property may have compatibility issues with other browsers
 ## we display an icon. When this icon is hovered this message is displayed to explain why

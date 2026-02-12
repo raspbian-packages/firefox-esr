@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Тафсилоти боргирӣ
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Файлҳо дар дастгоҳи шумо мемонанд
+downloads-private-browsing-message = Ҳар касе, ки ин дастгоҳро истифода мебарад, метавонад боргириҳоро бинад, ҳатто вақте ки шумо ҳамаи равзанаҳои хусусиро мепӯшед.
+downloads-private-browsing-delete-button =
+    .label = Файлҳо ба таври худкор нест карда мешаванд
+    .accesskey = Ф
+downloads-private-browsing-accept-button =
+    .label = Фаҳмидам
+    .accesskey = Ф
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

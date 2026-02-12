@@ -107,9 +107,35 @@ fp-cert-error-code = Error Code: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } doesn’t trust { $hostname } because it couldn’t prove it meets public certificate transparency requirements.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Probably nothing, since it’s likely there’s a problem with the site itself.
 fp-learn-more-about-secure-connection-failures = Learn more about secure connection failures
 fp-learn-more-about-cert-issues = Learn more about these kinds of certificate issues
 fp-learn-more-about-time-related-errors = Learn more about troubleshooting time-related errors
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } has been revoked and isn’t trusted anymore.
+cert-error-bad-signature = { -brand-short-name } blocked your visit to this site because the signature on the certificate provided for { $hostname } isn’t valid.
+cert-error-key-pinning-failure = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } uses a different public key than expected.
+cert-error-bad-der = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } isn’t properly encoded.
+cert-error-cert-not-in-name-space = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } doesn’t follow the name constraints of a certificate that issued it.
+cert-error-inadequate-cert-type = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } isn’t allowed to be used by a web server.
+cert-error-path-len-constraint-invalid = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } has too many intermediate certificates in the path to the root certificate.
+cert-error-invalid-key = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } has a key that is invalid. Most likely, it is too small to be secure.
+cert-error-unknown-critical-extension = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } contains an unsupported critical extension.
+cert-error-extension-value-invalid = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } contains an invalid extension.
+cert-error-untrusted-issuer = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } was issued by a certificate authority that isn’t trusted anymore.
+cert-error-untrusted-cert = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } is marked as not trusted.
+cert-error-invalid-integer-encoding = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } contains an invalid encoding of an integer. Common causes include negative serial numbers, negative RSA moduli, and encodings that are longer than necessary.
+cert-error-unsupported-keyalg = { -brand-short-name } blocked your visit to this site because the certificate provided for { $hostname } has an unsupported key type.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } blocked your visit to this site because the certificate authority that issued the certificate provided for { $hostname } isn’t trusted anymore.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } blocked your visit to this site because the signature algorithm of the certificate provided for { $hostname } doesn’t match its signature algorithm field.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = This address is restricted
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. We’re having trouble finding that site.
+internet-connection-offline-title = Looks like there’s a problem with your internet connection.
 dns-not-found-trr-only-title2 = Possible security risk looking up this domain
 dns-not-found-native-fallback-title2 = Possible security risk looking up this domain
 fileNotFound-title = File not found
@@ -134,6 +161,7 @@ contentEncodingError-title = Content Encoding Error
 unsafeContentType-title = Unsafe File Type
 netReset-title = The connection was reset
 netTimeout-title = The connection has timed out
+httpErrorPage-title = Looks like there’s a problem with this site
 serverError-title = Looks like there’s a problem with this site
 unknownProtocolFound-title = The address wasn’t understood
 proxyConnectFailure-title = The proxy server is refusing connections
@@ -142,6 +170,7 @@ redirectLoop-title = The page isn’t redirecting properly
 unknownSocketType-title = Unexpected response from server
 nssFailure2-title = Secure Connection Failed
 csp-xfo-error-title = { -brand-short-name } Can’t Open This Page
+corruptedContentErrorv2-title = Corrupted Content Error
 corruptedContentError-title = Corrupted Content Error
 sslv3Used-title = Unable to Connect Securely
 inadequateSecurityError-title = Your connection is not secure
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Hide advanced
 fp-certerror-override-exception-button = Proceed to { $hostname } (Risky)
 fp-certerror-intro = { -brand-short-name } spotted a potentially serious security issue with <strong>{ $hostname }</strong>. Someone pretending to be the site could try to steal things like credit card info, passwords, or emails.
 fp-certerror-expired-into = { -brand-short-name } spotted a security issue with <strong>{ $hostname }</strong>. Either the site isn’t set up right or your device’s clock is set to the wrong date/time.
+fp-certerror-transparency-intro = Someone pretending to be <strong>{ $hostname }</strong> could try to steal things like credit card info, passwords, or emails.

@@ -25,6 +25,8 @@ return-to-amo-subtitle = Oso ondo, { -brand-short-name } darabilzu
 return-to-amo-addon-title = Orain eskura dezagun zuretzat <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Gehitu hedapena
 return-to-amo-add-theme-label = Gehitu itxura
+return-to-amo-theme-install-complete-label = Itxura instalatuta
+return-to-amo-extension-install-complete-label = Hedapena instalatuta
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,8 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Inportatu { $previous }
 mr1-onboarding-theme-header = Moldatu zure erara
 mr1-onboarding-theme-subtitle = Pertsonalizatu { -brand-short-name } itxura batekin.
 mr1-onboarding-theme-secondary-button-label = Une honetan ez
-newtab-wallpaper-onboarding-title = Probatu kolore ukitu bat
-newtab-wallpaper-onboarding-primary-button-label = Ezarri horma-papera
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Sistemaren itxura
 mr1-onboarding-theme-label-light = Argia
@@ -188,6 +188,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Mantendu { -brand-short-name } Dock-ean
        *[other] Ainguratu { -brand-short-name } ataza-barran
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Ainguratu { -brand-short-name } ataza-barran eta Hasi menuan
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -335,6 +337,7 @@ onboarding-device-migration-primary-button-label = Hasi saioa
 
 ## Add-ons Picker screen
 
+amo-picker-install-button-label = Gehitu { -brand-short-name }(e)ra
 amo-picker-install-complete-label = Instalatuta
 amo-picker-collection-link = Esploratu gehigarri gehiago
 
@@ -345,6 +348,8 @@ onboarding-easy-setup-security-and-privacy-title = Zu seguru mantentzea dugu xed
 onboarding-easy-setup-security-and-privacy-subtitle = Irabazi asmorik gabeko erakundeak babestutako gure nabigatzaileak laguntzen du eragozten enpresek zure webeko jarraipena sekretupean egin dezaten.
 # Mobile download screen
 onboarding-mobile-download-security-and-privacy-title = Mantendu zifratzea gailuen artean salto egitean
+# Sign up or Sign in screen
+onboarding-sign-up-title = Sinkronizatu datuak gailuen artean
 onboarding-sign-up-button = Eman izena edo hasi saioa
 onboarding-sign-up-secondary-button = Hasi nabigatzen
 
@@ -399,8 +404,80 @@ onboarding-checklist-extension = Gehitu hedapen bat
 
 ## Tab Groups feature onboarding strings
 
+tab-groups-onboarding-dismiss = Ados
 
 ## Multi Profiles feature onboarding messages
 
 multi-profile-spotlight-cta = Sortu profil bat
 multi-profile-callout-cta = Sortu profil bat
+
+## Desktop to Mobile Adoption feature callout strings
+
+dismiss-button-label = Baztertu
+sync-to-mobile-button-label = Sinkronizatu mugikorrarekin
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Mugikorrerako { -brand-product-name } deskargatzeko QR kodea
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-flair = Gomendatua
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Argibide gehiago</a>
+create-backup-screen-1-sync-label = Sinkronizatu { -brand-product-name } erabiliz
+create-backup-select-tile-button-label = Hautatu
+create-backup-back-button-label = Atzera
+create-backup-show-fewer =
+    .label = Erakutsi horrelako gutxiago
+create-backup-screen-2-subtitle = Minutu bat behar da soilik. Zure datuen babeskopia egunean behin egiten da.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Konfigurazio erraza
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Laster-markak, historia, ezarpenak eta gehiago
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Pasahitzak eta ordainketa-metodoak ez daude barne
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Zifratu gabea
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Datu guztiak
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Pasahitzak eta ordainketa-metodoak barne
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Pasahitz bidez zifratuta
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Non nahi duzu babeskopia gordetzea?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Sortu babeskopia-fitxategiaren pasahitza
+create-backup-screen-3-subtitle = Beharrezkoa zure datuak zifratzeko. Gorde ezazu gogoratzeko moduko leku batean.
+fx-backup-opt-in-header = Aukeratu fitxategiaren kokapena
+fx-backup-opt-in-filepath-label = Aukeratu gailu berri batera transferitu nahi duzun kokapena, adibidez OneDrive.
+fx-backup-opt-in-create-password-label = Idatzi pasahitza
+fx-backup-opt-in-confirm-btn-label = Jarraitu
+fx-backup-opt-in-cancel-btn-label = Atzera
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Zure babeskopia programatuta dago
+fx-backup-confirmation-screen-close-button = Itxi
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Nabigatze-datu guztiak barne
+fx-backup-confirmation-screen-all-data-item-text-2 = Zure gailuan gordeta
+fx-backup-confirmation-screen-all-data-item-text-3 = Zifratuta eta pasahitz bidez babestuta
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Laster-markak, historia, ezarpenak eta bestelako datuak barne
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Zure gailuan gordeta
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Pasahitzak eta ordainketa-metodoak ez daude barne
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Joan <a data-l10n-name="settings">ezarpenetara</a> kontuzko datuak ere barne hartzeko.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Berreskuratu babeskopiatik
+restore-from-backup-secondary-button = Ez berreskuratu
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Bueltan gaude! Zure { -brand-short-name } datuak berreskuratu dira.
+restored-from-backup-success-with-checklist-primary-button = Gorde eta jarraitu
+restored-from-backup-success-with-checklist-secondary-button = Saltatu urrats hau
+restored-from-backup-success-no-checklist-primary-button = Jarraitu
+restored-from-backup-error-title = Kontxo, arazo bat egon da zure babeskopia-fitxategiarekin.
+restored-from-backup-error-primary-button = Itxi

@@ -9,7 +9,7 @@ urlbar-translations-button =
 # not be translated, as it is a reflection of the un-localized BETA icon that is in the
 # panel.
 urlbar-translations-button2 =
-    .tooltiptext = Prevedi ovu stranicu - beta
+    .tooltiptext = Prevedi ovu stranicu – beta
 # Note that here "Beta" should not be translated, as it is a reflection of the
 # un-localized BETA icon that is in the panel.
 urlbar-translations-button-intro =
@@ -120,13 +120,13 @@ translations-panel-restore-button =
 
 translations-manage-header = Prijevodi
 translations-manage-settings-button =
-    .label = Postavke…
+    .label = Postavke …
     .accesskey = t
 translations-manage-description = Preuzmi jezike za izvanmrežni prijevod.
 translations-manage-all-language = Svi jezici
 translations-manage-download-button = Preuzmi
 translations-manage-delete-button = Obriši
-translations-manage-intro-2 = Postavite svoj jezik i postavke prijevoda stranica i upravljajte jezicima preuzetim za izvanmrežni prijevod.
+translations-manage-intro-2 = Postavi svoj jezik i postavke prijevoda stranica i upravljaj preuzetim jezicima za izvanmrežni prijevod.
 translations-manage-download-description = Preuzmi jezike za izvanmrežni prijevod
 translations-manage-language-download-button =
     .label = Preuzmi

@@ -34,17 +34,25 @@ protections-panel-site-not-working-view =
 ## custom element code.
 ##   $host (String): the hostname of the site that is being displayed.
 
+protections-panel-etp-toggle-on =
+    .label = Enhanced Tracking Protection
+    .description = Nakabukas sa site na ito
+    .aria-label = Enhanced Tracking Protection: Nakabukas para sa { $host }
+protections-panel-etp-toggle-off =
+    .label = Enhanced Tracking Protection
+    .description = Sarado para sa site na ito
+    .aria-label = Enhanced Tracking Protection: Sarado para sa { $host }
 
 ## The "Allowed" header also includes a "Why?" link that, when hovered, shows
 ## a tooltip explaining why these items were not blocked in the page.
 
 protections-panel-not-blocking-why-label = Bakit?
 protections-panel-not-blocking-why-etp-on-tooltip = Maaaring masira ang ilang parte ng ilang website kapag hinarang ang mga ito. Kapag walang mga tracker, may mga button, form, at login field na maaaring hindi gumana.
-protections-panel-not-blocking-why-etp-off-tooltip = Lahat ng mga tracker sa site na ito ay nag-load dahil nakasara ang mga protection.
+protections-panel-not-blocking-why-etp-off-tooltip = Lahat ng mga tracker sa site na ito ay nag-load dahil nakasara ang mga proteksyon.
 protections-panel-not-blocking-why-etp-on-tooltip-label =
     .label = Maaaring masira ang ilang parte ng ilang website kapag hinarang ang mga ito. Kapag walang mga tracker, may mga button, form, at login field na maaaring hindi gumana.
 protections-panel-not-blocking-why-etp-off-tooltip-label =
-    .label = Lahat ng mga tracker sa site na ito ay nag-load dahil nakasara ang mga protection.
+    .label = Lahat ng mga tracker sa site na ito ay nag-load dahil nakasara ang mga proteksyon.
 
 ##
 
@@ -63,9 +71,6 @@ protections-panel-content-blocking-fingerprinters-label = Mga fingerprinter
 protections-panel-blocking-label = Hinarang
 protections-panel-not-blocking-label = Pinapayagan
 protections-panel-not-found-label = Walang Nakita
-
-## Smartblock strings
-
 
 ##
 
@@ -111,6 +116,12 @@ protections-panel-content-blocking-breakage-report-view-send-report =
 
 # Cookie Banner Handling
 
+protections-panel-cookie-banner-handling-enabled = Nakabukas para sa site na ito
+protections-panel-cookie-banner-handling-disabled = Nakasara para sa site na ito
+protections-panel-cookie-banner-handling-undetected = Hindi suportado ang site sa ngayon.
+protections-panel-cookie-banner-view-cancel = Ikansela
+protections-panel-cookie-banner-view-turn-off = Isara
+protections-panel-cookie-banner-view-turn-on = Buksan
 
 ## Protections panel info message
 

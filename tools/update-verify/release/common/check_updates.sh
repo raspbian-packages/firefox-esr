@@ -52,6 +52,7 @@ check_updates () {
           ;;
   esac
 
+  # These files are created by the updater - see toolkit/mozapps/update/updater/updater.cpp
   if [ -f update/update.status ]; then rm update/update.status; fi
   if [ -f update/update.log ]; then rm update/update.log; fi
 
@@ -77,6 +78,7 @@ check_updates () {
     # shellcheck disable=SC2086
     cd_dir=$(ls -d ${PWD}/source/${platform_dirname})
     cd "${cd_dir}" || (echo "TEST-UNEXPECTED-FAIL: couldn't cd to ${cd_dir}" && return 1)
+
     set -x
     # Decide if we should use alternative argument list added in
     # https://bugzilla.mozilla.org/show_bug.cgi?id=1923376
@@ -91,6 +93,9 @@ check_updates () {
       # Note: argument quoting here is important!
       "$updater" "$update_abspath" "$cwd" "$cwd" 0
     fi
+
+    # TODO: Check updater return code
+    # updater_ret=$?
     set +x
     cd ../..
   else
@@ -98,7 +103,10 @@ check_updates () {
     return 1
   fi
 
+  # Print updater log
   cat update/update.log
+
+  # Capture updater status
   update_status=$(cat update/update.status)
 
   if [ "$update_status" != "succeeded" ]
@@ -106,6 +114,13 @@ check_updates () {
     echo "TEST-UNEXPECTED-FAIL: update status was not successful: $update_status"
     return 1
   fi
+
+  # TODO: Check updater return code
+  # if [ "$updater_ret" -gt 0 ]
+  # then
+  #   echo "TEST-UNEXPECTED-FAIL: update status was not successful: $updater_ret"
+  #   return $updater_ret
+  # fi
 
   # If we were testing an OS X mar on Linux, the unpack step copied the
   # precomplete file from Contents/Resources to the root of the install

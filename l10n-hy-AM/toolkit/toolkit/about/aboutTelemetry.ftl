@@ -23,13 +23,13 @@ about-telemetry-telemetry-dashboard = <a data-l10n-name="dashboard-link">Հեռ�
 about-telemetry-telemetry-probe-dictionary = <a data-l10n-name="probe-dictionary-link">Զննության բառարանը</a> մատակարարում է մանրամասնություններ և նկարագրություններ զննությունների համար, որոնք հավաքվել են հեռուսաչափության կողմից։
 about-telemetry-show-in-Firefox-json-viewer = Բացել JSON դիտումում
 about-telemetry-home-section = Տուն
-about-telemetry-general-data-section =   Գլխավոր տվյալներ
+about-telemetry-general-data-section = Գլխավոր տվյալներ
 about-telemetry-environment-data-section = Միջավայրի տվյալ
 about-telemetry-session-info-section = Տեղեկություն աշխատաշրջանի մասին
 about-telemetry-scalar-section = Կշեռքներ
 about-telemetry-keyed-scalar-section = Բանալիացուած մենարժէք
 about-telemetry-histograms-section = Գծապատկերներ
-about-telemetry-keyed-histogram-section =   Ստեղնաշարային հիստոգրամներ
+about-telemetry-keyed-histogram-section = Ստեղնաշարային հիստոգրամներ
 about-telemetry-events-section = Իրադարձություններ
 about-telemetry-simple-measurements-section = Պարզ չափումներ
 about-telemetry-slow-sql-section = Ցուցադրել SQL-ի առաջարկությունը
@@ -86,15 +86,15 @@ about-telemetry-filter-all-placeholder =
     .placeholder = Գտնել բոլոր ընտրանքներում
 # Variables:
 #   $searchTerms (string) - The searched terms
-about-telemetry-results-for-search = “{ $searchTerms }”-ի արդյունքներ։
+about-telemetry-results-for-search = «{ $searchTerms }»-ի արդյունքները
 # More info about it can be found here: https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/data/main-ping.html
 # Variables:
 #   $sectionName (string) - The section name from the structure of the ping.
 #   $currentSearchText (string) - The current text in the search input
-about-telemetry-no-search-results = Կներեք, { $sectionName }-ում “{ $currentSearchText }”–ի համար ոչ մի արդյունք չկա:
+about-telemetry-no-search-results = Կներե՛ք, { $sectionName }-ում «{ $currentSearchText }»-ի համար որևէ արդյունք չկա
 # Variables:
 #   $searchTerms (string) - The searched terms
-about-telemetry-no-search-results-all = Կներեք, “{ $searchTerms }”–ի համար ոչ մի հատվածում արդյունք չկա:
+about-telemetry-no-search-results-all = Կներե՛ք։ Որևէ բաժնում «{ $searchTerms }»-ի համար արդյունքներ չկան
 # This message is displayed when a section is empty.
 # Variables:
 #   $sectionName (string) - Is replaced by the section name.
@@ -116,7 +116,7 @@ about-telemetry-addon-table-id = Հավելման ID-ին
 about-telemetry-addon-table-details = Մանրամասներ
 # Variables:
 #   $addonProvider (string) - The name of an Add-on Provider (e.g. “XPI”, “Plugin”)
-about-telemetry-addon-provider = { $addonProvider } մատակարարը
+about-telemetry-addon-provider = { $addonProvider } մատակարար
 about-telemetry-keys-header = Հատկությունը
 about-telemetry-names-header = Անուն
 about-telemetry-values-header = Արժեքը

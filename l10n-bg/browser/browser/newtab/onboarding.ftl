@@ -52,8 +52,6 @@ mr1-onboarding-import-primary-button-label-attribution = Внасяне от { $
 mr1-onboarding-theme-header = По свой вкус
 mr1-onboarding-theme-subtitle = Приспособете { -brand-short-name } с тема.
 mr1-onboarding-theme-secondary-button-label = Не сега
-newtab-wallpaper-onboarding-title = Опитайте пръска цвят
-newtab-wallpaper-onboarding-subtitle = Изберете тапет, за да придадете свеж вид на новия си раздел.
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Системна тема
 mr1-onboarding-theme-label-light = Светла
@@ -204,7 +202,7 @@ mr2022-onboarding-get-started-primary-button-label = Настройва се з�
 ## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Светкавично-бърза настройка
-mr2022-onboarding-import-subtitle = Настройте { -brand-short-name } както ви харесва. Добавете своите отметки, пароли и всичко друго от стария си четец.
+mr2022-onboarding-import-subtitle = Настройте { -brand-short-name } както ви харесва. Добавете вашите отметки, пароли и други от стария ви браузър.
 mr2022-onboarding-import-primary-button-label-no-attribution = Внасяне от предишен четец
 
 ## If your language uses grammatical genders, in the description for the
@@ -246,13 +244,10 @@ mr2022-onboarding-mobile-download-subtitle = Вземете разделите �
 mr2022-onboarding-mobile-download-cta-text = Сканирайте QR кода, за да получите { -brand-product-name } за мобилно устройство или <a data-l10n-name="download-label">изпратете си връзка за изтегляне.</a>
 mr2022-onboarding-no-mobile-download-cta-text = Сканирайте QR кода, за да получите { -brand-product-name } за мобилни устройства.
 
-## MR2022 Upgrade Dialog screens
-## Pin private window screen shown only for users who don't have Firefox private pinned
-
-
 ## MR2022 Privacy Segmentation screen strings
 
 mr2022-onboarding-privacy-segmentation-title = Ние винаги уважаваме вашата поверителност
+mr2022-onboarding-privacy-segmentation-button-primary-label = Използвайте препоръките от { -brand-product-name }
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Показване на подробна информация
 
 ## MR2022 Multistage Gratitude screen strings
@@ -312,14 +307,10 @@ onboarding-new-user-survey-familiarity-based-option-4 = Ползвал съм г
 onboarding-new-tabs-title = Кажете ни къде искате да са разделите
 # Setup screen for vertical tabs - too many tabs variation
 onboarding-many-tabs-title = Вашите раздели, по ваш начин
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Изпробвайте вертикалните раздели
 # Additional setup card for setting up aichatbot in the sidebar
 onboarding-genai-sidebar-title = Опитайте чатбот с AI в страничната лента
-
-## New user onboarding checklist
-
-
-## Tab Groups feature onboarding strings
-
 
 ## Multi Profiles feature onboarding messages
 

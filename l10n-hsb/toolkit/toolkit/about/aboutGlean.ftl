@@ -21,6 +21,7 @@ about-glean-category-manual-testing = Manuelne testowanje
 about-glean-category-adhoc-testing = Testowanje ad hoc
 about-glean-category-profiler = Wukonowu analyzu wužiwać
 about-glean-category-about-data = Wo datach
+about-glean-category-metrics-table = Tabela metrikow
 about-glean-upload-enabled = Nahraće datow je zmóžnjene.
 about-glean-upload-disabled = Nahraće datow je znjemóžnjene.
 about-glean-upload-enabled-local = Nahraće datow je jenož za słanje na lokalny serwer zmóžnjene.
@@ -140,6 +141,76 @@ about-glean-about-data-list-item-debug-ping-viewer =
 about-glean-about-data-list-item-firefox-profiler =
     Zo byšće wukonowy profil registrował a wšě natočene metriki widźał, wužiwajće prošu
     <a data-l10n-name="about-glean-firefox-profiler">{ -profiler-brand-name }</a>.
+about-glean-metrics-table-header = Wšě metriki
+# This message refers to the category in which a given metric is recorded.
+about-glean-metrics-table-header-category = Kategorija
+# This message refers to the name of a given metric.
+about-glean-metrics-table-header-name = Mjeno
+# This message refers to a given metric's metric type.
+about-glean-metrics-table-header-type = Typ
+# This message refers to the underlying value of a given metric.
+about-glean-metrics-table-header-value = Hódnota
+# This message refers to the UI action buttons for a given metric.
+about-glean-metrics-table-header-actions = Akcije
+about-glean-metrics-table-settings-button = Nastajenja
+# Settings for the metrics table and its visualizations in about:glean
+about-glean-metrics-table-settings-title = Tabelowe nastajenja metriki
+about-glean-metrics-table-settings-category-general = Powšitkowny
+about-glean-metrics-table-settings-hide-empty-value-rows = Prózdne hódnotowe linki schować
+about-glean-metrics-table-settings-category-visualizations = Wizualizacije
+# This is a heading that is immediately followed by an example data visualization
+about-glean-metrics-table-settings-visualization-example = Přikład
+about-glean-metrics-table-settings-category-visualizations-histogram = Histogram
+about-glean-metrics-table-settings-histograms-chart-max = Maksimalna wysokosć diagrama
+# The maximum height after to which the y-values on the chart will be scaled
+about-glean-metrics-table-settings-histograms-scaled-max = Skalowana maksimalna wysokosć
+about-glean-metrics-table-settings-histograms-box-padding = Nutřkowny wotstup pola
+about-glean-metrics-table-settings-histograms-chart-padding = Nutřkowny wotstup diagrama
+about-glean-metrics-table-settings-histograms-left-padding = Přidatny lěwy nutřkowny wotstup
+about-glean-metrics-table-settings-category-visualizations-timeline = Časowa lajsta
+about-glean-metrics-table-settings-timelines-height = Wysokosć
+about-glean-metrics-table-settings-timelines-width = Šěrokosć
+about-glean-metrics-table-settings-timelines-chart-padding = Nutřkowny wotstup diagrama
+# The radius of each circle denoting individual events recorded for an event metric
+about-glean-metrics-table-settings-timelines-circle-radius = Kružny radius
+# The offset on the x-axis from the end of the horizontal line for the y-axis line
+about-glean-metrics-table-settings-timelines-vertical-line-x-offset = Wotchilenje X wóski Y
+# The offset on the y-axis from the x-axis for the y-axis line
+about-glean-metrics-table-settings-timelines-vertical-line-y-offset = Wotchilenje Y wóski Y
+# Label displayed near an input field that can be used to filter metrics
+about-glean-label-for-filter-metrics = Filter
+# This message sits alongside an input field, further describing its purpose.
+# Category refers to the category in which a given metric is recorded.
+# Name refers to the name of a given metric.
+# Type refers to a given metric's metric type.
+# Value refers to the underlying value of a given metric.
+# "Simple type" refers to a value type that does not have deeply-nested data, such as a boolean, number, string, or list of strings.
+about-glean-description-for-filter-metrics = To budźe tabelu deleka po kategoriji, mjenje, typje a hódnoće filtrować (jeli hódnota je jednory typ).
+about-glean-button-load-all = Wšě hódnoty začitać
+about-glean-button-load-value = Začitać
+# "Docs" is shorthand for "documentation"
+about-glean-button-dictionary-link = Dokumenty
+about-glean-button-watch = Wobkedźbować
+# Meaning "to stop watching"
+about-glean-button-unwatch = Hižo njewobkedźbować
+about-glean-no-data-to-display = Za pokazowanje daty njejsu.
+# Do not translate strings between <code> </code> tags.
+about-glean-dual-labeled-metric-warning = Metriki <code>DualLabeledCounter</code> so w napohledźe <code>about:glean</code> hišće njepodpěruja.
+# Do not translate strings between <code> </code> tags.
+about-glean-labeled-metric-warning = Popisane metriki so w napohledźe <code>about:glean</code> hišće njepodpěruja.
+about-glean-unknown-metric-type-warning = Njeznaty typ metriki.
+about-glean-enable-new-features-promo =
+    .message = Dźěłamy na přidawanju nowych funkcijow! Wuwiwaja so hišće, ale klikńće tu na akciske tłóčatko, jeli chceće je zmóžnić.
+    .heading = Nowe funkcije su po puću!
+about-glean-enable-new-features-button = Nowe funkcije zmóžnić
+about-glean-disable-new-features-button = Nowe funkcije znjemóžnić
 about-glean-about-data-explanation =
     Zo byšće lisćinu zhromadźenych datow přepytał, skonsultujće
     <a data-l10n-name="glean-dictionary-link">{ -glean-brand-name } Słownik</a>.
+
+## These labels are displayed to organize the different ping types within the dropdown.
+
+about-glean-ping-list-optgroup-built-in =
+    .label = Zatwarjene pingi
+about-glean-ping-list-optgroup-custom =
+    .label = Swójske pingi

@@ -106,10 +106,3 @@ networkProtocolError-title = Tinklo protokolo klaida
 nssBadCert-title = Dėmesio: galima saugumo rizika
 nssBadCert-sts-title = Neprisijungta: galima saugumo problema
 certerror-mitm-title = Kažkuri programa neleidžia „{ -brand-short-name }“ saugiai prisijungti prie šios svetainės
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

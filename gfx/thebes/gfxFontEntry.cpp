@@ -35,7 +35,6 @@
 #include "mozilla/ScopeExit.h"
 #include "mozilla/Services.h"
 #include "mozilla/StaticPrefs_layout.h"
-#include "mozilla/Telemetry.h"
 #include "gfxSVGGlyphs.h"
 #include "gfx2DGlue.h"
 
@@ -112,7 +111,8 @@ gfxFontEntry::~gfxFontEntry() {
     }
   }
 
-  delete mFontTableCache.exchange(nullptr);
+  mFontTableCache.reset(nullptr);
+
   delete mSVGGlyphs.exchange(nullptr);
   delete[] mUVSData.exchange(nullptr);
 
@@ -420,7 +420,7 @@ class gfxFontEntry::FontTableBlobData {
     MOZ_COUNT_DTOR(FontTableBlobData);
     if (mFontEntry && mHashKey) {
       AutoWriteLock lock(mFontEntry->mLock);
-      mFontEntry->GetFontTableCache()->RemoveEntry(mHashKey);
+      mFontEntry->mFontTableCache->RemoveEntry(mHashKey);
     }
   }
 
@@ -514,57 +514,38 @@ hb_blob_t* gfxFontEntry::FontTableHashEntry::GetBlob() const {
 }
 
 bool gfxFontEntry::GetExistingFontTable(uint32_t aTag, hb_blob_t** aBlob) {
-  // Accessing the mFontTableCache pointer is atomic, so we don't need to take
-  // a write lock even if we're initializing it here...
-  MOZ_PUSH_IGNORE_THREAD_SAFETY
-  if (MOZ_UNLIKELY(!mFontTableCache)) {
-    // We do this here rather than on fontEntry construction
-    // because not all shapers will access the table cache at all.
-    //
-    // We're not holding a write lock, so make sure to atomically update
-    // the cache pointer.
-    auto* newCache = new FontTableCache(8);
-    if (MOZ_UNLIKELY(!mFontTableCache.compareExchange(nullptr, newCache))) {
-      delete newCache;
-    }
-  }
-  FontTableCache* cache = GetFontTableCache();
-  MOZ_POP_THREAD_SAFETY
-
-  // ...but we do need a lock to read the actual hashtable contents.
   AutoReadLock lock(mLock);
-  FontTableHashEntry* entry = cache->GetEntry(aTag);
-  if (!entry) {
+
+  if (MOZ_UNLIKELY(!mFontTableCache)) {
     return false;
   }
 
-  *aBlob = entry->GetBlob();
-  return true;
+  if (const auto* entry = mFontTableCache->GetEntry(aTag)) {
+    *aBlob = entry->GetBlob();
+    return true;
+  }
+
+  return false;
 }
 
 hb_blob_t* gfxFontEntry::ShareFontTableAndGetBlob(uint32_t aTag,
                                                   nsTArray<uint8_t>* aBuffer) {
-  MOZ_PUSH_IGNORE_THREAD_SAFETY
-  if (MOZ_UNLIKELY(!mFontTableCache)) {
-    auto* newCache = new FontTableCache(8);
-    if (MOZ_UNLIKELY(!mFontTableCache.compareExchange(nullptr, newCache))) {
-      delete newCache;
-    }
-  }
-  FontTableCache* cache = GetFontTableCache();
-  MOZ_POP_THREAD_SAFETY
-
   AutoWriteLock lock(mLock);
 
+  if (MOZ_UNLIKELY(!mFontTableCache)) {
+    mFontTableCache = MakeUnique<FontTableCache>(8);
+  }
+
   FontTableHashEntry* entry;
-  if (MOZ_UNLIKELY(entry = cache->GetEntry(aTag))) {
+  if (MOZ_UNLIKELY(entry = mFontTableCache->GetEntry(aTag))) {
     // We must have been racing with another GetFontTable for the same table,
     // and it won the race and filled in the entry before we took the lock.
     // Ignore `aBuffer` and return a reference to the existing blob.
     return entry->GetBlob();
   }
 
-  entry = cache->PutEntry(aTag);
+  // Infallible PutEntry call, so `entry` will be non-null.
+  entry = mFontTableCache->PutEntry(aTag);
 
   if (!aBuffer) {
     // ensure the entry is null
@@ -679,7 +660,13 @@ struct gfxFontEntry::GrSandboxData {
       grGetGlyphAdvanceCallback;
 
   GrSandboxData() {
+#if defined(MOZ_WASM_SANDBOXING_GRAPHITE)
+    sandbox.create_sandbox(/* shouldAbortOnFailure = */ true,
+                           /* custom capacity = */ nullptr,
+                           "rlbox_wasm2c_graphite");
+#else
     sandbox.create_sandbox();
+#endif
     grGetTableCallback =
         sandbox.register_callback(gfxFontEntryCallbacks::GrGetTable);
     grReleaseTableCallback =
@@ -1358,7 +1345,7 @@ void gfxFontEntry::GetVariationsForStyle(nsTArray<gfxFontVariation>& aResult,
     // The 'ital' axis is normally a binary toggle; intermediate values
     // can only be set using font-variation-settings.
     aResult.AppendElement(gfxFontVariation{HB_TAG('i', 't', 'a', 'l'), 1.0f});
-  } else if (aStyle.style != StyleFontStyle::NORMAL && HasSlantVariation()) {
+  } else if (HasSlantVariation()) {
     // Figure out what slant angle we should try to match from the
     // requested style.
     float angle = aStyle.style.SlantAngle();
@@ -1436,7 +1423,7 @@ void gfxFontEntry::AddSizeOfExcludingThis(MallocSizeOf aMallocSizeOf,
     AutoReadLock lock(mLock);
     if (mFontTableCache) {
       aSizes->mFontTableCacheSize +=
-          GetFontTableCache()->SizeOfIncludingThis(aMallocSizeOf);
+          mFontTableCache->SizeOfIncludingThis(aMallocSizeOf);
     }
   }
 
@@ -1559,14 +1546,15 @@ static inline double WeightStyleStretchDistance(
     gfxFontEntry* aFontEntry, const gfxFontStyle& aTargetStyle) {
   double stretchDist =
       StretchDistance(aFontEntry->Stretch(), aTargetStyle.stretch);
-  double styleDist =
-      StyleDistance(aFontEntry->SlantStyle(), aTargetStyle.style);
+  double styleDist = StyleDistance(
+      aFontEntry->SlantStyle(), aTargetStyle.style,
+      aTargetStyle.synthesisStyle != StyleFontSynthesisStyle::ObliqueOnly);
   double weightDist = WeightDistance(aFontEntry->Weight(), aTargetStyle.weight);
 
   // Sanity-check that the distances are within the expected range
   // (update if implementation of the distance functions is changed).
   MOZ_ASSERT(stretchDist >= 0.0 && stretchDist <= 2000.0);
-  MOZ_ASSERT(styleDist >= 0.0 && styleDist <= 500.0);
+  MOZ_ASSERT(styleDist >= 0.0 && styleDist <= 900.0);
   MOZ_ASSERT(weightDist >= 0.0 && weightDist <= 1600.0);
 
   // weight/style/stretch priority: stretch >> style >> weight
@@ -1823,7 +1811,7 @@ void gfxFontFamily::FindFontForChar(GlobalFontMatch* aMatchData) {
 
       fe = e;
       distance = WeightStyleStretchDistance(fe, aMatchData->mStyle);
-      if (aMatchData->mPresentation != eFontPresentation::Any) {
+      if (aMatchData->mPresentation != FontPresentation::Any) {
         RefPtr<gfxFont> font = fe->FindOrMakeFont(&aMatchData->mStyle);
         if (!font) {
           continue;
@@ -1878,7 +1866,7 @@ void gfxFontFamily::SearchAllFontsForChar(GlobalFontMatch* aMatchData) {
     gfxFontEntry* fe = mAvailableFonts[i];
     if (fe && fe->HasCharacter(aMatchData->mCh)) {
       float distance = WeightStyleStretchDistance(fe, aMatchData->mStyle);
-      if (aMatchData->mPresentation != eFontPresentation::Any) {
+      if (aMatchData->mPresentation != FontPresentation::Any) {
         RefPtr<gfxFont> font = fe->FindOrMakeFont(&aMatchData->mStyle);
         if (!font) {
           continue;

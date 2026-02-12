@@ -5,11 +5,6 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = Bætir spjallkerfi að eigin vali við hliðarstikuna, til að komast skjótt í það þegar þú vafrar. <a data-l10n-name="connect">Deildu athugasemdum</a>
-genai-settings-chat-choose = Veldu spjallkerfi
-genai-settings-chat-choose-one-menuitem =
-    .label = Veldu einn
-genai-settings-chat-links = Þegar þú velur spjallkerfi samþykkir þú notkunarskilmála þjónustuveitunnar og persónuverndarstefnu hennar.
 genai-settings-chat-chatgpt-links = Með því að velja ChatGPT samþykkir þú <a data-l10n-name="link1">notkunarskilmála</a> og <a data-l10n-name="link2">persónuverndarstefnu</a> OpenAI.
 genai-settings-chat-claude-links = Með því að velja Anthropic Claude samþykkir þú <a data-l10n-name="link1">þjónustuskilmála notenda</a>, <a data-l10n-name="link2">notkunarstefnu</a>, og <a data-l10n-name="link3">persónuverndarstefnu</a> Anthropic.
 genai-settings-chat-copilot-links = Með því að velja Copilot samþykkir þú <a data-l10n-name="link1">skilmála Copilot AI Experiences</a> og <a data-l10n-name="link2">persónuverndaryfirlýsingu</a> Microsoft.
@@ -17,9 +12,6 @@ genai-settings-chat-gemini-links = Með því að velja Google Gemini samþykkir
 genai-settings-chat-huggingchat-links = Með því að velja HuggingChat samþykkir þú <a data-l10n-name="link1">persónuverndarákvæði HuggingChat</a> og <a data-l10n-name="link2">persónuverndarstefnu Hugging Face</a>.
 genai-settings-chat-lechat-links = Með því að velja Le Chat Mistral samþykkir þú <a data-l10n-name="link1">þjónustuskilmála</a> og <a data-l10n-name="link2">persónuverndarstefnu</a>  Mistral AI.
 genai-settings-chat-localhost-links = Settu upp þín eigin persónulegu staðbundin spjallkerfi á borð við <a data-l10n-name="link1">llamafile</a> frá Innovation-hópnum { -vendor-short-name }.
-genai-settings-chat-shortcuts =
-    .description = Birtir flýtileið að kvaðningum þegar þú velur texta. { -brand-short-name } sendir textann, titil síðunnar og kvaðningu til spjallkerfisins.
-    .label = Birta kvaðningar við val texta
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -55,19 +47,33 @@ genai-prompt-prefix-selection = Ég er á síðunni „{ $tabTitle }“ með „
 ## Chatbot menu shortcuts
 
 genai-menu-ask-generic =
-    .label = Spyrja AI-gervigreindarspjallkerfi
+    .label = Spyrja gervigreindarspjallkerfi
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = Spyrja { $provider }
+genai-menu-open-generic =
+    .label = Opna gervigreindarspjallkerfi
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Opna { $provider }
+genai-menu-remove-generic =
+    .label = Fjarlægja gervigreindarspjallkerfi
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Fjarlægja { $provider }
+genai-menu-remove-sidebar =
+    .label = Fjarlægja af hliðarstiku
+genai-menu-new-badge = Nýtt
+genai-menu-summarize-page = Gera samantekt síðu
 genai-input-ask-generic =
-    .placeholder = Spyrja AI-gervigreindarspjallkerfi…
+    .placeholder = Spyrja gervigreindarspjallkerfi…
 # $provider (string) - name of the provider
 genai-input-ask-provider =
     .placeholder = Spyrja { $provider }…
 # $selectionLength (number) - selected text length
 # $maxLength (number) - max length of what can be selected
 genai-shortcuts-selected-warning-generic =
-    .heading = Gervigreindar-spjallkerfið mun ekki fá allt sem þú valdir
+    .heading = Gervigreindarspjallkerfið mun ekki fá allt sem þú valdir
     .message =
         { $selectionLength ->
             [one] Þú valdir um það bil { $selectionLength } staf. Fjöldi stafa sem hægt er að senda á gervigreindarkerfið er { $maxLength }.
@@ -85,10 +91,12 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = Fela flýtileið spjallkerfis
+genai-menu-choose-chatbot =
+    .label = Veldu gervigreindarspjallkerfi
 
 ## Chatbot header
 
-genai-chatbot-title = AI-gervigreindarspjall
+genai-chatbot-title = Gervigreindarspjallkerfi
 genai-header-provider-menu =
     .title = Veldu spjallkerfi
 genai-header-options-button =
@@ -97,10 +105,8 @@ genai-header-close-button =
     .title = Loka
 genai-provider-view-details =
     .label = Skoða nánari upplýsingar um spjallkerfið
-genai-provider-about-chatbots =
-    .label = Um þessi spjallkerfi
 genai-options-reload-generic =
-    .label = Endurhlaða AI-gervigreindarspjallkerfi
+    .label = Endurhlaða gervigreindarspjallkerfi
 # $provider (string) - name of the provider
 genai-options-reload-provider =
     .label = Endurhlaða { $provider }
@@ -111,9 +117,14 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = Um gervigreindar-spjallkerfi í { -brand-short-name }
 
+## Chatbot footer
+
+genai-page-button-summarize = Gera samantekt efnis á síðu
+
 ## Chatbot onboarding
 
 genai-onboarding-header = Gerðu samantektir, fáðu hugmyndir og fleira um leið og þú vafrar
+genai-onboarding-choose-header = Veldu spjallþjón með gervigreind til að nota í hliðarstikunni { -brand-short-name }
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = Veldu gervigreindar-spjallkerfi til að nota í { -brand-short-name } hliðarstikunni. Upplýsingar um hvert spjallkerfi munu birtast þegar þú velur það. Skiptu um kerfi hvenær sem er. <a data-l10n-name="learn-more">Frekari upplýsingar</a>
 genai-onboarding-primary = Halda áfram
@@ -139,6 +150,8 @@ genai-onboarding-lechat-learn = Frekari upplýsingar um Le Chat
 genai-onboarding-select-header = Veldu texta til að sjá tillögur
 genai-onboarding-select-description = Þegar þú velur texta munum við stinga upp á kvaðningum sem þú getur sent til spjallkerfisins. Þú getur líka skrifað í þínar eigin kvaðningar.
 genai-onboarding-select-primary = Byrjaðu að spjalla
+genai-chatbot-contextual-title = Notaðu gervigreindarspjallþjón án þess að skipta um flipa
+genai-chatbot-contextual-button = Veldu spjallkerfi
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -160,3 +173,41 @@ genai-onboarding-huggingchat-switch = Skiptu á milli fjölbreyttra opinna líka
 genai-onboarding-huggingchat-price-2 = Ókeypis; reiknings er krafist eftir ákveðinn fjölda beiðna
 genai-onboarding-lechat-generate = Framleiddu texta og kóða
 genai-onboarding-lechat-price = Ókeypis; reiknings krafist
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Halda áfram
+genai-model-optin-optout =
+    .label = Hætta við
+genai-model-optin-cancel =
+    .label = Hætta við
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] { $range } mínútu lestrartími
+       *[other] { $range } mínútna lestrartími
+    }
+# Error message when we can't generate key points (summary highlights or main ideas of page content) for a page
+link-preview-generation-error-missing-data = Við getum ekki útbúið lykilatriði fyrir þessa vefsíðu.
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Eitthvað fór úrskeiðis.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Reyna aftur
+# Header for the key points section
+link-preview-key-points-header = Lykilatriði
+# Disclaimer for AI-generated key points
+link-preview-key-points-disclaimer = Lykilatriði eru búin til með gervigreind og geta innihaldið villur.
+# Onboarding card See a preview button
+link-preview-onboarding-button = Sjá forskoðun
+# Onboarding card Close button
+link-preview-onboarding-close = Loka

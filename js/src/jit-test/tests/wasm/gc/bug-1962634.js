@@ -20,15 +20,11 @@ const types = [
   "externref", "(ref extern)",
   "nullexternref", "(ref noextern)",
 
+  "exnref", "(ref exn)",
+  "nullexnref", "(ref noexn)",
+
   "(ref null $s)", "(ref $s)",
 ];
-
-if (wasmExnRefEnabled()) {
-  types.push(
-    "exnref", "(ref exn)",
-    "nullexnref", "(ref noexn)",
-  )
-}
 
 for (const type of types) {
   const m = new WebAssembly.Module(wasmTextToBinary(`(module

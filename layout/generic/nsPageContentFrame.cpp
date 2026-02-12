@@ -267,7 +267,9 @@ static void PruneDisplayListForExtraPage(nsDisplayListBuilder* aBuilder,
                                          nsPageFrame* aPage,
                                          nsDisplayList* aList) {
   for (nsDisplayItem* i : aList->TakeItems()) {
-    if (!i) break;
+    if (!i) {
+      break;
+    }
     nsDisplayList* subList = i->GetSameCoordinateSystemChildren();
     if (subList) {
       PruneDisplayListForExtraPage(aBuilder, aPage, subList);
@@ -426,7 +428,7 @@ void nsPageContentFrame::EnsurePageName() {
 nsresult nsPageContentFrame::GetFrameName(nsAString& aResult) const {
   return MakeFrameName(u"PageContent"_ns, aResult);
 }
-void nsPageContentFrame::ExtraContainerFrameInfo(nsACString& aTo) const {
+void nsPageContentFrame::ExtraContainerFrameInfo(nsACString& aTo, bool) const {
   if (mPageName) {
     aTo += " [page=";
     aTo += nsAtomCString(mPageName);

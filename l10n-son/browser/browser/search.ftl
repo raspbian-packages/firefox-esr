@@ -17,14 +17,3 @@ opensearch-error-download-desc = { -brand-short-name } mana hin ka ceeci sukaroo
 
 searchbar-submit =
     .tooltiptext = Ceeciyan sanba
-
-## Infobar shown when search engine is removed and replaced.
-## Variables
-## $oldEngine (String) - the search engine to be removed.
-## $newEngine (String) - the search engine to replace the removed search engine.
-
-
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
-

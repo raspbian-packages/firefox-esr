@@ -62,7 +62,7 @@ detail-private-browsing-label = Funzionamento in finestre anonime
 # Some add-ons may elect to not run in private windows by setting incognito: not_allowed in the manifest.  This
 # cannot be overridden by the user.
 detail-private-disallowed-label = Disattivata in finestre anonime
-detail-private-disallowed-description2 = Questa estensione non funziona in navigazione anonima. <<a data-l10n-name="learn-more">Ulteriori informazioni</a>
+detail-private-disallowed-description2 = Questa estensione non funziona in navigazione anonima. <a data-l10n-name="learn-more">Ulteriori informazioni</a>
 # Some special add-ons are privileged, run in private windows automatically, and this permission can't be revoked
 detail-private-required-label = Richiede accesso alle finestre anonime
 detail-private-required-description2 = Questa estensione ha accesso alle tue attività online nelle finestre anonime. <a data-l10n-name="learn-more">Ulteriori informazioni</a>
@@ -173,6 +173,8 @@ extensions-warning-update-security-button = Attiva
 extensions-warning-imported-addons2 =
     .message = Completa l’installazione delle estensioni importate in { -brand-short-name }.
 extensions-warning-imported-addons-button = Installa estensioni
+extensions-warning-safe-mode3 =
+    .message = Tutti i componenti aggiuntivi sono stati disattivati dalla modalità risoluzione problemi.
 
 ## Strings connected to add-on updates
 
@@ -209,6 +211,10 @@ addon-updates-manual-updates-found = Visualizza aggiornamenti disponibili
 
 addon-install-from-file = Installa componente aggiuntivo da file…
     .accesskey = I
+# Like `addon-install-from-file` but used when the `extensions.webextensions.prefer-update-over-install-for-existing-addon`
+# pref is set.
+addon-install-or-update-from-file = Installa o aggiorna componente aggiuntivo da file…
+    .accesskey = o
 addon-install-from-file-dialog-title = Selezionare i componenti aggiuntivi da installare
 addon-install-from-file-filter-name = Componenti aggiuntivi
 addon-open-about-debugging = Debug componenti aggiuntivi
@@ -280,6 +286,16 @@ discopane-notice-recommendations2 =
         estensioni già installate, le impostazioni del profilo e statistiche
         d’utilizzo.
 discopane-notice-learn-more = Ulteriori informazioni
+# Notice for the colorway theme removal
+colorway-removal-notice-message =
+    .heading = Le tonalità sono state rimosse.
+    .message = { -brand-product-name } ha aggiornato la sua collezione di tonalità. Le versioni precedenti sono state rimosse dall’elenco “Temi salvati”. Scarica le nuove versioni sul sito dei componenti aggiuntivi.
+colorway-removal-notice-learn-more = Ulteriori informazioni
+colorway-removal-notice-button = Ottieni tonalità aggiornate
+# Notice to make user aware that themes are not applied in forced colors mode.
+# This notice is only visible on Windows.
+forced-colors-theme-notice =
+    .message = Le impostazioni del contrasto di Windows hanno la precedenza sui temi di { -brand-short-name }. Disattiva queste impostazioni per utilizzare i temi in { -brand-short-name }.
 privacy-policy = Informativa sulla privacy
 # Refers to the author of an add-on, shown below the name of the add-on.
 # Variables:
@@ -302,7 +318,9 @@ addon-options-button =
     .aria-label = Altre opzioni
 # Explanatory introduction to the list of recommended add-ons. The action word
 # ("recommends") in the final sentence is a link to external documentation.
-discopane-intro2 = Estensioni e temi ti consentono di personalizzare { -brand-product-name }. Possono aiutarti a potenziare la tua privacy, incrementare la produttività, migliorare l’esperienza con i contenuti multimediali, cambiare l’aspetto di { -brand-product-name } e molto altro ancora. Queste piccole applicazioni software sono spesso sviluppate da terze parti. Qui trovi una selezione di elementi <a data-l10n-name="learn-more-trigger">consigliati</a> da { -brand-product-name } per sicurezza, prestazioni e funzionalità eccezionali.
+# We hard code "Firefox" because we do not want to imply that a Firefox fork is
+# making this recommendation.
+discopane-intro3 = Estensioni e temi ti consentono di personalizzare { -brand-product-name }. Possono aiutarti a potenziare la tua privacy, incrementare la produttività, migliorare l’esperienza con i contenuti multimediali, cambiare l’aspetto di { -brand-product-name } e molto altro ancora. Queste piccole applicazioni software sono spesso sviluppate da terze parti. Qui trovi una selezione di elementi <a data-l10n-name="learn-more-trigger">consigliati</a> da Firefox per sicurezza, prestazioni e funzionalità eccezionali.
 
 ## Add-on actions
 
@@ -389,6 +407,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = Attiva in finestre anonime
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = Attiva in finestre anonime
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -406,7 +428,7 @@ addon-detail-group-label-private-browsing =
 # Used as a description for the option to allow or block an add-on on quarantined domains.
 addon-detail-quarantined-domains-label = Funzionamento in siti con restrizioni
 # Used as help text part of the quarantined domains UI controls row.
-addon-detail-quarantined-domains-help = Se viene garantito il permesso, l’estensione avrà accesso a siti con restrizioni identificati da { -vendor-short-name }. Consentire solo se si considera l’estensione affidabile.
+addon-detail-quarantined-domains-help = Se viene garantito il permesso, l’estensione avrà accesso a siti con restrizioni identificati da { -vendor-short-name }. Consentire solo se si considera l’estensione attendibile.
 # Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
 addon-detail-quarantined-domains-allow = Consenti
 addon-detail-quarantined-domains-disallow = Non consentire
@@ -428,6 +450,24 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = Questa estensione è stata verificata per garantire il rispetto dei nostri standard in materia di sicurezza e prestazioni
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = Estensione ufficiale realizzata da Mozilla. Rispetta gli standard in materia di sicurezza e prestazioni
+# This string needs to work in the context of other forks that are not Firefox
+# or built by Mozilla. In particular, we do not want to imply that an
+# organisation other than Mozilla or the Firefox team are performing the
+# security or performance reviews. As such, we avoid personalising language
+# like the words "our" or "we".
+addon-badge-verified4 =
+    .title = Questa estensione è stata verificata per garantire il rispetto degli standard in materia di sicurezza e prestazioni
+# This string needs to work in the context of other forks that are not Firefox
+# or built by Mozilla. In particular, we do not want to imply that an
+# organisation other than Mozilla or the Firefox team are making the
+# recommendation. As such, we hard code "Firefox" and avoid personalising
+# language like the words "our" or "we".
+addon-badge-recommended4 =
+    .title = Vengono consigliate solo estensioni che soddisfano i requisiti di sicurezza e prestazioni di Firefox
 
 ##
 
@@ -435,7 +475,10 @@ available-updates-heading = Aggiornamenti disponibili
 recent-updates-heading = Aggiornamenti recenti
 release-notes-loading = Caricamento in corso…
 release-notes-error = Siamo spiacenti, si è verificato un errore durante il caricamento delle note di versione.
+addon-permissions-heading = Permessi
 addon-permissions-empty2 = Questa estensione non richiede alcun permesso.
+addon-permissions-required-label = Obbligatori:
+addon-permissions-optional-label = Facoltativi:
 addon-permissions-empty = Questa estensione non richiede alcun permesso
 addon-permissions-required = Permessi obbligatori per funzionalità principali:
 addon-permissions-optional = Permessi facoltativi per funzionalità aggiuntive:
@@ -463,6 +506,9 @@ shortcuts-heading = Gestione scorciatoie da tastiera
 default-heading-search-label = Trova altri componenti aggiuntivi
 addons-heading-search-input =
     .placeholder = Cerca in addons.mozilla.org
+addons-heading-search-button =
+    .title = Cerca in addons.mozilla.org
+    .aria-label = Cerca in addons.mozilla.org
 addon-page-options-button =
     .title = Strumenti per tutti i componenti aggiuntivi
 
@@ -491,9 +537,15 @@ details-notification-hard-blocked-other =
     .message = Questo componente aggiuntivo è bloccato in quanto viola i criteri di Mozilla ed è stato disattivato.
 details-notification-unsigned-link = Ulteriori informazioni
 details-notification-blocked = { $name } è stato disattivato in quanto comporta rischi per la stabilità o la sicurezza.
-details-notification-blocked2 =
-    .message = { $name } è stato disattivato in quanto comporta rischi per la stabilità o la sicurezza.
 details-notification-blocked-link2 = Mostra dettagli
+details-notification-soft-blocked-extension-disabled2 =
+    .message = Questa estensione è soggetta a restrizioni ed è stata disattivata. È possibile attivarla, ma il suo utilizzo potrebbe comportare dei rischi.
+details-notification-soft-blocked-extension-enabled2 =
+    .message = Questa estensione è soggetta a restrizioni. Il suo utilizzo potrebbe comportare dei rischi.
+details-notification-soft-blocked-other-disabled2 =
+    .message = Questo componente aggiuntivo è soggetto a restrizioni ed è stato disattivato. È possibile attivarlo, ma il suo utilizzo potrebbe comportare dei rischi.
+details-notification-soft-blocked-other-enabled2 =
+    .message = Questo componente aggiuntivo è soggetto a restrizioni. Il suo utilizzo potrebbe comportare dei rischi.
 details-notification-soft-blocked-extension-disabled =
     .message = Questa estensione è soggetta a limitazioni in quanto viola i criteri di Mozilla ed è stata disattivata. È possibile attivarla, ma il suo utilizzo potrebbe comportare dei rischi.
 details-notification-soft-blocked-extension-enabled =
@@ -505,8 +557,6 @@ details-notification-soft-blocked-other-enabled =
 details-notification-softblocked-link2 = Mostra dettagli
 details-notification-blocked-link = Ulteriori informazioni
 details-notification-softblocked = { $name } è riconosciuto come causa di problemi per la stabilità o la sicurezza.
-details-notification-softblocked2 =
-    .message = { $name } è riconosciuto come causa di problemi per la stabilità o la sicurezza.
 details-notification-softblocked-link = Ulteriori informazioni
 details-notification-gmp-pending = { $name } verrà installato tra qualche istante.
 details-notification-gmp-pending2 =
@@ -520,3 +570,45 @@ plugins-openh264-name = Codec video OpenH264 realizzato da Cisco Systems, Inc.
 plugins-openh264-description = Questo plugin viene installato automaticamente da Mozilla, in conformità con le specifiche WebRTC, per consentire chiamate con dispositivi che richiedono un codec video H.264. Visitare https://www.openh264.org/ per visualizzare il codice sorgente e scoprire ulteriori informazioni sull’implementazione.
 plugins-widevine-name = Modulo Widevine Content Decryption fornito da Google Inc.
 plugins-widevine-description = Questo plugin consente la riproduzione di file multimediali crittati, nel rispetto delle specifiche Encrypted Media Extensions. Questo tipo di file è normalmente utilizzato dai siti per proteggere contenuti di alta qualità contro la copia. Consultare https://www.w3.org/TR/encrypted-media/ per ulteriori informazioni relative a Encrypted Media Extensions.
+
+## Headings for the Permissions tab in `about:addons` when the data collection
+## feature is enabled.
+
+addon-permissions-required-data-collection = Raccolta dati obbligatoria:
+addon-permissions-optional-data-collection = Raccolta dati facoltativa:
+# Name of the Permissions tab in `about:addons` when the data collection feature is enabled.
+permissions-data-addon-button = Permessi e dati
+# This is a description for extension that use this AI model
+# Variables:
+#   $extensionName (String) - Name of the extension
+mlmodel-extension-label = Utilizzato dall’estensione { $extensionName }
+addon-permissions-data-collection-heading = Raccolta dati
+addon-permissions-data-collection-empty = Lo sviluppatore dichiara che questa estensione non richiede la raccolta di dati.
+addon-data-collection-provided = Informazioni fornite dallo sviluppatore dell’estensione
+addon-data-collection-learnmore = Ulteriori informazioni sulla raccolta dati
+
+## Mapping Engine IDs from AI models to how that feature represented by the engine Id is described in the used by section in local model management
+
+mlmodel-about-inference = { -brand-short-name } utilizza questo modello in about:inference
+mlmodel-link-preview = { -brand-short-name } utilizza questo modello per generare punti chiave quando visualizzi l’anteprima dei link
+mlmodel-pdfjs = { -brand-short-name } utilizza questo modello per creare testo alternativo per le immagini che aggiungi ai PDF
+mlmodel-smart-tab-topic-engine = { -brand-short-name } utilizza questo modello per suggerire nomi per i gruppi di schede
+mlmodel-smart-tab-embedding-engine = { -brand-short-name } utilizza questo modello per suggerire schede per i gruppi di schede
+# AI Model will be downloaded on the users device and used locally
+addon-category-mlmodel = IA sul dispositivo
+addon-category-mlmodel-title =
+    .title = IA sul dispositivo
+mlmodel-heading = Gestisci i modelli di IA sul dispositivo
+mlmodel-description = Alcune funzioni ed estensioni di { -brand-short-name } utilizzano modelli di intelligenza artificiale che funzionano localmente sul tuo dispositivo. Questo approccio protegge la tua privacy e, in molti casi, velocizza le prestazioni. <a data-l10n-name="learn-more">Ulteriori informazioni</a>
+# Label for button that when clicked removed local model
+mlmodel-remove-addon-button =
+    .aria-label = Rimuovi
+# Label for the aggregated value of all files for a model
+mlmodel-addon-detail-totalsize-label = Dimensione file
+mlmodel-addon-detail-last-used-label = Ultimo utilizzo
+# This is a section label to describe what extensions or features use a specific local AI model
+mlmodel-addon-detail-used-by-label = Utilizzato da
+# This is a section label to describe the link to the model card on the Hugging Face website
+mlmodel-addon-detail-model-card = Scheda modello
+# This is a label for the Model Card link to Hugging face
+mlmodel-addon-detail-model-card-link-label = Visualizza su Hugging Face

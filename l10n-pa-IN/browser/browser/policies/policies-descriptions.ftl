@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = ਸਿਰਨਾਵਿਆਂ ਲਈ ਆਪਣੇ-
 policy-AutofillCreditCardEnabled = ਭੁਗਤਾਨ ਢੰਗਾਂ ਲਈ ਆਪਣੇ-ਆਪ ਭਰਨਾ ਸਮਰੱਥ ਕਰੋ।
 policy-AutoLaunchProtocolsFromOrigins = ਬਾਹਰੀ ਪਰੋਟੋਕਾਲਾਂ ਦੀ ਸੂਚੀ ਦਿਓ, ਜੋ ਕਿ ਸੂਚੀਬੱਧ ਮੁੱਢ ਤੋਂ ਬਿਨਾਂ ਵਰਤੋਂਕਾਰ ਦੇ ਪੁੱਛੇ ਵਰਤੇ ਜਾ ਸਕਦੇ ਹਨ।
 policy-BackgroundAppUpdate2 = ਬੈਕਗਰਾਊਂਡ ਅੱਪਡੇਟਰ ਨੂੰ ਸਮਰੱਥ ਜਾਂ ਅਸਮਰੱਥ ਕਰੋ।
+policy-Backup = ਪਰੋਫ਼ਾਈਲ ਡਾਟੇ ਦੇ ਬੈਕਅੱਪ ਜਾਂ ਬਹਾਲ ਕਰਨ ਨੂੰ ਅਸਮਰੱਥ ਕਰੋ।
 policy-BlockAboutAddons = ਐਡ-ਆਨ ਮੈਨੇਜਰ (about:addons) ਤਕ ਪਹੁੰਚ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਓ।
 policy-BlockAboutConfig = about:config ਸਫ਼ੇ ਲਈ ਪਹੁੰਚ ਤੇ ਪਾਬੰਦੀ ਲਗਾਓ।
 policy-BlockAboutProfiles = about:profiles ਸਫ਼ੇ ਲਈ ਪਹੁੰਚ ਤੇ ਪਾਬੰਦੀ ਲਗਾਓ।
@@ -81,6 +82,7 @@ policy-ExtensionSettings = ਇਕਸਟੈਨਸ਼ਨ ਇੰਸਟਾਲੇਸ਼ਨ 
 policy-ExtensionUpdate = ਆਟੋਮੈਟਿਕ ਇਕਸਟੈਨਸ਼ਨ ਅੱਪਡੇਟ ਸਮਰੱਥ ਜਾਂ ਅਸਮਰੱਥ ਕਰੋ।
 policy-FirefoxHome2 = { -firefox-home-brand-name } ਦੀ ਸੰਰਚਨਾ।
 policy-FirefoxSuggest = { -firefox-suggest-brand-name } ਦੀ ਸੰਰਚਨਾ।
+policy-GenerativeAI = ਤਿਆਰਕਰਤਾ AI ਫ਼ੀਚਰਾਂ ਦੀ ਸੰਰਚਨਾ ਹੈ।
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = ਜਦੋਂ ਸਿਰਨਾਵਾਂ ਪੱਟੀ ਵਿੱਚ ਇੱਕਲਾ ਸ਼ਬਦ ਲਿਖਿਆ ਜਾਵੇ ਤਾਂ ਖੋਜ ਕਰਨ ਦੀ ਬਜਾਏ ਸਿੱਧੇ ਇੰਟਰਾਨੈੱਟ ਸਾਈਟ ਉੱਤੇ ਜਾਣ ਲਈ ਮਜ਼ਬੂਰ ਕਰੋ।
 policy-Handlers = ਡਿਫਾਲਟ ਐਪਲੀਕੇਸ਼ਨ ਹੈਂਡਲ ਸੰਰਚਨਾ ਕਰੋ।
 policy-HardwareAcceleration = ਜੇ ਗਲਤ ਹੈ, ਤਾਂ ਹਾਰਡਵੇਅਰ ਐਕਸਰਲੇਸ਼ਨ ਬੰਦ ਹੁੰਦਾ ਹੈ।
@@ -99,6 +101,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = ਨਿਰਧਾਰਤ 
 ##
 
 policy-LocalFileLinks = ਖਾਸ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਲੋਕਲ ਫ਼ਾਈਲਾਂ ਲਈ ਲਿੰਕ ਦੀ ਆਗਿਆ ਦਿਓ।
+policy-LocalNetworkAccess = ਲੋਕਲ ਨੈੱਟਵਰਕ ਪਹੁੰਚ ਲਈ ਜਾਂਚ ਨੂੰ ਸਮਰੱਥ ਜਾਂ ਅਸਮਰੱਥ ਕਰੋ।
 policy-ManagedBookmarks =
     ਪਰਸ਼ਾਸਕ ਵਲੋਂ ਇੰਤਜ਼ਾਮ ਕੀਤੇ ਬੁੱਕਮਾਰਕਾਂ ਦੀ ਸੂਚੀ ਸੰਰਚਿਤ ਕਰਦਾ ਹੈ, ਜਿਸ ਨੂੰ ਵਰਤੋਂਕਾਰ
     ਬਦਲ ਨਹੀਂ ਸਕਦਾ ਹੈ।
@@ -143,6 +146,7 @@ policy-SupportMenu = ਸਹਾਇਤਾ ਮੇਨੂ ਵਿੱਚ ਇੱਕ ਕ�
 policy-TranslateEnabled = ਵੈੱਬ-ਸਫ਼ੇ ਦੇ ਅਨੁਵਾਦ ਨੂੰ ਸਮਰੱਥ ਜਾਂ ਅਸਮਰੱਥ ਕਰੋ।
 policy-UserMessaging = ਵਰਤੋਂਕਾਰ ਨੂੰ ਕੁਝ ਸੁਨੇਹੇ ਨਾ ਵੇਖਾਓ।
 policy-UseSystemPrintDialog = ਸਿਸਟਮ ਪਰਿੰਟ ਡਾਈਲਾਗ ਨਾਲ ਪਰਿੰਟ ਕਰੋ।
+policy-VisualSearchEnabled = ਦਿੱਖ ਖੋਜ ਨੂੰ ਸਮਰੱਥ ਜਾਂ ਅਸਮਰੱਥ ਕਰੋ।
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = ਵੈਬਸਾਈਟ ਨੂੰ ਬਲਾਕ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ। ਫੌਰਮੈਟ ਤੇ ਹੋਰ ਵੇਰਵਿਆਂ ਲਈ ਦਸਤਾਵੇਜ਼ ਵੇਖੋ।
 policy-Windows10SSO = Microsoft, ਕੰਮ ਤੇ ਸਕੂਲ ਖਾਤਿਆਂ ਲਈ Windows ਇਕਹੇਰੇ ਸਾਈਨ-ਆਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।

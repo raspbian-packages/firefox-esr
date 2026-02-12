@@ -44,9 +44,6 @@ options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-name = રંગ નામ
 
-## Web Console section
-
-
 ## Style Editor section
 
 # The heading
@@ -108,5 +105,5 @@ options-enable-service-workers-http-tooltip =
 options-source-maps-label = સ્રોત નકશા સક્ષમ કરો
 options-source-maps-tooltip =
     .title = જો તમે આ વિકલ્પ સ્રોતોને સક્ષમ કરો છો તો ટૂલ્સમાં સરખાવવામાં આવશે.
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * ફક્ત વર્તમાન સત્ર, પાનાંને ફરી લાવે છે

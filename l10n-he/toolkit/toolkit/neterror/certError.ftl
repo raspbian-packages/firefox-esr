@@ -11,7 +11,7 @@ cert-error-mitm-connection = { -brand-short-name } עושה שימוש בחנו�
 cert-error-trust-unknown-issuer-intro = ייתכן שגורם כלשהו מנסה להתחזות לאתר ולכן מומלץ שלא להמשיך.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
-cert-error-trust-unknown-issuer = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא בוטח ב־{ $hostname } מכיוון שמנפיק אישור האבטחה שלו אינו ידוע, האישור נחתם עצמית או שהשרת לא שולח את אישורי הביניים הנכונים.
+cert-error-trust-unknown-issuer = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא נותן אמון ב־{ $hostname } מכיוון שמנפיק אישור האבטחה שלו אינו ידוע, האישור נחתם עצמית או שהשרת לא שולח את אישורי הביניים הנכונים.
 cert-error-trust-cert-invalid = האישור אינו מהימן מכיוון שהוא הונפק על־ידי רשות אישורים לא חוקית.
 cert-error-trust-untrusted-issuer = האישור אינו מהימן מכיוון שהאישור של הגורם המנפיק אינו מהימן.
 cert-error-trust-signature-algorithm-disabled = האישור אינו מהימן מכיוון שהוא נחתם על־ידי אלגוריתם חתימה שהושבת מכיוון שאינו מאובטח.
@@ -24,19 +24,19 @@ cert-error-trust-certificate-transparency = ‏{ -brand-short-name } לא נות
 cert-error-untrusted-default = האישור לא מגיע ממקור מהימן.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
-cert-error-domain-mismatch = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא בוטח באתר זה מכיוון שהוא משתמש באישור אבטחה שאינו תקף עבור { $hostname }.
+cert-error-domain-mismatch = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא נותן אמון באתר זה מכיוון שהוא משתמש באישור אבטחה שאינו תקף עבור { $hostname }.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $alt-name (string) - Alternate domain name for which the cert is valid.
-cert-error-domain-mismatch-single = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא בוטח באתר זה מכיוון שהוא משתמש באישור אבטחה שאינו תקף עבור { $hostname }. האישור תקף רק עבור <a data-l10n-name="domain-mismatch-link">{ $alt-name }</a>.
+cert-error-domain-mismatch-single = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא נותן אמון באתר זה מכיוון שהוא משתמש באישור אבטחה שאינו תקף עבור { $hostname }. האישור תקף רק עבור <a data-l10n-name="domain-mismatch-link">{ $alt-name }</a>.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $alt-name (string) - Alternate domain name for which the cert is valid.
-cert-error-domain-mismatch-single-nolink = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא בוטח באתר זה מכיוון שהוא משתמש באישור אבטחה שאינו תקף עבור { $hostname }. האישור תקף רק עבור { $alt-name }.
+cert-error-domain-mismatch-single-nolink = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא נותן אמון באתר זה מכיוון שהוא משתמש באישור אבטחה שאינו תקף עבור { $hostname }. האישור תקף רק עבור { $alt-name }.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $subject-alt-names (string) - Alternate domain names for which the cert is valid.
-cert-error-domain-mismatch-multiple = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא בוטח באתר זה מכיוון שהוא משתמש באישור אבטחה שאינו תקף עבור { $hostname }. האישור תקף עבור השמות הבאים בלבד: { $subject-alt-names }
+cert-error-domain-mismatch-multiple = אתרים מוכיחים את זהותם באמצעות אישורי אבטחה. { -brand-short-name } לא נותן אמון באתר זה מכיוון שהוא משתמש באישור אבטחה שאינו תקף עבור { $hostname }. האישור תקף עבור השמות הבאים בלבד: { $subject-alt-names }
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $not-after-local-time (Date) - Certificate is not valid after this time.
@@ -107,9 +107,35 @@ fp-cert-error-code = קוד שגיאה: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = ‏{ -brand-short-name } לא נותן אמון ב־{ $hostname } מכיוון שהוא לא הוכיח שהוא עומד בדרישות השקיפות של אישורים ציבוריים.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = כנראה שכלום, מכיוון שסביר להניח שיש בעיה באתר עצמו.
 fp-learn-more-about-secure-connection-failures = מידע נוסף על כשלים בחיבור מאובטח
 fp-learn-more-about-cert-issues = מידע נוסף על סוגים אלה של בעיות אישורי אבטחה
 fp-learn-more-about-time-related-errors = מידע נוסף על פתרון בעיות של שגיאות הקשורות לזמן
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } נשלל ואינו מהימן יותר.
+cert-error-bad-signature = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שהחתימה על אישור האבטחה שסופק עבור { $hostname } אינה חוקית.
+cert-error-key-pinning-failure = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } משתמש במפתח ציבורי שונה מהמצופה.
+cert-error-bad-der = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } אינו מקודד כראוי.
+cert-error-cert-not-in-name-space = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } אינו עומד באילוצי השם של אישור אבטחה שהנפיק אותו.
+cert-error-inadequate-cert-type = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } אינו מורשה לשימוש על־ידי שרת אינטרנט.
+cert-error-path-len-constraint-invalid = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } מכיל יותר מדי אישורי ביניים בנתיב לאישור הבסיס.
+cert-error-invalid-key = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שלאישור האבטחה שסופק עבור { $hostname } יש מפתח שאינו חוקי. סביר להניח שהוא קטן מדי כדי להיות מאובטח.
+cert-error-unknown-critical-extension = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } מכיל הרחבה קריטית שאינה נתמכת.
+cert-error-extension-value-invalid = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } מכיל הרחבה לא חוקית.
+cert-error-untrusted-issuer = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } סופק על־ידי רשות אישורים שאינה מהימנה יותר.
+cert-error-untrusted-cert = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } מסומן כלא מהימן.
+cert-error-invalid-integer-encoding = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } מכיל קידוד שגוי של מספר שלם וחיובי. הסיבות הנפוצות לכך הן מספרי סידוריים שליליים, שאריות שליליות של RSA וקידודים ארוכים מהנדרש.
+cert-error-unsupported-keyalg = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאישור האבטחה שסופק עבור { $hostname } מכיל סוג מפתח שאינו נתמך.
+cert-error-issuer-no-longer-trusted = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שרשות האישורים שהנפיקה את אישור האבטחה שסופק עבור { $hostname } אינה מהימנה יותר.
+cert-error-signature-algorithm-mismatch = ‏{ -brand-short-name } חסם את הביקור שלך לאתר זה מכיוון שאלגוריתם החתימה של אישור האבטחה שסופק עבור { $hostname } אינו תואם לשדה אלגוריתם החתימה שלו.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = כתובת זו מוגבלת
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = אבוי. יש לנו בעיה למצוא את האתר הזה.
+internet-connection-offline-title = נראה שיש בעיה בחיבור האינטרנט שלך.
 dns-not-found-trr-only-title2 = סיכון אבטחה אפשרי בחיפוש מתחם זה
 dns-not-found-native-fallback-title2 = סיכון אבטחה אפשרי בחיפוש מתחם זה
 fileNotFound-title = קובץ לא נמצא
@@ -134,6 +161,7 @@ contentEncodingError-title = שגיאה בקידוד תוכן
 unsafeContentType-title = סוג קובץ מסוכן
 netReset-title = החיבור הופסק
 netTimeout-title = תם הזמן המוקצב לחיבור
+httpErrorPage-title = נראה שיש בעיה באתר הזה
 serverError-title = נראה שיש בעיה באתר הזה
 unknownProtocolFound-title = כתובת זו אינה מובנת
 proxyConnectFailure-title = השרת המתווך דחה את ההתחברות
@@ -142,6 +170,7 @@ redirectLoop-title = הדף מבצע העברה לא תקינה
 unknownSocketType-title = תגובה לא צפויה מהשרת
 nssFailure2-title = חיבור מאובטח נכשל
 csp-xfo-error-title = ‏{ -brand-short-name } לא יכול לפתוח דף זה
+corruptedContentErrorv2-title = שגיאת תוכן פגום
 corruptedContentError-title = שגיאת תוכן פגום
 sslv3Used-title = לא ניתן להתחבר באופן מאובטח
 inadequateSecurityError-title = החיבור שלך אינו מאובטח
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = הסתרת מתקדם
 fp-certerror-override-exception-button = המשך אל { $hostname } (מסוכן)
 fp-certerror-intro = ‏{ -brand-short-name } זיהה בעיית אבטחה שעלולה להיות חמורה עם <strong>{ $hostname }</strong>. מישהו שמתחזה לאתר יכול לנסות לגנוב דברים כמו פרטי כרטיסי אשראי, ססמאות או דוא״ל.
 fp-certerror-expired-into = ‏{ -brand-short-name } זיהה בעיית אבטחה עם <strong>{ $hostname }</strong>. או שהאתר לא מוגדר נכון או ששעון המכשיר שלך מוגדר לתאריך/שעה הלא נכונים.
+fp-certerror-transparency-intro = מישהו שמתחזה לאתר <strong>{ $hostname }</strong> יכול לנסות לגנוב דברים כמו פרטים על כרטיסי אשראי, ססמאות או הודעות דוא״ל.

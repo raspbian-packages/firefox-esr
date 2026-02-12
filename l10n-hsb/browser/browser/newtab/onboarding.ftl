@@ -25,6 +25,8 @@ return-to-amo-subtitle = Wulkotnje, maće { -brand-short-name }
 return-to-amo-addon-title = Wobstarajće sej nětko <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Rozšěrjenje přidać
 return-to-amo-add-theme-label = Drastu přidać
+return-to-amo-theme-install-complete-label = Drasta je instalowana
+return-to-amo-extension-install-complete-label = Rozšěrjenje je instalowane
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Z { $previous } importo
 mr1-onboarding-theme-header = Přiswojće sej jón
 mr1-onboarding-theme-subtitle = Personalizujće { -brand-short-name } z drastu.
 mr1-onboarding-theme-secondary-button-label = Nic nětko
-newtab-wallpaper-onboarding-title = Wupruwujće barbowy woplusk
-newtab-wallpaper-onboarding-subtitle = Wubjerće pozadkowy wobraz, zo byšće swojemu nowemu rajtarkej nowy napohlad dał.
-newtab-wallpaper-onboarding-primary-button-label = Pozadkowy wobraz nastajić
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systemowa drasta
 mr1-onboarding-theme-label-light = Swětły
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Registrujće so abo přizjewće so pola swojeho k
 
 tab-groups-onboarding-feature-callout-title = Wupruwujće skupiny rajtarkow za mjenje njeporjada a wjace fokusa
 tab-groups-onboarding-feature-callout-subtitle = Organizujće so, ćehńće jedyn rajtark horjeka na druhi, zo byšće wašu prěnju skupinu wutworił.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Namakajće kóždy čas swoje skupiny rajtarkow w meniju Wšě rajtarki nalistować.
+tab-groups-onboarding-create-group-title-2 = Namakajće swoje skupiny rajtarkow tu kóždy čas.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Pytajće za swojimi skupinami, zo byšće je w adresowym polu namakał.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Hdyž skupinu rajtarkow začinjeće, wočińće ju zaso kóždy čas z menija Wšě rajtarki nalistować.
+tab-groups-onboarding-saved-groups-title-2 = Hdyž skupinu rajtarkow začinjeće, móžeće ju tu kóždy čas zaso wočinić.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Pytajće za swojimi začinjenymi skupinami, zo byšće je w adresowym polu namakał.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Wočińće zaso kóždy čas swoje skupiny rajtarkow z menija Wšě rajtarki nalistować.
+tab-groups-onboarding-session-restore-title = Wočińće zaso swoje skupiny rajtarkow tu kóždy čas.
+tab-groups-onboarding-dismiss = W porjadku
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,107 @@ multi-profile-spotlight-cta = Profil załožić
 multi-profile-callout-title = Załožće rozdźělne profile za dźěło a zabawu
 multi-profile-callout-subtitle = Profile wam zmóžnjeja, waše přehladowanske informacije kaž pytansku historiju a hesła dospołnje separatnje wobchować.
 multi-profile-callout-cta = Profil załožić
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Sćehńće, synchronizujće, běh!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Skenujće QR-kod, zo byšće { -brand-product-name } za mobilne graty sćahnył. Hdyž sće jón instalował, wubjerće „Z mobilnym gratom synchronizować“, zo byšće po puću přistup k swojim hesłam, zapołožkam a wjace dóstał.
+dismiss-button-label = Zaćisnyć
+sync-to-mobile-button-label = Z mobilnym gratom synchronizować
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-kod za sćehnjenje { -brand-product-name } za mobilny grat
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Aktualizujeće na Windows 11?
+    Dajće nam waše daty { -brand-product-name } zawěsćić.
+create-backup-screen-1-subtitle = Škitajće awtomatisce waše hesła, zapołožki a wjace za 1 mjeńšinu abo 2 mjeńšinje.
+create-backup-screen-1-flair = Doporučeny
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Dalše informacije</a>
+create-backup-screen-1-sync-label = Z { -brand-product-name } synchronizować
+create-backup-screen-1-sync-body = Zawěsćuje wšě přizjewjene graty
+create-backup-screen-1-backup-label = Na PC zawěsćić
+create-backup-screen-1-backup-body = Składuje na wašim graće abo OneDrive
+create-backup-select-tile-button-label = Wubrać
+create-backup-back-button-label = Wróćo
+create-backup-show-fewer =
+    .label = Mjenje wot nich pokazać
+create-backup-screen-2-title = Wubjerće daty { -brand-product-name }, kotrež so maja zawěsćić
+create-backup-screen-2-subtitle = Traje jenož mjeńšinu. Waše daty so jónu wob dźeń zawěsćuja.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Lochka konfiguracija
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Zapołožki, historija, nastajenja a wjace
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Njewobsahuje hesła a płaćenja
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Njezaklučowany
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Wšě daty
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Wobsahuje hesła a płaćenja
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Z hesłom zaklučowany
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Hdźe chceće swoje zawěsćenje składować?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Hesło za zawěsćensku dataju wutworić
+create-backup-screen-3-subtitle = Trěbne za zaklučowanje wašich datow. Składujće je na městnje, na kotrež so dopominaće.
+fx-backup-opt-in-header = Městno dataje wubrać
+fx-backup-opt-in-filepath-label = Wubjerće městno, kotrež chceće do noweho grata přenošować, na přikład OneDrive.
+fx-backup-opt-in-create-password-label = Hesło zapodać
+fx-backup-opt-in-confirm-btn-label = Dale
+fx-backup-opt-in-cancel-btn-label = Wróćo
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Waše zawěsćenje je planowane
+fx-backup-confirmation-screen-close-button = Začinić
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Wšě přehladowanske daty wobsahowane
+fx-backup-confirmation-screen-all-data-item-text-2 = Na wašim graće składowane
+fx-backup-confirmation-screen-all-data-item-text-3 = Zaklučowane a přez hesło škitane
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Zapołožki, historija, nastajenja a druhe daty wobsahowane
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Na wašim graće składowane
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Hesła a płaćenja njewobsahowane
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Dźiće k <a data-l10n-name="settings">nastajenjam</a>, zo byšće sensibelne daty zapřijał.
+fx-backup-confirmation-screen-item-subtext-1 = Waše zawěsćenje budźe za mało mjeńšin započinać a wuwjedźe so jónu wob dźeń. Móžeće procesej w <a data-l10n-name="settings">nastajenjach</a> slědować.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } budźe waše zawěsćenje pytać, jeli dyrbiće znowa instalować.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Ze zawěsćenja wobnowić
+restore-from-backup-title = Dóstańmy { -brand-short-name } wróćo, kaž so wam spodoba
+restore-from-backup-subtitle = Wobnowće wšě waše zapołožki, historiju a druhe daty, zo byšće so k přehladowanju wróćił.
+restore-from-backup-secondary-button = Njewobnowić
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Smy wróćo! Waše daty { -brand-short-name } su so wobnowili.
+restored-from-backup-success-with-checklist-subtitle = Chceće swój najlubši wobhladowak z fokusom na priwatnosć jenož jedyn klik preč wobchować?
+restored-from-backup-success-no-checklist-subtitle = Móžeće zawěsćenje za tutón grat w <a data-l10n-name="settings">nastajenjach</a> zmóžnić.
+restored-from-backup-success-with-checklist-primary-button = Składować a pokročować
+restored-from-backup-success-with-checklist-secondary-button = Tutón krok přeskočić
+restored-from-backup-success-no-checklist-primary-button = Dale
+restored-from-backup-error-title = Hmm, je problem z wašej zawěsćenskej dataju.
+restored-from-backup-error-subtitle = Jeli druhu zawěsćensku dataju { -brand-short-name } maće, spytajće z njeje wobnowić. <a data-l10n-name="restore-problems">Maće hišće problemy?</a>
+restored-from-backup-error-primary-button = Začinić
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Přiměrće swoje dožiwjenje { -brand-short-name }
+onboarding-personalization-subtitle = Wotmołwće na někotre prašenja a poručamy funkcije a rozšěrjenja, zo bychmy waše wužiće { -brand-short-name } polěpšili.
+onboarding-personalization-use-case-title = Za čo budźeće { -brand-short-name } wužiwać?
+onboarding-personalization-use-case-personal-option = Wosobinski
+onboarding-personalization-use-case-school-option = Šula
+onboarding-personalization-use-case-work-option = Słužbny
+onboarding-personalization-motivation-title = Kotre funkcije { -brand-short-name } su najwažniše za was?
+onboarding-personalization-motivation-privacy-option = Priwatnosć a wěstota
+onboarding-personalization-motivation-productivity-option = Produktiwita
+onboarding-personalization-motivation-other-option = Druhe

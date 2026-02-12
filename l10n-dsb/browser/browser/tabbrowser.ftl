@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Rejtarik zacyniś
 tabbrowser-menuitem-close =
     .label = Zacyniś
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } – { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -175,8 +188,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Toś ten dialogowy kašćik wěcej n
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Glědajśo
-tabbrowser-confirm-close-duplicate-tabs-text = Wóstajijomy slědny aktiwny rejtarik wócynjony
 tabbrowser-confirm-close-all-duplicate-tabs-title = Dwójne rejtariki zacyniś?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Zacynijomy dwójne rejtariki w toś tom woknje. Slědny aktiwny
@@ -224,6 +235,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Rejtarik nimy cyniś
@@ -231,8 +245,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Rejtarik głosny cyniś
 tabbrowser-manager-close-tab =
     .tooltiptext = Rejtarik zacyniś
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Zacynjony
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Aktualne wokno
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Rejtarikowu kupku napóraś
 tab-group-editor-title-edit = Rejtarikowu kupku zastojaś
@@ -244,22 +266,40 @@ tab-group-editor-cancel =
     .accesskey = P
 tab-group-editor-color-selector =
     .aria-label = Barwa kupki rejtarikow
-tab-group-editor-color-selector-blue = Módry
-tab-group-editor-color-selector-purple = Purpurowy
-tab-group-editor-color-selector-cyan = Cyan
-tab-group-editor-color-selector-orange = Oranžowy
-tab-group-editor-color-selector-yellow = Žołty
-tab-group-editor-color-selector-pink = Pink
-tab-group-editor-color-selector-green = Zeleny
-tab-group-editor-color-selector-gray = Šery
-tab-group-editor-color-selector-red = Cerwjeny
-tab-group-menu-header = Kupki rejtarikow
+tab-group-editor-color-selector2-blue = Módry
+    .title = Módry
+tab-group-editor-color-selector2-purple = Purpurowy
+    .title = Purpurowy
+tab-group-editor-color-selector2-cyan = Cyan
+    .title = Cyan
+tab-group-editor-color-selector2-orange = Oranžowy
+    .title = Oranžowy
+tab-group-editor-color-selector2-yellow = Žołty
+    .title = Žołty
+tab-group-editor-color-selector2-pink = Pink
+    .title = Pink
+tab-group-editor-color-selector2-green = Zeleny
+    .title = Zeleny
+tab-group-editor-color-selector2-gray = Šery
+    .title = Šery
+tab-group-editor-color-selector2-red = Cerwjeny
+    .title = Cerwjeny
+tab-group-description = { $tabGroupName } – kupka rejtarikow
+tab-group-label-tooltip-collapsed = { $tabGroupName } – schowany
+tab-group-label-tooltip-expanded = { $tabGroupName } – pokazany
+tab-group-preview-name =
+    .aria-label = Rejtariki w schowanej kupce
 tab-context-unnamed-group =
     .label = Kupka bźez mjenja
 tab-group-name-default = Kupka bźez mjenja
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Lisćina rejtarikow jo wócynjona
+tab-group-preview-closed-description = Lisćina rejtarikow jo zacynjona
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -281,6 +321,8 @@ tab-context-move-tab-to-group =
            *[other] Kupce { $tabCount } rejtarikow pśidaś
         }
     .accesskey = K
+tab-context-move-tab-to-group-saved-groups =
+    .label = Zacynjone kupki
 tab-group-editor-action-new-tab =
     .label = Nowy rejtarik w kupce
 tab-group-editor-action-new-window =
@@ -308,6 +350,18 @@ tab-context-ungroup-tab =
            *[other] Z { $groupCount } kupkow wótwónoźeś
         }
     .accesskey = Z
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } dalšny rejtarik
+        [two] { $tabCount } dalšnej rejtarika
+        [few] { $tabCount } dalšne rejtariki
+       *[other] { $tabCount } dalšnych rejtarikow
+    }
 
 ## Open/saved tab group context menu
 
@@ -333,3 +387,33 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Kupku w nowem woknje wócyniś
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Rozdźělony naglěd
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Rozdźělony naglěd pśidaś
+    .accesskey = d
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = W rozdźělonem naglěźe wócyniś
+    .accesskey = d
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Rozdźělony naglěd wótźěliś
+    .accesskey = d
+tab-context-badge-new = Nowy
+
+## Manage Split View (icon in the address bar & three-dot menu in the footer)
+
+# "Separate" is a verb, as in "separate the split view tabs and display them normally".
+split-view-menuitem-separate-tabs =
+    .label = Rejtariki źěliś
+# "Reverse" is a verb, as in "reverse the order of split view tabs".
+split-view-menuitem-reverse-tabs =
+    .label = Rejtariki pśewobrośiś
+split-view-menuitem-close-both-tabs =
+    .label = Wobej rejtarika zacyniś

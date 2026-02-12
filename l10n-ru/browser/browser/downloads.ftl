@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Сведения о загрузке
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Файлы остаются на вашем устройстве
+downloads-private-browsing-message = Любой, кто использует это устройство, сможет видеть загрузки, даже если вы закроете все приватные окна.
+downloads-private-browsing-delete-button =
+    .label = Автоматически удалять файлы
+    .accesskey = В
+downloads-private-browsing-accept-button =
+    .label = Понятно
+    .accesskey = П
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.
@@ -195,7 +207,7 @@ downloads-files-not-downloaded =
        *[many] { $num } файлов не загружены.
     }
 downloads-blocked-from-url = Загрузки с { $url } заблокированы.
-downloads-blocked-download-detailed-info = { $url } пытался автоматически загрузить большое число файлов. Возможно, сайт был неисправен или пытался разместить спам-файлы на вашем устройстве.
+downloads-blocked-download-detailed-info = { $url } пытался автоматически скачать большое число файлов. Возможно, сайт был неисправен или пытался разместить спам-файлы на вашем устройстве.
 
 ##
 

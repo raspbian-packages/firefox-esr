@@ -6,11 +6,4 @@
 ##
 ## Localization for remote types defined in RemoteType.h
 
-
-##
-## Localization for Gecko process types defined in GeckoProcessTypes.h
-
-
-##
-## Other
-
+process-type-extension = ထပ်တိုးအပို

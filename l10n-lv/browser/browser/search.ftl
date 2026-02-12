@@ -34,7 +34,10 @@ removed-search-engine-message = <strong>Jūsu noklusējuma meklētājs ir mainī
 removed-search-engine-message2 = <strong>Jūsu noklusējuma meklētājs ir mainīts.</strong> { $oldEngine } vairs nav pieejams kā noklusējuma { -brand-short-name } meklētājs. { $newEngine } tagad ir jūsu noklusējuma meklētājs. Lai pārslēgtos uz citu noklusējuma meklētāju, atveriet iestatījumus.
 remove-search-engine-button = Labi
 
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
+## The following strings are used as input labels.
 
+add-engine-window =
+    .title = Pievienot meklētāju
+    .style = min-width: 32em;
+add-engine-button = Pievienojiet pielāgotu meklētāju
+add-engine-name = Meklētāja nosaukums

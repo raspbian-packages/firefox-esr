@@ -60,6 +60,14 @@ perftools-button-add-directory = הוספת ספרייה
 perftools-button-remove-directory = הסרת הפריט הנבחר
 perftools-button-edit-settings = עריכת הגדרות…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = פעולות נוספות
+perftools-menu-more-actions-restart-with-profiling = הפעלה מחדש של { -brand-shorter-name } עם יצירת פרופיל אתחול מופעל
+perftools-menu-more-actions-copy-for-startup = העתק משתני סביבה עבור יצירת פרופיל אתחול
+perftools-menu-more-actions-copy-for-perf-tests = העתקת פרמטרים למבחני ביצועים
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -70,9 +78,6 @@ perftools-thread-img-decoder =
     .title = תהליכוני פענוח תמונה
 perftools-thread-dns-resolver =
     .title = פתרון כתובות מול ה־DNS מתרחש בתהליכון הזה
-
-##
-
 
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## devtools.performance.new-panel-onboarding preference is true.
@@ -99,6 +104,8 @@ perftools-presets-graphics-label = Graphics
 perftools-presets-graphics-description = ערכה לחקירת באגים גרפיים ב־{ -brand-shorter-name }.
 perftools-presets-media-label = Media
 perftools-presets-media-description2 = ערכה לחקירת באגים בשמע ווידאו ב־{ -brand-shorter-name }.
+perftools-presets-ml-label = למידת מכונה
+perftools-presets-ml-description2 = ערכה לחקירת באגים של למידת מכונה ב־{ -brand-shorter-name }.
 perftools-presets-networking-label = Networking
 perftools-presets-networking-description = ערכה לחקירת באגים של רשת או תקשורת ב־{ -brand-shorter-name }.
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -107,6 +114,3 @@ perftools-presets-power-description = ערכה לחקירת באגים של צר
 perftools-presets-debug-label = ניפוי שגיאות
 perftools-presets-debug-description = ערכה לניפוי שגיאות ב־{ -brand-shorter-name }. בעל תקורה גבוהה, אין להשתמש לעבודה על ביצועים אלא להשתמש להתמקדות על התנהגות הדפדפן.
 perftools-presets-custom-label = התאמה אישית
-
-##
-

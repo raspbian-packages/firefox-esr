@@ -25,6 +25,8 @@ return-to-amo-subtitle = Harika! { -brand-short-name } yüklendi
 return-to-amo-addon-title = Şimdi <img data-l10n-name="icon"/> <b>{ $addon-name }</b> uzantısına bir bakalım.
 return-to-amo-add-extension-label = Uzantıyı ekle
 return-to-amo-add-theme-label = Temayı ekle
+return-to-amo-theme-install-complete-label = Tema yüklendi
+return-to-amo-extension-install-complete-label = Uzantı yüklendi
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous } tarayıc�
 mr1-onboarding-theme-header = Zevkinize göre ayarlayın
 mr1-onboarding-theme-subtitle = { -brand-short-name } tarayıcınızı bir temayla kişiselleştirin.
 mr1-onboarding-theme-secondary-button-label = Şimdi değil
-newtab-wallpaper-onboarding-title = Farklı renkleri deneyin
-newtab-wallpaper-onboarding-subtitle = Yeni Sekme sayfanıza yeni bir görünüm kazandırmak için bir duvar kâğıdı seçin.
-newtab-wallpaper-onboarding-primary-button-label = Duvar kâğıdını ayarla
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Sistem teması
 mr1-onboarding-theme-label-light = Açık
@@ -186,8 +185,8 @@ mr2022-onboarding-welcome-pin-subtitle = { -brand-short-name } tarayıcısını 
 # Primary button string used on welcome page for when Firefox is not pinned.
 mr2022-onboarding-pin-primary-button-label =
     { PLATFORM() ->
-        [macos] { -brand-short-name } uygulamasını Dock’ta tut
-       *[other] { -brand-short-name } uygulamasını görev çubuğuma sabitle
+        [macos] { -brand-short-name }  tarayıcısını Dock’a sabitle
+       *[other] { -brand-short-name } tarayıcısını görev çubuğuna sabitle
     }
 # Primary button string used on welcome page for when Firefox is not pinned on MSIX
 mr2022-onboarding-pin-primary-button-label-msix = { -brand-short-name } uygulamasını görev çubuğuna ve başlat menüsüne sabitle
@@ -392,8 +391,12 @@ onboarding-new-tabs-title = Sekmelerinizi nerede görmek istersiniz?
 onboarding-new-tabs-subtitle = İstediğiniz zaman kenar çubuğu ayarlarından değiştirebilirsiniz.
 # Setup screen for vertical tabs - too many tabs variation
 onboarding-many-tabs-title = Senin sekmelerin, senin kararın
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Çok fazla açık sekmeniz mi var? Daha akıcı bir görünüm için sekmeleri kenara almayı deneyin. İsterseniz sekmelerinizi üstte tutmaya devam edebilir, tercihinizi istediğiniz zaman değiştirebilirsiniz.
 # Setup screen for vertical tabs - focused variation
 onboarding-focused-tabs-title = Sekme düzeninizi seçin
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Odaklanmanızı kolaylaştıracak, akıcı bir görünüm için sekmeleri kenara almayı deneyin. İsterseniz sekmelerinizi üstte tutmaya devam edebilir, tercihinizi istediğiniz zaman değiştirebilirsiniz.
 # Text underneath an image used for selecting browser tabs to appear on the side of the browser.
 onboarding-new-vertical-tabs-label = Kenarda
 # Text underneath an image used for selecting browser tabs to appear at the top of the browser.
@@ -432,21 +435,138 @@ onboarding-genai-sidebar-secondary-button = Gezinmeye başla
 
 onboarding-checklist-title = { -brand-short-name } kurulumunu tamamlayın
 onboarding-checklist-subtitle = Tarayıcınızdan en iyi şekilde yararlanmak için bu adımları tamamlayın.
-onboarding-checklist-set-default = { -brand-short-name } tarayıcısını varsayılan tarayıcım yap
-onboarding-checklist-pin = { -brand-short-name } tarayıcısını görev çubuğuma sabitle
-onboarding-checklist-import = Önceki tarayıcımdan içe aktar
-onboarding-checklist-extension = Bir uzantı ekle
-onboarding-checklist-sign-up = Hesap aç veya hesaba giriş yap
+onboarding-checklist-set-default = { -brand-short-name } tarayıcısını varsayılan tarayıcınız yapın
+onboarding-checklist-pin = { -brand-short-name } tarayıcısını görev çubuğuna sabitleyin
+onboarding-checklist-import = Önceki tarayıcınızdaki verileri içe aktarın
+onboarding-checklist-extension = Bir uzantı ekleyin
+onboarding-checklist-sign-up = Hesap açın veya hesaba giriş yapın
 
 ## Tab Groups feature onboarding strings
 
 tab-groups-onboarding-feature-callout-title = Dağınıklığı azaltarak daha iyi odaklanmak için sekme gruplarını deneyin
 tab-groups-onboarding-feature-callout-subtitle = İlk grubunuzu oluşturmak için sekmeleri üst üste sürükleyin.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Sekme gruplarınızı istediğiniz zaman “Tüm sekmeleri listele“ menüsünde bulabilirsiniz.
+tab-groups-onboarding-create-group-title-2 = Sekme gruplarınıza istediğiniz zaman buradan ulaşabilirsiniz.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Gruplarınızı adres çubuğundan arayarak bulabilirsiniz.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Bir sekme grubunu kapattığınızda istediğiniz zaman “Tüm sekmeleri listele“ menüsünden yeniden açabilirsiniz.
+tab-groups-onboarding-saved-groups-title-2 = Bir sekme grubunu kapatırsanız istediğiniz zaman buradan yeniden açabilirsiniz.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Kapattığınız grupları adres çubuğundan arayarak bulabilirsiniz.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = İstediğiniz zaman “Tüm sekmeleri listele“ menüsünden sekme gruplarınızı yeniden açabilirsiniz.
+tab-groups-onboarding-session-restore-title = Sekme gruplarınızı istediğiniz zaman buradan yeniden açabilirsiniz.
+tab-groups-onboarding-dismiss = Tamam
 
 ## Multi Profiles feature onboarding messages
 
 multi-profile-spotlight-title = { -brand-product-name } profilleriyle tanışın
+multi-profile-spotlight-body = İş ve eğlence amaçlı gezinti arasında kolayca geçiş yapın. Profiller, düzeninizi koruyabilmeniz için gezinti bilgilerinizi (arama geçmişi ve parolalar da dahil) tamamen ayrı tutar.
 multi-profile-spotlight-cta = Profil oluşturun
 multi-profile-callout-title = İş ve eğlence için farklı profiller oluşturun
 multi-profile-callout-subtitle = Profiller, arama geçmişi ve parolalar gibi gezinti bilgilerinizi tamamen ayrı tutmanızı sağlar.
 multi-profile-callout-cta = Profil oluştur
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = İndirin, eşitleyin ve gezinmeye başlayın!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = { -brand-product-name } uygulamasını mobil cihazınıza indirmek için QR kodunu okutun. İndirdikten sonra parolalarınıza, yer imlerinize ve diğer bilgilerinize erişmek için “Mobil cihazla eşitle” seçeneğini seçin.
+dismiss-button-label = Kapat
+sync-to-mobile-button-label = Mobil cihazla eşitleyin
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Mobil cihazlar için { -brand-product-name }’u indirebileceğiniz QR kodu
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Windows 11’e mi geçiyorsunuz?
+    { -brand-product-name } verilerinizi yedekleyelim.
+create-backup-screen-1-subtitle = Parolalarınızı, yer imlerinizi ve daha fazlasını 1–2 dakikalık bir işlemle otomatik korumaya alın.
+create-backup-screen-1-flair = Önerilen
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Daha fazla bilgi alın</a>
+create-backup-screen-1-sync-label = { -brand-product-name } ile eşitle
+create-backup-screen-1-sync-body = Giriş yapılmış cihazların hepsini yedekler
+create-backup-screen-1-backup-label = Bilgisayara yedekle
+create-backup-screen-1-backup-body = Cihazınıza veya OneDrive’a kaydeder
+create-backup-select-tile-button-label = Seç
+create-backup-back-button-label = Geri
+create-backup-show-fewer =
+    .label = Bu gibi mesajları daha az göster
+create-backup-screen-2-title = Yedeklenecek { -brand-product-name } verilerinizi seçin
+create-backup-screen-2-subtitle = Yalnızca bir dakikanızı alacak. Verileriniz günde bir kere yedeklenecek.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Kolay kurulum
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Yer imleri, geçmiş, ayarlar ve daha fazlası
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Parolalar ve ödeme yöntemleri hariç
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Şifrelenmemiş
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Tüm veriler
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Parolalar ve ödeme yöntemleri dahil
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Parolayla şifrelenmiş
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Yedeğinizi nereye kaydetmek istersiniz?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Yedek dosyası parolası oluştur
+create-backup-screen-3-subtitle = Verilerinizi şifrelemek için gereklidir. Unutmayacağınız bir yerde saklayın.
+fx-backup-opt-in-header = Dosya konumunu seçin
+fx-backup-opt-in-filepath-label = Yeni cihazınıza aktarmayı planladığınız bir yer (örn. OneDrive) seçin.
+fx-backup-opt-in-create-password-label = Parolayı girin
+fx-backup-opt-in-confirm-btn-label = İleri
+fx-backup-opt-in-cancel-btn-label = Geri
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Yedeklemeniz planlandı
+fx-backup-confirmation-screen-close-button = Kapat
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Tüm gezinti verileri dahil
+fx-backup-confirmation-screen-all-data-item-text-2 = Cihazınıza kaydedilecek
+fx-backup-confirmation-screen-all-data-item-text-3 = Şifrelenmiş ve parola korumalı
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Yer imleri, geçmiş, ayarlar ve diğer veriler dahil
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Cihazınıza kaydedilecek
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Parolalar ve ödeme yöntemleri hariç
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Hassas verileri dahil etmek için <a data-l10n-name="settings">Ayarlar</a>’a gidin.
+fx-backup-confirmation-screen-item-subtext-1 = Yedeklemeniz birkaç dakika içinde başlayacak ve günde bir kere çalışacak. İlerlemeyi <a data-l10n-name="settings">Ayarlar</a>’dan kontrol edebilirsiniz.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } tarayıcınızı yeniden yüklemeniz gerekirse yedekler otomatik aranacaktır.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Yedekten geri yükle
+restore-from-backup-title = { -brand-short-name } tarayıcısını sevdiğiniz eski haline döndürelim
+restore-from-backup-subtitle = Yer imlerinizi, geçmişinizi ve diğer verilerinizi geri yükleyerek gezinmeye kaldığınız yerden devam edin.
+restore-from-backup-secondary-button = Geri yükleme yapma
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Her şey hazır! { -brand-short-name } verileriniz geri yüklendi.
+restored-from-backup-success-with-checklist-subtitle = Gizlilik odaklı favori tarayıcınızı bir tık kadar yakınınızda tutmak ister misiniz?
+restored-from-backup-success-no-checklist-subtitle = Bu cihaz için yedeklemeyi <a data-l10n-name="settings">Ayarlar</a>’dan etkinleştirebilirsiniz.
+restored-from-backup-success-with-checklist-primary-button = Kaydet ve devam et
+restored-from-backup-success-with-checklist-secondary-button = Bu adımı atla
+restored-from-backup-success-no-checklist-primary-button = Devam et
+restored-from-backup-error-title = Yedekleme dosyanızla ilgili bir sorun var.
+restored-from-backup-error-subtitle = Başka bir { -brand-short-name } yedek dosyanız varsa onu geri yüklemeyi deneyin. <a data-l10n-name="restore-problems">Hâlâ sorun mu yaşıyorsunuz?</a>
+restored-from-backup-error-primary-button = Kapat
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = { -brand-short-name } deneyiminizi özelleştirin
+onboarding-personalization-subtitle = { -brand-short-name } kullanımınızı geliştirecek özellikler ve uzantılar önerebilmemiz için birkaç soruyu yanıtlayın.
+onboarding-personalization-use-case-title = { -brand-short-name } tarayıcısını ne için kullanacaksınız?
+onboarding-personalization-use-case-personal-option = Kişisel
+onboarding-personalization-use-case-school-option = Okul
+onboarding-personalization-use-case-work-option = İş
+onboarding-personalization-motivation-title = Hangi { -brand-short-name } özellikleri sizin için en önemli?
+onboarding-personalization-motivation-privacy-option = Gizlilik ve güvenlik
+onboarding-personalization-motivation-productivity-option = Verimlilik
+onboarding-personalization-motivation-other-option = Diğer

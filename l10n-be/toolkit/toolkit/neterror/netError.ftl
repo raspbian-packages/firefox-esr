@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Злучыцца з сеткай
 neterror-dns-not-found-title = Сервер не знойдзены
 neterror-malformed-uri-page-title = Несапраўдны URL
 general-body-title = Будзьце асцярожныя. Нешта выглядае не так.
+problem-with-this-site-title = Здаецца, з гэтым сайтам ёсць праблема
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = Калі ніводная старонка не
 neterror-load-error-firewall = Калі ваш камп'ютар ці сетка ахоўваюцца фаерволам ці проксі, пераканайцеся, што { -brand-short-name } дазволена мець доступ да сеціва.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Калі вы спрабуеце загрузіць старонку з лакальнай сеткі, пераканайцеся, што { -brand-short-name } атрымаў дазволы на лакальную сетку ў наладах прыватнасці і бяспекі macOS.
+neterror-http-error-page = Праверце, ці правільна вы ўвялі адрас сайта.
 neterror-captive-portal = Вы павінны ўвайсці ў гэту сетку перад тым, як зможаце атрымаць доступ у Інтэрнэт.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Калі вы ўвялі праві
 neterror-dns-not-found-hint-try-again = Паўтарыць спробу пазней
 neterror-dns-not-found-hint-check-network = Праверыць падлучэнне да сеткі
 neterror-dns-not-found-hint-firewall = Праверыць, ці мае { -brand-short-name } дазвол на доступ да Інтэрнэту (магчыма, вы падключаны, але за брандмаўарам)
+neterror-dns-not-found-offline-hint-header = <strong>Што вы можаце з гэтым зрабіць?</strong>
+neterror-dns-not-found-offline-hint-different-device = Паспрабуйце падключыцца на іншай прыладзе.
+neterror-dns-not-found-offline-hint-modem = Праверце свой мадэм ці маршрутызатар.
+neterror-dns-not-found-offline-hint-reconnect = Адключыцеся і зноў падключыцеся да Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Нечаканая праблема
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } не можа абараніць ваш запыт на адрас гэтага сайта праз нашу давераную службу DNS. Вось чаму:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } не можа абараніць ваш запыт на адрас гэтага сайта праз нашага абароненага правайдара DNS. Вось чаму:
 neterror-dns-not-found-native-fallback-heuristic = DNS па HTTPS быў адключаны ў вашай сетцы.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } не змог злучыцца з { $trrDomain }.
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = Упэўніцеся, што нала�
 neterror-proxy-connect-failure-contact-admin = Звяжыцеся з адміністратарам сеткі, каб ўпэўніцца, што проксі-сервер працуе.
 neterror-content-encoding-error = Паведамце, калі ласка, уладальнікам вэб-сайта пра гэтую праблему.
 neterror-unsafe-content-type = Паведамце, калі ласка, уладальнікам вэб-сайта пра гэтую праблему.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } не давярае { $hostname }, таму што злучэнне не бяспечнае. Паспрабуйце змяніць URL на HTTPS.
 neterror-nss-failure-not-verified = Старонка, якую вы спрабуеце адкрыць, не можа быць паказана, бо сапраўднасць атрыманых звестак нельга пацвердзіць.
 neterror-nss-failure-contact-website = Калі ласка, паведаміце ўладальніку сайта пра гэтую праблему.
 # Variables:
@@ -159,3 +167,13 @@ certerror-coep-learn-more = Даведацца больш пра Палітык�
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Код памылкі: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } не можа стварыць бяспечнае злучэнне з серверам па адрасе { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Здаецца, гэты сайт выкарыстоўвае старое праграмнае забеспячэнне з вядомымі праблемамі бяспекі.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Пераканайцеся, што вы карыстаецеся апошняй версіяй { -brand-short-name }. Перайдзіце ў меню Даведка > Пра { -brand-short-name }. Калі вы карыстаецеся апошняй версіяй { -brand-short-name }, праблема, хутчэй за ўсё, звязана з самім сайтам.

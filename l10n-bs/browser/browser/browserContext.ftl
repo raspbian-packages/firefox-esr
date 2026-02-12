@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Spasi link u { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Kopiraj Email adresu
@@ -162,16 +160,14 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Kopiraj link
     .accesskey = L
+main-context-menu-preview-link =
+    .label = Pregled linka
+    .accesskey = r
 # "Copy Clean Link" means that Firefox will remove things from the link you
 # copied, like items that identify you for advertising purposes, and other items
 # sites add into URLs to help them deliver a certain browsing experience.
 main-context-menu-copy-clean-link =
     .label = Kopiraj čistu vezu
-    .accesskey = u
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Kopiraj link bez praćenja stranice
     .accesskey = u
 
 ## Media (video/audio) controls
@@ -323,6 +319,9 @@ main-context-menu-manage-passwords =
 main-context-menu-keyword =
     .label = Dodaj ključnu riječ za ovu pretragu…
     .accesskey = k
+main-context-menu-add-engine =
+    .label = Dodaj pretraživač
+    .accesskey = S
 main-context-menu-link-send-to-device =
     .label = Pošalji link na uređaj
     .accesskey = u
@@ -393,3 +392,5 @@ main-context-menu-open-link-in-container-tab =
 main-context-menu-reveal-password =
     .label = Otkrij lozinku
     .accesskey = v
+# The label of a badge shown in menu items to call out new features.
+main-context-menu-new-feature-badge = Novo

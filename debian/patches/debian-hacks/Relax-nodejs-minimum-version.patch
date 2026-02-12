@@ -7,12 +7,12 @@ Subject: Relax nodejs minimum version
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/python/mozbuild/mozbuild/nodeutil.py b/python/mozbuild/mozbuild/nodeutil.py
-index 42f2627..c0e766c 100644
+index 3721929..3b5d37b 100644
 --- a/python/mozbuild/mozbuild/nodeutil.py
 +++ b/python/mozbuild/mozbuild/nodeutil.py
-@@ -11,7 +11,7 @@ from mozfile import which
+@@ -10,7 +10,7 @@ from mozboot.util import get_tools_dir
+ from mozfile import which
  from packaging.version import Version
- from six import PY3
  
 -NODE_MIN_VERSION = Version("12.22.12")
 +NODE_MIN_VERSION = Version("12.22")

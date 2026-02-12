@@ -72,10 +72,3 @@ clockSkewError-title = O releuio do computer o l'é erou
 networkProtocolError-title = Erô de protocòllo de ræ
 nssBadCert-title = Atençion: gh'é 'n reizego de seguessa potensiâ
 nssBadCert-sts-title = Conescion fermâ: reizego potensiâ de seguessa
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

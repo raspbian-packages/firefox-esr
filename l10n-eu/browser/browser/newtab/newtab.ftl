@@ -8,6 +8,9 @@
 newtab-page-title = Fitxa berria
 newtab-settings-button =
     .title = Pertsonalizatu fitxa berriaren orria
+newtab-customize-panel-icon-button =
+    .title = Pertsonalizatu orri hau
+newtab-customize-panel-icon-button-label = Pertsonalizatu
 newtab-personalize-settings-icon-label =
     .title = Pertsonalizatu fitxa berria
     .aria-label = Ezarpenak
@@ -53,6 +56,9 @@ newtab-topsites-add-shortcut-header = Lasterbide berria
 newtab-topsites-edit-topsites-header = Editatu maiz erabilitako gunea
 newtab-topsites-edit-shortcut-header = Editatu lasterbidea
 newtab-topsites-add-shortcut-label = Gehitu lasterbidea
+newtab-topsites-add-shortcut-title =
+    .title = Gehitu lasterbidea
+    .aria-label = Gehitu lasterbidea
 newtab-topsites-title-label = Izenburua
 newtab-topsites-title-input =
     .placeholder = Idatzi izenburua
@@ -117,12 +123,20 @@ newtab-menu-delete-pocket = Ezabatu { -pocket-brand-name }-etik
 newtab-menu-archive-pocket = Artxibatu { -pocket-brand-name }-en
 newtab-menu-show-privacy-info = Gure babesleak eta zure pribatutasuna
 newtab-menu-about-fakespot = { -fakespot-brand-name }(r)i buruz
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = Jakinarazi
 # Context menu option to personalize New Tab recommended stories by blocking a section of stories,
 # e.g. "Sports". "Block" is a verb here.
 newtab-menu-section-block = Blokeatu
 # "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
 # e.g. Following the travel section of stories.
 newtab-menu-section-unfollow = Ez jarraitu gaia
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = Kudeatu babesleen edukia
+newtab-menu-our-sponsors-and-your-privacy = Gure babesleak eta zure pribatutasuna
+newtab-menu-report-this-ad = Eman iragarki honen berri
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -183,6 +197,8 @@ newtab-label-sponsored-by = Babeslea: { $sponsor }
 #   $source (string) - The name of a company or their domain
 #   $timeToRead (number) - The estimated number of minutes to read this story
 newtab-label-source-read-time = { $source } · { $timeToRead } min
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = Babesleak hornituta
 
 ## Section Menu: These strings are displayed in the section context menu and are
 ## meant as a call to action for the given section.
@@ -213,6 +229,8 @@ newtab-section-header-recent-activity = Azken jarduera
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } hornitzaileak gomendatuta
 newtab-section-header-stories = Hausnartzeko moduko istorioak
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Gaurko hautua zuretzat
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -221,6 +239,8 @@ newtab-empty-section-highlights = Hasi nabigatzen eta azkenaldian bisitatutako e
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Egunean zaude jada. Etorri berriro geroago { $provider } hornitzailearen istorio ezagun gehiagorako. Ezin duzu itxaron? Hautatu gai ezagun bat webeko istorio gehiago aurkitzeko.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Egunean zaude jada. Etorri berriro geroago istorio gehiago jasotzeko. Ezin duzu itxaron? Hautatu gai ezagun bat webeko istorio gehiago aurkitzeko.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -241,9 +261,6 @@ newtab-pocket-learn-more = Argibide gehiago
 newtab-pocket-cta-button = Eskuratu { -pocket-brand-name }
 newtab-pocket-cta-text = Gorde gogoko dituzun istorioak { -pocket-brand-name }-en eta piztu zure gogoa irakurgai erakargarriekin.
 newtab-pocket-pocket-firefox-family = { -brand-product-name }(r)en familiakoa da { -pocket-brand-name }
-# A save to Pocket button that shows over the card thumbnail on hover.
-newtab-pocket-image =
-    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Gorde
 newtab-pocket-saved = Gordeta
 
@@ -258,7 +275,6 @@ newtab-pocket-thumbs-down-tooltip =
 # Used to show the user a message upon clicking the thumbs up or down buttons
 newtab-toast-thumbs-up-or-down2 =
     .message = Eskerrik asko. Zure iritziak jarioa hobetzen lagunduko digu.
-newtab-toast-thumbs-up-or-down = Eskerrik asko. Zure iritziak jarioa hobetzen lagunduko digu.
 newtab-toast-dismiss-button =
     .title = Baztertu
     .aria-label = Baztertu
@@ -290,16 +306,34 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Babesleen lasterbideak
 newtab-custom-pocket-title = { -pocket-brand-name }-ek gomendatua
 newtab-custom-pocket-subtitle = { -brand-product-name } familiakide den { -pocket-brand-name }-eko taldeak hautatutako aparteko edukia.
+newtab-custom-stories-toggle =
+    .label = Gomendatutako istorioak
+    .description = { -brand-product-name } familiak aukeratutako eduki aparta
+newtab-custom-stories-personalized-toggle =
+    .label = Istorioak
 newtab-custom-pocket-sponsored = Babesleen istorioak
 newtab-custom-pocket-show-recent-saves = Erakutsi gordetako azkenak
 newtab-custom-recent-title = Azken jarduera
 newtab-custom-recent-subtitle = Azken gune eta edukien hautapena
-newtab-custom-recent-toggle =
-    .label = Azken jarduera
-    .description = Azken gune eta edukien hautapena
 newtab-custom-weather-toggle =
     .label = Eguraldia
     .description = Gaurko eguraldi-iragarpena
+newtab-custom-trending-search-toggle =
+    .label = Bilaketa-joerak
+    .description = Ezagunak diren eta askotan bilatutako gaiak
+newtab-custom-widget-weather-toggle =
+    .label = Eguraldia
+newtab-custom-widget-trending-search-toggle =
+    .label = Bilaketa-joerak
+newtab-custom-widget-lists-toggle =
+    .label = Zerrendak
+newtab-custom-widget-timer-toggle =
+    .label = Tenporizadorea
+newtab-custom-widget-section-title = Widgetak
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .title = Itxi
+    .aria-label = Itxi menua
 newtab-custom-close-button = Itxi
 newtab-custom-settings = Kudeatu ezarpen gehiago
 
@@ -307,6 +341,8 @@ newtab-custom-settings = Kudeatu ezarpen gehiago
 
 newtab-wallpaper-title = Horma-paperak
 newtab-wallpaper-reset = Berrezarri lehenespenera
+newtab-wallpaper-upload-image = Igo irudia
+newtab-wallpaper-custom-color = Aukeratu kolorea
 newtab-wallpaper-light-red-panda = Panda gorria
 newtab-wallpaper-light-mountain = Mendi zuria
 newtab-wallpaper-light-sky = Hodei more eta arrosadun zerua
@@ -351,7 +387,7 @@ newtab-wallpaper-abstract-orange = Forma laranjak
 newtab-wallpaper-gradient-orange = Gradiente laranja eta arrosa
 newtab-wallpaper-abstract-blue-purple = Forma urdin eta moreak
 
-## Photographs
+## Firefox
 
 newtab-wallpaper-category-title-photographs = Argazkiak
 newtab-wallpaper-beach-at-sunrise = Hondartza egunsentian
@@ -381,7 +417,6 @@ newtab-weather-menu-change-location = Aldatu kokapena
 newtab-weather-change-location-search-input-placeholder =
     .placeholder = Bilatu kokapena
     .aria-label = Bilatu kokapena
-newtab-weather-change-location-search-input = Bilatu kokapena
 newtab-weather-menu-weather-display = Eguraldia bistaratzea
 # Display options are:
 # - Simple: Displays a current weather condition icon and the current temperature
@@ -399,6 +434,10 @@ newtab-weather-menu-hide-weather = Ezkutatu eguraldia fitxa berrian
 newtab-weather-menu-learn-more = Argibide gehiago
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Eguraldiari buruzko daturik ez dago erabilgarri orain.
+newtab-weather-opt-in-not-now =
+    .label = Une honetan ez
+newtab-weather-opt-in-yes =
+    .label = Bai
 
 ## Topic Labels
 
@@ -431,15 +470,120 @@ newtab-topic-selection-button-pick-interests = Hautatu zure interesak
 ## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
 ## e.g. Following the travel section of stories.
 
+newtab-section-follow-button = Jarraitu
+newtab-section-following-button = Jarraitzen
+newtab-section-unfollow-button = Utzi jarraitzeari
 
 ## Button to block/unblock listed topics
 ## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
 ## e.g. Blocked the politics section of stories.
 
+newtab-section-block-button = Blokeatu
+newtab-section-blocked-button = Blokeatuta
+newtab-section-unblock-button = Desblokeatu
 
 ## Confirmation modal for blocking a section
 
 newtab-section-cancel-button = Une honetan ez
+newtab-section-confirm-block-topic-p1 = Ziur zaude gai hau blokeatu nahi duzula?
+newtab-section-confirm-block-topic-p2 = Blokeatutako gaiak ez dira gehiago azalduko zure jarioan.
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = Blokeatu { $topic }
 
-## Panel in the Customize menu section to manage followed and blocked topics
+## Strings for custom wallpaper highlight
 
+newtab-section-mangage-topics-title = Gaiak
+newtab-section-manage-topics-button-v2 =
+    .label = Kudeatu gaiak
+newtab-section-mangage-topics-followed-topics = Jarraituta
+newtab-section-mangage-topics-followed-topics-empty-state = Ez duzu inongo gairik jarraitu oraindik.
+newtab-section-mangage-topics-blocked-topics = Blokeatuta
+newtab-section-mangage-topics-blocked-topics-empty-state = Ez duzu inongo gairik blokeatu oraindik.
+newtab-custom-wallpaper-cta = Probatu
+
+## Strings for new user activation custom wallpaper highlight
+
+newtab-new-user-custom-wallpaper-cta = Probatu orain
+
+## Strings for reporting ads and content
+
+newtab-report-cancel = Utzi
+newtab-report-submit = Bidali
+newtab-toast-thanks-for-reporting =
+    .message = Eskerrik asko hau jakinarazteagatik.
+
+## Strings for trending searches
+
+newtab-trending-searches-show-trending =
+    .title = Erakutsi bilaketa-joerak
+newtab-trending-searches-hide-trending =
+    .title = Ezkutatu bilaketa-joerak
+newtab-trending-searches-learn-more = Argibide gehiago
+newtab-trending-searches-dismiss = Ezkutatu bilaketa-joerak
+# "Trending searches refers to popular searches from search engines
+newtab-trending-searches-title = Bilaketa-joerak
+
+## Strings for task / to-do list productivity widget
+
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = Berria
+newtab-widget-lists-label-beta =
+    .label = Beta
+newtab-widget-task-list-menu-copy = Kopiatu
+newtab-widget-lists-menu-edit = Editatu zerrendaren izena
+newtab-widget-lists-menu-create = Sortu zerrenda berria
+newtab-widget-lists-menu-delete = Ezabatu zerrenda hau
+newtab-widget-lists-menu-copy = Kopiatu zerrenda arbelean
+newtab-widget-lists-menu-hide = Ezkutatu zerrenda guztiak
+newtab-widget-lists-menu-learn-more = Argibide gehiago
+newtab-widget-lists-input-add-an-item =
+    .placeholder = Gehitu elementua
+newtab-widget-lists-input-error = Idatzi testua elementua gehitu ahal izateko.
+newtab-widget-lists-input-menu-open-link = Ireki lotura
+newtab-widget-lists-input-menu-move-up = Eraman gora
+newtab-widget-lists-input-menu-move-down = Eraman behera
+newtab-widget-lists-input-menu-delete = Ezabatu
+newtab-widget-lists-input-menu-edit = Editatu
+# the + symbol emphasises the functionality of adding a new list
+newtab-widget-lists-dropdown-create =
+    .label = + Sortu zerrenda berria
+newtab-widget-lists-name-label-default =
+    .label = Zereginen zerrenda
+newtab-widget-lists-name-placeholder-default =
+    .placeholder = Zereginen zerrenda
+# The placeholder value of the name field for a newly created list
+newtab-widget-lists-name-placeholder-new =
+    .placeholder = Zerrenda berria
+
+## Strings for timer productivity widget
+## When the timer ends, a system notification may be shown. Depending on which mode the timer is in, that message would be shown
+
+newtab-widget-timer-notification-title = Tenporizadorea
+newtab-widget-timer-notification-focus = Kontzentratzeko denbora amaitu da. Ondo egina. Atsedena behar duzu?
+newtab-widget-timer-notification-break = Atsedena amaitu da. Kontzentratzeko prest?
+newtab-widget-timer-notification-warning = Jakinarazpenak desaktibatuta daude
+newtab-widget-timer-mode-focus =
+    .label = Kontzentratzeko denbora
+newtab-widget-timer-mode-break =
+    .label = Atsedena
+newtab-widget-timer-label-play =
+    .label = Erreproduzitu
+newtab-widget-timer-label-pause =
+    .label = Pausatu
+newtab-widget-timer-reset =
+    .title = Berrezarri
+newtab-widget-timer-menu-notifications = Desaktibatu jakinarazpenak
+newtab-widget-timer-menu-notifications-on = Aktibatu jakinarazpenak
+newtab-widget-timer-menu-hide = Ezkutatu tenporizadorea
+newtab-widget-timer-menu-learn-more = Argibide gehiago
+# Message that appears when widgets are full-height. This reminds users that there is more New Tab content to see if they scroll
+newtab-widget-keep-scrolling = Korritu gehiagorako
+newtab-widget-message-title = Mantendu kontzentratuta zerrendekin eta tenporizadorearekin
+newtab-promo-card-title = Lagundu { -brand-product-name }
+newtab-promo-card-body = Gure babesleek web hobeagoa eraikitzeko misioan laguntzen gaituzte
+newtab-promo-card-cta = Argibide gehiago
+newtab-promo-card-dismiss-button =
+    .title = Baztertu
+    .aria-label = Baztertu

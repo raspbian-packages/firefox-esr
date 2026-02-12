@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Cau Tab
 tabbrowser-menuitem-close =
     .label = Cau
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -102,6 +115,13 @@ tabbrowser-unblock-tab-audio-tooltip =
 
 ## Tooltips for tab audio control
 
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Dad-dewi tab
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Tewi tab
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Chwarae tab
 
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
@@ -186,8 +206,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Peidio dangos y blwch deialog yma et
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Rhybudd
-tabbrowser-confirm-close-duplicate-tabs-text = Byddwn yn cadw'r tab gweithredol olaf ar agor
 tabbrowser-confirm-close-all-duplicate-tabs-title = Cau tabiau dyblyg?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Byddwn yn cau tabiau dyblyg yn y ffenestr hon. Bydd y tab
@@ -237,6 +255,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Tewi tab
@@ -244,8 +265,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Dad-dewi tab
 tabbrowser-manager-close-tab =
     .tooltiptext = Cau tab
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Caewyd
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Y ffenestr gyfredol
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Creu grŵp tabiau
 tab-group-editor-title-edit = Rheoli grŵp tabiau
@@ -255,13 +284,42 @@ tab-group-editor-name-field =
 tab-group-editor-cancel =
     .label = Diddymu
     .accesskey = D
-tab-group-menu-header = Grwpiau tabiau
+tab-group-editor-color-selector =
+    .aria-label = Lliw grŵp tab
+tab-group-editor-color-selector2-blue = Glas
+    .title = Glas
+tab-group-editor-color-selector2-purple = Porffor
+    .title = Porffor
+tab-group-editor-color-selector2-cyan = Gwyrddlas
+    .title = Gwyrddlas
+tab-group-editor-color-selector2-orange = Oren
+    .title = Oren
+tab-group-editor-color-selector2-yellow = Melyn
+    .title = Melyn
+tab-group-editor-color-selector2-pink = Pinc
+    .title = Pinc
+tab-group-editor-color-selector2-green = Gwyrdd
+    .title = Gwyrdd
+tab-group-editor-color-selector2-gray = Llwyd
+    .title = Llwyd
+tab-group-editor-color-selector2-red = Coch
+    .title = Coch
+tab-group-description = { $tabGroupName } — Grŵp Tab
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Caewyd
+tab-group-label-tooltip-expanded = { $tabGroupName } — Ehangwyd
+tab-group-preview-name =
+    .aria-label = Tabiau mewn grŵp sydd wedi'i leihau
 tab-context-unnamed-group =
     .label = Grŵp heb ei enwi
 tab-group-name-default = Grŵp dienw
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Rhestr tabiau ar agor
+tab-group-preview-closed-description = Rhestr tabiau ar gau
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -287,6 +345,8 @@ tab-context-move-tab-to-group =
            *[other] Ychwanegu Tabiau i Grŵp
         }
     .accesskey = G
+tab-context-move-tab-to-group-saved-groups =
+    .label = Grwpiau Caeedig
 tab-group-editor-action-new-tab =
     .label = Tab newydd yn y grŵp
 tab-group-editor-action-new-window =
@@ -316,6 +376,20 @@ tab-context-ungroup-tab =
            *[other] Tynnu o'r Grwpiau
         }
     .accesskey = T
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [zero] { $tabCount } tab eraill
+        [one] { $tabCount } tab arall
+        [two] { $tabCount } dab arall
+        [few] { $tabCount } tab arall
+        [many] { $tabCount } thab arall
+       *[other] { $tabCount } tab arall
+    }
 
 ## Open/saved tab group context menu
 
@@ -341,3 +415,33 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Agor Grŵp mewn Ffenestr Newydd
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Golwg hollt
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Ychwanegu Golwg Hollti
+    .accesskey = Y
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Agor yn y Golwg Hollt
+    .accesskey = H
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Gwahanu Golwg Hollt
+    .accesskey = G
+tab-context-badge-new = Newydd
+
+## Manage Split View (icon in the address bar & three-dot menu in the footer)
+
+# "Separate" is a verb, as in "separate the split view tabs and display them normally".
+split-view-menuitem-separate-tabs =
+    .label = Gwahanu'r Tabiau
+# "Reverse" is a verb, as in "reverse the order of split view tabs".
+split-view-menuitem-reverse-tabs =
+    .label = Gwrthdroi'r Tabiau
+split-view-menuitem-close-both-tabs =
+    .label = Cau'r Ddau Dab

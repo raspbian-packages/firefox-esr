@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } ਵਰਤੋਂਕਾਰ
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਹਰ ਥਾਂ ਉੱਤੇ ਸਿੰਕ ਕਰੋ।
 cfr-doorhanger-bookmark-fxa-body = ਵਧੀਆ ਲੱਭੋ! ਹੁਣ ਆਪਣੇ ਮੋਬਾਈਲ ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਇਸ ਬੁੱਕਮਾਰਕ ਬਿਨਾਂ ਨਾ ਰਹੋ। { -fxaccount-brand-name } ਨਾਲ ਸ਼ੁਰੂ ਕਰੋ।
@@ -68,6 +68,11 @@ cfr-doorhanger-bookmark-fxa-link-text = …ਬੁੱਕਮਾਰਕਾਂ ਨੂ
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = ਬੰਦ ਕਰੋ ਬਟਨ
     .title = ਬੰਦ ਕਰੋ
+fxa-adoption-addresses-backup-title = ਆਓ ਤੁਹਾਡੇ ਸੰਭਾਲੇ ਹੋਏ ਸਿਰਨਾਵਿਆਂ ਦਾ ਬੈਕਅੱਪ ਲਈਏ
+fxa-adoption-addresses-backup-subtitle = ਆਪਣੇ ਸੰਭਾਲੇ ਹੋਏ ਸਿਰਨਾਵਿਆਂ ਨੂੰ ਇੰਕ੍ਰਿਪਸ਼ਨ ਨਾਲ ਆਪਣੇ ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਸਿੰਕ ਕਰਕੇ ਸੁਰੱਖਿਅਤ ਕਰੋ।
+fxa-adoption-credit-cards-backup-title = ਆਓ ਤੁਹਾਡੇ ਭੁਗਤਾਨ ਕਰਨ ਦੇ ਢੰਗਾਂ ਦਾ ਬੈਕਅੱਪ ਲਈਏ
+fxa-adoption-credit-cards-backup-subtitle = ਆਪਣੇ ਭੁਗਤਾਨ ਦੇ ਢੰਗਾਂ ਨੂੰ ਇੰਕ੍ਰਿਪਸ਼ਨ ਨਾਲ ਆਪਣੇ ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਸਿੰਕ ਕਰਕੇ ਸੁਰੱਖਿਅਤ ਰੱਖੋ।
+fxa-adoption-primary-button-label = ਸਾਈਨ ਅੱਪ ਕਰੋ
 
 ## Protections panel
 
@@ -225,6 +230,21 @@ fox-doodle-pin-secondary = ਹੁਣੇ ਨਹੀਂ
 set-default-pdf-handler-headline = <strong>ਤੁਹਾਡੇ PDF ਹੁਣ { -brand-short-name } ਵਿੱਚ ਖੁੱਲ੍ਹਦੇ ਹਨ।</strong> ਫ਼ਾਰਮਾਂ ਨੂੰ ਸਿੱਧਾ ਆਪਣੇ ਬਰਾਊਜ਼ਰ ਵਿੱਚ ਸੋਧੋ ਜਾਂ ਉਹਨਾਂ ਉੱਤੇ ਦਸਤਖਤ ਕਰੋ। ਬਦਲਣ ਲਈ ਸੈਟਿੰਗਾਂ ਵਿੱਚ “PDF” ਖੋਜੋ।
 set-default-pdf-handler-primary = ਸਮਝੇ
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = ਬਿੰਦੀਆਂ ਵਾਲੀਆਂ ਲਾਈਨ  — ਜਾਂ ਕਿਤੇ ਵੀ ਦਸਤਖ਼ਤ ਕਰੋ
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = ਆਪਣੇ ਦਸਤਖ਼ਤ ਵਾਹੋ, ਲਿਖੋ ਜਾਂ ਅੱਪਲੋਡ ਕਰੋ ਅਤੇ ਫੇਰ ਜਿੱਥੇ ਵੀ ਚਾਹੀਦਾ ਹੋਵੇ, ਉੱਥੇ ਲਾ ਦਿਓ। ਅਗਲੀ ਵਾਰ ਲਈ ਆਪਣੇ ਦਸਤਖ਼ਤਾਂ ਨੂੰ ਸੰਭਾਲ ਲਵੋ।
+annotations-make-default-pdf-handler-title = { -brand-short-name } ਨੂੰ ਆਪਣਾ ਮੂਲ PDF ਐਡੀਟਰ ਬਣਾਉਣਾ ਹੈ?
+annotations-make-default-pdf-primary-cta =
+    .label = ਮੂਲ ਵਜੋਂ ਸੈੱਟ ਕਰੋ
+annotations-make-default-pdf-next =
+    .label = ਅੱਗੇ
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = ਭਵਿੱਖ ਲਈ ਨਵਾਂ ਡਿਵਾਈਸ ਲੈਣਾ ਚਾਹੋਗੇ?
@@ -310,8 +330,11 @@ fxa-menu-message-close-button =
     .title = ਬੰਦ ਕਰੋ
     .aria-label = ਬੰਦ ਕਰੋ
 fxa-menu-message-sign-up-button = ਸਾਈਨ ਅੱਪ ਕਰੋ
+fxa-menu-message-sign-in-button = ਸਾਈਨ ਇਨ
+fxa-menu-message-sync-button = ਸਿੰਕ ਕਰਨਾ ਸ਼ੁਰੂ
 fxa-menu-message-sync-devices-primary-text = ਆਪਣੇ ਸਾਰੇ ਡਿਵਾਈਸਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ
 fxa-menu-message-sync-devices-secondary-text = ਜਿੱਥੇ ਵੀ ਤੁਸੀਂ { -brand-short-name } ਨੂੰ ਵਰਤਦੇ ਹੋ, ਉੱਥੇ — ਬੁੱਕਮਾਰਕਾਂ ਤੇ ਪਾਸਵਰਡਾਂ ਆਦਿ — ਵਰਗੀ ਆਪਣੀ ਜਾਣਕਾਰੀ ਫ਼ੌਰਨ ਲਵੋ।
+fxa-menu-message-sync-devices-secondary-text2 = ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ, ਅਤੀਤ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ — ਹਰ ਥਾਂ ਫ਼ੌਰਨ ਆਪਣੇ ਨਾਲ { -brand-short-name } ‘ਚ ਸਾਈਨ ਇਨ ਕਰਕੇ ਲੈ ਜਾਓ।
 fxa-menu-message-sync-devices-collapsed-text = ਆਪਣੇ ਸਾਰੇ ਡਿਵਾਈਸਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ
 fxa-menu-message-backup-data-primary-text = ਆਪਣੇ ਬਰਾਊਜ਼ਰ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲਵੋ
 fxa-menu-message-backup-data-secondary-text = ਆਪਣੇ ਸਾਰੇ ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਬੁੱਕਮਾਰਕਾਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਜਾਣਕਾਰੀ ਨੂੰ ਆਪਣੇ-ਆਪ ਸੁਰੱਖਿਅਤ ਕਰੋ।
@@ -342,3 +365,55 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] ਆਪਣੇ ਮਨਪਸੰਦ ਪਰਦੇਦਾਰੀ ਨੂੰ ਪਹਿਲ ਦੇਣ ਵਾਲੇ ਬਰਾਊਜ਼ਰ ਨੂੰ ਇੱਕ ਕਲਿੱਕ ਦੀ ਪਹੁੰਚ ਵਿੱਚ ਰੱਖੋ। ਲਿੰਕਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ { -brand-short-name } ਨੂੰ ਆਪਣਾ ਮੂਲ ਬਰਾਊਜ਼ਰ ਬਣਾਓ ਅਤੇ ਇਸ ਨੂੰ ਆਪਣੀ ਟਾਸਕ-ਬਾਰ ਵਿੱਚ ਟੰਗੋ।
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = ਆਪਣੇ ਮਨਪਸੰਦ ਪਰਦੇਦਾਰੀ ਨੂੰ ਪਹਿਲ ਦੇਣ ਵਾਲੇ ਬਰਾਊਜ਼ਰ ਨੂੰ ਇੱਕ ਕਲਿੱਕ ਦੀ ਪਹੁੰਚ ਵਿੱਚ ਰੱਖੋ। ਲਿੰਕਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ { -brand-short-name } ਨੂੰ ਆਪਣਾ ਮੂਲ ਬਰਾਊਜ਼ਰ ਬਣਾਓ ਅਤੇ ਇਸ ਨੂੰ ਆਪਣੀ ਟਾਸਕ-ਬਾਰ ਤੇ ਸਟਾਰਟ ਮੇਨੂ ਵਿੱਚ ਟੰਗੋ।
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = ਛੇਤੀ ਹੀ Windows 10 ਤੋਂ ਅੱਪਗਰੇਡ ਕਰਨ ਜਾ ਰਹੇ ਹੋ?
+windows-10-eos-sync-spotlight-subtitle = ਕਿਸੇ ਵੀ ਹੋਰ ਡਿਵਾਈਸ ਉੱਤੇ ਜਾਣ ਲਈ ਤਿਆਰ ਵਾਸਤੇ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਅਤੇ ਬੁੱਕਮਾਰਕਾਂ ਦਾ ਬੈਕਅੱਪ ਲੈ ਲਿਓ।
+windows-10-eos-sync-spotlight-primary-label = ਆਪਣੇ { -brand-short-name } ਦਾ ਬੈਕਅੱਪ ਲਵੋ
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Windows 11 ਲਈ ਅੱਪਗਰੇਡ ਕਰ ਰਹੇ ਹੋ? ਬੁੱਕਮਾਰਕ ਅਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਨਾ ਗੁਆਇਓ।
+windows-10-eos-sync-toast-subtitle = ਆਪਣੇ ਡਾਟਾ ਦੇ ਬੈਕਅੱਪ ਲੈ ਲਿਓ ਤਾਂ ਕਿ { -brand-short-name } ਕਿਸੇ ਵੀ ਵੇਲੇ ਤੁਹਾਡੇ ਇਸ ਕੰਪਿਊਟਰ ਅਤੇ ਨਵੇਂ ਉੱਤੇ ਬਦਲਣ ਲਈ ਤਿਆਰ ਹੋਵੇ।
+windows-10-eos-sync-toast-primary-label = ਸ਼ੁਰੂ ਕਰੀਏ
+windows-10-eos-sync-toast-secondary-label = ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਚੇਤੇ ਕਰਵਾਓ
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } ਹੋਰ ਵੱਡੀਆਂ ਕੰਪਨੀਆਂ ਦੇ ਬਰਾਊਜ਼ਰਾਂ ਵਾਗੂੰ ਪਹਿਲਾਂ ਹੀ ਲੋਡ ਕੀਤਾ ਨਹੀਂ ਹੁੰਦਾ। ਬੱਸ ਇਹੀ ਫ਼ਰਕ ਹੈ।
+windows-10-eos-challenger-sync-callout-subtitle = ਜਦੋਂ ਤੁਸੀ ਆਪਣੇ { -brand-product-name } ਬੁੱਕਮਾਰਕਾਂ ਅਤੇ ਪਾਸਵਰਡਾਂ ਦਾ ਬੈਕਅੱਪ ਲੈਂਦੇ ਹੋ ਤਾਂ ਤੁਹਾਡੇ ਹੋਰ ਡਿਵਾਈਸ ਉੱਤੇ ਤੁਹਾਨੂੰ ਬਰਾਊਜ਼ ਕਰਨਾ ਹੋਰ ਵੀ ਸੌਖਾ ਹੋ ਜਾਂਦਾ ਹੈ।
+windows-10-eos-challenger-pin-callout-subtitle = { -brand-shorter-name } ਨੂੰ ਆਪਣੀ ਟਾਸਕ-ਬਾਰ ਵਿੱਚ ਟੰਗੋ ਤਾਂ ਕਿ ਜਦੋਂ ਵੀ ਤੁਹਾਨੂੰ ਆਪਣੇ ਪਸੰਦ ਦੇ ਬਰਾਊਜ਼ਰ ਦੀ ਲੋੜ ਹੋਵੇ ਸੌਖੀ ਤਰ੍ਹਾਂ ਚੁਣ ਸਕੋ।
+windows-10-eos-challenger-sync-primary-button = { -brand-shorter-name } ਦਾ ਬੈਕਅੱਪ ਲਵੋ
+windows-10-eos-challenger-pin-primary-button = { -brand-shorter-name } ਨੂੰ ਟੰਗੋ
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } ਕ੍ਰਿਪਟੋਮਾਈਨਰ, ਸ਼ੋਸ਼ਲ ਮੀਡੀਆ ਟਰੈਕਰਾਂ ਅਤੇ ਫਿੰਗਰ-ਪਰਿੰਟਰਾਂ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਉਂਦਾ ਹੈ।
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = ਟਰੈਕਰ ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਦੀ ਪਛਾਣ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਾਂ ਵੈੱਬ ਉੱਤੇ ਤੁਹਾਡਾ ਪਿੱਛਾ ਨਹੀਂ ਕਰ ਸਕਦੇ — ਕਿਉਂਕਿ ਅਸੀਂ ਉਹਨਾਂ ਨੂੰ ਇਹ ਕਰਨ ਨਹੀਂ ਦਿੰਦੇ ਹਾਂ।
+windows-10-eos-sync-callout-privacy-screen-2-title = ਆਪਣੇ ਅਗਲੇ ਡਿਵਾਈਸ ਵਾਸਤੇ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਅਤੇ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੋ।
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = { -brand-shorter-name } ਨੂੰ ਬੈਕਅੱਪ ਲੈਣ ਨਾਲ ਤੁਹਾਡੇ ਡਾਟੇ ਅਤੇ ਤੁਹਾਡੀਆਂ ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਤੁਹਾਡੇ ਕੋਲ ਲਿਆਉਣਾ ਸੌਖਾ ਹੋ ਗਿਆ ਹੈ।
+windows-10-eos-sync-callout-privacy-info-button = ਵੇਖੋ ਕਿ ਕਿਸ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਈ ਹੈ
+windows-10-eos-callout-addons-title = ਐਡ-ਆਨ ਅਜ਼ਮਾਓ: ਸਰਲ ਅੱਪਗਰੇਡ, ਵੱਡੇ ਅਸਰ
+windows-10-eos-callout-addons-primary-button = ਸਾਡੇ ਵਲੋਂ ਚੁਣੇ
+windows-10-eos-sync-callout-addons-title = ਜਦੋਂ ਤੁਸੀਂ Windows 10 ਤੋਂ ਅੱਪਗਰੇਡ ਕਰੋ ਤਾਂ ਆਪਣੇ ਐਡ-ਆਨ ਨਾ ਗੁਆ ਦਿਓ।
+windows-10-eos-sync-callout-next-button = ਅੱਗੇ
+windows-10-eos-sync-callout-get-started-button = ਸ਼ੁਰੂ ਕਰੀਏ
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = ਵਰਟੀਕਲ ਟੈਬਾਂ ਅਤੇ ਟੈਬ ਗਰੁੱਪ ਇੱਥੇ ਹਨ!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = ਹਰਮਨਪਿਆਰੀ ਮੰਗ ਉੱਤੇ { -brand-product-name } ਨੇ ਤੁਹਾਡੇ ਬਰਾਊਜ਼ਿੰਗ ਨੂੰ ਸੰਚਾਰੂ ਅਤੇ ਇਕਸਾਰ ਰੱਖਣ ਲਈ ਨਵੇਂ ਫ਼ੀਚਰ ਪੇਸ਼ ਕੀਤੇ ਹਨ।
+windows-10-eos-feature-toast-whats-new-button = ਵੇਖੋ ਕਿ ਨਵਾਂ ਕੀ ਹੈ
+windows-10-eos-feature-toast-dismiss-button = ਖਾਰਜ ਕਰੋ
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-learn-more = ਹੋਰ ਜਾਣੋ
+etp-strict-exceptions-infobar-button = ਸੁਧਾਰ ਲਾਗੂ ਕਰੋ
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = ਹੁਣੇ ਨਹੀਂ
+    .accesskey = N

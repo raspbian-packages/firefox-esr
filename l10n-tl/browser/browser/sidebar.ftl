@@ -3,38 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-## Labels for sidebar history panel
-
-
-## Labels for sidebar search
-
-
-## Labels for sidebar customize panel
-
-
 ## Labels for sidebar context menu items
 
-
-## Labels for sidebar history context menu items
-
-
-## Labels for sidebar menu items.
-
-
-## Tooltips for sidebar menu items.
-
-
-## Headings for sidebar menu panels.
-
-
-## Titles for sidebar menu panels.
-
+sidebar-context-menu-copy-link =
+    .label = Kopyahin ang Link
 
 ## Context for closing synced tabs when hovering over the items
 
 show-sidebars =
     .tooltiptext = Ipakita ang mga sidebars
     .label = Mga sidebar
-
-## Tooltips for the sidebar toolbar widget.
-

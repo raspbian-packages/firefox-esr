@@ -19,10 +19,6 @@ sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
 sidebar-history-delete =
     .title = Обриши из историје
-sidebar-history-sort-by-date =
-    .label = Поредај по датуму
-sidebar-history-sort-by-site =
-    .label = Поредај према страници
 sidebar-history-clear =
     .label = Обриши историју
 
@@ -40,24 +36,8 @@ sidebar-customize-extensions-header = Додаци бочног панела
 sidebar-customize-firefox-tools-header =
     .label = { -brand-product-name } алатке
 sidebar-customize-firefox-settings = Управља { -brand-short-name } подешавањима
-sidebar-position-left =
-    .label = Прикажи налево
-sidebar-position-right =
-    .label = Прикажи надесно
 sidebar-vertical-tabs =
     .label = Усправне картице
-sidebar-horizontal-tabs =
-    .label = Водоравне картице
-sidebar-customize-tabs-header =
-    .label = Подешавања картица
-sidebar-customize-button-header =
-    .label = Тастер за бочни панел
-sidebar-customize-position-header =
-    .label = Положај бочног панела
-sidebar-visibility-setting-always-show =
-    .label = Рашири и скупи бочни панел
-sidebar-visibility-setting-hide-sidebar =
-    .label = Прикажи и сакриј бочни панел
 
 ## Labels for sidebar context menu items
 
@@ -80,11 +60,6 @@ sidebar-context-menu-copy-link =
 sidebar-context-menu-close-remote-tab =
     .label = Затвори картицу на { $deviceName }
 
-## Labels for sidebar history context menu items
-
-sidebar-history-context-menu-delete-page =
-    .label = Избриши из историје
-
 ## Labels for sidebar menu items.
 
 sidebar-menu-genai-chat-label =
@@ -97,8 +72,6 @@ sidebar-menu-bookmarks-label =
     .label = Обележивачи
 sidebar-menu-customize-label =
     .label = Прилагоди бочни панел
-sidebar-menu-review-checker-label =
-    .label = Прегледач рецензија
 
 ## Tooltips for sidebar menu items.
 
@@ -118,8 +91,6 @@ sidebar-menu-open-bookmarks-tooltip = Отвори обележиваче ({ $sh
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Затвори облеживаче ({ $shortcut })
-sidebar-menu-open-ai-chatbot-tooltip = Отвори AI чет-бот
-sidebar-menu-close-ai-chatbot-tooltip = Затвори AI чет-бот
 
 ## Headings for sidebar menu panels.
 
@@ -152,18 +123,6 @@ show-sidebars =
 
 ## Tooltips for the sidebar toolbar widget.
 
-sidebar-widget-expand-sidebar =
-    .tooltiptext = Прошири бочни панел
-    .label = Бочни панели
-sidebar-widget-collapse-sidebar =
-    .tooltiptext = Скупи бочни панел
-    .label = Бочни панели
-sidebar-widget-show-sidebar =
-    .tooltiptext = Прикажи бочни панел
-    .label = Бочни панели
-sidebar-widget-hide-sidebar =
-    .tooltiptext = Сакриј бочни панел
-    .label = Бочни панели
 # Variables:
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-widget-expand-sidebar2 =

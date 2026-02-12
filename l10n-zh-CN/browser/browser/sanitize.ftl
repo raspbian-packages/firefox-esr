@@ -36,11 +36,11 @@ clear-time-duration-prefix2 =
     .value = 时间：
     .accesskey = W
 clear-time-duration-value-last-hour =
-    .label = 最近一小时
+    .label = 过去一小时
 clear-time-duration-value-last-2-hours =
-    .label = 最近两小时
+    .label = 过去两小时
 clear-time-duration-value-last-4-hours =
-    .label = 最近四小时
+    .label = 过去四小时
 # Variables:
 #   $midnightTime (String) - Time of midnight (00:00 hours) - to inform the user that history will be cleared after midnight
 clear-time-duration-value-since-midnight =
@@ -59,11 +59,7 @@ history-section-label = 历史记录
 item-history-and-downloads =
     .label = 浏览和下载历史
     .accesskey = B
-item-history-and-downloads-description = 清除搜索、浏览、下载记录
-item-history-form-data-downloads =
-    .label = 历史记录
-    .accesskey = H
-item-history-form-data-downloads-description = 清除浏览、下载、搜索记录，以及保存的表单信息
+item-history-and-downloads-description2 = 清除网站和下载历史
 item-cookies =
     .label = Cookie
     .accesskey = C

@@ -2,15 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-profile-window-title = { -brand-short-name } - пайдаланушы профилін таңдау
 profile-window-heading = { -brand-short-name } профилін таңдау
 profile-window-body = Парольдер мен бетбелгілер сияқты нәрселерді қоса алғанда, жұмыс пен жеке шолуды бөлек ұстаңыз. Немесе осы құрылғыны пайдаланатын барлық адамдар үшін профильдер жасаңыз.
 # This checkbox appears in the Choose profile window that appears when the browser is opened. "Show this" refers to this window, which is displayed when the checkbox is enabled.
 profile-window-checkbox-label-2 =
     .label = { -brand-short-name } ашылған кезде профиль таңдау
-# This checkbox appears in the Choose profile window that appears when the browser is opened. "Show this" refers to this window, which is displayed when the checkbox is enabled.
-profile-window-checkbox-label =
-    .label = { -brand-short-name } ашылған кезде мұны көрсету
+# This subcopy appears below the checkbox when it is unchecked
+profile-window-checkbox-subcopy = { -brand-short-name } ең соңғы пайдаланған профильде ашылады.
 profile-window-create-profile = Профиль жасау
 profile-card-edit-button =
     .title = Профильді түзету
@@ -31,11 +29,24 @@ original-profile-name = Түпнұсқа профиль
 edit-profile-page-title = Профильді түзету
 edit-profile-page-header = Профиліңізді түзету
 edit-profile-page-profile-name-label = Профиль атауы
-edit-profile-page-theme-header = Тема
+edit-profile-page-theme-header-2 =
+    .label = Тема
 edit-profile-page-explore-themes = Көбірек темаларды шолу
-edit-profile-page-avatar-header = Аватар
+edit-profile-page-avatar-header-2 =
+    .label = Аватар
 edit-profile-page-delete-button =
     .label = Өшіру
+edit-profile-page-avatar-selector-opener-link = Түзету
+avatar-selector-icon-tab = Таңбаша
+avatar-selector-custom-tab = Таңдауыңызша
+avatar-selector-cancel-button =
+    .label = Бас тарту
+avatar-selector-save-button =
+    .label = Сақтау
+avatar-selector-upload-file = Файлды жүктеп салу
+avatar-selector-drag-file = Немесе файлды осы жерге тартып әкеліңіз
+avatar-selector-add-image = Суретті қосу
+avatar-selector-crop = Қию
 edit-profile-page-no-name = Бұл профильді кейін оңай табу үшін атаңыз. Кез келген уақытта атын өзгертуге болады.
 edit-profile-page-duplicate-name = Профиль атауы қолдануда болып тұр. Жаңа атауды қолданып көріңіз.
 edit-profile-page-profile-saved = Сақталды
@@ -48,6 +59,8 @@ new-profile-page-input-placeholder =
 new-profile-page-done-button =
     .label = Түзету аяқталды
 profile-window-title-2 = { -brand-short-name } - Профильді таңдау
+profile-window-logo =
+    .alt = { -brand-short-name } логотипі
 
 ## Delete profile dialogue that allows users to review what they will lose if they choose to delete their profile. Each item (open windows, etc.) is displayed in a table, followed by a column with the number of items.
 
@@ -76,23 +89,238 @@ delete-profile-confirm = Өшіру
 
 ## These strings are color themes available to select from the profile selection screen. Theme names should be localized.
 
-# This light theme features sunny colors such as goldenrod and pale yellow. Its name evokes the color of a marigold flower. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-marigold-theme = Барқытгүл
-# This light theme features various shades of soft, muted purples. Its name evokes the color of a lavender flower. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-lavender-theme = Лаванда
-# This light theme features very pale green tones. Its name evokes the color of pale green lichen from the forest. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-lichen-theme = Қына
-# This light theme features various shades of pink ranging from pale to bold. Its name evokes the color of a pink magnolia flower. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-magnolia-theme = Магнолия
-# Ocean is a dark theme that features very dark blues and black. Its name evokes the color of the deep ocean water. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-ocean-theme = Мұхит
-# This dark theme features warm oranges, dark mahogany browns, and earthy red/brown colors. The name evokes the earthy colors of terracotta tile. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-terracotta-theme = Терракота
-# This dark theme features forest green, dusky green with a gray undertone, and a muted sage green. Its name evokes the rich color of green moss in the forest. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
-profiles-moss-theme = Мүк
 # The default light theme
 profiles-light-theme = Ашық түсті
 # The default dark theme
 profiles-dark-theme = Күңгірт түсті
 # The default system theme
 profiles-system-theme = Жүйелік
+profiles-system-theme-title =
+    .title = Жүйелік теманы іске асыру
+# This light theme features sunny colors such as goldenrod and pale yellow. Its name evokes the color of a marigold flower. This name can be translated directly if it's easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
+profiles-marigold-theme-2 = Сары қырмызыгүл
+# This light theme features various shades of soft, muted purples. Its name evokes the color of a lavender flower. This name can be translated directly if it's easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
+profiles-lavender-theme-2 = Ақшыл лаванда
+# This light theme features very pale green tones. Its name evokes the color of pale green mint ice cream. This name can be translated directly if it's easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
+profiles-lichen-theme-2 = Жалбызды жасыл
+# This light theme features various shades of pink ranging from pale to bold. Its name evokes the color of a pink magnolia flower. This name can be translated directly if it's easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
+profiles-magnolia-theme-2 = Қызғылт магнолия
+# Ocean blue is a dark theme that features very dark blues and black. Its name evokes the color of the deep ocean water. This name can be translated directly if it's easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
+profiles-ocean-theme-2 = Көгілдір мұхит
+# This dark theme features warm oranges, dark mahogany browns, and earthy red/brown colors. The name evokes the earthy colors of brick masonry. This name can be translated directly if it's easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
+profiles-terracotta-theme-2 = Қызыл кірпіш
+# This dark theme features forest green, dusky green with a gray undertone, and a muted sage green. Its name evokes the rich color of green moss in the forest. This name can be translated directly if its easily understood in your language, or adapted to a more natural sounding name that fits the color scheme.
+profiles-moss-theme-2 = Жасыл мүк
+profiles-gray-theme = Сұр
+profiles-gray-theme-title =
+    .title = Сұр теманы іске асыру
+profiles-yellow-theme = Сары
+profiles-yellow-theme-title =
+    .title = Сары теманы іске асыру
+profiles-orange-theme = Қызғылт сары
+profiles-orange-theme-title =
+    .title = Қызғылт сары теманы іске асыру
+profiles-red-theme = Қызыл
+profiles-red-theme-title =
+    .title = Қызыл теманы іске асыру
+profiles-pink-theme = Қызғылт
+profiles-pink-theme-title =
+    .title = Қызғылт теманы іске асыру
+profiles-purple-theme = Қызыл көк
+profiles-purple-theme-title =
+    .title = Қызылкүлгін теманы іске асыру
+profiles-violet-theme = Күлгін
+profiles-violet-theme-title =
+    .title = Күлгін теманы іске асыру
+profiles-blue-theme = Көк
+profiles-blue-theme-title =
+    .title = Көк теманы іске асыру
+profiles-green-theme = Жасыл
+profiles-green-theme-title =
+    .title = Жасыл теманы іске асыру
+profiles-cyan-theme = Көгілдір
+profiles-cyan-theme-title =
+    .title = Көгілдір теманы іске асыру
+profiles-custom-theme-title =
+    .title = Таңдауыңызша теманы іске асыру
+
+## Data collection settings changed (multi-profile)
+
+# Primary button label to open the Data collection section in Settings
+multiprofile-data-collection-view-settings = Баптауларды қарау
+# Secondary button label to dismiss the infobar without action
+multiprofile-data-collection-dismiss = Елемеу
+
+## Alternative text for default profile icons
+
+book-avatar-alt =
+    .alt = Кітап
+briefcase-avatar-alt =
+    .alt = Портфель
+picture-avatar-alt =
+    .alt = Сурет
+# Craft refers to hobby arts and crafts, represented by a button/fastener commonly found on clothing like shirts
+craft-avatar-alt =
+    .alt = Қолөнер
+flower-avatar-alt =
+    .alt = Гүл
+folder-avatar-alt =
+    .alt = Бума
+hammer-avatar-alt =
+    .alt = Балға
+heart-avatar-alt =
+    .alt = Жүрек
+heart-rate-avatar-alt =
+    .alt = Жүрек соғу жиілігі
+clock-avatar-alt =
+    .alt = Сағат
+leaf-avatar-alt =
+    .alt = Жапырақ
+lightbulb-avatar-alt =
+    .alt = Жарық шамы
+makeup-avatar-alt =
+    .alt = Косметика
+# Message refers to a text message, not a traditional letter/envelope message
+message-avatar-alt =
+    .alt = Хабарлама
+musical-note-avatar-alt =
+    .alt = Музыкалық нота
+palette-avatar-alt =
+    .alt = Палитра
+paw-print-avatar-alt =
+    .alt = Табан ізі
+plane-avatar-alt =
+    .alt = Ұшақ
+# Present refers to a gift box, not the current time period
+present-avatar-alt =
+    .alt = Сыйлық
+shopping-avatar-alt =
+    .alt = Кәрзеңке
+soccer-ball-avatar-alt =
+    .alt = Футбол добы
+sparkle-single-avatar-alt =
+    .alt = Шоқ
+star-avatar-alt =
+    .alt = Жұлдызша
+video-game-controller-avatar-alt =
+    .alt = Видео ойын контроллері
+custom-avatar-alt =
+    .alt = Таңдауыңызша аватар
+# Globe refers to the generic globe/world icon that appears in browser tabs when a website doesn't have its own favicon.
+globe-avatar-alt =
+    .alt = Глобус
+# Diamond refers to the precious stone, not the geometric shape
+diamond-avatar-alt =
+    .alt = Бриллиант
+barbell-avatar-alt =
+    .alt = Штанга
+bike-avatar-alt =
+    .alt = Велосипед
+
+## Tooltips for default avatar icons
+
+book-avatar = Кітап
+briefcase-avatar = Портфель
+clock-avatar = Сағат
+# Craft refers to hobby arts and crafts, represented by a button/fastener commonly found on clothing like shirts
+craft-avatar = Қолөнер
+custom-avatar = Таңдауыңызша аватар
+# Diamond refers to the precious stone, not the geometric shape
+diamond-avatar = Бриллиант
+flower-avatar = Гүл
+folder-avatar = Бума
+# Globe refers to the generic globe/world icon that appears in browser tabs when a website doesn't have its own favicon.
+globe-avatar = Глобус
+hammer-avatar = Балға
+heart-avatar = Жүрек
+heart-rate-avatar = Жүрек соғу жиілігі
+leaf-avatar = Жапырақ
+lightbulb-avatar = Жарық шамы
+makeup-avatar = Косметика
+# Message refers to a text message, not a traditional letter/envelope message
+message-avatar = Хабарлама
+musical-note-avatar = Музыкалық нота
+palette-avatar = Палитра
+paw-print-avatar = Табан ізі
+picture-avatar = Сурет
+plane-avatar = Ұшақ
+# Present refers to a gift box, not the current time period
+present-avatar = Сыйлық
+shopping-avatar = Кәрзеңке
+soccer-ball-avatar = Футбол добы
+sparkle-single-avatar = Шоқ
+star-avatar = Жұлдызша
+video-game-controller-avatar = Видео ойын контроллері
+custom-avatar-crop-back-button =
+    .aria-label = Артқа
+custom-avatar-crop-view =
+    .aria-label = Суретті қию көрінісі
+custom-avatar-crop-area =
+    .aria-label = Кию аймағын көрсету
+custom-avatar-drag-handle =
+    .aria-label = Кию аймағының өлшемін өзгерту
+barbell-avatar = Штанга
+bike-avatar = Велосипед
+
+## Tooltips for default avatar icons
+
+barbell-avatar-tooltip =
+    .tooltiptext = Штанга аватарын іске асыру
+bike-avatar-tooltip =
+    .tooltiptext = Велосипед аватарын іске асыру
+book-avatar-tooltip =
+    .tooltiptext = Кітап аватарын іске асыру
+briefcase-avatar-tooltip =
+    .tooltiptext = Портфель аватарын іске асыру
+picture-avatar-tooltip =
+    .tooltiptext = Сурет аватарын іске асыру
+# Craft refers to hobby arts and crafts, represented by a button/fastener commonly found on clothing like shirts
+craft-avatar-tooltip =
+    .tooltiptext = Қолөнер аватарын іске асыру
+# Globe refers to the generic globe/world icon that appears in browser tabs when a website doesn't have its own favicon.
+globe-avatar-tooltip =
+    .tooltiptext = Глобус аватарын іске асыру
+diamond-avatar-tooltip =
+    .tooltiptext = Алмаз аватарын іске асыру
+flower-avatar-tooltip =
+    .tooltiptext = Гүл аватарын іске асыру
+folder-avatar-tooltip =
+    .tooltiptext = Бума аватарын іске асыру
+hammer-avatar-tooltip =
+    .tooltiptext = Балға аватарын іске асыру
+heart-avatar-tooltip =
+    .tooltiptext = Жүрек аватарын іске асыру
+heart-rate-avatar-tooltip =
+    .tooltiptext = Жүрек соғу аватарын іске асыру
+clock-avatar-tooltip =
+    .tooltiptext = Сағат аватарын іске асыру
+leaf-avatar-tooltip =
+    .tooltiptext = Жапырақ аватарын іске асыру
+lightbulb-avatar-tooltip =
+    .tooltiptext = Шам аватарын іске асыру
+makeup-avatar-tooltip =
+    .tooltiptext = Макияж аватарын іске асыру
+# Message refers to a text message, not a traditional letter/envelope message
+message-avatar-tooltip =
+    .tooltiptext = Хабарлама аватарын іске асыру
+musical-note-avatar-tooltip =
+    .tooltiptext = Музыкалық нота аватарын іске асыру
+palette-avatar-tooltip =
+    .tooltiptext = Палитра аватарын іске асыру
+paw-print-avatar-tooltip =
+    .tooltiptext = Табан ізінің аватарын іске асыру
+plane-avatar-tooltip =
+    .tooltiptext = Ұшақ аватарын іске асыру
+# Present refers to a gift box, not the current time period
+present-avatar-tooltip =
+    .tooltiptext = Сыйлық аватарын іске асыру
+shopping-avatar-tooltip =
+    .tooltiptext = Сауда арбасының аватарын іске асыру
+soccer-ball-avatar-tooltip =
+    .tooltiptext = Футбол добының аватарын іске асыру
+sparkle-single-avatar-tooltip =
+    .tooltiptext = От шоғы аватарын іске асыру
+star-avatar-tooltip =
+    .tooltiptext = Жұлдызша аватарын іске асыру
+video-game-controller-avatar-tooltip =
+    .tooltiptext = Видео ойыны контроллерінің аватарын іске асыру

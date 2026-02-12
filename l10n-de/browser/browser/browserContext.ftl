@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Link in { -pocket-brand-name } speichern
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = E-Mail-Adresse kopieren
@@ -162,17 +160,15 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Link-Adresse kopieren
     .accesskey = k
+main-context-menu-preview-link =
+    .label = Link-Vorschau anzeigen
+    .accesskey = V
 # "Copy Clean Link" means that Firefox will remove things from the link you
 # copied, like items that identify you for advertising purposes, and other items
 # sites add into URLs to help them deliver a certain browsing experience.
 main-context-menu-copy-clean-link =
     .label = Saubere Link-Adresse kopieren
-    .accesskey = k
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Link ohne Website-Tracking kopieren
-    .accesskey = y
+    .accesskey = b
 
 ## Media (video/audio) controls
 ##
@@ -274,6 +270,11 @@ main-context-menu-image-info =
 main-context-menu-image-desc =
     .label = Beschreibung anzeigen
     .accesskey = B
+# Variables
+#   $engine (String) - Name of the search engine that will perform the search.
+main-context-menu-visual-search-2 =
+    .label = Grafik mit { $engine } suchen
+    .accesskey = s
 main-context-menu-video-save-as =
     .label = Video speichern unter…
     .accesskey = u
@@ -322,6 +323,9 @@ main-context-menu-manage-passwords =
     .accesskey = v
 main-context-menu-keyword =
     .label = Ein Schlüsselwort für diese Suche hinzufügen…
+    .accesskey = S
+main-context-menu-add-engine =
+    .label = Suchmaschine hinzufügen
     .accesskey = S
 main-context-menu-link-send-to-device =
     .label = Link an Gerät senden
@@ -393,3 +397,5 @@ main-context-menu-open-link-in-container-tab =
 main-context-menu-reveal-password =
     .label = Passwort anzeigen
     .accesskey = o
+# The label of a badge shown in menu items to call out new features.
+main-context-menu-new-feature-badge = Neu

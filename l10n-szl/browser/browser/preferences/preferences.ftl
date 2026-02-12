@@ -111,6 +111,10 @@ startup-header = Sztartowanie
 always-check-default =
     .label = Zawdy badej, jeźli { -brand-short-name } to je twoja bazowo przeglōndarka
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } to je twoja bazowo przeglōndarka
+is-not-default-browser =
+    .message = { -brand-short-name } to niy ma twoja bazowo przeglōndarka
 is-default = { -brand-short-name } to je twoja bazowo przeglōndarka
 is-not-default = { -brand-short-name } to niy ma twoja bazowo przeglōndarka
 set-as-my-default-browser =
@@ -195,6 +199,12 @@ containers-remove-cancel-button = Niy wyciepuj tego kōntynera
 language-and-appearance-header = Godki i wyglōnd
 preferences-web-appearance-header = Wyglōnd strōn
 preferences-web-appearance-description = Niykere strōny przipasowujōm swoje schymaty farbōw do twojich preferyncyji. Ôbier, kery schymat farbōw chcesz mieć na takich strōnach.
+preferences-web-appearance-choice-light2 =
+    .label = Jasny
+    .title = Używej jasnego wyglōndu zadku i zawartości strōn.
+preferences-web-appearance-choice-dark2 =
+    .label = Ćmawy
+    .title = Używej ćmawego wyglōndu zadku i zawartości strōn.
 preferences-web-appearance-choice-light = Jasny
 preferences-web-appearance-choice-dark = Ćmawy
 preferences-web-appearance-choice-tooltip-light =
@@ -205,13 +215,11 @@ preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-web-appearance-link =
+    .label = Regiyruj motywami aplikacyje { -brand-short-name } w Rozszyrzynia i motywy
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Sztalōnki farbōw nadpisujōm wyglōnd strōny. <a data-l10n-name="colors-link">Regiyruj farbami</a>
-# This can appear when using windows HCM or "Override colors: always" without
-# system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Sztalōnki farbōw nadpisujōm wyglōnd strōny.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Regiyruj motywami aplikacyje { -brand-short-name } w <a data-l10n-name="themes-link">Rozszyrzynia i motywy</a>
@@ -271,6 +279,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Zbiory i aplikacyje
+downloads-header-2 =
+    .label = Pobrania
+download-save-where-2 =
+    .label = Spamiyntuj zbiory do
+    .accesskey = v
 download-header = Pobrania
 download-save-where = Spamiyntuj zbiory do
     .accesskey = v
@@ -490,7 +503,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Nowe ôkna i karty
 home-new-windows-tabs-description2 = Ôbier, co chcesz widzieć przi ôtwiyraniu swojij dōmowyj strōny, nowych ôkiyn abo kart.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Dōmowo strōna i nowe ôkna
 home-newtabs-mode-label = Nowe karty
@@ -630,6 +643,8 @@ search-keyword-warning-bookmark = Ôbranego kluczowego słowa używo teroz zokł
 containers-back-button2 =
     .aria-label = Nazod do sztalōnkōw
 containers-header = Kōntynerowe karty
+containers-section-header =
+    .heading = Kōntynerowe karty
 containers-add-button =
     .label = Przidej nowy kōntyner
     .accesskey = P
@@ -765,6 +780,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Miano masziny
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Miano masziny
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Zmiyń miano masziny
+    .accesskey = m
 sync-device-name-change =
     .label = Zmiyń miano masziny…
     .accesskey = m
@@ -854,9 +877,6 @@ primary-password-os-auth-dialog-message-win = Żeby zrychtować głōwne hasło,
 primary-password-os-auth-dialog-message-macosx = zrychtuj głōwne hasło
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Historyjo
@@ -877,6 +897,10 @@ history-remember-option-never =
     .label = nigdy niy spamiyntować historyje
 history-remember-option-custom =
     .label = używać twojich nasztalowań do historyje
+history-remember-description2 =
+    .description = { -brand-short-name } bydzie pamiyntoł twoje przeglōndanie, pobiyranie, formulary i historyjo szukanio.
+history-dontremember-description2 =
+    .description = { -brand-short-name } bydzie używoł tych samuych nasztalowań co we prywatnym trybie i niy spamiynto historyji twojigo przeglōndanio strōn.
 history-remember-description = { -brand-short-name } bydzie pamiyntoł twoje przeglōndanie, pobiyranie, formulary i historyjo szukanio.
 history-dontremember-description = { -brand-short-name } bydzie używoł tych samuych nasztalowań co we prywatnym trybie i niy spamiynto historyji twojigo przeglōndanio strōn.
 history-private-browsing-permanent =
@@ -940,12 +964,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Regiyruj wyjōntkami…
     .accesskey = x
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -1080,6 +1098,8 @@ permissions-notification-link = Przewiydz sie wiyncyj
 permissions-notification-pause =
     .label = Spauzuj powiadōmiynia, aże { -brand-short-name } sie zresztartuje
     .accesskey = n
+permissions-autoplay2 =
+    .label = Autōmatyczne puszczanie
 permissions-autoplay = Autōmatyczne puszczanie
 permissions-autoplay-settings =
     .label = Nasztalowania…
@@ -1099,6 +1119,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Wyjōntki…
     .accesskey = W
+permissions-location2 =
+    .label = Plac
+permissions-xr2 =
+    .label = Wirtualno ryalność
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Mikrofōn
+permissions-notification2 =
+    .label = Powiadōmiynia
 
 ## Privacy Section - Data Collection
 
@@ -1122,11 +1152,6 @@ addon-recommendations-link = Przewiydz sie wiyncyj
 collection-health-report-disabled = Posyłanie danych je zastawione przi tyj kōnfiguracyji
 collection-backlogged-crash-reports-with-link = Przizwōl, coby { -brand-short-name } posyłoł nazbiyrane raporty z awaryjōw za ciebie <a data-l10n-name="crash-reports-link">Przewiydz sie wiyncyj</a>
     .accesskey = c
-collection-backlogged-crash-reports = Przizwōl, coby { -brand-short-name } posyłoł nazbiyrane raporty z awaryjōw za ciebie
-    .accesskey = c
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -1158,6 +1183,7 @@ certs-view =
 certs-devices =
     .label = Masziny bezpieczyństwa…
     .accesskey = M
+certs-devices-enable-fips = Załōncz FIPS
 space-alert-over-5gb-settings-button =
     .label = Ôdewrzij sztalōnki
     .accesskey = O
@@ -1175,9 +1201,6 @@ httpsonly-radio-enabled-pbm =
     .label = Załōncz tryb "ino HTTPS" ino w prywatnych ôknach
 httpsonly-radio-disabled =
     .label = Niy załōnczej trybu "ino HTTPS"
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

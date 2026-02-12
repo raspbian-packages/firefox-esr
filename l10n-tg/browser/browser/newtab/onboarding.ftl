@@ -25,6 +25,8 @@ return-to-amo-subtitle = Аҷоиб, шумо «{ -brand-short-name }» доре
 return-to-amo-addon-title = Акнун биёед <img data-l10n-name="icon"/> <b>{ $addon-name }</b>-ро насб намоед.
 return-to-amo-add-extension-label = Илова кардани васеъшавӣ
 return-to-amo-add-theme-label = Илова кардани мавзуъ
+return-to-amo-theme-install-complete-label = Мавзуъ насб карда шуд
+return-to-amo-extension-install-complete-label = Васеъшавӣ насб карда шуд
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Ворид кардан
 mr1-onboarding-theme-header = Соҳиби он шавед
 mr1-onboarding-theme-subtitle = Намуди зоҳирии «{ -brand-short-name }»-ро бо мавзуи дилхоҳ иваз намоед.
 mr1-onboarding-theme-secondary-button-label = Ҳоло не
-newtab-wallpaper-onboarding-title = Чакраҳои рангро кӯшиш намоед
-newtab-wallpaper-onboarding-subtitle = Барои танзими нигоҳи нав барои Варақаи нави шумо, тасвири заминаеро интихоб намоед.
-newtab-wallpaper-onboarding-primary-button-label = Танзими тасвири замина
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Мавзуи низомӣ
 mr1-onboarding-theme-label-light = Равшан
@@ -128,7 +127,7 @@ mr2-onboarding-start-browsing-button-label = Оғоз кардани тамош�
 ##   $appLanguage (String) - The name of the language shipping in the browser build, e.g. "English (EN)"
 
 onboarding-live-language-header = Забони худро интихоб намоед
-mr2022-onboarding-live-language-text = «{ -brand-short-name }» бо забони шумо ҳарф мезанад
+mr2022-onboarding-live-language-text = Барномаи «{ -brand-short-name }» бо забони шумо ҳарф мезанад
 mr2022-language-mismatch-subtitle = Ба шарофати ҷамъияти умумиҷаҳонии мо, браузери интернетии «{ -brand-short-name }» ба зиёда аз 90 забон тарҷума карда шудааст. Чунин менамояд, ки низоми шумо аз забони «{ $systemLanguage }» истифода мебарад, он вақте ки браузери «{ -brand-short-name }» аз забони «{ $appLanguage }» истифода мебарад.
 onboarding-live-language-button-label-downloading = Боргирии бастаи забон барои «{ $negotiatedLanguage }»…
 onboarding-live-language-waiting-button = Гирифтани забонҳои дастрас…
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Ба ҳисоби худ ворид шавед ё
 
 tab-groups-onboarding-feature-callout-title = Гурӯҳҳои варақаҳоро кӯшиш кунед — камтар бесарусомонӣ, тамаркузи бештар
 tab-groups-onboarding-feature-callout-subtitle = Барои ба тартиб даровардани чизҳо ва эҷод кардани аввалин гурӯҳи варақаҳои худ, як варақаро кашида, ба варақаи дигар гузоред.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Гурӯҳҳои варақаҳои худро дар «Рӯйхати ҳамаи варақаҳо» дар вақти дилхоҳ пайдо намоед.
+tab-groups-onboarding-create-group-title-2 = Дар ин ҷой гурӯҳҳои варақаҳои худро дар вақти дилхоҳ пайдо намоед.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Гурӯҳҳои худро тавассути ҷустуҷӯи онҳо дар навори нишонӣ пайдо намоед.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Вақте ки шумо гурӯҳи варақаҳои худро мепӯшед, онҳоро дар «Рӯйхати ҳамаи варақаҳо» дар вақти дилхоҳ аз нав кушоед.
+tab-groups-onboarding-saved-groups-title-2 = Вақте ки шумо гурӯҳи варақаҳоеро мепӯшед, шумо метавонед онҳоро дар ин ҷой дар вақти дилхоҳ аз нав кушоед.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Гурӯҳҳои пӯшидаи худро тавассути ҷустуҷӯи онҳо дар навори нишонӣ пайдо намоед.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Гурӯҳҳои варақаҳои худро дар «Рӯйхати ҳамаи варақаҳо» дар вақти дилхоҳ аз нав кушоед.
+tab-groups-onboarding-session-restore-title = Дар ин ҷой гурӯҳҳои варақаҳои худро дар вақти дилхоҳ аз нав кушоед.
+tab-groups-onboarding-dismiss = ХУБ
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,70 @@ multi-profile-spotlight-cta = Эҷод кардани профил
 multi-profile-callout-title = Профилҳои гуногунро барои кор ва дилхушӣ эҷод намоед
 multi-profile-callout-subtitle = Профилҳо ба шумо имкон медиҳанд, то ки тавонед маълумоти тамошобинии худро, ба монанди таърих ва ниҳонвожаҳо, комилан ҷудо нигоҳ доред.
 multi-profile-callout-cta = Эҷод кардани профил
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Боргирӣ кунед, ҳамоҳанг созед ва ба пеш равед!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Барои боргирӣ кардани «{ -brand-product-name }» рамзи «QR»-ро тасвирбардорӣ кунед. Пас аз насб кардани барнома, имкони «Ҳамоҳангсозӣ бо дастгоҳи мобилӣ»-ро интихоб кунед, то тавонед ба ниҳонвожаҳо, хатбаракҳо ва чизҳои дигар новобаста аз ҷойгиршавии худ дастрасӣ пайдо намоед.
+dismiss-button-label = Нодида гузарондан
+sync-to-mobile-button-label = Ҳамоҳангсозӣ бо дастгоҳи мобилӣ
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Рамзи «QR» барои боргирӣ кардани версияи мобилии «{ -brand-product-name }»
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-flair = Тавсияшуда
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Маълумоти бештар</a>
+create-backup-screen-1-sync-label = Бо «{ -brand-product-name }» ҳамоҳанг кунед
+create-backup-select-tile-button-label = Интихоб кардан
+create-backup-back-button-label = Ба қафо
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Танзими осон
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Рамзгузорӣ нашудааст
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Ҳамаи маълумот
+fx-backup-opt-in-header = Интихоби ҷойгиршавии файл
+fx-backup-opt-in-create-password-label = Ниҳонвожаро ворид намоед
+fx-backup-opt-in-confirm-btn-label = Идома додан
+fx-backup-opt-in-cancel-btn-label = Ба қафо
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-close-button = Пӯшидан
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-2 = Ба дастгоҳи шумо нигоҳ дошта шуд
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Ба дастгоҳи шумо нигоҳ дошта шуд
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Барқарорсозӣ аз нусхаи эҳтиётӣ
+restore-from-backup-title = Биёед браузери «{ -brand-short-name }»-ро ба ҳолате баргардонем, ки ба шумо маъқул аст
+restore-from-backup-subtitle = Барои бозгашт ба тамошобинӣ, ҳамаи хатбаракҳо, таърих ва маълумоти дигари худро барқарор созед.
+restore-from-backup-secondary-button = Барқарор карда нашавад
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Мо баргаштем! Маълумоти «{ -brand-short-name }»-и шумо барқарор карда шуд.
+restored-from-backup-success-with-checklist-subtitle = Мехоҳед, ки браузери дӯстдоштаи худро, ки ба махфият нигаронида шудааст, дар зери даст нигоҳ доред?
+restored-from-backup-success-no-checklist-subtitle = Шумо метавонед таҳияи нусхаи эҳтиётиро барои ин дастгоҳ дар <a data-l10n-name="settings">Танзимот</a> фаъол созед.
+restored-from-backup-success-with-checklist-primary-button = Нигоҳ доред ва идома диҳед
+restored-from-backup-success-with-checklist-secondary-button = Нодида гузарондани ин қадам
+restored-from-backup-success-no-checklist-primary-button = Идома додан
+restored-from-backup-error-title = Ҳм, дар файли нусхаи эҳтиётии шумо мушкилӣ ба миён омад.
+restored-from-backup-error-subtitle = Агар шумо барои «{ -brand-short-name }» файли нусхаи эҳтиётии дигар дошта бошед, кӯшиш кунед, ки маълумотро аз он файл барқарор созед. <a data-l10n-name="restore-problems">Ҳанӯз мушкилӣ мекашед?</a>
+restored-from-backup-error-primary-button = Пӯшидан
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-use-case-personal-option = Шахсӣ
+onboarding-personalization-use-case-school-option = Омӯзишӣ
+onboarding-personalization-use-case-work-option = Корӣ
+onboarding-personalization-motivation-privacy-option = Махфият ва амният
+onboarding-personalization-motivation-productivity-option = Самаранокӣ
+onboarding-personalization-motivation-other-option = Дигар

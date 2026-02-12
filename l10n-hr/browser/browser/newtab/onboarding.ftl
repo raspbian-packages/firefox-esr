@@ -25,6 +25,8 @@ return-to-amo-subtitle = Super, imaš { -brand-short-name }
 return-to-amo-addon-title = Sada instalirajmo <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Dodaj proširenje
 return-to-amo-add-theme-label = Dodaj temu
+return-to-amo-theme-install-complete-label = Tema je instalirana
+return-to-amo-extension-install-complete-label = Proširenje je instalirano
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Uvezi iz { $previous }
 mr1-onboarding-theme-header = Učini ga svojim
 mr1-onboarding-theme-subtitle = Prilagodi { -brand-short-name } s temom.
 mr1-onboarding-theme-secondary-button-label = Ne sada
-newtab-wallpaper-onboarding-title = Dodaj nešto boje
-newtab-wallpaper-onboarding-subtitle = Odaberi sliku pozadinu kako bi tvoja nova kartica dobila svjež izgled.
-newtab-wallpaper-onboarding-primary-button-label = Postavi sliku pozadine
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Tema sustava
 mr1-onboarding-theme-label-light = Svijetla
@@ -200,7 +199,7 @@ mr2022-onboarding-set-default-only-subtitle = Započni s preglednikom koji podr�
 ## MR2022 Existing User Pin Firefox Screen Strings
 
 # Title used on multistage onboarding page for existing users when Firefox is not pinned
-mr2022-onboarding-existing-pin-header = Hvala vam što volite { -brand-product-name }
+mr2022-onboarding-existing-pin-header = Hvala ti što voliš { -brand-product-name }
 # Subtitle is used on onboarding page for existing users when Firefox is not pinned
 mr2022-onboarding-existing-pin-subtitle = Pokreni zdraviji internet s bilo kojeg mjesta jednim klikom. Naša najnovija izdanja su prepuna novih stvari za koje mislimo da ćeš ih obožavati.
 # Subtitle will be used on the welcome screen for existing users
@@ -275,7 +274,7 @@ mr2022-onboarding-colorway-description-innovator = <b>Ti si inovator.</b> Posvud
 ## MR2022 Multistage Mobile Download screen strings
 
 mr2022-onboarding-mobile-download-title = Prebaci se s prijenosnog računala na mobitel i natrag
-mr2022-onboarding-mobile-download-subtitle = Ugrabi kartice s jednog uređaja i nastavi tamo gdje si stao/la na drugom. Osim toga, sinkroniziraj zabilješke i lozinke gdje god koristiš { -brand-product-name }.
+mr2022-onboarding-mobile-download-subtitle = Ugrabi kartice s jednog uređaja i nastavi tamo gdje si stao/la na drugom uređaju. Osim toga, sinkroniziraj zabilješke i lozinke gdje god koristiš { -brand-product-name }.
 mr2022-onboarding-mobile-download-cta-text = Snimi QR kod za preuzimanje { -brand-product-name } za mobilni uređaj ili si <a data-l10n-name="download-label">pošalji poveznicu za preuzimanje.</a>
 mr2022-onboarding-no-mobile-download-cta-text = Snimi QR kod za preuzimanje { -brand-product-name } za mobilni uređaj.
 
@@ -293,7 +292,7 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 ## MR2022 Privacy Segmentation screen strings
 
 mr2022-onboarding-privacy-segmentation-title = Uvijek poštujemo tvoju privatnost
-mr2022-onboarding-privacy-segmentation-subtitle = Od inteligentnih prijedloga do pametnijeg pretraživanja, neprestano radimo na stvaranju boljeg, osobnijeg { -brand-product-name(case: "gen") }.
+mr2022-onboarding-privacy-segmentation-subtitle = Od inteligentnih prijedloga do pametnijeg pretraživanja, neprestano radimo na stvaranju boljeg, osobnijeg { -brand-product-name }a.
 mr2022-onboarding-privacy-segmentation-text-cta = Što želiš vidjeti kada ponudimo nove funkcije koje koriste tvoje podatke za poboljšanje pregledavanja?
 mr2022-onboarding-privacy-segmentation-button-primary-label = Koristi { -brand-product-name } preporuke
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Prikaži detaljne informacije
@@ -321,7 +320,7 @@ mr2022-onboarding-default-image-alt =
 mr2022-onboarding-import-image-alt =
     .aria-label = Osoba koja vozi skateboard s kutijom softverskih ikona
 mr2022-onboarding-mobile-download-image-alt =
-    .aria-label = Žabe koje skaču po ljiljanima s QR kodom za preuzimanje { -brand-product-name } za mobitel u centru
+    .aria-label = Žabe koje skaču po ljiljanima s QR kodom za preuzimanje { -brand-product-name }a za mobilne uređaje u centru
 mr2022-onboarding-pin-private-image-alt =
     .aria-label = Čarobni štapić prikazuje { -brand-product-name } logotip privatnog pregledavanja iz šešira
 mr2022-onboarding-privacy-segmentation-image-alt =
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Registriraj se ili se prijavi na svoj račun
 
 tab-groups-onboarding-feature-callout-title = Isprobaj grupe kartica za manje nereda, bolje fokusiranje
 tab-groups-onboarding-feature-callout-subtitle = Uredi popis kartica povlačenjem jedne kartice na drugu za stvaranje tvoje prve grupe.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Grupe kartica možete pronaći u izborniku Popis svih kartica u bilo kojem trenutku.
+tab-groups-onboarding-create-group-title-2 = Pronađi svoje grupe kartica u bilo kojem trenutku.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Pronađi svoje grupe pretraživanjem u adresnoj traci.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Kada zatvorite grupu kartica, možete ju ponovno otvoriti iz izbornika Popis svih kartica u bilo kojem trenutku.
+tab-groups-onboarding-saved-groups-title-2 = Kada zatvoriš grupu kartica, ovdje je možeš ponovo otvoriti u bilo kojem trenutku.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Pronađi svoje zatvorene grupe pretraživanjem u adresnoj traci.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Grupe kartica možete ponovno otvoriti iz izbornika Popis svih kartica u bilo kojem trenutku.
+tab-groups-onboarding-session-restore-title = Ponovo otvori svoje grupe kartica u bilo kojem trenutku.
+tab-groups-onboarding-dismiss = U redu
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,14 @@ multi-profile-spotlight-cta = Stvori profil
 multi-profile-callout-title = Stvori različite profile za posao i zabavu
 multi-profile-callout-subtitle = Profili omogućuju odvojiti podatke o pregledavanju, poput povijesti pretraživanja i lozinki.
 multi-profile-callout-cta = Stvori profil
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Preuzmi, sinkroniziraj i kreni!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Snimi QR kod za preuzimanje { -brand-product-name }a za mobilne uređaje. Nakon instalacije odaberi „Sinkroniziraj s mobilnim uređajem” za pristup lozinkama, zabilješkama i još mnogo toga gdje god se nalaziš.
+dismiss-button-label = Odbaci
+sync-to-mobile-button-label = Sinkroniziraj s mobilnim uređajem
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR kod za preuzimanje { -brand-product-name }a za mobilne uređaje

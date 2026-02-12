@@ -4,9 +4,6 @@
 
 do-not-track-description = Spletnim stranem pošiljajte signal “Brez sledenja”, torej da vam naj ne sledijo
 do-not-track-removal = Signala "Brez sledenja" ne podpiramo več
-do-not-track-description2 =
-    .label = Spletnim mestom pošiljaj zahtevo "brez sledenja"
-    .accesskey = d
 do-not-track-learn-more = Več o tem
 do-not-track-option-default-content-blocking-known =
     .label = Samo, ko je { -brand-short-name } nastavljen na zavračanje znanih sledilcev
@@ -16,6 +13,8 @@ global-privacy-control-description =
     .label = Spletnim mestom sporočaj, naj ne prodajajo ali delijo mojih podatkov
     .accesskey = n
 non-technical-privacy-header = Nastavitve zasebnosti spletnih mest
+non-technical-privacy-label =
+    .aria-label = { non-technical-privacy-header }
 # Do not translate.
 # "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
 # included to facilitate power-user search of the about:preferences page.
@@ -71,6 +70,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = Zapri
+do-not-track-removal2 =
+    .label = Signala "Brez sledenja" ne podpiramo več
 
 ## Browser Restart Dialog
 
@@ -112,6 +113,9 @@ extension-controlling-proxy-config = <img data-l10n-name ="icon"/> <strong>{ $na
 # <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
 # <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
 extension-controlled-enable = Da bi omogočili to razširitev, izberite <img data-l10n-name="addons-icon"/> Dodatki v meniju <img data-l10n-name="menu-icon"/>.
+# This string is shown to notify the user that their home page or new tab preferences
+# are being controlled by an extension.
+extension-controlling-homepage = Nekatere nastavitve domače strani nadzira { $name }.
 
 ## Preferences UI Search Results
 
@@ -126,6 +130,10 @@ startup-header = Zagon
 always-check-default =
     .label = Vedno preveri, ali je { -brand-short-name } privzeti brskalnik
     .accesskey = V
+is-default-browser =
+    .message = { -brand-short-name } je trenutno vaš privzeti brskalnik
+is-not-default-browser =
+    .message = { -brand-short-name } ni vaš privzeti brskalnik
 is-default = { -brand-short-name } je trenutno vaš privzeti brskalnik
 is-not-default = { -brand-short-name } ni vaš privzeti brskalnik
 set-as-my-default-browser =
@@ -134,6 +142,8 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = Naloži nazadnje odprta okna in zavihke
     .accesskey = z
+startup-windows-launch-on-login-profile-disabled =
+    .message = To nastavitev omogočite tako, da v okencu “Izbira uporabniškega profila” označite “{ profile-manager-use-selected.label }”.
 windows-launch-on-login =
     .label = Ob zagonu računalnika samodejno odpri { -brand-short-name(sklon: "tozilnik") }
     .accesskey = O
@@ -148,6 +158,11 @@ preferences-data-migration-description = Uvozite zaznamke, gesla, zgodovino in p
 preferences-data-migration-button =
     .label = Uvozi podatke
     .accesskey = U
+preferences-profiles-header = Profili
+preferences-manage-profiles-description = Vsak profil vsebuje ločene nastavitve in podatke brskanja, vključno z zgodovino, gesli in drugim.
+preferences-manage-profiles-learn-more = Več o tem
+preferences-manage-profiles-button =
+    .label = Upravljanje profilov
 tabs-group-header = Zavihki
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab kroži med zavihki po vrsti, kot so bili nazadnje uporabljeni
@@ -155,6 +170,8 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Odpiraj povezave v zavihkih namesto v novih oknih
     .accesskey = d
+open-external-link-next-to-active-tab =
+    .label = Povezave iz aplikacij odpiraj poleg trenutnega zavihka
 ask-on-close-multiple-tabs =
     .label = Vprašaj pred zapiranjem več zavihkov hkrati
     .accesskey = t
@@ -231,12 +248,33 @@ containers-remove-cancel-button = Ne odstrani tega vsebnika
 settings-tabs-show-image-in-preview =
     .label = Ob pomiku miškinega kazalca na zavihek prikaži sliko predogleda
     .accessKey = h
+browser-layout-header = Postavitev brskalnika
+browser-layout-horizontal-tabs =
+    .label = Vodoravni zavihki
+browser-layout-horizontal-tabs-desc = Prikaži zavihke na vrhu brskalnika
+browser-layout-vertical-tabs =
+    .label = Navpični zavihki
+browser-layout-vertical-tabs-desc = Prikaži zavihke ob strani, v stranski vrstici
+browser-layout-show-sidebar =
+    .label = Prikaži stransko vrstico
+browser-layout-show-sidebar-desc = Hitro dostopajte do zaznamkov in zavihkov na telefonu, do UI-klepetalnikov in še več, ne da bi zapustili svoj glavni pogled.
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Jezik in videz
 preferences-web-appearance-header = Videz spletnih strani
 preferences-web-appearance-description = Nekatera spletna mesta lahko prilagodijo barvno shemo glede na vaše nastavitve. Izberite barvno shemo, ki jo želite uporabiti za ta spletna mesta.
+preferences-web-appearance-choice-auto2 =
+    .label = Samodejno
+    .title = Samodejno prilagodi ozadja in vsebino spletnih mest glede na nastavitve sistema in temo { -brand-short-name(sklon: "rodilnik") }.
+preferences-web-appearance-choice-light2 =
+    .label = Svetla
+    .title = Spletna mesta naj uporabljajo svetle barve ozadij in vsebine.
+preferences-web-appearance-choice-dark2 =
+    .label = Temna
+    .title = Spletna mesta naj uporabljajo temne barve ozadij in vsebine.
+web-appearance-group =
+    .aria-label = Videz spletnih strani
 preferences-web-appearance-choice-auto = Samodejno
 preferences-web-appearance-choice-light = Svetla
 preferences-web-appearance-choice-dark = Temna
@@ -254,14 +292,27 @@ preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning = Vaše izbire barv so nastavljene, da preglasijo videz spletnih strani. <a data-l10n-name="colors-link">Upravljanje barv</a>
+preferences-web-appearance-override-warning3 =
+    .message = Vaše nastavitve kontrasta vplivajo na videz spletnih strani.
+preferences-web-appearance-link =
+    .label = Upravljajte teme { -brand-short-name(sklon: "rodilnik") } na strani Razširitve in teme
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Vaše izbire barv so nastavljene, da preglasijo videz spletnih strani.
+preferences-web-appearance-override-warning = Vaše izbire barv so nastavljene, da preglasijo videz spletnih strani. <a data-l10n-name="colors-link">Upravljanje barv</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Upravljajte teme { -brand-short-name(sklon: "rodilnik") } na strani <a data-l10n-name="themes-link">Razširitve in teme</a>
+preferences-contrast-control-header = Nadzor kontrasta
+preferences-contrast-control-description = Spletne strani uporabljajo različne barve ospredja in ozadja. Nastavite { -brand-short-name(sklon: "tozilnik") } tako, da bo za večjo berljivost na vseh spletnih mestih uporabljal enake barve.
+preferences-contrast-control-use-platform-settings =
+    .label = Samodejno (uporabi sistemske nastavitve)
+    .accesskey = a
+preferences-contrast-control-off =
+    .label = Izklopljeno
+    .accesskey = I
+preferences-contrast-control-custom =
+    .label = Po meri
+    .accesskey = m
 preferences-colors-header = Barve
 preferences-colors-description = Preglasi privzete barve { -brand-short-name(sklon: "rodilnik") } za besedilo, ozadja strani in povezave.
 preferences-colors-manage-button =
@@ -320,6 +371,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Datoteke in programi
+downloads-header-2 =
+    .label = Prenosi
+download-save-where-2 =
+    .label = Shrani datoteke v
+    .accesskey = S
 download-header = Prenosi
 download-save-where = Shrani datoteke v
     .accesskey = S
@@ -337,6 +393,9 @@ download-choose-folder =
 download-always-ask-where =
     .label = Vedno vprašaj, kam shraniti datoteko
     .accesskey = v
+download-private-browsing-delete =
+    .label = Izbriši datoteke, prenesene v zasebnem brskanju, ko se zaprejo vsa zasebna okna
+    .accesskey = I
 applications-header = Programi
 applications-description = Izberite, kako naj { -brand-short-name } ravna z datotekami, ki jih prenesete s spleta, ter aplikacijami, ki jih uporabljate med brskanjem.
 applications-filter =
@@ -491,6 +550,8 @@ performance-default-content-process-count =
 ## General Section - Browsing
 
 browsing-title = Brskanje
+browsing-group-label =
+    .aria-label = Brskanje
 browsing-use-autoscroll =
     .label = Uporabljaj samodrsenje
     .accesskey = a
@@ -524,10 +585,10 @@ browsing-media-control =
     .accesskey = v
 browsing-media-control-learn-more = Več o tem
 browsing-cfr-recommendations =
-    .label = Med brskanjem priporoči razširitve
+    .label = Med brskanjem priporočaj razširitve
     .accesskey = r
 browsing-cfr-features =
-    .label = Med brskanjem priporoči možnosti
+    .label = Med brskanjem priporočaj možnosti
     .accesskey = m
 browsing-cfr-recommendations-learn-more = Več o tem
 
@@ -545,21 +606,25 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Nova okna in zavihki
 home-new-windows-tabs-description2 = Izberite, kaj želite videti, ko odprete domačo stran, nova okna in nove zavihke.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Domača stran in nova okna
+home-homepage-mode-label2 = Nova okna
 home-newtabs-mode-label = Novi zavihki
 home-restore-defaults =
     .label = Obnovi privzeto
     .accesskey = O
 home-mode-choice-default-fx =
-    .label = { -firefox-home-brand-name } (privzeta)
+    .label = { -firefox-home-brand-name(zacetnica: "velika") } (privzeta)
 home-mode-choice-custom =
     .label = Spletne strani po meri ...
 home-mode-choice-blank =
     .label = Prazna stran
 home-homepage-custom-url =
     .placeholder = Prilepite spletni naslov ...
+# This button is shown when the homepage is managed by an extension and is placed below extension-controlling-homepage.
+home-homepage-manage-extension-button =
+    .label = Upravljanje razširitve
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -574,10 +639,18 @@ use-current-pages =
 choose-bookmark =
     .label = Uporabi zaznamek …
     .accesskey = z
+home-homepage-header = Domača stran
+
+## Custom Homepage subpage
+
+home-custom-homepage-header = Domača stran po meri
+home-custom-homepage-address =
+    .placeholder = Vnesite naslov
 
 ## Home Section - Firefox Home Content Customization
 
 home-prefs-content-header2 = Vsebina { -firefox-home-brand-name(sklon: "rodilnik") }
+home-prefs-content-header3 = { -firefox-home-brand-name }
 home-prefs-content-description2 = Izberite vsebino, ki jo želite prikazati na { -firefox-home-brand-name(sklon: "mestnik") }.
 home-prefs-search-header =
     .label = Iskanje po spletu
@@ -625,6 +698,14 @@ home-prefs-weather-header =
     .label = Vreme
 home-prefs-weather-description = Kratek pogled na današnjo napoved
 home-prefs-weather-learn-more-link = Več o tem
+home-prefs-trending-search-header =
+    .label = Trenutno iskano
+home-prefs-trending-search-description = Priljubljene in pogosto iskane teme
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = Podprite { -brand-product-name(sklon: "tozilnik") }
+home-prefs-mission-message = Naši sponzorji podpirajo naše poslanstvo ustvarjanja boljšega spleta
+home-prefs-mission-message-learn-more-link = Spoznajte, kako
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -695,6 +776,9 @@ search-remove-engine =
 search-add-engine =
     .label = Dodaj
     .accesskey = D
+search-edit-engine =
+    .label = Uredi
+    .accesskey = U
 search-find-more-link = Najdi več iskalnikov
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
@@ -703,12 +787,21 @@ search-keyword-warning-title = Podvojena ključna beseda
 #   $name (string) - Name of a search engine.
 search-keyword-warning-engine = Izbrali ste ključno besedo, ki jo trenutno uporablja "{ $name }". Prosim, izberite drugo.
 search-keyword-warning-bookmark = Izbrali ste ključno besedo, ki jo trenutno uporablja zaznamek. Prosim, izberite drugo.
+# This warning is displayed when the chosen name is already in use.
+# Variables:
+#   $name (string) - Name of a search engine.
+edit-engine-name-warning-duplicate = Iskalnik z imenom "{ $name }" že obstaja. Izberite drugačno ime.
+remove-engine-confirmation = Ali ste prepričani, da želite odstraniti ta iskalnik?
+remove-engine-remove = Odstrani
+remove-addon-engine-alert = Za odstranitev tega iskalnika odstranite z njim povezan dodatek.
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = Nazaj na nastavitve
 containers-header = Vsebniški zavihki
+containers-section-header =
+    .heading = Vsebniški zavihki
 containers-add-button =
     .label = Dodaj nov vsebnik
     .accesskey = D
@@ -873,6 +966,14 @@ sync-choose-what-to-sync-dialog4 =
 ## The device name controls.
 
 sync-device-name-header = Ime naprave
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Ime naprave
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Spremeni ime naprave
+    .accesskey = r
 sync-device-name-change =
     .label = Spremeni ime naprave …
     .accesskey = r
@@ -1013,6 +1114,12 @@ autofill-saved-payment-methods-button = Shranjena plačilna sredstva
 # This operation requires the user to authenticate with the operating system (device sign-in)
 autofill-reauth-payment-methods-checkbox = Zahtevaj prijavo v napravi za izpolnjevanje in upravljanje plačilnih sredstev
     .accesskey = o
+autofill-payment-methods-title = Plačilna sredstva
+autofill-payment-methods-header =
+    .aria-label = Plačilna sredstva
+autofill-payment-methods-manage-payments-button =
+    .label = Upravljanje plačilnih sredstev
+    .accesskey = p
 
 ## Privacy Section - History
 
@@ -1034,6 +1141,10 @@ history-remember-option-never =
     .label = ne shranjuje zgodovine
 history-remember-option-custom =
     .label = uporablja posebne nastavitve za zgodovino
+history-remember-description2 =
+    .description = { -brand-short-name } si bo zapomnil vašo zgodovino brskanja, prenosov, obrazcev in iskanj.
+history-dontremember-description2 =
+    .description = { -brand-short-name } bo uporabljal enake nastavitve kot pri zasebnem brskanju in med brskanjem ne bo hranil nobene zgodovine.
 history-remember-description = { -brand-short-name } si bo zapomnil vašo zgodovino brskanja, prenosov, obrazcev in iskanj.
 history-dontremember-description = { -brand-short-name } bo uporabljal enake nastavitve kot pri zasebnem brskanju in med brskanjem ne bo hranil nobene zgodovine.
 history-private-browsing-permanent =
@@ -1058,7 +1169,13 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Piškotki in podatki strani
+sitedata-label =
+    .aria-label = { sitedata-header }
 sitedata-total-size-calculating = Računanje velikosti podatkov strani in predpomnilnika …
+# Variables:
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size2 = Shranjeni piškotki, zgodovina, podatki strani in predpomnilnik trenutno zavzemajo <strong>{ $value } { $unit }</strong> prostora na disku.
 # Variables:
 #   $value (number) - Value of the unit (for example: 4.6, 500)
 #   $unit (string) - Name of the unit (for example: "bytes", "KB")
@@ -1067,6 +1184,8 @@ sitedata-learn-more = Več o tem
 sitedata-delete-on-close =
     .label = Izbriši piškotke in podatke strani, ko se { -brand-short-name } zapre
     .accesskey = z
+sitedata-delete-on-close-private-browsing3 =
+    .message = V skladu z nastavitvami zgodovine { -brand-short-name } izbriše piškotke in podatke spletnih mest, ko zaprete brskalnik.
 sitedata-delete-on-close-private-browsing = V načinu stalnega zasebnega brskanja bodo piškotki in podatki strani izbrisani ob vsakem zaprtju { -brand-short-name(sklon: "rodilnik") }.
 sitedata-delete-on-close-private-browsing2 = V skladu z nastavitvami zgodovine { -brand-short-name } izbriše piškotke in podatke spletnih mest, ko zaprete brskalnik.
 sitedata-allow-cookies-option =
@@ -1083,6 +1202,8 @@ sitedata-option-block-cross-site-trackers =
     .label = Sledilce med spletnimi mesti
 sitedata-option-block-cross-site-tracking-cookies =
     .label = Piškotke za sledenje med spletnimi mesti
+sitedata-option-block-cross-site-cookies2 =
+    .label = Izoliraj medspletne piškotke
 sitedata-option-block-cross-site-cookies =
     .label = Piškotke za sledenje med spletnimi mesti in izoliraj ostale medspletne piškotke
 sitedata-option-block-unvisited =
@@ -1091,6 +1212,12 @@ sitedata-option-block-all-cross-site-cookies =
     .label = Vse medspletne piškotke (lahko povzroči nedelovanje spletnih strani)
 sitedata-option-block-all =
     .label = Vse piškotke (povzroči nedelovanje spletnih strani)
+sitedata-clear2 =
+    .label = Počisti podatke brskanja
+    .accesskey = i
+sitedata-settings2 =
+    .label = Upravljanje podatkov brskanja
+    .accesskey = U
 sitedata-clear =
     .label = Počisti podatke …
     .accesskey = č
@@ -1100,6 +1227,10 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Upravljanje izjem ...
     .accesskey = z
+sitedata-cookies-exceptions2 =
+    .label = Upravljanje izjem
+    .accesskey = z
+    .description = Določite lahko, katera spletna mesta lahko vedno ali ne smejo nikoli shranjevati piškotkov in podatkov strani.
 
 ## Privacy Section - Cookie Banner Handling
 
@@ -1119,7 +1250,18 @@ cookie-banner-blocker-checkbox-label =
 ## Privacy Section - Address Bar
 
 addressbar-header = Naslovna vrstica
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest-1 = { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest-1 = Predlogi { -brand-short-name(sklon: "rodilnik") } in naših partnerjev v vaši naslovni vrstici.
 addressbar-suggest = Pri uporabi naslovne vrstice predlagaj
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = Naslovna vrstica – { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest = Izberite, kakšni predlogi naj se prikazujejo v naslovni vrstici.
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = Več o tem
 addressbar-locbar-history-option =
     .label = zgodovino brskanja
     .accesskey = Z
@@ -1139,6 +1281,9 @@ addressbar-locbar-shortcuts-option =
 addressbar-locbar-topsites-option =
     .label = glavne strani
     .accesskey = g
+addressbar-locbar-engines-option-1 =
+    .label = Predlagaj iskalnike za uporabo
+    .accesskey = a
 addressbar-locbar-engines-option =
     .label = iskalnike
     .accesskey = i
@@ -1152,7 +1297,30 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = Prikaži priljubljene predloge iskanja
     .accesskey = p
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = Predlogi { -brand-short-name(sklon: "rodilnik") }
+addressbar-locbar-suggest-all-option-desc = Prejemajte predloge s spleta, povezane z vašim iskanjem.
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = Predlogi { -brand-short-name(sklon: "rodilnik") }
+addressbar-locbar-suggest-nonsponsored-desc = Prejemajte predloge s spleta, povezane z vašim iskanjem.
+addressbar-locbar-suggest-sponsored-option =
+    .label = Predlogi sponzorjev
+addressbar-locbar-suggest-sponsored-desc = Podprite { -brand-short-name } z občasnimi sponzoriranimi predlogi
+# This string is used for a checkbox in the settings UI that opts the
+# user into "online" Firefox Suggest, allowing them to receive suggestions from
+# Mozilla's Merino server.
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since the online suggest is created and maintained
+# by Mozilla.
+addressbar-firefox-suggest-online =
+    .label = Med tipkanjem prejemaj predloge Mozille
 addressbar-quickactions-learn-more = Več o tem
+addressbar-dismissed-suggestions-label = Skriti predlogi
+addressbar-restore-dismissed-suggestions-description = Obnovi opuščene predloge oglaševalcev in { -brand-short-name(sklon: "rodilnik") }.
+addressbar-restore-dismissed-suggestions-button =
+    .label = Obnovi
 
 ## Privacy Section - Content Blocking
 
@@ -1189,6 +1357,7 @@ content-blocking-private-windows = Sledilno vsebino v zasebnih oknih
 content-blocking-cross-site-cookies-in-all-windows2 = Medspletne piškotke v vseh oknih
 content-blocking-cross-site-tracking-cookies = Piškotke za sledenje med spletnimi mesti
 content-blocking-all-cross-site-cookies-private-windows = Medspletne piškotke v zasebnih oknih
+content-blocking-isolate-cross-site-cookies = Izoliraj medspletne piškotke
 content-blocking-cross-site-tracking-cookies-plus-isolate = Piškotke za sledenje med spletnimi mesti in izoliraj preostale piškotke
 content-blocking-social-media-trackers = Sledilce družbenih omrežij
 content-blocking-all-cookies = Vse piškotke
@@ -1209,8 +1378,14 @@ content-blocking-etp-standard-tcp-rollout-description = Popolna zaščita pred p
 content-blocking-etp-standard-tcp-rollout-learn-more = Več o tem
 content-blocking-etp-standard-tcp-title = Vključuje popolno zaščito pred piškotki, našo najzmogljivejšo možnost zasebnosti doslej
 content-blocking-warning-title = Opozorilo!
+content-blocking-warning-title-2 = Nekatere strani lahko s strogo zaščito pred sledenjem ne delujejo pravilno
+content-blocking-warning-title-custom = Nekatere strani lahko z zaščito pred sledenjem po meri ne delujejo pravilno
 content-blocking-and-isolating-etp-warning-description-2 = Ta nastavitev lahko povzroči, da nekatera spletna mesta ne delujejo pravilno ali da se vsebina ne prikaže. Če se vam zdi spletno mesto pokvarjeno, lahko za nalaganje vse vsebine izklopite zaščito pred sledenjem.
 content-blocking-warning-learn-how = Naučite se, kako
+content-blocking-baseline-uncheck-warning-dialog-title = Ali ste prepričani, da želite izklopiti popravke?
+content-blocking-baseline-uncheck-warning-dialog-body = Ta nastavitev pomaga odpraviti najpogostejše težave s stranmi. Če jo boste izklopili, nekatere strani morda ne bodo delovale, { -brand-short-name } pa pri odpravljanju teh težav ne bo mogel pomagati.
+content-blocking-baseline-uncheck-warning-dialog-ok-button = Izklopi popravke
+content-blocking-baseline-uncheck-warning-dialog-cancel-button = Ohrani popravke vklopljene
 content-blocking-reload-description = Za uveljavitev sprememb boste morali znova naložiti zavihke.
 content-blocking-reload-tabs-button =
     .label = Znova naloži vse zavihke
@@ -1265,6 +1440,14 @@ permissions-location = Lokacija
 permissions-location-settings =
     .label = Nastavitve …
     .accesskey = t
+permissions-localhost = Aplikacije in storitve na napravi
+permissions-localhost-settings =
+    .label = Nastavitve …
+    .accesskey = t
+permissions-local-network = Naprave lokalnega omrežja
+permissions-local-network-settings =
+    .label = Nastavitve …
+    .accesskey = t
 permissions-xr = Navidezna resničnost
 permissions-xr-settings =
     .label = Nastavitve …
@@ -1290,6 +1473,8 @@ permissions-notification-link = Več o tem
 permissions-notification-pause =
     .label = Ne prikazuj obvestil do naslednjega zagona { -brand-short-name(sklon: "rodilnik") }
     .accesskey = u
+permissions-autoplay2 =
+    .label = Samodejno predvajanje
 permissions-autoplay = Samodejno predvajanje
 permissions-autoplay-settings =
     .label = Nastavitve …
@@ -1309,12 +1494,30 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Izjeme …
     .accesskey = I
+permissions-location2 =
+    .label = Lokacija
+permissions-localhost2 =
+    .label = Aplikacije in storitve na napravi
+permissions-local-network2 =
+    .label = Naprave lokalnega omrežja
+permissions-xr2 =
+    .label = Navidezna resničnost
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Mikrofon
+permissions-notification2 =
+    .label = Obvestila
 
 ## Privacy Section - Data Collection
 
 collection-header = Zbiranje in uporaba podatkov { -brand-short-name(sklon: "rodilnik") }
 collection-header2 = Zbiranje in uporaba podatkov v { -brand-short-name(sklon: "mestnik") }
     .searchkeywords = telemetrija
+preferences-collection-description = Trudimo se vam ponuditi izbiro in zbirati minimalno količino podatkov, ki jih potrebujemo za izboljševanje { -brand-product-name(sklon: "rodilnik") }.
+preferences-collection-privacy-notice = Ogled obvestila o zasebnosti
+preferences-across-profiles = Te nastavitve veljajo za vse profile { -brand-product-name(sklon: "rodilnik") } v tej napravi.
+preferences-view-profiles = Prikaži vse profile
 collection-description = Trudimo se, da vam ponudimo izbiro in da zbiramo samo tisto, kar potrebujemo za razvoj in izboljšave { -brand-short-name(sklon: "rodilnik") } za vse uporabnike. Pred sprejemanjem osebnih podatkov vas vedno vprašamo za dovoljenje.
 collection-privacy-notice = Obvestilo o zasebnosti
 collection-health-report-telemetry-disabled = Organizaciji { -vendor-short-name } ne dovoljujete več zajemanja tehničnih podatkov in podatkov o uporabi. Vsi pretekli podatki bodo izbrisani v 30 dneh.
@@ -1344,7 +1547,7 @@ addon-recommendations-description = Prejemajte priporočila za razširitve, ki b
 # or builds with no Telemetry support available.
 collection-health-report-disabled2 = Pošiljanje podatkov je za to nastavitev graditve onemogočeno.
 collection-backlogged-crash-reports2 =
-    .label = Samodejno pošlji poročila o sesutjih
+    .label = Samodejno pošiljaj poročila o sesutjih
     .accesskey = č
 collection-backlogged-crash-reports-description = To { -vendor-short-name(sklon: "dajalnik") } omogoča ugotoviti vzroke težav z brskalnikom in jih odpraviti. Poročila lahko vključujejo osebne ali občutljive podatke.
 addon-recommendations =
@@ -1354,8 +1557,6 @@ addon-recommendations-link = Več o tem
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Pošiljanje podatkov je onemogočeno za to nastavitev graditve
 collection-backlogged-crash-reports-with-link = { -brand-short-name(sklon: "dajalnik") } dovoli, da v vašem imenu pošilja poročila o sesutjih iz zaloge <a data-l10n-name="crash-reports-link">Več o tem</a>
-    .accesskey = z
-collection-backlogged-crash-reports = { -brand-short-name(sklon: "dajalnik") } dovoli, da v vašem imenu pošilja poročila o sesutjih iz zaloge
     .accesskey = z
 privacy-segmentation-section-header = Nove zmožnosti, ki izboljšajo vaše brskanje
 privacy-segmentation-section-description = Ko ponujamo zmogljivosti, ki uporabljajo vaše podatke, da vam omogočijo bolj osebno izkušnjo:
@@ -1405,30 +1606,35 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = Dovoli { -brand-short-name(sklon: "dajalnik") }, da samodejno zaupa korenskim digitalnim potrdilom tretjih oseb, ki jih namestite
     .accesskey = t
+certs-devices-enable-fips = Omogoči FIPS
 space-alert-over-5gb-settings-button =
     .label = Odpri nastavitve
     .accesskey = O
 space-alert-over-5gb-message2 = <strong>{ -brand-short-name(sklon: "dajalnik") } zmanjkuje prostora.</strong> Vsebina spletnih strani morda ne bo prikazana pravilno. Shranjene podatke lahko izbrišete v Nastavitve > Zasebnost in varnost > Piškotki in podatki strani.
 space-alert-under-5gb-message2 = <strong>{ -brand-short-name(sklon: "dajalnik") } zmanjkuje prostora na disku.</strong> Strani se morda ne bodo prikazovale pravilno. Kliknite "Več o tem" za optimizacijo uporabe prostora na disku in boljšo izkušnjo pri brskanju po spletu.
+certs-description2 =
+    .label = Digitalna potrdila
+    .description = Nastavitev digitalnih potrdil, ki jih { -brand-short-name } uporablja za overjanje.
 
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = Način "samo HTTPS"
+httpsonly-label =
+    .aria-label = { httpsonly-header }
+    .description = Dovoli samo varne povezave na spletna mesta. Pred vzpostavitvijo nezavarovane povezave naj { -brand-short-name } vpraša
+httpsonly-description3 = Dovoli samo varne povezave na spletna mesta. Pred vzpostavitvijo nezavarovane povezave naj { -brand-short-name } vpraša
+httpsonly-learn-more2 = Kako deluje način "samo HTTPS"
 httpsonly-description = HTTPS zagotavlja varno, šifrirano povezavo med { -brand-short-name(sklon: "orodnik") } in spletnimi mesti, ki jih obiščete. Večina spletnih mest podpira HTTPS in če je omogočen način "samo HTTPS", bo { -brand-short-name } nadgradil vse povezave na HTTPS.
-httpsonly-description2 = { -brand-short-name } ustvarja varne in šifrirane povezave na spletna mesta, ki jih obiščete. { -brand-short-name } vas bo opozoril, če povezava ni varna, ko je vklopljen HTTPS-Only.
 httpsonly-learn-more = Več o tem
 httpsonly-radio-enabled =
     .label = Omogoči način "samo HTTPS" v vseh oknih
-httpsonly-radio-enabled2 =
-    .label = Uporabljaj samo HTTPS v vseh oknih
 httpsonly-radio-enabled-pbm =
     .label = Omogoči način "samo HTTPS" samo v zasebnih oknih
-httpsonly-radio-enabled-pbm2 =
-    .label = Uporabljaj samo HTTPS v zasebnih oknih
+httpsonly-radio-disabled3 =
+    .label = Ne omogoči načina "samo HTTPS"
+    .description = { -brand-short-name } bo nekatere povezave vseeno nadgradil
 httpsonly-radio-disabled =
     .label = Ne omogoči načina "samo HTTPS"
-httpsonly-radio-disabled2 =
-    .label = Najprej preizkusite HTTPS, vendar dovolite povezave, ki niso varne
 
 ## DoH Section
 
@@ -1451,7 +1657,7 @@ preferences-doh-status-disabled = izključeno
 #   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
 preferences-doh-status-not-active = nedejavno ({ $reason })
 preferences-doh-group-message = Omogoči zavarovan DNS. Stopnja zaščite:
-preferences-doh-group-message2 = Omogoči DNS preko HTTPS z uporabo:
+preferences-doh-group-message2 = Omogoči DNS preko HTTPS. Raven zaščite:
 preferences-doh-expand-section =
     .tooltiptext = Več informacij
 preferences-doh-setting-default =

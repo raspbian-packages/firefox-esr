@@ -15,7 +15,25 @@ webext-perms-header-with-perms = Adicionar { $extension }? Esta extensão terá 
 webext-perms-header-unsigned = Adicionar { $extension }? Esta extensão não foi verificada. Extensões maliciosas podem roubar suas informações privativas ou comprometer este computador. Só instale se confiar na origem.
 webext-perms-header-unsigned-with-perms = Adicionar { $extension }? Esta extensão não foi verificada. Extensões maliciosas podem roubar suas informações privativas ou comprometer este computador. Só instale se confiar na origem. Esta extensão terá permissão para:
 webext-perms-sideload-header = { $extension } adicionado
+webext-perms-optional-perms-header2 = { $extension } requer permissões adicionais
 webext-perms-optional-perms-header = { $extension } requer permissões adicionais.
+webext-perms-header2 = Adicionar { $extension }
+webext-perms-list-intro-unsigned = Esta extensão não verificada pode colocar sua privacidade em risco ou comprometer seu dispositivo. Só adicione se confiar na origem.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Permissões necessárias:
+webext-perms-header-optional-settings = Configurações opcionais:
+webext-perms-header-update-required-perms = Novas permissões necessárias:
+webext-perms-header-optional-required-perms = Novas permissões:
+webext-perms-header-data-collection-perms = Coleta de dados necessária:
+webext-perms-header-data-collection-is-none = Coleta de dados:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Nova coleta de dados necessária:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Nova coleta de dados:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Cancelar
     .accesskey = C
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = { $extension } foi atualizado. Antes de instalar a nova versão, você precisa aprovar novas permissões. Se escolher “Cancelar”, é mantida a versão atual da extensão.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = A extensão { $extension } foi atualizada. Você precisa aprovar novas permissões para que a versão atualizada seja instalada. Se escolher “Cancelar”, será mantida a versão atual. Esta extensão terá permissão para:
@@ -85,6 +106,29 @@ webext-perms-host-description-multiple-domains =
        *[other] Acessar seus dados de sites em { $domainCount } domínios
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = O desenvolvedor afirma que esta extensão não requer coleta de dados.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = O desenvolvedor afirma que esta extensão coleta: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = O desenvolvedor afirma que a extensão coletará: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = O desenvolvedor afirma que a extensão quer coletar: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = { $extension } requer novas configurações para ser atualizado
+webext-perms-update-list-intro-with-data-collection = Cancele para manter a versão atual e suas configurações, ou atualize para receber a nova versão e aprovar as mudanças.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } requer configurações adicionais
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } requer coleta de dados adicional
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -118,3 +162,8 @@ webext-site-perms-header-unsigned-with-perms = Adicionar { $extension }? Esta ex
 
 webext-site-perms-midi = Acessar dispositivos MIDI
 webext-site-perms-midi-sysex = Acessar dispositivos MIDI com suporte a SysEx
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Seu tema de esquema de cores foi removido.</b> O { -brand-shorter-name } atualizou sua coleção de esquemas de cores. Você pode encontrar as versões mais recentes no site de extensões.
+webext-colorway-theme-migration-notification-button = Obtenha esquemas de cores atualizados

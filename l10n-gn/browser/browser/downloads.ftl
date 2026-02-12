@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Ñemboguejy mba’emimi
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Umi marandurenda opyta mba’e’okápe
+downloads-private-browsing-message = Oimeraẽ oipurúva ko mba’e’oka ikatu ohecha umi ñemboguejy, jepémo oñemboty ovetãita ñemigua.
+downloads-private-browsing-delete-button =
+    .label = Emboguete marandurenda ijehegui
+    .accesskey = D
+downloads-private-browsing-accept-button =
+    .label = Aikũmby
+    .accesskey = G
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

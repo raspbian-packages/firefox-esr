@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = Página bloqueada
 neterror-captive-portal-page-title = Iniciar sesión en la red
 neterror-dns-not-found-title = Servidor no encontrado
 neterror-malformed-uri-page-title = URL inválida
+general-body-title = Ten cuidado. Algo no parece estar bien.
+problem-with-this-site-title = Parece que hay un problema con este sitio
 
 ## Error page actions
 
@@ -25,14 +27,14 @@ neterror-return-to-previous-page-button = Regresar
 neterror-return-to-previous-page-recommended-button = Volver (recomendado)
 neterror-try-again-button = Intentar de nuevo
 neterror-add-exception-button = Continuar siempre para este sitio
-neterror-settings-button = Cambiar la configuración de DNS
+neterror-settings-button = Cambiar los ajustes de DNS
 neterror-view-certificate-link = Ver certificado
 neterror-trr-continue-this-time = Continuar esta vez
 neterror-disable-native-feedback-warning = Continuar siempre
 
 ##
 
-neterror-pref-reset = Parece que la configuración de seguridad de la red podría estar provocando esto. ¿Quieres la configuración predeterminada para restaurar?
+neterror-pref-reset = Parece que la configuración de seguridad de tu red podría estar causando este problema. ¿Quieres que se restablezcan las configuraciones predeterminadas?
 neterror-error-reporting-automatic = Informa errores de este tipo para ayudar a { -vendor-short-name } a identificar y bloquear sitios maliciosos.
 
 ## Specific error messages
@@ -43,6 +45,7 @@ neterror-load-error-connection = Si no puedes cargar ninguna página, verifica l
 neterror-load-error-firewall = Si la red o tu computadora están protegidas por un firewall o proxy, asegúrate que { -brand-short-name } pueda acceder a internet.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Si se está intentando cargar una página en la red local, verifica que se hayan otorgado permisos de red local a { -brand-short-name } en la configuración de Privacidad y seguridad de macOS.
+neterror-http-error-page = Verifique que haya escrito correctamente la dirección del sitio web.
 neterror-captive-portal = Hay que iniciar sesión en esta red antes de poder acceder a Internet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -51,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Si ingresaste la dirección correct
 neterror-dns-not-found-hint-try-again = Intentar de nuevo más tarde
 neterror-dns-not-found-hint-check-network = Comprueba tu conexión de red
 neterror-dns-not-found-hint-firewall = Verifica que { -brand-short-name } tenga permiso para acceder a la web (es posible que estés conectado pero detrás de un firewall)
+neterror-dns-not-found-offline-hint-header = <strong>¿Qué puedes hacer al respecto?</strong>
+neterror-dns-not-found-offline-hint-different-device = Intenta conectarte desde un dispositivo diferente.
+neterror-dns-not-found-offline-hint-modem = Revisa el módem o router.
+neterror-dns-not-found-offline-hint-reconnect = Desconectarse y volver a conectarse a Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -74,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Problema inesperado.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } no puede proteger tu solicitud para la dirección de este sitio a través de nuestro sistema de resolución de nuestro DNS de confianza. Esta es la razón:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } no puede proteger su solicitud de la dirección de este sitio a través de nuestro proveedor de DNS seguro. Este es el por qué:
 neterror-dns-not-found-native-fallback-heuristic = DNS sobre HTTPS ha sido deshabilitado en tu red.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } no pudo conectarse a { $trrDomain }.
 
@@ -98,6 +104,9 @@ neterror-proxy-connect-failure-settings = Comprueba que la configuración del pr
 neterror-proxy-connect-failure-contact-admin = Comunícate con el administrador de la red para comprobar que el servidor proxy está funcionando.
 neterror-content-encoding-error = Contacta a los propietarios del sitio web para informarles sobre este problema.
 neterror-unsafe-content-type = Contacta a los propietarios del sitio web para informarles sobre este problema.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } no confía en { $hostname } porque la conexión no es segura. Prueba a cambiar la URL a HTTPS.
 neterror-nss-failure-not-verified = La página que estás tratando de ver no se puede mostrar porque la autenticidad de los datos recibidos no pueden ser verificados.
 neterror-nss-failure-contact-website = Por favor contacta a los propietarios del sitio web para informarles de este problema.
 # Variables:
@@ -151,6 +160,9 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Si no estás familiarizado 
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> tiene una política de seguridad llamada HTTP Strict transporte Security (HSTS), que significa que { -brand-short-name } solo puede conectarse a él con seguridad. No puedes agregar una excepción para visitar este sitio.
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = Probablemente nada, ya que es posible que haya un problema con el sitio.
+certerror-blocked-by-corp-headers-description = A veces, los sitios web configuran protecciones para sí mismos y para personas como tú contra interacciones no deseadas con otros sitios.
+certerror-coop-learn-more = Obtén más información sobre las políticas de apertura de origen cruzado (COOP)
+certerror-coep-learn-more = Obtén más información sobre las políticas de integración de origen cruzado (COEP)
 # Variables:
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").

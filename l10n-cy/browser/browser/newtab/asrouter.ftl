@@ -67,7 +67,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } defnyddiwr
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Cydweddu eich nodau tudalen ym mhob man
 cfr-doorhanger-bookmark-fxa-body = Mae hwn yn dda! Peidiwch bod heb y nod tudalen hon ar eich dyfeisiau symudol. Dechrau arni gyda { -fxaccount-brand-name }.
@@ -76,6 +76,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Cydweddu nodau tudalen nawr…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Cau botwm
     .title = Cau
+fxa-adoption-addresses-backup-title = Gadewch i ni wneud copi wrth gefn o'ch cyfeiriadau sydd wedi'u cadw
+fxa-adoption-addresses-backup-subtitle = Diogelwch eich cyfrineiriau trwy eu cydweddu â'ch dyfeisiau gydag amgryptio.
+fxa-adoption-credit-cards-backup-title = Gadewch i ni wneud copi wrth gefn o'ch dulliau talu
+fxa-adoption-credit-cards-backup-subtitle = Diogelwch eich dulliau talu trwy eu cydweddu â'ch dyfeisiau gydag amgryptio.
+fxa-adoption-bookmarks-treatment-backup-title = Gadewch i ni wneud copi wrth gefn o'ch nodau tudalen
+fxa-adoption-bookmarks-treatment-backup-subtitle = Diogelwch eich nodau tudalen trwy eu cydweddu â'ch dyfeisiau gydag amgryptiad.
+fxa-adoption-primary-button-label = Ymuno
 
 ## Protections panel
 
@@ -238,6 +245,22 @@ fox-doodle-pin-secondary = Nid nawr
 set-default-pdf-handler-headline = <strong>Mae'ch ffeiliau PDF nawr yn agor yn { -brand-short-name }.</strong> Golygwch neu llofnodwch ffurflenni o fewn eich porwr. I newid, chwiliwch am "PDF" yn y gosodiadau.
 set-default-pdf-handler-primary = Iawn
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Rhowch eich llofnod yn unrhyw le!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Tynnwch lun, teipio, neu lwytho'ch llofnod, yna rhowch ef yn union lle rydych chi ei eisiau. Cadwch eich llofnod ar gyfer y tro nesaf.
+annotations-make-default-pdf-handler-title = Gwneud { -brand-short-name } eich golygydd PDF rhagosodedig?
+annotations-make-default-pdf-handler-subtitle = Bydd gyda chi fynediad at ein hoffer bob tro byddwch yn agor PDF.
+annotations-make-default-pdf-primary-cta =
+    .label = Gosod fel y rhagosodiad
+annotations-make-default-pdf-next =
+    .label = Nesaf
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Dyfais newydd yn eich dyfodol?
@@ -323,8 +346,11 @@ fxa-menu-message-close-button =
     .title = Cau
     .aria-label = Cau
 fxa-menu-message-sign-up-button = Cofrestru
+fxa-menu-message-sign-in-button = Mewngofnodi
+fxa-menu-message-sync-button = Cychwyn cydweddu
 fxa-menu-message-sync-devices-primary-text = Cydweddwch eich holl ddyfeisiau
 fxa-menu-message-sync-devices-secondary-text = Cael eich gwybodaeth ar unwaith — fel nodau tudalen a chyfrineiriau — ym mhob man rydych yn defnyddio { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Cewch eich nodau tudalen, cyfrineiriau, a mwy yn syth — ym mhob man y byddwch wedi'ch mewngofnodi i { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Cydweddwch eich holl ddyfeisiau
 fxa-menu-message-backup-data-primary-text = Gwnewch gopi wrth gefn o ddata eich porwr
 fxa-menu-message-backup-data-secondary-text = Diogelwch nodau tudalen, cyfrineiriau a gwybodaeth arall yn awtomatig ar eich holl ddyfeisiau.
@@ -355,3 +381,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Cadwch eich hoff borwr sy'n canolbwyntio ar breifatrwydd dim ond un clic i ffwrdd. Gosod { -brand-short-name } fel eich porwr rhagosodedig ar gyfer agor dolenni a'i binio i'ch bar tasgau.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Cadwch eich hoff borwr sy'n canolbwyntio ar breifatrwydd dim ond un clic i ffwrdd. Gosodwch { -brand-short-name } fel eich porwr rhagosodedig ar gyfer agor dolenni a'i binio i'ch dewislen Cychwyn.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Uwchraddio o Windows 10 cyn bo hir?
+windows-10-eos-sync-spotlight-subtitle = Gwnewch gopi wrth gefn o'ch cyfrineiriau a'ch nodau tudalen fel eich bod chi'n barod i symud i unrhyw ddyfais.
+windows-10-eos-sync-spotlight-primary-label = Gwnewch gopi wrth gefn o { -brand-short-name }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Yn uwchraddio i Windows 11? Peidiwch â cholli nodau tudalen a chyfrineiriau.
+windows-10-eos-sync-toast-subtitle = Gwnewch gopi wrth gefn o'ch data fel bod { -brand-short-name } yn barod ar unrhyw bryd, ar y cyfrifiadur hwn neu'r un nesaf.
+windows-10-eos-sync-toast-primary-label = Cychwyn arni
+windows-10-eos-sync-toast-secondary-label = Atgoffwch fi yn nes ymlaen
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = Dyw { -brand-product-name } heb ei raglwytho fel porwyr y cwmnïau mawr eraill. Dyna'r pwynt.
+windows-10-eos-challenger-sync-callout-subtitle = Pan fyddwch yn gwneud copi wrth gefn o'ch nodau tudalen a'ch cyfrineiriau { -brand-product-name }, mae'n haws dod â'r porwr rydych wedi'i ddewis i'ch dyfais nesaf.
+windows-10-eos-challenger-pin-callout-subtitle = Piniwch { -brand-shorter-name } i'ch bar tasgau fel bod y porwr rydych wedi'i ddewis yno bob amser pan fyddwch ei angen.
+windows-10-eos-challenger-sync-primary-button = Copïwch { -brand-shorter-name } wrth gefn
+windows-10-eos-challenger-pin-primary-button = Piniwch { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = Mae { -brand-product-name } yn rhwystro cryptogloddwyr, tracwyr cyfryngau cymdeithasol a bysbrintwyr.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Dyw tracwyr ddim yn gallu adnabod eich dyfais na'ch dilyn ar draws y we - oherwydd dydyn ni ddim yn gadael iddyn nhw.
+windows-10-eos-sync-callout-privacy-screen-2-title = Diogelwch eich cyfrineiriau a'ch nodau tudalen ar gyfer eich dyfais nesaf.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Mae gwneud copïau wrth gefn o { -brand-shorter-name } yn ei gwneud hi'n hawdd dod â'ch gosodiadau data a phreifatrwydd gyda chi.
+windows-10-eos-sync-callout-privacy-info-button = Gweld beth sydd wedi'i rwystro
+windows-10-eos-callout-addons-title = Rhowch gynnig ar ychwanegion: uwchraddiadau syml, effeithiau mawr
+windows-10-eos-callout-addons-subtitle = Mae'r estyniadau hyn wedi'u dewis i'ch helpu i aros yn gynhyrchiol, yn ddiogel a pheidio'ch tarfu.
+windows-10-eos-callout-addons-primary-button = Gweld ein dewisiadau
+windows-10-eos-sync-callout-addons-title = Peidiwch colli'ch ychwanegion pan fyddwch chi'n uwchraddio o Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Cydweddwch nawr fel bod eich ychwanegion { -brand-product-name } bob amser ar gael, hyd yn oed ar ôl newid dyfais.
+windows-10-eos-sync-callout-next-button = Nesaf
+windows-10-eos-sync-callout-get-started-button = Cychwyn arni
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Mae tabiau fertigol a grwpiau tab yma!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Ar gais poblogaidd, mae { -brand-product-name } newydd gynnig nodweddion newydd er mwyn sicrhau bod eich pori'n syml a chlir.
+windows-10-eos-feature-toast-whats-new-button = Gweld beth sy'n newydd
+windows-10-eos-feature-toast-dismiss-button = Cau
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Gall diogelwch tracio llym achosi i wefannau dorri.</strong> Mae modd trwsio problemau cyffredin trwy ddadrwystro elfennau hanfodol sy'n gallu cynnwys tracwyr.
+etp-strict-exceptions-infobar-learn-more = Dysgu rhagor
+etp-strict-exceptions-infobar-button = Datrys
+    .accesskey = D
+etp-strict-exceptions-infobar-not-now = Nid nawr
+    .accesskey = N

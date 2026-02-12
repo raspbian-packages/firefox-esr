@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Ignorar
     .secondarybuttonaccesskey = I
 appmenu-update-restart-message2 = Va per la versiun la pli nova da { -brand-shorter-name }. Fanestras e tabs averts vegnan restaurads.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Revocar
+    .secondarybuttonaccesskey = R
 appmenu-update-other-instance =
     .label = Impussibel dad actualisar automaticamain { -brand-shorter-name } a la pli nova versiun.
     .buttonlabel = Tuttina actualisar { -brand-shorter-name }
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = OK
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = Administrescha tes supplements e designs via il menu da l'applicaziun.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Actualisescha las permissiuns e las preferenzas per las datas da tut temp en ils <a data-l10n-name="settings-link">parameters da l’extensiuns</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Fixescha l’extensiun en la trav d’utensils
+    .accesskey = F
 appmenu-addon-post-install-incognito-checkbox =
     .label = Permetter a questa extensiun dad esser activa en fanestras privatas
     .accesskey = a

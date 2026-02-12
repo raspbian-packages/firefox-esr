@@ -25,6 +25,8 @@ return-to-amo-subtitle = Geweldich, jo hawwe { -brand-short-name }
 return-to-amo-addon-title = Litte wy no<img data-l10n-name="icon"/><b>{ $addon-name }</b> ophelje.
 return-to-amo-add-extension-label = De útwreiding tafoegje
 return-to-amo-add-theme-label = It tema tafoegje
+return-to-amo-theme-install-complete-label = Tema ynstallearre
+return-to-amo-extension-install-complete-label = Utwreiding ynstallearre
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Ymportearje út { $prev
 mr1-onboarding-theme-header = Meitsje it fan josels
 mr1-onboarding-theme-subtitle = Personalisearje { -brand-short-name } mei in tema.
 mr1-onboarding-theme-secondary-button-label = No net
-newtab-wallpaper-onboarding-title = Probearje in bytsje kleur
-newtab-wallpaper-onboarding-subtitle = Kies in eftergrûn om jo Nij-ljepblêdside in frisse útstrieling te jaan.
-newtab-wallpaper-onboarding-primary-button-label = Eftergrûn ynstelle
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systeemtema
 mr1-onboarding-theme-label-light = Ljocht
@@ -283,7 +282,7 @@ mr2022-onboarding-no-mobile-download-cta-text = Scan de QR-koade om { -brand-pro
 ## Pin private window screen shown only for users who don't have Firefox private pinned
 
 mr2022-upgrade-onboarding-pin-private-window-header = Krij frijheid fan priveenavigaasje mei ien klik
-mr2022-upgrade-onboarding-pin-private-window-subtitle = Gjin bewarre cookies of skiednis, direkt fan jo buroblêd. Blêdzje as oft net ien meisjocht.
+mr2022-upgrade-onboarding-pin-private-window-subtitle = Gjin bewarre cookies of skiednis, streekrjocht fan jo buroblêd ôf. Blêdzje as oft net ien sjocht.
 mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
     { PLATFORM() ->
         [macos] { -brand-short-name }-priveenavigaasje yn Dock hâlde
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Registrearje of oanmelde by jo account
 
 tab-groups-onboarding-feature-callout-title = Probearje ljepblêdgroepen foar minder rommel, mear fokus
 tab-groups-onboarding-feature-callout-subtitle = Wês organisearre troch it iene ljepblêd op it oar te slepen om jo earste groep te meitsjen.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Fyn jo ljepblêdgroepen altyd werom yn it menu Alle ljepblêdtitels toane.
+tab-groups-onboarding-create-group-title-2 = Fyn hjir altyd jo ljepblêdgroepen.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Fyn jo groepen troch dernei te sykjen yn de adresbalke.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Wannear’t jo in ljepblêdgroep slute, kinne jo dizze op elk winske momint opnij iepenje fan it menu Alle ljepblêdtitels toane út.
+tab-groups-onboarding-saved-groups-title-2 = Wannear’t jo in ljepblêdgroep slute, kinne jo dizze hjir altyd opnij iepenje.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Fyn jo sletten groepen troch dernei te sykjen yn de adresbalke.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Jo kinne jo ljepblêdgroepen op elk winske momint opnij iepenje fan it menu Alle tabbladtitels toane út.
+tab-groups-onboarding-session-restore-title = Iepenje hjir altyd jo ljepblêdgroepen.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,107 @@ multi-profile-spotlight-cta = In profyl oanmeitsje
 multi-profile-callout-title = Meitsje ferskate profilen foar wurk en wille
 multi-profile-callout-subtitle = Profilen litte jo jo sneupynformaasje, lykas sykskiednis en wachtwurden, folslein apart te hâlden.
 multi-profile-callout-cta = In profyl oanmeitsje
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Downloade, syngronisearje en gean!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Scan de QR-koade om { -brand-product-name } foar mobyl te downloaden. Selektearje nei ynstallaasje ‘Syngronisearje mei mobyl’ om ûnderweis tagong ta jo wachtwurden, blêdwizers en mear te krijen.
+dismiss-button-label = Slute
+sync-to-mobile-button-label = Syngronisearje mei mobyl
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-koade om { -brand-product-name } foar mobyl te downloaden
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Upgrade nei Windows 11?
+    Litte wy in reservekopy fan jo { -brand-product-name }-gegevens meitjse
+create-backup-screen-1-subtitle = Beskermje automatysk jo wachtwurden, blêdwizers en mear yn 1–2 minuten.
+create-backup-screen-1-flair = Oanrekommandearre
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Mear ynfo</a>
+create-backup-screen-1-sync-label = Syngronisearje mei { -brand-product-name }
+create-backup-screen-1-sync-body = Makket in reservekopy fan alle oanmelde apparaten
+create-backup-screen-1-backup-label = Reservekopy meitsje op PC
+create-backup-screen-1-backup-body = Bewarret op jo apparaat of OneDrive
+create-backup-select-tile-button-label = Selektearje
+create-backup-back-button-label = Tebek
+create-backup-show-fewer =
+    .label = Minder lykas dit toane
+create-backup-screen-2-title = Kies { -brand-product-name }-gegevens om in reservekopy fan te meitsjen
+create-backup-screen-2-subtitle = It duorret mar in minút. Der wurdt ien kear deis in reservekopy fan jo gegevens makke.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Ienfâldige ynstellingen
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Blêdwizers, skiednis, ynstellingen en mear
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Befettet gjin wachtwurden en betelmetoaden
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Net fersifere
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Alle gegevens
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Befettet wachtwurden en betelmetoaden
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Fersifere mei in wachtwurd
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Wêr wolle jo jo reservekopy bewarje?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Wachtwurd foar in reservekopybestân oanmeitsje
+create-backup-screen-3-subtitle = Fereaske om jo gegevens te fersiferjen. Bewarje it op in plak dat jo ûnthâlde kinne.
+fx-backup-opt-in-header = Bestânslokaasje kieze
+fx-backup-opt-in-filepath-label = Kies in lokaasje dy’t jo nei in nij apparaat oersette wolle, lykas OneDrive.
+fx-backup-opt-in-create-password-label = Fier wachtwurd yn
+fx-backup-opt-in-confirm-btn-label = Trochgean
+fx-backup-opt-in-cancel-btn-label = Tebek
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Jo reservekopy is ynpland
+fx-backup-confirmation-screen-close-button = Slute
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Alle navigaasjegegevens ynbegrepen
+fx-backup-confirmation-screen-all-data-item-text-2 = Bewarre op jo apparaat
+fx-backup-confirmation-screen-all-data-item-text-3 = Fersifere en befeilige mei in wachtwurd
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Ynklusyf blêdwizers, skiednis, ynstellingen en oare gegevens
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Bewarre op jo apparaat
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Wachtwurden en betelmetoaden net ynbegrepen
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Gean nei <a data-l10n-name="settings">Ynstellingen</a> om gefoelige gegevens op te nimmen.
+fx-backup-confirmation-screen-item-subtext-1 = It meitsjen fan jo reservekopy begjint oer in pear minuten en wurdt ien kear deis útfierd. Jo kinne de fuortgong kontrolearje yn <a data-l10n-name="settings">Ynstellingen</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } siket nei jo reservekopy as jo opnij ynstallearje moatte.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Weromsette fan reservekopy út
+restore-from-backup-title = Litte wy { -brand-short-name } weromkrije sa as jo it wolle
+restore-from-backup-subtitle = Werstel al jo blêdwizers, skiednis en oare gegevens om werom te kearen nei sneupen.
+restore-from-backup-secondary-button = Net weromsette
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Wy binne werom! { -brand-short-name }-gegevens binne weromset.
+restored-from-backup-success-with-checklist-subtitle = Wolle jo jo favorite op privacy rjochte browser ien klik tichteby hâlde?
+restored-from-backup-success-no-checklist-subtitle = Jo kinne reservekopyen foar dit apparaat ynskeakelje yn <a data-l10n-name="settings">Ynstellingen</a>.
+restored-from-backup-success-with-checklist-primary-button = Bewarje en trochgean
+restored-from-backup-success-with-checklist-secondary-button = Dizze stap oerslaan
+restored-from-backup-success-no-checklist-primary-button = Trochgean
+restored-from-backup-error-title = Hmm, der is in probleem mei jo reservekopybestân.
+restored-from-backup-error-subtitle = As jo in oar { -brand-short-name }-reservekopybestân hawwe, probearje dan derfan werom te setten. <a data-l10n-name="restore-problems">Noch hieltyd problemen?</a>
+restored-from-backup-error-primary-button = Slute
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Pas jo { -brand-short-name }-ûnderfining oan
+onboarding-personalization-subtitle = Beantwurdzje in pear fragen en wy sille funksjes en útwreidingen oanrekommandearje om jo gebrûk fan { -brand-short-name } te ferbetterjen.
+onboarding-personalization-use-case-title = Wêrfoar sille jo { -brand-short-name } brûke?
+onboarding-personalization-use-case-personal-option = Persoanlik
+onboarding-personalization-use-case-school-option = Skoalle
+onboarding-personalization-use-case-work-option = Wurk
+onboarding-personalization-motivation-title = Hokker funksjes fan { -brand-short-name } binne it wichtichst foar jo?
+onboarding-personalization-motivation-privacy-option = Privacy en befeiliging
+onboarding-personalization-motivation-productivity-option = Produktiviteit
+onboarding-personalization-motivation-other-option = Oars

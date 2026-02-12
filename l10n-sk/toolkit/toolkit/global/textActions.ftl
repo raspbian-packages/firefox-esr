@@ -28,11 +28,6 @@ text-action-copy-shortcut =
 text-action-copy-clean-link =
     .label = Kopírovať čistý odkaz
     .accesskey = i
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = Kopírovať bez sledovacích prvkov
-    .accesskey = b
 text-action-paste =
     .label = Prilepiť
     .accesskey = P
@@ -73,3 +68,23 @@ text-action-search-text-box-clear =
     .title = Vymazať
 text-action-highlight-selection =
     .label = Zvýrazniť výber
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = Pridať komentár k výberu
+# "Copy Link to Highlight" creates a permanent 'Text Fragment' link
+# to the current selection, and copies it into the user's clipboard.
+text-action-copy-link-to-highlight =
+    .label = Kopírovať odkaz do zvýraznenia
+# This combines "Copy Link to Highlight" with "Copy Clean Link", ie.
+# it creates a link with a text fragment to the current selection
+# and it strips trackers etc.
+text-action-copy-clean-link-to-highlight =
+    .label = Kopírovať čistý odkaz do zvýraznenia
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = Odstrániť zvýraznenie
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = Odstrániť všetky zvýraznenia

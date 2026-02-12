@@ -28,11 +28,6 @@ text-action-copy-shortcut =
 text-action-copy-clean-link =
     .label = Copiar ligamine nette
     .accesskey = n
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = Copiar sin traciamento de sito
-    .accesskey = n
 text-action-paste =
     .label = Collar
     .accesskey = l
@@ -73,3 +68,23 @@ text-action-search-text-box-clear =
     .title = Vacuar
 text-action-highlight-selection =
     .label = Evidentiar selection
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = Adder commento al selection
+# "Copy Link to Highlight" creates a permanent 'Text Fragment' link
+# to the current selection, and copies it into the user's clipboard.
+text-action-copy-link-to-highlight =
+    .label = Copiar ligamine al texto evidentiate
+# This combines "Copy Link to Highlight" with "Copy Clean Link", ie.
+# it creates a link with a text fragment to the current selection
+# and it strips trackers etc.
+text-action-copy-clean-link-to-highlight =
+    .label = Copiar ligamine nette al evidentia
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = Remover evidentia
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = Remover tote le evidentias

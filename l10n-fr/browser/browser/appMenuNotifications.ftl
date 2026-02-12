@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Ignorer
     .secondarybuttonaccesskey = n
 appmenu-update-restart-message2 = Installez la dernière version de { -brand-shorter-name }. Les fenêtres et onglets ouverts seront restaurés.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Annuler
+    .secondarybuttonaccesskey = A
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } ne peut se mettre automatiquement à jour vers la dernière version.
     .buttonlabel = Mettre { -brand-shorter-name } à jour quand même
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = OK
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = Gérez vos modules complémentaires et thèmes via le menu de l’application.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Mettez à jour les permissions et les préférences pour les données à tout moment dans les <a data-l10n-name="settings-link">paramètres de l’extension</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Épingler l’extension à la barre d’outils
+    .accesskey = e
 appmenu-addon-post-install-incognito-checkbox =
     .label = Autoriser cette extension à s’exécuter dans une fenêtre de navigation privée
     .accesskey = A

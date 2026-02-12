@@ -72,9 +72,6 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Legir lo son de { $tabCount } onglets
         }
 
-## Tooltips for tab audio control
-
-
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -106,10 +103,6 @@ tabbrowser-confirm-close-tabs-with-key-button = Quitar { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Confirmar abans de quitar amb { $quitKey }
-
-## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
-## and browser.warnOnQuitShortcut is true.
-
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -169,6 +162,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Listar los { $tabCount } onglets
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Rendre l'onglet mut
@@ -177,7 +173,7 @@ tabbrowser-manager-unmute-tab =
 tabbrowser-manager-close-tab =
     .tooltiptext = Tampar l’onglet
 
-## Tab Groups
+##
 
 tab-group-editor-title-edit = Gerir lo grop d’onglets
 tab-group-editor-name-label = Nom
@@ -189,8 +185,7 @@ tab-group-editor-cancel =
 tab-context-unnamed-group =
     .label = Grop sens nom
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -233,6 +228,3 @@ tab-context-ungroup-tab =
            *[other] Tirar del grop
         }
     .accesskey = T
-
-## Open/saved tab group context menu
-

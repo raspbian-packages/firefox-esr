@@ -4,6 +4,7 @@
 
 sidebar-menu-bookmarks =
     .label = العلامات
+sidebar-menu-bookmarks-2 = العلامات
 sidebar-menu-history =
     .label = التأريخ
 sidebar-menu-synced-tabs =

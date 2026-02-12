@@ -131,7 +131,7 @@ main-context-menu-open-link-new-tab =
     .label = Otvori poveznicu u novoj kartici
     .accesskey = t
 main-context-menu-open-link-container-tab =
-    .label = Otvori poveznicu u kontejnerskoj kartici
+    .label = Otvori poveznicu u novoj kontejnerskoj kartici
     .accesskey = k
 main-context-menu-open-link-new-window =
     .label = Otvori poveznicu u novom prozoru
@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Spremi poveznicu u { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Kopiraj adresu e-pošte
@@ -162,17 +160,15 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Kopiraj poveznicu (L)
     .accesskey = L
+main-context-menu-preview-link =
+    .label = Pregled poveznice
+    .accesskey = r
 # "Copy Clean Link" means that Firefox will remove things from the link you
 # copied, like items that identify you for advertising purposes, and other items
 # sites add into URLs to help them deliver a certain browsing experience.
 main-context-menu-copy-clean-link =
     .label = Kopiraj čistu poveznicu
     .accesskey = K
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Kopiraj poveznicu bez praćenja web stranice
-    .accesskey = u
 
 ## Media (video/audio) controls
 ##
@@ -323,6 +319,9 @@ main-context-menu-manage-passwords =
 main-context-menu-keyword =
     .label = Dodaj ključnu riječ za ovu pretragu …
     .accesskey = k
+main-context-menu-add-engine =
+    .label = Dodaj tražilicu
+    .accesskey = t
 main-context-menu-link-send-to-device =
     .label = Pošalji poveznicu na uređaj
     .accesskey = u
@@ -360,8 +359,8 @@ main-context-menu-print-selection-2 =
     .label = Ispiši odabir …
     .accesskey = r
 main-context-menu-view-selection-source =
-    .label = Prikaži izvorni kod odabranog
-    .accesskey = e
+    .label = Prikaži izvorni kod odabira
+    .accesskey = o
 main-context-menu-take-screenshot =
     .label = Snimi ekran
     .accesskey = e
@@ -370,7 +369,7 @@ main-context-menu-take-frame-screenshot =
     .accesskey = e
 main-context-menu-view-page-source =
     .label = Prikaži izvorni kod stranice
-    .accesskey = v
+    .accesskey = s
 main-context-menu-bidi-switch-text =
     .label = Promijeni smjer teksta
     .accesskey = t
@@ -393,3 +392,5 @@ main-context-menu-open-link-in-container-tab =
 main-context-menu-reveal-password =
     .label = Prikaži lozinku
     .accesskey = k
+# The label of a badge shown in menu items to call out new features.
+main-context-menu-new-feature-badge = Novo

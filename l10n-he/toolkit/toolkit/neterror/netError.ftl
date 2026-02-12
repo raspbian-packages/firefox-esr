@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = כניסה לרשת
 neterror-dns-not-found-title = השרת לא נמצא
 neterror-malformed-uri-page-title = כתובת לא תקנית
 general-body-title = נא להיזהר. משהו לא נראה תקין.
+problem-with-this-site-title = נראה שיש בעיה באתר הזה
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-load-error-connection = אם אינך מצליח לטעון שום דף
 neterror-load-error-firewall = אם המחשב או הרשת שלך מוגנים באמצעות חומת אש או שרת מתווך, יש לוודא כי { -brand-short-name } מורשה לגישה לרשת.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = אם הינך מנסה לטעון דף אינטרנט מקומי, נא לבדוק של־{ -brand-short-name } הוענקה הרשאות לרשת המקומית בהגדרות הפרטיות והאבטחה של macOS.
+neterror-http-error-page = כדאי לבדוק שהקלדת את כתובת האתר בצורה נכונה.
 neterror-captive-portal = עליך להתחבר לרשת זו כדי לגלוש באינטרנט.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -52,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>אם הזנת את הכתובת ה�
 neterror-dns-not-found-hint-try-again = לנסות שוב מאוחר יותר
 neterror-dns-not-found-hint-check-network = לבדוק את חיבור הרשת שלך
 neterror-dns-not-found-hint-firewall = לבדוק של־{ -brand-short-name } יש הרשאה לגשת לרשת (ייתכן שיש חיבור אבל מאחורי חומת אש)
+neterror-dns-not-found-offline-hint-header = <strong>מה אפשר לעשות בנידון?</strong>
+neterror-dns-not-found-offline-hint-different-device = ניתן לנסות להתחבר ממכשיר אחר.
+neterror-dns-not-found-offline-hint-modem = לבדוק את המודם או הנתב שלך.
+neterror-dns-not-found-offline-hint-reconnect = להתנתק ולהתחבר מחדש ל־Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -75,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = בעיה לא צפויה.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = ‏{ -brand-short-name } לא יכול להגן על הבקשה שלך עבור כתובת אתר זה באמצעות מפענח ה־DNS המהימן שלנו. הנה הסיבה:
-neterror-dns-not-found-native-fallback-reason2 = ‏{ -brand-short-name } לא יכול להגן על הבקשה שלך עבור כתובת אתר זה באמצעות ספק ה־DNS המאובטח שלנו. הנה הסיבה:
 neterror-dns-not-found-native-fallback-heuristic = ‏DNS over HTTPS הושבת ברשת שלך.
 neterror-dns-not-found-native-fallback-not-confirmed2 = ‏{ -brand-short-name } לא הצליח להתחבר אל { $trrDomain }.
 
@@ -99,6 +104,9 @@ neterror-proxy-connect-failure-settings = נא לבדוק כי הגדרות הש
 neterror-proxy-connect-failure-contact-admin = נא ליצור קשר עם מנהל הרשת שלך כדי לוודא כי השרת המתווך מתפקד.
 neterror-content-encoding-error = נא ליצור קשר עם בעלי האתר כדי ליידע אותם על בעיה זו.
 neterror-unsafe-content-type = נא ליצור קשר עם בעלי האתר כדי ליידע אותם על בעיה זו.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = ‏{ -brand-short-name } אינו נותן אמון ב־{ $hostname } מכיוון שהחיבור אינו מאובטח. ניתן לנסות לשנות את כתובת האתר ל־HTTPS.
 neterror-nss-failure-not-verified = לא ניתן להציג את הדף המבוקש מכיוון שאין אפשרות לאמת את אמינות הנתונים שהתקבלו.
 neterror-nss-failure-contact-website = נא ליצור קשר עם בעלי האתר כדי ליידע אותם על בעיה זו.
 # Variables:
@@ -159,3 +167,13 @@ certerror-coep-learn-more = מידע נוסף על Cross Origin Embedder Policie
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = קוד שגיאה: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = ל־{ -brand-short-name } אין אפשרות ליצור חיבור מאובטח לשרת ב־{ $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = נראה שאתר זה משתמש בתוכנה ישנה עם בעיות אבטחה ידועות.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = יש לוודא ש־{ -brand-short-name } הוא בגרסה העדכנית ביותר. יש לעבור אל עזרה > על אודות { -brand-short-name } בתפריט. אם יש לך את הגרסה העדכנית ביותר של { -brand-short-name }, הבעיה היא ככל הנראה באתר עצמו.

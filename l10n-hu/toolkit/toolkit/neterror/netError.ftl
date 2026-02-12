@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = Blokkolt oldal
 neterror-captive-portal-page-title = Bejelentkezés a hálózatba
 neterror-dns-not-found-title = A kiszolgáló nem található
 neterror-malformed-uri-page-title = Érvénytelen webcím
+general-body-title = Legyen óvatos. Úgy tűnik, hogy valami nincs rendben.
+problem-with-this-site-title = Úgy néz ki, hogy probléma van ezzel a webhellyel
 
 ## Error page actions
 
@@ -43,6 +45,7 @@ neterror-load-error-connection = Ha semmilyen oldalt nem tud letölteni, ellenő
 neterror-load-error-firewall = Ha a számítógépet vagy a hálózatot tűzfal vagy proxy védi, ellenőrizze, hogy a { -brand-short-name } számára engedélyezett-e a webhozzáférés.
 # This warning is only shown on macOS Sequoia and later (see bug 1929377)
 neterror-load-osx-permission = Ha egy helyi hálózati oldalt próbál betölteni, akkor ellenőrizze, hogy a { -brand-short-name } megkapta-e a helyi hálózati engedélyeket a macOS adatvédelmi és biztonsági beállításaiban.
+neterror-http-error-page = Ellenőrizze, hogy helyesen írta-e be a webhely címét.
 neterror-captive-portal = Az internet elérése előtt be kell jelentkezni a hálózatra.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -51,6 +54,10 @@ neterror-dns-not-found-hint-header = <strong>Ha a megfelelő címet adta meg, a 
 neterror-dns-not-found-hint-try-again = Próbálja meg újra később
 neterror-dns-not-found-hint-check-network = Ellenőrizze a hálózati kapcsolatot
 neterror-dns-not-found-hint-firewall = Ellenőrizze, hogy a { -brand-short-name } jogosult-e az internet elérésére (lehet, hogy csatlakozik, de tűzfal mögött van)
+neterror-dns-not-found-offline-hint-header = <strong>Mit tehet ez ellen?</strong>
+neterror-dns-not-found-offline-hint-different-device = Próbáljon meg csatlakozni egy másik eszközön.
+neterror-dns-not-found-offline-hint-modem = Ellenőrizze a modemet vagy a routert.
+neterror-dns-not-found-offline-hint-reconnect = Bontsa a kapcsolatot, majd kapcsolódjon újra a Wi–Fi-hez.
 
 ## TRR-only specific messages
 ## Variables:
@@ -74,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Váratlan probléma.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = A { -brand-short-name } nem tudja megvédeni a webhely címére vonatkozó kérését a megbízható DNS-feloldónkon keresztül. Ennek ez az oka:
-neterror-dns-not-found-native-fallback-reason2 = A { -brand-short-name } nem tudja megvédeni a webhely címére vonatkozó kérését a biztonságos DNS-szolgáltatónkon keresztül. Ennek ez az oka:
 neterror-dns-not-found-native-fallback-heuristic = A HTTP-n keresztüli DNS le van tiltva a hálózatán.
 neterror-dns-not-found-native-fallback-not-confirmed2 = A { -brand-short-name } nem tudott csatlakozni a következő domainhoz: { $trrDomain }.
 
@@ -98,6 +104,9 @@ neterror-proxy-connect-failure-settings = Ellenőrizze a proxybeállításokat, 
 neterror-proxy-connect-failure-contact-admin = Kérdezze meg a hálózati rendszergazdától, hogy a proxykiszolgáló működik-e.
 neterror-content-encoding-error = Értesítse a webhely tulajdonosait erről a problémáról.
 neterror-unsafe-content-type = Értesítse a webhely tulajdonosait erről a problémáról.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = A { -brand-short-name } nem bízik a(z) { $hostname } webhelyben, mert a kapcsolat nem biztonságos. Próbálja meg HTTPS-re változtatni a webcímet.
 neterror-nss-failure-not-verified = A megtekinteni kívánt oldal nem jeleníthető meg, mert a kapott adatok hitelessége nem ellenőrizhető.
 neterror-nss-failure-contact-website = Lépjen kapcsolatba a webhely üzemeltetőjével, és értesítse a problémáról.
 # Variables:
@@ -151,7 +160,20 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Ha nem tudja mi az a <b>{ $
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = A(z) <b>{ $hostname }</b> oldal a HTTP Strict Transport Security (HSTS) nevű biztonsági házirendet használja, amely azt jelenti, hogy a { -brand-short-name } csak biztonságosan kapcsolódhat hozzá. Nem adhat hozzá kivételt, hogy felkeresse ezt az oldalt.
 cert-error-trust-certificate-transparency-what-can-you-do-about-it = Valószínűleg semmit, mert jó eséllyel magával a webhellyel van a probléma.
+certerror-blocked-by-corp-headers-description = A webhelyek néha védelmet állítanak be saját maguk és az Önhöz hasonló emberek számára a más webhelyekkel történő nem kívánt interakciók ellen.
+certerror-coop-learn-more = Tudjon meg többet az eredetek közti megnyitási házirendekről (COOP)
+certerror-coep-learn-more = Tudjon meg többet az eredetek közti beágyazási házirendekről (COOP)
 # Variables:
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Hibakód: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = A { -brand-short-name } nem tud biztonságos kapcsolatot létrehozni a(z) { $hostname } kiszolgálóval.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Úgy tűnik, hogy ez az oldal régi szoftvert használ, ismert biztonsági problémákkal.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Győződjön meg arról, hogy a { -brand-short-name } legfrissebb verzióját használja. Ugorjon a menü Súgó > A { -brand-short-name } névjegye menüpontjához. Ha a legfrissebb { -brand-short-name } verziót használja, akkor a probléma valószínűleg magával a webhellyel van.

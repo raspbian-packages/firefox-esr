@@ -40,3 +40,11 @@ remove-search-engine-button = ٹھیک ہے
 
 install-search-engine-add = شامل کرو
 install-search-engine-no = کو
+
+## The following strings are used as input labels.
+
+add-engine-window =
+    .title = ڳولݨ انجݨ شامل کرو
+    .style = min-width: 32em;
+add-engine-button = حسب ضرورت انجن شامل کرو۔
+add-engine-name = ڳولݨ انجݨ ناں

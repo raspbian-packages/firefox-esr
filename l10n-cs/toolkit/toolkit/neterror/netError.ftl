@@ -13,6 +13,7 @@ neterror-captive-portal-page-title = Přihlásit se do sítě
 neterror-dns-not-found-title = Server nenalezen
 neterror-malformed-uri-page-title = Neplatná URL adresa
 general-body-title = Buďte opatrní. Něco není v pořádku.
+problem-with-this-site-title = Zdá se, že s touto stránkou nastal problém
 
 ## Error page actions
 
@@ -52,7 +53,8 @@ neterror-load-osx-permission =
         [with-cases] Pokud se pokoušíte načíst stránku místní sítě, zkontrolujte, zda máte v nastavení Soukromí a zabezpečení systému macOS přidělena oprávnění { -brand-short-name(case: "dat") } pro místní síť.
        *[no-cases] Pokud se pokoušíte načíst stránku místní sítě, zkontrolujte, zda máte v nastavení Soukromí a zabezpečení systému macOS přidělena oprávnění aplikace { -brand-short-name } pro místní síť.
     }
-neterror-captive-portal = Pro přístup k internetu se musíte nejdříve přihlásit k této síti.
+neterror-http-error-page = Zkontrolujte, zda jste správně zadali adresu webové stránky.
+neterror-captive-portal = Pro přístup na internet se musíte do této sítě nejprve přihlásit.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
 neterror-dns-not-found-with-suggestion = Chtěli jste navštívit <a data-l10n-name="website">{ $hostAndPath }</a>?
@@ -60,6 +62,10 @@ neterror-dns-not-found-hint-header = <strong>Pokud jste adresu zadali správně:
 neterror-dns-not-found-hint-try-again = Zkuste to znovu
 neterror-dns-not-found-hint-check-network = Zkontrolujte připojení k síti
 neterror-dns-not-found-hint-firewall = Zkontrolujte, zda má { -brand-short-name } povolený přístup na web (může být omezen firewallem).
+neterror-dns-not-found-offline-hint-header = <strong>Co s tím můžete dělat?</strong>
+neterror-dns-not-found-offline-hint-different-device = Zkuste se připojit na jiném zařízení.
+neterror-dns-not-found-offline-hint-modem = Zkontrolujte modem nebo router.
+neterror-dns-not-found-offline-hint-reconnect = Odpojte se a znovu se připojte k Wi-Fi.
 
 ## TRR-only specific messages
 ## Variables:
@@ -87,7 +93,6 @@ neterror-dns-not-found-trr-unknown-problem = Neočekávaný problém.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } nemůže ochránit vaše požadavky pro tento server pomocí důvěryhodného překladače DNS z těchto důvodů:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } nemůže ochránit váš požadavek na adresu tohoto webu prostřednictvím našeho zabezpečeného poskytovatele DNS. Zde je důvod:
 neterror-dns-not-found-native-fallback-heuristic = DNS over HTTPS je ve vaší síti zakázáno.
 neterror-dns-not-found-native-fallback-not-confirmed2 =
     { -brand-short-name.case-status ->
@@ -119,6 +124,9 @@ neterror-proxy-connect-failure-settings = Zkontrolujte nastavení proxy serveru.
 neterror-proxy-connect-failure-contact-admin = Kontaktujte správce vaší sítě, jestli je proxy server v provozu.
 neterror-content-encoding-error = Kontaktujte prosím vlastníky webového serveru a informujte je o tomto problému.
 neterror-unsafe-content-type = Kontaktujte prosím vlastníky webového serveru a informujte je o tomto problému.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } nedůvěřuje { $hostname }, protože připojení není zabezpečené. Zkuste změnit adresu URL na HTTPS.
 neterror-nss-failure-not-verified = Požadovanou stránku nelze zobrazit, protože nelze ověřit autenticitu přijatých dat.
 neterror-nss-failure-contact-website = Kontaktujte prosím vlastníky webového serveru a informujte je o tomto problému.
 # Variables:
@@ -209,3 +217,17 @@ certerror-coep-learn-more = Zjistit více o Cross Origin Embedder Policies (COEP
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
 neterror-response-status-code = Kód chyby: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } nemůže vytvořit zabezpečené připojení k serveru { $hostname }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-neterror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Zdá se, že tento server používá starý software se známými bezpečnostními problémy.
+# This string appears after the following string: "What can you do about it?" (fp-neterror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body =
+    { -brand-short-name.case-status ->
+        [with-cases] Ujistěte se, že používáte nejnovější verzi { -brand-short-name(case: "gen") }. Vyberte v nabídce Nápověda > O { -brand-short-name(case: "gen") }. Pokud používáte nejnovější verzi  { -brand-short-name(case: "gen") }, je problém pravděpodobně v samotných stránkách.
+       *[no-cases] Ujistěte se, že používáte nejnovější verzi aplikace { -brand-short-name }. Vyberte v nabídce Nápověda > O aplikaci { -brand-short-name }. Pokud používáte nejnovější verzi aplikace { -brand-short-name }, je problém pravděpodobně v samotných stránkách.
+    }

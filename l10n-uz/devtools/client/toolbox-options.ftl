@@ -37,9 +37,6 @@ options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-name = Rang nomlari
 
-## Web Console section
-
-
 ## Style Editor section
 
 # The heading
@@ -48,9 +45,6 @@ options-styleeditor-label = Uslubni tahrirlagich
 options-stylesheet-autocompletion-label = Avtotugatish CSS
 options-stylesheet-autocompletion-tooltip =
     .title = "Uslub tahrirchisi" CSS xossalari, qiymatlari va tanlagichlarini yozuvingiz sifatida avtotugatish
-
-## Screenshot section
-
 
 ## Editor section
 
@@ -89,5 +83,5 @@ options-enable-remote-label = Masofadan nosozliklarni jo‘natishni yoqish
 options-enable-service-workers-http-label = Service Workers ta’minotini sinash xususiyatlarini yoqib qo‘yadi (asboblar paneli ochiq bo‘lganda)
 options-enable-service-workers-http-tooltip =
     .title = Asboblar paneli bo‘lgan barcha ichki oynalar uchun HTTP ustida service workers ta’minotni yoqib qo‘yadi.
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * Faqat joriy seans, sahifani qayta yuklaydi

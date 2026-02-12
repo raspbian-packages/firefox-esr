@@ -64,12 +64,13 @@ policy-EncryptedMediaExtensions = Միացնել կամ անջատել գաղտ�
 policy-Extensions = Տեղադրել, ապատեղադրել կամ կողպել ընդլայնումները։ Տեղակադրան ընտրանքը վերցնում է URL-ը կամ ուղիները որպես հարաչափեր։ Ապատեղադրված և կողպված ընտրանքները վերցնում են ընդլայնման ID-ները։
 policy-ExtensionSettings = Կառավարել ընդլայնման տեղակադրան բոլոր կողմերը։
 policy-ExtensionUpdate = Միացնել կամ անջատել ընդլայումների ինքնաթարմացումները։
-policy-FirefoxHome2 = Կարգավորել { -firefox-home-brand-name }-ը:
-policy-FirefoxSuggest = Կարգավորել { -firefox-suggest-brand-name }-ը:
+policy-FirefoxHome2 = Կազմաձևել  { -firefox-home-brand-name }-ը:
+policy-FirefoxSuggest = Կազմաձևել { -firefox-suggest-brand-name }-ը:
 policy-Handlers = Կարգավորել սկզբնադիր հավելվածների մշակիչները:
 policy-HardwareAcceleration = Եթե կեղծ է՝ անջատել սարքի արագացումը։
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = Սահմանեք և ընտրովի կողպեք տնէջը։
+policy-HttpsOnlyMode = Թույլատրել Միայն HTTPS ռեժիմի միացումը։
 policy-InstallAddonsPermission = Թույլատրել որոշ կայքերին տեղադրել հավելումներ։
 policy-LegacyProfiles = Անջատեք առանձնահատկությունը, որն ամրացնում է առանձին պրոֆիլ յուրաքանչյուր տեղադրման համար
 
@@ -80,7 +81,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Վերադարձրեք
 
 ##
 
-policy-LocalFileLinks = Թույլատրել հատուկ կայքերին կապվել տեղային նիշքերի հետ։
+policy-LocalFileLinks = Թույլատրել հատուկ կայքերին կապվել տեղային ֆայլերի հետ։
 policy-PrimaryPassword = Պահանջում կամ կանխում է Հիմնական գաղտնաբառի օգտագործումը:
 policy-PrintingEnabled = Միացնել կամ անջատել տպումը:
 policy-NetworkPrediction = Միացնել կամ անջատել ցանցի կանխատեսումը (DNS նախապատվությունը):
@@ -95,15 +96,15 @@ policy-PasswordManagerExceptions = Կանխել { -brand-short-name }-ին՝ պ�
 # PDF.js and PDF should not be translated
 policy-PDFjs = Անջատել կամ կազմաձևել PDF.js-ը, ներկառուցված PDF դիտակը { -brand-short-name }-ում:
 policy-Permissions2 = Կարգավորում է թույլտվությունները տեսախցիկի, խոսափողի, տեղագրության, ծանուցումների և ինքնանվագարկման համար:
-policy-PictureInPicture = Միացնել կամ անջատել նկարը նկարում:
+policy-PictureInPicture = Միացնել կամ անջատել Նկարը նկարում:
 policy-PopupBlocking = Թույլատրել որոշ կայքերին սկզբնադրորեն ցուցադրել թռուցիկներ:
 policy-Preferences = Սահմանեք և կողպեք արժեքը նախապատվությունների ենթաբազմության համար:
-policy-PromptForDownloadLocation = Ներբեռնելու ժամանակ հարցրեք, թե որտեղ պահել նիշքերը:
+policy-PromptForDownloadLocation = Ներբեռնելու ժամանակ հարցրեք, թե որտեղ պահել ֆայլերը:
 policy-Proxy = Կազմաձևել միջնորդի կարգավորումները:
 policy-RequestedLocales = Նախապատվության կարգով սահմանե՛ք հայտի համար պահանջվող տեղանիների ցանկը:
 policy-SanitizeOnShutdown2 = Մաքրել ուղղորդման տվյալները անջատման վերաբերյալ:
-policy-SearchBar = Սահմանեք որոնման սանդղակի գտնվելու լռելյայն վայրը: Օգտատիրոջը դեռ թույլատրվում է հարմարեցնել այն:
-policy-SearchEngines = Կարգավորե՛ք որոնիչի շարժիչ կարգավորումները: Այս քաղաքականությունը հասանելի է միայն Ընդլայնված աջակցության թողարկման (ESR) տարբերակում:
+policy-SearchBar = Սահմանեք որոնման գոտու գտնվելու սկզբնադիր վայրը: Օգտատիրոջը դեռ թույլատրվում է հարմարեցնել այն:
+policy-SearchEngines = Կարգավորել որոնողական համակարգը: Այս քաղաքականությունը հասանելի է միայն Ընդլայնված աջակցության թողարկման (ESR) տարբերակում:
 policy-SearchSuggestEnabled = Միացնել կամ անջատել որոնման առաջարկները:
 policy-SSLVersionMax = Սահմանել SSL-֊ի առավելագույն տարբերակը:
 policy-SSLVersionMin = Սահմանել SSL-ի նվազագույն տարբերակը:

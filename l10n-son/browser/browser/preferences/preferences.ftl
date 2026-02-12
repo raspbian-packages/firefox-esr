@@ -28,17 +28,6 @@ should-restart-title = { -brand-short-name } tunandi taaga
 should-restart-ok = { -brand-short-name } tunandi taaga sohõ
 restart-later = Tunandi taaga nd'a too kayna
 
-## Extension Control Notifications
-##
-## These strings are used to inform the user
-## about changes made by extensions to browser settings.
-##
-## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
-##
-## Variables:
-##   $name (string) - Name of the extension
-
-
 ## Preferences UI Search Results
 
 search-results-header = Ceeci duurawey
@@ -49,6 +38,10 @@ startup-header = Tunandi
 always-check-default =
     .label = Guna waati kul wala { -brand-short-name } ti war tilasu ceecikaa
     .accesskey = w
+is-default-browser =
+    .message = { -brand-short-name } ti war tilasu ceecikaa sohõda.
+is-not-default-browser =
+    .message = { -brand-short-name } manti war tilasu ceecikaa sohõda
 is-default = { -brand-short-name } ti war tilasu ceecikaa sohõda.
 is-not-default = { -brand-short-name } manti war tilasu ceecikaa sohõda
 tabs-group-header = Kanjey
@@ -119,6 +112,11 @@ check-user-spelling =
 
 ## General Section - Files and Applications
 
+downloads-header-2 =
+    .label = Zumandiyaney
+download-save-where-2 =
+    .label = Tukey gaabu ga
+    .accesskey = g
 download-header = Zumandiyaney
 download-save-where = Tukey gaabu ga
     .accesskey = g
@@ -243,10 +241,7 @@ network-proxy-connection-settings =
     .label = Kayandiyaney…
     .accesskey = a
 
-## Home Section
-
-
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
@@ -262,15 +257,6 @@ use-current-pages =
 choose-bookmark =
     .label = Doo-šilbay goyandi...
     .accesskey = D
-
-## Home Section - Firefox Home Content Customization
-
-
-## Home Section - Firefox Home Content Customization
-
-
-##
-
 
 ## Search Section
 
@@ -300,6 +286,8 @@ search-keyword-warning-bookmark = War na kufalkalima suuba kaŋ goo goy ra doo-�
 ## Containers Section
 
 containers-header = Diikey kanjey
+containers-section-header =
+    .heading = Diikey kanjey
 containers-add-button =
     .label = Sun taaga tonton
     .accesskey = o
@@ -340,12 +328,6 @@ sync-sign-in =
     .label = Huru
     .accesskey = H
 
-## Sync section - enabling or disabling sync.
-
-
-## The list of things currently syncing.
-
-
 ## The "Choose what to sync" dialog.
 
 sync-engine-bookmarks =
@@ -358,6 +340,14 @@ sync-engine-history =
 ## The device name controls.
 
 sync-device-name-header = Jinay maa
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Jinay maa
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Jinay maa barmay
+    .accesskey = J
 sync-device-name-change =
     .label = Jinay maa barmay…
     .accesskey = J
@@ -378,12 +368,6 @@ sync-verification-sent-body = Tabatandiyan dobu sanbandi { $email } do.
 sync-verification-not-sent-title = Mana hin ka tabatandiyan sanba
 sync-verification-not-sent-body = Ir mana hin ka tabatandiyan bataga sanba sohõda, wa ceeci koyne waati foo.
 
-## Privacy Section
-
-
-## Privacy Section - Logins and Passwords
-
-
 ## Privacy Section - Passwords
 
 forms-exceptions =
@@ -399,12 +383,6 @@ forms-master-pw-change =
     .label = Takaddaɲaa šennikufal barmay
     .accesskey = T
 forms-master-pw-fips-desc = Šennikufal mana hin ka barmay mana
-
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
 
 ## Privacy Section - History
 
@@ -426,6 +404,8 @@ history-remember-option-never =
     .label = Ma ši honga taarikoo abada
 history-remember-option-custom =
     .label = Hanse bonse taariku se goyandi
+history-dontremember-description2 =
+    .description = { -brand-short-name } ga goy nda kayandiyan follokey kaŋ goo nda sutura ceeciyan, amma a ši taariku gaabu war tataaru ceeciroo waate.
 history-dontremember-description = { -brand-short-name } ga goy nda kayandiyan follokey kaŋ goo nda sutura ceeciyan, amma a ši taariku gaabu war tataaru ceeciroo waate.
 history-private-browsing-permanent =
     .label = Wa goy sutura naarumi alhaali ra waati kul
@@ -440,15 +420,6 @@ history-clear-on-close-settings =
     .label = Kayandiyaney…
     .accesskey = n
 
-## Privacy Section - Site Data
-
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
-
 ## Privacy Section - Address Bar
 
 addressbar-locbar-bookmarks-option =
@@ -459,22 +430,6 @@ addressbar-locbar-openpage-option =
     .accesskey = f
 addressbar-suggestions-settings = Ibaa&ey barmay ceecijinay honnandiyaney se
 
-## Privacy Section - Content Blocking
-
-
-## These strings are used to define the different levels of
-## Enhanced Tracking Protection.
-
-
-##
-
-
-# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
-
-
-## Privacy Section - Tracking
-
-
 ## Privacy Section - Permissions
 
 permissions-notification = Bangandiyaney
@@ -484,12 +439,8 @@ permissions-block-popups =
 permissions-addon-exceptions =
     .label = Hasarawey…
     .accesskey = H
-
-## Privacy Section - Data Collection
-
-
-## Privacy Section - Website Advertising Preferences
-
+permissions-notification2 =
+    .label = Bangandiyaney
 
 ## Privacy Section - Security
 ##
@@ -513,12 +464,7 @@ certs-header = Tabatiyan-tiirawey
 certs-enable-ocsp =
     .label = Hayyan OCSP zaabi feršikey ka sohõda tabatandi tiira booriyanoo cimandi.
     .accesskey = H
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPS tunandi
 
 ## The following strings are used in the Download section of settings
 

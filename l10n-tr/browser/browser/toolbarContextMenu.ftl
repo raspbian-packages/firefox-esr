@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Kapatılan sekmeleri yeniden aç
         }
     .accesskey = a
+toolbar-context-turn-on-vertical-tabs =
+    .label = Dikey sekmeleri aç
+toolbar-context-turn-off-vertical-tabs =
+    .label = Dikey sekmeleri kapat
+toolbar-context-customize-sidebar =
+    .label = Kenar çubuğunu özelleştir
 toolbar-context-menu-manage-extension =
     .label = Uzantıyı yönet
     .accesskey = U
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = İndirme başlayınca paneli göster
     .accesskey = n
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Araç çubuğunda her zaman göster
+    .accesskey = z
 toolbar-context-menu-remove-from-toolbar =
     .label = Araç çubuğundan kaldır
     .accesskey = k

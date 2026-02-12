@@ -13,11 +13,14 @@
 
 #include "mozilla/CheckedInt.h"
 #include "mozilla/UniquePtrExtensions.h"
+#include "nsRFPService.h"
 
 using mozilla::CheckedUint32;
 using mozilla::MakeUnique;
 using mozilla::MakeUniqueFallible;
+using mozilla::RFPTarget;
 using mozilla::UniquePtr;
+using mozilla::nsRFPService;
 
 /*
  * Sorts Nodes as specified by the W3C XSLT 1.0 Recommendation
@@ -74,6 +77,11 @@ nsresult txNodeSorter::addSortElement(Expr* aSelectExpr, Expr* aLangExpr,
     if (aLangExpr) {
       rv = aLangExpr->evaluateToString(aContext, lang);
       NS_ENSURE_SUCCESS(rv, rv);
+    }
+    if (lang.IsEmpty() &&
+        aContext->getContextNode().OwnerDoc()->ShouldResistFingerprinting(
+            RFPTarget::JSLocale)) {
+      CopyUTF8toUTF16(nsRFPService::GetSpoofedJSLocale(), lang);
     }
 
     // Case-order
@@ -140,8 +148,6 @@ nsresult txNodeSorter::sortNodeSet(txNodeSet* aNodes, txExecutionState* aEs,
   indexes.SetLengthAndRetainStorage(len.value());
   nsTArray<UniquePtr<txObject>> sortValues(numSortValues.value());
   sortValues.SetLengthAndRetainStorage(numSortValues.value());
-  // txObject* has no null initializing constructor, so we init manually.
-  memset(sortValues.Elements(), 0, sortValuesSize.value());
 
   uint32_t i;
   for (i = 0; i < len.value(); ++i) {

@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = Aktifkan isi otomatis untuk alamat.
 policy-AutofillCreditCardEnabled = Aktifkan osi ptomatis untuk metode pembayaran.
 policy-AutoLaunchProtocolsFromOrigins = Menentukan daftar protokol eksternal yang dapat digunakan dari asal-usul terdaftar tanpa bertanya pada pengguna.
 policy-BackgroundAppUpdate2 = Aktifkan atau nonaktifkan pembaruan latar belakang.
+policy-Backup = Nonaktifkan pencadangan atau pemulihan data profil.
 policy-BlockAboutAddons = Blokir akses ke Pengelola Pengaya (about:addons).
 policy-BlockAboutConfig = Blokir akses ke laman about:config.
 policy-BlockAboutProfiles = Blokir akses ke laman about:profiles.
@@ -79,6 +80,7 @@ policy-ExtensionSettings = Kelola semua aspek pemasangan ekstensi.
 policy-ExtensionUpdate = Aktifkan atau nonaktifkan pembaruan ekstensi otomatis.
 policy-FirefoxHome2 = Atur { -firefox-home-brand-name }.
 policy-FirefoxSuggest = Konfigurasikan { -firefox-suggest-brand-name }.
+policy-GenerativeAI = Konfigurasikan fitur AI generatif.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Paksa untuk membuka situs intranet secara langsung alih-alih melakukan pencarian saat mengetik satu kata di bilah alamat.
 policy-Handlers = Konfigurasikan penanganan aplikasi baku.
 policy-HardwareAcceleration = Jika bernilai false, menonaktifkan akselerasi perangkat keras.
@@ -97,6 +99,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Kembalikan ke perilaku
 ##
 
 policy-LocalFileLinks = Izinkan situs web tertentu untuk bertaut dengan berkas lokal.
+policy-LocalNetworkAccess = Aktifkan atau nonaktifkan pemeriksaan akses jaringan lokal.
 policy-ManagedBookmarks = Mengonfigurasi daftar markah yang dikelola oleh administrator yang tidak dapat diubah oleh pengguna.
 policy-ManualAppUpdateOnly = Izinkan pembaruan manual saja dan jangan beri tahu pengguna tentang pembaruan.
 policy-PrimaryPassword = Membutuhkan atau mencegah penggunaan Sandi Utama.
@@ -117,6 +120,7 @@ policy-PostQuantumKeyAgreementEnabled = Aktifkan perjanjian kunci pasca-kuantum 
 policy-PDFjs = Nonaktifkan atau atur konfigurasi PDF.js, penampil PDF bawaan di { -brand-short-name }.
 policy-Permissions2 = Atur izin untuk kamera, mikrofon, lokasi, notifikasi, dan putar-otomatis.
 policy-PictureInPicture = Aktifkan atau nonaktifkan Picture-in-Picture.
+policy-PopupBlocking2 = Izinkan situs web tertentu untuk menampilkan popup dan dialihkan oleh bingkai pihak ketiga.
 policy-PopupBlocking = Izinkan situs tertentu untuk menampilkan pop-up secara otomatis.
 policy-Preferences = Tetapkan dan kunci nilai untuk subset preferensi.
 policy-PrivateBrowsingModeAvailability = Setel ketersediaan mode penjelajahan pribadi.
@@ -130,6 +134,8 @@ policy-SearchSuggestEnabled = Aktifkan atau nonaktifkan saran pencarian.
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Tambah atau hapus modul PKCS #11.
 policy-ShowHomeButton = Tampilkan tombol beranda pada bilah alat.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Jangan tampilkan Ketentuan Penggunaan dan Pemberitahuan Privasi saat memulai. Anda menyatakan bahwa Anda menerima dan memiliki wewenang untuk menerima Ketentuan Penggunaan atas nama semua individu yang Anda beri akses ke peramban ini.
 policy-SSLVersionMax = Tetapkan versi SSL maksimum.
 policy-SSLVersionMin = Tetapkan versi SSL minimum.
 policy-StartDownloadsInTempDirectory = Paksa unduhan untuk dimulai di lokasi lokal dan sementara, bukan direktori unduhan baku.
@@ -137,6 +143,7 @@ policy-SupportMenu = Tambahkan item menu dukungan khusus pada menu bantuan.
 policy-TranslateEnabled = Aktifkan atau nonaktifkan terjemahan laman web.
 policy-UserMessaging = Jangan tampilkan pesan tertentu kepada pengguna.
 policy-UseSystemPrintDialog = Cetak menggunakan dialog sistem.
+policy-VisualSearchEnabled = Aktifkan atau nonaktifkan pencarian visual.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blokir situs web agar tidak dikunjungi. Lihat dokumentasi lebih lanjut untuk formatnya.
 policy-Windows10SSO = Izinkan sistem masuk tunggal Windows untuk akun Microsoft, kantor, dan sekolah.

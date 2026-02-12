@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = Aktivera autofyll för adresser.
 policy-AutofillCreditCardEnabled = Aktivera autofyll för betalningsmetoder.
 policy-AutoLaunchProtocolsFromOrigins = Definiera en lista över externa protokoll som kan användas från listade ursprung utan att uppmana användaren.
 policy-BackgroundAppUpdate2 = Aktivera eller inaktivera uppdateringar i bakgrunden.
+policy-Backup = Inaktivera säkerhetskopiering eller återställning av profildata.
 policy-BlockAboutAddons = Blockera tillgång till tilläggshanteraren (about:addons)
 policy-BlockAboutConfig = Blockera tillgång till sidan about:config.
 policy-BlockAboutProfiles = Blockera tillgång till sidan about:profiles.
@@ -79,6 +80,7 @@ policy-ExtensionSettings = Hantera alla aspekter av tilläggsinstallation.
 policy-ExtensionUpdate = Aktivera eller inaktivera automatiska tilläggsuppdateringar.
 policy-FirefoxHome2 = Konfigurera { -firefox-home-brand-name }.
 policy-FirefoxSuggest = Konfigurera { -firefox-suggest-brand-name }.
+policy-GenerativeAI = Konfigurera generativa AI-funktioner.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Tvinga direkt navigering på intranätet istället för att söka när du skriver in enstaka ord i adressfältet.
 policy-Handlers = Konfigurera standardprogramhanterare.
 policy-HardwareAcceleration = Om inaktiv, stäng av hårdvaruacceleration.
@@ -97,6 +99,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Återgå till föråld
 ##
 
 policy-LocalFileLinks = Tillåt specifika webbplatser att länka till lokala filer.
+policy-LocalNetworkAccess = Aktivera eller inaktivera kontroller av lokala nätverksåtkomst.
 policy-ManagedBookmarks = Konfigurerar en lista över bokmärken som hanteras av en administratör som inte kan ändras av användaren.
 policy-ManualAppUpdateOnly = Tillåt endast manuella uppdateringar och meddela inte användaren om uppdateringar.
 policy-PrimaryPassword = Kräv eller förhindra användandet av ett huvudlösenord.
@@ -117,6 +120,7 @@ policy-PostQuantumKeyAgreementEnabled = Aktivera post-quantum nyckelöverenskomm
 policy-PDFjs = Inaktivera eller konfigurera PDF.js, den inbyggda PDF-visaren i { -brand-short-name }
 policy-Permissions2 = Konfigurera behörigheter för kamera, mikrofon, plats, aviseringar och autoplay.
 policy-PictureInPicture = Aktivera eller inaktivera bild-i-bild.
+policy-PopupBlocking2 = Tillåt vissa webbplatser visa popup-fönster och omdirigeras av ramar från tredje part.
 policy-PopupBlocking = Tillåt vissa webbplatser att visa popup-fönster som standard.
 policy-Preferences = Ställ in och lås värdet för en delmängd av inställningar.
 policy-PrivateBrowsingModeAvailability = Ange tillgänglighet för privat surfläge.
@@ -130,6 +134,8 @@ policy-SearchSuggestEnabled = Aktivera eller inaktivera sökförslag.
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Lägg till eller ta bort PKCS #11-moduler.
 policy-ShowHomeButton = Visa hemknappen i verktygsfältet.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Visa inte användarvillkoren och sekretessmeddelandet vid start. Du intygar att du accepterar och har behörighet att acceptera användarvillkoren på uppdrag av alla individer som du ger åtkomst till den här webbläsaren.
 policy-SSLVersionMax = Ange den maximala SSL-versionen.
 policy-SSLVersionMin = Ange den lägsta SSL-versionen.
 policy-StartDownloadsInTempDirectory = Tvinga nedladdningar att starta på en lokal, tillfällig plats snarare än standardnedladdningskatalogen.
@@ -137,6 +143,7 @@ policy-SupportMenu = Lägg till ett anpassat menyalternativ med hjälp i hjälpm
 policy-TranslateEnabled = Aktivera eller inaktivera webböversättning.
 policy-UserMessaging = Visa inte vissa meddelanden till användaren.
 policy-UseSystemPrintDialog = Skriv ut med hjälp av systemets utskriftsdialog.
+policy-VisualSearchEnabled = Aktivera eller inaktivera visuell sökning.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blockera besök på webbplatser. Läs dokumentationen för mer detaljer om hur de anges.
 policy-Windows10SSO = Tillåt Windows enkel inloggning för Microsoft-, arbets- och skolkonton.

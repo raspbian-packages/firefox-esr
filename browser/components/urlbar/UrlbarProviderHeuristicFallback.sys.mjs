@@ -40,9 +40,7 @@ class ProviderHeuristicFallback extends UrlbarProvider {
   }
 
   /**
-   * Returns the type of this provider.
-   *
-   * @returns {integer} one of the types from UrlbarUtils.PROVIDER_TYPE.*
+   * @returns {Values<typeof UrlbarUtils.PROVIDER_TYPE>}
    */
   get type() {
     return UrlbarUtils.PROVIDER_TYPE.HEURISTIC;
@@ -52,10 +50,8 @@ class ProviderHeuristicFallback extends UrlbarProvider {
    * Whether this provider should be invoked for the given context.
    * If this method returns false, the providers manager won't start a query
    * with this provider, to save on resources.
-   *
-   * @returns {boolean} Whether this provider should be invoked for the search.
    */
-  isActive() {
+  async isActive() {
     return true;
   }
 
@@ -86,9 +82,7 @@ class ProviderHeuristicFallback extends UrlbarProvider {
       // to visit or search for it, we provide an alternative searchengine
       // match if the string looks like an alphanumeric origin or an e-mail.
       let str = queryContext.searchString;
-      try {
-        new URL(str);
-      } catch (ex) {
+      if (!URL.canParse(str)) {
         if (
           lazy.UrlbarPrefs.get("keyword.enabled") &&
           (lazy.UrlbarTokenizer.looksLikeOrigin(str, {
@@ -116,13 +110,19 @@ class ProviderHeuristicFallback extends UrlbarProvider {
       return;
     }
 
-    result = await this._engineSearchResult(queryContext);
-    if (instance != this.queryInstance) {
-      return;
-    }
-    if (result) {
-      result.heuristic = true;
-      addCallback(this, result);
+    if (
+      lazy.UrlbarPrefs.get("keyword.enabled") ||
+      queryContext.restrictSource == UrlbarUtils.RESULT_SOURCE.SEARCH ||
+      queryContext.searchMode
+    ) {
+      result = await this._engineSearchResult(queryContext);
+      if (instance != this.queryInstance) {
+        return;
+      }
+      if (result) {
+        result.heuristic = true;
+        addCallback(this, result);
+      }
     }
   }
 
@@ -201,7 +201,12 @@ class ProviderHeuristicFallback extends UrlbarProvider {
     // pass the pretty, unescaped URL as the result's title, since it is
     // displayed to the user.
     let escapedURL = uri.toString();
-    let displayURL = UrlbarUtils.prepareUrlForDisplay(uri, { trimURL: false });
+    let displayURL = UrlbarUtils.prepareUrlForDisplay(uri, {
+      trimURL: false,
+      // If the user didn't type a protocol, and we added one, don't show it,
+      // as https-first may upgrade it, potentially breaking expectations.
+      schemeless: !prefix,
+    });
 
     // We don't know if this url is in Places or not, and checking that would
     // be expensive. Thus we also don't know if we may have an icon.
@@ -318,7 +323,7 @@ class ProviderHeuristicFallback extends UrlbarProvider {
       UrlbarUtils.RESULT_SOURCE.SEARCH,
       ...lazy.UrlbarResult.payloadAndSimpleHighlights(queryContext.tokens, {
         engine: [engine.name, UrlbarUtils.HIGHLIGHT.TYPED],
-        icon: await engine.getIconURL(),
+        icon: UrlbarUtils.ICON.SEARCH_GLASS,
         query: [query, UrlbarUtils.HIGHLIGHT.NONE],
         keyword: keyword ? [keyword, UrlbarUtils.HIGHLIGHT.NONE] : undefined,
       })

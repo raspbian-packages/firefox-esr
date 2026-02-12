@@ -102,10 +102,3 @@ networkProtocolError-title = បញ្ហា​​ពិធីការ​បណ
 nssBadCert-title = ប្រុងប្រយ័ត្ន៖ មានហានិភ័យសុវត្ថិភាពដែលអាច​នឹង​កើត​មាន
 nssBadCert-sts-title = មិនបានភ្ជាប់៖ បញ្ហាសុវត្ថិភាពដែល​អាច​កើតឡើង
 certerror-mitm-title = កម្មវិធីកំពុងការពារ { -brand-short-name } ពីការភ្ជាប់ទៅគេហទំព័រនេះដោយសុវត្ថិភាព
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

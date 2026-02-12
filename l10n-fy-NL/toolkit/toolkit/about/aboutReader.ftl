@@ -74,17 +74,22 @@ about-reader-customtheme-tab = Oanpast
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Tekst
-    .title = Kleur bewurkje
-about-reader-custom-colors-background = Eftergrûn
-    .title = Kleur bewurkje
-about-reader-custom-colors-unvisited-links = Net-besochte keppelingen
-    .title = Kleur bewurkje
-about-reader-custom-colors-visited-links = Besochte keppelingen
-    .title = Kleur bewurkje
-about-reader-custom-colors-selection-highlight = Markearstift foar hurdop lêze
-    .title = Kleur bewurkje
 about-reader-reset-button = Standertynstellingen opnij ynstelle
+about-reader-custom-colors-foreground2 =
+    .label = Tekst
+    .title = Kleur bewurkje
+about-reader-custom-colors-background2 =
+    .label = Eftergrûn
+    .title = Kleur bewurkje
+about-reader-custom-colors-unvisited-links2 =
+    .label = Net-besochte keppelingen
+    .title = Kleur bewurkje
+about-reader-custom-colors-visited-links2 =
+    .label = Besochte keppelingen
+    .title = Kleur bewurkje
+about-reader-custom-colors-selection-highlight2 =
+    .label = Markearstift foar hurdop lêze
+    .title = Kleur bewurkje
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = Tekst sintrearre rjochtsje
 about-reader-text-alignment-right =
     .title = Tekst rjochts rjochtsje
+about-reader-text-alignment-justify =
+    .title = Tekst útlynje

@@ -98,10 +98,3 @@ clockSkewError-title = आपले संगणक घड्याळ चुक
 networkProtocolError-title = नेटवर्क नियमात त्रुटी
 nssBadCert-title = चेतावणी: पुढे संभाव्य सुरक्षा धोका आहे
 nssBadCert-sts-title = कनेक्ट झाले नाही: संभाव्य सुरक्षा समस्या
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

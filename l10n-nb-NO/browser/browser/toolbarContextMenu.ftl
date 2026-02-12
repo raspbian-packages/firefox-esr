@@ -25,10 +25,16 @@ toolbar-context-menu-select-all-tabs =
 toolbar-context-menu-reopen-closed-tabs =
     .label =
         { $tabCount ->
-            [1] Gjenopprett lukket fane
-           *[other] Gjenopprett lukkede faner
+            [1] Gjenåpne lukket fane
+           *[other] Gjenåpne lukkede faner
         }
-    .accesskey = o
+    .accesskey = e
+toolbar-context-turn-on-vertical-tabs =
+    .label = Slå på vertikale faner
+toolbar-context-turn-off-vertical-tabs =
+    .label = Slå av vertikale faner
+toolbar-context-customize-sidebar =
+    .label = Tilpass sidestolpe
 toolbar-context-menu-manage-extension =
     .label = Behandle utvidelser
     .accesskey = e
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Vis panel når nedlastingen starter
     .accesskey = s
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Vis alltid i verktøylinjen
+    .accesskey = V
 toolbar-context-menu-remove-from-toolbar =
     .label = Fjern fra verktøylinje
     .accesskey = n

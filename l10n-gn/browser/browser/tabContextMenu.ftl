@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Tendayke pyahu
     .accesskey = w
@@ -75,6 +79,10 @@ move-to-end =
 move-to-new-window =
     .label = Ovetã pyahúpe jereraha
     .accesskey = W
+# Variables
+#  $profileName (string): The name of the profile to move tab to
+move-to-new-profile =
+    .label = Erova { $profileName }-pe
 tab-context-close-multiple-tabs =
     .label = Emboty tendaykeita
     .accesskey = M
@@ -129,3 +137,11 @@ tab-context-send-tabs-to-device =
            *[other] Emondo umi tendayke { $tabCount } mba’e’okápe
         }
     .accesskey = n
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] Emboguejy tendayke
+            [one] Emboguejy { $tabCount } tendayke
+           *[other] Emboguejy { $tabCount } umi tendayke
+        }
+    .accesskey = U

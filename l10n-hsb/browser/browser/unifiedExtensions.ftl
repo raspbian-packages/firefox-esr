@@ -11,6 +11,15 @@
 unified-extensions-header-title = Rozšěrjenja
 unified-extensions-manage-extensions =
     .label = Rozšěrjenja rjadować
+unified-extensions-discover-extensions =
+    .label = Rozšěrjenja namakać
+unified-extensions-empty-reason-private-browsing-not-allowed = Sće rozšěrjenja instalował, ale njejsće je w priwatnych woknach zmóžnił
+unified-extensions-empty-reason-extension-not-enabled = Sće rozšěrjenja instalował, ale nic zmóžnił
+# In this headline, “Level up” means to enhance your browsing experience.
+unified-extensions-empty-reason-zero-extensions-onboarding = Powyšće niwow swojeho přehladowanja z rozšěrjenjemi
+unified-extensions-empty-content-explain-enable2 = Wubjerće „{ unified-extensions-manage-extensions.label }“, zo byšće je w nastajenjach zmóžnił.
+unified-extensions-empty-content-explain-manage2 = Wubjerće „{ unified-extensions-manage-extensions.label }“, zo byšće je w nastajenjach rjadował.
+unified-extensions-empty-content-explain-extensions-onboarding = Změńće zwonkowne a wukon abo polěpšće priwatnosć a wěstotu, zo byšće { -brand-short-name } přiměrił.
 
 ## An extension in the main list
 
@@ -21,6 +30,9 @@ unified-extensions-manage-extensions =
 unified-extensions-item-open-menu =
     .aria-label = Meni za { $extensionName } wočinić
 unified-extensions-item-message-manage = Rozšěrjenje rjadować
+# Variables:
+#   $extensionName (String) - Name of the user-enabled soft-blocked extension.
+unified-extensions-item-messagebar-softblocked2 = { $extensionName } je wobmjezowane. Jeho wužiwanje móže riskantne być.
 # Variables:
 #   $extensionName (String) - Name of the user-enabled soft-blocked extension.
 unified-extensions-item-messagebar-softblocked = { $extensionName } so přećiwo prawidłam Mozilla přeńdźe. Je riskantne jo wužiwać.
@@ -53,6 +65,13 @@ unified-extensions-mb-quarantined-domain-learn-more = Dalše informacije
 unified-extensions-mb-about-addons-link = K nastajenjam rozšěrjenjow
 # Variables:
 #   $extensionName (String) - Name of the extension disabled through a soft-block.
+unified-extensions-mb-blocklist-warning-single2 =
+    .heading = { $extensionName } znjemóžnjeny
+    .message =
+        { $extensionName } je wobmjezowane a je so znjemóžniło.
+        Móžeće jo w nastajenjach zmóžnić, ale to móže riskantne być.
+# Variables:
+#   $extensionName (String) - Name of the extension disabled through a soft-block.
 unified-extensions-mb-blocklist-warning-single =
     .heading = { $extensionName } znjemóžnjeny
     .message =
@@ -63,6 +82,19 @@ unified-extensions-mb-blocklist-warning-single =
 unified-extensions-mb-blocklist-error-single =
     .heading = { $extensionName } znjemóžnjeny
     .message = Tute rozšěrjenje so přećiwo prawidłam Mozilla přeńdźe a je so znjemóžniło.
+# Variables:
+#   $extensionsCount (Number) - Number of extensions disabled through both soft and hard-blocks (always going to be greater than 1)
+unified-extensions-mb-blocklist-warning-multiple2 =
+    .heading =
+        { $extensionsCount ->
+            [one] { $extensionsCount } rozšěrjenje znjemóžnjene
+            [two] { $extensionsCount } rozšěrjeni znjemóžnjenej
+            [few] { $extensionsCount } rozšěrjenja znjemóžnjene
+           *[other] { $extensionsCount } rozšěrjenjow znjemóžnjene
+        }
+    .message =
+        Někotre z wašich rozšěrjenjow su wobmjezowane a su so znjemóžnili.
+        Móžeće je w nastajenjach zmóžnić, ale to móže riskantne być.
 # Variables:
 #   $extensionsCount (Number) - Number of extensions disabled through both soft and hard-blocks (always going to be greater than 1)
 unified-extensions-mb-blocklist-warning-multiple =
@@ -87,3 +119,5 @@ unified-extensions-mb-blocklist-error-multiple =
            *[other] { $extensionsCount } rozšěrjenjow znjemóžnjene
         }
     .message = Někotre z wašich nastajenjow su so znjemóžnili, dokelž su so přećiwo prawidłam Mozilla přešli.
+unified-extensions-notice-safe-mode =
+    .message = Wšě rozšěrjenja su so přez modus za rozrisowanje problemow znjemóžnili.

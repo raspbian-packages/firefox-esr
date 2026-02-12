@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = Ota osoitteiden automaattinen täyttö käyttö�
 policy-AutofillCreditCardEnabled = Ota maksutapojen automaattinen täyttö käyttöön.
 policy-AutoLaunchProtocolsFromOrigins = Määritä lista ulkoisista yhteyskäytännöistä, joita voi käyttää määrätyistä lähteistä kysymättä lupaa käyttäjältä.
 policy-BackgroundAppUpdate2 = Ota käyttöön tai poista käytöstä taustalla suoritettavien päivitysten toiminnallisuus.
+policy-Backup = Poista profiilitietojen varmuuskopiointi tai palautus käytöstä.
 policy-BlockAboutAddons = Estä pääsy lisäosien hallintaan (about:addons).
 policy-BlockAboutConfig = Estä pääsy about:config-sivulle.
 policy-BlockAboutProfiles = Estä pääsy about:profiles-sivulle.
@@ -79,6 +80,7 @@ policy-ExtensionSettings = Hallitse kaikkia laajennusten asennukseen liittyviä 
 policy-ExtensionUpdate = Ota käyttöön tai poista käytöstä laajennusten automaattipäivitykset.
 policy-FirefoxHome2 = Määritä { -firefox-home-brand-name }.
 policy-FirefoxSuggest = Määritä { -firefox-suggest-brand-name }.
+policy-GenerativeAI = Määritä generatiivisen tekoälyn ominaisuudet.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Pakota suora intranet-sivustonavigointi internethaun sijaan, kun yksittäisiä sanoja kirjoitetaan osoitepalkkiin.
 policy-Handlers = Määritä oletussovelluskäsittelijät.
 policy-HardwareAcceleration = Jos epätosi, poista laitteistokiihdytys käytöstä.
@@ -97,6 +99,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Palaa vanhaan SameSite
 ##
 
 policy-LocalFileLinks = Salli tiettyjen sivustojen linkittää paikallisiin tiedostoihin.
+policy-LocalNetworkAccess = Ota käyttöön tai poista käytöstä paikallisverkon käyttöoikeustarkistukset.
 policy-ManagedBookmarks = Määrittää listan järjestelmänvalvojan hallinnoimista kirjanmerkeistä, joita käyttäjä ei voi muuttaa.
 policy-ManualAppUpdateOnly = Salli vain manuaaliset päivitykset, älä ilmoita käyttäjälle päivityksistä.
 policy-PrimaryPassword = Vaadi tai estä pääsalasanan käyttö.
@@ -117,6 +120,7 @@ policy-PostQuantumKeyAgreementEnabled = Ota käyttöön kvanttiturvallinen avain
 policy-PDFjs = Poista käytöstä tai määritä PDF.js, { -brand-short-name }in sisäänrakennettu PDF-katselin.
 policy-Permissions2 = Aseta kameran, mikrofonin, sijainnin, ilmoitusten ja automaattisen toiston käyttöoikeuksien asetukset.
 policy-PictureInPicture = Ota käyttöön tai poista käytöstä Kuva kuvassa -ominaisuus.
+policy-PopupBlocking2 = Salli tiettyjen verkkosivustojen näyttää ponnahdusikkunoita ja kolmansien osapuolten kehysten ohjata uudelleen.
 policy-PopupBlocking = Salli tiettyjen sivustojen näyttää ponnahdusikkunoita oletusarvoisesti.
 policy-Preferences = Aseta ja lukitse arvo asetusten osajoukolle.
 policy-PrivateBrowsingModeAvailability = Aseta yksityisen selaustilan saatavuus.
@@ -130,6 +134,8 @@ policy-SearchSuggestEnabled = Ota käyttöön tai poista käytöstä hakuehdotuk
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Lisää tai poista PKCS #11 -moduuleja.
 policy-ShowHomeButton = Näytä kotipainike työkalupalkissa.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Älä näytä käyttöehtoja ja tietosuojakäytöntöä käynnistyksen yhteydessä. Vakuutat, että hyväksyt käyttöehdot ja sinulla on valtuudet hyväksyä käyttöehdot kaikkien niiden henkilöiden puolesta, joille annat pääsyn tähän selaimeen.
 policy-SSLVersionMax = Aseta SSL:n enimmäisversio.
 policy-SSLVersionMin = Aseta SSL:n vähimmäisversio.
 policy-StartDownloadsInTempDirectory = Pakota lataukset alkamaan paikallisesta väliaikaisesta sijainnista oletusarvoisen latauskansion sijaan.
@@ -137,6 +143,7 @@ policy-SupportMenu = Lisää Ohje-valikkoon oma valikkokohta tukea varten.
 policy-TranslateEnabled = Ota käyttöön verkkosivun käännös tai poista se käytöstä.
 policy-UserMessaging = Älä näytä tiettyjä viestejä käyttäjälle.
 policy-UseSystemPrintDialog = Tulosta käyttäen järjestelmän tulostusikkunaa.
+policy-VisualSearchEnabled = Ota visuaalinen haku käyttöön tai poista se käytöstä.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Estä sivustojen avaaminen. Katso ohjeista lisätietoja käyttötavasta.
 policy-Windows10SSO = Salli Windowsin kertakirjautuminen Microsoft-, työ- ja koulutileille.

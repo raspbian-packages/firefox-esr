@@ -20,6 +20,18 @@ fxa-menu-connect-another-device =
     .label = Dalši grat zwjazać…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] Na grat pósłać
+            [one] { $tabCount } rajtark na grat pósłać
+            [two] { $tabCount } rajtarkaj na grat pósłać
+            [few] { $tabCount } rajtarki na grat pósłać
+           *[other] { $tabCount } rajtarkow na grat pósłać
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label =
         { $tabCount ->
@@ -35,8 +47,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Sćelće rajtark hnydom na grat, pola kotrehož sće přizjewjeny.
 fxa-menu-sign-out =
     .label = Wotzjewić…
-fxa-menu-sync-title = Synchronizować
 fxa-menu-sync-description = Mějće přistup k internetej wot wšudźe
+fxa-avatar-sign-in = Přizjewić
+fxa-avatar-sign-up = Registrować
+fxa-avatar-tooltip =
+    .tooltiptext = Přizjewće so pola swojeho konta
 sync-setup-verify-continue = Dale
 sync-setup-verify-title = Zjednoćenske warnowanje
 sync-setup-verify-heading = Chceće so woprawdźe w sync registrować?

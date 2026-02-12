@@ -15,6 +15,10 @@ support-addons-type = ชนิด
 support-addons-enabled = ถูกเปิดใช้งาน
 support-addons-version = รุ่น
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = ตำแหน่งที่ตั้ง
 legacy-user-stylesheets-title = สไตล์ชีตผู้ใช้แบบเดิม
 legacy-user-stylesheets-enabled = ใช้งานอยู่
 legacy-user-stylesheets-stylesheet-types = สไตล์ชีต
@@ -181,6 +185,8 @@ media-capabilities-enumerate = แจงนับฐานข้อมูล
 
 media-codec-support-sw-decoding = การถอดรหัสด้วยซอฟต์แวร์
 media-codec-support-hw-decoding = การถอดรหัสด้วยฮาร์ดแวร์
+media-codec-support-sw-encoding = การเข้ารหัสด้วยซอฟต์แวร์
+media-codec-support-hw-encoding = การเข้ารหัสด้วยฮาร์ดแวร์
 media-codec-support-codec-name = ชื่อตัวแปลงสัญญาณ
 media-codec-support-supported = รองรับ
 media-codec-support-unsupported = ไม่รองรับ
@@ -257,7 +263,7 @@ blocked-os-version = ถูกปิดกั้นจากรุ่นระ�
 blocked-mismatched-version = ถูกปิดกั้นจากรุ่นไดรเวอร์กราฟิกของคุณไม่ตรงกันระหว่าง registry และ DLL
 # Variables
 # $driverVersion - The graphics driver version string
-try-newer-driver = ถูกปิดกั้นจากรุ่นไดรเวอร์กราฟิกของคุณ ลองปรับปรุงไดรเวอร์กราฟิกของคุณเป็นรุ่น { $driverVersion } หรือใหม่กว่า
+try-newer-driver = ถูกปิดกั้นจากรุ่นไดรเวอร์กราฟิกของคุณ ลองอัปเดตไดรเวอร์กราฟิกของคุณเป็นรุ่น { $driverVersion } หรือใหม่กว่า
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = พารามิเตอร์ ClearType

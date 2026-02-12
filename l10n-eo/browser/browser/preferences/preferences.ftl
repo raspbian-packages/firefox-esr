@@ -4,9 +4,6 @@
 
 do-not-track-description = Sendi al retejoj sciigon, ke vi ne volas esti spurata
 do-not-track-removal = Ni ne plu subtenas la signalon “Do Not Track”
-do-not-track-description2 =
-    .label = Sendi “Ne spuru min” petojn al retejoj
-    .accesskey = S
 do-not-track-learn-more = Pli da informo
 do-not-track-option-default-content-blocking-known =
     .label = Nur kiam { -brand-short-name } estas agordita por bloki konatajn spurilojn
@@ -16,6 +13,8 @@ global-privacy-control-description =
     .label = Peti al retejoj ne vendi aŭ dividi miajn datumojn
     .accesskey = v
 non-technical-privacy-header = Preferoj pri privateco en retejoj
+non-technical-privacy-label =
+    .aria-label = { non-technical-privacy-header }
 # Do not translate.
 # "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
 # included to facilitate power-user search of the about:preferences page.
@@ -71,6 +70,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = Fermi
+do-not-track-removal2 =
+    .label = Ni ne plu subtenas la signalon “Do Not Track”
 
 ## Browser Restart Dialog
 
@@ -112,6 +113,9 @@ extension-controlling-proxy-config = <img data-l10n-name ="icon"/> <strong>{ $na
 # <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
 # <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
 extension-controlled-enable = Por aktivigi la etendaĵon iru al <img data-l10n-name="addons-icon"/> Aldonaĵoj en la <img data-l10n-name="menu-icon"/> menuo.
+# This string is shown to notify the user that their home page or new tab preferences
+# are being controlled by an extension.
+extension-controlling-homepage = { $name } regas kelkajn el viaj agordoj por la eka paĝo.
 
 ## Preferences UI Search Results
 
@@ -126,6 +130,10 @@ startup-header = Starto
 always-check-default =
     .label = Ĉiam kontroli ĉu { -brand-short-name } estas via ĉefa retumilo
     .accesskey = i
+is-default-browser =
+    .message = { -brand-short-name } estas nuntempe via ĉefa retumilo
+is-not-default-browser =
+    .message = { -brand-short-name } ne estas via ĉefa retumilo
 is-default = { -brand-short-name } estas nuntempe via ĉefa retumilo
 is-not-default = { -brand-short-name } ne estas via ĉefa retumilo
 set-as-my-default-browser =
@@ -134,6 +142,8 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = Malfermi antaŭajn fenestrojn kaj langetojn
     .accesskey = a
+startup-windows-launch-on-login-profile-disabled =
+    .message = Aktivigu tiun ĉi preferon per marko de “{ profile-manager-use-selected.label }” en la fenestro "Elekti profilon de uzanto".
 windows-launch-on-login =
     .label = Aŭtomate malfermi { -brand-short-name } kiam la komputilo ŝaltiĝas
     .accesskey = A
@@ -148,6 +158,11 @@ preferences-data-migration-description = Enporti legosignojn, pasvortojn, histor
 preferences-data-migration-button =
     .label = Enporti datumojn
     .accesskey = E
+preferences-profiles-header = Profiloj
+preferences-manage-profiles-description = Ĉiu profilo havas apartigitajn retumajn datumojn kaj agordojn, kio inkluzivas historion, pasvortojn kaj pli.
+preferences-manage-profiles-learn-more = Pli da informo
+preferences-manage-profiles-button =
+    .label = Administri profilojn
 tabs-group-header = Langetoj
 ctrl-tab-recently-used-order =
     .label = Stir+Tabo rondiras inter langetoj ordigitaj laŭ ĵuseco
@@ -155,6 +170,8 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Malfermi ligilojn en langetoj anstataŭ ol en nova fenestroj
     .accesskey = l
+open-external-link-next-to-active-tab =
+    .label = Malfermi ligilojn de apoj apud via aktiva langeto
 ask-on-close-multiple-tabs =
     .label = Demandi antaŭ ol fermi plurajn langetojn
     .accesskey = D
@@ -225,12 +242,33 @@ containers-remove-cancel-button = Ne forigi tiun ĉi ingon
 settings-tabs-show-image-in-preview =
     .label = Montri antaŭvidon kiam vi movas la muson super langeto
     .accessKey = a
+browser-layout-header = Aranĝo de la retumilo
+browser-layout-horizontal-tabs =
+    .label = Horizontalaj langetoj
+browser-layout-horizontal-tabs-desc = Langetoj supre
+browser-layout-vertical-tabs =
+    .label = Vertikalaj langetoj
+browser-layout-vertical-tabs-desc = Langetoj flanke, en la flanka strio
+browser-layout-show-sidebar =
+    .label = Montri flankan strion
+browser-layout-show-sidebar-desc = Rapide aliru legosignojn aŭ langetojn el via telefono, dialogantojn A.I. kaj pli sen devi eliri el la ĉefa vido.
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Lingvo kaj aspekto
 preferences-web-appearance-header = Aspekto de retejoj
 preferences-web-appearance-description = Kelkaj retejoj adaptas siajn kolorarojn al viaj preferoj. Elektu la koloraron kiun vi ŝatus uzi por tiuj retejoj.
+preferences-web-appearance-choice-auto2 =
+    .label = Aŭtomate
+    .title = Aŭtomate ŝanĝi enhavon kaj fonojn de retejoj laŭ viaj sistemaj agordoj kaj laŭ la etoso de { -brand-short-name }.
+preferences-web-appearance-choice-light2 =
+    .label = Hela
+    .title = Uzi helan aspekton por fono enhavo de retejoj.
+preferences-web-appearance-choice-dark2 =
+    .label = Malhela
+    .title = Uzi malhelan aspekton por fono enhavo de retejoj.
+web-appearance-group =
+    .aria-label = Aspekto de retejoj
 preferences-web-appearance-choice-auto = Aŭtomate
 preferences-web-appearance-choice-light = Hela
 preferences-web-appearance-choice-dark = Malhela
@@ -248,14 +286,27 @@ preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning = Via elekto de koloroj superregas la aspekton de retejoj. <a data-l10n-name="colors-link">Administri kolorojn</a>
+preferences-web-appearance-override-warning3 =
+    .message = Viaj agordoj de kontrasto modifas la aspekton de retejoj.
+preferences-web-appearance-link =
+    .label = Administri la etosojn de { -brand-short-name } en Etendaĵoj kaj etosoj
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Via elekto de koloroj superregas la aspekton de retejoj.
+preferences-web-appearance-override-warning = Via elekto de koloroj superregas la aspekton de retejoj. <a data-l10n-name="colors-link">Administri kolorojn</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Administri la etosojn de { -brand-short-name } en <a data-l10n-name="themes-link">Etendaĵoj kaj etosoj</a>
+preferences-contrast-control-header = Agordo de kontrasto
+preferences-contrast-control-description = Retejoj uzas multajn malsamajn antaŭajn kaj fonajn kolorojn. Agordu { -brand-short-name } por uzi la samajn kolorojn en ĉiuj retejoj por plibonigi la legeblon.
+preferences-contrast-control-use-platform-settings =
+    .label = Aŭtomata (uzi sistemajn agordojn)
+    .accesskey = A
+preferences-contrast-control-off =
+    .label = Malŝaltita
+    .accesskey = M
+preferences-contrast-control-custom =
+    .label = Personecigita
+    .accesskey = P
 preferences-colors-header = Koloroj
 preferences-colors-description = Superregi la normajn kolorojn de { -brand-short-name } por teksto, fono de retejoj kaj ligiloj.
 preferences-colors-manage-button =
@@ -314,6 +365,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Dosieroj kaj programoj
+downloads-header-2 =
+    .label = Elŝutoj
+download-save-where-2 =
+    .label = Konservi dosierojn en
+    .accesskey = d
 download-header = Elŝutoj
 download-save-where = Konservi dosierojn en
     .accesskey = d
@@ -331,6 +387,9 @@ download-choose-folder =
 download-always-ask-where =
     .label = Ĉiam demandi, kie konservi dosierojn
     .accesskey = d
+download-private-browsing-delete =
+    .label = Forigi dosierojn elŝutitaj dum privata retumo kiam ĉiuj privataj fenestroj estas fermitaj
+    .accesskey = F
 applications-header = Programoj
 applications-description = Elekti kiel { -brand-short-name } traktas la dosierojn elŝutitajn el la Teksaĵo aŭ la programojn uzatajn por ilin malfermi.
 applications-filter =
@@ -485,6 +544,8 @@ performance-default-content-process-count =
 ## General Section - Browsing
 
 browsing-title = Retumo
+browsing-group-label =
+    .aria-label = Retumo
 browsing-use-autoscroll =
     .label = Uzi aŭtomatan rulumon
     .accesskey = a
@@ -539,9 +600,10 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Novaj fenestroj kaj langetoj
 home-new-windows-tabs-description2 = Elektu tion, kion vi volas vidi je malfermo de via eka paĝo, novaj fenestroj aŭ novaj langetoj.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Eka paĝo kaj novaj fenestroj
+home-homepage-mode-label2 = Novaj fenestroj
 home-newtabs-mode-label = Novaj langetoj
 home-restore-defaults =
     .label = Remeti normojn
@@ -554,6 +616,11 @@ home-mode-choice-blank =
     .label = Malplena paĝo
 home-homepage-custom-url =
     .placeholder = Alglui retadreson…
+# This button is shown when the homepage is managed by an extension and is placed below extension-controlling-homepage.
+home-homepage-manage-extension-button =
+    .label = Administri etendaĵon
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-url = Elekti specifan retejon
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -568,13 +635,38 @@ use-current-pages =
 choose-bookmark =
     .label = Uzi legosignon…
     .accesskey = s
+home-homepage-header = Eka paĝo
+
+## Custom Homepage subpage
+
+home-custom-homepage-header = Personecigita eka paĝo
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-subheader = Adreso(j) de retejo
+home-custom-homepage-address =
+    .placeholder = Tajpi adreson
+home-custom-homepage-address-button =
+    .label = Aldoni adreson
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-websites-yet = Ankoraŭ neniu retejo aldonita.
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with = Anstataŭigi per
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-current-pages-button =
+    .label = Nune malfermitaj paĝoj
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-bookmarks-button =
+    .label = Legosignoj…
 
 ## Home Section - Firefox Home Content Customization
 
 home-prefs-content-header2 = { -firefox-home-brand-name } Enhavo
+home-prefs-content-header3 = { -firefox-home-brand-name }
 home-prefs-content-description2 = Elektu la enhavon, kiun vi volas en { -firefox-home-brand-name }.
 home-prefs-search-header =
     .label = Serĉo en la reto
+home-prefs-search-header2 =
+    .label = Serĉi
 home-prefs-shortcuts-header =
     .label = Ŝparvojoj
 home-prefs-shortcuts-description = Retejoj konservitaj aŭ vizititaj de vi
@@ -589,6 +681,12 @@ home-prefs-recommended-by-description-new = Eksterordinara  enhavo reviziita de 
 home-prefs-recommended-by-header-generic =
     .label = Rekomenditaj artikoloj
 home-prefs-recommended-by-description-generic = Eksterordinara enhavo elektita de la familio de { -brand-product-name }
+home-prefs-stories-header =
+    .label = Artikoloj
+home-prefs-stories-description = Artikoloj personecigitaj laŭ via retumo
+home-prefs-stories-header2 =
+    .label = Artikoloj
+    .description = Eksterordinara enhavo elektita de la familio de { -brand-product-name }
 
 ##
 
@@ -619,6 +717,16 @@ home-prefs-weather-header =
     .label = Vetero
 home-prefs-weather-description = Rapida rigardo al la veterprognozo hodiaŭa
 home-prefs-weather-learn-more-link = Pli da informo
+home-prefs-trending-search-header =
+    .label = Popularaj serĉoj
+home-prefs-trending-search-description = Popularaj kaj ofte serĉitaj temoj
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = Helpi { -brand-product-name }
+home-prefs-mission-message = Niaj patronoj subtenas nian mision: krei pli bonan interreton.
+home-prefs-mission-message-learn-more-link = Malkovri kiel
+home-prefs-manage-topics-link = Administri temojn
+home-prefs-choose-wallpaper-link = Elekti ekranfonon
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -687,6 +795,9 @@ search-remove-engine =
 search-add-engine =
     .label = Aldoni
     .accesskey = A
+search-edit-engine =
+    .label = Modifi
+    .accesskey = M
 search-find-more-link = Serĉi pli da serĉiloj
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
@@ -695,12 +806,21 @@ search-keyword-warning-title = Duobligita kategoria vorto
 #   $name (string) - Name of a search engine.
 search-keyword-warning-engine = Vi elektis kategorian vorton kiu estas nuntempe uzata de "{ $name }". Bonvolu elekti alian.
 search-keyword-warning-bookmark = Vi elektis kategorian vorton kiu estas nuntempe uzata de legosigno. Bonvolu elekti alian.
+# This warning is displayed when the chosen name is already in use.
+# Variables:
+#   $name (string) - Name of a search engine.
+edit-engine-name-warning-duplicate = Jam ekzistas serĉilo nomata “{ $name }”. Bonvolu elekti alian nomon.
+remove-engine-confirmation = Ĉu vi certe volas forigi tiun ĉi serĉilon?
+remove-engine-remove = Forigi
+remove-addon-engine-alert = Por forigi tiun ĉi serĉilon, forigu la asociitan aldonaĵon.
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = Reen al agordoj
 containers-header = Ingaj langetoj
+containers-section-header =
+    .heading = Ingaj langetoj
 containers-add-button =
     .label = Aldoni novan ingon
     .accesskey = A
@@ -865,6 +985,14 @@ sync-choose-what-to-sync-dialog4 =
 ## The device name controls.
 
 sync-device-name-header = Nomo de aparato
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Nomo de aparato
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Ŝanĝi nomon de aparato
+    .accesskey = a
 sync-device-name-change =
     .label = Ŝanĝi nomon de aparato…
     .accesskey = a
@@ -1005,6 +1133,28 @@ autofill-saved-payment-methods-button = Konservitaj pagmetodoj
 # This operation requires the user to authenticate with the operating system (device sign-in)
 autofill-reauth-payment-methods-checkbox = Postuli komencon de seanco en la aparato por enigi kaj administri pagmetodojn
     .accesskey = p
+autofill-payment-methods-title = Pagmetodoj
+autofill-payment-methods-header =
+    .aria-label = Pagmetodoj
+autofill-payment-methods-checkbox-message-2 =
+    .label = Konservi kaj aŭtomate plenigi pagmetodojn
+    .accesskey = p
+autofill-payment-methods-manage-payments-button =
+    .label = Administri pagmetodojn
+    .accesskey = A
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox-2 =
+    .label = Postuli komencon de seanco en la aparato por aŭtomate plenigi kaj administri pagmetodojn
+    .accesskey = s
+autofill-addresses-title = Adresoj kaj pli
+autofill-addresses-header =
+    .aria-label = Adresoj kaj pli
+autofill-addresses-checkbox-message =
+    .label = Konservi kaj aŭtomate plenigi adresojn
+    .accesskey = a
+autofill-addresses-manage-addresses-button =
+    .label = Administri adresojn kaj pli
+    .accesskey = A
 
 ## Privacy Section - History
 
@@ -1026,6 +1176,10 @@ history-remember-option-never =
     .label = neniam memoros historion
 history-remember-option-custom =
     .label = uzos personajn agordojn por la historio
+history-remember-description2 =
+    .description = { -brand-short-name } memoros vian retuman, elŝutan, formularan kaj serĉan historiojn.
+history-dontremember-description2 =
+    .description = { -brand-short-name } uzos la samajn agordojn de privata retumo, kaj ĝi ne memoros iun historion dum vi esploras la reton.
 history-remember-description = { -brand-short-name } memoros vian retuman, elŝutan, formularan kaj serĉan historiojn.
 history-dontremember-description = { -brand-short-name } uzos la samajn agordojn de privata retumo, kaj ĝi ne memoros iun historion dum vi esploras la reton.
 history-private-browsing-permanent =
@@ -1050,15 +1204,23 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Kuketoj kaj retejaj datumoj
+sitedata-label =
+    .aria-label = { sitedata-header }
 sitedata-total-size-calculating = Kalkulo de datuma kaj stapla grando de retejo…
 # Variables:
 #   $value (number) - Value of the unit (for example: 4.6, 500)
 #   $unit (string) - Name of the unit (for example: "bytes", "KB")
-sitedata-total-size = Viaj konservitaj kuketoj, retejaj datumoj kaj staplo uzas nuntempe { $value } { $unit } da diska spaco.
+sitedata-total-size2 = Viaj konservitaj kuketoj, historio, retejaj datumoj kaj staplo uzas nuntempe entute <strong>{ $value } { $unit }</strong> da diska spaco.
+# Variables:
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Viaj konservitaj kuketoj, retejaj datumoj kaj stokejo uzas nuntempe { $value } { $unit } da diska spaco.
 sitedata-learn-more = Pli da informo
 sitedata-delete-on-close =
     .label = Forigi kuketojn kaj retejajn datumojn je fermo de { -brand-short-name }
     .accesskey = F
+sitedata-delete-on-close-private-browsing3 =
+    .message = Konforme al viaj agordoj pri historio, { -brand-short-name } forigos kuketojn kaj retejajn datumojn el via seanco, kiam vi fermas la retumilon.
 sitedata-delete-on-close-private-browsing = En la konstanta reĝimo de privata retumo, kuketoj kaj retejaj datumoj estos forviŝitaj je ĉiu fermo de { -brand-short-name }.
 sitedata-delete-on-close-private-browsing2 = Konforme al viaj agordoj pri historio, { -brand-short-name } forigos kuketojn kaj retejajn datumojn el via seanco, kiam vi fermas la retumilon.
 sitedata-allow-cookies-option =
@@ -1075,6 +1237,8 @@ sitedata-option-block-cross-site-trackers =
     .label = Interetejaj spuriloj
 sitedata-option-block-cross-site-tracking-cookies =
     .label = Interretejaj spurilaj kuketoj
+sitedata-option-block-cross-site-cookies2 =
+    .label = Izoli interretejajn kuketojn
 sitedata-option-block-cross-site-cookies =
     .label = Interretejaj spurilaj kuketoj, kaj izoli aliajn interretejajn kuketojn
 sitedata-option-block-unvisited =
@@ -1083,6 +1247,12 @@ sitedata-option-block-all-cross-site-cookies =
     .label = Ĉiuj interretejaj kuketoj (tio povas misfunkciigi kelkajn retejojn)
 sitedata-option-block-all =
     .label = Ĉiuj kuketoj (tio misfunkciigos retejojn)
+sitedata-clear2 =
+    .label = Viŝi retumajn datumojn
+    .accesskey = V
+sitedata-settings2 =
+    .label = Administri retumajn datumojn
+    .accesskey = A
 sitedata-clear =
     .label = Viŝi datumojn…
     .accesskey = V
@@ -1092,6 +1262,10 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Administri esceptojn…
     .accesskey = e
+sitedata-cookies-exceptions2 =
+    .label = Administri esceptojn
+    .accesskey = e
+    .description = Vi povas specifi, kiuj retejoj ĉiam aŭ neniam rajtas uzi kuketojn kaj retejajn datumojn.
 
 ## Privacy Section - Cookie Banner Handling
 
@@ -1111,7 +1285,19 @@ cookie-banner-blocker-checkbox-label =
 ## Privacy Section - Address Bar
 
 addressbar-header = Adresa strio
+addressbar-suggest-1 = Elekti la sugestojn, kiuj videblas en via adresa strio
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest-1 = { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest-1 = Sugestoj el { -brand-short-name } kaj niaj asociitoj en via adresa strio.
 addressbar-suggest = Dum uzo de la retadresa strio, sugesti el
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = Adresa strio — { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest = Elektu la tipojn de sugestoj, kiu aperas en la adresa strio.
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = Pli da informo
 addressbar-locbar-history-option =
     .label = retuma historio
     .accesskey = h
@@ -1131,6 +1317,9 @@ addressbar-locbar-shortcuts-option =
 addressbar-locbar-topsites-option =
     .label = Plej vizititaj
     .accesskey = v
+addressbar-locbar-engines-option-1 =
+    .label = Sugesti serĉilojn
+    .accesskey = S
 addressbar-locbar-engines-option =
     .label = Serĉiloj
     .accesskey = S
@@ -1144,7 +1333,30 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = Montri sugestojn pri popularaj serĉoj
     .accesskey = s
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = Sugestoj de { -brand-short-name }
+addressbar-locbar-suggest-all-option-desc = Ricevu sugestojn el la reto, kiu rilatas vian serĉon
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = Sugestoj de { -brand-short-name }
+addressbar-locbar-suggest-nonsponsored-desc = Ricevu sugestojn el la reto, kiu rilatas vian serĉon
+addressbar-locbar-suggest-sponsored-option =
+    .label = Sugestoj el patronoj
+addressbar-locbar-suggest-sponsored-desc = Subtenu { -brand-short-name } per ricevo de patronitaj sugestoj, de tempo al tempo.
+# This string is used for a checkbox in the settings UI that opts the
+# user into "online" Firefox Suggest, allowing them to receive suggestions from
+# Mozilla's Merino server.
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since the online suggest is created and maintained
+# by Mozilla.
+addressbar-firefox-suggest-online =
+    .label = Akiri sugestojn el Mozilla dum tajpado
 addressbar-quickactions-learn-more = Pli da informo
+addressbar-dismissed-suggestions-label = Ignoritaj sugestoj
+addressbar-restore-dismissed-suggestions-description = Restarigi ignoritajn sugestojn de patronoj kaj de { -brand-short-name }.
+addressbar-restore-dismissed-suggestions-button =
+    .label = Restarigi
 
 ## Privacy Section - Content Blocking
 
@@ -1181,6 +1393,7 @@ content-blocking-private-windows = Spurila enhavo en privataj fenestroj
 content-blocking-cross-site-cookies-in-all-windows2 = Interretejajn kuketojn en ĉiuj fenestroj
 content-blocking-cross-site-tracking-cookies = Interretejaj spuriloj
 content-blocking-all-cross-site-cookies-private-windows = Interretejajn kuketojn en privataj fenestroj
+content-blocking-isolate-cross-site-cookies = Izoli interretejajn kuketojn
 content-blocking-cross-site-tracking-cookies-plus-isolate = Interretejaj spurilaj kuketoj, kaj izoli ceterajn kuketojn
 content-blocking-social-media-trackers = Sociretaj spuriloj
 content-blocking-all-cookies = Ĉiuj kuketoj
@@ -1201,8 +1414,23 @@ content-blocking-etp-standard-tcp-rollout-description = La totala protekto kontr
 content-blocking-etp-standard-tcp-rollout-learn-more = Pli da informo
 content-blocking-etp-standard-tcp-title = Tio inkluzivas plenan protekton kontraŭ kuketoj, nia ĝisnune plej pova privateca trajto
 content-blocking-warning-title = Atentu!
+content-blocking-warning-title-2 = Rigora blokado de spuriloj povas misfunkciigi retejojn
+content-blocking-warning-title-custom = Personecigita blokado de spuriloj povas misfunkciigi retejojn
+# “Fix site issues” references the string content-blocking-exceptions-subheader
+content-blocking-and-isolating-etp-warning-description-4 = { -brand-short-name } rekomendas uzi la agordojn en “Solvi retejajn problemojn” por redukti misfunkciantajn trajtojn kaj enhavon. Se retejo aspektas misfunkciante, provu malŝalti la protekton kontraŭ spurado por tiu retejo, por ŝargi la tutan enhavon.
 content-blocking-and-isolating-etp-warning-description-2 = Tiu ĉi agordo povas mismontri aŭ misfunkciigi retejojn. Se iu retejo ne bone funkcias aŭ videblas, vi povas malaktivigi la protekton kontaŭ spurado por tiu retejo, tiel ke ĝi ŝargos la tutan enhavon.
 content-blocking-warning-learn-how = Pli da informo
+content-blocking-baseline-exceptions-3 =
+    .label = Solvi gravajn retejajn problemojn (rekomendata)
+    .description = Tio ĉi helpas retejojn kaj trajtojn per malblokado de (nur) nepraj elementoj, kiuj tamen povus enhave spurilojn. La plimulto de oftaj problemoj estas solveblaj ĉi tiel.
+# This option to fix minor site issues must be used with the option to fix major site issues (string content-blocking-baseline-exceptions-3)
+content-blocking-convenience-exceptions-3 =
+    .label = Solvi negravajn retejajn problemojn
+    .description = Tio ĉi remetas aferojn kiel filmetojn aŭ komentan sekcion en artikolon pero malblokado de elementoj kiuj povus enhavi spurilojn. Tio povas redukti problemojn en la retejo sed malplibonigas la protekton. Oni uzu tion kune kun korektoj por gravaj problemoj.
+content-blocking-baseline-uncheck-warning-dialog-title = Ĉu vi certe volas malŝalti korektojn?
+content-blocking-baseline-uncheck-warning-dialog-body = Tiu ĉi agordo helpas solvi la plej oftajn retejajn problemojn. Se vi malŝaltas ĝin, kelkaj retejoj povus ne plu funkcii kaj { -brand-short-name } ne povos helpi vin solvi tiujn problemojn.
+content-blocking-baseline-uncheck-warning-dialog-ok-button = Malŝalti korektojn
+content-blocking-baseline-uncheck-warning-dialog-cancel-button = Gardi korektojn
 content-blocking-reload-description = Vi bezonos reŝargi viajn langetojn por apliki tiujn ĉi ŝanĝojn.
 content-blocking-reload-tabs-button =
     .label = Reŝargi ĉiujn langetojn
@@ -1257,6 +1485,14 @@ permissions-location = Loko
 permissions-location-settings =
     .label = Agordoj…
     .accesskey = A
+permissions-localhost = Programoj kaj servoj de la aparato
+permissions-localhost-settings =
+    .label = Agordoj…
+    .accesskey = A
+permissions-local-network = Aparatoj de la loka reto
+permissions-local-network-settings =
+    .label = Agordoj…
+    .accesskey = A
 permissions-xr = Virtuala realo
 permissions-xr-settings =
     .label = Agordoj…
@@ -1282,10 +1518,15 @@ permissions-notification-link = Pli da informo
 permissions-notification-pause =
     .label = Paŭzigi sciigojn ĝis kiam { -brand-short-name } restartos
     .accesskey = P
+permissions-autoplay2 =
+    .label = Aŭtomata ludado
 permissions-autoplay = Aŭtomata ludado
 permissions-autoplay-settings =
     .label = Agordoj…
     .accesskey = A
+permissions-block-popups2 =
+    .label = Bloki ŝprucaĵojn kaj redirektojn al aliaj retejoj
+    .accesskey = B
 permissions-block-popups =
     .label = Bloki ŝprucfenestrojn
     .accesskey = B
@@ -1301,15 +1542,33 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Esceptoj…
     .accesskey = E
+permissions-location2 =
+    .label = Loko
+permissions-localhost2 =
+    .label = Programoj kaj servoj de la aparato
+permissions-local-network2 =
+    .label = Aparatoj de la loka reto
+permissions-xr2 =
+    .label = Virtuala realo
+permissions-camera2 =
+    .label = Filmilo
+permissions-microphone2 =
+    .label = Mikrofono
+permissions-notification2 =
+    .label = Sciigoj
 
 ## Privacy Section - Data Collection
 
 collection-header = Kolekto kaj uzo de datumojn de { -brand-short-name }
 collection-header2 = Kolekto kaj uzo de datumojn de { -brand-short-name }
     .searchkeywords = telemezuro
+preferences-collection-description = Ni strebas lasi vin decidi, kaj nur kolektas la minimumajn datumojn bezonatajn por plibonigi { -brand-product-name } por ĉiuj.
+preferences-collection-privacy-notice = Vidi rimarkon pri privateco
+preferences-across-profiles = Tiuj ĉi agordoj aplikeblas al ĉiuj profilo de { -brand-product-name } en tiu ĉi aparato.
+preferences-view-profiles = Montri ĉiujn profilojn
 collection-description = Ni penas doni al vi plurajn eblojn, kaj kolekti nur tion, kion ni bezonas por fari kaj plibonigi { -brand-short-name } por ĉiuj. Ni ĉiam petos permeson antaŭ ol ricevi personajn informojn.
 collection-privacy-notice = Rimarko pri privateco
-collection-health-report-telemetry-disabled = Vi ne plu permesas al { -vendor-short-name } kapti teĥnikajn kaj interagajn datumojn. Ĉiuj antaŭaj datumoj estos forigitaj dum la venontaj 30 tagoj.
+collection-health-report-telemetry-disabled = Vi ne plu permesas al { -vendor-short-name } kapti teknikajn kaj interagajn datumojn. Ĉiuj antaŭaj datumoj estos forigitaj dum la venontaj 30 tagoj.
 collection-health-report-telemetry-disabled-link = Pli da informo
 collection-usage-ping =
     .label = Sendi ping pri taga uzo al { -vendor-short-name }
@@ -1346,8 +1605,6 @@ addon-recommendations-link = Pli da informo
 # or builds with no Telemetry support available.
 collection-health-report-disabled = La raporto de datumoj estas malŝaltita pro la agordoj de konstruo
 collection-backlogged-crash-reports-with-link = Permesi al { -brand-short-name } aŭtomate sendi ankoraŭ nesenditajn raportojn pri paneo. <a data-l10n-name="crash-reports-link">Pli da informo</a>
-    .accesskey = A
-collection-backlogged-crash-reports = Permesi al { -brand-short-name } aŭtomate sendi ankoraŭ nesenditajn raportojn pri paneo.
     .accesskey = A
 privacy-segmentation-section-header = Novaj trajtoj kiuj plibonigas vian retumon
 privacy-segmentation-section-description = Kiam ni proponas trajtojn kiuj uzas viajn datumojn por havi pli personan sperton:
@@ -1397,30 +1654,35 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = Permesi al { -brand-short-name } aŭtomate fidi radikajn atestilojn de aliaj, kiuj estis instalitaj de vi
     .accesskey = f
+certs-devices-enable-fips = Ebligi FIPS
 space-alert-over-5gb-settings-button =
     .label = Malfermi agordojn
     .accesskey = a
 space-alert-over-5gb-message2 = <strong>Elĉerpiĝas la diska spaco por { -brand-short-name }.</strong> Enhavo de retejoj povas aperi malĝuste. Vi povas viŝi konservitajn retejajn datumojn en Agordoj > Privateco kaj sekureco > Kuketoj kaj retejaj datumoj.
 space-alert-under-5gb-message2 = <strong>Elĉerpiĝas la diska spaco por { -brand-short-name }</strong>. Enhavo de retejoj povas aperi malĝuste. Vizitu “Pli da informo” por optimumigi la uzon de diska spaco, por pli bona retuma sperto.
+certs-description2 =
+    .label = Atestiloj
+    .description = Agordi la atestilojn uzatajn de { -brand-short-name } por aŭtentigo.
 
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = HTTPS-nura reĝimo
+httpsonly-label =
+    .aria-label = { httpsonly-header }
+    .description = Nur permesi sekurajn konektojn al retejoj. { -brand-short-name } demandos antaŭ ol konektiĝi nesekure.
+httpsonly-description3 = Nur permesi sekurajn konektojn al retejoj. { -brand-short-name } demandos antaŭ ol konektiĝi nesekure.
+httpsonly-learn-more2 = Kiel funkcias HTTPS-nura reĝimo
 httpsonly-description = HTTPS provizas sekuran, ĉifritan konekton inter { -brand-short-name } kaj la vizitataj retejoj. Plimulto de la retejoj subtenas HTTPS kaj, se la HTTPS-nura reĝimo estas aktiva, { -brand-short-name } movos ĉiujn konektojn al HTTPS.
-httpsonly-description2 = { -brand-short-name } kreas sekurajn kaj ĉifritajn konektojn al la retejoj, kiujn vi vizitas. Se la HTTPS-nura reĝimo estas ŝaltita { -brand-short-name } avertos vin se konekto ne estas sekura.
 httpsonly-learn-more = Pli da informo
 httpsonly-radio-enabled =
     .label = Aktivigi HTTPS-nuran reĝimon en ĉiuj fenestroj
-httpsonly-radio-enabled2 =
-    .label = Nur uzi HTTPS en ĉiuj fenestroj
 httpsonly-radio-enabled-pbm =
     .label = Aktivigi HTTPS-nuran reĝimon nur en privataj fenestroj
-httpsonly-radio-enabled-pbm2 =
-    .label = Nur uzi HTTPS en privataj fenestroj
+httpsonly-radio-disabled3 =
+    .label = Ne aktivigi HTTPS-nuran reĝimon
+    .description = { -brand-short-name } povus tamen plisekurigi kelkajn konektojn
 httpsonly-radio-disabled =
     .label = Ne aktivigi HTTPS-nuran reĝimon
-httpsonly-radio-disabled2 =
-    .label = Unue provi HTTPS sed permesi nesekurajn konektojn
 
 ## DoH Section
 

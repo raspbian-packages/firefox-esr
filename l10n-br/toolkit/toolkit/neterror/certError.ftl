@@ -90,6 +90,8 @@ contentEncodingError-title = Fazi enrinegañ an endalc’had
 unsafeContentType-title = Rizh restr arvarus
 netReset-title = Ehanet eo bet ar c’hennaskañ
 netTimeout-title = Troc’het eo bet ar c’hennask rak re hir e oa
+httpErrorPage-title = War a-seblant ez eus ur gudenn gant al lec’hienn-mañ
+serverError-title = War a-seblant ez eus ur gudenn gant al lec’hienn-mañ
 unknownProtocolFound-title = N'eo ket bet komprenet ar chomlec’h
 proxyConnectFailure-title = Dafariad ar proksi zo o nac’hañ ar c’hennaskañ
 proxyResolveFailure-title = N'eo ket bet kavet an dafariad proksi
@@ -106,10 +108,3 @@ networkProtocolError-title = Fazi komenad rouedad
 nssBadCert-title = Diwallit: gallout a ra bezañ un arvar diogelroez
 nssBadCert-sts-title = N'eo ket kennasket: kudenn diogelroez posupl
 certerror-mitm-title = Ur meziant a vir { -brand-short-name } da gennaskañ ent diogel d’al lec’hienn-mañ
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Telechargiadas
 appmenuitem-passwords =
     .label = Pleds-clav
+appmenuitem-extensions-and-themes =
+    .label = Extensiuns e designs
+appmenuitem-extensions =
+    .label = Extensiuns
 appmenuitem-addons-and-themes =
     .label = Supplements e designs
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Avrir la panela dal profiler
+    .tooltiptext = Avrir la panela dal profiler
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Preselecziun per examinar sbagls dad audio e video en { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Multimedia
+profiler-popup-presets-ml-description = Preselecziun per la diagnosa da problems en connex cun l’emprender maschinal en { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Emprender maschinal
 profiler-popup-presets-networking-description = Preselecziun per examinar sbagls da rait en { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Rait
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Avrir la survista dals alias dad e-mail
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Protegia tias activitads online
 appmenu-services-header = Mes servetschs
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Emprova auters utensils da protecziun da Mozilla:
 appmenu-other-protection-header = Emprova era auters utensils da protecziun da { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Profils
 appmenu-other-profiles = Auters profils
 appmenu-manage-profiles =
     .label = Administrar ils profils
+appmenu-copy-profile =
+    .label = Copiar quest profil
 appmenu-create-profile =
     .label = Nov profil
 appmenu-edit-profile =
     .aria-label = Modifitgar il profil
+appmenu-profiles-2 =
+    .label = Profils

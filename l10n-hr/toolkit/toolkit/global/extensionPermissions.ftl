@@ -40,3 +40,36 @@ webext-perms-description-webNavigation = Pristup aktivnostima preglednika tijeko
 webext-perms-extra-warning-userScripts-long = Neprovjerena skripta mogu predstavljati rizike za sigurnost i privatnost, poput pokretanja štetnog koda ili praćenja aktivnosti na web stranicama. Pokreći samo skripta iz proširenja ili izvora kojima vjeruješ.
 # A shorter warning is displayed in UI surfaces with little room, such as a permission prompt.
 webext-perms-extra-warning-userScripts-short = Neprovjerena skripta mogu predstavljati rizike za sigurnost i privatnost. Pokreći samo skripta iz proširenja ili izvora kojima vjeruješ.
+
+## Short form to be used in lists or in a string (`webext-perms-description-data-some`)
+## that formats some of the data collection permissions below using `Intl.ListFormat`.
+##
+## This is used when the data collection permissions are required.
+
+webext-perms-description-data-short-authenticationInfo = podaci autentifikacije
+webext-perms-description-data-short-bookmarksInfo = zabilješke
+webext-perms-description-data-short-browsingActivity = aktivnost pregledavanja
+webext-perms-description-data-short-financialAndPaymentInfo = financijski podaci i podaci o plaćanju
+webext-perms-description-data-short-healthInfo = zdravstveni podaci
+webext-perms-description-data-short-locationInfo = lokacija
+webext-perms-description-data-short-personalCommunications = osobne komunikacije
+webext-perms-description-data-short-personallyIdentifyingInfo = osobni identifikacijski podaci
+webext-perms-description-data-short-searchTerms = pojmovi pretraživanja
+webext-perms-description-data-short-technicalAndInteraction = tehnički podaci i podaci o interakciji
+webext-perms-description-data-short-websiteActivity = aktivnost web stranice
+webext-perms-description-data-short-websiteContent = sadržaj web stranice
+
+## Long form to be used in `about:addons` when these data collection permissions are optional.
+
+webext-perms-description-data-long-authenticationInfo = Dijeli podatke autentifikacije s programerom proširenja
+webext-perms-description-data-long-bookmarksInfo = Dijeli podatke zabilješki s programerom proširenja
+webext-perms-description-data-long-browsingActivity = Dijeli aktivnost pregledavanja s programerom proširenja
+webext-perms-description-data-long-financialAndPaymentInfo = Dijeli financijske podatke i podatke o plaćanju s programerom proširenja
+webext-perms-description-data-long-healthInfo = Dijeli zdravstvene podatke s programerom proširenja
+webext-perms-description-data-long-locationInfo = Dijeli lokacijske podatke s programerom proširenja
+webext-perms-description-data-long-personalCommunications = Dijeli osobne komunikacije s programerom proširenja
+webext-perms-description-data-long-personallyIdentifyingInfo = Dijeli osobne identifikacijske podatke s programerom proširenja
+webext-perms-description-data-long-searchTerms = Dijeli pojmove pretraživanja s programerom proširenja
+webext-perms-description-data-long-technicalAndInteraction = Dijeli tehničke podatke i podatke o interakciji s programerom proširenja
+webext-perms-description-data-long-websiteActivity = Dijeli aktivnost web stranice s programerom proširenja
+webext-perms-description-data-long-websiteContent = Dijeli sadržaj web stranice s programerom proširenja

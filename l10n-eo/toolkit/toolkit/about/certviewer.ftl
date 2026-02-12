@@ -36,6 +36,9 @@ certificate-viewer-key-size = Grando de ŝlosilo
 certificate-viewer-inc-locality = Sidejo
 certificate-viewer-locality = Loko
 certificate-viewer-location = Loko
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = Nomo de la registra dosiero
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = Identigilo de registro
 certificate-viewer-method = Metodo
 certificate-viewer-modulus = Modulo
@@ -110,6 +113,8 @@ certificate-viewer-export = Elporti
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = (nekonata)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = atestilo
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

@@ -111,6 +111,37 @@ about-glean-feedback-settings-only =
 about-glean-feedback-settings-and-ping =
     .message = Баптаулар іске асырылды және пинг жіберілді!
 about-glean-about-data-header = Деректер туралы
+about-glean-metrics-table-header = Барлық көрсеткіштер
+# This message refers to the category in which a given metric is recorded.
+about-glean-metrics-table-header-category = Санат
+# This message refers to the name of a given metric.
+about-glean-metrics-table-header-name = Аты
+# This message refers to a given metric's metric type.
+about-glean-metrics-table-header-type = Түрі
+# This message refers to the underlying value of a given metric.
+about-glean-metrics-table-header-value = Мәні
+# This message refers to the UI action buttons for a given metric.
+about-glean-metrics-table-header-actions = Әрекеттер
+about-glean-metrics-table-settings-button = Баптаулар
+about-glean-metrics-table-settings-category-general = Жалпы
+about-glean-metrics-table-settings-hide-empty-value-rows = Бос мән жолдарын жасыру
+about-glean-metrics-table-settings-category-visualizations = Визуализациялар
+# This is a heading that is immediately followed by an example data visualization
+about-glean-metrics-table-settings-visualization-example = Мысалы
+about-glean-metrics-table-settings-category-visualizations-histogram = Гистограмма
+# Label displayed near an input field that can be used to filter metrics
+about-glean-label-for-filter-metrics = Сүзгі
+about-glean-button-load-all = Барлық мәндерді жүктеу
+about-glean-button-load-value = Жүктеу
+# "Docs" is shorthand for "documentation"
+about-glean-button-dictionary-link = Құжаттар
+about-glean-button-watch = Бақылау
+# Meaning "to stop watching"
+about-glean-button-unwatch = Бақыламау
+about-glean-no-data-to-display = Көрсетілетін деректер жоқ.
+about-glean-unknown-metric-type-warning = Белгісіз метрика түрі.
+about-glean-enable-new-features-button = Жаңа мүмкіндіктерді іске қосу
+about-glean-disable-new-features-button = Жаңа мүмкіндіктерді сөндіру
 about-glean-about-data-explanation =
     Жиналған деректер тізімін шолу үшін,
     <a data-l10n-name="glean-dictionary-link">{ -glean-brand-name } Сөздігін</a> шолыңыз.

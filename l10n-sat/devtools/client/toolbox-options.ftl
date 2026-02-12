@@ -54,9 +54,6 @@ options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-hwb = HWB
 options-default-color-unit-name = ᱨᱚᱝ ᱧᱩᱛᱩᱢ ᱠᱚ
 
-## Web Console section
-
-
 ## Style Editor section
 
 # The heading
@@ -132,5 +129,5 @@ options-enable-service-workers-http-tooltip =
 options-source-maps-label = ᱥᱨᱚᱛ ᱱᱚᱠᱥᱟ ᱮᱢ ᱪᱷᱚᱭᱚᱭ
 options-source-maps-tooltip =
     .title = ᱡᱩᱫᱤ ᱟᱢ ᱱᱚᱶᱟ ᱢᱚᱱᱮᱛᱮᱭᱟᱜ ᱮᱢ ᱠᱷᱟᱱ ᱦᱟᱹᱛᱤᱭᱟᱨ ᱨᱮ ᱥᱨᱚᱛᱠᱚ ᱵᱟᱹᱭᱥᱟᱣᱜᱼᱟ ᱾
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * ᱮᱠᱷᱮᱱ ᱱᱤᱛᱟᱜ ᱠᱟᱹᱢᱤ ᱚᱠᱛᱚ, ᱥᱟᱦᱴᱟ ᱞᱟᱫᱮ ᱫᱚᱦᱲᱟ ᱾

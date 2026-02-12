@@ -27,6 +27,8 @@ appmenuitem-downloads =
     .label = Telecargaments
 appmenuitem-passwords =
     .label = Senhals
+appmenuitem-extensions-and-themes =
+    .label = Extensions e tèmas
 appmenuitem-addons-and-themes =
     .label = Moduls complementaris e tèmas
 appmenuitem-print =
@@ -282,7 +284,6 @@ appmenu-services-header = Mos servicis
 
 ## Profiles panel
 
-appmenu-profiles = Perfils
 appmenu-other-profiles = Autres perfils
 appmenu-manage-profiles =
     .label = Gestion dels perfils
@@ -290,3 +291,5 @@ appmenu-create-profile =
     .label = Perfil nòu
 appmenu-edit-profile =
     .aria-label = Modificar lo perfil
+appmenu-profiles-2 =
+    .label = Perfils

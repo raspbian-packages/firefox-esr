@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = ბმულის შენახვა { -pocket-brand-name }-ში
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = ელფოსტის მისამართის ასლი
@@ -162,17 +160,15 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = ბმულის ასლი
     .accesskey = ბ
+main-context-menu-preview-link =
+    .label = ბმულის შეთვალიერება
+    .accesskey = ვ
 # "Copy Clean Link" means that Firefox will remove things from the link you
 # copied, like items that identify you for advertising purposes, and other items
 # sites add into URLs to help them deliver a certain browsing experience.
 main-context-menu-copy-clean-link =
     .label = ბმულის სუფთა ასლი
     .accesskey = ფ
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = ბმულის ასლი თვალის დევნების არიდებით
-    .accesskey = უ
 
 ## Media (video/audio) controls
 ##
@@ -274,6 +270,11 @@ main-context-menu-image-info =
 main-context-menu-image-desc =
     .label = აღწერილობის ნახვა
     .accesskey = ა
+# Variables
+#   $engine (String) - Name of the search engine that will perform the search.
+main-context-menu-visual-search-2 =
+    .label = სურათით ძიებისთვის { $engine }
+    .accesskey = ბ
 main-context-menu-video-save-as =
     .label = ვიდეოს შენახვა როგორც...
     .accesskey = ნ
@@ -289,6 +290,9 @@ main-context-menu-video-email =
 main-context-menu-audio-email =
     .label = ხმოვანი ფაილის გაგზავნა ელფოსტით…
     .accesskey = ე
+main-context-menu-send-to-device-2 =
+    .label = მოწყობილობაზე გაგზავნა
+    .accesskey = ზ
 main-context-menu-save-to-pocket =
     .label = გვერდის შენახვა { -pocket-brand-name }-ში
     .accesskey = k
@@ -323,6 +327,9 @@ main-context-menu-manage-passwords =
 main-context-menu-keyword =
     .label = საკვანძო სიტყვის მინიჭება საძიებოდ…
     .accesskey = ო
+main-context-menu-add-engine =
+    .label = საძიებოს დამატება
+    .accesskey = ძ
 main-context-menu-link-send-to-device =
     .label = ბმულის გაგზავნა მოწყობილობაზე
     .accesskey = წ
@@ -393,3 +400,5 @@ main-context-menu-open-link-in-container-tab =
 main-context-menu-reveal-password =
     .label = პაროლის გამოჩენა
     .accesskey = მ
+# The label of a badge shown in menu items to call out new features.
+main-context-menu-new-feature-badge = სიახლე

@@ -3,18 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't re-use these strings outside of the menubar.
-
-
-# NOTE: For English locales, strings in this file should be in APA-style Title Case.
-# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
-#
-# NOTE: For Engineers, please don't reuse these strings outside of the menubar.
-
-
 ## Application Menu (macOS only)
 
 menu-application-preferences =
@@ -151,8 +139,6 @@ menu-view-history-button =
     .label = Historie
 menu-view-synced-tabs-sidebar =
     .label = Synchronizované panely
-menu-view-megalist-sidebar =
-    .label = Hesla
 menu-view-full-zoom =
     .label = Velikost stránky
     .accesskey = V
@@ -268,6 +254,13 @@ menu-profiles-manage-profiles =
     .label = Správa profilů
 menu-profiles-new-profile =
     .label = Nový profil
+# Variables:
+#  $profileName (String): the name of the users profile
+menu-profiles-current =
+    .label = { $profileName } (aktuální)
+menu-profiles-menu =
+    .label = Profily
+    .accesskey = P
 
 ## Tools Menu
 
@@ -277,6 +270,9 @@ menu-tools =
 menu-tools-downloads =
     .label = Stahování
     .accesskey = t
+menu-tools-extensions-and-themes =
+    .label = Rozšíření a vzhledy
+    .accesskey = R
 menu-tools-addons-and-themes =
     .label = Doplňky a vzhledy
     .accesskey = a

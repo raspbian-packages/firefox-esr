@@ -72,12 +72,6 @@ toolbar-button-stop =
 toolbar-button-stop-reload =
     .title = { main-context-menu-reload.aria-label }
 
-## Firefox Account Button
-
-
-## Account toolbar Button
-
-
 ## Save Page
 
 main-context-menu-page-save =
@@ -108,9 +102,7 @@ main-context-menu-save-link-to-pocket =
     .label = Alzar vinclo en { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Copiar l'adreza de correu electronico
@@ -195,9 +187,6 @@ main-context-menu-save-to-pocket =
 main-context-menu-send-to-device =
     .label = Ninviar la pachina ta lo dispositivo
     .accesskey = d
-
-##
-
 
 ##
 

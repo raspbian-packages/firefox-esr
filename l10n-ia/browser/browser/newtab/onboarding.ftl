@@ -25,6 +25,8 @@ return-to-amo-subtitle = Multo bon, tu ha installate { -brand-short-name }
 return-to-amo-addon-title = Ora que nos installa tu <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Adder le extension
 return-to-amo-add-theme-label = Adder le thema
+return-to-amo-theme-install-complete-label = Thema installate
+return-to-amo-extension-install-complete-label = Extension installate
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Importar de { $previous
 mr1-onboarding-theme-header = Personalisa lo
 mr1-onboarding-theme-subtitle = Personalisa { -brand-short-name } con un thema.
 mr1-onboarding-theme-secondary-button-label = Non ora
-newtab-wallpaper-onboarding-title = Prova un tocco de color
-newtab-wallpaper-onboarding-subtitle = Eliger un fundo pro dar a tu Nove scheda un apparentia fresc.
-newtab-wallpaper-onboarding-primary-button-label = Fixar un fundo de schermo
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Thema del systema
 mr1-onboarding-theme-label-light = Clar
@@ -204,7 +203,7 @@ mr2022-onboarding-existing-pin-header = Gratias pro amar { -brand-product-name }
 mr2022-onboarding-existing-pin-subtitle = Lancea un internet plus san de ubique con un sol clic. Nostre ultime actualisation es plen de nove cosas que nos pensa tu adorara.
 # Subtitle will be used on the welcome screen for existing users
 # when they already have Firefox pinned but not set as default
-mr2022-onboarding-existing-set-default-only-subtitle = Usa un navigator que defende tu confidentialitate dum tu ambula circum le web. Nostre ultime actualisation es plen de cosas que tu adora.
+mr2022-onboarding-existing-set-default-only-subtitle = Usa un navigator que defende tu confidentialitate durante que tu naviga per le web. Nostre ultime actualisation es plen de cosas que tu adora.
 mr2022-onboarding-existing-pin-checkbox-label = Adde equalmente le navigation private de { -brand-short-name }
 
 ## MR2022 New User Set Default screen strings
@@ -328,7 +327,7 @@ mr2022-onboarding-privacy-segmentation-image-alt =
 mr2022-onboarding-gratitude-image-alt =
     .aria-label = Vision de un sol ponente per un fenestra con un vulpe e un planta de interno sur un appoio del fenestra
 mr2022-onboarding-colorways-image-alt =
-    .aria-label = Un mano pinge con pulverisator un collage multicolor de un oculo verde, un scarpa orange, un ballon corbe rubie, bonettos auricular purpuree,corde blau e corona jalne
+    .aria-label = Un mano pinge con spray un collage multicolor de un oculo verde, un scarpa orange, un ballon de basket rubie, auriculares purpuree, un corde blau e un corona jalne
 
 ## Device migration onboarding
 
@@ -353,7 +352,7 @@ amo-picker-collection-link = Discoperi altere additivos
 onboarding-easy-setup-security-and-privacy-title = A nos place mantener te secur
 onboarding-easy-setup-security-and-privacy-subtitle = Nostre navigator supportate per un organisation sin fin d lucro adjuta stoppar le companias de sequer secretemente tu movimentos circum le web.
 # Mobile download screen
-onboarding-mobile-download-security-and-privacy-title = Resta cryptate dum tu passa inter tu apparatos
+onboarding-mobile-download-security-and-privacy-title = Resta cryptate quando tu passa inter apparatos
 onboarding-mobile-download-security-and-privacy-subtitle = Quando tu es synchronisate, { -brand-short-name } crypta tu contrasignos, marcapaginas, e altero. In addition tu pote recuperar le schedas de tu altere apparatos.
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } es tu supporto
@@ -445,6 +444,18 @@ onboarding-checklist-sign-up = Registrate o accede a tu conto
 
 tab-groups-onboarding-feature-callout-title = Prova le gruppos de schedas pro minus disordine, plus concentration
 tab-groups-onboarding-feature-callout-subtitle = Organisa te trahente un scheda al summitate de un altere pro crear tu prime gruppo.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Trova quandocunque tu gruppos de schedas in le menu Listar tote le schedas.
+tab-groups-onboarding-create-group-title-2 = Trova hic tu gruppos de schedas in omne momento.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Pro trovar tu gruppos, cerca los in le barra de adresse.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Si tu claudeva un gruppo de schedas, reaperi lo quandocunque per le menu Listar tote le schedas.
+tab-groups-onboarding-saved-groups-title-2 = Quando tu claude un gruppo de schedas, tu pote reaperir lo hic in omne momento.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Pro trovar tu gruppos claudite, cerca los in le barra de adresse.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Reaperi tu gruppos de schedas quandocunque per le menu Listar tote le schedas.
+tab-groups-onboarding-session-restore-title = Reaperi tu gruppos de schedas hic in omne momento.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -454,3 +465,107 @@ multi-profile-spotlight-cta = Crear un profilo
 multi-profile-callout-title = Crear profilos differente pro labor e amusamento
 multi-profile-callout-subtitle = Le profilos te permitte mantener tu informationes de navigation, como le chronologia de recerca e le contrasignos, totalmente separate.
 multi-profile-callout-cta = Crear un profilo
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Discargar, synchronisar, e lancear!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Scanna le codice QR pro discargar { -brand-product-name } pro apparatos mobile. Un vice installate, selige “Synchronisar a mobile” pro acceder a tu contrasignos, marcapaginas, e plus, al volo.
+dismiss-button-label = Clauder
+sync-to-mobile-button-label = Synchronisar con apparato mobile
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Codice QR pro discargar { -brand-product-name } pro apparato mobile
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Actualisa tu a Windows 11?
+    Que nos face un copia de securitate de tu datos de { -brand-product-name }.
+create-backup-screen-1-subtitle = Protege automaticamente tu contrasignos, marcapaginas, e plus in 1–2 minutas.
+create-backup-screen-1-flair = Recommendate
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Pro saper plus</a>
+create-backup-screen-1-sync-label = Synchronisar con { -brand-product-name }
+create-backup-screen-1-sync-body = Facer copia de securitate de tote le apparatos in session
+create-backup-screen-1-backup-label = Facer un copia de securitate sur le computator
+create-backup-screen-1-backup-body = Salva a tu apparato o a OneDrive
+create-backup-select-tile-button-label = Seliger
+create-backup-back-button-label = Retro
+create-backup-show-fewer =
+    .label = Monstrar minus como isto
+create-backup-screen-2-title = Elige le datos de { -brand-product-name } pro facer un copia de securitate
+create-backup-screen-2-subtitle = Il prende solo un minuta. Le copia de securitate de tu datos se face un vice per die.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Configuration facile
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Marcapaginas, chronologia, parametros, etc.
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Non includer contrasignos e pagamentos
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Non cryptate
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Tote le datos
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Include contrasignos e pagamentos
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Cryptate con un contrasigno
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Ubi vole tu salvar tu copia de securitate?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Crear un file contrasigno de reserva
+create-backup-screen-3-subtitle = Immagazina lo in un posto que tu memorara.
+fx-backup-opt-in-header = Eliger position de file
+fx-backup-opt-in-filepath-label = Elige un loco que tu intende transferer a un nove apparato, como OneDrive.
+fx-backup-opt-in-create-password-label = Insere le contrasigno
+fx-backup-opt-in-confirm-btn-label = Continuar
+fx-backup-opt-in-cancel-btn-label = Retro
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Tu copia de securitate es programmate
+fx-backup-confirmation-screen-close-button = Clauder
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Tote le datos de navigation incluse
+fx-backup-confirmation-screen-all-data-item-text-2 = Salvate a tu apparato
+fx-backup-confirmation-screen-all-data-item-text-3 = Cryptate e protecte per contrasigno
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Marcapaginas, chronologia, parametros, e altere datos includite
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Salvate a tu apparato
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Contrasignos e pagamentos non includite
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Va a <a data-l10n-name="settings">Parametros</a> pro includer datos sensibile.
+fx-backup-confirmation-screen-item-subtext-1 = Le copia de securitate comenciara in alcun minutas e essera exequite un vice per die. Tu pote verificar le progresso in <a data-l10n-name="settings">Parametros</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } cercara tu copia de securitate si tu debe reinstallar.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Restaurar ab le copia de securitate
+restore-from-backup-title = Que nos reobtene { -brand-short-name } como illo te place
+restore-from-backup-subtitle = Recupera tote tu marcapaginas, chronologia, e altere datos pro retornar a navigar.
+restore-from-backup-secondary-button = Non restaurar
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Nos es retro! Le datos de tu { -brand-short-name } ha essite restaurate.
+restored-from-backup-success-with-checklist-subtitle = Vole tu tener tu navigator preferite e attente al confidentialitate a portata de clic?
+restored-from-backup-success-no-checklist-subtitle = Tu pote activar le copia de securitate pro iste apparato in <a data-l10n-name="settings">Parametros</a>.
+restored-from-backup-success-with-checklist-primary-button = Salvar e continuar
+restored-from-backup-success-with-checklist-secondary-button = Saltar iste passo
+restored-from-backup-success-no-checklist-primary-button = Continuar
+restored-from-backup-error-title = Hmm, il habeva un problema con tu file de copia de securitate.
+restored-from-backup-error-subtitle = Si tu ha un altere file de copia de securitate de { -brand-short-name }, tenta restaurar ab illo. <a data-l10n-name="restore-problems">Ha tu ancora problemas?</a>
+restored-from-backup-error-primary-button = Clauder
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Personalisa tu experientia de { -brand-short-name }
+onboarding-personalization-subtitle = Responde a alcun questiones e nos recommendara functiones e extensiones pro meliorar tu uso de { -brand-short-name }.
+onboarding-personalization-use-case-title = Proque usara tu { -brand-short-name }?
+onboarding-personalization-use-case-personal-option = Personal
+onboarding-personalization-use-case-school-option = Schola
+onboarding-personalization-use-case-work-option = Labor
+onboarding-personalization-motivation-title = Qual functiones de { -brand-short-name } es le plus importante pro te?
+onboarding-personalization-motivation-privacy-option = Confidentialitate e securitate
+onboarding-personalization-motivation-productivity-option = Productivitate
+onboarding-personalization-motivation-other-option = Altere

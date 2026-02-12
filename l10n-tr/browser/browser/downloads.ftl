@@ -25,7 +25,7 @@ downloads-cmd-resume =
     .label = Devam et
     .accesskey = m
 downloads-cmd-cancel =
-    .tooltiptext = İptal
+    .tooltiptext = Vazgeç
 downloads-cmd-cancel-panel =
     .aria-label = İptal
 downloads-cmd-show-menuitem-2 =
@@ -150,13 +150,13 @@ downloads-open-file =
 ##   $minutes (number) - Amount of minutes till the file opens.
 
 downloading-file-opens-in-hours-and-minutes-2 =
-    .value = { $hours } saat { $minutes } dk sonra açılacak…
+    .value = { $hours } saat { $minutes } dk. sonra açılacak…
 downloading-file-opens-in-minutes-2 =
-    .value = { $minutes } dk sonra açılacak…
+    .value = { $minutes } dk. sonra açılacak…
 downloading-file-opens-in-minutes-and-seconds-2 =
-    .value = { $minutes } dk { $seconds } sn sonra açılacak…
+    .value = { $minutes } dk. { $seconds } sn. sonra açılacak…
 downloading-file-opens-in-seconds-2 =
-    .value = { $seconds } sn sonra açılacak…
+    .value = { $seconds } sn. sonra açılacak…
 downloading-file-opens-in-some-time-2 =
     .value = Tamamlandığında açılacak…
 downloading-file-click-to-open =
@@ -182,6 +182,18 @@ downloads-history =
 # that we are showing the details of a single download.
 downloads-details =
     .title = İndirme ayrıntıları
+
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Dosyalar cihazınızda kalacak
+downloads-private-browsing-message = Tüm gizli pencereleri kapatsanız bile bu cihazı kullanan herkes indirilen dosyaları görebilir.
+downloads-private-browsing-delete-button =
+    .label = Dosyaları otomatik olarak sil
+    .accesskey = D
+downloads-private-browsing-accept-button =
+    .label = Anladım
+    .accesskey = A
 
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:

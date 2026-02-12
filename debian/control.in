@@ -22,7 +22,7 @@ Build-Depends: debhelper-compat (= 12),
                libnspr4-dev (>= 2:@NSPR_VERSION@~),
 %endif
 %if USE_SYSTEM_NSS
-%define NSS_VERSION 3.101
+%define NSS_VERSION 3.112
                libnss3-dev (>= 2:@NSS_VERSION@~),
 %endif
 %if USE_SYSTEM_VPX
@@ -41,7 +41,7 @@ Build-Depends: debhelper-compat (= 12),
 %if DIST == bookworm
                g++-11,
 %endif
-%define RUST_VERSION 1.76
+%define RUST_VERSION 1.82
 %if DIST == bookworm || DIST == bullseye
                rustc-web (>= @RUST_VERSION@),
                cargo-web (>= @RUST_VERSION@),
@@ -57,7 +57,7 @@ Build-Depends: debhelper-compat (= 12),
                libclang-rt-dev-wasm32,
                lld,
 %endif
-%define CBINDGEN_VERSION 0.26.0
+%define CBINDGEN_VERSION 0.27.0
 %if DIST == bookworm || DIST == bullseye
                cbindgen-web (>= @CBINDGEN_VERSION@),
 %else

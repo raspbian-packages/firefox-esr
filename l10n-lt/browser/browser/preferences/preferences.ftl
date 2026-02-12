@@ -111,6 +111,10 @@ startup-header = Paleistis
 always-check-default =
     .label = Visada tikrinti, ar „{ -brand-short-name }“ yra jūsų numatytoji naršyklė
     .accesskey = d
+is-default-browser =
+    .message = „{ -brand-short-name }“ šiuo metu yra numatytoji naršyklė
+is-not-default-browser =
+    .message = „{ -brand-short-name }“ šiuo metu nėra numatytoji naršyklė
 is-default = „{ -brand-short-name }“ šiuo metu yra numatytoji naršyklė
 is-not-default = „{ -brand-short-name }“ šiuo metu nėra numatytoji naršyklė
 set-as-my-default-browser =
@@ -195,6 +199,15 @@ containers-remove-cancel-button = Palikti šį sudėtinį rodinį
 language-and-appearance-header = Kalba ir išvaizda
 preferences-web-appearance-header = Svetainių išvaizda
 preferences-web-appearance-description = Kai kurios svetainės pritaiko savo spalvų schemą pagal jūsų nustatymus. Pasirinkite, kurią spalvų schemą norėtumėte naudoti tokioms svetainėms.
+preferences-web-appearance-choice-auto2 =
+    .label = Automatinis
+    .title = Automatiškai keiskite svetainės foną ir turinį pagal sistemos nustatymus ir „{ -brand-short-name }“ grafinį apvalkalą.
+preferences-web-appearance-choice-light2 =
+    .label = Šviesus
+    .title = Naudoti šviesias spalvas svetainių fonui ir turiniui.
+preferences-web-appearance-choice-dark2 =
+    .label = Tamsus
+    .title = Naudoti tamsias spalvas svetainių fonui ir turiniui.
 preferences-web-appearance-choice-auto = Automatinis
 preferences-web-appearance-choice-light = Šviesus
 preferences-web-appearance-choice-dark = Tamsus
@@ -210,13 +223,11 @@ preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-web-appearance-link =
+    .label = Tvarkykite { -brand-short-name } apvalkalus prieduose ir grafiniuose apvalkaluose
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Jūsų spalvų pasirinkimai pakeičia svetainių išvaizdą. <a data-l10n-name="colors-link">Tvarkyti spalvas</a>
-# This can appear when using windows HCM or "Override colors: always" without
-# system colors.
-preferences-web-appearance-override-warning2 =
-    .message = Jūsų spalvų pasirinkimai pakeičia svetainių išvaizdą.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Tvarkykite { -brand-short-name } apvalkalus <a data-l10n-name="themes-link">prieduose ir grafiniuose apvalkaluose</a>
@@ -276,6 +287,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Failai ir programos
+downloads-header-2 =
+    .label = Atsiuntimai
+download-save-where-2 =
+    .label = Atsiunčiamus failus įrašyti į:
+    .accesskey = f
 download-header = Atsiuntimai
 download-save-where = Atsiunčiamus failus įrašyti į:
     .accesskey = f
@@ -495,7 +511,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Nauji langai ir kortelės
 home-new-windows-tabs-description2 = Pasirinkite, ką norite matyti atvėrę savo pradžios tinklalapį, naujus langus, naujas korteles.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Pradžios tinklalapis ir nauji langai
 home-newtabs-mode-label = Naujos kortelės
@@ -644,6 +660,8 @@ search-keyword-warning-bookmark = Įvedėte reikšminį žodį, kurį jau naudoj
 containers-back-button2 =
     .aria-label = Grįžti į nuostatas
 containers-header = Sudėtinio rodinio kortelės
+containers-section-header =
+    .heading = Sudėtinio rodinio kortelės
 containers-add-button =
     .label = Pridėti naują sudėtinį rodinį
     .accesskey = P
@@ -779,6 +797,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Įrenginio pavadinimas
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Įrenginio pavadinimas
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Keisti įrenginio pavadinimą
+    .accesskey = e
 sync-device-name-change =
     .label = Keisti įrenginio pavadinimą…
     .accesskey = e
@@ -869,9 +895,6 @@ primary-password-os-auth-dialog-message-win = Norėdami sukurti pagrindinį slap
 primary-password-os-auth-dialog-message-macosx = sukurti pagrindinį slaptažodį
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Žurnalas
@@ -892,6 +915,10 @@ history-remember-option-never =
     .label = niekada nevesti žurnalo
 history-remember-option-custom =
     .label = laikytis tinkintų žurnalo vedimo nuostatų
+history-remember-description2 =
+    .description = { -brand-short-name } įsimins jūsų naršytus tinklalapius, parsiųstus failus, įvestas formų ir paieškos laukų reikšmes.
+history-dontremember-description2 =
+    .description = „{ -brand-short-name }“ visą laiką laikysis privačiojo naršymo seanso nuostatų ir nepildys naršymo žurnalo.
 history-remember-description = { -brand-short-name } įsimins jūsų naršytus tinklalapius, parsiųstus failus, įvestas formų ir paieškos laukų reikšmes.
 history-dontremember-description = „{ -brand-short-name }“ visą laiką laikysis privačiojo naršymo seanso nuostatų ir nepildys naršymo žurnalo.
 history-private-browsing-permanent =
@@ -955,12 +982,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Tvarkyti išimtis…
     .accesskey = m
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -1101,6 +1122,8 @@ permissions-notification-link = Sužinoti daugiau
 permissions-notification-pause =
     .label = Nerodyti pranešimų iki kito „{ -brand-short-name }“ paleidimo
     .accesskey = p
+permissions-autoplay2 =
+    .label = Automatinis grojimas
 permissions-autoplay = Automatinis grojimas
 permissions-autoplay-settings =
     .label = Nuostatos…
@@ -1120,6 +1143,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Išimtys…
     .accesskey = I
+permissions-location2 =
+    .label = Vieta
+permissions-xr2 =
+    .label = Virtualioji realybė
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Mikrofonas
+permissions-notification2 =
+    .label = Pranešimai
 
 ## Privacy Section - Data Collection
 
@@ -1143,17 +1176,12 @@ addon-recommendations-link = Sužinoti daugiau
 collection-health-report-disabled = Duomenų siuntimas šiai darinio sąrankai yra išjungtas
 collection-backlogged-crash-reports-with-link = Leisti „{ -brand-short-name }“ siųsti sukauptus strigčių pranešimus jūsų vardu. <a data-l10n-name="crash-reports-link">Sužinoti daugiau</a>
     .accesskey = s
-collection-backlogged-crash-reports = Leisti „{ -brand-short-name }“ siųsti sukauptus strigčių pranešimus jūsų vardu.
-    .accesskey = s
 privacy-segmentation-section-header = Naujos funkcijos, kurios pagerina jūsų naršymą
 privacy-segmentation-section-description = Kai siūlome funkcijas, kurios naudoja jūsų duomenis, kad suteiktų jums asmeniškesnės patirties:
 privacy-segmentation-radio-off =
     .label = Naudoti „{ -brand-product-name }“ rekomendacijas
 privacy-segmentation-radio-on =
     .label = Rodyti detalią informaciją
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -1185,6 +1213,7 @@ certs-view =
 certs-devices =
     .label = Saugumo priemonės…
     .accesskey = S
+certs-devices-enable-fips = FIPS veiksena
 space-alert-over-5gb-settings-button =
     .label = Atverti nuostatas
     .accesskey = A
@@ -1202,9 +1231,6 @@ httpsonly-radio-enabled-pbm =
     .label = Įjungti tik HTTPS veikseną privačiojo naršymo languose
 httpsonly-radio-disabled =
     .label = Neįjungti tik HTTPS veiksenos
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

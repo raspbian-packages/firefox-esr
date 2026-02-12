@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = { -pocket-brand-name } এ লিঙ্ক সংরক্ষণ করুন
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = ইমেইল ঠিকানা অনুলিপি
@@ -162,11 +160,6 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = লিংক কপি করুন
     .accesskey = L
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = সাইট ট্র্যাকিং ছাড়াই লিঙ্ক কপি করুন
-    .accesskey = u
 
 ## Media (video/audio) controls
 ##

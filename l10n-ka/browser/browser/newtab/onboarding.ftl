@@ -25,6 +25,8 @@ return-to-amo-subtitle = მშვენიერია, თქვენ უკ�
 return-to-amo-addon-title = ახლა, მოდით დავამატოთ <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = გაფართოების დამატება
 return-to-amo-add-theme-label = დაამატეთ გაფორმება
+return-to-amo-theme-install-complete-label = თემა ჩადგმულია
+return-to-amo-extension-install-complete-label = გაფართოება ჩადგმულია
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = გადმოტა�
 mr1-onboarding-theme-header = გახადეთ თქვენებური
 mr1-onboarding-theme-subtitle = მოირგეთ { -brand-short-name } გაფორმებით.
 mr1-onboarding-theme-secondary-button-label = ახლა არა
-newtab-wallpaper-onboarding-title = შეაფერადეთ
-newtab-wallpaper-onboarding-subtitle = აირჩიეთ ფონი ახალი ჩანართისვის ახლებური იერსახის მისანიჭებლად.
-newtab-wallpaper-onboarding-primary-button-label = ფონის დაყენება
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = სისტემური გაფორმება
 mr1-onboarding-theme-label-light = ნათელი
@@ -275,9 +274,9 @@ mr2022-onboarding-colorway-description-innovator = <b>სიახლის შ�
 ## MR2022 Multistage Mobile Download screen strings
 
 mr2022-onboarding-mobile-download-title = მოქნილად გადაერთეთ ნოუთბუქიდან ტელეფონზე ან პირიქით
-mr2022-onboarding-mobile-download-subtitle = წაიყოლეთ ჩანართები სხვა მოწყობილობაზე და განაგრძეთ იქიდან, სადაც შეჩერდით. ამასთანავე, დაასინქრონეთ სანიშნები და პაროლები ყველგან, სადაც { -brand-product-name } გიყენიათ.
-mr2022-onboarding-mobile-download-cta-text = წააკითხეთ QR-კოდი, რომ გადმოწეროთ { -brand-product-name } მობილურზე ან <a data-l10n-name="download-label">გაგზავნეთ ჩამოსატვირთი ბმული.</a>
-mr2022-onboarding-no-mobile-download-cta-text = წააკითხეთ QR-კოდი, რომ გადმოწეროთ { -brand-product-name } მობილურზე.
+mr2022-onboarding-mobile-download-subtitle = გაიყოლეთ ჩანართები სხვა მოწყობილობაზე და განაგრძეთ იქიდან, სადაც შეჩერდით. ამასთანავე, დაასინქრონეთ სანიშნები და პაროლები ყველგან, სადაც { -brand-product-name } გიყენიათ.
+mr2022-onboarding-mobile-download-cta-text = გადაუღეთ QR-კოდს, რომ გადმოწეროთ { -brand-product-name } მობილურზე ან <a data-l10n-name="download-label">გაგზავნეთ ჩამოსატვირთი ბმული.</a>
+mr2022-onboarding-no-mobile-download-cta-text = გადაუღეთ QR-კოდს, რომ გადმოწეროთ { -brand-product-name } მობილურზე.
 
 ## MR2022 Upgrade Dialog screens
 ## Pin private window screen shown only for users who don't have Firefox private pinned
@@ -293,7 +292,7 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 ## MR2022 Privacy Segmentation screen strings
 
 mr2022-onboarding-privacy-segmentation-title = ჩვენ ყოველთვის პატივს ვცემთ თქვენს პირადულობას
-mr2022-onboarding-privacy-segmentation-subtitle = საზრიანი შემოთავაზებებითა გონიერი საძიებოთი მუდამ ვცდილობთ, გავხადოთ { -brand-product-name } უკეთესი და მეტად პირადი.
+mr2022-onboarding-privacy-segmentation-subtitle = საზრიანი შემოთავაზებებითა და გონიერი საძიებოთი მუდამ ვცდილობთ, გავხადოთ { -brand-product-name } უკეთესი და მეტად პირადი.
 mr2022-onboarding-privacy-segmentation-text-cta = რისი ხილვა გსურთ თქვენი მონაცემების საფუძველზე ახალი შესაძლებლობების შემოთავაზებისას?
 mr2022-onboarding-privacy-segmentation-button-primary-label = { -brand-product-name }-შემოთავაზებების გამოყენება
 mr2022-onboarding-privacy-segmentation-button-secondary-label = დაწვრილებით ჩვენება
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = შექმენით ან შედით �
 
 tab-groups-onboarding-feature-callout-title = მოსინჯეთ ჩანართების დაჯგუფება არეულობის ასარიდებლად და ყურადღების მოსაკრებად
 tab-groups-onboarding-feature-callout-subtitle = დაალაგეთ ჩანართები ერთიმეორის ზემოთ მოქცევით, რომ შეიქმნას პირველი ჯგუფი.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = ნებისმიერ დროს მონახეთ თქვენი ჩანართის ჯგუფები ყველა ჩანართის მენიუში.
+tab-groups-onboarding-create-group-title-2 = აქ მოიძიეთ ნებისმიერ დროს თქვენი ჩანართების ჯგუფები.
+tab-groups-onboarding-create-group-no-alltabs-button-title = მონახეთ თქვენი ჯგუფები მისამართების ველში მოძიებით.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = ჩანართის ჯგუფის დახურვის შემდგომ, ნებისმიერ დროს შეგეძლებათ მისი დაბრუნება ყველა ჩანართის მენიუდან.
+tab-groups-onboarding-saved-groups-title-2 = ჩანართის ჯგუფი დახურვის შემთხვევაში, აქედან შეგეძლებათ კვლავ გახსნათ ნებისმიერ დროს.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = მონახეთ დახურული ჯგუფები მისამართების ველში მოძიებით.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = ნებისმიერ დროს შეგეძლებათ თქვენი ჩანართის ჯგუფები კვლავ გახსნათ ყველა ჩანართის მენიუდან.
+tab-groups-onboarding-session-restore-title = კვლავ გახსენით აქედან თქვენი ჩანართების ჯგუფები ნებისმიერ დროს.
+tab-groups-onboarding-dismiss = კარგი
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,107 @@ multi-profile-spotlight-cta = პროფილის შექმნა
 multi-profile-callout-title = შექმენით განსხვავებული პროფილები საქმისთვის და გასართობად
 multi-profile-callout-subtitle = პროფილები საშუალებას გაძლევთ, განაცალკევოთ თქვენი მონაცემები, მათ შორის ძიების ისტორია და პაროლები.
 multi-profile-callout-cta = პროფილის შექმნა
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = ჩამოტვირთეთ, დაასინქრონეთ და გზას გაუდექით!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = გადაუღეთ QR-კოდს, რომ ჩამოტვირთოთ { -brand-product-name } მობილურზე. დაყენების შემდეგ აირჩიეთ „დასინქრონება მობილურზე“ თქვენს პაროლებთან, სანიშნებთან და სხვა მასალებთან წვდომისთვის ნებისმიერი ადგილიდან.
+dismiss-button-label = აცილება
+sync-to-mobile-button-label = დასინქრონება მობილურზე
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-კოდი, რომ ჩამოტვირთოთ { -brand-product-name } მობილურზე
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    აპირებთ განახლებით დააყენოთ Windows 11?
+    ჯერ { -brand-product-name } დაამარქაფებს თქვენს მონაცემებს.
+create-backup-screen-1-subtitle = მიანიჭეთ თავისთავადი დაცვა თქვენს პაროლებს, სანიშნებსა და სხვა მონაცემებს 1–2 წუთში.
+create-backup-screen-1-flair = სასურველი
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">ვრცლად</a>
+create-backup-screen-1-sync-label = დაასინქრონეთ – { -brand-product-name }
+create-backup-screen-1-sync-body = დაამარქაფებს ანგარიშზე შესულ ყველა მოწყობილობას
+create-backup-screen-1-backup-label = დამარქაფება კომპიუტერში
+create-backup-screen-1-backup-body = შენახვისთვის გამოიყენება თქვენი მოწყობილობა ან OneDrive
+create-backup-select-tile-button-label = არჩევა
+create-backup-back-button-label = უკან
+create-backup-show-fewer =
+    .label = იშვიათად ჩვენება
+create-backup-screen-2-title = აირჩიეთ, რომელ მონაცემებს დაამარქაფებს { -brand-product-name }
+create-backup-screen-2-subtitle = მხოლოდ ერთ წუთს გასტანს. თქვენი მონაცემების დამარქაფდება დღეში ერთხელ.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = ადვილი გამართვა
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = სანიშნები, ისტორია, პარამეტრები და სხვა
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = არ მოიცავს პაროლებსა და გადახდის საშუალებებს
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = დაუშიფრავია
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = ყველა მონაცემი
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = მოიცავს პაროლებსა და გადახდის საშუალებებს
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = დაშიფრულია პაროლით
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = სად განთავსდეს სამარქაფო ფაილი?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = შექმენით სამარქაფო ფაილის პაროლი
+create-backup-screen-3-subtitle = საჭიროა თქვენი მონაცემების დასაშიფრად. შეინახეთ იოლად დასამახსოვრებელ ადგილას.
+fx-backup-opt-in-header = ფაილის მდებარეობის შერჩევა
+fx-backup-opt-in-filepath-label = მიუთითეთ ისეთი ადგილი, რომლის გადატანასაც აპირებთ ახალ მოწყობილობაზე, თუნდაც OneDrive.
+fx-backup-opt-in-create-password-label = შეიყვანეთ პაროლი
+fx-backup-opt-in-confirm-btn-label = განაგრძეთ
+fx-backup-opt-in-cancel-btn-label = უკან
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = თქვენი მარქაფი დაგეგმილია
+fx-backup-confirmation-screen-close-button = დახურვა
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = დათვალიერების ყველა მონაცემს მოიცავს
+fx-backup-confirmation-screen-all-data-item-text-2 = ინახება თქვენს მოწყობილობაზე
+fx-backup-confirmation-screen-all-data-item-text-3 = დაშიფრულია და პაროლით დაცულია
+fx-backup-confirmation-screen-easy-setup-item-text-1 = მოიცავს სანიშნებს, ისტორიას, პარამეტრებსა და სხვ.
+fx-backup-confirmation-screen-easy-setup-item-text-2 = ინახება თქვენს მოწყობილობაზე
+fx-backup-confirmation-screen-easy-setup-item-text-3 = პაროლებსა და გადახდის საშუალებებს არ მოიცავს
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = გადადით <a data-l10n-name="settings">პარამეტრებზე</a> საფრთხილო მონაცემების დასამატებლად.
+fx-backup-confirmation-screen-item-subtext-1 = დამარქაფება რამდენიმე წუთში დაიწყება და გაეშვება დღეში ერთხელ. წინსვლის შემოწმება შეგიძლიათ <a data-l10n-name="settings">პარამეტრებიდან</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } მოიძიებს თქვენს მარქაფს, თუ ხელახლა დაყენება დაგჭირდებათ.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = აღდგენა მარქაფიდან
+restore-from-backup-title = დაიბრუნეთ { -brand-short-name } ისეთი, როგორიც მოგწონდათ.
+restore-from-backup-subtitle = აღადგინეთ თქვენი სანიშნები, ისტორია და სხვა მონაცემები, რომ დაუბრუნდეთ გვერდების მონახულებას.
+restore-from-backup-secondary-button = აღდგენის გარეშე
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = დავბრუნდით! { -brand-short-name } აღდგენილია თქვენი მონაცემებით.
+restored-from-backup-success-with-checklist-subtitle = გსურთ, პირადულობის უზრუნველმყოფი ბრაუზერი მუდამ გქონდეთ თითის ერთ გაწვდენაზე?
+restored-from-backup-success-no-checklist-subtitle = შეგიძლიათ ჩართოთ დამარქაფება ამ მოწყობილობისთვის <a data-l10n-name="settings">პარამეტრებიდან</a>.
+restored-from-backup-success-with-checklist-primary-button = შეინახეთ და განაგრძეთ
+restored-from-backup-success-with-checklist-secondary-button = ამ ნაბიჯის გამოტოვება
+restored-from-backup-success-no-checklist-primary-button = განაგრძეთ
+restored-from-backup-error-title = ჰმ, ხარვეზი წარმოიქმნა სამარქაფო ფაილთან დაკავშირებით.
+restored-from-backup-error-subtitle = თუ სხვა ფაილშიც გაქვთ { -brand-short-name } დამარქაფებული, მოსინჯეთ იმ ფაილიდან აღდგენა. <a data-l10n-name="restore-problems">კვლავ რამე დაბრკოლებაა?</a>
+restored-from-backup-error-primary-button = დახურვა
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = მოირგეთ { -brand-short-name } უკეთ გამოყენებისთვის
+onboarding-personalization-subtitle = გაეცით პასუხი რამდენიმე კითხვას და გირჩევთ შესაძლებლობებსა თუ გაფართოებებს, რომლითაც მეტად სარგებლიანი გახდება თქვენთვის { -brand-short-name }.
+onboarding-personalization-use-case-title = რა საქმისთვის გადგებათ მეტად { -brand-short-name }?
+onboarding-personalization-use-case-personal-option = პირადი
+onboarding-personalization-use-case-school-option = სასკოლო
+onboarding-personalization-use-case-work-option = სამსახურეობრივი
+onboarding-personalization-motivation-title = რომელი შესაძლებლობების გამოა { -brand-short-name } ყველაზე მნიშვნელოვანი თქვენთვის?
+onboarding-personalization-motivation-privacy-option = პირადულობა და უსაფრთხოება
+onboarding-personalization-motivation-productivity-option = შედეგიანობა
+onboarding-personalization-motivation-other-option = სხვა

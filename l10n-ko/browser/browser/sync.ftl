@@ -20,6 +20,15 @@ fxa-menu-connect-another-device =
     .label = 다른 기기 연결…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] 기기에 보내기
+           *[other] 탭 { $tabCount }개를 기기로 보내기
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label = 탭 { $tabCount }개를 기기로 보내기
 # This is shown dynamically within "Send tab to device" in fxa menu.
@@ -29,8 +38,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = 로그인한 모든 기기로 즉시 탭을 보냅니다.
 fxa-menu-sign-out =
     .label = 로그아웃…
-fxa-menu-sync-title = Sync
 fxa-menu-sync-description = 어디서나 웹에 접근하세요
+fxa-avatar-sign-in = 로그인
+fxa-avatar-sign-up = 가입
+fxa-avatar-tooltip =
+    .tooltiptext = 계정에 로그인
 sync-setup-verify-continue = 계속
 sync-setup-verify-title = 합치기 경고
 sync-setup-verify-heading = Sync에 가입하시겠습니까?

@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Ignorieren
     .secondarybuttonaccesskey = g
 appmenu-update-restart-message2 = Installieren Sie die neueste Version von { -brand-shorter-name }. Offene Tabs und Fenster werden wiederhergestellt.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Rückgängig
+    .secondarybuttonaccesskey = R
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } kann nicht automatisch auf die neueste Version aktualisiert werden.
     .buttonlabel = { -brand-shorter-name } trotzdem aktualisieren
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = OK
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = Add-ons und Themes können über das Anwendungsmenü verwaltet werden.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Aktualisieren Sie Berechtigungen und Dateneinstellungen jederzeit in den <a data-l10n-name="settings-link">Erweiterungseinstellungen</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Erweiterung an Symbolleiste anheften
+    .accesskey = a
 appmenu-addon-post-install-incognito-checkbox =
     .label = Ausführen der Erweiterung in privaten Fenstern erlauben
     .accesskey = e

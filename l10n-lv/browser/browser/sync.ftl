@@ -34,8 +34,4 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Uzreiz nosūtīt cilni uz jebkuru ierīci, kurā esat ierakstījies.
 fxa-menu-sign-out =
     .label = Izrakstīties...
-fxa-menu-sync-title = Sinhronizēšana
 fxa-menu-sync-description = Piekļūstiet savam tīmeklim no jebkuras vietas
-
-## Sync warning strings that support the browser profiles feature, these will be shown when the user might be merging data
-

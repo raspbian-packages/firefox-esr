@@ -66,6 +66,10 @@ startup-header = Caki
 always-check-default =
     .label = Jwijwi rot kace { -brand-short-name } tye layeny mamegi makwongo
     .accesskey = j
+is-default-browser =
+    .message = { -brand-short-name } kombedi tye layeny mamegi makwongo
+is-not-default-browser =
+    .message = { -brand-short-name } pe tye layeny mamegi makwongo
 is-default = { -brand-short-name } kombedi tye layeny mamegi makwongo
 is-not-default = { -brand-short-name } pe tye layeny mamegi makwongo
 set-as-my-default-browser =
@@ -162,6 +166,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Pwail ki Purugram
+downloads-header-2 =
+    .label = Gam
+download-save-where-2 =
+    .label = Gwok pwail bot
+    .accesskey = w
 download-header = Gam
 download-save-where = Gwok pwail bot
     .accesskey = w
@@ -318,7 +327,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Dirica ki dirica matino manyen
 home-new-windows-tabs-description2 = Yer ngo ma ineno ka iyabo potbuk me acakki mamegi, dirica manyen, ki dirica matino manyen.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Potbuk me acakki ki dirica manyen
 home-newtabs-mode-label = Dirica matino manyen
@@ -429,6 +438,8 @@ search-keyword-warning-bookmark = I yero lok mapire tek ma kombedi alama buk tye
 ## Containers Section
 
 containers-header = Dirica matidi me mako jami
+containers-section-header =
+    .heading = Dirica matidi me mako jami
 containers-add-button =
     .label = Med lamak jami manyen
     .accesskey = e
@@ -530,6 +541,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = Nying Nyonyo
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Nying Nyonyo
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Lok nying nyonyo
+    .accesskey = o
 sync-device-name-change =
     .label = Lok nying nyonyo…
     .accesskey = o
@@ -587,9 +606,6 @@ forms-master-pw-fips-desc = Loko mung me donyo Pe olare
 
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Gin mukato
@@ -610,6 +626,10 @@ history-remember-option-never =
     .label = Pe i poo ikom gin mukato matwal
 history-remember-option-custom =
     .label = Tii ki ter mamegi pi gin mukato
+history-remember-description2 =
+    .description = { -brand-short-name } bi poo ikom yeny mamegi, gam, pwom ki yeny mukato.
+history-dontremember-description2 =
+    .description = { -brand-short-name } bi tic ki ter acel calo yeny me mung, ka pe bi poo ikom gin mukato mo keken kun nongo i yenyo Kakube.
 history-remember-description = { -brand-short-name } bi poo ikom yeny mamegi, gam, pwom ki yeny mukato.
 history-dontremember-description = { -brand-short-name } bi tic ki ter acel calo yeny me mung, ka pe bi poo ikom gin mukato mo keken kun nongo i yenyo Kakube.
 history-private-browsing-permanent =
@@ -655,12 +675,6 @@ sitedata-settings =
     .label = Lo Data
     .accesskey = D
 
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
-
 ## Privacy Section - Address Bar
 
 addressbar-header = Lanyut me kanonge
@@ -679,10 +693,6 @@ addressbar-suggestions-settings = Lok ter pi tam ma kimiyo me injin yeny
 ## Privacy Section - Content Blocking
 
 content-blocking-learn-more = Nong ngec mapol
-
-## These strings are used to define the different levels of
-## Enhanced Tracking Protection.
-
 
 ##
 
@@ -708,9 +718,6 @@ content-blocking-cookies-label =
     .accesskey = A
 content-blocking-expand-section =
     .tooltiptext = Ngec mapol
-
-## Privacy Section - Tracking
-
 
 ## Privacy Section - Permissions
 
@@ -738,6 +745,8 @@ permissions-notification-link = Nong ngec mapol
 permissions-notification-pause =
     .label = Juk jami angeya wang ma { -brand-short-name } onwoyo cake
     .accesskey = n
+permissions-autoplay2 =
+    .label = Tuk pire kene
 permissions-autoplay = Tuk pire kene
 permissions-autoplay-settings =
     .label = Ter…
@@ -751,6 +760,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Ma kiweko woko…
     .accesskey = M
+permissions-location2 =
+    .label = Kabedo
+permissions-camera2 =
+    .label = Lamak cal
+permissions-microphone2 =
+    .label = Mikropon
+permissions-notification2 =
+    .label = Jami angeya
 
 ## Privacy Section - Data Collection
 
@@ -763,9 +780,6 @@ collection-health-report =
     .accesskey = r
 collection-health-report-link = Nong ngec mapol
 addon-recommendations-link = Nong ngec mapol
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -797,13 +811,11 @@ certs-view =
 certs-devices =
     .label = Nyonyo me ber bedo…
     .accesskey = N
+certs-devices-enable-fips = Mii tic me FIPS
 
 ## Privacy Section - HTTPS-Only
 
 httpsonly-learn-more = Nong ngec mapol
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

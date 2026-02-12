@@ -41,3 +41,11 @@ remove-search-engine-button = D'acòrdi
 install-search-engine = Apondre { $engineName } coma motor de recèrca ?
 install-search-engine-add = Apondre
 install-search-engine-no = Non
+
+## The following strings are used as input labels.
+
+add-engine-window =
+    .title = Apondre un motor de recèrca
+    .style = min-width: 32em;
+add-engine-button = Apondre motor personalizat
+add-engine-name = Nom del motor de recèrca

@@ -78,9 +78,6 @@ toolbar-button-fxaccount =
     .label = { -fxaccount-brand-name }
     .tooltiptext = { -fxaccount-brand-name }
 
-## Account toolbar Button
-
-
 ## Save Page
 
 main-context-menu-page-save =
@@ -111,9 +108,7 @@ main-context-menu-save-link-to-pocket =
     .label = Gwok Kakube i { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Lok kanonge me email
@@ -208,9 +203,6 @@ main-context-menu-save-to-pocket =
 main-context-menu-send-to-device =
     .label = Cwal Potbuk i Nyonyo
     .accesskey = o
-
-##
-
 
 ##
 

@@ -106,10 +106,3 @@ networkProtocolError-title = Грешка во мрежниот протокол
 nssBadCert-title = Предупредување: Претстои потенцијален ризик за безбедноста
 nssBadCert-sts-title = Не се поврзав: Потенцијално безбедносно прашање
 certerror-mitm-title = Софтверот го спречува { -brand-short-name } од безбедно поврзување со оваа страница
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

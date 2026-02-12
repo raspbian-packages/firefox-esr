@@ -3,22 +3,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-## Generative AI (GenAI) Settings section
-
-genai-settings-chat-choose = Dibab un chatbot
-
-## Chatbot prompts
-## Prompts are plain language ‘instructions’ sent to a chatbot.
-## These prompts have been made concise and direct in English because some chatbot providers
-## have character restrictions and being direct reduces the chance for misinterpretation.
-## When localizing, please be concise and direct, but not at the expense of losing meaning.
-
-
 ## Chatbot menu shortcuts
 
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = Goulenn digant { $provider }
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Digeriñ { $provider }
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Lemel { $provider }
+genai-menu-new-badge = Nevez
 # $provider (string) - name of the provider
 genai-input-ask-provider =
     .placeholder = Goulenn digant { $provider }…
@@ -62,3 +58,12 @@ genai-onboarding-claude-analyze = Dielfennañ teulioù ha skeudennoù
 genai-onboarding-chatgpt-analyze = Dielfennañ teulioù ha skeudennoù
 genai-onboarding-copilot-analyze = Dielfennañ skeudennoù
 genai-onboarding-gemini-analyze = Dielfennañ skeudennoù (digoust) ha teulioù (da baeañ)
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Kenderc’hel
+genai-model-optin-optout =
+    .label = Nullañ
+genai-model-optin-cancel =
+    .label = Nullañ

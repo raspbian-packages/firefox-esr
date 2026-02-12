@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Zavřít panel
 tabbrowser-menuitem-close =
     .label = Zavřít
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -191,8 +204,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Tento dialog příště nezobrazovat
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Pozor
-tabbrowser-confirm-close-duplicate-tabs-text = Ponecháme otevřený poslední aktivní panel
 tabbrowser-confirm-close-all-duplicate-tabs-title = Zavřít duplicitní panely?
 tabbrowser-confirm-close-all-duplicate-tabs-text = V tomto okně zavřeme duplicitní panely. Poslední aktivní panel zůstane otevřený.
 tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Zavřít panely
@@ -241,6 +252,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Vypne zvuk panelu
@@ -248,8 +262,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Zapne zvuk panelu
 tabbrowser-manager-close-tab =
     .tooltiptext = Zavře panel
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — zavřená
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — aktuální okno
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Vytvořit skupinu panelů
 tab-group-editor-title-edit = Spravovat skupinu panelů
@@ -261,22 +283,40 @@ tab-group-editor-cancel =
     .accesskey = Z
 tab-group-editor-color-selector =
     .aria-label = Barva skupiny panelů
-tab-group-editor-color-selector-blue = Modrá
-tab-group-editor-color-selector-purple = Fialová
-tab-group-editor-color-selector-cyan = Azurová
-tab-group-editor-color-selector-orange = Oranžová
-tab-group-editor-color-selector-yellow = Žlutá
-tab-group-editor-color-selector-pink = Růžová
-tab-group-editor-color-selector-green = Zelená
-tab-group-editor-color-selector-gray = Šedivý
-tab-group-editor-color-selector-red = Červená
-tab-group-menu-header = Skupiny panelů
+tab-group-editor-color-selector2-blue = Modrá
+    .title = Modrá
+tab-group-editor-color-selector2-purple = Fialová
+    .title = Fialová
+tab-group-editor-color-selector2-cyan = Azurová
+    .title = Azurová
+tab-group-editor-color-selector2-orange = Oranžová
+    .title = Oranžová
+tab-group-editor-color-selector2-yellow = Žlutá
+    .title = Žlutá
+tab-group-editor-color-selector2-pink = Růžová
+    .title = Růžová
+tab-group-editor-color-selector2-green = Zelená
+    .title = Zelená
+tab-group-editor-color-selector2-gray = Šedivý
+    .title = Šedivý
+tab-group-editor-color-selector2-red = Červená
+    .title = Červená
+tab-group-description = { $tabGroupName } — Skupina panelů
+tab-group-label-tooltip-collapsed = { $tabGroupName } — sbaleno
+tab-group-label-tooltip-expanded = { $tabGroupName } — rozbaleno
+tab-group-preview-name =
+    .aria-label = Panely ve sbalené skupině
 tab-context-unnamed-group =
     .label = Nepojmenovaná skupina
 tab-group-name-default = Nepojmenovaná skupina
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Seznam panelů je otevřen
+tab-group-preview-closed-description = Seznam panelů zavřen
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -298,6 +338,8 @@ tab-context-move-tab-to-group =
            *[other] Přidat panely do skupiny
         }
     .accesskey = d
+tab-context-move-tab-to-group-saved-groups =
+    .label = Zavřené skupiny
 tab-group-editor-action-new-tab =
     .label = Nový panel ve skupině
 tab-group-editor-action-new-window =
@@ -325,6 +367,18 @@ tab-context-ungroup-tab =
            *[other] Odebrat ze skupin
         }
     .accesskey = d
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = + { $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } další panel
+        [few] { $tabCount } další panely
+        [many] { $tabCount } dalších panelů
+       *[other] { $tabCount } dalších panelů
+    }
 
 ## Open/saved tab group context menu
 
@@ -350,3 +404,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Otevřít skupinu v novém okně
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Rozdělené zobrazení
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Přidat rozdělené zobrazení
+    .accesskey = P
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Otevřít v rozděleném zobrazení
+    .accesskey = t
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Samostatné rozdělené zobrazení
+    .accesskey = t
+tab-context-badge-new = Nové

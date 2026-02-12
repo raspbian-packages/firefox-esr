@@ -53,17 +53,73 @@ fx-view-discoverability-secondary-button-label = Zgel
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = Ur d-skanay ara awelleh-a tikkelt tayeḍ
+split-dismiss-button-dont-show-option =
+    .label = Ur d-skanay ara awelleh-a tikkelt tayeḍ
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = Sken cwiṭ n yiwellihen
+split-dismiss-button-show-fewer-option =
+    .label = Sken cwiṭ n yiwellihen
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = Sefrek iɣewwaren
+split-dismiss-button-manage-settings-option =
+    .label = Sefrek iɣewwaren
+# Accessibility label for dropdown menu button
+split-dismiss-button-default-label =
+    .title = Ugar n yiɣewwaren
+
+## Bookmarks toolbar callout strings
+
+bookmarks-toolbar-callout-1-primary-button-label = Rnu tacreṭ n usebter
+bookmarks-toolbar-callout-1-secondary-button-label = Ala, tanemmirt
+bookmarks-toolbar-callout-2a-primary-button-label = Awi-t
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2a-secondary-button-label = Ffer afeggag n yifecka
+bookmarks-toolbar-callout-2b-primary-button-label = Eǧǧ-it yeldi
+# Reverts the bookmarks toolbar to the default setting
+bookmarks-toolbar-callout-2b-secondary-button-label = Ala, tanemmirt
+
+## Perplexity callout strings
+
+perplexity-callout-secondary-label-1 = Zgel
+perplexity-callout-secondary-label-2 = Awi-t
+
+## Account Adoption Passwords callout strings
+
+# Opens Mozilla accounts sign-up page
+fxa-adoption-passwords-primary-button-label = Kcem
+
+## Taskbar Tabs callout strings
+
+taskbar-tabs-social-callout-title = Eǧǧ urtan i tesmenyafayeḍ deg ufeggag n temsekriyin
+
+## Windows 10 EoS Sync messages group 1 callouts
+
+windows-10-eos-sync-new-device-primary-label = Mtawi tura
 
 ## Sidebar Strings
 
+sidebar-button-callout-title = Sken izwal n waccaren deg ufeggag adisan
+
+## Sidebar Vertical Tabs Strings
+
+vertical-tabs-callout-1-cta-button = Ԑreḍ accaren d ubdiden
+vertical-tabs-callout-2-cta-button = Ԑreḍ tura
+
+## Sidebar Vertical Tabs Pinning Strings
+
+sidebar-pins-callout-cta-button = Rzi iccer
+
+## Pinning Tabs Strings
+
+pin-tabs-callout-cta-1-button = Senṭeḍ iccer-a
+pin-tabs-callout-cta-2-button = Senṭeḍ iccer-a
+
+## Sidebar Onboarding Strings
+
+sidebar-customization-callout-callout-button = Sagen afeggag adigan
+sidebar-customization-callout-dismiss-button = Ffer afeggag adisan
 
 ## Sidebar Callout Survey Strings
 
+sidebar-callout-survey-title = Ɛawen i usemɣer n { -brand-short-name }
 sidebar-callout-survey-privacy-notice-link = Tasertit n tbaḍnit
 sidebar-callout-survey-very-satisfied = Yumer aṭas
 sidebar-callout-survey-satisfied = Y·Tumer
@@ -78,3 +134,7 @@ sidebar-callout-survey-strongly-disagree = Ur qbileɣ ara aṭas
 sidebar-callout-survey-none-of-above = Ula d yiwen seg yisumar-a
 sidebar-callout-survey-submit = Azen
 sidebar-callout-survey-thank-you = Tanemmirt ɣef tekti-ik!
+unified-search-callout-primary-label = Ɣer zdat
+unified-search-callout-secondary-label = Zgel
+unified-search-engines-callout-title = Nadi s yinegzumen
+unified-search-engines-callout-primary-label = Awi-t

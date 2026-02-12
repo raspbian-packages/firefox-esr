@@ -83,7 +83,7 @@ fp-certerror-bad-domain-what-can-you-do-body = Valószínűleg semmit, mert val�
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
 fp-certerror-unknown-issuer-why-dangerous-body = Probléma van a webhely tanúsítványával. Lehet, hogy egy rosszhiszemű szereplő próbálja megszemélyesíteni a webhelyet. A webhelyek hitelesítésszolgáltatók által kiadott tanúsítványokat használnak annak bizonyítására, hogy valóban azok, akiknek mondják magukat. A { -brand-short-name } nem bízik ebben a webhelyben, mert nem tudja megmondani, hogy ki adta ki a tanúsítványt; önaláírt, vagy a webhely nem olyan köztes tanúsítványokat küld, amelyekben nem bízik meg.
 # This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
-fp-certerror-unknown-issuer-what-can-you-do-body = Valószínűleg semmit, mert valószínűleg magával a webhellyel van a probléma. De mivel vállalati hálózaton van, a támogatási csapata több információval rendelkezhet. Ha víruskereső szoftvert használ, akkor lehet, hogy be kell állítania, hogy a { -brand-short-name(case: "instrumental") } működjön.
+fp-certerror-unknown-issuer-what-can-you-do-body = Valószínűleg semmit, mert valószínűleg magával a webhellyel van a probléma. De mivel vállalati hálózaton van, a támogatási csapata több információval rendelkezhet. Ha víruskereső szoftvert használ, akkor lehet, hogy be kell állítania, hogy a { -brand-short-name }szal működjön.
 # This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
 fp-certerror-self-signed-why-dangerous-body = Mert probléma van a webhely tanúsítványával. A webhelyek hitelesítésszolgáltató által kibocsátott tanúsítványokat használnak annak bizonyítására, hogy valóban azok, akiknek mondják magukat. A webhely tanúsítványa önaláírt. Nem egy elismert hitelesítésszolgáltató bocsátotta ki – így alapértelmezés szerint a böngésző nem bízik meg benne.
 # This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
@@ -107,9 +107,35 @@ fp-cert-error-code = Hibakód: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = A { -brand-short-name } nem bízik a(z) { $hostname } webhelyben, mert nem tudta bizonyítani, hogy megfelel a nyilvános tanúsítványok átláthatósági követelményeinek.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Valószínűleg semmit, mert jó eséllyel magával a webhellyel van a probléma.
 fp-learn-more-about-secure-connection-failures = Tudjon meg többet a biztonságos kapcsolódást érintő hibákról
 fp-learn-more-about-cert-issues = Tudjon meg többet az ilyen tanúsítványproblémákról
 fp-learn-more-about-time-related-errors = Tudjon meg többet az idővel kapcsolatos hibák elhárításáról
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } tanúsítványát visszavonták, és már nem megbízható.
+cert-error-bad-signature = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } tanúsítványának aláírása nem érvényes.
+cert-error-key-pinning-failure = A { -brand-short-name } blokkolta az oldal felkeresését, mert a(z) { $hostname } számára megadott tanúsítvány a várttól eltérő nyilvános kulcsot használ.
+cert-error-bad-der = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } tanúsítványa nem megfelelően van kódolva.
+cert-error-cert-not-in-name-space = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } számára megadott tanúsítvány nem követi az azt kibocsátó tanúsítvány névkorlátozásait.
+cert-error-inadequate-cert-type = A { -brand-short-name } blokkolta az oldal felkeresését, mert a(z) { $hostname } számára megadott tanúsítvány nem engedélyezi, hogy webkiszolgáló használja.
+cert-error-path-len-constraint-invalid = A { -brand-short-name } blokkolta az oldal felkeresését, mert a(z) { $hostname } számára megadott tanúsítvány túl sok közbülső tanúsítványt tartalmaz a gyökértanúsítvány útvonalában.
+cert-error-invalid-key = A { -brand-short-name } blokkolta az oldal felkeresését, mert a(z) { $hostname } számára megadott tanúsítvány kulcsa érvénytelen. Valószínűleg túl kicsi ahhoz, hogy biztonságos legyen.
+cert-error-unknown-critical-extension = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } tanúsítványkibocsátója nem támogatott kritikus kiegészítést tartalmaz.
+cert-error-extension-value-invalid = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } tanúsítványkibocsátója érvénytelen kiegészítést tartalmaz.
+cert-error-untrusted-issuer = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } tanúsítványát olyan kibocsátó állította ki, amelyik már nem megbízható.
+cert-error-untrusted-cert = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } tanúsítványa nincs megbízhatónak jelölve.
+cert-error-invalid-integer-encoding = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } érvénytelen egészszám-kódolást tartalmazó tanúsítványt mutatott be. Ezt gyakran negatív sorozatszámok, negatív RSA modulusok, és a szükségesnél hosszabb kódolások okozzák.
+cert-error-unsupported-keyalg = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } tanúsítványának kulcstípusa nem támogatott.
+cert-error-issuer-no-longer-trusted = A { -brand-short-name } blokkolta az oldalt, mert a(z) { $hostname } tanúsítványának hitelesítésszolgáltatója már nem megbízható.
+cert-error-signature-algorithm-mismatch = A { -brand-short-name } blokkolta ezt az oldalt, mert a(z) { $hostname } számára megadott tanúsítvány aláírási algoritmusa nem egyezik meg az aláírásának algoritmus mezőjével.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Ez a cím tiltva van
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Probléma az oldal megkeresésekor.
+internet-connection-offline-title = Úgy néz ki, hogy probléma van az internetkapcsolatával.
 dns-not-found-trr-only-title2 = Lehetséges biztonsági kockázat a domain keresése során
 dns-not-found-native-fallback-title2 = Lehetséges biztonsági kockázat a domain keresése során
 fileNotFound-title = A fájl nem található
@@ -134,6 +161,7 @@ contentEncodingError-title = Tartalomkódolási hiba
 unsafeContentType-title = Nem biztonságos fájltípus
 netReset-title = A kapcsolat alaphelyzetbe állt
 netTimeout-title = A kapcsolat időtúllépés miatt megszakadt
+httpErrorPage-title = Úgy néz ki, hogy probléma van ezzel a webhellyel
 serverError-title = Úgy néz ki, hogy probléma van ezzel a webhellyel
 unknownProtocolFound-title = A cím nem volt érthető
 proxyConnectFailure-title = A proxykiszolgáló visszautasította a kapcsolatokat
@@ -142,6 +170,7 @@ redirectLoop-title = Az oldal nem megfelelően van átirányítva
 unknownSocketType-title = Váratlan válasz a kiszolgálótól
 nssFailure2-title = A biztonságos kapcsolat sikertelen
 csp-xfo-error-title = A { -brand-short-name } nem tudja megnyitni ezt az oldalt
+corruptedContentErrorv2-title = Hiba: sérült tartalom
 corruptedContentError-title = Sérült tartalom hiba
 sslv3Used-title = Nem lehet biztonságosan kapcsolódni
 inadequateSecurityError-title = A kapcsolat nem biztonságos
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Speciális lehetőségek elrejtése
 fp-certerror-override-exception-button = Tovább erre: { $hostname } (kockázatos)
 fp-certerror-intro = A { -brand-short-name } egy lehetséges komoly biztonsági problémát észlelt a(z) <strong>{ $hostname }</strong> webhelyen. Lehet, hogy valaki a webhelynek adja ki magát, és bankkártyaadatokat, jelszavakat vagy e-mail-címeket próbál ellopni.
 fp-certerror-expired-into = A { -brand-short-name } biztonsági problémát észlelt a(z) <strong>{ $hostname }</strong> webhelyen. A webhely nincs jól beállítva, vagy az eszköz órája hibás dátumra és időre van beállítva.
+fp-certerror-transparency-intro = Valaki, aki a(z) <strong>{ $hostname }</strong> webhelynek adja ki magát, megpróbálhatja ellopni a felhasználónevét, jelszavát vagy e-mail-címét.

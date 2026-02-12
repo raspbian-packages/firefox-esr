@@ -62,6 +62,14 @@ perftools-button-add-directory = Klasör ekle
 perftools-button-remove-directory = Seçilenleri sil
 perftools-button-edit-settings = Ayarları düzenle…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = Diğer eylemler
+perftools-menu-more-actions-restart-with-profiling = Başlangıç profili oluşturmayı etkinleştirerek { -brand-shorter-name } tarayıcısını yeniden başlat
+perftools-menu-more-actions-copy-for-startup = Başlangıç profili oluşturma için ortam değişkenlerini kopyala
+perftools-menu-more-actions-copy-for-perf-tests = Performans testleri için parametreleri kopyala
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -134,6 +142,8 @@ perftools-presets-graphics-label = Grafik
 perftools-presets-graphics-description = { -brand-shorter-name } tarayıcısında grafik hatalarını araştırma ayarı.
 perftools-presets-media-label = Ortam
 perftools-presets-media-description2 = { -brand-shorter-name } tarayıcısında ses ve video hatalarını araştırma ayarı.
+perftools-presets-ml-label = Makine öğrenimi
+perftools-presets-ml-description2 = { -brand-shorter-name } tarayıcısında makine öğrenimi hatalarını araştırma ayarı.
 perftools-presets-networking-label = Ağ
 perftools-presets-networking-description = { -brand-shorter-name } tarayıcısında ağ hatalarını araştırma ayarı.
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -142,6 +152,3 @@ perftools-presets-power-description = { -brand-shorter-name } tarayıcısında g
 perftools-presets-debug-label = Hata ayıklama
 perftools-presets-debug-description = { -brand-shorter-name } tarayıcısında hata ayıklama ayarı. Yüksek ek yük nedeniyle performans çalışması için uygun değildir, tarayıcı davranışını anlamaya odaklanmak için kullanın.
 perftools-presets-custom-label = Özel
-
-##
-

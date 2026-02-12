@@ -9,17 +9,17 @@ crashreporter-plea = Per aiutare a individuare e risolvere il problema, è possi
 crashreporter-information = Questa applicazione viene eseguita dopo un arresto anomalo per segnalare il problema a { -vendor-short-name }. Non dovrebbe essere eseguita direttamente.
 crashreporter-error = Si è verificato un problema in { -brand-short-name } che ha provocato un arresto anomalo. Purtroppo non è stato possibile inviare una segnalazione per questo errore.
 crashreporter-error-details-header = Dettagli:
-# $details (String) - the reason that a crash report cannot be submitted
-crashreporter-error-details = Dettagli: { $details }
 crashreporter-no-run-message = Questa applicazione viene eseguita dopo un arresto anomalo per segnalare il problema al produttore dell’applicazione, non dovrebbe essere lanciata direttamente.
 crashreporter-button-details = Dettagli…
 crashreporter-loading-details = Caricamento in corso…
 crashreporter-view-report-title = Contenuto della segnalazione
 crashreporter-comment-prompt = Aggiungi un commento (i commenti sono visibili pubblicamente)
 crashreporter-report-info = Questa segnalazione contiene anche informazioni relative allo stato dell’applicazione al momento dell’arresto anomalo.
-crashreporter-send-report = Segnala questo arresto anomalo a { -vendor-short-name } in modo che possano risolverlo.
-crashreporter-include-url = Includi l’indirizzo della pagina che si stava visitando.
+crashreporter-checkbox-test-hardware = Verifica la presenza di problemi hardware e di configurazione sul dispositivo.
+crashreporter-checkbox-send-report = Segnala questo arresto anomalo a { -vendor-short-name } in modo che possano risolverlo.
+crashreporter-checkbox-include-url = Includi l’indirizzo della pagina che si stava visitando.
 crashreporter-submit-status = La segnalazione verrà inviata prima della chiusura o del riavvio.
+crashreporter-submit-waiting-hardware-tests = Verifica la presenza di problemi hardware e di configurazione…
 crashreporter-submit-in-progress = Invio della segnalazione in corso…
 crashreporter-submit-success = La segnalazione è stata inviata correttamente.
 crashreporter-submit-failure = Si è verificato un problema durante l’invio della segnalazione.
@@ -35,7 +35,6 @@ crashreporter-crash-details = È possibile visualizzare i dettagli di questo arr
 
 # Error strings
 
-crashreporter-error-minidump-analyzer = Esecuzione di minidump-analyzer non riuscita
 # $path (String) - the file path
 crashreporter-error-opening-file = Errore durante l’apertura del file ({ $path })
 # $path (String) - the file path
@@ -47,4 +46,4 @@ crashreporter-error-no-home-dir = Directory home non presente
 # $to (String) - the destination path
 crashreporter-error-moving-path = Errore durante lo spostamento da { $from } a { $to }
 crashreporter-error-version-eol = La versione non è più supportata: le segnalazioni di arresto anomalo non vengono più accettate.
-
+crashreporter-error-failed-to-generate-minidump = L’applicazione non è riuscita a generare informazioni sull’arresto anomalo.

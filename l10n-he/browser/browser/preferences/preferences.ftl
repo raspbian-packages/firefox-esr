@@ -4,9 +4,6 @@
 
 do-not-track-description = שליחת חיווי ”נא לא לעקוב” לאתרים שאין ברצונך שיעקבו אחריך
 do-not-track-removal = איננו תומכים עוד בחיווי ”נא לא לעקוב”
-do-not-track-description2 =
-    .label = שליחת בקשה של ״נא לא לעקוב״ לאתרים
-    .accesskey = נ
 do-not-track-learn-more = מידע נוסף
 do-not-track-option-default-content-blocking-known =
     .label = רק כאשר { -brand-short-name } מוגדר לחסום רכיבי מעקב מוכרים
@@ -16,6 +13,8 @@ global-privacy-control-description =
     .label = להורות לאתרים לא למכור או לשתף את הנתונים שלי
     .accesskey = מ
 non-technical-privacy-header = העדפות פרטיות של אתרים
+non-technical-privacy-label =
+    .aria-label = { non-technical-privacy-header }
 # Do not translate.
 # "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
 # included to facilitate power-user search of the about:preferences page.
@@ -61,6 +60,7 @@ pane-experimental-description2 = שינוי הגדרות התצורה המתקד
 settings-pane-labs-title = { -firefoxlabs-brand-name }
 settings-category-labs =
     .tooltiptext = { -firefoxlabs-brand-name }
+pane-experimental-description4 = נסו את התכונות הניסיוניות שלנו! הן נמצאות בפיתוח ומשתדרגות עם הזמן, דבר שעשוי להשפיע על אופן הפעולה של { -brand-short-name }. אנו מקבלים נתונים על אופן השימוש שלך בתכונות אלה רק אם האפשרות <a data-l10n-name="data-collection">נתונים טכניים ונתוני אינטראקציה</a> הופעלה.
 pane-experimental-description3 = נסו את התכונות הניסיוניות שלנו! הן בתהליך פיתוח ומשתדרגות עם הזמן, מה שעשוי להשפיע על האופן שבו { -brand-short-name } עובד.
 pane-experimental-reset =
     .label = שחזור ברירות מחדל
@@ -71,6 +71,8 @@ focus-search =
     .key = f
 close-button =
     .aria-label = סגירה
+do-not-track-removal2 =
+    .label = איננו תומכים עוד בחיווי ”נא לא לעקוב”
 
 ## Browser Restart Dialog
 
@@ -112,6 +114,10 @@ extension-controlling-proxy-config = <img data-l10n-name ="icon"/> <strong>‏{ 
 # <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
 # <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
 extension-controlled-enable = להפעלת ההרחבה יש לגשת לתוספות <img data-l10n-name="addons-icon"/> בתפריט <img data-l10n-name="menu-icon"/>.
+extension-controlled-enable-2 = כדי להפעיל מחדש את ההרחבה הזו, יש לבקר ב<a data-l10n-name="addons-link">הרחבות וערכות נושא</a>.
+# This string is shown to notify the user that their home page or new tab preferences
+# are being controlled by an extension.
+extension-controlling-homepage = ‏{ $name } שולטת בחלק מהגדרות דף הבית שלך.
 
 ## Preferences UI Search Results
 
@@ -126,6 +132,10 @@ startup-header = הפעלה
 always-check-default =
     .label = תמיד לבדוק אם { -brand-short-name } הוא דפדפן ברירת המחדל
     .accesskey = ת
+is-default-browser =
+    .message = { -brand-short-name } הוא כרגע דפדפן ברירת המחדל שלך
+is-not-default-browser =
+    .message = { -brand-short-name } אינו דפדפן ברירת המחדל שלך
 is-default = { -brand-short-name } הוא כרגע דפדפן ברירת המחדל שלך
 is-not-default = { -brand-short-name } אינו דפדפן ברירת המחדל שלך
 set-as-my-default-browser =
@@ -134,6 +144,8 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = פתיחת חלונות ולשוניות קודמות
     .accesskey = פ
+startup-windows-launch-on-login-profile-disabled =
+    .message = ניתן להפעיל את העדפה זו על־ידי סימון האפשרות ״{ profile-manager-use-selected.label }״ בחלון ״בחירת פרופיל משתמש״.
 windows-launch-on-login =
     .label = פתיחת { -brand-short-name } באופן אוטומטי כשהמחשב שלך נדלק
     .accesskey = פ
@@ -148,6 +160,11 @@ preferences-data-migration-description = ייבוא סימניות, ססמאות
 preferences-data-migration-button =
     .label = ייבוא נתונים
     .accesskey = י
+preferences-profiles-header = פרופילים
+preferences-manage-profiles-description = לכל פרופיל יש נתוני גלישה והגדרות נפרדים, כולל היסטוריה, ססמאות ועוד.
+preferences-manage-profiles-learn-more = מידע נוסף
+preferences-manage-profiles-button =
+    .label = ניהול פרופילים
 tabs-group-header = לשוניות
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab מחליף את הלשוניות לפי סדר השימוש בהן
@@ -155,6 +172,8 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = פתיחת קישורים בלשוניות במקום בחלונות חדשים
     .accesskey = ח
+open-external-link-next-to-active-tab =
+    .label = פתיחת קישורים מיישומים מיד לאחר הלשונית הפעילה שלך
 ask-on-close-multiple-tabs =
     .label = לשאול לפני סגירת מספר לשוניות
     .accesskey = ל
@@ -225,12 +244,33 @@ containers-remove-cancel-button = לא להסיר מגירה זו
 settings-tabs-show-image-in-preview =
     .label = הצגת תצוגה מקדימה בעת ריחוף על לשונית
     .accessKey = ת
+browser-layout-header = פריסת דפדפן
+browser-layout-horizontal-tabs =
+    .label = לשוניות אופקיות
+browser-layout-horizontal-tabs-desc = להציג בחלק העליון של הדפדפן
+browser-layout-vertical-tabs =
+    .label = לשוניות אנכיות
+browser-layout-vertical-tabs-desc = להציג בצד, בסרגל הכלים
+browser-layout-show-sidebar =
+    .label = הצגת סרגל צד
+browser-layout-show-sidebar-desc = קבלת גישה מהירה לסימניות, ללשוניות מהטלפון שלך, לצ’אטבוטים של AI ועוד מבלי לעזוב את התצוגה הראשית שלך.
 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = שפה ותצוגה
 preferences-web-appearance-header = מראה האתר
 preferences-web-appearance-description = חלק מהאתרים מתאימים את ערכת הצבעים שלהם בהתאם להעדפות שלך. ניתן לבחור באיזו ערכת צבעים ברצונך להשתמש עבור אתרים אלה.
+preferences-web-appearance-choice-auto2 =
+    .label = אוטומטי
+    .title = שינוי אוטומטי של הרקעים והתכנים של אתרים בהתבסס על הגדרות המערכת שלך וערכת הנושא של { -brand-short-name }.
+preferences-web-appearance-choice-light2 =
+    .label = בהיר
+    .title = שימוש במראה בהיר עבור רקעים ותכנים של אתרים.
+preferences-web-appearance-choice-dark2 =
+    .label = כהה
+    .title = שימוש במראה כהה עבור רקעים ותכנים של אתרים.
+web-appearance-group =
+    .aria-label = מראה האתר
 preferences-web-appearance-choice-auto = אוטומטי
 preferences-web-appearance-choice-light = בהיר
 preferences-web-appearance-choice-dark = כהה
@@ -248,14 +288,27 @@ preferences-web-appearance-choice-input-dark =
     .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning = בחירות הצבעים שלך דורסות את מראה האתר. <a data-l10n-name="colors-link">ניהול צבעים</a>
+preferences-web-appearance-override-warning3 =
+    .message = הגדרות בקרת הניגודיות שלך דורסות את מראה האתר.
+preferences-web-appearance-link =
+    .label = ניהול ערכות נושא של { -brand-short-name } בהרחבות וערכות נושא
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
-preferences-web-appearance-override-warning2 =
-    .message = בחירות הצבעים שלך דורסות את מראה האתר.
+preferences-web-appearance-override-warning = בחירות הצבעים שלך דורסות את מראה האתר. <a data-l10n-name="colors-link">ניהול צבעים</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = ניהול ערכות נושא של { -brand-short-name } ב<a data-l10n-name="themes-link">הרחבות וערכות נושא</a>
+preferences-contrast-control-header = בקרת ניגודיות
+preferences-contrast-control-description = לאתרים יש מגוון צבעי קדמה ורקע. ניתן להגדיר ל־{ -brand-short-name } להשתמש באותם צבעים באתרי אינטרנט לשיפור יכולת הקריאה.
+preferences-contrast-control-use-platform-settings =
+    .label = אוטומטי (שימוש בהגדרות מערכת)
+    .accesskey = א
+preferences-contrast-control-off =
+    .label = כבוי
+    .accesskey = כ
+preferences-contrast-control-custom =
+    .label = התאמה אישית
+    .accesskey = ה
 preferences-colors-header = צבעים
 preferences-colors-description = דריסת צבעי ברירת המחדל של { -brand-short-name } עבור טקסט, רקעי אתרים וקישורים.
 preferences-colors-manage-button =
@@ -314,6 +367,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = קבצים ויישומים
+downloads-header-2 =
+    .label = הורדות
+download-save-where-2 =
+    .label = שמירת קבצים אל
+    .accesskey = ק
 download-header = הורדות
 download-save-where = שמירת קבצים אל
     .accesskey = ק
@@ -331,6 +389,9 @@ download-choose-folder =
 download-always-ask-where =
     .label = לשאול תמיד היכן לשמור קבצים
     .accesskey = ק
+download-private-browsing-delete =
+    .label = מחיקת קבצים שהורדו בגלישה פרטית כאשר כל החלונות הפרטיים נסגרים
+    .accesskey = מ
 applications-header = יישומים
 applications-description = בחירה כיצד { -brand-short-name } יטפל בקבצים שהורדו מהרשת או ביישומים שיהיו בשימוש במהלך הגלישה.
 applications-filter =
@@ -485,6 +546,8 @@ performance-default-content-process-count =
 ## General Section - Browsing
 
 browsing-title = דפדוף
+browsing-group-label =
+    .aria-label = דפדוף
 browsing-use-autoscroll =
     .label = שימוש בגלילה אוטומטית
     .accesskey = ב
@@ -539,9 +602,10 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = חלונות ולשוניות חדשים
 home-new-windows-tabs-description2 = ניתן לבחור מה יופיע בעת פתיחת דף הבית שלך, חלונות חדשים ולשוניות חדשות.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = דף הבית וחלונות חדשים
+home-homepage-mode-label2 = חלונות חדשים
 home-newtabs-mode-label = לשוניות חדשות
 home-restore-defaults =
     .label = שחזור ברירות מחדל
@@ -554,6 +618,11 @@ home-mode-choice-blank =
     .label = דף ריק
 home-homepage-custom-url =
     .placeholder = נא להדביק כתובת…
+# This button is shown when the homepage is managed by an extension and is placed below extension-controlling-homepage.
+home-homepage-manage-extension-button =
+    .label = ניהול הרחבה
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-url = בחירה באתר מסוים
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -568,18 +637,45 @@ use-current-pages =
 choose-bookmark =
     .label = שימוש בסימנייה…
     .accesskey = ס
+home-homepage-header = דף הבית
+
+## Custom Homepage subpage
+
+home-custom-homepage-header = דף בית מותאם אישית
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-subheader = כתובות אתרי אינטרנט
+home-custom-homepage-address =
+    .placeholder = נא להכניס כתובת
+home-custom-homepage-address-button =
+    .label = הוספת כתובת
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-websites-yet = עדיין לא נוספו אתרים.
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with = החלפה עם
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-current-pages-button =
+    .label = הדפים הפתוחים הנוכחיים
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with)
+home-custom-homepage-bookmarks-button =
+    .label = סימניות…
 
 ## Home Section - Firefox Home Content Customization
 
 home-prefs-content-header2 = תוכן { -firefox-home-brand-name }
+home-prefs-content-header3 = { -firefox-home-brand-name }
 home-prefs-content-description2 = בחירת התוכן שיוצג ב{ -firefox-home-brand-name }.
 home-prefs-search-header =
     .label = חיפוש ברשת
+home-prefs-search-header2 =
+    .label = חיפוש
 home-prefs-shortcuts-header =
     .label = קיצורי דרך
 home-prefs-shortcuts-description = אתרים ששמרת או ביקרת בהם
 home-prefs-shortcuts-by-option-sponsored =
     .label = קיצורי דרך ממומנים
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
 
 ## Home Section - Firefox Home Content Customization
 
@@ -589,6 +685,12 @@ home-prefs-recommended-by-description-new = תוכן יוצא דופן שנבח�
 home-prefs-recommended-by-header-generic =
     .label = סיפורים מומלצים
 home-prefs-recommended-by-description-generic = תוכן יוצא דופן שנבחר בקפידה על־ידי משפחת { -brand-product-name }
+home-prefs-stories-header =
+    .label = סיפורים
+home-prefs-stories-description = סיפורים מותאמים אישית המבוססים על הפעילות שלך
+home-prefs-stories-header2 =
+    .label = סיפורים
+    .description = תוכן יוצא דופן שנבחר בקפידה על־ידי משפחת { -brand-product-name }
 
 ##
 
@@ -619,6 +721,26 @@ home-prefs-weather-header =
     .label = מזג אוויר
 home-prefs-weather-description = תחזית היום במבט חטוף
 home-prefs-weather-learn-more-link = מידע נוסף
+home-prefs-widgets-header =
+    .label = ווידג’טים
+home-prefs-trending-search-header =
+    .label = חיפושים פופולריים
+home-prefs-trending-search-description = נושאים פופולריים שאנשים מחפשים לעתים קרובות
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = רשימות
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = שעון עצר
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = תמיכה ב־{ -brand-product-name }
+home-prefs-mission-message = נותני החסות שלנו תומכים במשימה שלנו לבנות אינטרנט טוב יותר
+home-prefs-mission-message-learn-more-link = כיצד?
+home-prefs-mission-message2 =
+    .message = נותני החסות שלנו תומכים במשימה שלנו לבנות אינטרנט טוב יותר.
+home-prefs-manage-topics-link = ניהול נושאים
+home-prefs-choose-wallpaper-link = בחירת תמונת רקע
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -687,20 +809,32 @@ search-remove-engine =
 search-add-engine =
     .label = הוספה
     .accesskey = ה
+search-edit-engine =
+    .label = עריכה
+    .accesskey = ע
 search-find-more-link = מנועי חיפוש נוספים
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
 search-keyword-warning-title = מילת מפתח כפולה
 # Variables:
 #   $name (string) - Name of a search engine.
-search-keyword-warning-engine = בחרת להשתמש במילת מפתח שנמצאת כרגע בשימוש עבור "{ $name }". אנא בחר במילה אחרת.
+search-keyword-warning-engine = בחרת להשתמש במילת מפתח שנמצאת כרגע בשימוש על־ידי ״{ $name }״. נא לבחור במילה אחרת.
 search-keyword-warning-bookmark = בחרת להשתמש במילת מפתח שנמצאת כרגע בשימוש על־ידי סימנייה. נא לבחור במילה אחרת.
+# This warning is displayed when the chosen name is already in use.
+# Variables:
+#   $name (string) - Name of a search engine.
+edit-engine-name-warning-duplicate = כבר קיים מנוע חיפוש בשם ״{ $name }״. נא לבחור בשם אחר.
+remove-engine-confirmation = האם ברצונך להסיר את מנוע חיפוש זה?
+remove-engine-remove = הסרה
+remove-addon-engine-alert = כדי להסיר את מנוע חיפוש זה, יש להסיר את התוספת המשוייכת אליו.
 
 ## Containers Section
 
 containers-back-button2 =
     .aria-label = חזרה להגדרות
 containers-header = מגירת לשוניות
+containers-section-header =
+    .heading = מגירת לשוניות
 containers-add-button =
     .label = הוספת מגירה חדשה
     .accesskey = מ
@@ -865,6 +999,14 @@ sync-choose-what-to-sync-dialog4 =
 ## The device name controls.
 
 sync-device-name-header = שם המכשיר
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = שם המכשיר
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = שינוי שם מכשיר
+    .accesskey = ש
 sync-device-name-change =
     .label = שינוי שם מכשיר…
     .accesskey = ש
@@ -965,7 +1107,10 @@ forms-primary-pw-change =
 forms-primary-pw-former-name = { "" }
 forms-primary-pw-fips-title = מצבך כרגע הוא FIPS. ‏FIPS דורש ססמה ראשית לא־ריקה.
 forms-master-pw-fips-desc = שינוי הססמה נכשל
+forms-windows-sso =
+    .label = לאפשר SSO של Windows עבור חשבונות של Microsoft, עבודה או לימודים
 forms-windows-sso-learn-more-link = מידע נוסף
+forms-windows-sso-desc = ניהול חשבונות בהגדרות במכשיר
 windows-passkey-settings-label = ניהול passkeys בהגדרות המערכת
 
 ## OS Authentication dialog
@@ -1002,6 +1147,28 @@ autofill-saved-payment-methods-button = אמצעי תשלום שמורים
 # This operation requires the user to authenticate with the operating system (device sign-in)
 autofill-reauth-payment-methods-checkbox = לדרוש פרטי התחברות של המכשיר כדי למלא ולנהל אמצעי תשלום
     .accesskey = ד
+autofill-payment-methods-title = אמצעי תשלום
+autofill-payment-methods-header =
+    .aria-label = אמצעי תשלום
+autofill-payment-methods-checkbox-message-2 =
+    .label = שמירה ומילוי אוטומטי של פרטי אמצעי תשלום
+    .accesskey = ת
+autofill-payment-methods-manage-payments-button =
+    .label = ניהול אמצעי תשלום
+    .accesskey = נ
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox-2 =
+    .label = לדרוש פרטי התחברות של המכשיר כדי למלא אוטומטית ולנהל אמצעי תשלום
+    .accesskey = פ
+autofill-addresses-title = כתובות ועוד
+autofill-addresses-header =
+    .aria-label = כתובות ועוד
+autofill-addresses-checkbox-message =
+    .label = שמירה ומילוי אוטומטי של כתובות
+    .accesskey = ש
+autofill-addresses-manage-addresses-button =
+    .label = ניהול כתובות ועוד
+    .accesskey = נ
 
 ## Privacy Section - History
 
@@ -1023,6 +1190,12 @@ history-remember-option-never =
     .label = לעולם לא ישמור היסטוריה
 history-remember-option-custom =
     .label = ישתמש בהגדרות מותאמות אישית להיסטוריה
+history-remember-description2 =
+    .description = ‏{ -brand-short-name } יזכור את היסטוריית הגלישה, ההורדות, הטפסים והחיפוש שלך.
+history-dontremember-description2 =
+    .description = { -brand-short-name } ישתמש באותן ההגדרות לגלישה פרטית, ולא יזכור היסטוריה כלשהי במהלך הגלישה שלך ברשת.
+history-custom-description =
+    .description = ‏{ -brand-short-name } ישתמש בהגדרות מותאמות אישית עבור היסטוריית הגלישה, ההורדות, הטפסים והחיפוש שלך.
 history-remember-description = ‏{ -brand-short-name } יזכור את היסטוריית הגלישה, ההורדות, הטפסים והחיפוש שלך.
 history-dontremember-description = { -brand-short-name } ישתמש באותן ההגדרות לגלישה פרטית, ולא יזכור היסטוריה כלשהי במהלך הגלישה שלך ברשת.
 history-private-browsing-permanent =
@@ -1047,7 +1220,13 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = עוגיות ונתוני אתרים
+sitedata-label =
+    .aria-label = { sitedata-header }
 sitedata-total-size-calculating = חישוב גודל נתוני אתרים ומטמון…
+# Variables:
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size2 = העוגיות, ההיסטוריה, נתוני האתרים והמטמון השמורים שלך משתמשים כרגע ב־<strong>{ $value } { $unit }</strong> משטח הדיסק.
 # Variables:
 #   $value (number) - Value of the unit (for example: 4.6, 500)
 #   $unit (string) - Name of the unit (for example: "bytes", "KB")
@@ -1056,6 +1235,8 @@ sitedata-learn-more = מידע נוסף
 sitedata-delete-on-close =
     .label = מחיקת עוגיות ונתוני אתרים עם סגירת { -brand-short-name }
     .accesskey = ח
+sitedata-delete-on-close-private-browsing3 =
+    .message = בהתאם להגדרות ההיסטוריה שלך, { -brand-short-name } מוחק עוגיות ונתוני אתרים מההפעלה שלך בעת סגירת הדפדפן.
 sitedata-delete-on-close-private-browsing = במצב גלישה פרטית קבועה, עוגיות ונתוני אתרים ינוקו תמיד כש־{ -brand-short-name } נסגר.
 sitedata-delete-on-close-private-browsing2 = בהתאם להגדרות ההיסטוריה שלך, { -brand-short-name } מוחק עוגיות ונתוני אתרים מההפעלה שלך בעת סגירת הדפדפן.
 sitedata-allow-cookies-option =
@@ -1072,6 +1253,8 @@ sitedata-option-block-cross-site-trackers =
     .label = רכיבי מעקב חוצי אתרים
 sitedata-option-block-cross-site-tracking-cookies =
     .label = עוגיות מעקב חוצות אתרים
+sitedata-option-block-cross-site-cookies2 =
+    .label = בידוד עוגיות חוצות אתרים
 sitedata-option-block-cross-site-cookies =
     .label = עוגיות מעקב חוצות אתרים, ובידוד שאר עוגיות חוצות אתרים
 sitedata-option-block-unvisited =
@@ -1080,6 +1263,12 @@ sitedata-option-block-all-cross-site-cookies =
     .label = כל העוגיות חוצות האתרים (עשוי לשבש פעילות של חלק מהאתרים)
 sitedata-option-block-all =
     .label = כל העוגיות (ישבש פעילות של אתרים)
+sitedata-clear2 =
+    .label = מחיקת נתוני גלישה
+    .accesskey = מ
+sitedata-settings2 =
+    .label = ניהול נתוני גלישה
+    .accesskey = נ
 sitedata-clear =
     .label = ניקוי נתונים…
     .accesskey = נ
@@ -1089,6 +1278,10 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = ניהול חריגות…
     .accesskey = ח
+sitedata-cookies-exceptions2 =
+    .label = ניהול חריגות
+    .accesskey = ח
+    .description = באפשרותך לציין אילו אתרים תמיד מורשים או אסורים להשתמש בעוגיות ונתוני אתרים.
 
 ## Privacy Section - Cookie Banner Handling
 
@@ -1108,7 +1301,19 @@ cookie-banner-blocker-checkbox-label =
 ## Privacy Section - Address Bar
 
 addressbar-header = שורת כתובת
+addressbar-suggest-1 = בחירה בהצעות שיוצגו בשורת הכתובת
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest-1 = { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest-1 = הצעות מ־{ -brand-short-name } ומהשותפים שלנו בשורת הכתובת שלך.
 addressbar-suggest = כאשר משתמשים בסרגל החיפוש, יוצגו המלצות עבור
+# When Firefox Suggest is enabled, this replaces `addressbar-header`.
+addressbar-header-firefox-suggest = שורת הכתובת - { -firefox-suggest-brand-name }
+# When Firefox Suggest is enabled, this replaces `addressbar-suggest`.
+addressbar-suggest-firefox-suggest = ניתן לבחור את סוג ההצעות המופיעות בשורת הכתובת.
+# When Firefox Suggest is enabled, a "Learn more" link appears at the end of
+# `addressbar-suggest-firefox-suggest`.
+addressbar-locbar-firefox-suggest-learn-more = מידע נוסף
 addressbar-locbar-history-option =
     .label = היסטוריית גלישה
     .accesskey = ג
@@ -1128,6 +1333,9 @@ addressbar-locbar-shortcuts-option =
 addressbar-locbar-topsites-option =
     .label = אתרים מובילים
     .accesskey = מ
+addressbar-locbar-engines-option-1 =
+    .label = הצגת הצעות לשימוש במנועי חיפוש
+    .accesskey = מ
 addressbar-locbar-engines-option =
     .label = מנועי חיפוש
     .accesskey = מ
@@ -1141,7 +1349,30 @@ addressbar-locbar-showrecentsearches-option =
 addressbar-locbar-showtrendingsuggestions-option =
     .label = הצגת הצעות חיפוש פופולריים
     .accesskey = פ
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option =
+    .label = הצעות מ־{ -brand-short-name }
+addressbar-locbar-suggest-all-option-desc = קבלת הצעות מהאינטרנט הקשורות לחיפוש שלך.
+# Nonsponsored suggestions refers to Firefox Suggest suggestions like Wikipedia.
+addressbar-locbar-suggest-nonsponsored-option =
+    .label = הצעות מ־{ -brand-short-name }
+addressbar-locbar-suggest-nonsponsored-desc = קבלת הצעות מהאינטרנט הקשורות לחיפוש שלך.
+addressbar-locbar-suggest-sponsored-option =
+    .label = הצעות מנותני חסות
+addressbar-locbar-suggest-sponsored-desc = תמיכה ב־{ -brand-short-name } עם הצעות ממומנות מדי פעם.
+# This string is used for a checkbox in the settings UI that opts the
+# user into "online" Firefox Suggest, allowing them to receive suggestions from
+# Mozilla's Merino server.
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since the online suggest is created and maintained
+# by Mozilla.
+addressbar-firefox-suggest-online =
+    .label = אחזור הצעות מ־Mozilla תוך כדי הקלדה
 addressbar-quickactions-learn-more = מידע נוסף
+addressbar-dismissed-suggestions-label = הצעות שנדחו
+addressbar-restore-dismissed-suggestions-description = שחזור הצעות שנדחו מנותני חסות ומ־{ -brand-short-name }.
+addressbar-restore-dismissed-suggestions-button =
+    .label = שחזור
 
 ## Privacy Section - Content Blocking
 
@@ -1178,6 +1409,7 @@ content-blocking-private-windows = תוכן מעקב בחלונות פרטיים
 content-blocking-cross-site-cookies-in-all-windows2 = עוגיות חוצות אתרים בכל החלונות
 content-blocking-cross-site-tracking-cookies = עוגיות מעקב חוצות אתרים
 content-blocking-all-cross-site-cookies-private-windows = עוגיות חוצות אתרים בחלונות פרטיים
+content-blocking-isolate-cross-site-cookies = בידוד עוגיות חוצות אתרים
 content-blocking-cross-site-tracking-cookies-plus-isolate = עוגיות מעקב חוצות אתרים, ובידוד שאר העוגיות
 content-blocking-social-media-trackers = רכיבי מעקב של מדיה חברתית
 content-blocking-all-cookies = כל העוגיות
@@ -1198,8 +1430,23 @@ content-blocking-etp-standard-tcp-rollout-description = הגנת עוגיות מ
 content-blocking-etp-standard-tcp-rollout-learn-more = מידע נוסף
 content-blocking-etp-standard-tcp-title = כולל הגנת עוגיות מלאה, תכונת הפרטיות העוצמתית ביותר שלנו אי פעם
 content-blocking-warning-title = לתשומת לבך!
-content-blocking-and-isolating-etp-warning-description-2 = הגדרה זו עלולה לגרום לאתרים מסויימים שלא להציג תוכן או שלא לעבוד כראוי. אם נראה שאתר מסויים שבור, באפשרותך לכבות את הגנת המעקב עבור אותו אתר כדי לטעון את כל התוכן.
+content-blocking-warning-title-2 = ייתכן שחלק מהאתרים לא יעבדו כשורה כשהגנת מעקב מחמירה פעילה
+content-blocking-warning-title-custom = ייתכן שחלק מהאתרים לא יעבדו כשורה כשהגנת מעקב מותאמת אישית פעילה
+# “Fix site issues” references the string content-blocking-exceptions-subheader
+content-blocking-and-isolating-etp-warning-description-4 = ‏{ -brand-short-name } ממליץ להשתמש בהגדרות ״תיקון בעיות באתרים״ כדי להפחית תכונות ותוכן שבורים באתרים. אם נראה שאתר מסוים לא פועל כשורה, ניתן לנסות לכבות את הגנת המעקב עבור אותו אתר כדי לטעון את כל התוכן.
+content-blocking-and-isolating-etp-warning-description-2 = הגדרה זו עלולה לגרום לאתרים מסוימים שלא להציג תוכן או שלא לעבוד כראוי. אם נראה שאתר מסוים שבור, באפשרותך לכבות את הגנת המעקב עבור אותו אתר כדי לטעון את כל התוכן.
 content-blocking-warning-learn-how = מידע נוסף
+content-blocking-baseline-exceptions-3 =
+    .label = תיקון בעיות משמעותיות באתרים (מומלץ)
+    .description = מסייע בטעינת אתרים ותכונות על־ידי ביטול חסימה של אלמנטים חיוניים בלבד שעשויים להכיל רכיבי מעקב. זה מכסה את רוב הבעיות הנפוצות.
+# This option to fix minor site issues must be used with the option to fix major site issues (string content-blocking-baseline-exceptions-3)
+content-blocking-convenience-exceptions-3 =
+    .label = תיקון בעיות קלות באתרים
+    .description = משחזר דברים כמו סרטונים במאמר או מקטעי תגובות על־ידי ביטול חסימה של אלמנטים שעשויים להכיל רכיבי מעקב. פעולה זו יכולה להפחית בעיות באתרים אך מציעה הגנה פחותה יותר. יש להשתמש בו עם תיקונים לבעיות משמעותיות.
+content-blocking-baseline-uncheck-warning-dialog-title = האם ברצונך לכבות את התיקונים?
+content-blocking-baseline-uncheck-warning-dialog-body = הגדרה זו מסייעת לתקן את בעיות האתרים הנפוצות ביותר. אם הגדרה זו תכובה, ייתכן שחלק מהאתרים לא יפעלו, ו־{ -brand-short-name } לא יוכל לסייע בפתרון בעיות אלו.
+content-blocking-baseline-uncheck-warning-dialog-ok-button = כיבוי התיקונים
+content-blocking-baseline-uncheck-warning-dialog-cancel-button = להשאיר את התיקונים פעילים
 content-blocking-reload-description = יהיה עליך לטעון מחדש את הלשוניות שלך כדי להחיל שינויים אלו.
 content-blocking-reload-tabs-button =
     .label = טעינת כל הלשוניות מחדש
@@ -1254,6 +1501,14 @@ permissions-location = מיקום
 permissions-location-settings =
     .label = הגדרות…
     .accesskey = ה
+permissions-localhost = יישומים ושירותים של מכשירים
+permissions-localhost-settings =
+    .label = הגדרות…
+    .accesskey = ה
+permissions-local-network = מכשירים ברשת המקומית
+permissions-local-network-settings =
+    .label = הגדרות…
+    .accesskey = ה
 permissions-xr = מציאות מדומה
 permissions-xr-settings =
     .label = הגדרות…
@@ -1279,10 +1534,27 @@ permissions-notification-link = מידע נוסף
 permissions-notification-pause =
     .label = השהיית התרעות עד להפעלה מחדש של { -brand-short-name }
     .accesskey = ה
+permissions-autoplay2 =
+    .label = ניגון אוטומטי
 permissions-autoplay = ניגון אוטומטי
 permissions-autoplay-settings =
     .label = הגדרות…
     .accesskey = ה
+permissions-block-popups2 =
+    .label = חסימת חלונות קופצים והפניות מצד שלישי
+    .accesskey = ח
+# "popup" is a misspelling that is more popular than the correct spelling of
+# "pop-up" so it's included as a search keyword, not displayed in the UI.
+permissions-block-popups-exceptions-button2 =
+    .label = ניהול חריגות עבור חלונות קופצים והפניות צד שלישי
+    .accesskey = נ
+    .searchkeywords = חלונות קופצים
+permissions-addon-install-warning2 =
+    .label = הצגת אזהרה כשאתרים מנסים להתקין הרחבות
+    .accesskey = ה
+permissions-addon-exceptions2 =
+    .label = בחירה באתרים המורשים להתקין הרחבות
+    .accesskey = ב
 permissions-block-popups =
     .label = חסימת חלונות קופצים
     .accesskey = ח
@@ -1298,22 +1570,59 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = חריגות…
     .accesskey = ח
+permissions-header2 =
+    .label = הרשאות
+    .description = הרשאות הניתנות לאתרים בהם גולשים.
+permissions-location2 =
+    .label = מיקום
+permissions-localhost2 =
+    .label = יישומים ושירותים של מכשירים
+permissions-local-network2 =
+    .label = מכשירים ברשת המקומית
+permissions-xr2 =
+    .label = מציאות מדומה
+permissions-camera2 =
+    .label = מצלמה
+permissions-microphone2 =
+    .label = מיקרופון
+# Privacy permission for sound output devices.
+permissions-speaker2 =
+    .label = רמקול
+permissions-notification2 =
+    .label = התרעות
 
 ## Privacy Section - Data Collection
 
 collection-header = איסוף המידע של { -brand-short-name }
 collection-header2 = איסוף המידע של { -brand-short-name }
     .searchkeywords = טלמטריה
+preferences-collection-description = אנו שואפים לספק לך אפשרויות בחירה ולאסוף רק את הנתונים המינימליים הדרושים כדי לשפר את { -brand-product-name } עבור כולם.
+preferences-collection-privacy-notice = הצגת הצהרת הפרטיות
+preferences-across-profiles = הגדרות אלה חלות על כל פרופיל של { -brand-product-name } במכשיר זה.
+preferences-view-profiles = צפייה בכל הפרופילים
 collection-description = אנו חותרים לספק לך זכות בחירה ולאסוף רק מה שנדרש לנו כדי לספק ולשפר את { -brand-short-name } לטובת הכלל. אנו תמיד נבקש את רשותך לפני קבלת פרטים אישיים.
 collection-privacy-notice = הצהרת פרטיות
 collection-health-report-telemetry-disabled-link = מידע נוסף
+collection-usage-ping =
+    .label = שליחת פינג שימוש יומי אל { -vendor-short-name }
+    .accesskey = פ
+collection-usage-ping-description = זה מסייע ל־{ -vendor-short-name } להעריך כמה יש משתמשים פעילים.
+collection-health-report2 =
+    .label = שליחת נתונים טכניים ונתוני אינטראקציה אל { -vendor-short-name }
+    .accesskey = ט
 collection-health-report =
     .label = לאפשר ל־{ -brand-short-name } לשלוח אל { -vendor-short-name } מידע טכני ופעולות שבוצעו בדפדפן
     .accesskey = ד
 collection-health-report-link = מידע נוסף
+collection-health-report-description = זה מסייע לנו לשפר את היכולות, הביצועים והיציבות של { -brand-product-name }.
+collection-studies2 =
+    .label = התקנה והרצת מחקרים
+collection-studies-description = נסו תכונות ורעיונות לפני שהם משוחררים לכולם.
 collection-studies =
     .label = לאפשר ל־{ -brand-short-name } להתקין ולהריץ מחקרים
 collection-studies-link = הצגת המחקרים של { -brand-short-name }
+addon-recommendations2 =
+    .label = לאפשר המלצות מותאמות אישית על הרחבות
 addon-recommendations-description = קבלת המלצות על הרחבות לשיפור חווית הגלישה שלך.
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
@@ -1329,8 +1638,6 @@ addon-recommendations-link = מידע נוסף
 # or builds with no Telemetry support available.
 collection-health-report-disabled = דיווח נתונים מנוטרל עבור תצורת בנייה זו
 collection-backlogged-crash-reports-with-link = לאפשר ל־{ -brand-short-name } לשלוח דיווחי קריסה שנצטברו בשמך <a data-l10n-name="crash-reports-link">מידע נוסף</a>
-    .accesskey = ק
-collection-backlogged-crash-reports = לאפשר ל־{ -brand-short-name } לשלוח דיווחי קריסה שנצטברו בשמך
     .accesskey = ק
 privacy-segmentation-section-header = תכונות חדשות שמשפרות את הגלישה שלך
 privacy-segmentation-section-description = כשאנחנו מציעים תכונות המשתמשות בנתונים שלך כדי להעניק לך חוויה אישית יותר:
@@ -1380,30 +1687,35 @@ certs-devices =
 certs-thirdparty-toggle =
     .label = לאפשר ל־{ -brand-short-name } לתת באופן אוטומטי אמון באישורי שורש מצד שלישי שיותקנו על ידך
     .accesskey = ל
+certs-devices-enable-fips = הפעלת FIPS
 space-alert-over-5gb-settings-button =
     .label = פתיחת הגדרות
     .accesskey = ה
 space-alert-over-5gb-message2 = <strong>ל־{ -brand-short-name } אוזל שטח הדיסק.</strong> יתכן שתכני אתרים לא יוצגו כשורה. ניתן למחוק נתונים שמורים בהגדרות > פרטיות ואבטחה > עוגיות ונתוני אתרים.
 space-alert-under-5gb-message2 = <strong>ל־{ -brand-short-name } אוזל שטח הדיסק.</strong> יתכן שנתוני אתרים לא יוצגו כשורה. ניתן לבקר בקישור של “מידע נוסף” כדי לייעל את אופן השימוש בדיסק לחוויית גלישה טובה יותר.
+certs-description2 =
+    .label = אישורים
+    .description = הגדרת התצורה של האישורים שבהם { -brand-short-name } משתמש לצורך אימות.
 
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = מצב HTTPS בלבד
+httpsonly-label =
+    .aria-label = { httpsonly-header }
+    .description = מאפשר רק חיבורים מאובטחים לאתרי אינטרנט. { -brand-short-name } ישאל לפני התחברות באמצעות חיבור לא מאובטח.
+httpsonly-description3 = מאפשר רק חיבורים מאובטחים לאתרי אינטרנט. { -brand-short-name } ישאל לפני התחברות באמצעות חיבור לא מאובטח.
+httpsonly-learn-more2 = כיצד עובד מצב HTTPS בלבד
 httpsonly-description = ‏HTTPS מספק חיבור מאובטח ומוצפן בין { -brand-short-name } לבין האתרים שמבקרים בהם. רוב האתרים תומכים ב־HTTPS, ואם מצב HTTPS בלבד מופעל, { -brand-short-name } ישדרג את כל החיבורים ל־HTTPS.
-httpsonly-description2 = ‏{ -brand-short-name } יוצר חיבורים מאובטחים ומוצפנים לאתרים שנכנסים אליהם. { -brand-short-name } יזהיר אותך אם החיבור אינו מאובטח כאשר מצב HTTPS בלבד מופעל.
 httpsonly-learn-more = מידע נוסף
 httpsonly-radio-enabled =
     .label = הפעלת מצב HTTPS בלבד בכל החלונות
-httpsonly-radio-enabled2 =
-    .label = להשתמש ב־HTTPS בלבד בכל החלונות
 httpsonly-radio-enabled-pbm =
     .label = הפעלת מצב HTTPS בלבד אך ורק בחלונות פרטיים
-httpsonly-radio-enabled-pbm2 =
-    .label = להשתמש ב־HTTPS בלבד בחלונות פרטיים
+httpsonly-radio-disabled3 =
+    .label = לא להפעיל מצב HTTPS בלבד
+    .description = ‏ייתכן ש־{ -brand-short-name } עדיין ישדרג חלק מהחיבורים
 httpsonly-radio-disabled =
     .label = לא להפעיל מצב HTTPS בלבד
-httpsonly-radio-disabled2 =
-    .label = לנסות תחילה את HTTPS, אבל לאפשר חיבורים שאינם מאובטחים
 
 ## DoH Section
 

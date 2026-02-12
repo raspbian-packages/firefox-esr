@@ -107,9 +107,35 @@ fp-cert-error-code = Cod Gwall: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = Nid yw { -brand-short-name } yn ymddiried yn { $hostname } oherwydd nad yw'n gallu profi ei fod yn bodloni gofynion tryloywder tystysgrif gyhoeddus.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Dim byd yn ôl pob tebyg, gan ei bod hi'n debygol bod problem gyda'r wefan ei hun.
 fp-learn-more-about-secure-connection-failures = Dysgu rhagor am fethiannau cysylltiadau diogel
 fp-learn-more-about-cert-issues = Dysgu rhagor am y mathau hyn o faterion tystysgrifau
 fp-learn-more-about-time-related-errors = Dysgu rhagor am ddatrys gwallau sy'n gysylltiedig ag amser
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd bod y dystysgrif ddarparwyd ar gyfer { $hostname } wedi'i dirymu a does dim modd ymddiried ynddi bellach.
+cert-error-bad-signature = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd nad yw'r llofnod ar y dystysgrif ddarparwyd ar gyfer { $hostname } yn ddilys.
+cert-error-key-pinning-failure = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd bod y dystysgrif ddarparwyd ar gyfer { $hostname } wedi'i dirymu a does dim modd ymddiried ynddi bellach.
+cert-error-bad-der = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd nad yw'r llofnod ar y dystysgrif ddarparwyd ar gyfer { $hostname } yn ddilys.
+cert-error-cert-not-in-name-space = Rhwystrodd { -brand-short-name } eich ymweliad â'r wefan hon oherwydd nid yw'r dystysgrif a ddarparwyd ar gyfer { $hostname } yn dilyn cyfyngiadau enw tystysgrif a'i rhoddodd.
+cert-error-inadequate-cert-type = Rhwystrodd { -brand-short-name } eich ymweliad â'r wefan hon oherwydd nad yw'r gweinydd gwe yn cael caniatâd i ddefnyddio'r dystysgrif a ddarparwyd ar gyfer { $hostname }.
+cert-error-path-len-constraint-invalid = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd nad yw'r llofnod ar y dystysgrif ddarparwyd ar gyfer { $hostname } yn ddilys.
+cert-error-invalid-key = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd bod gan y dystysgrif a ddarparwyd ar gyfer { $hostname } allwedd sy'n annilys. Yn fwyaf tebygol, mae'n rhy fach i fod yn ddiogel.
+cert-error-unknown-critical-extension = Rhwystrodd { -brand-short-name } eich ymweliad â'r wefan hon oherwydd bod y dystysgrif a ddarparwyd ar gyfer { $hostname } yn cynnwys estyniad critigol nad yw'n cael ei gefnogi.
+cert-error-extension-value-invalid = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd bod y dystysgrif a ddarparwyd ar gyfer { $hostname } yn cynnwys estyniad annilys.
+cert-error-untrusted-issuer = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd bod y dystysgrif a ddarparwyd ar gyfer { $hostname } wedi'i chyhoeddi gan awdurdod tystysgrifau nad yw'n ymddiried ynddo mwyach.
+cert-error-untrusted-cert = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd bod y dystysgrif a ddarparwyd ar gyfer { $hostname } wedi'i nodi fel un nad oes ymddiriedaeth ynddo.
+cert-error-invalid-integer-encoding = Mae { -brand-short-name } wedi rhwystro eich ymweliad â'r wefan hon oherwydd bod y dystysgrif a ddarparwyd ar gyfer { $hostname } yn cynnwys amgodiad annilys o gyfanrif. Mae achosion cyffredin yn cynnwys rhifau cyfresol negyddol, modwli RSA negyddol, ac amgodiadau sy'n hirach nag sydd ei angen.
+cert-error-unsupported-keyalg = Rhwystrodd { -brand-short-name } eich ymweliad â'r wefan hon oherwydd bod gan y dystysgrif a ddarparwyd ar gyfer { $hostname } y math allwedd nad yw'n ei gefnogi.
+cert-error-issuer-no-longer-trusted = Rhwystrodd { -brand-short-name } eich ymweliad â'r wefan hon oherwydd nid yw'r awdurdod tystysgrifau a gyhoeddodd y dystysgrif a ddarparwyd ar gyfer { $hostname } yn ymddiried ynddo mwyach.
+cert-error-signature-algorithm-mismatch = Rhwystrodd { -brand-short-name } eich ymweliad â'r wefan hon oherwydd nid yw algorithm llofnod y dystysgrif a ddarparwyd ar gyfer { $hostname } yn cyd-fynd â'i faes algorithm llofnod.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Mae'r cyfeiriad wedi ei gyfyngu
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Rydym yn cael trafferth canfod y wefan honno.
+internet-connection-offline-title = Mae'n ymddangos bod problem gyda'ch cysylltiad rhyngrwyd.
 dns-not-found-trr-only-title2 = Risg diogelwch posibl wrth chwilio'r parth hwn
 dns-not-found-native-fallback-title2 = Risg diogelwch posibl wrth chwilio'r parth hwn
 fileNotFound-title = Heb ganfod ffeil
@@ -134,6 +161,7 @@ contentEncodingError-title = Gwall Amgodio Cynnwys
 unsafeContentType-title = Math Anniogel o Ffeil
 netReset-title = Cafodd y cysylltiad ei ailosod
 netTimeout-title = Mae'r cyfnod cyswllt wedi dod i ben
+httpErrorPage-title = Mae'n ymddangos bod problem gyda'r wefan hon
 serverError-title = Mae'n ymddangos bod problem gyda'r wefan hon
 unknownProtocolFound-title = Heb ddeall y cyfeiriad
 proxyConnectFailure-title = Mae'r gweinydd dirprwy yn gwrthod cysylltiadau
@@ -142,6 +170,7 @@ redirectLoop-title = Nid yw'r dudalen yn ailgyfeirio'n iawn
 unknownSocketType-title = Ymateb annisgwyl gan y gweinydd
 nssFailure2-title = Methodd y Cysylltiad Diogel
 csp-xfo-error-title = Nid yw { -brand-short-name } yn Gallu Agor y Dudalen hon
+corruptedContentErrorv2-title = Gwall Cynnwys Llygredig
 corruptedContentError-title = Gwall Cynnwys Llygredig
 sslv3Used-title = Methu Cysylltu'n Ddiogel
 inadequateSecurityError-title = Nid yw eich cysylltiad yn ddiogel
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Cuddio uwch
 fp-certerror-override-exception-button = Ewch ymlaen i { $hostname } ( Peryglus )
 fp-certerror-intro = Mae { -brand-short-name } wedi sylwi ar fater diogelwch a allai fod yn ddifrifol gyda <strong>{ $hostname }</strong>. Gall rhywun sy'n smalio fod y wefan geisio dwyn pethau fel manylion cerdyn credyd, cyfrineiriau neu e-byst.
 fp-certerror-expired-into = Mae { -brand-short-name } wedi sylwi ar broblem diogelwch gyda <strong>{ $hostname }</strong>. Naill ai nid yw'r wefan wedi'i gosod yn iawn neu mae cloc eich dyfais wedi'i osod i'r dyddiad/amser anghywir.
+fp-certerror-transparency-intro = Gallai rhywun sy'n smalio bod yn <strong>{ $hostname }</strong> geisio dwyn pethau fel manylion cerdyn credyd, cyfrineiriau neu e-byst.

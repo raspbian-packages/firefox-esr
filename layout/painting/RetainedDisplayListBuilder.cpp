@@ -305,8 +305,14 @@ bool RetainedDisplayListBuilder::PreProcessDisplayList(
         !item->GetActiveScrolledRoot()) {
       agrFrame = aAsyncAncestor;
     } else {
-      agrFrame = item->GetActiveScrolledRoot()
-                     ->mScrollContainerFrame->GetScrolledFrame();
+      auto* scrollContainerFrame =
+          item->GetActiveScrolledRoot()->mScrollContainerFrame;
+      if (MOZ_UNLIKELY(!scrollContainerFrame)) {
+        MOZ_DIAGNOSTIC_ASSERT(false);
+        gfxCriticalNoteOnce << "Found null mScrollContainerFrame in asr";
+        return false;
+      }
+      agrFrame = scrollContainerFrame->GetScrolledFrame();
     }
 
     if (aAGR && agrFrame != aAGR) {
@@ -545,8 +551,7 @@ class MergeState {
     // haven't modified the frame, and it's hard to fix. In these cases we just
     // always use the new item to be safe.
     DisplayItemType type = aNewItem->GetType();
-    if (type == DisplayItemType::TYPE_CANVAS_BACKGROUND_COLOR ||
-        type == DisplayItemType::TYPE_SOLID_COLOR) {
+    if (type == DisplayItemType::TYPE_SOLID_COLOR) {
       // The canvas background color item can paint the color from another
       // frame, and even though we schedule a paint, we don't mark the canvas
       // frame as invalid.

@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Fechar separador
 tabbrowser-menuitem-close =
     .label = Fechar
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -74,6 +87,13 @@ tabbrowser-unblock-tab-audio-tooltip =
 
 ## Tooltips for tab audio control
 
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Ativar som do separador
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Silenciar som do separador
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Reproduzir separador
 
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
@@ -142,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Não voltar a mostrar esta janela.
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Atenção
-tabbrowser-confirm-close-duplicate-tabs-text = Iremos manter aberto o último separador ativo
 tabbrowser-confirm-close-all-duplicate-tabs-title = Fechar os separadores duplicados?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Nós iremos fechar os separadores duplicados nesta janela. O último separador
@@ -185,6 +203,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Mostrar os { $tabCount } separadores
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Silenciar separador
@@ -192,8 +213,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Ativar separador
 tabbrowser-manager-close-tab =
     .tooltiptext = Fechar separador
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Fechado
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Janela atual
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Criar grupo de separadores
 tab-group-editor-title-edit = Gerir grupo de separadores
@@ -203,28 +232,49 @@ tab-group-editor-name-field =
 tab-group-editor-cancel =
     .label = Cancelar
     .accesskey = C
-tab-group-menu-header = Grupos de separadores
+tab-group-editor-color-selector =
+    .aria-label = Cor do grupo de separadores
+tab-group-editor-color-selector2-blue = Azul
+    .title = Azul
+tab-group-editor-color-selector2-purple = Roxo
+    .title = Roxo
+tab-group-editor-color-selector2-cyan = Ciano
+    .title = Ciano
+tab-group-editor-color-selector2-orange = Laranja
+    .title = Laranja
+tab-group-editor-color-selector2-yellow = Amarelo
+    .title = Amarelo
+tab-group-editor-color-selector2-pink = Rosa
+    .title = Rosa
+tab-group-editor-color-selector2-green = Verde
+    .title = Verde
+tab-group-editor-color-selector2-gray = Cinzento
+    .title = Cinzento
+tab-group-editor-color-selector2-red = Vermelho
+    .title = Vermelho
+tab-group-description = { $tabGroupName } — Grupo de separadores
 tab-context-unnamed-group =
     .label = Grupo sem nome
 tab-group-name-default = Grupo sem nome
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+##
 
 tab-context-move-tab-to-new-group =
     .label =
         { $tabCount ->
             [1] Adicionar separador ao novo grupo
-           *[other] Add Tabs to New Group
+           *[other] Adicionar separadores ao novo grupo
         }
     .accesskey = g
 tab-context-move-tab-to-group =
     .label =
         { $tabCount ->
             [1] Adicionar separador ao grupo
-           *[other] Add Tabs to Group
+           *[other] Adicionar separadores ao grupo
         }
     .accesskey = g
+tab-context-move-tab-to-group-saved-groups =
+    .label = Grupos fechados
 tab-group-editor-action-new-tab =
     .label = Novo separador no grupo
 tab-group-editor-action-new-window =

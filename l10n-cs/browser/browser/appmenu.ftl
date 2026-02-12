@@ -31,6 +31,10 @@ appmenuitem-downloads =
     .label = Stahování
 appmenuitem-passwords =
     .label = Hesla
+appmenuitem-extensions-and-themes =
+    .label = Rozšíření a vzhledy
+appmenuitem-extensions =
+    .label = Rozšíření
 appmenuitem-addons-and-themes =
     .label = Doplňky a vzhledy
 appmenuitem-print =
@@ -170,6 +174,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Otevřít panel nástroje pro profilování
+    .tooltiptext = Otevřít panel nástroje pro profilování
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -208,6 +215,9 @@ profiler-popup-presets-media-description2 =
     }
 profiler-popup-presets-media-label =
     .label = Média
+profiler-popup-presets-ml-description = Doporučené nastavení pro ladění problémů se strojovým učením v aplikaci { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Strojové učení
 profiler-popup-presets-networking-description =
     { -brand-shorter-name.case-status ->
         [with-cases] Doporučené nastavení pro ladění síťových problémů ve { -brand-shorter-name(case: "loc") }.
@@ -320,6 +330,10 @@ appmenuitem-services-relay-description = Spustit nástěnku e-mailových masek
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Chraňte svou online aktivitu
 appmenu-services-header = Mé služby
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Vyzkoušejte další ochranné nástroje od Mozilly:
 appmenu-other-protection-header =
     { -vendor-short-name.case-status ->
         [with-cases] Vyzkoušejte další nástroje ochrany od { -vendor-short-name(case: "gen") }:
@@ -328,11 +342,14 @@ appmenu-other-protection-header =
 
 ## Profiles panel
 
-appmenu-profiles = Profily
 appmenu-other-profiles = Další profily
 appmenu-manage-profiles =
     .label = Správa profilů
+appmenu-copy-profile =
+    .label = Kopírovat tento profil
 appmenu-create-profile =
     .label = Nový profil
 appmenu-edit-profile =
     .aria-label = Upravit profil
+appmenu-profiles-2 =
+    .label = Profily

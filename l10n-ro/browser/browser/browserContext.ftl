@@ -80,6 +80,9 @@ toolbar-button-fxaccount =
 
 ## Account toolbar Button
 
+toolbar-button-account =
+    .label = Cont
+    .tooltiptext = Cont
 
 ## Save Page
 
@@ -111,6 +114,10 @@ main-context-menu-bookmark-page-with-shortcut =
     .aria-label = Marchează pagina…
     .accesskey = m
     .tooltiptext = Marchează pagina({ $shortcut })
+main-context-menu-edit-bookmark =
+    .aria-label = Editează marcajul…
+    .accesskey = m
+    .tooltiptext = Editează marcajul
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
 main-context-menu-edit-bookmark-with-shortcut =
@@ -142,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = Salvează linkul în { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = Copiază adresa de e-mail
@@ -155,10 +160,14 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Copiază linkul
     .accesskey = L
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = Copiază linkul fără urmărirea site-ului
+main-context-menu-preview-link =
+    .label = Previzualizează linkul
+    .accesskey = r
+# "Copy Clean Link" means that Firefox will remove things from the link you
+# copied, like items that identify you for advertising purposes, and other items
+# sites add into URLs to help them deliver a certain browsing experience.
+main-context-menu-copy-clean-link =
+    .label = Copiază linkul curat
     .accesskey = u
 
 ## Media (video/audio) controls
@@ -252,12 +261,20 @@ main-context-menu-image-email =
 main-context-menu-image-set-image-as-background =
     .label = Setează imaginea ca fundal pentru desktop...
     .accesskey = S
+main-context-menu-image-copy-text =
+    .label = Copiază textul din imagine
+    .accesskey = x
 main-context-menu-image-info =
     .label = Vezi informații privind imaginea
     .accesskey = f
 main-context-menu-image-desc =
     .label = Vezi descrierea
     .accesskey = D
+# Variables
+#   $engine (String) - Name of the search engine that will perform the search.
+main-context-menu-visual-search-2 =
+    .label = Caută imaginea cu { $engine }
+    .accesskey = e
 main-context-menu-video-save-as =
     .label = Salvează videoclipul ca…
     .accesskey = v
@@ -282,12 +299,34 @@ main-context-menu-send-to-device =
 
 ##
 
+main-context-menu-use-saved-login =
+    .label = Folosește credențialele salvate
+    .accesskey = o
+# Displayed when there are saved passwords and the user clicks inside a username or password field
+main-context-menu-use-saved-password =
+    .label = Folosește parola salvată
+    .accesskey = o
 
 ##
 
+main-context-menu-use-relay-mask =
+    .label = Folosește masca de e-mail { -relay-brand-short-name }
+    .accesskey = E
+main-context-menu-suggest-strong-password =
+    .label = Sugerează o parolă puternică...
+    .accesskey = S
+main-context-menu-manage-logins2 =
+    .label = Gestionează credențialele
+    .accesskey = M
+main-context-menu-manage-passwords =
+    .label = Gestionează parolele
+    .accesskey = M
 main-context-menu-keyword =
     .label = Adaugă un cuvânt-cheie pentru această căutare…
     .accesskey = K
+main-context-menu-add-engine =
+    .label = Adaugă motor de căutare
+    .accesskey = S
 main-context-menu-link-send-to-device =
     .label = Trimite linkul către un dispozitiv
     .accesskey = n
@@ -306,11 +345,14 @@ main-context-menu-frame-open-window =
 main-context-menu-frame-reload =
     .label = Reîncarcă cadrul
     .accesskey = R
+main-context-menu-frame-add-bookmark =
+    .label = Marchează cadrul...
+    .accesskey = m
 main-context-menu-frame-save-as =
     .label = Salvează cadrul ca…
     .accesskey = F
 main-context-menu-frame-print =
-    .label = Tipărește cadrul…
+    .label = Printează cadrul…
     .accesskey = p
 main-context-menu-frame-view-source =
     .label = Vezi sursa cadrului
@@ -318,12 +360,18 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Vezi informații despre cadru
     .accesskey = I
+main-context-menu-print-selection-2 =
+    .label = Printează selecția…
+    .accesskey = r
 main-context-menu-view-selection-source =
     .label = Vezi sursa selecției
     .accesskey = e
 main-context-menu-take-screenshot =
-    .label = Realizează o captură de ecran
+    .label = Fă o captură de ecran
     .accesskey = T
+main-context-menu-take-frame-screenshot =
+    .label = Fă o captură de ecran
+    .accesskey = o
 main-context-menu-view-page-source =
     .label = Vezi sursa paginii
     .accesskey = V
@@ -346,3 +394,8 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Deschide linkul într-o filă { $containerName } nouă
     .accesskey = T
+main-context-menu-reveal-password =
+    .label = Arată parola
+    .accesskey = v
+# The label of a badge shown in menu items to call out new features.
+main-context-menu-new-feature-badge = Nou

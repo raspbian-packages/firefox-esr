@@ -25,6 +25,8 @@ return-to-amo-subtitle = Odlično, imate { -brand-short-name }
 return-to-amo-addon-title = Zdaj pa dodajte <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Dodaj razširitev
 return-to-amo-add-theme-label = Dodaj temo
+return-to-amo-theme-install-complete-label = Tema nameščena
+return-to-amo-extension-install-complete-label = Razširitev nameščena
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Uvozi iz brskalnika { $
 mr1-onboarding-theme-header = Uredite ga po svoje
 mr1-onboarding-theme-subtitle = Prilagodite svoj { -brand-short-name } s temo.
 mr1-onboarding-theme-secondary-button-label = Ne zdaj
-newtab-wallpaper-onboarding-title = Poskusite s kančkom barve
-newtab-wallpaper-onboarding-subtitle = Izberite si ozadje in polepšajte stran novega zavihka.
-newtab-wallpaper-onboarding-primary-button-label = Nastavi ozadje
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Sistemska tema
 mr1-onboarding-theme-label-light = Svetla
@@ -211,7 +210,7 @@ mr2022-onboarding-existing-pin-checkbox-label = Dodaj tudi zasebno brskanje { -b
 
 # This string is the title used when the user already has pinned the browser, but has not set default.
 mr2022-onboarding-set-default-title = Nastavite { -brand-short-name } za svoj priljubljeni brskalnik
-mr2022-onboarding-set-default-primary-button-label = Nastavi { -brand-short-name } kot privzeti brskalnik
+mr2022-onboarding-set-default-primary-button-label = Nastavi { -brand-short-name(sklon: "tozilnik") } kot privzeti brskalnik
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
 # and makes sense in the context of navigating the web.
 mr2022-onboarding-set-default-subtitle = Uporabite brskalnik, ki ga podpira neprofitna organizacija. Varujemo vašo zasebnost, medtem ko brskate po spletu.
@@ -435,7 +434,7 @@ onboarding-genai-sidebar-secondary-button = Začni z brskanjem
 
 onboarding-checklist-title = Dokončaj nastavitev { -brand-short-name(sklon: "rodilnik") }
 onboarding-checklist-subtitle = Izvedite naslednje korake in kar najbolje izkoristite brskalnik.
-onboarding-checklist-set-default = Nastavi { -brand-short-name } kot privzeti brskalnik
+onboarding-checklist-set-default = Nastavi { -brand-short-name(sklon: "tozilnik") } kot privzeti brskalnik
 onboarding-checklist-pin = Pripni { -brand-short-name } v opravilno vrstico
 onboarding-checklist-import = Uvozi iz prejšnjega brskalnika
 onboarding-checklist-extension = Dodaj razširitev
@@ -445,6 +444,18 @@ onboarding-checklist-sign-up = Registrirajte se ali se prijavite v svoj račun
 
 tab-groups-onboarding-feature-callout-title = Preizkusite skupine zavihkov za manj nereda in več osredotočenosti
 tab-groups-onboarding-feature-callout-subtitle = Organizirajte se: povlecite en zavihek na drugega in ustvarite svojo prvo skupino.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Svoje skupine zavihkov lahko kadarkoli najdete v meniju Seznam vseh zavihkov.
+tab-groups-onboarding-create-group-title-2 = Svoje skupine zavihkov lahko kadarkoli najdete tukaj.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Svoje skupine zavihkov lahko najdete z iskanjem v naslovni vrstici.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Skupine zavihkov, ki ste jih zaprli, lahko kadarkoli znova odprete iz menija Seznam vseh zavihkov.
+tab-groups-onboarding-saved-groups-title-2 = Skupine zavihkov, ki ste jih zaprli, lahko tukaj kadarkoli znova odprete.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Zaprte skupine lahko najdete z iskanjem v naslovni vrstici.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Skupine zavihkov lahko kadarkoli znova odprete iz menija Seznam vseh zavihkov.
+tab-groups-onboarding-session-restore-title = Tukaj lahko ponovno odprete skupine zavihkov.
+tab-groups-onboarding-dismiss = V redu
 
 ## Multi Profiles feature onboarding messages
 
@@ -454,3 +465,33 @@ multi-profile-spotlight-cta = Ustvari profil
 multi-profile-callout-title = Ustvarite ločena profila za delo in zabavo
 multi-profile-callout-subtitle = Profili vam omogočajo, da ločite podatke o brskanju, kot so zgodovina iskanja in gesla.
 multi-profile-callout-cta = Ustvari profil
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Prenesi, sinhroniziraj in gremo!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Skenirajte kodo QR za prenos { -brand-product-name(sklon: "rodilnik") } za mobilne naprave. Ko je nameščen, izberite “Sinhronizacija z mobilno napravo” za dostop do gesel, zaznamkov in drugih podatkov na poti.
+dismiss-button-label = Skrij
+sync-to-mobile-button-label = Sinhronizacija z mobilno napravo
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Koda QR za prenos { -brand-product-name(sklon: "rodilnik") } za mobilne naprave
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Obnovitev iz varnostne kopije
+restore-from-backup-title = Povrnite si { -brand-short-name(sklon: "tozilnik") }, kakršen vam je všeč
+restore-from-backup-subtitle = Obnovite zaznamke, zgodovino in druge podatke ter nadaljujte z brskanjem.
+restore-from-backup-secondary-button = Ne obnovi
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Spet smo nazaj! Vaši podatki { -brand-short-name(sklon: "rodilnik") } so bili obnovljeni.
+restored-from-backup-success-with-checklist-subtitle = Želite imeti svoj najljubši zaseben brskalnik le klik stran?
+restored-from-backup-success-no-checklist-subtitle = Varnostno kopiranje za to napravo lahko vključite v <a data-l10n-name="settings">nastavitvah</a>.
+restored-from-backup-success-with-checklist-primary-button = Shrani in nadaljuj
+restored-from-backup-success-with-checklist-secondary-button = Preskoči ta korak
+restored-from-backup-success-no-checklist-primary-button = Nadaljuj
+restored-from-backup-error-title = Hmm, prišlo je do težave z datoteko z varnostno kopijo.
+restored-from-backup-error-subtitle = Če imate drugo datoteko z varnostno kopijo { -brand-short-name(sklon: "rodilnik") }, poskusite podatke obnoviti iz nje. <a data-l10n-name="restore-problems">Imate še vedno težave?</a>
+restored-from-backup-error-primary-button = Zapri

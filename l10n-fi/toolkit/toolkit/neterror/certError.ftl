@@ -104,9 +104,32 @@ fp-certerror-expired-what-can-you-do-body = Laitteesi kello on asetettu { DATETI
 # Variables:
 #   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 fp-cert-error-code = Virhekoodi: { $error }
+# Variables:
+#   $datetime (Date) - Current datetime.
+fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
 fp-learn-more-about-secure-connection-failures = Lue lisää suojatun yhteyden virheistä
 fp-learn-more-about-cert-issues = Lue lisää tällaisista varmenneongelmista
 fp-learn-more-about-time-related-errors = Lue lisää aikaan liittyvien virheiden vianetsinnästä
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annettu varmenne on kumottu eikä siihen enää luoteta.
+cert-error-bad-signature = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annetun varmenteen allekirjoitus ei ole kelvollinen.
+cert-error-key-pinning-failure = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annettu varmenne käyttää erilaista julkista avainta kuin mitä odotettiin.
+cert-error-bad-der = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annettua varmennetta ei ole koodattu oikein.
+cert-error-cert-not-in-name-space = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annettu varmenne ei noudata sen myöntäneen varmenteen nimirajoituksia.
+cert-error-inadequate-cert-type = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annettua varmennetta ei sallita käytettävän verkkopalvelimen toimesta.
+cert-error-path-len-constraint-invalid = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annetulla varmenteella on liian monta välivarmennetta juurivarmenteen polussa.
+cert-error-invalid-key = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annetussa varmenteessa on virheellinen avain. Todennäköisesti se on liian pieni ollakseen turvallinen.
+cert-error-unknown-critical-extension = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annettu varmenne sisältää ei-tuetun kriittisen päätteen.
+cert-error-extension-value-invalid = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annettu varmenne sisältää virheellisen laajennuksen.
+cert-error-untrusted-issuer = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annetun varmenteen on myöntänyt varmentaja, johon ei enää luoteta.
+cert-error-untrusted-cert = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annettu varmenne on merkitty epäluotettavaksi.
+cert-error-invalid-integer-encoding = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annettu varmenne sisältää virheellisen kokonaisluvun koodauksen. Yleisiä syitä ovat negatiiviset sarjanumerot, negatiivinen RSA-moduuli ja tarpeettoman pitkät koodaukset.
+cert-error-unsupported-keyalg = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annetulla varmenteella on ei-tuettu avaintyyppi.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivuston { $hostname } varmenteen myöntäjään ei enää luoteta.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } esti vierailusi tälle sivustolle, koska sivustolle { $hostname } annetun varmenteen allekirjoitusalgoritmi ei vastaa sen allekirjoituksen algoritmikenttää.
 
 ## Messages used for certificate error titles
 
@@ -115,6 +138,7 @@ deniedPortAccess-title = Osoitteen käyttö on rajoitettu
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Sivua ei löydy.
+internet-connection-offline-title = Vaikuttaa siltä, että Internet-yhteydessäsi on ongelma.
 dns-not-found-trr-only-title2 = Mahdollinen tietoturvariski tätä verkkotunnusta etsittäessä
 dns-not-found-native-fallback-title2 = Mahdollinen tietoturvariski tätä verkkotunnusta etsittäessä
 fileNotFound-title = Tiedostoa ei löytynyt
@@ -131,6 +155,7 @@ contentEncodingError-title = Sisällön koodausvirhe
 unsafeContentType-title = Vaarallinen tiedostotyyppi
 netReset-title = Yhteys keskeytyi
 netTimeout-title = Yhteyden aikakatkaisu
+httpErrorPage-title = Vaikuttaa siltä, että tällä sivustolla on ongelma
 serverError-title = Vaikuttaa siltä, että tällä sivustolla on ongelma
 unknownProtocolFound-title = Osoitetta ei ymmärretty
 proxyConnectFailure-title = Välityspalvelin kieltäytyy yhteydestä
@@ -139,6 +164,7 @@ redirectLoop-title = Sivusto ei uudelleenohjaudu asianmukaisesti
 unknownSocketType-title = Odottamaton vastaus palvelimelta
 nssFailure2-title = Suojatun yhteyden muodostaminen epäonnistui
 csp-xfo-error-title = { -brand-short-name } ei voi avata tätä sivua
+corruptedContentErrorv2-title = Sisältö vioittunut -virhe
 corruptedContentError-title = Sisältö vioittunut -virhe
 sslv3Used-title = Ei voitu muodostaa suojattua yhteyttä
 inadequateSecurityError-title = Yhteys ei ole suojattu

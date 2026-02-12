@@ -46,23 +46,3 @@ experimental-features-js-warp-description = Activar Warp, un proyecto para mejor
 experimental-features-ime-search =
     .label = Barra de direcciones: mostrar los resultados durante la composición IME
 experimental-features-ime-search-description = Una IME (Input Method Editor) es una herramienta que te permite escribir símbolos complejos, como los que se usan en los idiomas escritos del Índico o Asia oriental, utilizando un teclado estándar. Activar este experimento mantendrá abierto el panel de la barra de direcciones, mostrando resultados de búsqueda y sugerencias, mientras se usa IME para escribir texto. Ten en cuenta que el IME puede mostrar un panel que cubre los resultados de la barra de direcciones, por lo que se recomienda el uso de esta preferencia solo si el IME no usa este tipo de panel.
-# Auto Picture-in-Picture
-experimental-features-auto-pip =
-    .label = Picture-in-Picture: abrir automáticamente al cambiar de pestaña
-experimental-features-auto-pip-description = Habilitar Picture-in-Picture en videos activos al cambiar de pestañas.
-genai-settings-chat-title =
-    .label = Chatbot de IA
-# Updated sidebar settings
-sidebar-title =
-    .label = Barra lateral
-sidebar-description = Accede fácilmente al historial, pestañas de otros dispositivos, extensiones de la barra lateral y más al navegar. <a data-l10n-name="connect">Compartir opinión</a>
-vertical-tabs-title =
-    .label = Pestañas verticales
-vertical-tabs-description = Mueva las pestañas de la parte superior del navegador al lateral. También requieres probar la barra lateral. <a data-l10n-name="connect">Compartir opinión</a>
-experimental-features-group-developer-tools =
-    .label = Herramientas para desarrolladores
-experimental-features-group-webpage-display =
-    .label = Visualización de página web
-experimental-features-group-customize-browsing =
-    .label = Personaliza tu navegación
-experimental-features-group-customize-browsing-description = Si pruebas estas funciones, <a data-l10n-name="connect">comparte tus comentarios acerca de Connect</a>

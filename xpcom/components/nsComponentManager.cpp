@@ -367,7 +367,6 @@ nsresult nsComponentManagerImpl::Init() {
     // We are going to assume that only a select few (see below) process types
     // want to load chrome manifests, and that any new process types will not
     // want to load them, because they're not going to be executing JS.
-    case GeckoProcessType_RemoteSandboxBroker:
     default:
       loadChromeManifests = false;
       break;
@@ -1470,14 +1469,6 @@ nsComponentManagerImpl::RemoveBootstrappedManifestLocation(nsIFile* aLocation) {
 
   rv = cr->CheckForNewChrome();
   return rv;
-}
-
-NS_IMETHODIMP
-nsComponentManagerImpl::GetComponentJSMs(nsIUTF8StringEnumerator** aJSMs) {
-  nsCOMPtr<nsIUTF8StringEnumerator> result =
-      StaticComponents::GetComponentJSMs();
-  result.forget(aJSMs);
-  return NS_OK;
 }
 
 NS_IMETHODIMP

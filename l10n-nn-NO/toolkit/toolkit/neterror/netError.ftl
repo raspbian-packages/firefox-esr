@@ -12,6 +12,8 @@ neterror-blocked-by-policy-page-title = Blokkert side
 neterror-captive-portal-page-title = Logg inn på nettverket
 neterror-dns-not-found-title = Fann ikkje serveren
 neterror-malformed-uri-page-title = Ugyldig nettadresse
+general-body-title = Ver varsam. Noko ser ikkje rett ut.
+problem-with-this-site-title = Det ser ut til at det er eit problem med denne nettstaden
 
 ## Error page actions
 
@@ -41,14 +43,21 @@ neterror-generic-error = { -brand-short-name } klarte ikkje å laste denne sida 
 neterror-load-error-try-again = Nettstaden kan vere mellombels utilgjengeleg eller oppteken. Prøv på nytt om ei lita stund.
 neterror-load-error-connection = Dersom ingen sider vert lasta, kontroller at nettverkstilkoplinga til datamaskina er i orden.
 neterror-load-error-firewall = Dersom datamaskina er verna av ein brannmur eller mellomtenar, kontroller at { -brand-short-name } har løyve til å bruke nettet.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Viss du prøver å laste inn ei lokal nettverksside, må du kontrollere at { -brand-short-name } har fått løyve for lokale nettverk i innstillingane for macOS personvern og sikkerheit.
+neterror-http-error-page = Kontroller at du har skrive inn nettadressa rett.
 neterror-captive-portal = Du må logge inn på nettverket før du kan kople til Internett.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
 neterror-dns-not-found-with-suggestion = Meinte du å gå til <a data-l10n-name="website">{ $hostAndPath }</a>?
 neterror-dns-not-found-hint-header = <strong>Om du har skrive inn rett adresse, kan du:</strong>
-neterror-dns-not-found-hint-try-again = Prøv på nytt seinare
+neterror-dns-not-found-hint-try-again = Prøve på nytt seinare
 neterror-dns-not-found-hint-check-network = Kontrollere nettverkstilkoplinga di
-neterror-dns-not-found-hint-firewall = Kontrollere at { -brand-short-name } har løyve til å kople til nettet (du kan vere tilkopla, men bak ein brannvegg)
+neterror-dns-not-found-hint-firewall = Kontrollere at { -brand-short-name } har løyve til å kople til nettet (du kan vere tilkopla, men bak ein brannmur)
+neterror-dns-not-found-offline-hint-header = <strong>Kva kan du gjere med det?</strong>
+neterror-dns-not-found-offline-hint-different-device = Prøv å kople til på ei anna eining.
+neterror-dns-not-found-offline-hint-modem = Sjekk modemet eller ruteren din.
+neterror-dns-not-found-offline-hint-reconnect = Kople frå og kople til Wi-Fi på nytt.
 
 ## TRR-only specific messages
 ## Variables:
@@ -72,7 +81,6 @@ neterror-dns-not-found-trr-unknown-problem = Uventa problem.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } kan ikkje beskytte førespurnaden din om adressa til denne nettstaden, gjennom den pålitelege DNS-løysaren vår. Årsak:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } kan ikkje beskytte førespurnaden din om adressa til denne nettstaden gjennom vår sikre DNS-leverandør. Årsak:
 neterror-dns-not-found-native-fallback-heuristic = DNS-over-HTTPS er deaktivert på nettverket ditt.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } klarte ikkje å kople til { $trrDomain }.
 
@@ -96,6 +104,9 @@ neterror-proxy-connect-failure-settings = Kontroller at proxy-innstillingane er 
 neterror-proxy-connect-failure-contact-admin = Kontakt nettverksansvarleg for å forsikre deg om at proxyserveren fungerer.
 neterror-content-encoding-error = Kontakt eigarane av nettstaden og informer dei om problemet.
 neterror-unsafe-content-type = Kontakt eigaren av nettsida og informer dei om dette problemet.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } stolar ikkje på { $hostname } fordi tilkoplinga ikkje er sikker. Prøv å endre URL-en til HTTPS.
 neterror-nss-failure-not-verified = Sida du prøver å opne kan ikkje visast fordi det ikkje kan stadfestast at overførte data er autentiske.
 neterror-nss-failure-contact-website = Kontakt nettstadeigarane og informer om problemet.
 # Variables:
@@ -148,6 +159,10 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Viss du ikkje kjenner til <
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> har ein tryggingspolicy kalla HTTP Strict Transport Security (HSTS), som betyr at { -brand-short-name } berre kan kople til han trygt. Du kan ikkje leggje til eit unntak for å besøkje denne nettstaden.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Truleg ikkje mykje, det er sannsynleg at det er eit problem med sjølve nettstaden.
+certerror-blocked-by-corp-headers-description = Nokre gongar set nettstadar opp vern for seg sjølv og folk som deg mot uønskt samhandling med andre nettstadar.
+certerror-coop-learn-more = Les meir om Cross Origin Opener Policies (COOP)
+certerror-coep-learn-more = Les meir om Cross Origin Embedder Policies (COEP)
 # Variables:
 #   $responsestatus (string) - HTTP response status code (e.g., 500).
 #   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").

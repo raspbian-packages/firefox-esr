@@ -40,3 +40,36 @@ webext-perms-description-webNavigation = Gezinti sırasında tarayıcı etkinli�
 webext-perms-extra-warning-userScripts-long = Doğrulanmamış betikler, zararlı kod çalıştırma veya web sitesi etkinliğini izleme gibi güvenlik ve gizlilik riskleri doğurabilir. Yalnızca güvendiğiniz uzantılardan veya kaynaklardan gelen betikleri çalıştırın.
 # A shorter warning is displayed in UI surfaces with little room, such as a permission prompt.
 webext-perms-extra-warning-userScripts-short = Doğrulanmamış betikler güvenlik ve gizlilik riskleri doğurabilir. Yalnızca güvendiğiniz uzantılardan veya kaynaklardan gelen betikleri çalıştırın.
+
+## Short form to be used in lists or in a string (`webext-perms-description-data-some`)
+## that formats some of the data collection permissions below using `Intl.ListFormat`.
+##
+## This is used when the data collection permissions are required.
+
+webext-perms-description-data-short-authenticationInfo = kimlik doğrulama bilgileri
+webext-perms-description-data-short-bookmarksInfo = yer imleri
+webext-perms-description-data-short-browsingActivity = gezinti etkinliği
+webext-perms-description-data-short-financialAndPaymentInfo = finansal bilgiler ve ödeme bilgileri
+webext-perms-description-data-short-healthInfo = sağlık bilgileri
+webext-perms-description-data-short-locationInfo = konum
+webext-perms-description-data-short-personalCommunications = kişisel iletişim
+webext-perms-description-data-short-personallyIdentifyingInfo = kişisel bilgiler
+webext-perms-description-data-short-searchTerms = arama terimleri
+webext-perms-description-data-short-technicalAndInteraction = teknik veriler ve etkileşim verileri
+webext-perms-description-data-short-websiteActivity = web sitesi etkinliği
+webext-perms-description-data-short-websiteContent = web sitesi içeriği
+
+## Long form to be used in `about:addons` when these data collection permissions are optional.
+
+webext-perms-description-data-long-authenticationInfo = Kimlik doğrulama bilgilerini uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-bookmarksInfo = Yer imi bilgilerini uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-browsingActivity = Gezinti etkinliğini uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-financialAndPaymentInfo = Finansal bilgileri ve ödeme bilgilerini uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-healthInfo = Sağlık bilgilerini uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-locationInfo = Konum bilgilerini uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-personalCommunications = Kişisel iletişimi uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-personallyIdentifyingInfo = Kişisel bilgileri uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-searchTerms = Arama terimlerini uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-technicalAndInteraction = Teknik verileri ve etkileşim verilerini uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-websiteActivity = Web sitesi etkinliğini uzantı geliştiricisiyle paylaşma
+webext-perms-description-data-long-websiteContent = Web sitesi içeriğini uzantı geliştiricisiyle paylaşma

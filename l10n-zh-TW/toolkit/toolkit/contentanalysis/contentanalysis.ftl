@@ -13,6 +13,11 @@ contentanalysis-slow-agent-dialog-header = 正在掃描
 contentanalysis-slow-agent-dialog-body-file = { $agent } 正在確認「{ $filename }」是否符合貴組織的資料政策，可能會需要一點時間。
 # Variables:
 #   $agent - The name of the DLP agent doing the analysis
+#   $filename - Name of a file being analyzed, such as "aFile.txt"
+#   $count (number) - The number of additional items in the request for analysis
+contentanalysis-slow-agent-dialog-body-file-and-more = { $agent } 正在確認「{ $filename }」與另 { $count } 個項目是否符合貴組織的資料政策，可能會需要一點時間。
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
 contentanalysis-slow-agent-dialog-body-clipboard = { $agent } 正在確認您貼上的內容是否符合貴組織的資料政策，可能會需要一點時間。
 # Note that this is shown when the user drag and drops text into the browser.
 # Variables:
@@ -25,7 +30,9 @@ contentanalysis-operationtype-clipboard = 剪貼簿
 contentanalysis-operationtype-dropped-text = 已放下文字
 contentanalysis-operationtype-print = 列印
 #   $filename - The filename associated with the request, such as "aFile.txt"
-contentanalysis-customdisplaystring-description = 上傳「{ $filename }」
+contentanalysis-upload-description = 上傳「{ $filename }」
+#   $filename - The filename associated with the request, such as "aFile.txt"
+contentanalysis-download-description = 下載「{ $filename }」
 contentanalysis-warndialogtitle = 此內容可能不安全
 # Variables:
 #   $content - Description of the content being warned about, such as "clipboard" or "aFile.txt"
@@ -58,10 +65,18 @@ contentanalysis-error-message-upload-file = 上傳「{ $filename }」被拒絕�
 contentanalysis-error-message-dropped-text = 被拒絕拖放檔案。
 contentanalysis-error-message-clipboard = 被拒絕貼上。
 contentanalysis-error-message-print = 被拒絕列印。
+# Variables:
+#   $agent - The name of the DLP agent doing the analysis
+#   $contentName - Description of the content, such as "clipboard" or "aFile.txt"
+contentanalysis-timeout-block-error-message-content = 與 { $agent } 之間的連線已逾時，已封鎖 { $contentName }。
 contentanalysis-block-dialog-title-upload-file = 您未被允許上傳此檔案
 # Variables:
 #   $filename - Name of the file that was blocked, such as "aFile.txt"
 contentanalysis-block-dialog-body-upload-file = 根據您組織的資料保護政策，您未被允許上傳檔案「{ $filename }」。若需更多資訊，請聯絡您的管理員。
+contentanalysis-block-dialog-title-download-file = 您未被允許下載此檔案
+# Variables:
+#   $filename - Name of the file that was blocked, such as "aFile.txt"
+contentanalysis-block-dialog-body-download-file = 根據您組織的資料保護政策，您未被允許下載檔案「{ $filename }」。若需更多資訊，請聯絡您的管理員。
 contentanalysis-block-dialog-title-clipboard = 您未被允許貼上此內容
 contentanalysis-block-dialog-body-clipboard = 根據您組織的資料保護政策，您未被允許貼上此內容。若需更多資訊，請聯絡您的管理員。
 contentanalysis-block-dialog-title-dropped-text = 您未被允許放下此內容

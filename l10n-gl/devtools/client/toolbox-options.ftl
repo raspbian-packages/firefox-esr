@@ -43,6 +43,11 @@ options-inspector-draggable-properties-tooltip =
 options-inspector-simplified-highlighters-label = Usar resaltadores máis sinxelos con prefers-reduced-motion
 options-inspector-simplified-highlighters-tooltip =
     .title = Activa os resaltadores simplificados cando está activado prefers-reduced-motion. Debuxa liñas en lugar de rectángulos cheos ao redor dos elementos resaltados para evitar efectos de pestanexo.
+# The label for the checkbox option to make the Enter key move the focus to the next input
+# when editing a property name or value in the Inspector rules view
+options-inspector-rules-focus-next-on-enter-label = Pasar o foco á seguinte entrada con <kbd>Enter</kbd>
+options-inspector-rules-focus-next-on-enter-tooltip =
+    .title = Cando estea activado, premendo a tecla Enter ao editar un selector, un nome ou valor de propiedade moverá o foco á seguinte entrada.
 
 ## "Default Color Unit" options for the Inspector
 
@@ -56,6 +61,12 @@ options-default-color-unit-name = Nomes de cores
 
 ## Web Console section
 
+# The heading
+options-webconsole-label = Consola web
+# The label for the checkbox that toggle whether the Split console is enabled
+options-webconsole-split-console-label = Activar a consola dividida
+options-webconsole-split-console-tooltip =
+    .title = Abrir a consola dividida coa tecla Esc
 
 ## Style Editor section
 
@@ -132,5 +143,5 @@ options-enable-service-workers-http-tooltip =
 options-source-maps-label = Activar ligazóns a fontes
 options-source-maps-tooltip =
     .title = Se activa esta opción, as fontes ligaranse nas ferramentas.
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * Para a sesión actual, recargue a páxina

@@ -9,8 +9,8 @@ download-ui-confirm-title = Չեղարկե՞լ բոլոր ներբեռնումն
 
 download-ui-confirm-quit-cancel-downloads =
     { $downloadsCount ->
-        [1] Եթե հիմա փակեք 1 բեռնում կդադարեցվի: Ցանկանու՞մ եք փակել:
-       *[other] Եթե հիմա փակեք, { $downloadsCount } ներբեռնումները կդադարեցվեն: Ցանկանու՞մ եք փակել:
+        [1] Եթե հիմա փակեք 1 ներբեռնում կդադարեցվի: Ցանկանո՞ւմ եք փակել:
+       *[other] Եթե հիմա փակեք, { $downloadsCount } ներբեռնումներ կդադարեցվեն: Ցանկանո՞ւմ եք փակել:
     }
 download-ui-confirm-quit-cancel-downloads-mac =
     { $downloadsCount ->
@@ -30,13 +30,13 @@ download-ui-confirm-offline-cancel-downloads =
 download-ui-dont-go-offline-button = Կապը չանջատել
 download-ui-confirm-leave-private-browsing-windows-cancel-downloads =
     { $downloadsCount ->
-        [1] Եթե հիմա փակեք Գաղտնի դիտարկման էջը, 1 բեռնում կչեղարկվի: Փակե՞լ:
-       *[other] Եթե հիմա փակեք Գաղտնի դիտարկման էջը, { $downloadsCount } ներբեռնումներ կչեղարկվեն: Փակե՞լ:
+        [1] Եթե հիմա փակեք գաղտնի դիտարկման պատուհանը, 1 ներբեռնում կչեղարկվի: Վստա՞հ եք, որ ցանկանում եք լքել գաղտնի դիտարկումը:
+       *[other] Եթե հիմա փակեք գաղտնի դիտարկման պատուհանը, { $downloadsCount } ներբեռնում կչեղարկվի: Վստա՞հ եք, որ ցանկանում եք լքել գաղտնի դիտարկումը:
     }
-download-ui-dont-leave-private-browsing-button = Շարունակել Գաղտնի Դիտարկումը
+download-ui-dont-leave-private-browsing-button = Մնալ գաղտնի դիտարկման մեջ
 download-ui-cancel-downloads-ok =
     { $downloadsCount ->
-        [1] Չեղարկել 1 բեռնում
+        [1] Չեղարկել 1 ներբեռնում
        *[other] Չեղարկել { $downloadsCount } ներբեռնումներ
     }
 

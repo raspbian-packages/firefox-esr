@@ -2,7 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-edit-profile-page-theme-header = అలంకారం
+edit-profile-page-theme-header-2 =
+    .label = అలంకారం
 edit-profile-page-delete-button =
     .label = తొలగించు
 
@@ -16,6 +17,3 @@ delete-profile-bookmarks = ఇష్టాంశాలు
 delete-profile-cancel = రద్దుచేయి
 # Button label
 delete-profile-confirm = తొలగించు
-
-## These strings are color themes available to select from the profile selection screen. Theme names should be localized.
-

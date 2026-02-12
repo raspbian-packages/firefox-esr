@@ -25,6 +25,8 @@ return-to-amo-subtitle = Bukur, e morët { -brand-short-name }-in
 return-to-amo-addon-title = Tani le të marrin për ju <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Shtoje Zgjerimin
 return-to-amo-add-theme-label = Shtoni Temën
+return-to-amo-theme-install-complete-label = Temë e instaluar
+return-to-amo-extension-install-complete-label = Zgjerim i instaluar
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Importo prej { $previou
 mr1-onboarding-theme-header = Bëjeni tuajin
 mr1-onboarding-theme-subtitle = Personalizojeni { -brand-short-name }-in me një temë.
 mr1-onboarding-theme-secondary-button-label = Jo tani
-newtab-wallpaper-onboarding-title = Shtoni pakëz ngjyrë
-newtab-wallpaper-onboarding-subtitle = Zgjidhni një sfond, për t’i dhënë një pamje të re Skedës tuaj të Re.
-newtab-wallpaper-onboarding-primary-button-label = Caktoni sfond
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Temë sistemi
 mr1-onboarding-theme-label-light = E çelët
@@ -443,6 +442,18 @@ onboarding-checklist-sign-up = Regjistrohuni, ose bëni hyrjen te llogaria juaj
 
 tab-groups-onboarding-feature-callout-title = Provoni grupe skedash për më pak rrëmujë, më tepër përqendrim
 tab-groups-onboarding-feature-callout-subtitle = Sistemoni gjërat, duke tërhequr një skedë mbi një tjetër, që të krijoni grupin tuaj të parë.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Gjeni kurdo grupet tuaj të skedave të menuja “Shfaq Krejt Skedat”.
+tab-groups-onboarding-create-group-title-2 = Gjeni këtu kurdo grupet tuaj të skedave.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Gjeni grupet tuaj të skedave duke kërkuar për ta te shtylla e adresave.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Kur mbyllni një grup skedash, rihapeni kurdo që nga menuja “Shfaq Krejt Skedat”.
+tab-groups-onboarding-saved-groups-title-2 = Kur mbyllni një grup skedash, mund ta rihapni këtu kurdo.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Gjeni grupet tuaj të mbyllur të skedave duke kërkuar për ta te shtylla e adresave.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Rihapni kurdo grupet tuaj të skedave, që nga menuja “Shfaq Krejt Skedat”.
+tab-groups-onboarding-session-restore-title = Rihapni këtu kurdo grupet tuaj të skedave.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -452,3 +463,107 @@ multi-profile-spotlight-cta = Krijoni profil
 multi-profile-callout-title = Krijoni profile ndaras për punë dhe zbavitje
 multi-profile-callout-subtitle = Profilet ju lejojnë të mbani tërësisht ndaras informacione të shfletimit tuaj, bie fjala, historik kërkimesh dhe fjalëkalime.
 multi-profile-callout-cta = Krijoni profil
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Shkarkoni, njëkohësoni dhe jepini!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Që të shkarkohet { -brand-product-name }-i për celular, skanoni kodin QR. Pasi të instalohet, përzgjidhni “Njëkohësoje me celularin”, që të përdorni rrugës fjalëkalimet tuaj, faqerojtësit, etj.
+dismiss-button-label = Hidhe tej
+sync-to-mobile-button-label = Njëkohësoje me celularin
+desktop-to-mobile-qr-code-alt =
+    .aria-label = Kod QR për të shkarkuar { -brand-product-name } për celular
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Po e përmirësoni me Windows 11?
+    Le të kopjeruajmë të dhënat tuaja { -brand-product-name }-it.
+create-backup-screen-1-subtitle = Mbroni automatikisht fjalëkalimet tuaj, faqerojtësit, etj, në 1 a 2 minuta.
+create-backup-screen-1-flair = E këshilluar
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Mësoni më tepër</a>
+create-backup-screen-1-sync-label = Njëkohësoje me { -brand-product-name }-in
+create-backup-screen-1-sync-body = Bën kopjeruajtje të krejt pajisjeve ku është bërë hyrja në llogari
+create-backup-screen-1-backup-label = Kopjeruaje në PC
+create-backup-screen-1-backup-body = Bën ruajtjen te pajisja juaj, ose në OneDrive
+create-backup-select-tile-button-label = Përzgjidhe
+create-backup-back-button-label = Mbrapsht
+create-backup-show-fewer =
+    .label = Shfaq më pak të tilla
+create-backup-screen-2-title = Zgjidhni të dhëna { -brand-product-name } që të kopjeruhen
+create-backup-screen-2-subtitle = Zgjat vetëm një minutë. Të dhënat tuaja kopjeruhen një herë në ditë.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Ujdisje e kollajtë
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Faqerojtës, historik, rregullime, etj
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Mos përfshi fjalëkalime dhe pagesa
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Të pafshehtëzuara
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Krejt të dhënat
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Përfshin fjalëkalime dhe pagesa
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Fshehtëzuar me një fjalëkalim
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Ku doni të ruhet kopjeruajtja juaj?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Krijoni një fjalëkalim kartele kopjeruajtjeje
+create-backup-screen-3-subtitle = I domosdoshëm për fshehtëzim të të dhënave tuaja. Depozitojeni në një vend që do ta mbani mend.
+fx-backup-opt-in-header = Zgjidhni vendndodhje kartele
+fx-backup-opt-in-filepath-label = Zgjidhni një vend që planifikoni ta shpërngulni te një pajisje e re, b.f., OneDrive.
+fx-backup-opt-in-create-password-label = Jepni fjalëkalimin
+fx-backup-opt-in-confirm-btn-label = Vazhdo
+fx-backup-opt-in-cancel-btn-label = Mbrapsht
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Kopjeruajtja juaj është vënë në plan
+fx-backup-confirmation-screen-close-button = Mbylle
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Përfshi krejt të dhënat e shfletimit
+fx-backup-confirmation-screen-all-data-item-text-2 = U ruajtën në pajisjen tuaj
+fx-backup-confirmation-screen-all-data-item-text-3 = Të fshehtëzuar dhe të mbrojtur me fjalëkalim
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Përfshi faqerojtës, historik, rregullime dhe të dhëna të tjera
+fx-backup-confirmation-screen-easy-setup-item-text-2 = U ruajtën në pajisjen tuaj
+fx-backup-confirmation-screen-easy-setup-item-text-3 = S’përfshin fjalëkalime dhe pagesa
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Që të përfshini të dhëna rezervat, kaloni te <a data-l10n-name="settings">Rregullime</a>.
+fx-backup-confirmation-screen-item-subtext-1 = Kopjeruajtja juaj do të fillojë pas pak minutash dhe do të kryhet një herë në ditë. Ecurinë mund ta kontrolloni që nga <a data-l10n-name="settings">Rregullime</a>.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } do të kërkojë për kopjeruajtjen tuaj, nëse keni nevojë ta riinstaloni.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Riktheje që nga Kopjeruajtje
+restore-from-backup-title = Le ta rikthejmë { -brand-short-name }-in si e doni
+restore-from-backup-subtitle = Rimerrni krejt faqerojtësit tuaj, historikun dhe të tjera të dhëna, që t’i riktheheni shfletimit.
+restore-from-backup-secondary-button = Mos e rikthe
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = U kthyem! Të dhënat tuaj { -brand-short-name } janë rikthyer.
+restored-from-backup-success-with-checklist-subtitle = Dëshironi ta mbani një klikim larg shfletuesin tuaj të parapëlqyer, të përqendruar te privatësia?
+restored-from-backup-success-no-checklist-subtitle = Kopjeruajtjet për këtë pajisje mund t’i aktivizoni që nga <a data-l10n-name="settings">Rregullimet</a>.
+restored-from-backup-success-with-checklist-primary-button = Ruaje dhe vazhdo
+restored-from-backup-success-with-checklist-secondary-button = Anashkalojeni këtë hap
+restored-from-backup-success-no-checklist-primary-button = Vazhdo
+restored-from-backup-error-title = Hëm, pati një problem me kartelën tuaj kopjeruajtje.
+restored-from-backup-error-subtitle = Nëse keni tjetër kartelë kopjeruajtje { -brand-short-name }, provoni rikthimin që nga ajo. <a data-l10n-name="restore-problems">Keni ende probleme?</a>
+restored-from-backup-error-primary-button = Mbylle
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Përshtatni punimin tuaj në { -brand-short-name }
+onboarding-personalization-subtitle = Përgjigjuni ndopak pyetjeve dhe do të rekomandojmë veçori dhe zgjerime për të zgjeruar përdorimin tuaj të { -brand-short-name }-it.
+onboarding-personalization-use-case-title = Për çfarë do ta përdorni { -brand-short-name }-in?
+onboarding-personalization-use-case-personal-option = Personal
+onboarding-personalization-use-case-school-option = Shkollë
+onboarding-personalization-use-case-work-option = Punë
+onboarding-personalization-motivation-title = Cilat veçori të { -brand-short-name }-it janë më të rëndësishmet për ju?
+onboarding-personalization-motivation-privacy-option = Privatësi dhe Siguri
+onboarding-personalization-motivation-productivity-option = Prodhimshmëri
+onboarding-personalization-motivation-other-option = Tjetër

@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Ivinell nevez
     .accesskey = I
@@ -77,10 +81,20 @@ move-to-new-window =
     .accesskey = D
 tab-context-close-multiple-tabs =
     .label = Serriñ meur a ivinell
-    .accesskey = S
+    .accesskey = r
+tab-context-close-duplicate-tabs =
+    .label = Serriñ an ivinelloù doubl
+    .accesskey = e
 tab-context-share-url =
     .label = Rannañ
     .accesskey = h
+# In left-to-right languages this should use "Right" and in right-to-left languages this should use "Left" to indicate the direction a new tab will open.
+tab-context-new-tab-open =
+    .label = Ivinell nevez a-zehoù
+    .accesskey = v
+tab-context-new-group =
+    .label = Strollad nevez
+    .accesskey = S
 
 ## Variables:
 ##  $tabCount (Number): the number of tabs that are affected by the action.

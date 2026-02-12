@@ -38,9 +38,7 @@ about-logging-preset-custom-description = Ручно одабрани модул
 # Error handling
 about-logging-error = Грешка:
 
-## Variables:
-##   $k (String) - Variable name
-##   $v (String) - Variable value
+##
 
 about-logging-invalid-output = Неважећа вредност “{ $v }“ за кључ “{ $k }“
 about-logging-unknown-logging-preset = Непознато унапред подешено бележење “{ $v }“

@@ -17,7 +17,7 @@ cert-error-trust-untrusted-issuer = 该证书因为其颁发者证书不受信�
 cert-error-trust-signature-algorithm-disabled = 该证书不被信任，因为证书签名所使用的签名算法因不安全已被禁用。
 cert-error-trust-expired-issuer = 该证书因为其颁发者证书已过期而不被信任。
 cert-error-trust-self-signed = 该证书因为其自签名而不被信任。
-cert-error-trust-symantec = 由 GeoTrust、RapidSSL、Symantec、Thawte 以及 VeriSign 颁发的证书已不再被认为安全，因为这些证书颁发机构过往未遵循安全准则。
+cert-error-trust-symantec = 由 GeoTrust、RapidSSL、Symantec、Thawte 以及 VeriSign 颁发的证书已不再被视为安全，因为这些证书颁发机构在过去未能严格遵循安全准则。
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 cert-error-trust-certificate-transparency = { -brand-short-name } 无法信任 { $hostname }，因其无法证明自己符合公开证书透明度要求。
@@ -107,9 +107,35 @@ fp-cert-error-code = 错误代码：{ $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } 无法信任 { $hostname }，因其无法证明自己符合公开证书透明度要求。
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = 这很可能是网站自身存在问题，无法通过您的操作解决。
 fp-learn-more-about-secure-connection-failures = 详细了解安全连接失败
 fp-learn-more-about-cert-issues = 详细了解此类证书问题
 fp-learn-more-about-time-related-errors = 详细了解时间相关错误的解决办法
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书已被吊销，不再受信任。
+cert-error-bad-signature = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书签名无效。
+cert-error-key-pinning-failure = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书使用了非预期的公钥。
+cert-error-bad-der = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书存在编码错误。
+cert-error-cert-not-in-name-space = { -brand-short-name } 已拦截您对该网站的访问，这是由于为 { $hostname } 颁发证书的一个上游证书具有名称约束，而该网站获得的证书不符合此约束。
+cert-error-inadequate-cert-type = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书不允许由 Web 服务器使用。
+cert-error-path-len-constraint-invalid = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书链中，中间证书数量超过标准限制。
+cert-error-invalid-key = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书存在无效密钥。这很可能是因为密钥长度过短，无法确保安全。
+cert-error-unknown-critical-extension = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书包含不受支持的关键扩展。
+cert-error-extension-value-invalid = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书包含无效扩展。
+cert-error-untrusted-issuer = { -brand-short-name } 已拦截您对该网站的访问，因为颁发提供给 { $hostname } 的证书的证书授权机构已不再受信任。
+cert-error-untrusted-cert = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书已被标记为不可信。
+cert-error-invalid-integer-encoding = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书包含无效的整数编码。造成此情况的常见因素包括：负值序列号、负 RSA 模数，以及冗余整数编码。
+cert-error-unsupported-keyalg = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书存在不受支持的密钥类型。
+cert-error-issuer-no-longer-trusted = { -brand-short-name } 已拦截您对该网站的访问，因为颁发提供给 { $hostname } 的证书的证书授权机构已不再受信任。
+cert-error-signature-algorithm-mismatch = { -brand-short-name } 已拦截您对该网站的访问，因为提供给 { $hostname } 的证书的签名算法与其签名算法字段信息不一致。
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = 此网址已被限制
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = 呃…找不到此网站。
+internet-connection-offline-title = 您的网络连接似乎出了点问题。
 dns-not-found-trr-only-title2 = 查询此域名可能存在安全风险
 dns-not-found-native-fallback-title2 = 查询此域名可能存在安全风险
 fileNotFound-title = 找不到文件
@@ -134,7 +161,8 @@ contentEncodingError-title = 内容编码错误
 unsafeContentType-title = 不安全的文件类型
 netReset-title = 连接被重置
 netTimeout-title = 连接超时
-serverError-title = 此网站似乎出了点问题
+httpErrorPage-title = 此网站似乎存在问题
+serverError-title = 此网站似乎存在问题
 unknownProtocolFound-title = 无法理解该网址
 proxyConnectFailure-title = 代理服务器拒绝连接
 proxyResolveFailure-title = 无法找到代理服务器
@@ -142,6 +170,7 @@ redirectLoop-title = 此页面不能正确地重定向
 unknownSocketType-title = 服务器响应异常
 nssFailure2-title = 建立安全连接失败
 csp-xfo-error-title = { -brand-short-name } 无法打开此页面
+corruptedContentErrorv2-title = 内容损坏错误
 corruptedContentError-title = 内容损坏错误
 sslv3Used-title = 无法安全地连接
 inadequateSecurityError-title = 您的连接不安全
@@ -166,5 +195,5 @@ fp-certerror-hide-advanced-button = 隐藏高级选项
 ##   $hostname (String) - Hostname of the website to which the user was trying to connect.
 
 fp-certerror-override-exception-button = 继续前往 { $hostname }（存在风险）
-fp-certerror-intro = { -brand-short-name } 发现 <strong>{ $hostname }</strong> 存在严重的安全隐患。若有人冒充此网站，其可试图窃取您的信用卡信息、密码、邮箱地址等数据。
+fp-certerror-intro = { -brand-short-name } 发现 <strong>{ $hostname }</strong> 存在严重的安全隐患。若有人冒充此网站，其可试图窃取您的信用卡信息、密码、邮箱地址等信息。
 fp-certerror-expired-into = { -brand-short-name } 发现 <strong>{ $hostname }</strong> 存在安全问题。此网站可能未正确设置，或者您设备的日期/时间有误。

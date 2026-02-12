@@ -94,10 +94,3 @@ networkProtocolError-title = ကွန်ယက် လုပ်ထုံး (ပ
 nssBadCert-title = သတိပေးချက်: လုံခြုံရေးအန္တရာယ်
 nssBadCert-sts-title = လုံခြုံရေးပြဿနာကြောင့် မချိတ်ဆက်ခဲ့ပါ။
 certerror-mitm-title = ဆော့ဝဲ သည် { -brand-short-name } မှ ဤ ဆိုက်ကို လုံခြုံစွာ ချိတ်ဆက်ရန် ကာကွယ်နေသည်
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

@@ -107,9 +107,35 @@ fp-cert-error-code = Zmólkowy kod: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } { $hostname } njedowěrja, dokulaž njejo mógał dopokazaś, až pominanja transparence za zjawne certifikaty docynja.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Nejskerjej nic, dokulaž jo wěrjepódobnje, až problem jo ze sedłom samym.
 fp-learn-more-about-secure-connection-failures = Zgóńśo wěcej wó wěstych zwiskowych wótłamanjach
 fp-learn-more-about-cert-issues = Zgóńśo wěcej wó toś tych družynach certifikatowych problemow
 fp-learn-more-about-time-related-errors = Zgóńśo wěcej wó rozwězowanju na cas póśěgowanych zmólkow
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, jo se wótwołał a wěcej njejo gódny.
+cert-error-bad-signature = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž signatura na certifikaśe, kótaryž jo se stajił za { $hostname } k dispoziciji, njejo płaśiwy.
+cert-error-key-pinning-failure = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, drugi zjawny kluc wužywa ako jo se wótcakał.
+cert-error-bad-der = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, njejo pórědnje skoděrowany.
+cert-error-cert-not-in-name-space = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, mjenowym wobgranicowanjam certifikata njeslědujo, kótaryž jo jen wudał.
+cert-error-inadequate-cert-type = { -brand-short-name } jo blokěrował waš woglěd na toś tym sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, njesmějo se pśez webserwer wužywaś.
+cert-error-path-len-constraint-invalid = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, ma pśewjele mjazycertifikatow w sćažce k stawnemu certifikatoju.
+cert-error-invalid-key = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, ma njepłaśiwy kluc. Nejskerjej jo pśemały, aby wěsty był.
+cert-error-unknown-critical-extension = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, njepódpěrane kritiske rozšyrjenje wopśimujo.
+cert-error-extension-value-invalid = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, njepłaśiwe rozšyrjenje wopśimujo.
+cert-error-untrusted-issuer = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, jo se wudał wót awtority certificěrowanja, kótaraž wěcej njejo dowěry gódna.
+cert-error-untrusted-cert = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, jo markěrowany ako dowěry njegódny.
+cert-error-invalid-integer-encoding = { -brand-short-name } jo blokěrował waš woglěd na sedle, dokulaž  certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, njepłaśiwe koděrowanje cełeje licby wopśimujo. Ceste zawiny mógu byś: negatiwne serijowe numery, negatiwne RSA-module a koděrowanja, kótarež su dlejše ako trjebne.
+cert-error-unsupported-keyalg = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, ma njepódpěrany klucowy typ.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž awtorita certificěrowanja, kótaraž jo wudała certifikat, kótaryž jo se stajił za { $hostname } k dispoziciji, njejo wěcej dowěry gódna.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } jo blokěrował waš woglěd na toś tom sedle, dokulaž algoritmus signatury certifikata, kótaryž jo se stajił za { $hostname } k dispoziciji, póloju algoritmusa signatury njewótpowědujo.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Toś ta adresa jo wobgranicowana
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hm. Mamy problemy, to sedło namakaś.
+internet-connection-offline-title = Zda se, až dajo problem z wašym internetnym zwiskom.
 dns-not-found-trr-only-title2 = Móžne wěstotne riziko pśi glědanju za toś teju domenu
 dns-not-found-native-fallback-title2 = Móžne wěstotne riziko pśi glědanju za toś teju domenu
 fileNotFound-title = Dataja njejo se namakała
@@ -134,6 +161,7 @@ contentEncodingError-title = Zmólka pśi koděrowanju wopśimjeśa
 unsafeContentType-title = Njewěsty datajowy typ
 netReset-title = Zwisk jo se slědk stajił
 netTimeout-title = Zwisk jo cas pśekšocył
+httpErrorPage-title = Zda se, až jo problem z toś tym sedłom
 serverError-title = Zda se, až jo problem z toś tym sedłom
 unknownProtocolFound-title = Adresa njejo se zrozměła
 proxyConnectFailure-title = Proksy-serwer wótpokazujo zwiski
@@ -142,6 +170,7 @@ redirectLoop-title = Bok pšawje njepósrědnja
 unknownSocketType-title = Njewótčakane wótegrono ze serwera
 nssFailure2-title = Wěsty zwisk njejo móžny
 csp-xfo-error-title = { -brand-short-name } njamóžo toś ten bok wócyniś
+corruptedContentErrorv2-title = Zmólka - wobškóźone wopśimjeśe
 corruptedContentError-title = Zmólka - wobškóźone wopśimjeśe
 sslv3Used-title = Wěsty zwisk njejo móžny
 inadequateSecurityError-title = Waš zwisk njejo wěsty
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Rozšyrjone schowaś
 fp-certerror-override-exception-button = Dalej k { $hostname } (riskantny)
 fp-certerror-intro = { -brand-short-name } jo namakał potencielnje śěžki wěstotny problem z <strong>{ $hostname }</strong>. Něchten, kótaryž twarźi, až toś to sedło wěcy ako informacije kreditowych kórtow, gronidła abo e-mailowe adrese kšadnjo.
 fp-certerror-expired-into = { -brand-short-name } jo namakał potencielnje śěžki wěstotny problem z <strong>{ $hostname }</strong>. Pak sedło njejo korektnje konfigurěrowane pak zeger wašogo rěda jo na wopacny datum/cas stajony.
+fp-certerror-transparency-intro = Něchten, kótaryž wudawa, až jo <strong>{ $hostname }</strong>, mógał wěcy ako waše informacije kreditoweje kórty, gronidła abo e-mailowe adrese kšadnuś.

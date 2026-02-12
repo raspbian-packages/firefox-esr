@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = Awtomatiske wupołnjenje za adrese zmóžniś.
 policy-AutofillCreditCardEnabled = Awtomatiske wupołnjenje za płaśeńske metody zmóžniś.
 policy-AutoLaunchProtocolsFromOrigins = Definěrujśo lisćinu protokolow, kótarež daju se z naliconych žrědłow wužywaś, bźez togo aby se dejało wužywarja pšašaś.
 policy-BackgroundAppUpdate2 = Slězynowe aktualizěrowanje zmóžniś abo znjemóžniś.
+policy-Backup = Znjemóžniśo zawěsćenje abo wótnowjenje profilowych datow.
 policy-BlockAboutAddons = Pśistup k zastojnikoju dodankow (about:addons) blokěrowaś.
 policy-BlockAboutConfig = Pśistup k bokoju about:config blokěrowaś.
 policy-BlockAboutProfiles = Pśistup k bokoju about:profiles blokěrowaś.
@@ -79,6 +80,7 @@ policy-ExtensionSettings = Wšykne aspekty instalacije rozšyrjenjow zastojaś.
 policy-ExtensionUpdate = Awtomatiske aktualizacije rozšyrjenjow zmóžniś abo znjemóžniś.
 policy-FirefoxHome2 = { -firefox-home-brand-name } konfigurěrowaś.
 policy-FirefoxSuggest = { -firefox-suggest-brand-name } konfigurěrowaś.
+policy-GenerativeAI = Konfigurěrujśo generatiwne funkcije KI.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Wunuźćo direktnu nawigaciju do intranetnego sedła, město togo aby wy pytał, gaž jadnotliwe słowne zapiski do adresoweho póla zapódawaśo.
 policy-Handlers = Standardne nałožeńske pśeźěłaki konfigurěrowaś
 policy-HardwareAcceleration = Jolic njewěrno, hardwarowe póspěšenje znjemóžniś.
@@ -97,6 +99,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Zestarjone zaźaržanj
 ##
 
 policy-LocalFileLinks = Wěstym websedłam dowóliś, na lokalne dataje wótkazaś.
+policy-LocalNetworkAccess = Zmóžniśo abo znjemóžniśo lokalne kontrole seśowego pśistupa.
 policy-ManagedBookmarks = Konfigurěrujo lisćinu cytańskich znamjenjow, kótarež administrator zastoj a kótarež wužywaŕ njamóžo změniś.
 policy-ManualAppUpdateOnly = Jano manuelne aktualizacije dowóliś a wužywarja wó aktualizacijach njeinforměrowaś.
 policy-PrimaryPassword = Głowne gronidło pominaś abo jogo wužywanjeju zajźowaś
@@ -117,6 +120,7 @@ policy-PostQuantumKeyAgreementEnabled = Dojadnanje wó postkwantowem klucu za TL
 policy-PDFjs = PDF.js znjemóžniś abo konfigurěrowaś, zatwarjony PDF-wobglědowak w { -brand-short-name }.
 policy-Permissions2 = Pšawa za kameru, mikrofon, stojnišćo, powěźeńki a awtomatiske wótgraśe konfigurěrowaś.
 policy-PictureInPicture = Wobraz-we-wobrazu zmóžniś abo znjemóžniś.
+policy-PopupBlocking2 = Wěstym websedłam dowóliś, wuskokujuce wokna pokazaś a se pśez wobłuki tśeśich póbitowarjow dalej pósrědnjaju.
 policy-PopupBlocking = Wěstym websedłam dowóliś, wuskokujuce wokna pó standarźe pokazaś.
 policy-Preferences = Gódnotu za pódsajźbu nastajenjow stajiś a zastajiś
 policy-PrivateBrowsingModeAvailability = Nastajśo k-dispoziciji-byśe priwatnego modusa.
@@ -130,6 +134,8 @@ policy-SearchSuggestEnabled = Pytańske naraźenja zmóžniś abo znjemóžniś.
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Pśidajśo abo wulašujśo module PKCS #11.
 policy-ShowHomeButton = Tłocašk startoweho boka na symbolowej rědce pokazaś.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Njepokazujśo wužywańske wuměnjenja a powěźeńku priwatnosći pśi startowanju. Deklarěrujośo, až wužywańske wuměnjenja akceptěrujośo a maśo awtoritu je akceptěrowaś, w mjenju wšych wósobow, kótarymž pśistup k toś tomu wobglědowakoju dawaśo.
 policy-SSLVersionMax = Nastajśo maksimalnu SSL-wersiju.
 policy-SSLVersionMin = Nastajśo minimalnu SSL-wersiju.
 policy-StartDownloadsInTempDirectory = Ześěgnjenja nuźiś, aby w lokalnem, nachylnem městnje město w standardnem zapisu ześěgnjenjow zachopili.
@@ -137,6 +143,7 @@ policy-SupportMenu = Swójski menijowy zapisk pomocy menijoju pomocy pśidaś.
 policy-TranslateEnabled = Pśełožowanje webbokow zmóžniś abo znjemóžniś.
 policy-UserMessaging = Wužywarjeju wěste powěsći njepokazaś
 policy-UseSystemPrintDialog = Z pomocu systemowego śišćaŕskego dialoga śišćaś.
+policy-VisualSearchEnabled = Zmóžniśo abo znjemóžniśo wizuelne pytanje.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Woglědowanju k websydłam zajźowaś. Glejśo dokumentaciju za dalšne drobnostki wó formaśe.
 policy-Windows10SSO = Jadnotne pśizjawjenje za konta Microsoft, źěłowe konta a šulske konta zmóžniś.

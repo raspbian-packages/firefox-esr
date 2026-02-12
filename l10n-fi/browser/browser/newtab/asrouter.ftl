@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } käyttäjää
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Synkronoi kirjanmerkkisi kaikkialla.
 cfr-doorhanger-bookmark-fxa-body = Hyvä löytö! Älä jää ilman tätä kirjanmerkkiä mobiililaitteillasi. Aloita { -fxaccount-brand-name(case: "genitive") } käyttö.
@@ -68,6 +68,11 @@ cfr-doorhanger-bookmark-fxa-link-text = Synkronoi kirjanmerkit nyt…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Sulje-painike
     .title = Sulje
+fxa-adoption-addresses-backup-title = Varmuuskopioidaan tallennetut osoitteesi
+fxa-adoption-addresses-backup-subtitle = Suojaa tallennetut osoitteesi synkronoimalla ne laitteillesi salattuna.
+fxa-adoption-credit-cards-backup-title = Varmuuskopioidaan maksutapasi
+fxa-adoption-credit-cards-backup-subtitle = Suojaa maksutapasi synkronoimalla ne laitteillesi salattuna.
+fxa-adoption-primary-button-label = Rekisteröidy
 
 ## Protections panel
 
@@ -225,6 +230,22 @@ fox-doodle-pin-secondary = Ei nyt
 set-default-pdf-handler-headline = <strong>PDF-tiedostot avataan nyt { -brand-short-name }issa.</strong> Muokkaa tai allekirjoita lomakkeita suoraan selaimessa. Muuttaksesi toimintaa, etsi asetuksista “PDF”.
 set-default-pdf-handler-primary = Selvä
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Allekirjoita allekirjoitusriville – tai minne tahansa!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Piirrä, kirjoita tai lähetä allekirjoituksesi, ja sijoita se haluamaasi paikkaan. Tallenna käytetyimmät allekirjoituksesi seuraavaa kertaa varten.
+annotations-make-default-pdf-handler-title = Tehdäänkö { -brand-short-name }ista oletusarvoinen PDF-editori?
+annotations-make-default-pdf-handler-subtitle = Pääset käyttämään työkalujamme aina, kun avaat PDF-tiedoston.
+annotations-make-default-pdf-primary-cta =
+    .label = Aseta oletukseksi
+annotations-make-default-pdf-next =
+    .label = Seuraava
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Uusi laite tulevaisuudessa?
@@ -310,8 +331,11 @@ fxa-menu-message-close-button =
     .title = Sulje
     .aria-label = Sulje
 fxa-menu-message-sign-up-button = Rekisteröidy
+fxa-menu-message-sign-in-button = Kirjaudu sisään
+fxa-menu-message-sync-button = Aloita synkronointi
 fxa-menu-message-sync-devices-primary-text = Synkronoi kaikki laitteesi
 fxa-menu-message-sync-devices-secondary-text = Hyödynnä tietojasi, kuten kirjanmerkkejä ja salasanoja, kaikkialla missä käytät { -brand-short-name }ia.
+fxa-menu-message-sync-devices-secondary-text2 = Kirjanmerkit, salasanat ja paljon muuta välittömästi – kaikkialla missä olet kirjautuneena { -brand-short-name }iin.
 fxa-menu-message-sync-devices-collapsed-text = Synkronoi kaikki laitteesi
 fxa-menu-message-backup-data-primary-text = Varmuuskopioi selaimesi tiedot
 fxa-menu-message-backup-data-secondary-text = Suojaa automaattisesti kirjanmerkit, salasanat ja muut tiedot kaikilla laitteillasi.
@@ -342,3 +366,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Pidä yksityisyyteen keskittyvä suosikkiselaimesi vain yhden napsautuksen päässä. Aseta { -brand-short-name } oletusselaimeksi linkkien avaamiseen ja kiinnitä se tehtäväpalkkiin.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Pidä yksityisyyteen keskittyvä suosikkiselaimesi vain yhden napsautuksen päässä. Aseta { -brand-short-name } oletusselaimeksi linkkien avaamiseen ja kiinnitä se tehtäväpalkkiin sekä Käynnistä-valikkoon.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Päivitätkö pian Windows 10:stä?
+windows-10-eos-sync-spotlight-subtitle = Varmuuskopioi salasanasi ja kirjanmerkkisi, jotta olet valmis siirtymään mille tahansa laitteelle.
+windows-10-eos-sync-spotlight-primary-label = Varmuuskopioi { -brand-short-name }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Päivitätkö Windows 11:een? Älä kadota kirjanmerkkejä ja salasanoja.
+windows-10-eos-sync-toast-subtitle = Varmuuskopioi tietosi, jotta { -brand-short-name } on käyttövalmis milloin tahansa, tällä tai seuraavalla tietokoneella.
+windows-10-eos-sync-toast-primary-label = Aloitetaan
+windows-10-eos-sync-toast-secondary-label = Muistuta myöhemmin
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } ei ole esiasennettu kuten muut suurten teknologiayritysten selaimet. Juuri siinä se pointti onkin.
+windows-10-eos-challenger-sync-callout-subtitle = Kun varmuuskopioit { -brand-product-name }-kirjanmerkkisi ja -salasanasi, valitsemasi selaimen siirtäminen seuraavalle laitteellesi on aiempaa helpompaa.
+windows-10-eos-challenger-pin-callout-subtitle = Kiinnitä { -brand-shorter-name } tehtäväpalkkiin, jotta valitsemasi selain on aina käytettävissäsi tarvittaessa.
+windows-10-eos-challenger-sync-primary-button = Varmuuskopioi { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Kiinnitä { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } estää kryptolouhijat, sosiaalisen median seuraimet ja yksilöijät.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Seuraimet eivät voi yksilöidä laitettasi tai seurata sinua verkossa – koska emme anna niiden tehdä niin.
+windows-10-eos-sync-callout-privacy-screen-2-title = Turvaa salasanasi ja kirjanmerkkisi seuraavaa laitettasi varten.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = { -brand-shorter-name }in varmuuskopioinnin avulla voit helposti siirtää tai ottaa mukaan tietosi ja yksityisyysasetuksesi.
+windows-10-eos-sync-callout-privacy-info-button = Katso mitä on estetty
+windows-10-eos-callout-addons-title = Kokeile lisäosia: yksinkertaisia päivityksiä, suuria vaikutuksia
+windows-10-eos-callout-addons-subtitle = Nämä laajennukset valittiin pitämään sinut tuottavana, turvattuna ja ilman häiriötekijöitä.
+windows-10-eos-callout-addons-primary-button = Katso valintamme
+windows-10-eos-sync-callout-addons-title = Älä menetä lisäosiasi, kun päivität Windows 10:stä.
+windows-10-eos-sync-callout-addons-subtitle = Synkronoi nyt, jotta { -brand-product-name }-lisäosasi ovat aina käytettävissä, myös laitteen vaihdon jälkeen.
+windows-10-eos-sync-callout-next-button = Seuraava
+windows-10-eos-sync-callout-get-started-button = Aloitetaan
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Pystysuuntaiset välilehdet ja välilehtiryhmät ovat täällä!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Yleisön pyynnöstä { -brand-product-name } on juuri julkaissut uusia ominaisuuksia, jotka tekevät selaamisestasi aiempaa sujuvampaa ja keskittyneempää.
+windows-10-eos-feature-toast-whats-new-button = Katso, mikä on uutta
+windows-10-eos-feature-toast-dismiss-button = Hylkää
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Tiukka seurannan suojaus voi aiheuttaa sivustojen toimintahäiriöitä.</strong> Korjaa yleisiä ongelmia poistamalla seuraimia mahdollisesti sisältävien olennaisten elementtien esto.
+etp-strict-exceptions-infobar-learn-more = Lue lisää
+etp-strict-exceptions-infobar-button = Toteuta korjaukset
+    .accesskey = a
+etp-strict-exceptions-infobar-not-now = Ei nyt
+    .accesskey = E

@@ -139,7 +139,7 @@ def make_repackage_signing_description(config, jobs):
                     "taskId": {"task-reference": "<repack>"},
                     "taskType": "repackage",
                     "paths": [
-                        get_artifact_path(dep_job, f"{repack_id}/target.tar.bz2"),
+                        get_artifact_path(dep_job, f"{repack_id}/target.tar.xz"),
                     ],
                     "formats": ["gcp_prod_autograph_gpg"],
                 }
@@ -152,7 +152,6 @@ def make_repackage_signing_description(config, jobs):
             "worker": {
                 "implementation": "scriptworker-signing",
                 "upstream-artifacts": upstream_artifacts,
-                "max-run-time": 3600,
             },
             "scopes": scopes,
             "dependencies": dependencies,

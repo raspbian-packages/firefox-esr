@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Nedladdningsdetaljer
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Filer stannar på enheten
+downloads-private-browsing-message = Alla som använder den här enheten kan se nedladdningar, även när du stänger alla privata fönster.
+downloads-private-browsing-delete-button =
+    .label = Ta bort filer automatiskt
+    .accesskey = T
+downloads-private-browsing-accept-button =
+    .label = Jag förstår
+    .accesskey = J
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

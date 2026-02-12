@@ -20,6 +20,16 @@ fxa-menu-connect-another-device =
     .label = Weiteres Gerät verbinden…
 # Variables:
 #   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] An Gerät senden
+            [one] Tab an Gerät senden
+           *[other] { $tabCount } Tabs an Gerät senden
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
 fxa-menu-send-tab-to-device =
     .label =
         { $tabCount ->
@@ -33,8 +43,11 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Tab sofort an alle Geräte senden, auf denen Sie angemeldet sind.
 fxa-menu-sign-out =
     .label = Abmelden…
-fxa-menu-sync-title = Synchronisieren
 fxa-menu-sync-description = Greifen Sie von überall aus auf Ihr Web zu
+fxa-avatar-sign-in = Anmelden
+fxa-avatar-sign-up = Registrieren
+fxa-avatar-tooltip =
+    .tooltiptext = Melden Sie sich mit Ihrem Konto an
 sync-setup-verify-continue = Weiter
 sync-setup-verify-title = Warnung: Daten Zusammenführen
 sync-setup-verify-heading = Wirklich zur Synchronisation anmelden?

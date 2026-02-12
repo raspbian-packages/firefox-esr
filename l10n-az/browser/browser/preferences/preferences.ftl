@@ -65,6 +65,10 @@ startup-header = Başlanğıc
 always-check-default =
     .label = { -brand-short-name } səyyahının əsas səyyahınız olub olmadığını hər dəfə yoxla
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } hazırda əsas səyyahınızdır
+is-not-default-browser =
+    .message = { -brand-short-name } əsas səyyahınız deyil
 is-default = { -brand-short-name } hazırda əsas səyyahınızdır
 is-not-default = { -brand-short-name } əsas səyyahınız deyil
 set-as-my-default-browser =
@@ -159,6 +163,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Fayllar və Tətbiqlər
+downloads-header-2 =
+    .label = Endirilənlər
+download-save-where-2 =
+    .label = Faylların saxlandığı yer
+    .accesskey = y
 download-header = Endirilənlər
 download-save-where = Faylların saxlandığı yer
     .accesskey = y
@@ -318,7 +327,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = Yeni Pəncərələr və Vərəqlər
 home-new-windows-tabs-description2 = Ev səhifənizi, yeni pəncərə və vərəqləri açdığınızda nə gördüyünüzü seçin.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Ev səhifəsi və yeni pəncərələr
 home-newtabs-mode-label = Yeni vərəqlər
@@ -429,6 +438,8 @@ search-keyword-warning-bookmark = Hazırda bir əlfəcin tərəfindən istifadə
 ## Containers Section
 
 containers-header = Konteyner Vərəqlər
+containers-section-header =
+    .heading = Konteyner Vərəqlər
 containers-add-button =
     .label = Yeni konteyner əlavə et
     .accesskey = A
@@ -477,12 +488,6 @@ sync-sign-in =
     .label = Daxil ol
     .accesskey = x
 
-## Sync section - enabling or disabling sync.
-
-
-## The list of things currently syncing.
-
-
 ## The "Choose what to sync" dialog.
 
 sync-engine-bookmarks =
@@ -511,6 +516,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = Cihaz Adı
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Cihaz Adı
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Cihaz adını dəyişdir
+    .accesskey = h
 sync-device-name-change =
     .label = Cihaz adını dəyişdir…
     .accesskey = h
@@ -562,12 +575,6 @@ forms-master-pw-change =
     .accesskey = d
 forms-master-pw-fips-desc = Parolu dəyişdirmək mümkün olmadı.
 
-## OS Authentication dialog
-
-
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Tarixçə
@@ -588,6 +595,10 @@ history-remember-option-never =
     .label = Tarixçəni heç vaxt xatırlama
 history-remember-option-custom =
     .label = Tarixçə üçün fərdi tənzimləmələri işlət
+history-remember-description2 =
+    .description = { -brand-short-name } səyahət, endirmə, forma və axtarış tarixçənizi yadda saxlayacaq.
+history-dontremember-description2 =
+    .description = { -brand-short-name } gizli baxışdakı nizamlamalardan istifadə edəcək və siz Web-də gəzərkən keçmişlə bağlı heçnə xatırlamayacaq.
 history-remember-description = { -brand-short-name } səyahət, endirmə, forma və axtarış tarixçənizi yadda saxlayacaq.
 history-dontremember-description = { -brand-short-name } gizli baxışdakı nizamlamalardan istifadə edəcək və siz Web-də gəzərkən keçmişlə bağlı heçnə xatırlamayacaq.
 history-private-browsing-permanent =
@@ -638,12 +649,6 @@ sitedata-clear =
 sitedata-settings =
     .label = Məlumatları idarə et…
     .accesskey = M
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -737,6 +742,14 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = İstisnalar…
     .accesskey = s
+permissions-location2 =
+    .label = Mövqe
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Mikrofon
+permissions-notification2 =
+    .label = Bildirişlər
 
 ## Privacy Section - Data Collection
 
@@ -754,9 +767,6 @@ addon-recommendations-link = Ətraflı öyrən
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Bu quraşdırmanın konfiqurasiyasında məlumat xəbərdarlığı söndürülüb
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -788,12 +798,7 @@ certs-view =
 certs-devices =
     .label = Təhlükəsizlik cihazları…
     .accesskey = T
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPS aktivləşdir
 
 ## The following strings are used in the Download section of settings
 

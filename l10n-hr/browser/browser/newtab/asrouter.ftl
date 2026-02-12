@@ -61,7 +61,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } korisnika
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Sinkroniziraj svoje zabilješke svagdje.
 cfr-doorhanger-bookmark-fxa-body = Koristi ovu zabilješku na mobilnim uređajima. Započni s računom { -fxaccount-brand-name }.
@@ -114,7 +114,7 @@ cfr-doorhanger-doh-secondary-button = Deaktiviraj
 
 ## Full Video Support CFR message
 
-cfr-doorhanger-video-support-body = Videozapisi na ovoj stranici možda se neće ispravno reproducirati na ovoj { -brand-short-name } verziji. Za potpunu podršku za videozapise, nadogradi { -brand-short-name } sada.
+cfr-doorhanger-video-support-body = Videa na ovoj stranici se možda neće ispravno reproducirati na ovoj { -brand-short-name } verziji. Za potpunu podršku za videa aktualiziraj { -brand-short-name }.
 cfr-doorhanger-video-support-header = Nadogradi { -brand-short-name } za reprodukciju videozapisa
 cfr-doorhanger-video-support-primary-button = Nadogradi sada
     .accesskey = N
@@ -174,7 +174,7 @@ mr2022-background-update-toast-secondary-button-label = Podsjeti me kasnije
 
 ## Firefox View CFR
 
-firefoxview-cfr-primarybutton = Isprobaj ga
+firefoxview-cfr-primarybutton = Isprobaj
     .accesskey = I
 firefoxview-cfr-secondarybutton = Ne sada
     .accesskey = N
@@ -304,6 +304,7 @@ root-certificate-succession-infobar-secondary-button =
 ## Root Certificate Succession Windows Background Notification
 
 root-certificate-windows-background-notification-title = Propustio/la si važno aktualiziranje { -brand-short-name(case: "gen") }
+root-certificate-windows-background-notification-subtitle = Dijelovi preglednika će uskoro prestati raditi ako ga ne aktualiziraš. Nabavi naše najnovije zaštite i funkcije.
 root-certificate-windows-background-notification-learn-more-button = Saznaj više
 root-certificate-windows-background-notification-update-button = Aktualiziraj { -brand-short-name }
 

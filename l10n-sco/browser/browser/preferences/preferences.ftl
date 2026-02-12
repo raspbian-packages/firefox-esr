@@ -96,6 +96,10 @@ startup-header = Stertup
 always-check-default =
     .label = Ayeweys check if { -brand-short-name } is yer staunart stravaiger
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } is yer staunart stravaiger the noo
+is-not-default-browser =
+    .message = { -brand-short-name } isnae yer staunart stravaiger
 is-default = { -brand-short-name } is yer staunart stravaiger the noo
 is-not-default = { -brand-short-name } isnae yer staunart stravaiger
 set-as-my-default-browser =
@@ -225,6 +229,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Files and Applications
+downloads-header-2 =
+    .label = Doonloads
+download-save-where-2 =
+    .label = Save files tae
+    .accesskey = v
 download-header = Doonloads
 download-save-where = Save files tae
     .accesskey = v
@@ -431,7 +440,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = New Windaes and Tabs
 home-new-windows-tabs-description2 = Decide whit ye see when ye open yer hamepage, new windaes, and new tabs.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Hamepage and new windaes
 home-newtabs-mode-label = New tabs
@@ -568,6 +577,8 @@ search-keyword-warning-bookmark = Ye've waled a keywird that's awready in yaise 
 containers-back-button2 =
     .aria-label = Back tae Settins
 containers-header = Conteener Tabs
+containers-section-header =
+    .heading = Conteener Tabs
 containers-add-button =
     .label = Eik On New Conteener
     .accesskey = E
@@ -703,6 +714,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Device Nemme
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Device Nemme
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Chynge Device Nemme
+    .accesskey = h
 sync-device-name-change =
     .label = Chynge Device Nemme…
     .accesskey = h
@@ -792,9 +811,6 @@ primary-password-os-auth-dialog-message-win = Tae mak a Primary Passwird, inpit 
 primary-password-os-auth-dialog-message-macosx = mak a Primary Passwird
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Historie
@@ -815,6 +831,10 @@ history-remember-option-never =
     .label = Nivver mind yer historie
 history-remember-option-custom =
     .label = Yaise custom settins for historie
+history-remember-description2 =
+    .description = { -brand-short-name } will mind yer stravaigin, doonload, form and sairch historie.
+history-dontremember-description2 =
+    .description = { -brand-short-name } will yaise the same settins as private stravaigin, and willnae mind o onie historie as ye stravaig the Wab.
 history-remember-description = { -brand-short-name } will mind yer stravaigin, doonload, form and sairch historie.
 history-dontremember-description = { -brand-short-name } will yaise the same settins as private stravaigin, and willnae mind o onie historie as ye stravaig the Wab.
 history-private-browsing-permanent =
@@ -878,12 +898,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Manage Exceptions…
     .accesskey = x
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -1016,6 +1030,8 @@ permissions-notification-link = Lairn mair
 permissions-notification-pause =
     .label = Pit notifications on haud the noo until { -brand-short-name } resterts
     .accesskey = n
+permissions-autoplay2 =
+    .label = Autopley
 permissions-autoplay = Autopley
 permissions-autoplay-settings =
     .label = Settins…
@@ -1035,6 +1051,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Exceptions…
     .accesskey = E
+permissions-location2 =
+    .label = Airtin
+permissions-xr2 =
+    .label = Virtual Reality
+permissions-camera2 =
+    .label = Camera
+permissions-microphone2 =
+    .label = Microphone
+permissions-notification2 =
+    .label = Notifications
 
 ## Privacy Section - Data Collection
 
@@ -1058,11 +1084,6 @@ addon-recommendations-link = Lairn mair
 collection-health-report-disabled = Data reportin is disabled fur this build confeeguration
 collection-backlogged-crash-reports-with-link = Alloo { -brand-short-name } tae send backlogged crash reports on yer behauf <a data-l10n-name="crash-reports-link">Lairn mair</a>
     .accesskey = c
-collection-backlogged-crash-reports = Alloo { -brand-short-name } tae send backlogged crash reports on yer behauf
-    .accesskey = c
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -1094,6 +1115,7 @@ certs-view =
 certs-devices =
     .label = Siccarness Devices…
     .accesskey = D
+certs-devices-enable-fips = Enable FIPS
 space-alert-over-5gb-settings-button =
     .label = Open Settins
     .accesskey = O
@@ -1111,9 +1133,6 @@ httpsonly-radio-enabled-pbm =
     .label = Yaise HTTPS-Anely Mode in private windaes, jist
 httpsonly-radio-disabled =
     .label = Dinnae yaise HTTPS-Anely Mode
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

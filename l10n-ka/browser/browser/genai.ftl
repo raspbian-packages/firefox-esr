@@ -5,21 +5,13 @@
 
 ## Generative AI (GenAI) Settings section
 
-genai-settings-chat-description = ამატებს თანამოსაუბრეს თქვენ მიერ შერჩეულ გვერდით ზოლზე ვებსივრცის თვალიერებისას სწრაფი წვდომისთვის. <a data-l10n-name="connect">გამოგვეხმაურეთ</a>
-genai-settings-chat-choose = აირჩიეთ თანამოსაუბრე
-genai-settings-chat-choose-one-menuitem =
-    .label = ერთ-ერთის შერჩევა
-genai-settings-chat-links = თანამოსაუბრის არჩევით, ეთანხმებით მომწოდებლის მომსახურების პირობებსა და პირადულობის დებულებას.
 genai-settings-chat-chatgpt-links = ვინაიდან აირჩიეთ ChatGPT, ეთანხმებით <a data-l10n-name="link1">მომსახურების პირობებსა</a> და <a data-l10n-name="link2">პირადულობის დაცვის განაცხადს</a>, რომელსაც ადგენს OpenAI.
-genai-settings-chat-claude-links = ვინაიდან აირჩიეთ Anthropic Claude, ეთანხმებით <a data-l10n-name="link1">მომხმარებლისა და მომსახურების პირობებს</a>, <a data-l10n-name="link2">გამოყენების დებულებას</a>, აგრეთვე, <a data-l10n-name="link3">პირადულობის დებულებას</a>, რომელთაც ადგენს Anthropic.
-genai-settings-chat-copilot-links = ვინაიდან აირჩიეთ Copilot, ეთანხმებით<a data-l10n-name="link1">პირობებს, რომლითაც შეგიძლიათ გამოიყენოთ Copilot-AI</a> და <a data-l10n-name="link2">Microsoft-ის პირადულობის დებულებას</a>.
+genai-settings-chat-claude-links = ვინაიდან აირჩიეთ Anthropic Claude, ეთანხმებით <a data-l10n-name="link1">მომხმარებლისა და მომსახურების პირობებს</a>, <a data-l10n-name="link2">გამოყენების დებულებას</a>, აგრეთვე <a data-l10n-name="link3">პირადულობის დებულებას</a>, რომელთაც ადგენს Anthropic.
+genai-settings-chat-copilot-links = ვინაიდან აირჩიეთ Copilot, ეთანხმებით <a data-l10n-name="link1">პირობებს, რომ გამოიყენოთ Copilot-AI</a> და <a data-l10n-name="link2">პირადულობის დებულებას, რომელსაც ადგენს Microsoft</a>.
 genai-settings-chat-gemini-links = ვინაიდან აირჩიეთ Google Gemini, ეთანხმებით <a data-l10n-name="link1">Google-ის მომსახურების პირობებს</a>, <a data-l10n-name="link2">Generative-AI-ის არამართლზომიერი გამოყენების შეზღუდვებს</a>, აგრეთვე, <a data-l10n-name="link3">Gemini-Apps-ის პირადულობის დებულებას</a>.
-genai-settings-chat-huggingchat-links = ვინაიდან აირჩიეთ HuggingChat, ეთანხმებით <a data-l10n-name="link1">HuggingChat-ის პირადულობის განაცხადსა</a> და <a data-l10n-name="link2">პირადულობის დებულებას, რომელსაც ადგენს Hugging Face</a>.
+genai-settings-chat-huggingchat-links = ვინაიდან აირჩიეთ HuggingChat, ეთანხმებით <a data-l10n-name="link1">პირადულობის განაცხადს, რომ გამოიყენოთ HuggingChat</a> და <a data-l10n-name="link2">პირადულობის დებულებას, რომელსაც ადგენს Hugging Face</a>.
 genai-settings-chat-lechat-links = ვინაიდან აირჩიეთ Le Chat Mistral, ეთანხმებით <a data-l10n-name="link1">მომსახურების პირობებსა</a> და <a data-l10n-name="link2">პირადულობის დებულებას</a>, რომელსაც ადგენს Mistral AI.
 genai-settings-chat-localhost-links = დაამატეთ თქვენი საკუთარი ადგილობრივი თანამოსაუბრე, როგორიცაა <a data-l10n-name="link1">llamafile</a>, რომელსაც გთავაზობთ სიახლეების დამნერგავი საზოგადოება { -vendor-short-name }.
-genai-settings-chat-shortcuts =
-    .description = მოთხოვნის მალსახმობის გამოჩენა ტექსტის მონიშვნისას. { -brand-short-name } გადაუგზავნის ტექსტს, გვერდის სათაურსა და მოთხოვნას თანამოსაუბრეს.
-    .label = მოთხოვნების ჩვენება ტექსტის მონიშვნისას
 
 ## Chatbot prompts
 ## Prompts are plain language ‘instructions’ sent to a chatbot.
@@ -59,6 +51,20 @@ genai-menu-ask-generic =
 # $provider (string) - name of the provider
 genai-menu-ask-provider =
     .label = გიპასუხებთ { $provider }
+genai-menu-open-generic =
+    .label = AI-თანამოსაუბრის გახსნა
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = გაიხსნას { $provider }
+genai-menu-remove-generic =
+    .label = AI-თანამოსაუბრის მოცილება
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = მოცილდეს { $provider }
+genai-menu-remove-sidebar =
+    .label = მოცილება გვერდითი ზოლიდან
+genai-menu-new-badge = სიახლე
+genai-menu-summarize-page = გვერდის შეჯამება
 genai-input-ask-generic =
     .placeholder = ჰკითხეთ AI-თანამოსაუბრეს…
 # $provider (string) - name of the provider
@@ -85,20 +91,32 @@ genai-shortcuts-selected-warning =
         }
 genai-shortcuts-hide =
     .label = თანამოსაუბრის მალსახმობის დამალვა
+genai-menu-choose-chatbot =
+    .label = AI-თანამოსაუბრის არჩევა
+genai-menu-ask-generic-2 =
+    .label = ჰკითხეთ AI-თანამოსაუბრეს
+    .accesskey = ი
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = გიპასუხებთ { $provider }
+    .accesskey = ი
+genai-menu-no-provider-2 =
+    .label = ჰკითხეთ AI-თანამოსაუბრეს
+    .accesskey = ი
 
 ## Chatbot header
 
 genai-chatbot-title = AI-თანამოსაუბრე
 genai-header-provider-menu =
     .title = აირჩიეთ თანამოსაუბრე
+genai-header-settings-button =
+    .title = AI-სასაუბროს პარამეტრები
 genai-header-options-button =
     .title = მენიუს გახსნა
 genai-header-close-button =
     .title = დახურვა
 genai-provider-view-details =
-    .label = იხილეთ თანამოსაუბრის მონაცემები
-genai-provider-about-chatbots =
-    .label = ამ თანამოსაუბრეების შესახებ
+    .label = ვრცლად თანამოსაუბრის შესახებ
 genai-options-reload-generic =
     .label = ახლიდან ჩაიტვირთოს თანამოსაუბრე
 # $provider (string) - name of the provider
@@ -111,11 +129,23 @@ genai-options-hide-shortcut =
 genai-options-about-chatbot =
     .label = გაეცნით, რომელ AI-თანამოსაბრეს გთავაზობთ { -brand-short-name }
 
+## Chatbot message
+
+genai-page-warning =
+    .message = ვინაიდან ვრცელი გვერდია, შეჯამება ნაწილობრივია.
+
+## Chatbot footer
+
+genai-page-button-summarize = გვერდის შეჯამება
+
 ## Chatbot onboarding
 
 genai-onboarding-header = იხილეთ დასკვნები, ახალი მოსაზრებები და ა. შ. გვერდების მონახულებისას
+genai-onboarding-choose-header = აირჩიეთ AI-თანამოსაუბრე, რომელსაც { -brand-short-name } გამოაჩენს გვერდით ზოლზე გამოსაყენებლად
 # "Switch anytime" refers to allowing the user to switch to a different chatbot.
 genai-onboarding-description = აირჩიეთ AI-თანამოსაუბრე, რომელსაც გაგიხსნით { -brand-short-name } გვერდით ზოლზე გამოსაყენებლად. დაწვრილებით იხილავთ თითოეული თანამოსაუბრის შესახებ მათი შერჩევისას. ნებისმიერ დროს შეგეძლებათ შეცვლას. <a data-l10n-name="learn-more">ვრცლად</a>
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = გადართვა ნებისმიერ დროსაა შესაძლებელი. არჩევანის გასაიოლებლად <a data-l10n-name="learn-more">იხილეთ ვრცლად თითოეული თანამოსაუბრის შესახებ</a>.
 genai-onboarding-primary = განაგრძეთ
 genai-onboarding-secondary = დახურვა
 genai-onboarding-claude-tooltip =
@@ -139,6 +169,18 @@ genai-onboarding-lechat-learn = უკეთ გაიცანით Le Chat
 genai-onboarding-select-header = მონიშნეთ ტექსტი შემოთავაზებებისთვის
 genai-onboarding-select-description = ტექსტის მონიშვნისას შემოგთავაზებთ მოთხოვნებს, რომელთა გაგზავნაც შეგეძლებათ თანამოსაუბრისთვის. აგრეთვე შეგეძლებათ თავად მიუწეროთ თქვენი მოთხოვნები.
 genai-onboarding-select-primary = მიმოწერის დაწყება
+genai-chatbot-contextual-title = გამოიყენეთ AI-თანამოსაუბრე ჩანართების გადაურთველად.
+genai-chatbot-contextual-subtitle = ისაუბრეთ და ინახულეთ გვერდები ერთდროულად, { -brand-short-name } საშუალებას გაძლევთ, AI-თანამოსაუბრე გვერდით ზოლზე განათავსოთ.
+genai-chatbot-contextual-button = აირჩიეთ თანამოსაუბრე
+genai-chatbot-summarize-title = სიახლე! შეაჯამეთ გვერდის შიგთავსი ერთი დაწკაპებით
+genai-chatbot-summarize-button = გვერდის შეჯამება
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = მარჯვენა წკაპით გვერდით ზოლში თქვენს AI-თანამოსაუბრეზე აირჩიეთ „გვერდის შეჯამება“.
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = მარჯვენა წკაპით გვერდით ზოლში ნაპერწკლების ღილაკზე აირჩიეთ „გვერდის შეჯამება”. ჯერ აირჩიეთ თავად AI-თანამოსაუბრე.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = გახსენით გვერდითი ზოლიდან თქვენი AI-თანამოსაუბრე და აირჩიეთ „გვერდის შეჯამება“ ქვემოთ.
+genai-chatbot-summarize-footer-generic-subtitle = გვერდის შინაარსის სწრაფად შესაჯამებლად დაამატეთ AI-თანამოსაუბრე, რომელსაც განათავსებს { -brand-short-name } გვერდით ზოლზე.
 
 ## Chatbot onboarding choices
 ## These describe features/capabilities of chatbot providers. These are not buttons/actions.
@@ -160,3 +202,72 @@ genai-onboarding-huggingchat-switch = სხვადასხვა ღია �
 genai-onboarding-huggingchat-price-2 = უფასო; საჭიროებს ანგარიშს გარკვეული ოდენობის მოთხოვნების შემდეგ
 genai-onboarding-lechat-generate = ტექსტისა და კოდის შედგენა
 genai-onboarding-lechat-price = უფასო; საჭიროებს ანგარიშს
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = განაგრძეთ
+genai-model-optin-optout =
+    .label = გაუქმება
+genai-model-optin-cancel =
+    .label = გაუქმება
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] { $range } წთ კითხვის დრო
+       *[other] { $range } წთ კითხვის დრო
+    }
+# Error message displayed when a link preview cannot be generated
+link-preview-error-message = ამ ბმულის შეთვალიერება ვერ ხერხდება
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = ეწვიეთ ბმულს
+# Error message when we can't generate key points (summary highlights or main ideas of page content) for a page
+link-preview-generation-error-missing-data = ვერ ხერხდება საკვანძო საკითხების გამოკვეთა ამ ვებგვერდიდან.
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = რაღაც ხარვეზი წარმოიქმნა.
+# Text for the retry link when generation fails
+link-preview-generation-retry = ხელახლა ცდა
+# Button that opens the Link Preview settings
+link-preview-settings-button =
+    .title = ბმულის შეთვალიერების პარამეტრები
+link-preview-settings-enable =
+    .label = ბმულის შეთვალიერების ჩართვა
+    .description = იხილეთ გვერდის სათაური, აღწერილობა და სხვ. მალსახმობის გამოყენებისას ან ბმულზე მარჯვენა წკაპით.
+link-preview-settings-key-points =
+    .label = ნებართვა, რომ ხელგონი წაიკითხავს გვერდის დასაწყისს და გამოკვეთს საკვანძო საკითხებს
+link-preview-settings-long-press =
+    .label = მალსახმობი: დაწკაპეთ და დააყოვნეთ ბმულზე 1 წამი (ხანგრძლივი დაჭერა)
+# Title that appears when user is shown the opt-in flow for link previews
+link-preview-optin-title = გსურთ, უფრო ვრცლად იხილოთ ხელგონით?
+# Message that appears when user is shown the opt-in flow for link previews
+link-preview-optin-message = { -brand-short-name } იყენებს ხელგონს გვერდის დასაწყისის წასაკითხად და რამდენიმე საკვანძო საკითხის გამოსაკვეთად. თქვენი პირადულობის უზრუნველსაყოფად ეს ყველაფერი მოწყობილობაზევე შესრულდება.
+# Onboarding card title for long press
+link-preview-onboarding-title-long-press = სიახლე: დაწკაპეთ და დააყოვნეთ ბმულზე მის შესათვალიერებლად
+# Onboarding card description for long press
+link-preview-onboarding-description-long-press = იხილეთ მოკლე აღწერა, წაკითხვის დრო და ა. შ. რომ გადაწყვიტოთ, ღირს თუ არა ბმულის გახსნა. ხელმისაწვდომია მარჯვენა წკაპითაც.
+# Header for the key points section
+link-preview-key-points-header = საკვანძო საკითხები
+# Disclaimer for AI-generated key points
+link-preview-key-points-disclaimer = საკვანძო პუნქტები ხელგონის მიერაა შედგენილი და შესაძლოა შეცდომები ახლდეს.
+# Progress message for the first-time setup
+# $progress (number) - The percentage value 1-100 indicating the progress of the setup.
+link-preview-setup = პირველადი გამართვა • <strong>{ $progress }%</strong>
+# Message indicating faster performance after initial setup
+link-preview-setup-faster-next-time = საკვანძო საკითხებს უფრო მალე იხილავთ შემდეგ ჯერზე.
+# Onboarding card See a preview button
+link-preview-onboarding-button = შეათვალიერეთ
+# Onboarding card Close button
+link-preview-onboarding-close = დახურვა
+# Title for the first-time setup modal
+link-preview-first-time-setup-title = საწყისი გამართვა
+# Message for the first-time setup modal
+link-preview-first-time-setup-message = შესაძლოა გარკვეულ ხანს გასტანოს. შემდეგ ჯერზე საკვანძო საკითხებს უფრო მალე გაეცნობით.

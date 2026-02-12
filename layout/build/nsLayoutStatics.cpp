@@ -10,6 +10,7 @@
 #include "nscore.h"
 
 #include "mozilla/intl/AppDateTimeFormat.h"
+#include "mozilla/intl/EncodingToLang.h"
 #include "mozilla/dom/ServiceWorkerRegistrar.h"
 #include "nsAttrValue.h"
 #include "nsComputedDOMStyle.h"
@@ -69,6 +70,9 @@
 
 #include "mozilla/dom/UIDirectionManager.h"
 
+#ifdef XP_WIN
+#  include "mozilla/widget/AudioSession.h"
+#endif
 #include "CubebUtils.h"
 #include "WebAudioUtils.h"
 
@@ -118,7 +122,7 @@
 #include "mozilla/css/ImageLoader.h"
 #include "gfxUserFontSet.h"
 #include "RestoreTabContentObserver.h"
-#include "mozilla/intl/nsComplexBreaker.h"
+#include "mozilla/intl/LineBreakCache.h"
 
 #include "nsRLBoxExpatDriver.h"
 #include "RLBoxWOFF2Types.h"
@@ -218,6 +222,12 @@ nsresult nsLayoutStatics::Initialize() {
   }
 
   DecoderDoctorLogger::Init();
+
+#ifdef XP_WIN
+  if (XRE_IsParentProcess()) {
+    widget::CreateAudioSession();
+  }
+#endif
   CubebUtils::InitLibrary();
 
   nsHtml5Module::InitializeStatics();
@@ -253,7 +263,7 @@ nsresult nsLayoutStatics::Initialize() {
   if (XRE_IsParentProcess()) {
     // On content process we initialize these components when PContentChild is
     // fully initialized.
-    mozilla::dom::RemoteWorkerService::Initialize();
+    mozilla::dom::RemoteWorkerService::InitializeParent();
   }
 
   ClearSiteData::Initialize();
@@ -274,7 +284,7 @@ nsresult nsLayoutStatics::Initialize() {
 
   RestoreTabContentObserver::Initialize();
 
-  ComplexBreaker::Initialize();
+  mozilla::intl::LineBreakCache::Initialize();
 
   RLBoxExpatSandboxPool::Initialize();
 
@@ -289,6 +299,8 @@ nsresult nsLayoutStatics::Initialize() {
     InitializeViaduct();
   }
 #endif
+
+  mozilla::intl::EncodingToLang::Initialize();
 
   return NS_OK;
 }
@@ -347,6 +359,11 @@ void nsLayoutStatics::Shutdown() {
 
   CubebUtils::ShutdownLibrary();
   WebAudioUtils::Shutdown();
+#ifdef XP_WIN
+  if (XRE_IsParentProcess()) {
+    widget::DestroyAudioSession();
+  }
+#endif
 
   nsCORSListenerProxy::Shutdown();
 
@@ -386,5 +403,7 @@ void nsLayoutStatics::Shutdown() {
 
   RestoreTabContentObserver::Shutdown();
 
-  ComplexBreaker::Shutdown();
+  mozilla::intl::LineBreakCache::Shutdown();
+
+  mozilla::intl::EncodingToLang::Shutdown();
 }

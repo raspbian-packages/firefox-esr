@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Expires / Max-Age
 storage-table-headers-cookies-size = 크기
 storage-table-headers-cookies-last-accessed = 마지막 액세스
 storage-table-headers-cookies-creation-time = 생성일
+storage-table-headers-cookies-update-time = 업데이트됨
 storage-table-headers-cache-status = 상태
 storage-table-headers-extension-storage-area = 저장 영역
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = 모든 연결이 끊긴 후 “{ $dbName }” 데�
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = “{ $dbName }” 데이터베이스는 삭제될 수 없습니다.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = 쿠키를 만들 수 없습니다: “{ $errorString }”.
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = 쿠키를 업데이트할 수 없습니다: “{ $errorString }”.

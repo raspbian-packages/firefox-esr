@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Đóng thẻ
 tabbrowser-menuitem-close =
     .label = Đóng
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -46,6 +59,13 @@ tabbrowser-unblock-tab-audio-tooltip =
 
 ## Tooltips for tab audio control
 
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Bỏ tắt tiếng thẻ
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Tắt tiếng thẻ
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Phát âm thanh thẻ
 
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
@@ -114,8 +134,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Không hiện lại hộp thoại n�
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Hãy cân nhắc
-tabbrowser-confirm-close-duplicate-tabs-text = Chúng tôi sẽ giữ thẻ hoạt động lần cuối
 tabbrowser-confirm-close-all-duplicate-tabs-title = Đóng các thẻ trùng?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     Chúng tôi sẽ đóng các thẻ trùng lặp trong cửa sổ này.Thẻ hoạt động
@@ -157,6 +175,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Hiển thị tất cả { $tabCount } thẻ
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Tắt tiếng thẻ
@@ -164,8 +185,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Bỏ tắt tiếng thẻ
 tabbrowser-manager-close-tab =
     .tooltiptext = Đóng thẻ
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Đã đóng
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — Cửa sổ hiện tại
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Tạo nhóm thẻ
 tab-group-editor-title-edit = Quản lý nhóm thẻ
@@ -175,13 +204,42 @@ tab-group-editor-name-field =
 tab-group-editor-cancel =
     .label = Huỷ bỏ
     .accesskey = C
-tab-group-menu-header = Nhóm thẻ
+tab-group-editor-color-selector =
+    .aria-label = Màu nhóm thẻ
+tab-group-editor-color-selector2-blue = Xanh dương
+    .title = Xanh dương
+tab-group-editor-color-selector2-purple = Tím
+    .title = Tím
+tab-group-editor-color-selector2-cyan = Xanh lơ
+    .title = Xanh lơ
+tab-group-editor-color-selector2-orange = Cam
+    .title = Cam
+tab-group-editor-color-selector2-yellow = Vàng
+    .title = Vàng
+tab-group-editor-color-selector2-pink = Hồng
+    .title = Hồng
+tab-group-editor-color-selector2-green = Xanh lá cây
+    .title = Xanh lá cây
+tab-group-editor-color-selector2-gray = Xám
+    .title = Xám
+tab-group-editor-color-selector2-red = Đỏ
+    .title = Đỏ
+tab-group-description = { $tabGroupName } — Nhóm thẻ
+tab-group-label-tooltip-collapsed = { $tabGroupName } — Đã thu gọn
+tab-group-label-tooltip-expanded = { $tabGroupName } — Đã mở rộng
+tab-group-preview-name =
+    .aria-label = Các thẻ trong một nhóm thu gọn
 tab-context-unnamed-group =
     .label = Nhóm không tên
 tab-group-name-default = Nhóm chưa có tên
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Danh sách thẻ đang mở
+tab-group-preview-closed-description = Danh sách thẻ đã đóng
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -197,6 +255,8 @@ tab-context-move-tab-to-group =
            *[other] Thêm các thẻ vào nhóm
         }
     .accesskey = G
+tab-context-move-tab-to-group-saved-groups =
+    .label = Nhóm đã đóng
 tab-group-editor-action-new-tab =
     .label = Thẻ mới trong nhóm
 tab-group-editor-action-new-window =
@@ -221,6 +281,12 @@ tab-context-ungroup-tab =
            *[other] Xoá khỏi các nhóm
         }
     .accesskey = R
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip = { $tabCount } thẻ khác
 
 ## Open/saved tab group context menu
 
@@ -246,3 +312,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Mở nhóm trong cửa sổ mới
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Chế độ chia cửa sổ
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = Chế độ chia cửa sổ
+    .accesskey = t
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Mở trong chế độ chia cửa sổ
+    .accesskey = t
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = Tách các thẻ
+    .accesskey = t
+tab-context-badge-new = Mới

@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Opne attlatne faner
         }
     .accesskey = a
+toolbar-context-turn-on-vertical-tabs =
+    .label = Slå på vertikale faner
+toolbar-context-turn-off-vertical-tabs =
+    .label = Slå av vertikale faner
+toolbar-context-customize-sidebar =
+    .label = Tilpass sidestolpen
 toolbar-context-menu-manage-extension =
     .label = Handsam utviding
     .accesskey = u
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Vis panel når nedlastinga startar
     .accesskey = s
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Vis alltid i verktøylinja
+    .accesskey = V
 toolbar-context-menu-remove-from-toolbar =
     .label = Fjern frå verktøylinja
     .accesskey = n

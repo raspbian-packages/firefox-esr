@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Lejupielādes
 appmenuitem-passwords =
     .label = Paroles
+appmenuitem-extensions-and-themes =
+    .label = Paplašinājumi un motīvi
+appmenuitem-extensions =
+    .label = Paplašinājumi
 appmenuitem-addons-and-themes =
     .label = Paplašinājumi un motīvi
 appmenuitem-print =
@@ -192,6 +196,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Priekšiestatījums audio un video kļūdu izmeklēšanai { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Multimediji
+profiler-popup-presets-ml-description = Priekšiestatījums mašīnmācīšanās kļūdu izmeklēšanai { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Mašīnmācīšanās
 profiler-popup-presets-networking-description = Priekšiestatījums tīkla kļūdu izmeklēšanai { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Tīkls
@@ -288,7 +295,6 @@ appmenu-other-protection-header = Izmēģiniet citus aizsardzības rīkus no { -
 
 ## Profiles panel
 
-appmenu-profiles = Profili
 appmenu-other-profiles = Citi profili
 appmenu-manage-profiles =
     .label = Pārvaldīt profilus
@@ -296,3 +302,5 @@ appmenu-create-profile =
     .label = Jauns profils
 appmenu-edit-profile =
     .aria-label = Rediģēt profilu
+appmenu-profiles-2 =
+    .label = Profili

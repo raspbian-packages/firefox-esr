@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Забранена страница
 neterror-captive-portal-page-title = Влизане в мрежа
 neterror-dns-not-found-title = Сървърът не е намерен
 neterror-malformed-uri-page-title = Неправилен адрес
+problem-with-this-site-title = Изглежда, че има проблем с този сайт
 
 ## Error page actions
 
@@ -44,6 +45,7 @@ neterror-dns-not-found-hint-header = <strong>Ако сте въвели вере
 neterror-dns-not-found-hint-try-again = Опитайте отново по-късно
 neterror-dns-not-found-hint-check-network = Проверете мрежовата си връзка
 neterror-dns-not-found-hint-firewall = Проверете дали { -brand-short-name } има права за достъп до мрежата (може и да сте свързани, но зад защитна стена)
+neterror-dns-not-found-offline-hint-header = <strong>Какво можете да направите?</strong>
 
 ## TRR-only specific messages
 ## Variables:
@@ -51,11 +53,6 @@ neterror-dns-not-found-hint-firewall = Проверете дали { -brand-shor
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-trr-unknown-host2 = Този сайт не беше намерен от { $trrDomain }.
-
-## Native fallback specific messages
-## Variables:
-##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
-
 
 ##
 
@@ -129,3 +126,4 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Ако не сте запо
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> използва политика за сигурност наречена HTTP Strict Transport Security (HSTS), което означава, че { -brand-short-name } може да използва само сигурни връзки. Не може да добавяте изключение при посещение на тази страница.
+certerror-blocked-by-corp-headers-description = Понякога уебсайтовете създават защита за себе си и за хора като вас от нежелани взаимодействия с други сайтове.

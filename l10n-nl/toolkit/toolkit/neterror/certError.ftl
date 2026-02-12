@@ -107,9 +107,35 @@ fp-cert-error-code = Foutcode: { $error }
 # Variables:
 #   $datetime (Date) - Current datetime.
 fp-datetime = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-certerror-transparency-why-dangerous-body = { -brand-short-name } vertrouwt { $hostname } niet, omdat het niet kan bewijzen dat het aan de transparantievereisten voor openbare certificaten voldoet.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-transparency-what-can-you-do-body = Waarschijnlijk niets, aangezien er waarschijnlijk een probleem met de website zelf is.
 fp-learn-more-about-secure-connection-failures = Meer info over mislukte beveiligde verbindingen
 fp-learn-more-about-cert-issues = Meer info over dit soort certificaatproblemen
 fp-learn-more-about-time-related-errors = Meer info over het oplossen van tijdgerelateerde fouten
+
+## Variables:
+##   $hostname (string) - Hostname of the website with cert error.
+
+cert-error-revoked-certificate = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het certificaat voor { $hostname } is ingetrokken en niet meer wordt vertrouwd.
+cert-error-bad-signature = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat de ondertekening op het voor { $hostname } verstrekte certificaat niet geldig is.
+cert-error-key-pinning-failure = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat een andere publieke sleutel gebruikt dan verwacht.
+cert-error-bad-der = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat niet juist is versleuteld.
+cert-error-cert-not-in-name-space = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat niet de naambeperkingen volgt van een certificaat dat het heeft uitgegeven.
+cert-error-inadequate-cert-type = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat niet mag worden gebruikt door een webserver.
+cert-error-path-len-constraint-invalid = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat te veel tussencertificaten in het pad naar het rootcertificaat bevat.
+cert-error-invalid-key = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat een ongeldige sleutel bevat. Hoogstwaarschijnlijk is deze te klein om veilig te zijn.
+cert-error-unknown-critical-extension = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat een niet-ondersteunde kritieke extensie bevat.
+cert-error-extension-value-invalid = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat een ongeldige extensie bevat.
+cert-error-untrusted-issuer = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat is uitgegeven door een certificaatautoriteit die niet meer wordt vertrouwd.
+cert-error-untrusted-cert = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat als niet vertrouwd is gemarkeerd.
+cert-error-invalid-integer-encoding = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat een ongeldige codering van een integer bevat. Gebruikelijke oorzaken zijn negatieve serienummers, negatieve RSA-moduli en coderingen die langer zijn dan nodig.
+cert-error-unsupported-keyalg = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het voor { $hostname } verstrekte certificaat een niet-ondersteund sleuteltype heeft.
+cert-error-issuer-no-longer-trusted = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat de certificaatautoriteit die het voor { $hostname } verstrekte certificaat heeft uitgegeven niet meer wordt vertrouwd.
+cert-error-signature-algorithm-mismatch = { -brand-short-name } heeft uw bezoek aan deze website geblokkeerd, omdat het ondertekeningsalgoritme van het voor { $hostname } verstrekte certificaat niet overeenkomt met het veld voor het ondertekeningsalgoritme.
 
 ## Messages used for certificate error titles
 
@@ -118,6 +144,7 @@ deniedPortAccess-title = Dit adres heeft beperkte toegang
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. We kunnen die website niet vinden.
+internet-connection-offline-title = Het lijkt erop dat er een probleem is met uw internetverbinding.
 dns-not-found-trr-only-title2 = Mogelijk beveiligingsrisico bij opzoeken van dit domein
 dns-not-found-native-fallback-title2 = Mogelijk beveiligingsrisico bij opzoeken van dit domein
 fileNotFound-title = Bestand niet gevonden
@@ -134,6 +161,7 @@ contentEncodingError-title = Inhoudcoderingsfout
 unsafeContentType-title = Onveilig bestandstype
 netReset-title = De verbinding werd geherinitialiseerd
 netTimeout-title = De wachttijd voor de verbinding is verstreken
+httpErrorPage-title = Het lijkt erop dat er een probleem met deze website is
 serverError-title = Het lijkt erop dat er een probleem met deze website is
 unknownProtocolFound-title = Het adres werd niet begrepen
 proxyConnectFailure-title = De proxyserver weigert verbindingen
@@ -142,6 +170,7 @@ redirectLoop-title = De pagina verwijst niet op een juiste manier door
 unknownSocketType-title = Onverwacht antwoord van server
 nssFailure2-title = Beveiligde verbinding mislukt
 csp-xfo-error-title = { -brand-short-name } kan deze pagina niet openen
+corruptedContentErrorv2-title = Beschadigde-inhoudsfout
 corruptedContentError-title = Beschadigde-inhoudsfout
 sslv3Used-title = Kan geen beveiligde verbinding maken
 inadequateSecurityError-title = Uw verbinding is niet beveiligd
@@ -168,3 +197,4 @@ fp-certerror-hide-advanced-button = Geavanceerd verbergen
 fp-certerror-override-exception-button = Doorgaan naar { $hostname } (Risicovol)
 fp-certerror-intro = { -brand-short-name } heeft een mogelijk ernstig beveiligingsprobleem met <strong>{ $hostname }</strong> opgemerkt. Iemand die zich voordoet als de website kan zaken zoals creditcardgegevens, wachtwoorden of e-mailadressen proberen te stelen.
 fp-certerror-expired-into = { -brand-short-name } heeft een beveiligingsprobleem ontdekt met <strong>{ $hostname }</strong>. Of de website is niet goed ingesteld, of de klok van uw apparaat is op de verkeerde datum/tijd ingesteld.
+fp-certerror-transparency-intro = Iemand die zich voordoet als <strong>{ $hostname }</strong> kan dingen zoals creditcardgegevens, wachtwoorden of e-mailadressen proberen te stelen.

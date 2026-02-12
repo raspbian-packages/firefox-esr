@@ -63,24 +63,3 @@ webext-perms-host-description-too-many-sites =
         [one] अन्य { $domainCount } साइटमा आफ्नो डाटाको पहुँच पाउनुहोस्
        *[other] अन्य { $domainCount } साइटहरूमा आफ्नो डाटाको पहुँच पाउनुहोस्
     }
-
-## Headers used in the webextension permissions dialog for synthetic add-ons.
-## The part of the string describing what privileges the extension gives should be consistent
-## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
-## Note, this string will be used as raw markup. Avoid characters like <, >, &
-## Variables:
-##   $hostname (String): the hostname of the site the add-on is being installed from.
-
-
-##
-
-
-## Headers used in the webextension permissions dialog.
-## Note: This string will be used as raw markup. Avoid characters like <, >, &
-## Variables:
-##   $extension (String): replaced with the localized name of the extension being installed.
-##   $hostname (String): will be replaced by the DNS host name for which a webextension enables permissions.
-
-
-## These should remain in sync with permissions.NAME.label in sitePermissions.properties
-

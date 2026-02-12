@@ -59,7 +59,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } users
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Synchronise your bookmarks everywhere.
 cfr-doorhanger-bookmark-fxa-body = Great find! Now don’t be left without this bookmark on your mobile devices. Get Started with a { -fxaccount-brand-name }.
@@ -68,6 +68,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Synchronise bookmarks now…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Close button
     .title = Close
+fxa-adoption-addresses-backup-title = Let’s back up your saved addresses
+fxa-adoption-addresses-backup-subtitle = Protect your saved addresses by synchronising them to your devices with encryption.
+fxa-adoption-credit-cards-backup-title = Let’s back up your payment methods
+fxa-adoption-credit-cards-backup-subtitle = Protect your payment methods by synchronising them to your devices with encryption.
+fxa-adoption-bookmarks-treatment-backup-title = Let’s back up your bookmarks
+fxa-adoption-bookmarks-treatment-backup-subtitle = Protect your bookmarks by synchronising them to your devices with encryption.
+fxa-adoption-primary-button-label = Sign up
 
 ## Protections panel
 
@@ -225,6 +232,22 @@ fox-doodle-pin-secondary = Not now
 set-default-pdf-handler-headline = <strong>Your PDFs now open in { -brand-short-name }.</strong> Edit or sign forms directly in your browser. To change, search “PDF” in settings.
 set-default-pdf-handler-primary = Got it
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Sign on the dotted line — or anywhere!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Draw, type, or upload your signature, then place it exactly where you want. Save your go-to signatures for next time.
+annotations-make-default-pdf-handler-title = Make { -brand-short-name } your default PDF editor?
+annotations-make-default-pdf-handler-subtitle = You’ll have access to our tools every time you open a PDF.
+annotations-make-default-pdf-primary-cta =
+    .label = Set as default
+annotations-make-default-pdf-next =
+    .label = Next
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = New device in your future?
@@ -310,8 +333,11 @@ fxa-menu-message-close-button =
     .title = Close
     .aria-label = Close
 fxa-menu-message-sign-up-button = Sign up
+fxa-menu-message-sign-in-button = Sign in
+fxa-menu-message-sync-button = Start synchronising
 fxa-menu-message-sync-devices-primary-text = Synchronise all your devices
 fxa-menu-message-sync-devices-secondary-text = Instantly get your info — like bookmarks and passwords — everywhere you use { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Instantly get your bookmarks, passwords, and more — everywhere you’re signed in to { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Synchronise all your devices
 fxa-menu-message-backup-data-primary-text = Back up your browser data
 fxa-menu-message-backup-data-secondary-text = Automatically protect bookmarks, passwords, and other info on all your devices.
@@ -342,3 +368,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Keep your favourite privacy-focused browser just one click away. Set { -brand-short-name } as your default browser for opening links and pin it to your taskbar.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Keep your favourite privacy-focused browser just one click away. Set { -brand-short-name } as your default browser for opening links and pin it to your taskbar and Start menu.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Upgrading from Windows 10 soon?
+windows-10-eos-sync-spotlight-subtitle = Back up your passwords and bookmarks so you’re ready to make the leap to any device.
+windows-10-eos-sync-spotlight-primary-label = Back up your { -brand-short-name }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Upgrading to Windows 11? Don’t lose bookmarks and passwords.
+windows-10-eos-sync-toast-subtitle = Back up your data so { -brand-short-name } is ready to go any time, on this PC or the next one.
+windows-10-eos-sync-toast-primary-label = Get started
+windows-10-eos-sync-toast-secondary-label = Remind me later
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } isn’t preloaded like other Big Tech browsers. That’s the point.
+windows-10-eos-challenger-sync-callout-subtitle = When you back up your { -brand-product-name } bookmarks and passwords, it’s easier to bring the browser you chose to your next device.
+windows-10-eos-challenger-pin-callout-subtitle = Pin { -brand-shorter-name } to your taskbar so the browser you chose is always there when you need it.
+windows-10-eos-challenger-sync-primary-button = Back up { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Pin { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } blocks cryptominers, social media trackers and fingerprinters.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Trackers can’t ID your device or follow you across the web — because we don’t let them.
+windows-10-eos-sync-callout-privacy-screen-2-title = Secure your passwords and bookmarks for your next device.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Backing up { -brand-shorter-name } makes it easy to bring your data and privacy settings with you.
+windows-10-eos-sync-callout-privacy-info-button = See what’s blocked
+windows-10-eos-callout-addons-title = Try add-ons: simple upgrades, big impacts
+windows-10-eos-callout-addons-subtitle = These extensions were chosen to help you stay productive, protected and distraction-free.
+windows-10-eos-callout-addons-primary-button = See our picks
+windows-10-eos-sync-callout-addons-title = Don’t lose your add-ons when you upgrade from Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Synchronise now so your { -brand-product-name } add-ons are always available, even after a device change.
+windows-10-eos-sync-callout-next-button = Next
+windows-10-eos-sync-callout-get-started-button = Get started
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Vertical tabs and tab groups are here!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = By popular request, { -brand-product-name } just dropped new features to keep your browsing streamlined and focused.
+windows-10-eos-feature-toast-whats-new-button = See what’s new
+windows-10-eos-feature-toast-dismiss-button = Dismiss
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Strict tracking protection can cause sites to break.</strong> Fix common issues by unblocking essential elements that could contain trackers.
+etp-strict-exceptions-infobar-learn-more = Learn more
+etp-strict-exceptions-infobar-button = Apply fixes
+    .accesskey = A
+etp-strict-exceptions-infobar-not-now = Not now
+    .accesskey = N

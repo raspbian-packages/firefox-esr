@@ -31,6 +31,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Obnovi zaprte zavihke
         }
     .accesskey = h
+toolbar-context-turn-on-vertical-tabs =
+    .label = Vklopi navpične zavihke
+toolbar-context-turn-off-vertical-tabs =
+    .label = Izklopi navpične zavihke
+toolbar-context-customize-sidebar =
+    .label = Prilagodi stransko vrstico
 toolbar-context-menu-manage-extension =
     .label = Upravljaj razširitev
     .accesskey = U
@@ -55,6 +61,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Ob začetku prenosa prikaži ploščo
     .accesskey = š
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Vedno prikaži v orodni vrstici
+    .accesskey = a
 toolbar-context-menu-remove-from-toolbar =
     .label = Odstrani iz orodne vrstice
     .accesskey = R

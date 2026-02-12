@@ -77,7 +77,7 @@ detail-home =
 detail-home-value =
     .value = { detail-home.label }
 detail-repository =
-    .label = Кеңейту профайлы
+    .label = Кеңейту профилі
 detail-repository-value =
     .value = { detail-repository.label }
 detail-check-for-updates =
@@ -201,6 +201,10 @@ addon-updates-manual-updates-found = Қолжетімді жаңартулард
 
 addon-install-from-file = Файлдан қосымшаны орнату…
     .accesskey = Ф
+# Like `addon-install-from-file` but used when the `extensions.webextensions.prefer-update-over-install-for-existing-addon`
+# pref is set.
+addon-install-or-update-from-file = Файлдан қосымшаны орнату немесе жаңарту…
+    .accesskey = р
 addon-install-from-file-dialog-title = Орнату үшін кеңейтуді таңдаңыз
 addon-install-from-file-filter-name = Қосымшалар
 addon-open-about-debugging = Қосымшаларды жөндеу
@@ -272,6 +276,7 @@ discopane-notice-recommendations2 =
         Бұл ұсыныстардың кейбіреулері жекеленген. Олар сіз басқа орнатқан кеңейтулер,
         профиль баптаулары және қолданылу статистикасына негізделген.
 discopane-notice-learn-more = Көбірек білу
+colorway-removal-notice-learn-more = Көбірек білу
 privacy-policy = Жекелік саясаты
 # Refers to the author of an add-on, shown below the name of the add-on.
 # Variables:
@@ -292,13 +297,6 @@ find-more-themes = Көбірек темаларды табу
 # used for screen readers.
 addon-options-button =
     .aria-label = Көбірек опциялар
-# Explanatory introduction to the list of recommended add-ons. The action word
-# ("recommends") in the final sentence is a link to external documentation.
-discopane-intro2 =
-    Кеңейтулер мен темалар сізге { -brand-product-name } баптауға мүмкіндік береді. Олар жекелікті мен өнімділікті арттыруға,
-    мультимедианы жақсартуға, { -brand-product-name } сыртқы түрін өзгертуге және т.б. мүмкіндік береді. Бұл шағын
-    бағдарламалық қамтаманы көбінесе үшінші тарап әзірлейді. Мұнда ерекше қауіпсіздік, өнімділік және функционалдылық үшін
-    { -brand-product-name } <a data-l10n-name="learn-more-trigger">ұсынатын таңдау</a> берілген.
 
 ## Add-on actions
 
@@ -384,6 +382,10 @@ addon-detail-group-label-updates =
     .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed3 =
+    .title = Жекелік терезелерінде рұқсат етілген
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
     .title = Жекелік терезелерінде рұқсат етілген
     .aria-label = { addon-badge-private-browsing-allowed2.title }
@@ -423,6 +425,10 @@ addon-badge-line3 =
 addon-badge-verified2 =
     .title = Бұл кеңейту қауіпсіздік пен өнімділік стандарттарына сай келетініне тексерілді
     .aria-label = { addon-badge-verified2.title }
+# We hard code "Mozilla" in the string below because the extensions are built
+# by Mozilla and we don't want forks to display "by Fork".
+addon-badge-line4 =
+    .title = Mozilla компаниясы жасаған ресми кеңейту. Қауіпсіздік және өнімділік стандарттарына сәйкес келеді
 
 ##
 
@@ -430,7 +436,10 @@ available-updates-heading = Қолжетімді жаңартулар
 recent-updates-heading = Соңғы жаңартулар
 release-notes-loading = Жүктелуде…
 release-notes-error = Кешіріңіз, шығарылым ескертпесін жүктеп алу кезінде қате кетті.
+addon-permissions-heading = Рұқсаттар
 addon-permissions-empty2 = Бұл кеңейту ешқандай рұқсаттарды қажет етпейді.
+addon-permissions-required-label = Керек етілген:
+addon-permissions-optional-label = Қосымша:
 addon-permissions-empty = Бұл кеңейту ешқандай рұқсаттарды қажет етпейді
 addon-permissions-required = Негізгі мүмкіндіктері үшін керек рұқсаттар:
 addon-permissions-optional = Қосымша мүмкіндіктері үшін керек рұқсаттар:
@@ -458,6 +467,9 @@ shortcuts-heading = Кеңейтудің пернетақта жарлықтар
 default-heading-search-label = Көбірек қосымшаларды табу
 addons-heading-search-input =
     .placeholder = addons.mozilla.org-ға іздеу
+addons-heading-search-button =
+    .title = addons.mozilla.org сайтынан іздеу
+    .aria-label = addons.mozilla.org сайтынан іздеу
 addon-page-options-button =
     .title = Барлық қосымшалар үшін құралдар
 
@@ -486,8 +498,6 @@ details-notification-hard-blocked-other =
     .message = Бұл қосымша Mozilla саясаттарын бұзғаны үшін бұғатталған және сөндірілген.
 details-notification-unsigned-link = Көбірек ақпарат
 details-notification-blocked = { $name } қауіпсіздік не тұрақтылық мәселелер салдарынан сөндірілген.
-details-notification-blocked2 =
-    .message = { $name } қауіпсіздік не тұрақтылық мәселелер салдарынан сөндірілген.
 details-notification-blocked-link2 = Ақпаратын қарау
 details-notification-soft-blocked-extension-disabled =
     .message = Бұл кеңейту Mozilla саясаттарын бұзғаны үшін шектелген және сөндірілген. Оны іске қосуға болады, бірақ бұл қауіпті болуы мүмкін.
@@ -500,8 +510,6 @@ details-notification-soft-blocked-other-enabled =
 details-notification-softblocked-link2 = Ақпаратын қарау
 details-notification-blocked-link = Көбірек ақпарат
 details-notification-softblocked = { $name } қауіпсіздік не тұрақтылықпен мәселелер туғызатыны белгілі.
-details-notification-softblocked2 =
-    .message = { $name } қауіпсіздік не тұрақтылықпен мәселелер туғызатыны белгілі.
 details-notification-softblocked-link = Көбірек ақпарат
 details-notification-gmp-pending = { $name } жақында орнатылады.
 details-notification-gmp-pending2 =
@@ -515,3 +523,38 @@ plugins-openh264-name = OpenH264 видео кодекті Cisco Systems, Inc қ
 plugins-openh264-description = Mozilla бұл плагинді WebRTC сипаттамасына сәйкес болу үшін және H.264 видео кодегін талап ететін құрылғылармен WebRTC қоңырауларын іске қосу үшін автоматты түрде орнатты. Кодектің бастапқы кодтарын қарау және іске асырылуы туралы көбірек білу үшін http://www.openh264.org/ сайтын шолыңыз.
 plugins-widevine-name = Widevine Content Decryption Module ұсынған Google Inc.
 plugins-widevine-description = Бұл плагин шифрленген медианы ойнатуды Encrypted Media Extensions сипаттамасына сай мүмкін етеді. Шифрленген медиа әдетте сайттармен премиум-мазмұнын көшіруге жол бермеу үшін қолданылады. Encrypted Media Extensions туралы көбірек білу үшін, https://www.w3.org/TR/encrypted-media/ шолыңыз.
+
+## Headings for the Permissions tab in `about:addons` when the data collection
+## feature is enabled.
+
+addon-permissions-required-data-collection = Міндетті деректерді жинау:
+addon-permissions-optional-data-collection = Қосымша деректер жинау:
+# Name of the Permissions tab in `about:addons` when the data collection feature is enabled.
+permissions-data-addon-button = Рұқсаттар мен деректер
+# This is a description for extension that use this AI model
+# Variables:
+#   $extensionName (String) - Name of the extension
+mlmodel-extension-label = { $extensionName } кеңейтуімен қолданылуда
+addon-permissions-data-collection-heading = Деректерді жинау
+addon-permissions-data-collection-empty = Әзірлеуші бұл кеңейту деректер жинауды қажет етпейтінін хабарлады.
+
+## Mapping Engine IDs from AI models to how that feature represented by the engine Id is described in the used by section in local model management
+
+mlmodel-smart-tab-topic-engine = { -brand-short-name } мұны беттер топтары үшін атауларды ұсыну үшін пайдаланады
+# AI Model will be downloaded on the users device and used locally
+addon-category-mlmodel = Құрылғыдағы ЖИ
+addon-category-mlmodel-title =
+    .title = Құрылғыдағы ЖИ
+mlmodel-heading = Құрылғыдағы ЖИ модельдерін басқару
+# Label for button that when clicked removed local model
+mlmodel-remove-addon-button =
+    .aria-label = Өшіру
+# Label for the aggregated value of all files for a model
+mlmodel-addon-detail-totalsize-label = Файл өлшемі
+mlmodel-addon-detail-last-used-label = Соңғы қолданылған
+# This is a section label to describe what extensions or features use a specific local AI model
+mlmodel-addon-detail-used-by-label = Қолданған
+# This is a section label to describe the link to the model card on the Hugging Face website
+mlmodel-addon-detail-model-card = Модель картасы
+# This is a label for the Model Card link to Hugging face
+mlmodel-addon-detail-model-card-link-label = Hugging Face ішінде ашу

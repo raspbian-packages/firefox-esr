@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = { -brand-shortcut-name } Privat surfning
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,25 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } — Privat surfning
     .data-content-title-default-with-profile = { $content-title } — { $profile-name }
     .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Privat surfning
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — Privat surfning
+       *[other] { -brand-full-name } Privat surfning
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = Privat surfning
+popups-infobar-dont-show-message2 =
+    .label = Visa inte det här meddelandet när popup-fönster eller omdirigeringar från tredje part blockeras
+    .accesskey = V
+edit-popup-settings2 =
+    .label = Hantera popup-inställningar och omdirigeringsinställningar för tredje part...
+    .accesskey = H
 
 ##
 
@@ -135,6 +152,10 @@ urlbar-default-notification-anchor =
     .tooltiptext = Öppna meddelandepanel
 urlbar-geolocation-notification-anchor =
     .tooltiptext = Öppna platsbegäranspanel
+urlbar-localhost-notification-anchor =
+    .tooltiptext = Hantera lokal enhetsåtkomst för den här webbplatsen
+urlbar-local-network-notification-anchor =
+    .tooltiptext = Hantera delning av din lokala nätverksåtkomst med den här webbplatsen
 urlbar-xr-notification-anchor =
     .tooltiptext = Öppna behörighetspanelen för virtuell verklighet
 urlbar-storage-access-anchor =
@@ -181,6 +202,35 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = Få hjälp
     .accesskey = h
+urlbar-result-menu-dismiss-suggestion =
+    .label = Avvisa förslaget
+    .accesskey = A
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = Läs mer om { -firefox-suggest-brand-name }
+    .accesskey = L
+urlbar-result-menu-manage-firefox-suggest =
+    .label = Hantera { -firefox-suggest-brand-name }
+    .accesskey = H
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = Rapportera felaktig plats
+urlbar-result-menu-show-less-frequently =
+    .label = Visas mer sällan
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = Visa inte väderförslag
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = Öppna meny
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = Tack för din feedback
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = Tack för din feedback. Du kommer inte att se väderförslag längre.
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -206,6 +256,10 @@ urlbar-search-mode-actions = Åtgärder
 
 urlbar-geolocation-blocked =
     .tooltiptext = Du har blockerat platsinformation för den här webbplatsen.
+urlbar-localhost-blocked =
+    .tooltiptext = Du har blockerat lokala enhetsanslutningar för den här webbplatsen.
+urlbar-local-network-blocked =
+    .tooltiptext = Du har blockerat lokala nätverksanslutningar för den här webbplatsen.
 urlbar-xr-blocked =
     .tooltiptext = Du har blockerat enheter för virtuell verklighet att få åtkomst till den här webbplatsen.
 urlbar-web-notifications-blocked =
@@ -218,6 +272,8 @@ urlbar-screen-blocked =
     .tooltiptext = Du har blockerat den här webbsidan från att få dela din skärm.
 urlbar-persistent-storage-blocked =
     .tooltiptext = Du har blockerat beständig lagring för den här webbplatsen.
+urlbar-popup-blocked2 =
+    .tooltiptext = Du har blockerat popup-fönster och omdirigeringar från tredje part för den här webbplatsen.
 urlbar-popup-blocked =
     .tooltiptext = Du har blockerat popup-fönster för den här webbplatsen.
 urlbar-autoplay-media-blocked =
@@ -312,10 +368,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Visa tillägg
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = tillägg, teman
 quickactions-cmd-addons2 = tillägg
 # Opens the bookmarks library window
 quickactions-bookmarks2 = Hantera bokmärken
 quickactions-cmd-bookmarks = bokmärken
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = Rensa senaste historik
+quickactions-cmd-clearrecenthistory = rensa närliggande historik, historik
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Rensa historik
 quickactions-cmd-clearhistory = rensa historik
@@ -324,9 +387,20 @@ quickactions-downloads2 = Visa nedladdningar
 quickactions-cmd-downloads = hämtningar
 # Opens about:addons page in the extensions section
 quickactions-extensions = Hantera tillägg
+quickactions-cmd-extensions2 = tillägg
 quickactions-cmd-extensions = tillägg
+# Opens Firefox View
+quickactions-firefoxview = Öppna { -firefoxview-brand-name }
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = öppna { -firefoxview-brand-name }, { -firefoxview-brand-name }, öppen vy, vy
+# Opens SUMO home page
+quickactions-help = { -brand-product-name } hjälp
+quickactions-cmd-help = hjälp, stöd
 # Opens the devtools web inspector
 quickactions-inspector2 = Öppna utvecklarverktyg
+quickactions-cmd-inspector2 = inspektör, utvecklingsverktyg, devtools
 quickactions-cmd-inspector = inspektör, utvecklarverktyg
 # Opens about:logins
 quickactions-logins2 = Hantera lösenord
@@ -339,7 +413,7 @@ quickactions-print2 = Skriv ut sida
 quickactions-cmd-print = skriva ut
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Spara sida som PDF
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, spara sida
 # Opens a new private browsing window
 quickactions-private2 = Öppna privat fönster
 quickactions-cmd-private = privat surfning
@@ -351,18 +425,26 @@ quickactions-restart = Starta om { -brand-short-name }
 quickactions-cmd-restart = omstart
 # Opens the screenshot tool
 quickactions-screenshot3 = Ta en skärmdump
+quickactions-cmd-screenshot2 = skärmdump, ta en skärmdump
 quickactions-cmd-screenshot = skärmbild
 # Opens about:preferences
 quickactions-settings2 = Hantera inställningar
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = inställningar, alternativ, hantera
 quickactions-cmd-settings = inställningar, alternativ
 # Opens about:addons page in the themes section
 quickactions-themes = Hantera teman
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = teman, tillägg
 quickactions-cmd-themes = teman
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = Uppdatera { -brand-short-name }
 quickactions-cmd-update = uppdatera
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = Visa källkod
+quickactions-cmd-viewsource2 = visa källa, källa, sidkälla
 quickactions-cmd-viewsource = visa källa, källa
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
@@ -557,6 +639,10 @@ urlbar-search-mode-indicator-close =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = Sök eller ange adress
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = Ange adress
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -636,6 +722,8 @@ urlbar-result-action-visit = Besök
 # Variables
 # $container (String): the name of the target container
 urlbar-result-action-switch-tab-with-container = Byt till flik · <span>{ $container }</span>
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = Namnlös grupp
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Besök från urklipp
 # Directs a user to press the Tab key to perform a search with the specified
@@ -665,6 +753,131 @@ urlbar-result-action-copy-to-clipboard = Kopiera
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = odefinierad
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong> i { $city }, { $region }
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature }°{ $unit }</strong> i { $city }, { $region }, { $country }
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong> i { $city }
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } · Sponsrad
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = Få börsdata direkt i sökfältet
+# This string is shown as description when Market suggestion are disabled.
+urlbar-result-market-opt-in-description = Visa marknadsuppdateringar och mer från våra partners när du delar sökfrågedata med { -vendor-short-name }. <a data-l10n-name="learn-more-link">Läs mer</a>
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = Visa förslag
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = Inte nu
+urlbar-result-realtime-opt-in-dismiss = Ignorera
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = Visa inte dessa förslag
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = Visa inte marknadsförslag
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = Tack för din feedback. Du ser inte marknadsförslag längre.
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = Tack för din feedback. Du ser inte dessa förslag längre.
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown =
+    { $daysUntilStart ->
+        [one] { $name } · Om { $daysUntilStart } dag
+       *[other] { $name } · Om { $daysUntilStart } dagar
+    }
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range =
+    { $daysUntilStart ->
+        [one] { $name } · Startar om { $daysUntilStart } dag
+       *[other] { $name } · Startar om { $daysUntilStart } dagar
+    }
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing =
+    { $daysUntilEnd ->
+        [one] { $name } · Slutar om { $daysUntilEnd } dag
+       *[other] { $name } · Slutar om { $daysUntilEnd } dagar
+    }
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · Idag
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · Slutar idag
 
 ## Strings used for buttons in the urlbar
 
@@ -692,8 +905,15 @@ urlbar-searchmode-actions =
     .label = Åtgärder
 urlbar-searchmode-exit-button =
     .tooltiptext = Stäng
+urlbar-searchmode-default =
+    .tooltiptext = Standardsökmotor
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Denna gång, sök med:
-urlbar-searchmode-popup-search-settings = Sökinställningar
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Sökinställningar
+# Label shown next to a new search engine in the Searchmode Switcher popup to promote it.
+urlbar-searchmode-new = Ny
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -744,6 +964,9 @@ urlbar-group-recent-searches =
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
     .label = Trender på { $engine }
+# Label shown above sponsored suggestions in the urlbar results.
+urlbar-group-sponsored =
+    .label = Sponsrad
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = Visa inte populära sökningar
@@ -924,7 +1147,7 @@ toolbar-button-new-private-window =
 
 ## EME notification panel
 
-eme-notifications-drm-content-playing = En del ljud eller video på den här hemsidan använder DRM mjukvara, vilket kan begränsa vad { -brand-short-name } tillåter dig att använda den till.
+eme-notifications-drm-content-playing = En del ljud eller video på den här sidan använder DRM mjukvara, vilket kan begränsa vad { -brand-short-name } tillåter dig att använda den till.
 eme-notifications-drm-content-playing-manage = Hantera inställningar
 eme-notifications-drm-content-playing-manage-accesskey = H
 eme-notifications-drm-content-playing-dismiss = Ignorera
@@ -940,6 +1163,9 @@ panel-save-update-password = Lösenord
 # "More" item in macOS share menu
 menu-share-more =
     .label = Mer…
+menu-share-copy-link =
+    .label = Kopiera länk
+    .accesskey = K
 ui-tour-info-panel-close =
     .tooltiptext = Stäng
 
@@ -952,6 +1178,9 @@ popups-infobar-allow =
 popups-infobar-block =
     .label = Blockera popup-fönster för { $uriHost }
     .accesskey = p
+popups-infobar-allow2 =
+    .label = Tillåt popup-fönster och omdirigeringar från tredje part för { $uriHost }
+    .accesskey = T
 
 ##
 
@@ -987,6 +1216,8 @@ navbar-accessible =
     .aria-label = Navigering
 navbar-downloads =
     .label = Filhämtaren
+navbar-overflow-2 =
+    .tooltiptext = Fler verktyg
 navbar-overflow =
     .tooltiptext = Fler verktyg…
 # Variables:
@@ -1012,6 +1243,10 @@ tabs-toolbar-new-tab =
 tabs-toolbar-list-all-tabs =
     .label = Lista alla flikar
     .tooltiptext = Lista alla flikar
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = Släpp flik här för att fästa
 
 ## Infobar shown at startup to suggest session-restore
 
@@ -1110,6 +1345,7 @@ firefox-relay-offer-why-to-use-relay = Våra säkra, lättanvända alias skyddar
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = Alla e-postmeddelanden som skickas till dina e-postalias kommer att vidarebefordras till <strong>{ $useremail }</strong> (om du inte bestämmer dig för att blockera dem).
 firefox-relay-offer-legal-notice = Genom att klicka på "Använd e-postalias" godkänner du <label data-l10n-name="tos-url">användarvillkoren</label> och <label data-l10n-name="privacy-url">sekretessmeddelandet</label>.
+firefox-relay-offer-legal-notice-1 = Genom att registrera dig och skapa ett e-postalias godkänner du <label data-l10n-name="tos-url">användarvillkoren</label> och <label data-l10n-name="privacy-url">sekretessmeddelandet</label>.
 
 ## Add-on Pop-up Notifications
 
@@ -1117,10 +1353,15 @@ popup-notification-addon-install-unsigned =
     .value = (Overifierad)
 popup-notification-xpinstall-prompt-learn-more = Läs mer om hur du installerar tillägg säkert
 popup-notification-xpinstall-prompt-block-url = Se detaljer
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = Kör i privata fönster
-    .accesskey = K
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = Tillåt att tillägg körs i privata fönster
+    .accesskey = T
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = Dela teknisk data och interaktionsdata med tilläggsutvecklare
+    .accesskey = D
 
 ## Pop-up warning
 
@@ -1131,10 +1372,24 @@ popup-warning-message =
         [one] { -brand-short-name } hindrade att denna webbplats öppnar ett popup-fönster.
        *[other] { -brand-short-name } hindrade att denna webbplats öppnar { $popupCount } popup-fönster.
     }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] { -brand-short-name } förhindrade den här webbplatsen från att omdirigera.
+        [1] { -brand-short-name } förhindrade att den här webbplatsen öppnade ett popup-fönster och omdirigerade.
+       *[other] { -brand-short-name } prevented this site from opening { $popupCount } pop-up windows and redirecting.
+    }
 # The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
 # Variables:
 #   $popupCount (Number): the number of pop-ups blocked.
 popup-warning-exceeded-message = { -brand-short-name } hindrade den här webbplatsen från att öppna fler än { $popupCount } popup-fönster.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-with-redirect-message =
+    { $popupCount ->
+       *[other] { -brand-short-name } förhindrade att den här webbplatsen öppnade fler än { $popupCount } popup-fönster och omdirigerade.
+    }
 popup-warning-button =
     .label =
         { PLATFORM() ->
@@ -1150,6 +1405,10 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = Visa “{ $popupURI }”
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = Visa “{ $redirectURI }”
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
@@ -1171,3 +1430,148 @@ file-picker-crashed-save-nowhere = Windows fildialog har kraschat. Ingen standar
 file-picker-crashed-show-in-folder =
     .label = Visa i mapp
     .accessKey = m
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = Slutför installationen
+onboarding-aw-finish-setup-button =
+    .label = Slutför konfigurationen
+    .tooltiptext = Slutför konfigureringen av { -brand-short-name }
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = Förbättrat spårningsskydd är på
+trustpanel-etp-label-disabled = Förbättrat spårningsskydd är av
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = Förbättrat spårningsskydd: På för { $host }
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = Förbättrat spårningsskydd: Av för { $host }
+trustpanel-etp-description-enabled = Om något ser trasigt ut på den här webbplatsen, försök att stänga av skydden.
+trustpanel-etp-description-disabled = { -brand-product-name } tycker att företag borde följa dig mindre. Vi blockerar så många spårare vi kan när du slår på skydd.
+trustpanel-connection-label-secure = Anslutningen säker
+trustpanel-connection-label-insecure = Anslutningen är inte säker
+trustpanel-header-enabled = { -brand-product-name } är på vakt
+trustpanel-description-enabled2 = Du är skyddad. Om vi upptäcker något meddelar vi dig.
+trustpanel-header-enabled-insecure = Var försiktig med den här sidan
+trustpanel-description-enabled-insecure = { -brand-product-name } märkte något misstänkt.
+trustpanel-header-disabled = Du stängde av skydden
+trustpanel-description-disabled = { -brand-product-name } är inte i drift. Vi föreslår att du aktiverar skydden igen.
+trustpanel-clear-cookies-button = Rensa kakor och webbplatsdata
+trustpanel-privacy-link = Sekretessinställningar
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = Rensa kakor och webbplatsdata för { $host }
+trustpanel-clear-cookies-description = Att ta bort kakor och webbplatsdata kan logga ut dig från webbplatser och tömma kundvagnar.
+trustpanel-clear-cookies-subview-button-clear = Rensa
+trustpanel-clear-cookies-subview-button-cancel = Avbryt
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = Anslutningsskydd för { $host }
+trustpanel-siteinformation-morelink = Mer webbplatsinformation
+trustpanel-blocker-see-all = Visa alla
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = Spårningsskydd för { $host }
+
+## The urlbar trust icon & panel
+
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = Inte säker
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-section-header =
+    { $count ->
+        [one] <span>{ $count }</span> spårare blockerad på den här webbplatsen
+       *[other] <span>{ $count }</span> spårare blockerade på den här webbplatsen
+    }
+trustpanel-blocker-description = { -brand-product-name } tycker att företag borde följa dig mindre. Så vi blockerar så många vi kan.
+trustpanel-blocked-header = { -brand-product-name } blockerade dessa saker för dig:
+trustpanel-tracking-header = { -brand-product-name } tillät dessa saker så att webbplatser inte skulle sluta fungera:
+trustpanel-tracking-description = Utan spårare kanske vissa knappar, formulär och inloggningsfält inte fungerar.
+trustpanel-insecure-section-header = Din anslutning är inte säker
+trustpanel-insecure-description = Den data du skickar till den här webbplatsen är inte krypterad. Den kan visas, bli stulen eller ändrad.
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [one] { $count } global spårningskaka
+       *[other] { $count } globala spårningskakor
+    }
+trustpanel-list-label-tracking-content = Spårningsinnehåll
+trustpanel-list-label-fingerprinter =
+    { $count ->
+        [one] { $count } fingeravtrycksspårare
+       *[other] { $count } fingeravtrycksspårare
+    }
+trustpanel-list-label-social-tracking =
+    { $count ->
+        [one] { $count } social mediespårare
+       *[other] { $count } sociala mediespårare
+    }
+trustpanel-list-label-cryptominer =
+    { $count ->
+        [one] { $count } kryptogrävare
+       *[other] { $count } kryptogrävare
+    }
+trustpanel-social-tracking-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } blockerade { $count } social mediespårare
+       *[other] { -brand-product-name } blockerade { $count } sociala mediespårare
+    }
+trustpanel-social-tracking-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } tillät { $count } social mediespårare
+       *[other] { -brand-product-name } tillät { $count } sociala mediespårare
+    }
+trustpanel-tracking-cookies-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } blockerade { $count } global spårningskaka
+       *[other] { -brand-product-name } blockerade { $count } globala spårningskakor
+    }
+trustpanel-tracking-cookies-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } tillät { $count } global spårningskaka
+       *[other] { -brand-product-name } tillät { $count } globala spårningskakor
+    }
+trustpanel-tracking-content-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } blockerade { $count } spårare
+       *[other] { -brand-product-name } blockerade { $count } spårare
+    }
+trustpanel-tracking-content-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } tillät { $count } spårare
+       *[other] { -brand-product-name } tillät { $count } spårare
+    }
+trustpanel-tracking-content-tab-list-header = Dessa webbplatser försöker spåra dig:
+trustpanel-fingerprinter-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } blockerade { $count } fingeravtrycksspårare
+       *[other] { -brand-product-name } blockerade { $count } fingeravtrycksspårare
+    }
+trustpanel-fingerprinter-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } tillät { $count } fingeravtrycksspårare
+       *[other] { -brand-product-name } tillät { $count } fingeravtrycksspårare
+    }
+trustpanel-fingerprinter-list-header = Dessa webbplatser försöker ta fingeravtryck från dig:
+trustpanel-cryptominer-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } blockerade { $count } kryptogrävare
+       *[other] { -brand-product-name } blockerade { $count } kryptogrävare
+    }
+trustpanel-cryptominer-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } tillät { $count } kryptogrävare
+       *[other] { -brand-product-name } tillät { $count } kryptogrävare
+    }
+trustpanel-cryptominer-tab-list-header = Dessa webbplatser försöker kryptominera:

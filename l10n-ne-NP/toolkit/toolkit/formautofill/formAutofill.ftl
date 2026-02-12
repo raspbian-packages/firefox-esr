@@ -8,11 +8,8 @@
 # The links lead users to Form Autofill browser preferences.
 autofill-options-link = फाराम स्वत: भर्नका लागि विकल्पहरू
 
-## The credit card capture doorhanger
-
-
-# Used on the doorhanger when an credit card change is detected.
-
-
 ## These are brand names and should only be translated when a locale-specific name for that brand is in common use
 
+# This string is used in drop down suggestion when users try to autofill credit
+# card on an insecure website (without https).
+autofill-insecure-field-warning-description = { -brand-short-name } ले असुरक्षित साइट फेला पारेको छ। स्वत: फाराम भर्ने सुविधा अस्थायी रुपमा बन्द गरिएको छ।

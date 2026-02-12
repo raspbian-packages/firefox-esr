@@ -29,6 +29,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Reabrir abas fechadas
         }
     .accesskey = h
+toolbar-context-turn-on-vertical-tabs =
+    .label = Ativar abas na vertical
+toolbar-context-turn-off-vertical-tabs =
+    .label = Desativar abas na vertical
+toolbar-context-customize-sidebar =
+    .label = Personalizar painel lateral
 toolbar-context-menu-manage-extension =
     .label = Gerenciar extensão
     .accesskey = e
@@ -53,6 +59,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Mostrar painel ao iniciar um download
     .accesskey = M
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Sempre aparecer na barra de ferramentas
+    .accesskey = a
 toolbar-context-menu-remove-from-toolbar =
     .label = Remover da barra de ferramentas
     .accesskey = R

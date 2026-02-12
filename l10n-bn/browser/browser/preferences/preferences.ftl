@@ -80,6 +80,10 @@ startup-header = শুরুতে
 always-check-default =
     .label = সর্বদা যাচাই করবে { -brand-short-name } আপনার ডিফল্ট ব্রাউজার কি না
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } আপনার বর্তমান ডিফল্ট ব্রাউজার
+is-not-default-browser =
+    .message = { -brand-short-name } আপনার নির্ধারিত ব্রাউজার নয়
 is-default = { -brand-short-name } আপনার বর্তমান ডিফল্ট ব্রাউজার
 is-not-default = { -brand-short-name } আপনার নির্ধারিত ব্রাউজার নয়
 set-as-my-default-browser =
@@ -190,6 +194,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = ফাইল ও অ্যাপ্লিকেশন
+downloads-header-2 =
+    .label = ডাউনলোড
+download-save-where-2 =
+    .label = ফাইল সংরক্ষণের স্থান
+    .accesskey = v
 download-header = ডাউনলোড
 download-save-where = ফাইল সংরক্ষণের স্থান
     .accesskey = v
@@ -374,7 +383,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = নতুন উইন্ডো এবং ট্যাব
 home-new-windows-tabs-description2 = নীড় পাতা, নতুন ইউন্ডো এবং নতুন ট্যাব খুলে আপনি যা দেখতে চান তা নির্বাচন করুন।
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = নীড়পাতা এবং নতুন পর্দা
 home-newtabs-mode-label = নতুন ট্যাবগুলি
@@ -494,6 +503,8 @@ search-keyword-warning-bookmark = আপনার দেয়া কীওয়া�
 ## Containers Section
 
 containers-header = কন্টেইনার ট্যাব
+containers-section-header =
+    .heading = কন্টেইনার ট্যাব
 containers-add-button =
     .label = নতুন কন্টেইনার যোগ
     .accesskey = A
@@ -615,6 +626,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = ডিভাইসের নাম
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = ডিভাইসের নাম
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = ডিভাইসের নাম পরিবর্তন
+    .accesskey = h
 sync-device-name-change =
     .label = ডিভাইসের নাম পরিবর্তন…
     .accesskey = h
@@ -681,9 +700,6 @@ forms-master-pw-fips-desc = পাসওয়ার্ড পরিবর্তন
 
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = ইতিহাস
@@ -704,6 +720,10 @@ history-remember-option-never =
     .label = কখনোই ইতিহাস মনে রাখবে না
 history-remember-option-custom =
     .label = ইতিহাসের জন্য স্বনির্বাচিত সেটিং ব্যবহার করবে
+history-remember-description2 =
+    .description = { -brand-short-name } আপনার ব্রাউজিং, ডাউনলোড, ফরম এবং অনুসন্ধান ইতিহাস মনে রাখবে।
+history-dontremember-description2 =
+    .description = { -brand-short-name } একান্ত ব্রাউজিং এর মতোই সেটিং ব্যবহার করবে, এবং আপনার ব্রাউজিং এর কোন তথ্য সংরক্ষণ করবে না।
 history-remember-description = { -brand-short-name } আপনার ব্রাউজিং, ডাউনলোড, ফরম এবং অনুসন্ধান ইতিহাস মনে রাখবে।
 history-dontremember-description = { -brand-short-name } একান্ত ব্রাউজিং এর মতোই সেটিং ব্যবহার করবে, এবং আপনার ব্রাউজিং এর কোন তথ্য সংরক্ষণ করবে না।
 history-private-browsing-permanent =
@@ -760,12 +780,6 @@ sitedata-clear =
 sitedata-settings =
     .label = ডাটা ব্যবস্থাপনা…
     .accesskey = M
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -882,6 +896,8 @@ permissions-notification-link = আরও জানুন
 permissions-notification-pause =
     .label = নোটিফিকেশন বন্ধ রাখো যতক্ষণ না { -brand-short-name } রিস্টার্ট হয়
     .accesskey = n
+permissions-autoplay2 =
+    .label = অটোপ্লে
 permissions-autoplay = অটোপ্লে
 permissions-autoplay-settings =
     .label = সেটিং...
@@ -895,6 +911,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = ব্যতিক্রম...
     .accesskey = E
+permissions-location2 =
+    .label = অবস্থান
+permissions-xr2 =
+    .label = ভার্চুয়াল রিয়েলিটি
+permissions-camera2 =
+    .label = ক্যামেরা
+permissions-microphone2 =
+    .label = মাইক্রোফোন
+permissions-notification2 =
+    .label = নোটিফিকেশন
 
 ## Privacy Section - Data Collection
 
@@ -916,9 +942,6 @@ addon-recommendations-link = আরও জানুন
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = এই বিল্ড কনফিগারেশনের জন্যে ডাটা রিপোর্টিং নিস্ক্রিয় করা হয়েছে
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -950,12 +973,7 @@ certs-view =
 certs-devices =
     .label = নিরাপত্তা ডিভাইস…
     .accesskey = D
-
-## Privacy Section - HTTPS-Only
-
-
-## DoH Section
-
+certs-devices-enable-fips = FIPS সক্রিয় করা হবে
 
 ## The following strings are used in the Download section of settings
 

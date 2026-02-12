@@ -15,7 +15,25 @@ webext-perms-header-with-perms = { $extension } toevoegen? Deze extensie heeft t
 webext-perms-header-unsigned = { $extension } toevoegen? Deze extensie is niet geverifieerd. Kwaadwillende extensies kunnen uw privégegevens stelen of de controle over uw computer overnemen. Voeg deze extensie alleen toe als u de bron vertrouwt.
 webext-perms-header-unsigned-with-perms = { $extension } toevoegen? Deze extensie is niet geverifieerd. Kwaadwillende extensies kunnen uw privégegevens stelen of de controle over uw computer overnemen. Voeg de extensie alleen toe als u de bron vertrouwt. Deze extensie heeft toestemming om:
 webext-perms-sideload-header = { $extension } is toegevoegd
+webext-perms-optional-perms-header2 = { $extension } vraagt aanvullende toestemmingen
 webext-perms-optional-perms-header = { $extension } vraagt aanvullende toestemmingen.
+webext-perms-header2 = { $extension } toevoegen
+webext-perms-list-intro-unsigned = Deze niet-geverifieerde extensie kan uw privacy of uw apparaat in gevaar brengen. Voeg het alleen toe als u de bron vertrouwt.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = Vereiste machtigingen:
+webext-perms-header-optional-settings = Optionele instellingen:
+webext-perms-header-update-required-perms = Nieuwe vereiste machtigingen:
+webext-perms-header-optional-required-perms = Nieuwe toestemmingen:
+webext-perms-header-data-collection-perms = Vereiste gegevensverzameling:
+webext-perms-header-data-collection-is-none = Gegevensverzameling:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = Nieuwe vereiste gegevensverzameling:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = Nieuwe gegevensverzameling:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = Annuleren
     .accesskey = n
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = { $extension } is bijgewerkt. U moet nieuwe toestemmingen goedkeuren voordat de bijgewerkte versie wordt geïnstalleerd. ‘Annuleren’ kiezen zal de huidige versie van uw extensie behouden.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = { $extension } is bijgewerkt. U moet nieuwe toestemmingen goedkeuren voordat de bijgewerkte versie wordt geïnstalleerd. ‘Annuleren’ kiezen zal de huidige versie van de extensie behouden. Deze extensie heeft toestemming om:
@@ -85,6 +106,29 @@ webext-perms-host-description-multiple-domains =
        *[other] Uw gegevens voor websites in { $domainCount } domeinen benaderen
     }
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = De ontwikkelaar zegt dat deze extensie geen gegevensverzameling vereist.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = De ontwikkelaar zegt dat deze extensie het volgende verzamelt: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = De ontwikkelaar zegt dat de extensie het volgende verzamelt: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = De ontwikkelaar zegt dat de extensie het volgende wil verzamelen: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = { $extension } vereist nieuwe instellingen om bij te werken
+webext-perms-update-list-intro-with-data-collection = Annuleer om uw huidige versie en instellingen te behouden, of werk bij om de nieuwe versie op te halen en de wijzigingen goed te keuren.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = { $extension } vraagt om aanvullende instellingen
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = { $extension } vraagt om aanvullende gegevensverzameling
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -118,3 +162,8 @@ webext-site-perms-header-unsigned-with-perms = { $extension } toevoegen? Deze ex
 
 webext-site-perms-midi = MIDI-apparaten benaderen
 webext-site-perms-midi-sysex = MIDI-apparaten met SysEx-ondersteuning benaderen
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>Uw kleurstellingenthema is verwijderd.</b> { -brand-shorter-name } heeft haar collectie kleurstellingen bijgewerkt. U kunt de nieuwste versies vinden op de add-onswebsite.
+webext-colorway-theme-migration-notification-button = Bijgewerkte kleurstellingen verkrijgen

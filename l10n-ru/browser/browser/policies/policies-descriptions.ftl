@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = Включить автозаполнение а
 policy-AutofillCreditCardEnabled = Включить автозаполнение для способов оплаты.
 policy-AutoLaunchProtocolsFromOrigins = Определяет список внешних протоколов, которые могут быть вызваны из указанных источников без запроса пользователя.
 policy-BackgroundAppUpdate2 = Включает или отключает фоновое обновление.
+policy-Backup = Отключает резервное копирование или восстановление данных профиля.
 policy-BlockAboutAddons = Блокирует доступ к менеджеру дополнений (about:addons).
 policy-BlockAboutConfig = Блокирует доступ к странице about:config.
 policy-BlockAboutProfiles = Блокирует доступ к странице about:profiles.
@@ -79,6 +80,7 @@ policy-ExtensionSettings = Управляет всеми аспектами ус
 policy-ExtensionUpdate = Включает или отключает автоматические обновления расширений.
 policy-FirefoxHome2 = Настройка { -firefox-home-brand-name(case: "genitive") }.
 policy-FirefoxSuggest = Настройка { -firefox-suggest-brand-name }.
+policy-GenerativeAI = Настраивает генеративные функции ИИ.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Принудительный прямой переход на сайт интрасети вместо поиска при вводе отдельных слов в адресной строке.
 policy-Handlers = Настраивает обработчики приложений по умолчанию.
 policy-HardwareAcceleration = Отключает аппаратное ускорение, если установлена в false.
@@ -97,6 +99,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Переключить
 ##
 
 policy-LocalFileLinks = Разрешает определённым веб-сайтам ссылаться на локальные файлы.
+policy-LocalNetworkAccess = Включает или отключает проверки доступа к локальной сети.
 policy-ManagedBookmarks = Настраивает список закладок, управляемых администратором и недоступных для изменения пользователем.
 policy-ManualAppUpdateOnly = Разрешать только обновления вручную и не уведомлять пользователя об обновлениях.
 policy-PrimaryPassword = Требовать или не допускать использование основного пароля.
@@ -117,6 +120,7 @@ policy-PostQuantumKeyAgreementEnabled = Включает постквантов�
 policy-PDFjs = Отключает или настраивает PDF.js, встроенный просмотрщик PDF в { -brand-short-name }.
 policy-Permissions2 = Настраивает разрешения для камеры, микрофона, местоположения, уведомлений и автовоспроизведения.
 policy-PictureInPicture = Включает или отключает функцию «Картинка в картинке».
+policy-PopupBlocking2 = Разрешает некоторым веб-сайтам показывать всплывающие окна и перенаправлять их сторонними фреймами.
 policy-PopupBlocking = Разрешает некоторым веб-сайтам открывать всплывающие окна по умолчанию.
 policy-Preferences = Устанавливает и фиксирует значение набора настроек.
 policy-PrivateBrowsingModeAvailability = Устанавливает доступность приватного режима.
@@ -130,6 +134,8 @@ policy-SearchSuggestEnabled = Включает или отключает пои�
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Добавляет или удаляет модули PKCS #11.
 policy-ShowHomeButton = Включает кнопку «Домой» на панели инструментов.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = Не отображать условия использования и уведомления о конфиденциальности при запуске. Вы заверяете, что принимаете и имеете право принимать Условия использования от имени всех лиц, которым вы предоставляете доступ к этому браузеру.
 policy-SSLVersionMax = Устанавливает максимальную версию SSL.
 policy-SSLVersionMin = Устанавливает минимальную версию SSL.
 policy-StartDownloadsInTempDirectory = Заставляет загрузки запускаться в локальном временном расположении, а не в каталоге загрузки по умолчанию.
@@ -137,6 +143,7 @@ policy-SupportMenu = Добавляет настраиваемый пункт м
 policy-TranslateEnabled = Включает или отключает перевод веб-страниц.
 policy-UserMessaging = Позволяет не показывать определённые сообщения пользователю.
 policy-UseSystemPrintDialog = Использует для печати системный диалог печати.
+policy-VisualSearchEnabled = Включает или отключает визуальный поиск.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Блокирует посещение веб-сайтов. Для получения дополнительной информации о формате обратитесь к документации.
 policy-Windows10SSO = Разрешает единый вход Windows для учётных записей Microsoft, учётных записей на работе и в учебных заведениях.

@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Nov zavihek
     .accesskey = v
@@ -136,3 +140,12 @@ tab-context-send-tabs-to-device =
            *[other] Pošlji { $tabCount } zavihkov na napravo
         }
     .accesskey = š
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [one] Sprosti zavihek
+            [two] Sprosti { $tabCount } zavihka
+            [few] Sprosti { $tabCount } zavihke
+           *[other] Sprosti { $tabCount } zavihkov
+        }
+    .accesskey = S

@@ -27,6 +27,7 @@ return-to-amo-add-extension-label = Idagdag ang Extension
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
+mr1-return-to-amo-add-extension-label = Idagdag ang { $addon-name }
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -53,6 +54,7 @@ mr1-onboarding-theme-label-light = Maliwanag
 mr1-onboarding-theme-label-dark = Madilim
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = Tapos na
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
@@ -102,6 +104,8 @@ mr1-onboarding-theme-description-alpenglow =
 
 ## Strings for Thank You page
 
+mr2-onboarding-thank-you-header = Salamat sa pagpili sa amin
+mr2-onboarding-start-browsing-button-label = Simulan ang pag-browse
 
 ## Multistage live language reloading onboarding strings (about:welcome pages)
 ##
@@ -112,78 +116,41 @@ mr1-onboarding-theme-description-alpenglow =
 ##   $systemLanguage (String) - The name of the system language, e.g "Español (ES)"
 ##   $appLanguage (String) - The name of the language shipping in the browser build, e.g. "English (EN)"
 
+onboarding-live-language-header = Piliin ang iyong wika
+mr2022-onboarding-live-language-text = Sinasalita ng { -brand-short-name } ang iyong wika
+mr2022-onboarding-live-language-continue-in = Magpatuloy sa { $appLanguage }
+onboarding-live-language-secondary-cancel-download = Ikansela
+onboarding-live-language-skip-button-label = Laktawan
 
 ## Firefox 100 Thank You screens
 
+fx100-thank-you-subtitle = Ito ang aming ika-100 release! Salamat sa pagtulong sa amin na bumuo ng isang mas mahusay, mas mabuti na internet.
+mr2022-onboarding-secondary-skip-button-label = Laktawan ang hakbang na ito
 
 ## MR2022 New User Easy Setup screen strings
 
-
-## MR2022 New User Pin Firefox screen strings
-
+# Primary button string used on new user onboarding first screen showing multiple actions such as Set Default, Import from previous browser.
+mr2022-onboarding-easy-setup-primary-button-label = I-save at magpatuloy
+# Import action checkbox label used on new user onboarding first screen
+mr2022-onboarding-easy-setup-import-checkbox-label = Mag-import mula sa dati mong browser
 
 ## MR2022 Existing User Pin Firefox Screen Strings
 
-
-## MR2022 New User Set Default screen strings
-
-
-## MR2022 Get Started screen strings.
-## These strings will be used on the welcome page
-## when Firefox is already set to default and pinned.
-
+# Title used on multistage onboarding page for existing users when Firefox is not pinned
+mr2022-onboarding-existing-pin-header = Salamat sa pagmamahal mo sa { -brand-product-name }
 
 ## MR2022 Get Started screen strings.
 ## These strings will be used on the welcome page
 ## when Firefox is already set to default and pinned.
 
+mr2022-onboarding-get-started-primary-button-label = I-set up ng ilang segundo
 
 ## If your language uses grammatical genders, in the description for the
 ## colorway feel free to switch from "You are a X. You…" (e.g. "You are a
 ## Playmaker. You create…") to "X: you…" ("Playmaker: You create…"). This might
 ## help creating a more inclusive translation.
 
-
-## MR2022 Multistage Mobile Download screen strings
-
-
-## MR2022 Upgrade Dialog screens
-## Pin private window screen shown only for users who don't have Firefox private pinned
-
-
-## MR2022 Privacy Segmentation screen strings
-
-
-## MR2022 Multistage Gratitude screen strings
-
-
-## Onboarding spotlight for infrequent users
-
-
-## MR2022 Illustration alt tags
-## Descriptive tags for illustrations used by screen readers and other assistive tech
-
-
-## Device migration onboarding
-
-
-## Add-ons Picker screen
-
-
-## The following screens have been updated to use security and privacy focused strings:
-
-
-## New user time and familiarity survey strings
-
-
-## UI strings for the sidebar and vertical tabs
-
-
-## New user onboarding checklist
-
-
-## Tab Groups feature onboarding strings
-
-
-## Multi Profiles feature onboarding messages
-
+mr2022-onboarding-colorway-label-default = Default
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Kasalukuyang mga kulay ng { -brand-short-name }
+mr2022-onboarding-colorway-label-playmaker = Playmaker

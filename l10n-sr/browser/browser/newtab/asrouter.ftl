@@ -61,7 +61,7 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } корисника
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Приступите обележивачима свуда.
 cfr-doorhanger-bookmark-fxa-body = Одлично откриће! Пренесите овај обележивач и на мобилне уређаје помоћу { -fxaccount-brand-name(case: "gen") }.
@@ -115,12 +115,12 @@ cfr-doorhanger-doh-secondary-button = Онемогући
 
 cfr-doorhanger-video-support-body = Видео записи на овом сајту се можда неће правилно репродуковати у овој { -brand-short-name } верзији. Ажурирајте { -brand-short-name } за потпуну видео подршку.
 cfr-doorhanger-video-support-header =
-    Ажурирајте { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "acc") }
-        [feminine] { -brand-short-name(case: "acc") }
-        [neuter] { -brand-short-name(case: "acc") }
-       *[other] програм { -brand-short-name }
-    } да бисте пустили видео
+    { -brand-short-name.gender ->
+        [masculine] Ажурирајте { -brand-short-name(case: "acc") } да бисте пустили видео
+        [feminine] Ажурирајте { -brand-short-name(case: "acc") } да бисте пустили видео
+        [neuter] Ажурирајте { -brand-short-name(case: "acc") } да бисте пустили видео
+       *[other] Ажурирајте програм { -brand-short-name } да бисте пустили видео
+    }
 cfr-doorhanger-video-support-primary-button = Ажурирај
     .accesskey = А
 
@@ -303,9 +303,6 @@ root-certificate-succession-infobar-primary-button =
 root-certificate-succession-infobar-secondary-button =
     .label = Касније
     .accesskey = К
-
-## Root Certificate Succession Windows Background Notification
-
 
 ## FxA Menu Message variants
 

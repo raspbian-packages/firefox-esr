@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Lataukset
 appmenuitem-passwords =
     .label = Salasanat
+appmenuitem-extensions-and-themes =
+    .label = Laajennukset ja teemat
+appmenuitem-extensions =
+    .label = Laajennukset
 appmenuitem-addons-and-themes =
     .label = Lisäosat ja teemat
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Avaa profilointipaneeli
+    .tooltiptext = Avaa profilointipaneeli
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Esiasetus ääni- ja videovirheiden tutkimiseen { -brand-shorter-name }issa.
 profiler-popup-presets-media-label =
     .label = Media
+profiler-popup-presets-ml-description = Esiasetus koneoppimisvirheiden tutkimiseen { -brand-shorter-name }issa.
+profiler-popup-presets-ml-label =
+    .label = Koneoppiminen
 profiler-popup-presets-networking-description = Esiasetus verkkovirheiden tutkimiseen { -brand-shorter-name }issa.
 profiler-popup-presets-networking-label =
     .label = Verkko
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Käynnistä sähköpostimaskien hallint
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Suojaa toimintaasi verkossa
 appmenu-services-header = Omat palvelut
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Kokeile muita Mozillan suojaustyökaluja:
 appmenu-other-protection-header = Kokeile muita { -vendor-short-name }n suojaustyökaluja:
 
 ## Profiles panel
 
-appmenu-profiles = Profiilit
 appmenu-other-profiles = Muut profiilit
 appmenu-manage-profiles =
     .label = Hallitse profiileja
+appmenu-copy-profile =
+    .label = Kopioi tämä profiili
 appmenu-create-profile =
     .label = Uusi profiili
 appmenu-edit-profile =
     .aria-label = Muokkaa profiilia
+appmenu-profiles-2 =
+    .label = Profiilit

@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Expiration / Durée maximum
 storage-table-headers-cookies-size = Taille
 storage-table-headers-cookies-last-accessed = Dernier accès
 storage-table-headers-cookies-creation-time = Date de création
+storage-table-headers-cookies-update-time = Mis à jour
 storage-table-headers-cache-status = État
 storage-table-headers-extension-storage-area = Zone de stockage
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = La base de données « { $dbName } » sera suppri
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = La base de données « { $dbName } » ne peut pas être supprimée.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = Un cookie n’a pas pu être créé : « { $errorString } ».
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = Un cookie n’a pas pu être mis à jour : « { $errorString } ».

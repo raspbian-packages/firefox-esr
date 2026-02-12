@@ -50,6 +50,8 @@ graph_config_schema = Schema(
                 str: {
                     Optional("from-branch"): str,
                     Required("to-branch"): str,
+                    Optional("from-repo"): str,
+                    Optional("to-repo"): str,
                     Required("version-files"): [
                         {
                             Required("filename"): str,
@@ -59,6 +61,7 @@ graph_config_schema = Schema(
                     ],
                     Required("replacements"): [[str]],
                     Required("merge-old-head"): bool,
+                    Optional("regex-replacements"): [[str]],
                     Optional("base-tag"): str,
                     Optional("end-tag"): str,
                     Optional("fetch-version-from"): str,
@@ -130,6 +133,9 @@ graph_config_schema = Schema(
                 description="Python function to call to register extensions.",
             ): str,
             Optional("decision-parameters"): str,
+            Optional("run"): {
+                Optional("use-caches"): Any(bool, [str]),
+            },
         },
         Required("expiration-policy"): optionally_keyed_by("project", {str: str}),
     }

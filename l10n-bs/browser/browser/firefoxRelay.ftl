@@ -4,7 +4,7 @@
 
 
 ## Error messages for failed HTTP web requests.
-## https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+## https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
@@ -23,6 +23,7 @@ firefox-relay-opt-in-title-1 = Zaštitite svoju email adresu:
 # This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
 # ends with a colon. You might need to adapt the capitalization of this string.
 firefox-relay-opt-in-subtitle-1 = Koristite { -relay-brand-name } email masku
+firefox-relay-use-mask-title-1 = Koristi email masku
 firefox-relay-use-mask-title = Koristite { -relay-brand-name } email masku
 # This is followed, on a new line, by firefox-relay-opt-in-subtitle-a
 firefox-relay-opt-in-title-a = Spriječite neželjenu poštu besplatnom email maskom
@@ -72,6 +73,7 @@ firefox-relay-and-fxa-opt-in-confirmation-enable-button-basic-info =
 
 firefox-relay-and-fxa-popup-notification-header-with-domain = Nabavite besplatnu email masku
 firefox-relay-and-fxa-popup-notification-first-sentence-with-domain = Zaštitite svoju pristiglu poštu od neželjene pošte korištenjem besplatne <label data-l10n-name="firefox-relay-learn-more-url">maske e-pošte</label> da sakrijete svoju pravu adresu. E-poruke sa <label data-l10n-name="firefox-fxa-and-relay-offer-domain">ove stranice</label> i dalje će stizati u vašu pristiglu poštu, ali sa vašom skrivenim emailom.
+firefox-relay-and-fxa-popup-notification-first-sentence = Zaštitite svoju pristiglu poštu od neželjene pošte korištenjem besplatne <label data-l10n-name="firefox-relay-learn-more-url">{ -relay-brand-name } email maske</label> kako biste sakrili svoju stvarnu adresu. E-poruke sa <label data-l10n-name="firefox-fxa-and-relay-offer-domain">ove stranice</label> će i dalje stizati u vašu pristiglu poštu, ali sa skrivenim emailom.
 firefox-relay-and-fxa-popup-notification-second-sentence-with-domain = Prvo se prijavite ili prijavite na svoj račun da koristite email masku
 firefox-relay-and-fxa-opt-in-confirmation-enable-button-with-domain =
     .label = Registruj se

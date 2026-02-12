@@ -113,8 +113,8 @@ class gfxDWriteFontEntry final : public gfxFontEntry {
     mStretchRange =
         StretchRange(FontStretchFromDWriteStretch(aFont->GetStretch()));
 
-    int weight = NS_ROUNDUP(aFont->GetWeight() - 50, 100);
-    weight = mozilla::Clamp(weight, 100, 900);
+    int weight = mozilla::RoundUpToMultiple(aFont->GetWeight() - 50, 100);
+    weight = std::clamp(weight, 100, 900);
     mWeightRange = WeightRange(FontWeight::FromInt(weight));
 
     mIsCJK = UNINITIALIZED_VALUE;
@@ -457,6 +457,10 @@ class gfxDWriteFontList final : public gfxPlatformFontList {
       const nsTArray<nsCString>* aForceClassicFams = nullptr)
       MOZ_REQUIRES(mLock);
 
+  void AddSubstitute(const nsCString& aSubstituteName,
+                     const nsCString& aActualFontName, bool aIsHardcoded)
+      MOZ_REQUIRES(mLock);
+
 #ifdef MOZ_BUNDLED_FONTS
   already_AddRefed<IDWriteFontCollection> CreateBundledFontsCollection(
       IDWriteFactory* aFactory);
@@ -474,6 +478,13 @@ class gfxDWriteFontList final : public gfxPlatformFontList {
    */
   FontFamilyTable mFontSubstitutes;
   nsClassHashtable<nsCStringHashKey, nsCString> mSubstitutions;
+
+  /**
+   * Table of hardcoded font substitutes. We use this instead of the one
+   * generated from the registry when fingerprinting protections are enabled.
+   */
+  FontFamilyTable mHardcodedSubstitutes;
+  nsClassHashtable<nsCStringHashKey, nsCString> mHardcodedSubstitutions;
 
   virtual already_AddRefed<FontInfoData> CreateFontInfoData();
 

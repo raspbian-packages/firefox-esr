@@ -1,2 +1,2 @@
-20250811113756
-https://hg.mozilla.org/releases/mozilla-esr128/rev/df0b4a4887880a1b267ca2b4902afee84e80f6e9
+20260106170501
+https://hg.mozilla.org/releases/mozilla-esr140/rev/82e96a128bf5e3e7dd6e5180c9528f623ba5e0f7

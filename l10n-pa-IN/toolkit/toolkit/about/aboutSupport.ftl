@@ -15,6 +15,10 @@ support-addons-type = ਕਿਸਮ
 support-addons-enabled = ਸਮਰੱਥ ਹੈ
 support-addons-version = ਵਰਜ਼ਨ
 support-addons-id = ID
+# In the add-on world, locations are where the addon files are stored. Each
+# location has name. For instance: app-system-addons, app-builtin,
+# app-temporary, etc.
+support-addons-location-name = ਟਿਕਾਣਾ
 legacy-user-stylesheets-title = ਪੁਰਾਣੀਆਂ ਵਰਤੋਂਕਾਰ ਸਟਾਈਲਸ਼ੀਟਾਂ
 legacy-user-stylesheets-enabled = ਸਰਗਰਮ
 legacy-user-stylesheets-stylesheet-types = ਸਟਾਈਲਸ਼ੀਟਾਂ
@@ -181,6 +185,8 @@ media-capabilities-enumerate = ਡਾਟਾਬੇਸ ਦੇ ਇੰਦਰਾਜ਼�
 
 media-codec-support-sw-decoding = ਸਾਫ਼ਟਵੇਅਰ ਡਿਕੋਡਿੰਗ
 media-codec-support-hw-decoding = ਹਾਰਡਵੇਅਰ ਡਿਕੋਡਿੰਗ
+media-codec-support-sw-encoding = ਸਾਫ਼ਟਵੇਅਰ ਇਨਕੋਡਿੰਗ
+media-codec-support-hw-encoding = ਹਾਰਡਵੇਅਰ ਇਨਕੋਡਿੰਗ
 media-codec-support-codec-name = Codec ਦਾ ਨਾਂ
 media-codec-support-supported = ਸਹਿਯੋਗੀ
 media-codec-support-unsupported = ਗ਼ੈਰ-ਸਹਿਯੋਗੀ

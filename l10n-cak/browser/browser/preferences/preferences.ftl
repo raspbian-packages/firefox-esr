@@ -108,6 +108,10 @@ startup-header = Tikirisab'äl
 always-check-default =
     .label = Junelïk tinik'öx we { -brand-short-name } ja ri' ri awokik'amaya'l
     .accesskey = e
+is-default-browser =
+    .message = { -brand-short-name } ja awokik'amaya'l kan k'o wi
+is-not-default-browser =
+    .message = { -brand-short-name } man ja ta ri awokik'amaya'l kan k'o wi
 is-default = { -brand-short-name } ja awokik'amaya'l kan k'o wi
 is-not-default = { -brand-short-name } man ja ta ri awokik'amaya'l kan k'o wi
 set-as-my-default-browser =
@@ -255,6 +259,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = Taq Yakb'äl chuqa' taq Chokoy
+downloads-header-2 =
+    .label = Taq qasanïk
+download-save-where-2 =
+    .label = Keyak yakb'äl pa
+    .accesskey = y
 download-header = Taq qasanïk
 download-save-where = Keyak yakb'äl pa
     .accesskey = y
@@ -474,7 +483,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = K'ak'a' taq Tzuwäch chuqa' taq Ruwi'
 home-new-windows-tabs-description2 = Tacha' ri natz'ët toq ye'ajäq ri tikirib'äl ruxaq, k'ak'a' taq tzuwäch chuqa' k'ak'a' taq ruwi'.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = Tikirib'äl ruxaq chuqa' k'ak'a' taq tzuwäch
 home-newtabs-mode-label = K'ak'a' taq ruwi'
@@ -617,6 +626,8 @@ search-keyword-warning-bookmark = Xacha' jun ewan tzij okisan ruma jun yaketal. 
 containers-back-button2 =
     .aria-label = Tib'an chik Runuk'ulem
 containers-header = Ajk'wayöl taq ruwi'
+containers-section-header =
+    .heading = Ajk'wayöl taq ruwi'
 containers-add-button =
     .label = Titz'aqatisäx k'ak'a' k'wayöl
     .accesskey = t
@@ -752,6 +763,14 @@ sync-engine-settings =
 ## The device name controls.
 
 sync-device-name-header = Rub'i' ri okisaxel
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Rub'i' ri okisaxel
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Tijal rub'i' okisaxel
+    .accesskey = j
 sync-device-name-change =
     .label = Tijal rub'i' okisaxel…
     .accesskey = j
@@ -842,9 +861,6 @@ primary-password-os-auth-dialog-message-win = Richin natz'ük jun Nab'ey Ewan Tz
 primary-password-os-auth-dialog-message-macosx = Titz'uk jun Nab'ey Ewan Tzij
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = Natab'äl
@@ -865,6 +881,10 @@ history-remember-option-never =
     .label = Mani ninatäx ri natab'äl
 history-remember-option-custom =
     .label = Tokisäx jun ichinan runuk'ulem re natab'äl
+history-remember-description2 =
+    .description = { -brand-short-name } Xtunataj awokem pa k'amaya'l, qasanïk, nojwuj chuqa' runatab'al kanoxïk.
+history-dontremember-description2 =
+    .description = { -brand-short-name } xtrokisaj ri junam runuk'ulem achi'el pa ichinan okem pa k'amaya'l, chuqa' man xkerunataj ta ri taq rutzij natab'äl toq tajin nok pa ajk'amaya'l.
 history-remember-description = { -brand-short-name } Xtunataj awokem pa k'amaya'l, qasanïk, nojwuj chuqa' runatab'al kanoxïk.
 history-dontremember-description = { -brand-short-name } xtrokisaj ri junam runuk'ulem achi'el pa ichinan okem pa k'amaya'l, chuqa' man xkerunataj ta ri taq rutzij natab'äl toq tajin nok pa ajk'amaya'l.
 history-private-browsing-permanent =
@@ -1083,6 +1103,8 @@ permissions-notification-link = Tetamäx ch'aqa' chik
 permissions-notification-pause =
     .label = Keq'at ri taq rutzijol k'a toq ri { -brand-short-name } nitikïr chik
     .accesskey = r
+permissions-autoplay2 =
+    .label = Ruyon titzijtäj
 permissions-autoplay = Ruyon titzijtäj
 permissions-autoplay-settings =
     .label = Taq nuk'ulem…
@@ -1102,6 +1124,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = Taq man relik ta…
     .accesskey = r
+permissions-location2 =
+    .label = K'ojlib'äl
+permissions-xr2 =
+    .label = Achik'al K'ojlemal
+permissions-camera2 =
+    .label = Elesäy wachib'äl
+permissions-microphone2 =
+    .label = Q'asäy ch'ab'äl
+permissions-notification2 =
+    .label = Taq rutzijol
 
 ## Privacy Section - Data Collection
 
@@ -1125,16 +1157,11 @@ addon-recommendations-link = Tetamäx ch'aqa' chik
 collection-health-report-disabled = Chupül ri kitzijol taq tzij richin nib'an kinuk'ulem re taq alk'walaxinem re'
 collection-backlogged-crash-reports-with-link = Tiya' q'ij chi { -brand-short-name } yerutäq taq rutzijol sachoj emolon pa rub'i' <a data-l10n-name="crash-reports-link">Tetamäx ch'aqa' chik</a>
     .accesskey = s
-collection-backlogged-crash-reports = Tiya' q'ij chi { -brand-short-name } yerutäq taq rutzijol sachoj emolon pa rub'i'
-    .accesskey = s
 privacy-segmentation-section-header = K'ak'a' taq b'anikil nikutzilaj ri okem pa k'amaya'l
 privacy-segmentation-radio-off =
     .label = Tokisäx ruchilab'exik { -brand-product-name }
 privacy-segmentation-radio-on =
     .label = Tik'ut pe ri cholajin retamab'al
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -1166,6 +1193,7 @@ certs-view =
 certs-devices =
     .label = Taq Rokisab'al Jikomal…
     .accesskey = R
+certs-devices-enable-fips = Titzij ruwäch FIPS
 space-alert-over-5gb-settings-button =
     .label = Tijaq taq runuk'ulem
     .accesskey = T

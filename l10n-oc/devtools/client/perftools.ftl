@@ -146,6 +146,3 @@ perftools-presets-networking-description = Preconfiguracion per analisar los bug
 perftools-presets-power-label = Energia
 perftools-presets-power-description = Preconfiguracion per analisar las avarias ligada a la consomacion energetica dins { -brand-shorter-name }, amb una subrecarga febla.
 perftools-presets-custom-label = Personalizat
-
-##
-

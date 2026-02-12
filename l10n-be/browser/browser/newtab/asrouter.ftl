@@ -61,7 +61,7 @@ cfr-doorhanger-extension-total-users =
        *[many] { $total } карыстальнікаў
     }
 
-## Firefox Accounts Message
+## Mozilla Account messages
 
 cfr-doorhanger-bookmark-fxa-header = Сінхранізуйце свае закладкі ўсюды.
 cfr-doorhanger-bookmark-fxa-body = Выдатная знаходка! Цяпер не заставайцеся без гэтай закладкі на вашых мабільных прыладах. Пачніце працу з { -fxaccount-brand-name }.
@@ -70,6 +70,13 @@ cfr-doorhanger-bookmark-fxa-link-text = Сінхранізаваць закла�
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Кнопка закрыцця
     .title = Закрыць
+fxa-adoption-addresses-backup-title = Давайце зробім рэзервовую копію вашых захаваных адрасоў
+fxa-adoption-addresses-backup-subtitle = Абараніце свае захаваныя адрасы, сінхранізуючы іх паміж прыладамі з дапамогай шыфравання.
+fxa-adoption-credit-cards-backup-title = Давайце зробім рэзервовую копію вашых спосабаў аплаты
+fxa-adoption-credit-cards-backup-subtitle = Абараніце свае спосабы аплаты, сінхранізуючы іх паміж прыладамі з дапамогай шыфравання.
+fxa-adoption-bookmarks-treatment-backup-title = Давайце зробім рэзервовую копію вашых закладак
+fxa-adoption-bookmarks-treatment-backup-subtitle = Абараніце свае закладкі, сінхранізуючы іх паміж прыладамі з дапамогай шыфравання.
+fxa-adoption-primary-button-label = Зарэгістравацца
 
 ## Protections panel
 
@@ -229,6 +236,22 @@ fox-doodle-pin-secondary = Не зараз
 set-default-pdf-handler-headline = <strong>Вашы PDF-файлы цяпер адкрываюцца ў { -brand-short-name }.</strong> Рэдагуйце або падпісвайце формы прама ў браўзеры. Каб змяніць, шукайце «PDF» у наладах.
 set-default-pdf-handler-primary = Зразумела
 
+## PDF Annotations strings
+
+# “Sign on the dotted line” is an idiomatic English expression about
+# where to place your signature.
+# If this expression doesn’t have a direct translation, please
+# translate this alternative string: "Add your signature anywhere!"
+annotations-default-pdf-handler-headline = Дадайце свой подпіс у адпаведным полі — або дзе хочаце!
+# “Go-to” is an idiomatic English expression referring to something that is used often.
+annotations-default-pdf-handler-body = Намалюйце, напішыце або зацягніце свой подпіс, а затым размясціце яго дакладна там, дзе вам трэба. Захоўвайце свае любімыя подпісы для наступнага разу.
+annotations-make-default-pdf-handler-title = Зрабіць { -brand-short-name } вашым прадвызначаным рэдактарам PDF?
+annotations-make-default-pdf-handler-subtitle = Вы будзеце мець доступ да нашых прылад кожны раз, калі адкрываеце PDF-файл.
+annotations-make-default-pdf-primary-cta =
+    .label = Зрабіць прадвызначаным
+annotations-make-default-pdf-next =
+    .label = Далей
+
 ## FxA sync CFR
 
 fxa-sync-cfr-header = Новая прылада ў вашай будучыні?
@@ -314,8 +337,11 @@ fxa-menu-message-close-button =
     .title = Закрыць
     .aria-label = Закрыць
 fxa-menu-message-sign-up-button = Зарэгістравацца
+fxa-menu-message-sign-in-button = Увайсці
+fxa-menu-message-sync-button = Пачаць сінхранізацыю
 fxa-menu-message-sync-devices-primary-text = Сінхранізуйце ўсе вашы прылады
 fxa-menu-message-sync-devices-secondary-text = Імгненна атрымайце вашу інфармацыю (напр., закладкі і паролі) ўсюды, дзе вы карыстаецеся { -brand-short-name }.
+fxa-menu-message-sync-devices-secondary-text2 = Імгненна атрымлівайце свае закладкі, паролі і многае іншае — усюды, дзе вы ўвайшлі ў { -brand-short-name }.
 fxa-menu-message-sync-devices-collapsed-text = Сінхранізуйце ўсе вашы прылады
 fxa-menu-message-backup-data-primary-text = Зрабіце рэзервовую копію дадзеных браўзера
 fxa-menu-message-backup-data-secondary-text = Аўтаматычна абараняйце закладкі, паролі і іншую інфармацыю на ўсіх вашых прыладах.
@@ -346,3 +372,58 @@ multi-cta-fox-doodle-privacy-focused-subtitle =
        *[other] Трымайце пад рукой свой любімы браўзер, арыентаваны на прыватнасць. Усталюйце { -brand-short-name } як ваш прадвызначаны браўзер для адкрыцця спасылак і замацуйце яго на панэлі заданняў.
     }
 multi-cta-fox-doodle-msix-privacy-focused-subtitle = Трымайце пад рукой свой любімы браўзер, арыентаваны на прыватнасць. Усталюйце { -brand-short-name } як ваш прадвызначаны браўзер для адкрыцця спасылак і замацуйце яго ў стартавым меню.
+
+## Windows 10 EoS Sync messages group 1 spotlight
+
+windows-10-eos-sync-spotlight-title = Хутка абновіце з Windows 10?
+windows-10-eos-sync-spotlight-subtitle = Зрабіце рэзервовую копію пароляў і закладак, каб быць гатовымі да выкарыстання на любой прыладзе.
+windows-10-eos-sync-spotlight-primary-label = Зрабіце рэзервовую копію свайго { -brand-short-name }
+
+## Windows 10 EoS Sync messages group 1 toast notification
+
+windows-10-eos-sync-toast-title = Абнаўляецеся да Windows 11? Не губляйце закладкі і паролі.
+windows-10-eos-sync-toast-subtitle = Зрабіце рэзервовую копію сваіх дадзеных, каб { -brand-short-name } быў гатовы да выкарыстання ў любы час, як на гэтым, так і на наступным камп'ютары.
+windows-10-eos-sync-toast-primary-label = Пачаць
+windows-10-eos-sync-toast-secondary-label = Нагадаць пазней
+
+## Windows 10 EoS sync messages group 2 feature callouts
+
+windows-10-eos-challenger-callout-title = { -brand-product-name } не загружаны загадзя, як іншыя браўзеры буйных тэхналагічных кампаній. У гэтым і сэнс.
+windows-10-eos-challenger-sync-callout-subtitle = Калі вы створыце рэзервовую копію закладак і пароляў { -brand-product-name }, вам будзе прасцей перанесці абраны вамі браўзер на наступную прыладу.
+windows-10-eos-challenger-pin-callout-subtitle = Замацуйце { -brand-shorter-name } на панэлі задач, каб абраны вамі браўзер заўсёды быў пад рукой, калі ён спатрэбіцца.
+windows-10-eos-challenger-sync-primary-button = Рэзервовая копія { -brand-shorter-name }
+windows-10-eos-challenger-pin-primary-button = Замацаваць { -brand-shorter-name }
+windows-10-eos-sync-callout-privacy-screen-1-title = { -brand-product-name } блакуе крыптамайнеры, трэкеры сацыяльных сетак і збіральнікі лічбавых адбіткаў.
+windows-10-eos-sync-callout-privacy-screen-1-subtitle = Трэкеры не могуць ідэнтыфікаваць вашу прыладу або сачыць за вамі ў інтэрнэце — таму што мы ім гэтага не дазваляем.
+windows-10-eos-sync-callout-privacy-screen-2-title = Забяспечце свае паролі і закладкі для наступнай прылады.
+windows-10-eos-sync-callout-privacy-screen-2-subtitle = Рэзервовае капіяванне { -brand-shorter-name } дазваляе лёгка забраць з сабой вашы дадзеныя і налады прыватнасці.
+windows-10-eos-sync-callout-privacy-info-button = Паглядзець, што заблакавана
+windows-10-eos-callout-addons-title = Паспрабуйце дадаткі: простыя паляпшэнні, вялікі ўплыў
+windows-10-eos-callout-addons-subtitle = Гэтыя пашырэнні былі выбраны, каб дапамагчы вам заставацца прадуктыўнымі, абароненымі і не губляць увагу.
+windows-10-eos-callout-addons-primary-button = Паглядзіце нашы выбары
+windows-10-eos-sync-callout-addons-title = Не страцьце свае дадаткі пры абнаўленні з Windows 10.
+windows-10-eos-sync-callout-addons-subtitle = Сінхранізуйце зараз, каб вашы дадаткі { -brand-product-name } былі заўсёды даступныя, нават пасля змены прылады.
+windows-10-eos-sync-callout-next-button = Далей
+windows-10-eos-sync-callout-get-started-button = Пачаць
+
+## Windows 10 EoS Sync messages group 2 toast notification
+
+windows-10-eos-feature-toast-title = Вертыкальныя карткі і групы картак тут!
+# In English, "dropped" is a colloquial form for released.
+windows-10-eos-feature-toast-subtitle = Па шматлікіх просьбах { -brand-product-name } дадаў новыя функцыі, каб зрабіць ваша агляданне сайтаў больш зручным і мэтанакіраваным.
+windows-10-eos-feature-toast-whats-new-button = Што новага
+windows-10-eos-feature-toast-dismiss-button = Адхіліць
+
+## ETP (Enhanced Tracking Protection) Strict exceptions infobar
+##
+## These strings are displayed in an infobar notification that appears when
+## Enhanced Tracking Protection's Strict mode is causing website functionality
+## issues. The infobar offers users the option to apply automatic exceptions
+## to fix common site breakage by unblocking essential elements.
+
+etp-strict-exceptions-infobar-message = <strong>Строгая ахова ад сачэння можа прывесці да няспраўнасці сайтаў.</strong> Выпраўце распаўсюджаныя праблемы, разблакаваўшы важныя элементы, якія могуць утрымліваць трэкеры.
+etp-strict-exceptions-infobar-learn-more = Даведацца больш
+etp-strict-exceptions-infobar-button = Ужыць выпраўленні
+    .accesskey = У
+etp-strict-exceptions-infobar-not-now = Не зараз
+    .accesskey = Н

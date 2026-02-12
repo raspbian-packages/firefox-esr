@@ -672,6 +672,31 @@ FaultingCodeOffset MacroAssemblerMIPS64::ma_load(Register dest, Address address,
   return fco;
 }
 
+void MacroAssemblerMIPS64::ma_store(ImmWord imm, const BaseIndex& dest,
+                                    LoadStoreSize size,
+                                    LoadStoreExtension extension) {
+  SecondScratchRegisterScope scratch2(asMasm());
+
+  // Make sure that SecondScratchReg contains absolute address so that
+  // offset is 0.
+  asMasm().computeEffectiveAddress(dest, scratch2);
+  // Scrach register is free now, use it for loading imm value
+  ScratchRegisterScope scratch(asMasm());
+  ma_li(scratch, ImmWord(imm.value));
+
+  // with offset=0 ScratchRegister will not be used in ma_store()
+  // so we can use it as a parameter here
+  ma_store(scratch, Address(scratch2, 0), size, extension);
+}
+
+void MacroAssemblerMIPS64::ma_store(ImmWord imm, Address address,
+                                    LoadStoreSize size,
+                                    LoadStoreExtension extension) {
+  SecondScratchRegisterScope scratch2(asMasm());
+  ma_li(scratch2, imm);
+  ma_store(scratch2, address, size, extension);
+}
+
 FaultingCodeOffset MacroAssemblerMIPS64::ma_store(
     Register data, Address address, LoadStoreSize size,
     LoadStoreExtension extension) {
@@ -680,22 +705,23 @@ FaultingCodeOffset MacroAssemblerMIPS64::ma_store(
   FaultingCodeOffset fco;
 
   if (isLoongson() && !Imm16::IsInSignedRange(address.offset)) {
-    ma_li(ScratchRegister, Imm32(address.offset));
+    ScratchRegisterScope scratch(asMasm());
+    ma_li(scratch, Imm32(address.offset));
     base = address.base;
 
     fco = FaultingCodeOffset(currentOffset());
     switch (size) {
       case SizeByte:
-        as_gssbx(data, base, ScratchRegister, 0);
+        as_gssbx(data, base, scratch, 0);
         break;
       case SizeHalfWord:
-        as_gsshx(data, base, ScratchRegister, 0);
+        as_gsshx(data, base, scratch, 0);
         break;
       case SizeWord:
-        as_gsswx(data, base, ScratchRegister, 0);
+        as_gsswx(data, base, scratch, 0);
         break;
       case SizeDouble:
-        as_gssdx(data, base, ScratchRegister, 0);
+        as_gssdx(data, base, scratch, 0);
         break;
       default:
         MOZ_CRASH("Invalid argument for ma_store");
@@ -704,6 +730,8 @@ FaultingCodeOffset MacroAssemblerMIPS64::ma_store(
   }
 
   if (!Imm16::IsInSignedRange(address.offset)) {
+    // assert on scratch ownership
+    ScratchRegisterScope scratch(asMasm());
     ma_li(ScratchRegister, Imm32(address.offset));
     as_daddu(ScratchRegister, address.base, ScratchRegister);
     base = ScratchRegister;
@@ -736,9 +764,10 @@ FaultingCodeOffset MacroAssemblerMIPS64::ma_store(
 void MacroAssemblerMIPS64Compat::computeScaledAddress(const BaseIndex& address,
                                                       Register dest) {
   int32_t shift = Imm32::ShiftOf(address.scale).value;
+  ScratchRegisterScope scratch(asMasm());
   if (shift) {
-    ma_dsll(ScratchRegister, address.index, Imm32(shift));
-    as_daddu(dest, address.base, ScratchRegister);
+    ma_dsll(scratch, address.index, Imm32(shift));
+    as_daddu(dest, address.base, scratch);
   } else {
     as_daddu(dest, address.base, address.index);
   }
@@ -765,7 +794,7 @@ void MacroAssemblerMIPS64::ma_push(Register r) {
     r = ScratchRegister;
   }
 
-  as_daddiu(StackPointer, StackPointer, (int32_t) - sizeof(intptr_t));
+  as_daddiu(StackPointer, StackPointer, -int32_t(sizeof(intptr_t)));
   as_sd(r, StackPointer, 0);
 }
 
@@ -946,16 +975,30 @@ void MacroAssemblerMIPS64::ma_cmp_set(Register rd, Register rs, ImmWord imm,
   }
 }
 
+void MacroAssemblerMIPS64::ma_cmp_set(Register rd, Register rs, ImmPtr imm,
+                                      Condition c) {
+  ma_cmp_set(rd, rs, ImmWord(uintptr_t(imm.value)), c);
+}
+
+void MacroAssemblerMIPS64::ma_cmp_set(Register rd, Register rs, ImmGCPtr imm,
+                                      Condition c) {
+  ScratchRegisterScope scratch(asMasm());
+  ma_li(scratch, imm);
+  ma_cmp_set(rd, rs, scratch, c);
+}
+
+void MacroAssemblerMIPS64::ma_cmp_set(Register rd, Address address, Register rt,
+                                      Condition c) {
+  SecondScratchRegisterScope scratch2(asMasm());
+  ma_load(scratch2, address, SizeDouble);
+  ma_cmp_set(rd, scratch2, rt, c);
+}
+
 void MacroAssemblerMIPS64::ma_cmp_set(Register rd, Address address, ImmWord imm,
                                       Condition c) {
   SecondScratchRegisterScope scratch2(asMasm());
   ma_load(scratch2, address, SizeDouble);
   ma_cmp_set(rd, scratch2, imm, c);
-}
-
-void MacroAssemblerMIPS64::ma_cmp_set(Register rd, Register rs, ImmPtr imm,
-                                      Condition c) {
-  ma_cmp_set(rd, rs, ImmWord(uintptr_t(imm.value)), c);
 }
 
 void MacroAssemblerMIPS64::ma_cmp_set(Register rd, Address address, Imm32 imm,
@@ -1075,7 +1118,7 @@ void MacroAssemblerMIPS64::ma_pop(FloatRegister f) {
 }
 
 void MacroAssemblerMIPS64::ma_push(FloatRegister f) {
-  as_daddiu(StackPointer, StackPointer, (int32_t) - sizeof(double));
+  as_daddiu(StackPointer, StackPointer, -int32_t(sizeof(double)));
   as_sdc1(f, StackPointer, 0);
 }
 
@@ -1308,8 +1351,7 @@ FaultingCodeOffset MacroAssemblerMIPS64Compat::store32(Register src,
 
 template <typename T>
 void MacroAssemblerMIPS64Compat::storePtr(ImmWord imm, T address) {
-  ma_li(SecondScratchReg, imm);
-  ma_store(SecondScratchReg, address, SizeDouble);
+  ma_store(imm, address, SizeDouble);
 }
 
 template void MacroAssemblerMIPS64Compat::storePtr<Address>(ImmWord imm,
@@ -1579,28 +1621,6 @@ void MacroAssemblerMIPS64Compat::boxNonDouble(JSValueType type, Register src,
   boxValue(type, src, dest.valueReg());
 }
 
-void MacroAssemblerMIPS64Compat::boolValueToDouble(const ValueOperand& operand,
-                                                   FloatRegister dest) {
-  convertBoolToInt32(operand.valueReg(), ScratchRegister);
-  convertInt32ToDouble(ScratchRegister, dest);
-}
-
-void MacroAssemblerMIPS64Compat::int32ValueToDouble(const ValueOperand& operand,
-                                                    FloatRegister dest) {
-  convertInt32ToDouble(operand.valueReg(), dest);
-}
-
-void MacroAssemblerMIPS64Compat::boolValueToFloat32(const ValueOperand& operand,
-                                                    FloatRegister dest) {
-  convertBoolToInt32(operand.valueReg(), ScratchRegister);
-  convertInt32ToFloat32(ScratchRegister, dest);
-}
-
-void MacroAssemblerMIPS64Compat::int32ValueToFloat32(
-    const ValueOperand& operand, FloatRegister dest) {
-  convertInt32ToFloat32(operand.valueReg(), dest);
-}
-
 void MacroAssemblerMIPS64Compat::loadConstantFloat32(float f,
                                                      FloatRegister dest) {
   ma_lis(dest, f);
@@ -1713,7 +1733,7 @@ void MacroAssemblerMIPS64Compat::storeValue(JSValueType type, Register reg,
   if (type == JSVAL_TYPE_INT32 || type == JSVAL_TYPE_BOOLEAN) {
     store32(reg, dest);
     JSValueShiftedTag tag = (JSValueShiftedTag)JSVAL_TYPE_TO_SHIFTED_TAG(type);
-    store32(((Imm64(tag)).secondHalf()), Address(dest.base, dest.offset + 4));
+    store32(((Imm64(tag)).hi()), Address(dest.base, dest.offset + 4));
   } else {
     ma_li(SecondScratchReg, ImmTag(JSVAL_TYPE_TO_TAG(type)));
     ma_dsll(SecondScratchReg, SecondScratchReg, Imm32(JSVAL_TAG_SHIFT));
@@ -1789,27 +1809,6 @@ void MacroAssemblerMIPS64Compat::popValue(ValueOperand val) {
 
 void MacroAssemblerMIPS64Compat::breakpoint() { as_break(0); }
 
-void MacroAssemblerMIPS64Compat::ensureDouble(const ValueOperand& source,
-                                              FloatRegister dest,
-                                              Label* failure) {
-  Label isDouble, done;
-  {
-    ScratchTagScope tag(asMasm(), source);
-    splitTagForTest(source, tag);
-    asMasm().branchTestDouble(Assembler::Equal, tag, &isDouble);
-    asMasm().branchTestInt32(Assembler::NotEqual, tag, failure);
-  }
-
-  unboxInt32(source, ScratchRegister);
-  convertInt32ToDouble(ScratchRegister, dest);
-  jump(&done);
-
-  bind(&isDouble);
-  unboxDouble(source, dest);
-
-  bind(&done);
-}
-
 void MacroAssemblerMIPS64Compat::checkStackAlignment() {
 #ifdef DEBUG
   Label aligned;
@@ -1821,7 +1820,8 @@ void MacroAssemblerMIPS64Compat::checkStackAlignment() {
 }
 
 void MacroAssemblerMIPS64Compat::handleFailureWithHandlerTail(
-    Label* profilerExitTail, Label* bailoutTail) {
+    Label* profilerExitTail, Label* bailoutTail,
+    uint32_t* returnValueCheckOffset) {
   // Reserve space for exception information.
   int size = (sizeof(ResumeFromException) + ABIStackAlignment) &
              ~(ABIStackAlignment - 1);
@@ -1835,13 +1835,15 @@ void MacroAssemblerMIPS64Compat::handleFailureWithHandlerTail(
   asMasm().callWithABI<Fn, HandleException>(
       ABIType::General, CheckUnsafeCallWithABI::DontCheckHasExitFrame);
 
+  *returnValueCheckOffset = asMasm().currentOffset();
+
   Label entryFrame;
   Label catch_;
   Label finally;
   Label returnBaseline;
   Label returnIon;
   Label bailout;
-  Label wasm;
+  Label wasmInterpEntry;
   Label wasmCatch;
 
   // Already clobbered a0, so use it...
@@ -1859,8 +1861,9 @@ void MacroAssemblerMIPS64Compat::handleFailureWithHandlerTail(
                     Imm32(ExceptionResumeKind::ForcedReturnIon), &returnIon);
   asMasm().branch32(Assembler::Equal, a0, Imm32(ExceptionResumeKind::Bailout),
                     &bailout);
-  asMasm().branch32(Assembler::Equal, a0, Imm32(ExceptionResumeKind::Wasm),
-                    &wasm);
+  asMasm().branch32(Assembler::Equal, a0,
+                    Imm32(ExceptionResumeKind::WasmInterpEntry),
+                    &wasmInterpEntry);
   asMasm().branch32(Assembler::Equal, a0, Imm32(ExceptionResumeKind::WasmCatch),
                     &wasmCatch);
 
@@ -1960,15 +1963,14 @@ void MacroAssemblerMIPS64Compat::handleFailureWithHandlerTail(
   ma_li(ReturnReg, Imm32(1));
   jump(bailoutTail);
 
-  // If we are throwing and the innermost frame was a wasm frame, reset SP and
-  // FP; SP is pointing to the unwound return address to the wasm entry, so
-  // we can just ret().
-  bind(&wasm);
+  // Reset SP and FP; SP is pointing to the unwound return address to the wasm
+  // interpreter entry, so we can just ret().
+  bind(&wasmInterpEntry);
   loadPtr(Address(StackPointer, ResumeFromException::offsetOfFramePointer()),
           FramePointer);
   loadPtr(Address(StackPointer, ResumeFromException::offsetOfStackPointer()),
           StackPointer);
-  ma_li(InstanceReg, ImmWord(wasm::FailInstanceReg));
+  ma_li(InstanceReg, ImmWord(wasm::InterpFailInstanceReg));
   ret();
 
   // Found a wasm catch handler, restore state and jump to it.
@@ -2220,30 +2222,6 @@ void MacroAssembler::callWithABINoProfiler(const Address& fun, ABIType result) {
 // ===============================================================
 // Move
 
-void MacroAssembler::moveValue(const TypedOrValueRegister& src,
-                               const ValueOperand& dest) {
-  if (src.hasValue()) {
-    moveValue(src.valueReg(), dest);
-    return;
-  }
-
-  MIRType type = src.type();
-  AnyRegister reg = src.typedReg();
-
-  if (!IsFloatingPointType(type)) {
-    boxNonDouble(ValueTypeFromMIRType(type), reg.gpr(), dest);
-    return;
-  }
-
-  FloatRegister scratch = ScratchDoubleReg;
-  FloatRegister freg = reg.fpu();
-  if (type == MIRType::Float32) {
-    convertFloat32ToDouble(freg, scratch);
-    freg = scratch;
-  }
-  boxDouble(freg, dest, scratch);
-}
-
 void MacroAssembler::moveValue(const ValueOperand& src,
                                const ValueOperand& dest) {
   if (src == dest) {
@@ -2299,10 +2277,33 @@ void MacroAssembler::branchValueIsNurseryCellImpl(Condition cond,
 void MacroAssembler::branchTestValue(Condition cond, const ValueOperand& lhs,
                                      const Value& rhs, Label* label) {
   MOZ_ASSERT(cond == Equal || cond == NotEqual);
+  MOZ_ASSERT(!rhs.isNaN());
   ScratchRegisterScope scratch(*this);
   MOZ_ASSERT(lhs.valueReg() != scratch);
   moveValue(rhs, ValueOperand(scratch));
   ma_b(lhs.valueReg(), scratch, label, cond);
+}
+
+void MacroAssembler::branchTestNaNValue(Condition cond, const ValueOperand& val,
+                                        Register temp, Label* label) {
+  MOZ_ASSERT(cond == Equal || cond == NotEqual);
+  ScratchRegisterScope scratch(asMasm());
+  MOZ_ASSERT(val.valueReg() != scratch);
+
+  // When testing for NaN, we want to ignore the sign bit.
+  if (hasR2()) {
+    // Clear the sign bit by extracting the lower 63 bits.
+    ma_dext(temp, val.valueReg(), Imm32(0), Imm32(63));
+  } else {
+    // Clear the sign bit by shifting left and then right.
+    ma_dsll(temp, val.valueReg(), Imm32(1));
+    ma_dsrl(temp, temp, Imm32(1));
+  }
+
+  // Compare against a NaN with sign bit 0.
+  static_assert(JS::detail::CanonicalizedNaNSignBit == 0);
+  moveValue(DoubleValue(JS::GenericNaN()), ValueOperand(scratch));
+  ma_b(temp, scratch, label, cond);
 }
 
 // ========================================================================
@@ -2529,7 +2530,7 @@ void MacroAssemblerMIPS64Compat::wasmLoadI64Impl(
     const wasm::MemoryAccessDesc& access, Register memoryBase, Register ptr,
     Register ptrScratch, Register64 output, Register tmp) {
   access.assertOffsetInGuardPages();
-  uint32_t offset = access.offset();
+  uint32_t offset = access.offset32();
   MOZ_ASSERT_IF(offset, ptrScratch != InvalidReg);
 
   MOZ_ASSERT(!access.isZeroExtendSimd128Load());
@@ -2543,33 +2544,7 @@ void MacroAssemblerMIPS64Compat::wasmLoadI64Impl(
   }
 
   unsigned byteSize = access.byteSize();
-  bool isSigned;
-
-  switch (access.type()) {
-    case Scalar::Int8:
-      isSigned = true;
-      break;
-    case Scalar::Uint8:
-      isSigned = false;
-      break;
-    case Scalar::Int16:
-      isSigned = true;
-      break;
-    case Scalar::Uint16:
-      isSigned = false;
-      break;
-    case Scalar::Int32:
-      isSigned = true;
-      break;
-    case Scalar::Uint32:
-      isSigned = false;
-      break;
-    case Scalar::Int64:
-      isSigned = true;
-      break;
-    default:
-      MOZ_CRASH("unexpected array type");
-  }
+  bool isSigned = Scalar::isSignedIntType(access.type());
 
   BaseIndex address(memoryBase, ptr, TimesOne);
   if (IsUnaligned(access)) {
@@ -2581,12 +2556,12 @@ void MacroAssemblerMIPS64Compat::wasmLoadI64Impl(
   }
 
   asMasm().memoryBarrierBefore(access.sync());
+  FaultingCodeOffset fco = asMasm().ma_load(
+      output.reg, address, static_cast<LoadStoreSize>(8 * byteSize),
+      isSigned ? SignExtend : ZeroExtend);
   asMasm().append(access,
                   wasm::TrapMachineInsnForLoad(Scalar::byteSize(access.type())),
-                  FaultingCodeOffset(currentOffset()));
-  asMasm().ma_load(output.reg, address,
-                   static_cast<LoadStoreSize>(8 * byteSize),
-                   isSigned ? SignExtend : ZeroExtend);
+                  fco);
   asMasm().memoryBarrierAfter(access.sync());
 }
 
@@ -2594,7 +2569,7 @@ void MacroAssemblerMIPS64Compat::wasmStoreI64Impl(
     const wasm::MemoryAccessDesc& access, Register64 value, Register memoryBase,
     Register ptr, Register ptrScratch, Register tmp) {
   access.assertOffsetInGuardPages();
-  uint32_t offset = access.offset();
+  uint32_t offset = access.offset32();
   MOZ_ASSERT_IF(offset, ptrScratch != InvalidReg);
 
   // Maybe add the offset.
@@ -2604,32 +2579,7 @@ void MacroAssemblerMIPS64Compat::wasmStoreI64Impl(
   }
 
   unsigned byteSize = access.byteSize();
-  bool isSigned;
-  switch (access.type()) {
-    case Scalar::Int8:
-      isSigned = true;
-      break;
-    case Scalar::Uint8:
-      isSigned = false;
-      break;
-    case Scalar::Int16:
-      isSigned = true;
-      break;
-    case Scalar::Uint16:
-      isSigned = false;
-      break;
-    case Scalar::Int32:
-      isSigned = true;
-      break;
-    case Scalar::Uint32:
-      isSigned = false;
-      break;
-    case Scalar::Int64:
-      isSigned = true;
-      break;
-    default:
-      MOZ_CRASH("unexpected array type");
-  }
+  bool isSigned = Scalar::isSignedIntType(access.type());
 
   BaseIndex address(memoryBase, ptr, TimesOne);
 
@@ -2642,12 +2592,12 @@ void MacroAssemblerMIPS64Compat::wasmStoreI64Impl(
   }
 
   asMasm().memoryBarrierBefore(access.sync());
+  FaultingCodeOffset fco = asMasm().ma_store(
+      value.reg, address, static_cast<LoadStoreSize>(8 * byteSize),
+      isSigned ? SignExtend : ZeroExtend);
   asMasm().append(
       access, wasm::TrapMachineInsnForStore(Scalar::byteSize(access.type())),
-      FaultingCodeOffset(currentOffset()));
-  asMasm().ma_store(value.reg, address,
-                    static_cast<LoadStoreSize>(8 * byteSize),
-                    isSigned ? SignExtend : ZeroExtend);
+      fco);
   asMasm().memoryBarrierAfter(access.sync());
 }
 
@@ -2905,7 +2855,18 @@ void MacroAssembler::convertUInt64ToFloat32(Register64 src_, FloatRegister dest,
   bind(&done);
 }
 
-#ifdef ENABLE_WASM_TAIL_CALLS
+void MacroAssembler::flexibleQuotientPtr(
+    Register rhs, Register srcDest, bool isUnsigned,
+    const LiveRegisterSet& volatileLiveRegs) {
+  quotient64(rhs, srcDest, isUnsigned);
+}
+
+void MacroAssembler::flexibleRemainderPtr(
+    Register rhs, Register srcDest, bool isUnsigned,
+    const LiveRegisterSet& volatileLiveRegs) {
+  remainder64(rhs, srcDest, isUnsigned);
+}
+
 void MacroAssembler::wasmMarkCallAsSlow() { mov(ra, ra); }
 
 const int32_t SlowCallMarker = 0x37ff0000;  // ori ra, ra, 0
@@ -2923,6 +2884,5 @@ CodeOffset MacroAssembler::wasmMarkedSlowCall(const wasm::CallSiteDesc& desc,
   wasmMarkCallAsSlow();
   return offset;
 }
-#endif  // ENABLE_WASM_TAIL_CALLS
 
 //}}} check_macroassembler_style

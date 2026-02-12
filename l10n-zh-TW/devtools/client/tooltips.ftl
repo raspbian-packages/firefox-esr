@@ -10,14 +10,6 @@ learn-more = <span data-l10n-name="link">了解更多</span>
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain why
 ## the property is not applied.
-## Variables:
-##   $property (string) - A CSS property name e.g. "color".
-##   $display (string) - A CSS display value e.g. "inline-block".
-
-
-## In the Rule View when a CSS property cannot be successfully applied we display
-## an icon. When this icon is hovered this message is displayed to explain why
-## the property is not applied.
 ## The variables are all passed from the same place, in `InactiveCssTooltipHelper#getTemplate`
 ## (devtools/client/shared/widgets/tooltip/inactive-css-tooltip-helper.js#95)
 ## Variables:
@@ -42,6 +34,8 @@ inactive-css-not-display-block-on-floated = 由於是 <strong>floated</strong> �
 inactive-css-not-display-block-on-floated-2 = 由於是 <strong>floated</strong> 元素，繪圖引擎已將 <strong>display</strong> 值更改為 <strong>{ $display }</strong>。
 inactive-css-only-non-grid-or-flex-item = 由於無法對 Flex 或 Grid 項目使用 <strong>{ $property }</strong>，沒有影響。
 inactive-css-not-block = 由於 <strong>{ $property }</strong> 只對區塊級元素有效，對此元素沒有影響。
+inactive-css-not-block-container = 由於 <strong>{ $property }</strong> 只對區塊容器元素有效，對此元素沒有影響。
+inactive-css-not-block-flex-grid-container = 由於 <strong>{ $property }</strong> 只對 block、flex、grid 容器元素有效，對此元素沒有影響。
 inactive-css-not-floated = 由於 <strong>{ $property }</strong> 只對 float 元素有效，沒有影響。
 inactive-css-property-is-impossible-to-override-in-visited = 由於 <strong>:visited</strong> 的限制，無法蓋過 <strong>{ $property }</strong>。
 inactive-css-position-property-on-unpositioned-box = 由於元素未置入，<strong>{ $property }</strong> 對此元素沒有影響。
@@ -74,6 +68,7 @@ inactive-css-cue-pseudo-element-not-supported = ::cue 偽元素不支援 <strong
 inactive-css-text-wrap-balance-lines-exceeded = 由於行數超過 { $lineCount } 行，<strong>{ $property }</strong> 對此元素沒有影響。
 inactive-css-text-wrap-balance-fragmented = 由於是分段的元素（內容拆分在不同欄或頁面中），<strong>{ $property }</strong> 對此元素沒有影響。
 inactive-css-no-width-height = 由於無法設定寬度與高度，<strong>{ $property }</strong> 對此元素沒有影響。
+inactive-css-no-principal-box = 由於不會建立 principal box，<strong>{ $property }</strong> 對此元素沒有影響。
 
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain how
@@ -96,6 +91,8 @@ inactive-css-non-replaced-inline-or-table-column-or-column-group-fix = 請嘗試
 inactive-css-not-display-block-on-floated-fix = 可試著移除 <strong>float</strong> 或加入 <strong>display:block</strong>。{ learn-more }
 inactive-css-only-non-grid-or-flex-item-fix = 請試著將元素容器的 <strong>display</strong> 屬性值，更改為 <strong>flex</strong>、<strong>grid</strong>、<strong>inline-flex</strong> 或 <strong>inline-grid</strong> 以外的值，或是移除 <strong>float</strong>。{ learn-more }
 inactive-css-not-block-fix = 請嘗試加入 <strong>display:block</strong> 或 <strong>float:left</strong>。{ learn-more }
+inactive-css-not-block-container-fix = 請嘗試加入 <strong>display:block</strong>、<strong>display:inline-block</strong> 或 <strong>display:flow-root</strong>。{ learn-more }
+inactive-css-not-block-flex-grid-container-fix = 可嘗試加入 <strong>display:block</strong>、<strong>display:inline-block</strong>、<strong>display:flex</strong>、<strong>display:inline-flex</strong>、<strong>display:grid</strong>、<strong>display:inline-grid</strong> 或 <strong>display:flow-root</strong>。{ learn-more }
 inactive-css-not-floated-fix = 請嘗試加入 <strong>none</strong> 以外的 <strong>float</strong> 屬性值。{ learn-more }
 inactive-css-position-property-on-unpositioned-box-fix = 請試著將 <strong>position</strong> 屬性設定為 <strong>static</strong> 以外的值。{ learn-more }
 inactive-css-only-replaced-elements-fix = 請確認您將屬性加入到要被置換的元素。{ learn-more }
@@ -112,6 +109,7 @@ inactive-css-resize-fix = 可試著將 <strong>overflow</strong> 設定為 <stro
 inactive-css-ruby-element-fix = 請嘗試調整 ruby 文字的 <strong>font-size</strong>。{ learn-more }
 inactive-css-text-wrap-balance-lines-exceeded-fix = 請試著減少行數。{ learn-more }
 inactive-css-text-wrap-balance-fragmented-fix = 請避免分割元素內容，例如將欄位移除，或是使用 <strong>page-break-inside:avoid</strong>。{ learn-more }
+inactive-css-no-principal-box-fix = 請嘗試加入會建立 Principal box 的 <strong>display</strong> 值，例如 <strong>block</strong>、<strong>inline-block</strong>、<strong>flex</strong> 或 <strong>grid</strong>。{ learn-more }
 
 ## In the Rule View when a CSS property may have compatibility issues with other browsers
 ## we display an icon. When this icon is hovered this message is displayed to explain why
@@ -125,7 +123,7 @@ css-compatibility-deprecated-experimental-message = <strong>{ $property }</stron
 css-compatibility-deprecated-experimental-supported-message = <strong>{ $property }</strong> 原本是一個實驗性的屬性，現行 W3C 標準已經棄用。
 css-compatibility-deprecated-message = <strong>{ $property }</strong> 在現行 W3C 標準中已經棄用，於下列瀏覽器中已不支援:
 css-compatibility-deprecated-supported-message = <strong>{ $property }</strong> 在現行 W3C 標準中已經棄用。
-css-compatibility-experimental-message = <strong>{ $property }</strong> 是一個實驗性的屬性，在下列瀏覽器中已不支援:
+css-compatibility-experimental-message = <strong>{ $property }</strong> 是一個實驗性的屬性，在下列瀏覽器中不受支援：
 css-compatibility-experimental-supported-message = <strong>{ $property }</strong> 是一個實驗性的屬性。
 css-compatibility-learn-more-message = <span data-l10n-name="link">了解更多</span>關於 <strong>{ $rootProperty }</strong> 的資訊
 

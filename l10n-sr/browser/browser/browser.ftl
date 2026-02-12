@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -51,6 +48,9 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } приватно прегледање
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -254,10 +254,17 @@ search-one-offs-actions =
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Прикажи додатке
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = додаци, теме
 quickactions-cmd-addons2 = додаци
 # Opens the bookmarks library window
 quickactions-bookmarks2 = Управљај обележивачима
 quickactions-cmd-bookmarks = обележивачи
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = Обриши недавну историју
+quickactions-cmd-clearrecenthistory = обриши недавну историју, историја
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Обриши историју
 quickactions-cmd-clearhistory = обриши историју
@@ -265,11 +272,13 @@ quickactions-cmd-clearhistory = обриши историју
 quickactions-downloads2 = Прикажи преузимања
 quickactions-cmd-downloads = преузимања
 # Opens about:addons page in the extensions section
-quickactions-extensions = Управљај проширењима
-quickactions-cmd-extensions = проширења
+quickactions-extensions = Управљај додацима
+quickactions-cmd-extensions = додаци
+quickactions-cmd-help = помоћ, подршка
 # Opens the devtools web inspector
-quickactions-inspector2 = Отвори алате за програмере
-quickactions-cmd-inspector = инспектор, алати за програмере
+quickactions-inspector2 = Отвори алатке за програмере
+quickactions-cmd-inspector2 = инспектор, алатке за програмере
+quickactions-cmd-inspector = инспектор, алатке за програмере
 # Opens about:logins
 quickactions-logins2 = Управљај лозинкама
 quickactions-cmd-logins = пријаве, лозинке
@@ -277,11 +286,11 @@ quickactions-cmd-logins = пријаве, лозинке
 quickactions-plugins = Управљај прикључцима
 quickactions-cmd-plugins = прикључци
 # Opens the print dialog
-quickactions-print2 = Штампај страницу
-quickactions-cmd-print = штампај
+quickactions-print2 = Одштампај страницу
+quickactions-cmd-print = одштампај, штампај
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Сачувај страницу као PDF
-quickactions-cmd-savepdf = pdf
+quickactions-cmd-savepdf2 = pdf, сачувај страницу
 # Opens a new private browsing window
 quickactions-private2 = Отвори приватни прозор
 quickactions-cmd-private = приватно прегледање
@@ -293,19 +302,27 @@ quickactions-restart = Поново покрени { -brand-short-name }
 quickactions-cmd-restart = рестартуј
 # Opens the screenshot tool
 quickactions-screenshot3 = Направи снимак екрана
+quickactions-cmd-screenshot2 = снимак екрана, направи снимак екрана
 quickactions-cmd-screenshot = снимак екрана
 # Opens about:preferences
 quickactions-settings2 = Управљај подешавањима
-quickactions-cmd-settings = подешавања, преференце, опције
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = подешавања, опције
+quickactions-cmd-settings = подешавања, опције
 # Opens about:addons page in the themes section
 quickactions-themes = Управљај темама
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = теме, додаци
 quickactions-cmd-themes = теме
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = Ажурирај { -brand-short-name }
 quickactions-cmd-update = ажурирај
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = Прикажи извор странице
-quickactions-cmd-viewsource = изворни код
+quickactions-cmd-viewsource2 = прикажи извор, извор странице
+quickactions-cmd-viewsource = прикажи извор, извор
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Сазнајте више о брзим радњама
@@ -351,22 +368,22 @@ identity-connection-not-secure = Веза није безбедна
 identity-connection-secure = Веза је безбедна
 identity-connection-failure = Грешка при повезивању
 identity-connection-internal =
-    Ово је безбедна страница { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "gen") }
-        [feminine] { -brand-short-name(case: "gen") }
-        [neuter] { -brand-short-name(case: "gen") }
-       *[other] програма { -brand-short-name }
-    }.
+    { -brand-short-name.gender ->
+        [masculine] Ово је безбедна страница { -brand-short-name(case: "gen") }.
+        [feminine] Ово је безбедна страница { -brand-short-name(case: "gen") }.
+        [neuter] Ово је безбедна страница { -brand-short-name(case: "gen") }.
+       *[other] Ово је безбедна страница програма { -brand-short-name }.
+    }
 identity-connection-file = Ова страница је сачувана на рачунару.
 identity-connection-associated = Ова страница је учитана из друге странице.
 identity-extension-page = Ову страницу је отворио додатак.
 identity-active-blocked =
     { -brand-short-name.gender ->
-        [masculine] { -brand-short-name } је блокирао
-        [feminine] { -brand-short-name } је блокирала
-        [neuter] { -brand-short-name } је блокирало
-       *[other] Програм { -brand-short-name } је блокирао
-    } делове ове странице који нису безбедни.
+        [masculine] { -brand-short-name } је блокирао делове ове странице који нису безбедни.
+        [feminine] { -brand-short-name } је блокирала делове ове странице који нису безбедни.
+        [neuter] { -brand-short-name } је блокирало делове ове странице који нису безбедни.
+       *[other] Програм { -brand-short-name } је блокирао делове ове странице који нису безбедни.
+    }
 identity-custom-root = Везу је потврдио издавалац сертификата ког Mozilla не препознаје.
 identity-passive-loaded = Неки делови ове странице, попут слика, нису безбедни.
 identity-active-loaded = Онемогућили сте заштиту на овој страници.
@@ -645,8 +662,11 @@ urlbar-searchmode-actions =
     .label = Радње
 urlbar-searchmode-exit-button =
     .tooltiptext = Затвори
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Овај пут претражи користећи:
-urlbar-searchmode-popup-search-settings = Подешавање претраге
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Подешавање претраге
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -887,6 +907,9 @@ panel-save-update-password = Лозинка
 # "More" item in macOS share menu
 menu-share-more =
     .label = Више…
+menu-share-copy-link =
+    .label = Копирај везу
+    .accesskey = у
 ui-tour-info-panel-close =
     .tooltiptext = Затвори
 
@@ -1010,10 +1033,6 @@ unified-extensions-button-quarantined =
         Додаци
         Неки додаци нису дозвољени
 
-## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
-## Note that the new line is intentionally part of the tooltip.
-
-
 ## Private browsing reset button
 
 reset-pbm-toolbar-button =
@@ -1107,3 +1126,13 @@ file-picker-crashed-save-nowhere = Windows дијалошки оквир за и
 # The wording here should be consistent with the Windows variant of
 # `downloads-cmd-show-menuitem-2` and similar messages.
 
+
+## The urlbar trust icon & panel
+
+trustpanel-blocker-see-all = Прикажи све
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-insecure-section-header = Ваша веза није безбедна
+trustpanel-insecure-description = Подаци које шаљете на овај сајт нису шифровани. Могу бити прегледани, украдени или измењени.

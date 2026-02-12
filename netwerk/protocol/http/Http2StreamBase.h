@@ -33,11 +33,14 @@ class Http2Session;
 class Http2Stream;
 class Http2PushedStream;
 class Http2Decompressor;
+class Http2WebTransportSession;
 
-class Http2StreamBase : public nsAHttpSegmentReader,
+class Http2StreamBase : public nsISupports,
+                        public nsAHttpSegmentReader,
                         public nsAHttpSegmentWriter,
                         public SupportsWeakPtr {
  public:
+  NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSAHTTPSEGMENTREADER
 
   enum stateType {
@@ -102,6 +105,10 @@ class Http2StreamBase : public nsAHttpSegmentReader,
 
   void SetQueued(bool aStatus) { mQueued = aStatus ? 1 : 0; }
   bool Queued() { return mQueued; }
+  void SetInWriteQueue(bool aStatus) { mInWriteQueue = aStatus ? 1 : 0; }
+  bool InWriteQueue() { return mInWriteQueue; }
+  void SetInReadQueue(bool aStatus) { mInReadQueue = aStatus ? 1 : 0; }
+  bool InReadQueue() { return mInReadQueue; }
 
   void SetCountAsActive(bool aStatus) { mCountAsActive = aStatus ? 1 : 0; }
   bool CountAsActive() { return mCountAsActive; }
@@ -171,6 +178,9 @@ class Http2StreamBase : public nsAHttpSegmentReader,
   virtual uint32_t GetWireStreamId() { return mStreamID; }
   virtual Http2Stream* GetHttp2Stream() { return nullptr; }
   virtual Http2PushedStream* GetHttp2PushedStream() { return nullptr; }
+  virtual Http2WebTransportSession* GetHttp2WebTransportSession() {
+    return nullptr;
+  }
 
   [[nodiscard]] virtual nsresult OnWriteSegment(char*, uint32_t,
                                                 uint32_t*) override;
@@ -199,7 +209,8 @@ class Http2StreamBase : public nsAHttpSegmentReader,
 
  protected:
   virtual ~Http2StreamBase();
-
+  friend class DeleteHttp2StreamBase;
+  void DeleteSelfOnSocketThread();
   virtual void HandleResponseHeaders(nsACString& aHeadersOut,
                                      int32_t httpResponseCode) {}
   virtual nsresult CallToWriteData(uint32_t count, uint32_t* countRead) = 0;
@@ -251,6 +262,10 @@ class Http2StreamBase : public nsAHttpSegmentReader,
   // Flag is set when stream is queued inside the session due to
   // concurrency limits being exceeded
   uint32_t mQueued : 1;
+
+  // Flag to indicate whether this stream is in write or read queue
+  uint32_t mInWriteQueue : 1;
+  uint32_t mInReadQueue : 1;
 
   void ChangeState(enum upstreamStateType);
 

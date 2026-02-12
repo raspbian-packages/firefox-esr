@@ -62,6 +62,14 @@ perftools-button-add-directory = Aldoni dosierujon
 perftools-button-remove-directory = Forigi elektitajn
 perftools-button-edit-settings = Modifi agordojn…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = Aliaj agoj
+perftools-menu-more-actions-restart-with-profiling = Restartigi { -brand-shorter-name } kun aktiva rulanalizo de starto
+perftools-menu-more-actions-copy-for-startup = Kopii ĉirkaŭaĵajn variantojn por rulanalizo de starto
+perftools-menu-more-actions-copy-for-perf-tests = Kopii parametrojn por efikecaj testoj
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -134,6 +142,8 @@ perftools-presets-graphics-label = Grafikoj
 perftools-presets-graphics-description = Rekomendita agordaro por senerarigo de grafikoj en { -brand-shorter-name }.
 perftools-presets-media-label = Aŭdvidaĵo
 perftools-presets-media-description2 = Rekomendita agordaro por senerarigo de sono kaj video en { -brand-shorter-name }.
+perftools-presets-ml-label = Aŭtomata lernado
+perftools-presets-ml-description2 = Agordoj por senerarigo de aŭtomata lernado en { -brand-shorter-name }.
 perftools-presets-networking-label = Reto
 perftools-presets-networking-description = Rekomendita agordaro por esploro de retaj eraroj en { -brand-shorter-name }.
 # "Power" is used in the sense of energy (electricity used by the computer).
@@ -142,6 +152,3 @@ perftools-presets-power-description = Agordoj por senerarigo de uzo de energio e
 perftools-presets-debug-label = Senerarigi
 perftools-presets-debug-description = Antaŭagordo por senerarigo en { -brand-shorter-name }. Tio postulas multe pli da rimedoj, ne uzu por mezuri efikecon sed por pli koncentriĝe kompreni la konduton de la retumilo.
 perftools-presets-custom-label = Personecigita
-
-##
-

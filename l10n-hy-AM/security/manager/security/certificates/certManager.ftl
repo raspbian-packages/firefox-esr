@@ -30,7 +30,7 @@ certmgr-delete-cert2 =
     .title = Հեռացնել Վկայագիրը
     .style = min-width: 48em; min-height: 24em;
 certmgr-cert-host =
-    .label = Հանգույց
+    .label = Հյուրընկալ
 certmgr-cert-name =
     .label = Վկայագրի Անունը
 certmgr-cert-server =
@@ -135,9 +135,6 @@ delete-email-cert-impact = Եթե Դուք ջնջեք անձի էլ. փոստի 
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Վկայագրել հաջորդական համարով՝ { $serialNumber }
-
-## Used to show whether an override is temporary or permanent
-
 
 ## Add Security Exception dialog
 

@@ -183,6 +183,18 @@ downloads-history =
 downloads-details =
     .title = Downloadgegevens
 
+## These strings are displayed in the private browsing view of the downloads panel
+
+downloads-private-browsing-details =
+    .title = Bestanden blijven op uw apparaat
+downloads-private-browsing-message = Iedereen die dit apparaat gebruikt, kan downloads zien, zelfs wanneer u alle privévensters sluit.
+downloads-private-browsing-delete-button =
+    .label = Bestanden automatisch verwijderen
+    .accesskey = v
+downloads-private-browsing-accept-button =
+    .label = Begrepen
+    .accesskey = B
+
 ## Displayed when a site attempts to automatically download many files.
 ## Variables:
 ##   $num (number) - Number of blocked downloads.

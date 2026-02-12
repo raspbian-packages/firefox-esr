@@ -54,11 +54,14 @@ fx-view-discoverability-secondary-button-label = ᱵᱚᱸᱫ
 ## Split Dismiss Button Labels
 
 # Blocks the message from showing again
-split-dismiss-button-dont-show-option-label = ᱱᱚᱶᱟ ᱵᱟᱛᱟᱣᱟᱜ ᱟᱨ ᱫᱩᱦᱲᱟᱹ ᱟᱞᱚᱢ ᱫᱮᱠᱷᱟᱣᱟ
+split-dismiss-button-dont-show-option =
+    .label = ᱱᱚᱶᱟ ᱵᱟᱛᱟᱣᱟᱜ ᱟᱨ ᱫᱩᱦᱲᱟᱹ ᱟᱞᱚᱢ ᱫᱮᱠᱷᱟᱣᱟ
 # Dismisses message and reduces frequency of message
-split-dismiss-button-show-fewer-option-label = ᱠᱚᱢ ᱥᱮ ᱠᱚᱢ ᱵᱟᱛᱟᱣᱟᱜ ᱫᱮᱠᱷᱟᱣ ᱢᱮ
+split-dismiss-button-show-fewer-option =
+    .label = ᱠᱚᱢ ᱥᱮ ᱠᱚᱢ ᱵᱟᱛᱟᱣᱟᱜ ᱫᱮᱠᱷᱟᱣ ᱢᱮ
 # Opens about:preferences#general-cfrfeatures
-split-dismiss-button-manage-settings-option-label = ᱥᱟᱡᱟᱣ ᱠᱚ ᱢᱮᱱᱮᱡᱽ ᱢᱮ
+split-dismiss-button-manage-settings-option =
+    .label = ᱥᱟᱡᱟᱣ ᱠᱚ ᱢᱮᱱᱮᱡᱽ ᱢᱮ
 
 ## Sidebar Strings
 

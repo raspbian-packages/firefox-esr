@@ -48,9 +48,6 @@ download-cert-view-cert =
     .label = Hecha
 download-cert-view-text = CA mboajepyre hechakatu
 
-## Client Authorization Ask dialog
-
-
 ## Client Authentication Ask dialog
 
 client-auth-window =
@@ -85,8 +82,13 @@ client-auth-cert-details-issued-by = Onohẽpyre: { $issuedBy }
 # Variables:
 # $storedOn (String) - The name of the token holding the certificate (for example, "OS Client Cert Token (Modern)")
 client-auth-cert-details-stored-on = Ñongatupyre: { $storedOn }
-client-auth-cert-remember-box =
-    .label = Epyta mba’e je’epyrépe
+client-auth-cert-remember-label = Eñemomandu’a ko ejapóvare:
+client-auth-cert-remember-never =
+    .label = Peteĩ jey
+client-auth-cert-remember-always =
+    .label = Tapiaitéva
+client-auth-cert-remember-temporarily =
+    .label = Ko jeiképe g̃uarã
 
 ## Set password (p12) dialog
 

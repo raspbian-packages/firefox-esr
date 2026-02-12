@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Dismiss
     .secondarybuttonaccesskey = m
 appmenu-update-restart-message2 = Get the latest version of { -brand-shorter-name }. Open tabs and windows will be restored.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Undo
+    .secondarybuttonaccesskey = U
 appmenu-update-other-instance =
     .label = { -brand-shorter-name } is unable to automatically update to the latest version.
     .buttonlabel = Update { -brand-shorter-name } anyway
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = Okay
     .buttonaccesskey = O
 appmenu-addon-post-install-message3 = Manage your add-ons and themes through the application menu.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Update permissions and data preferences any time in the <a data-l10n-name="settings-link">extension settings</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Pin extension to toolbar
+    .accesskey = P
 appmenu-addon-post-install-incognito-checkbox =
     .label = Allow this extension to run in Private Windows
     .accesskey = A

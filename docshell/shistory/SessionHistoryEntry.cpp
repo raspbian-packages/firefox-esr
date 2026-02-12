@@ -29,6 +29,7 @@
 #include "mozilla/dom/DocumentBinding.h"
 #include "mozilla/dom/DOMTypes.h"
 #include "mozilla/dom/nsCSPContext.h"
+#include "mozilla/dom/nsCSPUtils.h"
 #include "mozilla/dom/PermissionMessageUtils.h"
 #include "mozilla/dom/ReferrerInfoUtils.h"
 #include "mozilla/ipc/IPDLParamTraits.h"
@@ -52,7 +53,6 @@ SessionHistoryInfo::SessionHistoryInfo(nsDocShellLoadState* aLoadState,
                       : Some(aLoadState->SrcdocData())),
       mBaseURI(aLoadState->BaseURI()),
       mLoadReplace(aLoadState->LoadReplace()),
-      mHasUserInteraction(false),
       mHasUserActivation(aLoadState->HasValidUserGestureActivation()),
       mSharedState(SharedState::Create(
           aLoadState->TriggeringPrincipal(), aLoadState->PrincipalToInherit(),
@@ -79,6 +79,7 @@ SessionHistoryInfo::SessionHistoryInfo(
     const SessionHistoryInfo& aSharedStateFrom, nsIURI* aURI)
     : mURI(aURI), mSharedState(aSharedStateFrom.mSharedState) {
   MaybeUpdateTitleFromURI();
+  mHasUserInteraction = aSharedStateFrom.mHasUserInteraction;
 }
 
 SessionHistoryInfo::SessionHistoryInfo(
@@ -240,6 +241,10 @@ void SessionHistoryInfo::SetCacheKey(uint32_t aCacheKey) {
 
 bool SessionHistoryInfo::IsSubFrame() const {
   return mSharedState.Get()->mIsFrameNavigation;
+}
+
+nsStructuredCloneContainer* SessionHistoryInfo::GetNavigationState() const {
+  return mSharedState.Get()->mNavigationState.get();
 }
 
 void SessionHistoryInfo::SetSaveLayoutStateFlag(bool aSaveLayoutStateFlag) {
@@ -887,7 +892,10 @@ SessionHistoryEntry::GetCsp(nsIContentSecurityPolicy** aCsp) {
 
 NS_IMETHODIMP
 SessionHistoryEntry::SetCsp(nsIContentSecurityPolicy* aCsp) {
-  SharedInfo()->mCsp = aCsp;
+  nsCOMPtr<nsIURI> uri = mInfo->mURI;
+  if (CSP_ShouldURIInheritCSP(uri)) {
+    SharedInfo()->mCsp = aCsp;
+  }
   return NS_OK;
 }
 
@@ -1496,11 +1504,9 @@ void SessionHistoryEntry::SetFrameLoader(nsFrameLoader* aFrameLoader) {
   SharedInfo()->SetFrameLoader(aFrameLoader);
   if (aFrameLoader) {
     if (BrowsingContext* bc = aFrameLoader->GetMaybePendingBrowsingContext()) {
-      bc->PreOrderWalk([&](BrowsingContext* aContext) {
-        if (BrowserParent* bp = aContext->Canonical()->GetBrowserParent()) {
-          bp->Deactivated();
-        }
-      });
+      if (BrowserParent* bp = bc->Canonical()->GetBrowserParent()) {
+        bp->VisitAll([&](BrowserParent* aBp) { aBp->Deactivated(); });
+      }
     }
 
     // When a new frameloader is stored, try to evict some older
@@ -1559,6 +1565,8 @@ void IPDLParamTraits<dom::SessionHistoryInfo>::Write(
   WriteIPDLParam(aWriter, aActor, stateData);
   WriteIPDLParam(aWriter, aActor, aParam.mSrcdocData);
   WriteIPDLParam(aWriter, aActor, aParam.mBaseURI);
+  WriteIPDLParam(aWriter, aActor, aParam.mNavigationKey);
+  WriteIPDLParam(aWriter, aActor, aParam.mNavigationId);
   WriteIPDLParam(aWriter, aActor, aParam.mLoadReplace);
   WriteIPDLParam(aWriter, aActor, aParam.mURIWasModified);
   WriteIPDLParam(aWriter, aActor, aParam.mScrollRestorationIsManual);
@@ -1601,6 +1609,8 @@ bool IPDLParamTraits<dom::SessionHistoryInfo>::Read(
       !ReadIPDLParam(aReader, aActor, &stateData) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mSrcdocData) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mBaseURI) ||
+      !ReadIPDLParam(aReader, aActor, &aResult->mNavigationKey) ||
+      !ReadIPDLParam(aReader, aActor, &aResult->mNavigationId) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mLoadReplace) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mURIWasModified) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mScrollRestorationIsManual) ||

@@ -36,6 +36,9 @@ certificate-viewer-key-size = Rozmiar klucza
 certificate-viewer-inc-locality = Region założenia
 certificate-viewer-locality = Region
 certificate-viewer-location = Położenie
+# Log is a noun meaning a record of events.
+certificate-viewer-log-name = Nazwa dziennika
+# Log is a noun meaning a record of events.
 certificate-viewer-logid = Identyfikator dziennika
 certificate-viewer-method = Metoda
 certificate-viewer-modulus = Modulo
@@ -110,6 +113,8 @@ certificate-viewer-export = Eksportuj
 
 # Label for a tab where we haven't found a better label:
 certificate-viewer-unknown-group-label = (nieznane)
+# Name for a file where we haven't found a better name:
+certificate-viewer-unknown-file-name = certyfikat
 
 ## Labels for tabs displayed in stand-alone about:certificate page
 

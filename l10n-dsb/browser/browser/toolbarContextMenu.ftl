@@ -32,6 +32,12 @@ toolbar-context-menu-reopen-closed-tabs =
            *[other] Zacynjone rejtariki znowego wócyniś
         }
     .accesskey = Z
+toolbar-context-turn-on-vertical-tabs =
+    .label = Wertikalne rejtariki wužywaś
+toolbar-context-turn-off-vertical-tabs =
+    .label = Wertikalne rejtariki njewužywaś
+toolbar-context-customize-sidebar =
+    .label = Bocnicu pśiměriś
 toolbar-context-menu-manage-extension =
     .label = Rozšyrjenje zastojaś
     .accesskey = R
@@ -56,6 +62,10 @@ toolbar-context-menu-auto-hide-downloads-button-2 =
 toolbar-context-menu-always-open-downloads-panel =
     .label = Wokno pokazaś, gaž se ześěgnjenje zachopina
     .accesskey = o
+# Label of checkbox menu item to toggle visibility of Extensions Button.
+toolbar-context-menu-always-show-extensions-button =
+    .label = Pśecej w symbolowej rědce pokazaś
+    .accesskey = c
 toolbar-context-menu-remove-from-toolbar =
     .label = Ze symboloweje rědki wótpóraś
     .accesskey = Z

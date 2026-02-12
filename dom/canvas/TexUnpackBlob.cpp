@@ -9,8 +9,10 @@
 #include "GLContext.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/HTMLCanvasElement.h"
+#include "mozilla/gfx/CanvasManagerParent.h"
 #include "mozilla/gfx/Logging.h"
 #include "mozilla/layers/ImageDataSerializer.h"
+#include "mozilla/layers/SharedSurfacesParent.h"
 #include "mozilla/layers/TextureHost.h"
 #include "mozilla/layers/VideoBridgeParent.h"
 #include "mozilla/RefPtr.h"
@@ -314,6 +316,20 @@ static bool SDIsNullRemoteDecoder(const layers::SurfaceDescriptor& sd) {
                  .type() == layers::RemoteDecoderVideoSubDescriptor::Tnull_t;
 }
 
+// Check if the surface descriptor describes an ExternalImage surface for which
+// we only have an opaque source/handle to derive the actual surface from.
+static bool SDIsExternalImage(const layers::SurfaceDescriptor& sd) {
+  return sd.type() ==
+             layers::SurfaceDescriptor::TSurfaceDescriptorExternalImage &&
+         sd.get_SurfaceDescriptorExternalImage().source() ==
+             wr::ExternalImageSource::SharedSurfaces;
+}
+
+static bool SDIsCanvasSurface(const layers::SurfaceDescriptor& sd) {
+  return sd.type() ==
+         layers::SurfaceDescriptor::TSurfaceDescriptorCanvasSurface;
+}
+
 // static
 std::unique_ptr<TexUnpackBlob> TexUnpackBlob::Create(
     const TexUnpackBlobDesc& desc) {
@@ -339,12 +355,13 @@ std::unique_ptr<TexUnpackBlob> TexUnpackBlob::Create(
       // Otherwise, TexUnpackImage will try to blit the surface descriptor as
       // if it can be mapped as a framebuffer, whereas the Shmem is still CPU
       // data.
-      if (SDIsRGBBuffer(*desc.sd) || SDIsNullRemoteDecoder(*desc.sd)) {
+      if (SDIsRGBBuffer(*desc.sd) || SDIsNullRemoteDecoder(*desc.sd) ||
+          SDIsExternalImage(*desc.sd) || SDIsCanvasSurface(*desc.sd)) {
         return new TexUnpackSurface(desc);
       }
       return new TexUnpackImage(desc);
     }
-    if (desc.dataSurf) {
+    if (desc.sourceSurf) {
       return new TexUnpackSurface(desc);
     }
 
@@ -389,6 +406,21 @@ bool TexUnpackBlob::ConvertIfNeeded(
 
   if (!rowLength || !rowCount) return true;
 
+  auto minSrcStride =
+      CheckedInt<size_t>(
+          WebGLTexelConversions::TexelBytesForFormat(srcFormat)) *
+      rowLength;
+  auto minDstStride =
+      CheckedInt<size_t>(
+          WebGLTexelConversions::TexelBytesForFormat(dstFormat)) *
+      rowLength;
+  if (srcStride <= 0 || dstStride <= 0 || !minSrcStride.isValid() ||
+      !minDstStride.isValid() || size_t(srcStride) < minSrcStride.value() ||
+      size_t(dstStride) < minDstStride.value()) {
+    webgl->ErrorInvalidOperation("Invalid stride.");
+    return false;
+  }
+
   const auto srcIsPremult = (mDesc.srcAlphaType == gfxAlphaType::Premult);
   auto dstIsPremult = unpacking.premultiplyAlpha;
   const auto fnHasPremultMismatch = [&]() {
@@ -408,6 +440,12 @@ bool TexUnpackBlob::ConvertIfNeeded(
     dstOrigin = srcOrigin;
   }
 
+  // TODO (Bug 754256): Figure out the source colorSpace.
+  dom::PredefinedColorSpace srcColorSpace = dom::PredefinedColorSpace::Srgb;
+  dom::PredefinedColorSpace dstColorSpace =
+      webgl->mUnpackColorSpace ? *webgl->mUnpackColorSpace
+                               : dom::PredefinedColorSpace::Srgb;
+
   if (srcFormat != dstFormat) {
     webgl->GeneratePerfWarning(
         "Conversion requires pixel reformatting. (%u->%u)", uint32_t(srcFormat),
@@ -421,6 +459,10 @@ bool TexUnpackBlob::ConvertIfNeeded(
   } else if (srcStride != dstStride) {
     webgl->GeneratePerfWarning("Conversion requires change in stride. (%u->%u)",
                                uint32_t(srcStride), uint32_t(dstStride));
+  } else if (srcColorSpace != dstColorSpace) {
+    webgl->GeneratePerfWarning(
+        "Conversion requires colorSpace conversion. (%u->%u)",
+        uint32_t(srcColorSpace), uint32_t(dstColorSpace));
   } else {
     return true;
   }
@@ -446,7 +488,8 @@ bool TexUnpackBlob::ConvertIfNeeded(
   bool wasTrivial;
   if (!ConvertImage(rowLength, rowCount, srcBegin, srcStride, srcOrigin,
                     srcFormat, srcIsPremult, dstBegin, dstStride, dstOrigin,
-                    dstFormat, dstIsPremult, &wasTrivial)) {
+                    dstFormat, dstIsPremult, srcColorSpace, dstColorSpace,
+                    &wasTrivial)) {
     webgl->ErrorImplementationBug("ConvertImage failed.");
     return false;
   }
@@ -656,12 +699,12 @@ bool TexUnpackImage::Validate(const WebGLContext* const webgl,
     return false;
   }
   const auto& elemSize = *mDesc.structuredSrcSize;
-  if (mDesc.dataSurf) {
-    const auto& surfSize = mDesc.dataSurf->GetSize();
+  if (mDesc.sourceSurf) {
+    const auto& surfSize = mDesc.sourceSurf->GetSize();
     const auto surfSize2 = ivec2::FromSize(surfSize)->StaticCast<uvec2>();
     if (uvec2{elemSize.x, elemSize.y} != surfSize2) {
       gfxCriticalError()
-          << "TexUnpackImage mismatched structuredSrcSize for dataSurf.";
+          << "TexUnpackImage mismatched structuredSrcSize for sourceSurf.";
       return false;
     }
   }
@@ -673,7 +716,8 @@ bool TexUnpackImage::Validate(const WebGLContext* const webgl,
 Maybe<std::string> BlitPreventReason(
     const int32_t level, const ivec3& offset, const GLenum internalFormat,
     const webgl::PackingInfo& pi, const TexUnpackBlobDesc& desc,
-    const OptionalRenderableFormatBits optionalRenderableFormatBits) {
+    const OptionalRenderableFormatBits optionalRenderableFormatBits,
+    bool sameColorSpace, bool allowConversion) {
   const auto& size = desc.size;
   const auto& unpacking = desc.unpacking;
 
@@ -694,7 +738,7 @@ Maybe<std::string> BlitPreventReason(
 
       const bool srcIsPremult = (desc.srcAlphaType == gfxAlphaType::Premult);
       const auto& dstIsPremult = unpacking.premultiplyAlpha;
-      if (srcIsPremult == dstIsPremult) return nullptr;
+      if (srcIsPremult == dstIsPremult || allowConversion) return nullptr;
 
       if (dstIsPremult) {
         return "UNPACK_PREMULTIPLY_ALPHA_WEBGL is not true";
@@ -703,6 +747,10 @@ Maybe<std::string> BlitPreventReason(
       }
     }();
     if (premultReason) return premultReason;
+
+    if (!sameColorSpace) {
+      return "not same colorSpace";
+    }
 
     const auto formatReason = [&]() -> const char* {
       if (pi.type != LOCAL_GL_UNSIGNED_BYTE) {
@@ -800,9 +848,16 @@ bool TexUnpackImage::TexOrSubImage(bool isSubImage, bool needsRespec,
 
   // -
 
-  const auto reason =
-      BlitPreventReason(level, {xOffset, yOffset, zOffset}, dui->internalFormat,
-                        pi, mDesc, webgl->mOptionalRenderableFormatBits);
+  // TODO (Bug 754256): Figure out the source colorSpace.
+  dom::PredefinedColorSpace srcColorSpace = dom::PredefinedColorSpace::Srgb;
+  dom::PredefinedColorSpace dstColorSpace =
+      webgl->mUnpackColorSpace ? *webgl->mUnpackColorSpace
+                               : dom::PredefinedColorSpace::Srgb;
+  bool sameColorSpace = (srcColorSpace == dstColorSpace);
+
+  const auto reason = BlitPreventReason(
+      level, {xOffset, yOffset, zOffset}, dui->internalFormat, pi, mDesc,
+      webgl->mOptionalRenderableFormatBits, sameColorSpace);
   if (reason) {
     webgl->GeneratePerfWarning(
         "Failed to hit GPU-copy fast-path."
@@ -901,7 +956,7 @@ static bool GetFormatForSurf(const gfx::SourceSurface* surf,
       *out_bpp = 1;
       return true;
 
-    case gfx::SurfaceFormat::YUV:
+    case gfx::SurfaceFormat::YUV420:
       // Ugh...
       NS_ERROR("We don't handle uploads from YUV sources yet.");
       // When we want to, check out gfx/ycbcr/YCbCrUtils.h. (specifically
@@ -924,12 +979,12 @@ bool TexUnpackSurface::Validate(const WebGLContext* const webgl,
     return false;
   }
   const auto& elemSize = *mDesc.structuredSrcSize;
-  if (mDesc.dataSurf) {
-    const auto& surfSize = mDesc.dataSurf->GetSize();
+  if (mDesc.sourceSurf) {
+    const auto& surfSize = mDesc.sourceSurf->GetSize();
     const auto surfSize2 = ivec2::FromSize(surfSize)->StaticCast<uvec2>();
     if (uvec2{elemSize.x, elemSize.y} != surfSize2) {
       gfxCriticalError()
-          << "TexUnpackSurface mismatched structuredSrcSize for dataSurf.";
+          << "TexUnpackSurface mismatched structuredSrcSize for sourceSurf.";
       return false;
     }
   }
@@ -957,9 +1012,20 @@ bool TexUnpackSurface::TexOrSubImage(bool isSubImage, bool needsRespec,
       const auto& data = sdb.data();
       MOZ_ASSERT(data.type() == layers::MemoryOrShmem::TShmem);
       const auto& shmem = data.get_Shmem();
-      surf = gfx::Factory::CreateWrappingDataSourceSurface(
-          shmem.get<uint8_t>(), layers::ImageDataSerializer::GetRGBStride(rgb),
+      size_t shmemSize = shmem.Size<uint8_t>();
+      int32_t stride = layers::ImageDataSerializer::GetRGBStride(rgb);
+      if (stride <= 0) {
+        gfxCriticalError() << "TexUnpackSurface failed to get rgb stride";
+        return false;
+      }
+      size_t bufSize = layers::ImageDataSerializer::ComputeRGBBufferSize(
           rgb.size(), rgb.format());
+      if (!bufSize || bufSize > shmemSize) {
+        gfxCriticalError() << "TexUnpackSurface failed to get rgb buffer size";
+        return false;
+      }
+      surf = gfx::Factory::CreateWrappingDataSourceSurface(
+          shmem.get<uint8_t>(), stride, rgb.size(), rgb.format());
     } else if (SDIsNullRemoteDecoder(sd)) {
       const auto& sdrd = sd.get_SurfaceDescriptorGPUVideo()
                              .get_SurfaceDescriptorRemoteDecoder();
@@ -976,6 +1042,54 @@ bool TexUnpackSurface::TexOrSubImage(bool isSubImage, bool needsRespec,
         return false;
       }
       surf = texture->GetAsSurface();
+    } else if (SDIsExternalImage(sd)) {
+      const auto& sdei = sd.get_SurfaceDescriptorExternalImage();
+      if (auto* sharedSurfacesHolder = webgl->GetSharedSurfacesHolder()) {
+        surf = sharedSurfacesHolder->Get(sdei.id());
+      }
+      if (!surf) {
+        // Most likely the content process crashed before it was able to finish
+        // sharing the surface with the compositor process.
+        gfxCriticalNote << "TexUnpackSurface failed to get ExternalImage";
+        return false;
+      }
+    } else if (SDIsCanvasSurface(sd)) {
+      // The canvas surface resides on a 2D canvas within the same content
+      // process as the WebGL canvas. Query it for the surface.
+      const auto& sdc = sd.get_SurfaceDescriptorCanvasSurface();
+      uint32_t managerId = sdc.managerId();
+      mozilla::ipc::ActorId canvasId = sdc.canvasId();
+      uintptr_t surfaceId = sdc.surfaceId();
+      surf = gfx::CanvasManagerParent::GetCanvasSurface(
+          webgl->GetContentId(), managerId, canvasId, surfaceId);
+      if (!surf) {
+        gfxCriticalNote << "TexUnpackSurface failed to get CanvasSurface";
+        return false;
+      }
+      if (NS_WARN_IF(surf->GetSize().width < GLint(size.x)) ||
+          NS_WARN_IF(surf->GetSize().height < GLint(size.y))) {
+        RefPtr<gfx::DrawTarget> adjusted = gfx::Factory::CreateDrawTarget(
+            gfx::BackendType::SKIA, gfx::IntSize(size.x, size.y),
+            surf->GetFormat());
+        if (!adjusted) {
+          gfxCriticalNote
+              << "Failed to created adjusted target for CanvasSurface";
+          return false;
+        }
+        adjusted->CopySurface(surf, surf->GetRect(), gfx::IntPoint(0, 0));
+        if (RefPtr<gfx::SourceSurface> snapshot = adjusted->Snapshot()) {
+          surf = snapshot->GetDataSurface();
+          if (!surf) {
+            gfxCriticalNote
+                << "Failed to get adjusted snapshot data for CanvasSurface";
+            return false;
+          }
+        } else {
+          gfxCriticalNote
+              << "Failed to create adjusted snapshot for CanvasSurface";
+          return false;
+        }
+      }
     } else {
       MOZ_ASSERT_UNREACHABLE("Unexpected surface descriptor!");
     }
@@ -984,8 +1098,13 @@ bool TexUnpackSurface::TexOrSubImage(bool isSubImage, bool needsRespec,
                             "DataSourceSurface for Shmem.";
       return false;
     }
-  } else {
-    surf = mDesc.dataSurf;
+  } else if (mDesc.sourceSurf) {
+    surf = mDesc.sourceSurf->GetDataSurface();
+    if (!surf) {
+      gfxCriticalError() << "TexUnpackSurface failed to get data for "
+                            "sourceSurf.";
+      return false;
+    }
   }
 
   ////
@@ -1013,12 +1132,10 @@ bool TexUnpackSurface::TexOrSubImage(bool isSubImage, bool needsRespec,
   // -
 
   const auto dstFormat = FormatForPackingInfo(dstPI);
-  const auto dstBpp = BytesPerPixel(dstPI);
+  const size_t dstBpp = BytesPerPixel(dstPI);
   const size_t dstUsedBytesPerRow = dstBpp * surf->GetSize().width;
-  auto dstStride = dstUsedBytesPerRow;
-  if (dstFormat == srcFormat) {
-    dstStride = srcStride;  // Try to match.
-  }
+  size_t dstStride = dstFormat == srcFormat ? srcStride  // Try To match
+                                            : dstUsedBytesPerRow;
 
   // -
 

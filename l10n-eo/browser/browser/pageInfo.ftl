@@ -104,7 +104,7 @@ security-view-privacy-viewpasswords =
     .label = Vidi konservitajn pasvortojn
     .accesskey = v
 security-view-technical =
-    .value = Teĥnikaj detaloj
+    .value = Teknikaj detaloj
 help-button =
     .label = Helpo
 
@@ -149,7 +149,7 @@ page-info-security-no-owner =
     .value = Tiu ĉi retejo ne provizas informon pri sia posedanto.
 media-select-folder = Elektu dosierujon kie konservi bildojn
 media-unknown-not-cached =
-    .value = Nekonata (ne en la staplo)
+    .value = Nekonata (ne en la stokejo)
 permissions-use-default =
     .label = Uzi normon
 security-no-visits = Ne

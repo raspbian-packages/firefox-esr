@@ -8,12 +8,11 @@
 
 ## Panel
 
-
-## An extension in the main list
-
+unified-extensions-header-title = Mga Extension
 
 ## Extension's context menu
 
-
-## Notifications
-
+unified-extensions-context-menu-pin-to-toolbar =
+    .label = I-pin sa Toolbar
+unified-extensions-context-menu-remove-extension =
+    .label = Alisin ang Extension

@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
 tab-context-new-tab =
     .label = Nová karta
     .accesskey = N
@@ -75,6 +79,10 @@ move-to-end =
 move-to-new-window =
     .label = Presunúť do nového okna
     .accesskey = d
+# Variables
+#  $profileName (string): The name of the profile to move tab to
+move-to-new-profile =
+    .label = Presunúť do profilu { $profileName }
 tab-context-close-multiple-tabs =
     .label = Zavrieť viaceré karty
     .accesskey = c
@@ -131,3 +139,13 @@ tab-context-send-tabs-to-device =
            *[other] Odoslať { $tabCount } kariet do zariadenia
         }
     .accesskey = n
+tab-context-unload-n-tabs =
+    .label =
+        { $tabCount ->
+            [1] Uvoľniť kartu
+            [one] Uvoľniť kartu
+            [few] Uvoľniť { $tabCount } karty
+            [many] Uvoľniť { $tabCount } kariet
+           *[other] Uvoľniť { $tabCount } kariet
+        }
+    .accesskey = U

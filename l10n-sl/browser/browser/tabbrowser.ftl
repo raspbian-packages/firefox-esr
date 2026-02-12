@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = Zapri zavihek
 tabbrowser-menuitem-close =
     .label = Zapri
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } – { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -104,6 +117,7 @@ tabbrowser-unblock-tab-audio-aria-label =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title =
     { $tabCount ->
+        [one] Zapri { $tabCount } zavihek?
         [two] Zapri { $tabCount } zavihka?
         [few] Zapri { $tabCount } zavihke?
        *[other] Zapri { $tabCount } zavihkov?
@@ -120,6 +134,7 @@ tabbrowser-confirm-close-tabs-checkbox = Vprašaj za potrditev pred zapiranjem v
 #   $windowCount (Number): The number of windows that will be closed.
 tabbrowser-confirm-close-windows-title =
     { $windowCount ->
+        [one] Zapri { $windowCount } okno?
         [two] Zapri { $windowCount } okni?
         [few] Zapri { $windowCount } okna?
        *[other] Zapri { $windowCount } oken?
@@ -173,8 +188,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = Tega pogovornega okna ne prikazuj ve
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = Pozor
-tabbrowser-confirm-close-duplicate-tabs-text = Obdržali bomo zadnji aktivni zavihek
 tabbrowser-confirm-close-all-duplicate-tabs-title = Zaprem podvojene zavihke?
 tabbrowser-confirm-close-all-duplicate-tabs-text =
     V tem oknu bomo zaprli podvojene zavihke. Zadnji dejavni
@@ -215,12 +228,16 @@ tabbrowser-tab-audio-playing-description = Predvaja zvok
 tabbrowser-ctrl-tab-list-all-tabs =
     .label =
         { $tabCount ->
-            [two] Prikaži oba dva zavihka
+            [one] Prikaži { $tabCount } zavihek
+            [two] Prikaži oba { $tabCount } zavihka
             [few] Prikaži vse { $tabCount } zavihke
            *[other] Prikaži vseh { $tabCount } zavihkov
         }
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = Utišaj zavihek
@@ -228,8 +245,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Povrni glasnost zavihka
 tabbrowser-manager-close-tab =
     .tooltiptext = Zapri zavihek
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Zaprta
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } – Trenutno okno
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = Ustvari skupino zavihkov
 tab-group-editor-title-edit = Upravljanje skupine zavihkov
@@ -241,22 +266,40 @@ tab-group-editor-cancel =
     .accesskey = P
 tab-group-editor-color-selector =
     .aria-label = Barva skupine zavihkov
-tab-group-editor-color-selector-blue = Modra
-tab-group-editor-color-selector-purple = Vijolična
-tab-group-editor-color-selector-cyan = Cian
-tab-group-editor-color-selector-orange = Oranžna
-tab-group-editor-color-selector-yellow = Rumena
-tab-group-editor-color-selector-pink = Roza
-tab-group-editor-color-selector-green = Zelena
-tab-group-editor-color-selector-gray = Siva
-tab-group-editor-color-selector-red = Rdeča
-tab-group-menu-header = Skupine zavihkov
+tab-group-editor-color-selector2-blue = Modra
+    .title = Modra
+tab-group-editor-color-selector2-purple = Vijolična
+    .title = Vijolična
+tab-group-editor-color-selector2-cyan = Cian
+    .title = Cian
+tab-group-editor-color-selector2-orange = Oranžna
+    .title = Oranžna
+tab-group-editor-color-selector2-yellow = Rumena
+    .title = Rumena
+tab-group-editor-color-selector2-pink = Roza
+    .title = Roza
+tab-group-editor-color-selector2-green = Zelena
+    .title = Zelena
+tab-group-editor-color-selector2-gray = Siva
+    .title = Siva
+tab-group-editor-color-selector2-red = Rdeča
+    .title = Rdeča
+tab-group-description = { $tabGroupName } – Skupina zavihkov
+tab-group-label-tooltip-collapsed = { $tabGroupName } – strnjena
+tab-group-label-tooltip-expanded = { $tabGroupName } – razširjena
+tab-group-preview-name =
+    .aria-label = Zavihki v strnjeni skupini
 tab-context-unnamed-group =
     .label = Neimenovana skupina
 tab-group-name-default = Neimenovana skupina
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = Seznam zavihkov je odprt
+tab-group-preview-closed-description = Seznam zavihkov je zaprt
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -276,6 +319,8 @@ tab-context-move-tab-to-group =
            *[other] Dodaj zavihke k skupini
         }
     .accesskey = s
+tab-context-move-tab-to-group-saved-groups =
+    .label = Zaprte skupine
 tab-group-editor-action-new-tab =
     .label = Nov zavihek v skupini
 tab-group-editor-action-new-window =
@@ -296,12 +341,24 @@ tab-context-reopen-tab-group =
 tab-context-ungroup-tab =
     .label =
         { $groupCount ->
-            [one] Odstrani iz skupin
+            [one] Odstrani iz skupine
             [two] Odstrani iz skupin
             [few] Odstrani iz skupin
            *[other] Odstrani iz skupin
         }
     .accesskey = O
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = + { $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] Še { $tabCount } zavihek
+        [two] Še { $tabCount } zavihka
+        [few] Še { $tabCount } zavihki
+       *[other] Še { $tabCount } zavihkov
+    }
 
 ## Open/saved tab group context menu
 
@@ -327,3 +384,14 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = Odpri skupino v novem oknu
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = Razdeljen pogled
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = Odpri v razdeljenem pogledu
+    .accesskey = d
+tab-context-badge-new = Novo

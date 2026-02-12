@@ -72,17 +72,22 @@ about-reader-customtheme-tab = Personalizadu
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Testu
-    .title = Modìfica su colore
-about-reader-custom-colors-background = Isfundu
-    .title = Modìfica su colore
-about-reader-custom-colors-unvisited-links = Ligòngios non bisitados
-    .title = Modìfica su colore
-about-reader-custom-colors-visited-links = Ligòngios bisitados
-    .title = Modìfica su colore
-about-reader-custom-colors-selection-highlight = Evidentziadura pro sa letura a boghe arta
-    .title = Modìfica su colore
 about-reader-reset-button = Torra a is valores predefinidos
+about-reader-custom-colors-foreground2 =
+    .label = Testu
+    .title = Modìfica su colore
+about-reader-custom-colors-background2 =
+    .label = Isfundu
+    .title = Modìfica su colore
+about-reader-custom-colors-unvisited-links2 =
+    .label = Ligòngios non bisitados
+    .title = Modìfica su colore
+about-reader-custom-colors-visited-links2 =
+    .label = Ligòngios bisitados
+    .title = Modìfica su colore
+about-reader-custom-colors-selection-highlight2 =
+    .label = Evidentziadura pro sa letura a boghe arta
+    .title = Modìfica su colore
 
 ## Reader View text and layout menu
 

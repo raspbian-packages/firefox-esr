@@ -25,6 +25,8 @@ return-to-amo-subtitle = Fantastisch, du hast jetzt { -brand-short-name }
 return-to-amo-addon-title = Hol dir auch <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Erweiterung hinzufügen
 return-to-amo-add-theme-label = Das Theme hinzufügen
+return-to-amo-theme-install-complete-label = Theme installiert
+return-to-amo-extension-install-complete-label = Erweiterung installiert
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
@@ -53,9 +55,6 @@ mr1-onboarding-import-primary-button-label-attribution = Aus { $previous } impor
 mr1-onboarding-theme-header = Ganz dein Style
 mr1-onboarding-theme-subtitle = Personalisiere { -brand-short-name } mit einem Theme.
 mr1-onboarding-theme-secondary-button-label = Nicht jetzt
-newtab-wallpaper-onboarding-title = Wie wäre es mit einem Farbtupfer?
-newtab-wallpaper-onboarding-subtitle = Wähle ein Hintergrundbild, um deinem neuen Tab ein neues Aussehen zu verpassen.
-newtab-wallpaper-onboarding-primary-button-label = Hintergrundbild festlegen
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = System-Theme
 mr1-onboarding-theme-label-light = Hell
@@ -360,7 +359,7 @@ onboarding-mobile-download-security-and-privacy-subtitle = Wenn du deine Daten s
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } gibt dir Rückendeckung
 onboarding-gratitude-security-and-privacy-subtitle = Vielen Dank, dass du { -brand-short-name } verwendest, unterstützt von der Mozilla Foundation. Mit deiner Unterstützung arbeiten wir daran, das Internet für alle sicherer und zugänglicher zu machen.
 # Sign up or Sign in screen
-onboarding-sign-up-title = Synchronisieren deine Daten zwischen mehreren Geräten
+onboarding-sign-up-title = Daten zwischen mehreren Geräten synchronisieren
 onboarding-sign-up-description = Erstelle ein Konto und alle deine wichtigen Daten – Passwörter, Lesezeichen und mehr – werden sicher gespeichert und verfügbar, wenn du dich auf einem beliebigen Gerät anmeldest.
 onboarding-sign-up-button = Anmelden oder registrieren
 onboarding-sign-up-secondary-button = Lossurfen
@@ -446,6 +445,18 @@ onboarding-checklist-sign-up = Registriere dich oder melde dich mit deinem Konto
 
 tab-groups-onboarding-feature-callout-title = Probiere Tab-Gruppen für weniger Unordnung und mehr Fokus
 tab-groups-onboarding-feature-callout-subtitle = Schaffe Ordnung, indem du einen Tab über den anderen ziehst, um deine erste Gruppe zu erstellen.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-create-group-title-3 = Ihre Tab-Gruppen finden Sie jederzeit im Menü "Alle Tabs auflisten".
+tab-groups-onboarding-create-group-title-2 = Finden Sie hier jederzeit Ihre Tab-Gruppen.
+tab-groups-onboarding-create-group-no-alltabs-button-title = Finden Sie Ihre Gruppen, indem Sie in der Adressleiste danach suchen.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-saved-groups-title-3 = Wenn Sie eine Tab-Gruppe schließen, können Sie sie jederzeit aus dem Menü "Alle Tabs auflisten" wieder öffnen.
+tab-groups-onboarding-saved-groups-title-2 = Wenn Sie eine Tab-Gruppe schließen, können Sie sie hier jederzeit wieder öffnen.
+tab-groups-onboarding-saved-groups-no-alltabs-button-title-2 = Finden Sie Ihre geschlossenen Gruppen, indem Sie in der Adressleiste danach suchen.
+# The text "list all tabs" refers to the string tabs-toolbar-list-all-tabs
+tab-groups-onboarding-session-restore-title-2 = Öffnen Sie Ihre Tab-Gruppen jederzeit aus dem Menü "Alle Tabs auflisten" wieder.
+tab-groups-onboarding-session-restore-title = Hier öffnen Sie Ihre Tab-Gruppen jederzeit wieder.
+tab-groups-onboarding-dismiss = OK
 
 ## Multi Profiles feature onboarding messages
 
@@ -455,3 +466,107 @@ multi-profile-spotlight-cta = Ein Profil erstellen
 multi-profile-callout-title = Erstelle unterschiedliche Profile für Arbeit und Freizeit
 multi-profile-callout-subtitle = Mit Profilen kannst du deine Surf-Daten, wie Suchchronik und Passwörter, komplett trennen.
 multi-profile-callout-cta = Ein Profil erstellen
+
+## Desktop to Mobile Adoption feature callout strings
+
+# If translating the headline is challenging, consider using a simplified alternative as a reference: 'Sync your browsing with Firefox for mobile.'
+desktop-to-mobile-headline = Herunterladen, synchronisieren und loslegen!
+# The phrase, 'on the go', is used to describe when people are very busy and are traveling from place to place.
+desktop-to-mobile-subtitle = Scannen Sie den QR-Code, um { -brand-product-name } für Mobilgeräte herunterzuladen. Wählen Sie nach der Installation "Mit Mobilgerät synchronisieren", um unterwegs auf Ihre Passwörter, Lesezeichen und mehr zuzugreifen.
+dismiss-button-label = Verwerfen
+sync-to-mobile-button-label = Mit Mobilgerät synchronisieren
+desktop-to-mobile-qr-code-alt =
+    .aria-label = QR-Code zum Herunterladen von { -brand-product-name } für Mobilgeräte
+
+## Fx Backup onboarding: Create Backup spotlight
+
+create-backup-screen-1-title =
+    Upgrade auf Windows 11?
+    Lassen Sie uns Ihre { -brand-product-name } Daten sichern.
+create-backup-screen-1-subtitle = Schützen Sie Ihre Passwörter, Lesezeichen und mehr automatisch in ein bis zwei Minuten.
+create-backup-screen-1-flair = Empfohlen
+create-backup-learn-more-link = <a data-l10n-name="learn-more-label">Weitere Informationen</a>
+create-backup-screen-1-sync-label = Synchronisieren mit { -brand-product-name }
+create-backup-screen-1-sync-body = Sichert alle angemeldeten Geräte
+create-backup-screen-1-backup-label = Auf PC sichern
+create-backup-screen-1-backup-body = Speichert auf Ihrem Gerät oder OneDrive
+create-backup-select-tile-button-label = Auswählen
+create-backup-back-button-label = Zurück
+create-backup-show-fewer =
+    .label = Weniger hiervon anzeigen
+create-backup-screen-2-title = Wählen Sie die zu sichernden { -brand-product-name }-Daten
+create-backup-screen-2-subtitle = Dauert nur eine Minute. Ihre Daten werden einmal täglich gesichert.
+# Label for the "Easy setup" backup option
+create-backup-screen-2-easy-label = Einfache Einrichtung
+# Preceded by a green check mark indicating that these are included in "Easy setup" backup
+create-backup-screen-2-easy-list-1 = Lesezeichen, Chronik, Einstellungen und mehr
+# Preceded by a red X indicating that these are not included in the "Easy setup" backup
+create-backup-screen-2-easy-list-2 = Enthält keine Passwörter und Zahlungsmethoden
+# Preceded by a red X indicating that "Easy setup" backups are not encrypted
+create-backup-screen-2-easy-list-3 = Nicht verschlüsselt
+# Label for the "All data" backup option
+create-backup-screen-2-all-label = Alle Daten
+# Preceded by a green check mark indicating that these are included in the "All data" backup
+create-backup-screen-2-all-list-2 = Enthält Passwörter und Zahlungen
+# Preceded by a green check mark and shield indicating "All data" backups are encrypted
+create-backup-screen-2-all-list-3 = Mit Passwort verschlüsselt
+# Title for a screen asking users to choose a file location
+create-backup-screen-3-location = Wo soll Ihr Backup gespeichert werden?
+# Title for a screen asking users to create a password that will encrypt the backup
+create-backup-screen-3-title = Passwort für eine Sicherungsdatei erstellen
+create-backup-screen-3-subtitle = Erforderlich, um Ihre Daten zu verschlüsseln. Bewahren Sie es an einem Ort auf, an den Sie sich erinnern werden.
+fx-backup-opt-in-header = Dateipfad wählen
+fx-backup-opt-in-filepath-label = Wählen Sie einen Ort aus, an den Sie die Daten übertragen möchten, z. B. OneDrive.
+fx-backup-opt-in-create-password-label = Passwort eingeben
+fx-backup-opt-in-confirm-btn-label = Weiter
+fx-backup-opt-in-cancel-btn-label = Zurück
+
+## Fx Backup confirmation screen strings
+
+fx-backup-confirmation-screen-title = Ihr Backup ist geplant
+fx-backup-confirmation-screen-close-button = Schließen
+
+## These strings appear as a confirmation of which items will or won't be included as part of the selected backup method.
+
+fx-backup-confirmation-screen-all-data-item-text-1 = Alle Browser-Daten enthalten
+fx-backup-confirmation-screen-all-data-item-text-2 = Auf Ihrem Gerät gespeichert
+fx-backup-confirmation-screen-all-data-item-text-3 = Verschlüsselt und passwortgeschützt
+fx-backup-confirmation-screen-easy-setup-item-text-1 = Lesezeichen, Chronik, Einstellungen und andere Daten enthalten
+fx-backup-confirmation-screen-easy-setup-item-text-2 = Auf Ihrem Gerät gespeichert
+fx-backup-confirmation-screen-easy-setup-item-text-3 = Passwörter und Zahlungen nicht enthalten
+fx-backup-confirmation-screen-easy-setup-item-subtext-3 = Gehen Sie zu den <a data-l10n-name="settings">Einstellungen</a>, um vertrauliche Daten hinzuzufügen.
+fx-backup-confirmation-screen-item-subtext-1 = Ihr Backup wird in wenigen Minuten gestartet und einmal täglich ausgeführt. Sie können den Fortschritt in den <a data-l10n-name="settings">Einstellungen</a> verfolgen.
+fx-backup-confirmation-screen-item-subtext-2 = { -brand-short-name } wird nach Ihrem Backup suchen, falls eine Neuinstallation notwendig ist.
+
+## Restore from Backup Flow about:welcome screens
+
+restore-from-backup-secondary-top-button = Aus Backup wiederherstellen
+restore-from-backup-title = Holen wir uns { -brand-short-name } zurück, wie Sie ihn mögen
+restore-from-backup-subtitle = Stellen Sie alle Lesezeichen, Chronik und andere Daten wieder her, um zum Surfen zurückzukehren.
+restore-from-backup-secondary-button = Nicht wiederherstellen
+
+## Restored from Backup spotlight
+
+restored-from-backup-success-title = Wir sind zurück! Ihre { -brand-short-name }-Daten wurden wiederhergestellt.
+restored-from-backup-success-with-checklist-subtitle = Möchten Sie Ihren bevorzugten Browser mit Fokus auf Datenschutz nur einen Klick entfernt haben?
+restored-from-backup-success-no-checklist-subtitle = Sie können die Datensicherung für dieses Gerät in den <a data-l10n-name="settings">Einstellungen</a> aktivieren.
+restored-from-backup-success-with-checklist-primary-button = Speichern und weiter
+restored-from-backup-success-with-checklist-secondary-button = Diesen Schritt überspringen
+restored-from-backup-success-no-checklist-primary-button = Weiter
+restored-from-backup-error-title = Hmm, es ist ein Problem mit Ihrer Sicherungsdatei aufgetreten.
+restored-from-backup-error-subtitle = Wenn Sie eine andere { -brand-short-name }-Backupdatei haben, versuchen Sie es mit dieser. <a data-l10n-name="restore-problems">Haben Sie weiterhin Probleme?</a>
+restored-from-backup-error-primary-button = Schließen
+
+## Onboarding Personalization Screen
+## A screen shown to users during the onboarding process that asks them two qualifying questions about their use of the browser
+
+onboarding-personalization-title = Passen Sie Ihr { -brand-short-name }-Erlebnis an
+onboarding-personalization-subtitle = Beantworten Sie ein paar Fragen und wir empfehlen Funktionen und Erweiterungen, die Ihre Nutzung von { -brand-short-name } verbessern.
+onboarding-personalization-use-case-title = Wofür werden Sie { -brand-short-name } verwenden?
+onboarding-personalization-use-case-personal-option = Privat
+onboarding-personalization-use-case-school-option = Schule
+onboarding-personalization-use-case-work-option = Dienstlich
+onboarding-personalization-motivation-title = Welche Funktionen von { -brand-short-name } sind für Sie am wichtigsten?
+onboarding-personalization-motivation-privacy-option = Datenschutz und Sicherheit
+onboarding-personalization-motivation-productivity-option = Produktivität
+onboarding-personalization-motivation-other-option = Sonstiges

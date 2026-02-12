@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Downloads
 appmenuitem-passwords =
     .label = Senhas
+appmenuitem-extensions-and-themes =
+    .label = Extensões e temas
+appmenuitem-extensions =
+    .label = Extensões
 appmenuitem-addons-and-themes =
     .label = Extensões e temas
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Abrir o painel do profiler
+    .tooltiptext = Abrir o painel do profiler
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -192,6 +199,9 @@ profiler-popup-presets-graphics-label =
 profiler-popup-presets-media-description2 = Ajuste prévio para investigar bugs de áudio e vídeo no { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Mídia
+profiler-popup-presets-ml-description = Ajuste prévio para investigar bugs de aprendizado de máquina no { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Aprendizado de máquina
 profiler-popup-presets-networking-description = Ajuste prévio para investigar bugs de rede no { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Rede
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Abrir painel de máscaras de email
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Proteja sua atividade online
 appmenu-services-header = Meus serviços
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Experimente outras ferramentas de proteção da Mozilla:
 appmenu-other-protection-header = Experimente outras ferramentas de proteção da { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Perfis
 appmenu-other-profiles = Outros perfis
 appmenu-manage-profiles =
     .label = Gerenciar perfis
+appmenu-copy-profile =
+    .label = Copiar este perfil
 appmenu-create-profile =
     .label = Novo perfil
 appmenu-edit-profile =
     .aria-label = Editar perfil
+appmenu-profiles-2 =
+    .label = Perfis

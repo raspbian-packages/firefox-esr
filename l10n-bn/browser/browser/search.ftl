@@ -25,13 +25,10 @@ searchbar-input =
 searchbar-icon =
     .tooltiptext = অনুসন্ধান
 
-## Infobar shown when search engine is removed and replaced.
-## Variables
-## $oldEngine (String) - the search engine to be removed.
-## $newEngine (String) - the search engine to replace the removed search engine.
+## The following strings are used as input labels.
 
-
-## Infobar shown when user is prompted to install search engine.
-## Variables
-## $engineName (String) - the name of the search engine to install.
-
+add-engine-window =
+    .title = অনুসন্ধান ইঞ্জিন যোগ করুন
+    .style = min-width: 32em;
+add-engine-button = স্বনির্ধারিত ইঞ্জিন যোগ করুন
+add-engine-name = অনুসন্ধান ইঞ্জিনের নাম

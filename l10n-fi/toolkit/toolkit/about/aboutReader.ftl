@@ -74,17 +74,22 @@ about-reader-customtheme-tab = Mukautettu
 ## The .title element is used to make the editing functionality
 ## clear and give context for screen reader users.
 
-about-reader-custom-colors-foreground = Teksti
-    .title = Muokkaa väriä
-about-reader-custom-colors-background = Tausta
-    .title = Muokkaa väriä
-about-reader-custom-colors-unvisited-links = Avaamattomat linkit
-    .title = Muokkaa väriä
-about-reader-custom-colors-visited-links = Avatut linkit
-    .title = Muokkaa väriä
-about-reader-custom-colors-selection-highlight = Korostus ääneen lukua varten
-    .title = Muokkaa väriä
 about-reader-reset-button = Palauta oletukset
+about-reader-custom-colors-foreground2 =
+    .label = Teksti
+    .title = Muokkaa väriä
+about-reader-custom-colors-background2 =
+    .label = Tausta
+    .title = Muokkaa väriä
+about-reader-custom-colors-unvisited-links2 =
+    .label = Avaamattomat linkit
+    .title = Muokkaa väriä
+about-reader-custom-colors-visited-links2 =
+    .label = Avatut linkit
+    .title = Muokkaa väriä
+about-reader-custom-colors-selection-highlight2 =
+    .label = Korostus ääneen lukua varten
+    .title = Muokkaa väriä
 
 ## Reader View text and layout menu
 
@@ -114,3 +119,5 @@ about-reader-text-alignment-center =
     .title = Tasaa teksti keskelle
 about-reader-text-alignment-right =
     .title = Tasaa teksti oikealle
+about-reader-text-alignment-justify =
+    .title = Tasaa teksti

@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The main browser window's title
-
 # These are the default window titles everywhere except macOS.
 # .data-title-default and .data-title-private are used when the web content
 # opened has no title:
@@ -61,7 +58,10 @@ private-browsing-shortcut-text-2 = Brabhsadh prìobhaideach { -brand-shortcut-na
 # .data-content-title-default and .data-content-title-private are for use when
 # there *is* a content title.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Variables:
 #  $content-title (String): the title of the web content.
@@ -87,7 +87,10 @@ browser-main-window-titles =
 # there *is* a content title.
 # Do not use the brand name in these, as we do on non-macOS.
 #
-# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+# .data-title-default-with-profile, .data-title-private-with-profile,
+# .data-content-title-default-with-profile,
+# .data-content-title-private-with-profile are used when there a
+# SelectableProfileService.current profile exists.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -104,11 +107,16 @@ browser-main-window-titles-mac =
     .data-content-title-private = { $content-title } – Brabhsadh prìobhaideach
     .data-content-title-default-with-profile = { $content-title } – { $profile-name }
     .data-content-title-private-with-profile = { $content-title } – { $profile-name } – Brabhsadh prìobhaideach
-# This gets set as the initial title, and is overridden as soon as we start
-# updating the titlebar based on loaded tabs or private browsing state.
-# This should match the `data-title-default` attribute in both
-# `browser-main-window` and `browser-main-window-mac`.
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
 browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] Brabhsadh prìobhaideach – { -brand-full-name }
+       *[other] Brabhsadh prìobhaideach { -brand-full-name }
+    }
 
 ##
 
@@ -181,6 +189,15 @@ urlbar-result-menu-remove-from-history =
 urlbar-result-menu-tip-get-help =
     .label = Faigh cobhair
     .accesskey = F
+urlbar-result-menu-dismiss-suggestion =
+    .label = Leig seachad am moladh seo
+    .accesskey = L
+urlbar-result-menu-learn-more-about-firefox-suggest =
+    .label = Barrachd fiosrachaidh mu dhèidhinn { -firefox-suggest-brand-name }
+    .accesskey = B
+urlbar-result-menu-manage-firefox-suggest =
+    .label = Stiùirich { -firefox-suggest-brand-name }
+    .accesskey = S
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -339,7 +356,6 @@ quickactions-print2 = Clò-bhuail an duilleag
 quickactions-cmd-print = clò-bhuail
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = Sàbhail an duilleag mar PDF
-quickactions-cmd-savepdf = pdf
 # Opens a new private browsing window
 quickactions-private2 = Fosgail uinneag phrìobhaideach
 quickactions-cmd-private = brabhsadh prìobhaideach
@@ -676,6 +692,25 @@ urlbar-result-action-copy-to-clipboard = Dèan lethbhreac
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = gun deifinisean
+# Shows the result of a formula expression being calculated, in scientific notation.
+# The last = sign will be shown as part of the result (e.g. "= 1.0e17").
+# Variables
+#  $result (String): the string representation for a result in scientific notation
+#  (e.g. "1.0e17").
+urlbar-result-action-calculator-result-scientific-notation = = { $result }
+# Shows the result of a formula expression being calculated, this is used for numbers >= 1.
+# The last = sign will be shown as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-3 = = { NUMBER($result, useGrouping: "false", maximumFractionDigits: 8) }
+# Shows the result of a formula expression being calculated, to a maximum of 9 significant
+# digits. This is used for numbers < 1.
+# The last = sign will be shown as part of the result (e.g. "= 0.333333333").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result-decimal = = { NUMBER($result, maximumSignificantDigits: 9) }
 
 ## Strings used for buttons in the urlbar
 
@@ -703,8 +738,11 @@ urlbar-searchmode-actions =
     .label = Gnìomhan
 urlbar-searchmode-exit-button =
     .tooltiptext = Dùin
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
 urlbar-searchmode-popup-description = Dèan lorg leis na leanas an turas seo:
-urlbar-searchmode-popup-search-settings = Roghainnean luirg
+urlbar-searchmode-popup-search-settings-menuitem =
+    .label = Roghainnean luirg
 # Searchmode Switcher button
 # Variables:
 #   $engine (String): the current default search engine.
@@ -1128,10 +1166,6 @@ popup-notification-addon-install-unsigned =
     .value = (Gun dearbhadh)
 popup-notification-xpinstall-prompt-learn-more = Barrachd fiosrachaidh mu stàladh tèarainte de thuilleadain
 popup-notification-xpinstall-prompt-block-url = Faic am mion-fhiosrachadh
-# Note: Access key is set to P to match "Private" in the corresponding localized label.
-popup-notification-addon-privatebrowsing-checkbox =
-    .label = Ruith ann an uinneagan prìobhaideach
-    .accesskey = R
 
 ## Pop-up warning
 

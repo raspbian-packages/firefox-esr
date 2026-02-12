@@ -25,11 +25,11 @@ security-software-antivirus = Антивирус
 security-software-antispyware = Антиспајвер
 security-software-firewall = Заштитни зид
 features-title =
-    Функције { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "gen") }
-        [feminine] { -brand-short-name(case: "gen") }
-        [neuter] { -brand-short-name(case: "gen") }
-       *[other] програма { -brand-short-name }
+    { -brand-short-name.gender ->
+        [masculine] Функције { -brand-short-name(case: "gen") }
+        [feminine] Функције { -brand-short-name(case: "gen") }
+        [neuter] Функције { -brand-short-name(case: "gen") }
+       *[other] Функције програма { -brand-short-name }
     }
 features-name = Назив
 features-version = Верзија
@@ -175,11 +175,6 @@ media-codec-support-hw-decoding = Хардверско декодирање
 media-codec-support-codec-name = Име кодека
 media-codec-support-supported = Подржано
 media-codec-support-unsupported = Није подржано
-
-## Media Content Decryption Modules (CDM)
-## See EME Spec for more explanation for following technical terms
-## https://w3c.github.io/encrypted-media/
-
 
 ##
 
@@ -406,9 +401,3 @@ support-remote-experiments-see-about-studies = За више информаци�
 support-remote-features-title = Удаљене функције
 support-remote-features-name = Назив
 support-remote-features-status = Статус
-
-## Pointing devices
-
-
-## Content Analysis (DLP)
-

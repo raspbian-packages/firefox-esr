@@ -141,8 +141,8 @@ class NotifyRunnable final : public WorkerThreadRunnable {
 /* static */
 already_AddRefed<ConnectionWorker> ConnectionWorker::Create(
     WorkerPrivate* aWorkerPrivate, ErrorResult& aRv) {
-  bool shouldResistFingerprinting = aWorkerPrivate->ShouldResistFingerprinting(
-      RFPTarget::NavigatorConnection);
+  bool shouldResistFingerprinting =
+      aWorkerPrivate->ShouldResistFingerprinting(RFPTarget::NetworkConnection);
   RefPtr<ConnectionWorker> c = new ConnectionWorker(shouldResistFingerprinting);
   c->mProxy = ConnectionProxy::Create(aWorkerPrivate, c);
   if (!c->mProxy) {
@@ -154,7 +154,7 @@ already_AddRefed<ConnectionWorker> ConnectionWorker::Create(
   RefPtr<InitializeRunnable> runnable =
       new InitializeRunnable(aWorkerPrivate, c->mProxy, networkInfo);
 
-  runnable->Dispatch(Canceling, aRv);
+  runnable->Dispatch(aWorkerPrivate, Canceling, aRv);
   if (NS_WARN_IF(aRv.Failed())) {
     return nullptr;
   }
@@ -201,7 +201,7 @@ void ConnectionProxy::Shutdown() {
 
   ErrorResult rv;
   // This runnable _must_ be executed.
-  runnable->Dispatch(Killing, rv);
+  runnable->Dispatch(mWorkerRef->Private(), Killing, rv);
   if (NS_WARN_IF(rv.Failed())) {
     rv.SuppressException();
   }

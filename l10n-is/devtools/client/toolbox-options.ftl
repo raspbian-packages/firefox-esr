@@ -44,9 +44,6 @@ options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-name = Color Names
 
-## Web Console section
-
-
 ## Style Editor section
 
 # The heading
@@ -112,5 +109,5 @@ options-enable-service-workers-http-tooltip =
 options-source-maps-label = Enable Source Maps
 options-source-maps-tooltip =
     .title = If you enable this option sources will be mapped in the tools.
-# The message shown for settings that trigger page reload
+# The message shown for settings that trigger page reload and will only apply to the current session
 options-context-triggers-page-refresh = * Aðeins núverandi lota, endurhleður síðuna

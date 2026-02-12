@@ -12,7 +12,6 @@
 #include <sstream>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/process.h"
 #include "base/process_util.h"
@@ -77,8 +76,8 @@ Channel::ChannelImpl::ChannelImpl(ChannelHandle pipe, Mode mode,
                                   base::ProcessId other_pid)
     : chan_cap_("ChannelImpl::SendMutex",
                 MessageLoopForIO::current()->SerialEventTarget()),
-      ALLOW_THIS_IN_INITIALIZER_LIST(input_state_(this)),
-      ALLOW_THIS_IN_INITIALIZER_LIST(output_state_(this)),
+      input_state_(this),
+      output_state_(this),
       other_pid_(other_pid) {
   Init(mode);
 
@@ -108,7 +107,7 @@ void Channel::ChannelImpl::Init(Mode mode) {
 }
 
 void Channel::ChannelImpl::OutputQueuePush(mozilla::UniquePtr<Message> msg) {
-  chan_cap_.NoteSendMutex();
+  chan_cap_.NoteLockHeld();
 
   mozilla::LogIPCMessage::LogDispatchWithPid(msg.get(), other_pid_);
 
@@ -166,7 +165,7 @@ void Channel::ChannelImpl::CloseLocked() {
 
 bool Channel::ChannelImpl::Send(mozilla::UniquePtr<Message> message) {
   mozilla::MutexAutoLock lock(SendMutex());
-  chan_cap_.NoteSendMutex();
+  chan_cap_.NoteLockHeld();
 
 #ifdef IPC_MESSAGE_DEBUG_EXTRA
   DLOG(INFO) << "sending message @" << message.get() << " on channel @" << this
@@ -263,7 +262,7 @@ void Channel::ChannelImpl::SetOtherPid(base::ProcessId other_pid) {
 
 bool Channel::ChannelImpl::ProcessIncomingMessages(
     MessageLoopForIO::IOContext* context, DWORD bytes_read, bool was_pending) {
-  chan_cap_.NoteOnIOThread();
+  chan_cap_.NoteOnTarget();
 
   DCHECK(!input_state_.is_pending);
 
@@ -406,7 +405,7 @@ bool Channel::ChannelImpl::ProcessIncomingMessages(
 bool Channel::ChannelImpl::ProcessOutgoingMessages(
     MessageLoopForIO::IOContext* context, DWORD bytes_written,
     bool was_pending) {
-  chan_cap_.NoteSendMutex();
+  chan_cap_.NoteLockHeld();
 
   DCHECK(!output_state_.is_pending);
   DCHECK(!waiting_connect_);  // Why are we trying to send messages if there's
@@ -501,7 +500,7 @@ void Channel::ChannelImpl::OnIOCompleted(MessageLoopForIO::IOContext* context,
   RefPtr<ChannelImpl> was_pending;
 
   IOThread().AssertOnCurrentThread();
-  chan_cap_.NoteOnIOThread();
+  chan_cap_.NoteOnTarget();
 
   bool ok;
   if (context == &input_state_.context) {
@@ -594,7 +593,7 @@ static HANDLE Uint32ToHandle(uint32_t h) {
 }
 
 bool Channel::ChannelImpl::AcceptHandles(Message& msg) {
-  chan_cap_.NoteOnIOThread();
+  chan_cap_.NoteOnTarget();
 
   MOZ_ASSERT(msg.num_handles() == 0);
 
@@ -675,7 +674,7 @@ bool Channel::ChannelImpl::AcceptHandles(Message& msg) {
 }
 
 bool Channel::ChannelImpl::TransferHandles(Message& msg) {
-  chan_cap_.NoteSendMutex();
+  chan_cap_.NoteLockHeld();
 
   MOZ_ASSERT(msg.header()->num_handles == 0);
 
@@ -783,16 +782,6 @@ void Channel::SetOtherPid(base::ProcessId other_pid) {
 }
 
 bool Channel::IsClosed() const { return channel_impl_->IsClosed(); }
-
-HANDLE Channel::GetClientChannelHandle() {
-  // Read the switch from the command line which passed the initial handle for
-  // this process, and convert it back into a HANDLE.
-  std::wstring switchValue = CommandLine::ForCurrentProcess()->GetSwitchValue(
-      switches::kProcessChannelID);
-
-  uint32_t handleInt = std::stoul(switchValue);
-  return Uint32ToHandle(handleInt);
-}
 
 // static
 bool Channel::CreateRawPipe(ChannelHandle* server, ChannelHandle* client) {

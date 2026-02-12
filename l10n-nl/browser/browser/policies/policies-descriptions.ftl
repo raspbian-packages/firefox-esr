@@ -21,6 +21,7 @@ policy-AutofillAddressEnabled = Automatisch invullen voor adressen inschakelen.
 policy-AutofillCreditCardEnabled = Automatisch invullen voor betalingsmethoden inschakelen.
 policy-AutoLaunchProtocolsFromOrigins = Definieer een lijst met externe protocollen die vanuit vermelde bronnen kunnen worden gebruikt zonder de gebruiker te vragen.
 policy-BackgroundAppUpdate2 = Achtergrondupdates in- of uitschakelen.
+policy-Backup = Reservekopie maken of herstellen van profielgegevens uitschakelen.
 policy-BlockAboutAddons = Toegang tot de Add-onbeheerder (about:addons) blokkeren.
 policy-BlockAboutConfig = Toegang tot de about:config-pagina blokkeren.
 policy-BlockAboutProfiles = Toegang tot de about:profiles-pagina blokkeren.
@@ -79,6 +80,7 @@ policy-ExtensionSettings = Alle aspecten van installatie van extensies beheren.
 policy-ExtensionUpdate = Automatische extensie-updates inschakelen of uitschakelen.
 policy-FirefoxHome2 = { -firefox-home-brand-name } configureren.
 policy-FirefoxSuggest = { -firefox-suggest-brand-name } configureren.
+policy-GenerativeAI = Generatieve AI-functies configureren.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Directe navigatie op intranetsites forceren in plaats van zoeken bij het typen van enkele woorden in de adresbalk.
 policy-Handlers = Standaard toepassinghandlers configureren
 policy-HardwareAcceleration = Wanneer false, hardwareversnelling uitschakelen.
@@ -97,6 +99,7 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Op specifieke websites
 ##
 
 policy-LocalFileLinks = Specifieke websites toestaan te koppelen naar lokale bestanden.
+policy-LocalNetworkAccess = Controles op lokale netwerktoegang in- of uitschakelen.
 policy-ManagedBookmarks = Configureert een lijst met bladwijzers die wordt beheerd door een beheerder en die niet door de gebruiker kan worden gewijzigd.
 policy-ManualAppUpdateOnly = Alleen handmatige updates toestaan en de gebruiker niet over updates informeren.
 policy-PrimaryPassword = Een hoofdwachtwoord vereisen of voorkomen.
@@ -117,6 +120,7 @@ policy-PostQuantumKeyAgreementEnabled = Post-kwantumsleutelovereenkomst voor TLS
 policy-PDFjs = PDF.js, de in { -brand-short-name } ingebouwde PDF-lezer, uitschakelen of instellen.
 policy-Permissions2 = Toestemmingen voor camera, microfoon, locatie, notificaties en automatisch afspelen configureren.
 policy-PictureInPicture = Picture-in-picture in- of uitschakelen.
+policy-PopupBlocking2 = Toestaan dat bepaalde websites pop-ups weergeven en door frames van derden worden doorgestuurd.
 policy-PopupBlocking = Toestaan dat bepaalde websites standaard pop-ups weergeven.
 policy-Preferences = De waarde voor een subset van voorkeuren instellen en vergrendelen.
 policy-PrivateBrowsingModeAvailability = Beschikbaarheid van privénavigatiemodus instellen.
@@ -130,6 +134,8 @@ policy-SearchSuggestEnabled = Zoeksuggesties inschakelen of uitschakelen.
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = PKCS #11-modules toevoegen of verwijderen.
 policy-ShowHomeButton = De startpaginaknop op de werkbalk tonen.
+# ”You represent that...” means ”You confirm/declare that...”
+policy-SkipTermsOfUse2 = De gebruiksvoorwaarden en privacyverklaring niet tonen bij opstarten. U verklaart dat u de Gebruiksvoorwaarden accepteert en de zeggenschap hebt om deze te accepteren namens alle personen aan wie u toegang tot deze browser geeft.
 policy-SSLVersionMax = De maximale SSL-versie instellen.
 policy-SSLVersionMin = De minimale SSL-versie instellen.
 policy-StartDownloadsInTempDirectory = Afdwingen dat downloads starten in een lokale, tijdelijke locatie in plaats van de standaard downloadmap.
@@ -137,6 +143,7 @@ policy-SupportMenu = Een aangepast menu-item voor ondersteuning aan het menu Hel
 policy-TranslateEnabled = Vertaling van webpagina’s in- of uitschakelen.
 policy-UserMessaging = Bepaalde berichten niet aan de gebruiker tonen.
 policy-UseSystemPrintDialog = Afdrukken via het afdrukdialoogvenster van het systeem.
+policy-VisualSearchEnabled = Visueel zoeken inschakelen of uitschakelen.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Het bezoeken van websites blokkeren. Zie de documentatie voor meer informatie over de notatie.
 policy-Windows10SSO = Windows-single-sign-on toestaan voor Microsoft- werk- en schoolaccounts.

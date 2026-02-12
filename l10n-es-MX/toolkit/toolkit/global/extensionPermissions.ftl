@@ -8,7 +8,7 @@
 ## must have a corresponding entry in the `PERMISSION_L10N_ID_OVERRIDES` map.
 
 webext-perms-description-bookmarks = Leer y modificar marcadores
-webext-perms-description-browserSettings = Leer y modificar configuración del navegador
+webext-perms-description-browserSettings = Leer y modificar los ajustes del navegador
 webext-perms-description-browsingData = Borrar historial de navegación reciente, cookies y datos relacionados
 webext-perms-description-clipboardRead = Obtener datos desde el portapapeles
 webext-perms-description-clipboardWrite = Ingresar datos desde el portapapeles
@@ -24,8 +24,8 @@ webext-perms-description-management = Controlar el uso de la extensión y admini
 webext-perms-description-nativeMessaging = Intercambiar mensajes con programas distintos a { -brand-short-name }
 webext-perms-description-notifications = Mostrarte notificaciones
 webext-perms-description-pkcs11 = Proporciona servicios autenticación criptográfica
-webext-perms-description-privacy = Leer y modificar la configuración de privacidad
-webext-perms-description-proxy = Controlar configuración del proxy del navegador
+webext-perms-description-privacy = Leer y modificar los ajustes de privacidad
+webext-perms-description-proxy = Controlar los ajustes del proxy del navegador
 webext-perms-description-sessions = Acceder a pestañas recientemente cerradas del navegador
 webext-perms-description-tabs = Acceder a pestañas del navegador
 webext-perms-description-tabHide = Ocultar y mostrar pestañas de navegación
@@ -40,3 +40,11 @@ webext-perms-description-webNavigation = Acceder a la actividad del navegador du
 webext-perms-extra-warning-userScripts-long = Los scripts no verificados pueden suponer riesgos de seguridad y privacidad, como la ejecución de código dañino o el seguimiento de la actividad del sitio web. Ejecuta únicamente scripts de extensiones o fuentes en las que confíes.
 # A shorter warning is displayed in UI surfaces with little room, such as a permission prompt.
 webext-perms-extra-warning-userScripts-short = Los scripts no verificados pueden suponer riesgos de seguridad y privacidad. Ejecuta únicamente scripts de extensiones o fuentes en las que confíes.
+
+## Short form to be used in lists or in a string (`webext-perms-description-data-some`)
+## that formats some of the data collection permissions below using `Intl.ListFormat`.
+##
+## This is used when the data collection permissions are required.
+
+webext-perms-description-data-short-authenticationInfo = información de autenticación
+webext-perms-description-data-short-bookmarksInfo = marcadores

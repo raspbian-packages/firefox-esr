@@ -27,6 +27,10 @@ appmenuitem-downloads =
     .label = Λήψεις
 appmenuitem-passwords =
     .label = Κωδικοί πρόσβασης
+appmenuitem-extensions-and-themes =
+    .label = Επεκτάσεις και θέματα
+appmenuitem-extensions =
+    .label = Επεκτάσεις
 appmenuitem-addons-and-themes =
     .label = Πρόσθετα και θέματα
 appmenuitem-print =
@@ -166,6 +170,9 @@ profiler-popup-capture-shortcut =
         [macos] ⌃⇧2
        *[other] Ctrl+Shift+2
     }
+profiler-button-dropmarker =
+    .label = Άνοιγμα του εργαλείου προφίλ
+    .tooltiptext = Άνοιγμα του εργαλείου προφίλ
 
 ## Profiler presets
 ## They are shown in the popup's select box.
@@ -186,13 +193,16 @@ profiler-popup-presets-web-developer-label =
 profiler-popup-presets-firefox-description = Προτεινόμενη προεπιλογή για την καταγραφή προφίλ στο { -brand-shorter-name }.
 profiler-popup-presets-firefox-label =
     .label = { -brand-shorter-name }
-profiler-popup-presets-graphics-description = Προτεινόμενη προεπιλογή για τη διερεύνηση σφαλμάτων γραφικών στο { -brand-shorter-name }.
+profiler-popup-presets-graphics-description = Προεπιλογή για τη διερεύνηση σφαλμάτων γραφικών στο { -brand-shorter-name }.
 profiler-popup-presets-graphics-label =
     .label = Γραφικά
-profiler-popup-presets-media-description2 = Προτεινόμενη προεπιλογή για τη διερεύνηση σφαλμάτων ήχου και βίντεο στο { -brand-shorter-name }.
+profiler-popup-presets-media-description2 = Προεπιλογή για τη διερεύνηση σφαλμάτων ήχου και βίντεο στο { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = Πολυμέσα
-profiler-popup-presets-networking-description = Προτεινόμενη προεπιλογή για τη διερεύνηση σφαλμάτων δικτύωσης στο { -brand-shorter-name }.
+profiler-popup-presets-ml-description = Προεπιλογή για τη διερεύνηση σφαλμάτων μηχανικής μάθησης στο { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Μηχανική μάθηση
+profiler-popup-presets-networking-description = Προεπιλογή για τη διερεύνηση σφαλμάτων δικτύωσης στο { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Δικτύωση
 profiler-popup-presets-power-description = Προκαθορισμένη ρύθμιση για τη διερεύνηση σφαλμάτων χρήσης ενέργειας στο { -brand-shorter-name }, με μικρή επιβάρυνση.
@@ -284,15 +294,22 @@ appmenuitem-services-relay-description = Εκκίνηση πίνακα μασκ�
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Προστατέψτε το διαδικτυακό σας απόρρητο
 appmenu-services-header = Οι υπηρεσίες μου
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Δοκιμάστε άλλα εργαλεία προστασίας από τη Mozilla:
 appmenu-other-protection-header = Δοκιμάστε άλλα εργαλεία προστασίας από τη { -vendor-short-name }:
 
 ## Profiles panel
 
-appmenu-profiles = Προφίλ
 appmenu-other-profiles = Άλλα προφίλ
 appmenu-manage-profiles =
     .label = Διαχείριση προφίλ
+appmenu-copy-profile =
+    .label = Αντιγράψτε αυτό το προφίλ
 appmenu-create-profile =
     .label = Νέο προφίλ
 appmenu-edit-profile =
     .aria-label = Επεξεργασία προφίλ
+appmenu-profiles-2 =
+    .label = Προφίλ

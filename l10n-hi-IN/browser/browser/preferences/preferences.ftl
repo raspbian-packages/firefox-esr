@@ -69,6 +69,10 @@ startup-header = आरंभन
 always-check-default =
     .label = जाँच कीजिए { -brand-short-name } आपका तयशुदा ब्राउज़र है
     .accesskey = y
+is-default-browser =
+    .message = { -brand-short-name } अभी आपका तयशुदा ब्राउज़र है
+is-not-default-browser =
+    .message = { -brand-short-name } अभी आपका तयशुदा ब्राउज़र है
 is-default = { -brand-short-name } अभी आपका तयशुदा ब्राउज़र है
 is-not-default = { -brand-short-name } अभी आपका तयशुदा ब्राउज़र है
 set-as-my-default-browser =
@@ -180,6 +184,11 @@ check-user-spelling =
 ## General Section - Files and Applications
 
 files-and-applications-title = फ़ाइल व अनुप्रयोग
+downloads-header-2 =
+    .label = डाउनलोड
+download-save-where-2 =
+    .label = यहाँ फ़ाइल सहेजें
+    .accesskey = v
 download-header = डाउनलोड
 download-save-where = यहाँ फ़ाइल सहेजें
     .accesskey = v
@@ -357,7 +366,7 @@ network-proxy-connection-settings =
 home-new-windows-tabs-header = नया विंडोज और टैब
 home-new-windows-tabs-description2 = चुनें कि आप अपने होमपेज, नयी विंडो और नए टैब को खोलते समय क्या देखेंगे.
 
-## Home Section - Home Page Customization
+## Custom Homepage subpage
 
 home-homepage-mode-label = मुखपृष्ठ और नई विंडो
 home-newtabs-mode-label = नया टैब
@@ -476,6 +485,8 @@ search-keyword-warning-bookmark = आपने एक बीजशब्द च�
 ## Containers Section
 
 containers-header = पात्र टैब
+containers-section-header =
+    .heading = पात्र टैब
 containers-add-button =
     .label = नया पात्र जोड़े
     .accesskey = A
@@ -590,6 +601,14 @@ sync-engine-addons =
 ## The device name controls.
 
 sync-device-name-header = डिवाइस का नाम
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = डिवाइस का नाम
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = उपकरण का नाम बदले
+    .accesskey = h
 sync-device-name-change =
     .label = उपकरण का नाम बदले…
     .accesskey = h
@@ -652,9 +671,6 @@ forms-windows-sso-learn-more-link = अधिक जानें
 master-password-os-auth-dialog-caption = { -brand-full-name }
 autofill-creditcard-os-auth-dialog-caption = { -brand-full-name }
 
-## Privacy section - Autofill
-
-
 ## Privacy Section - History
 
 history-header = इतिहास
@@ -675,6 +691,10 @@ history-remember-option-never =
     .label = इतिहास कभी याद ना रखें
 history-remember-option-custom =
     .label = इतिहास के लिए मनपसंद सेटिंग्स का उपयोग करें
+history-remember-description2 =
+    .description = { -brand-short-name } द्वारा आपके ब्राउज़िंग, डाउनलोड, फॉर्म तथा खोज इतिहास याद रखा जाएगा.
+history-dontremember-description2 =
+    .description = { -brand-short-name } बतौर निजी ब्राउज़िंग की तरह समान सेटिंग का उपयोग करेगा, और कोई इतिहास याद नहीं रखेगा जब आप वेब ब्राउज़ करते हैं.
 history-remember-description = { -brand-short-name } द्वारा आपके ब्राउज़िंग, डाउनलोड, फॉर्म तथा खोज इतिहास याद रखा जाएगा.
 history-dontremember-description = { -brand-short-name } बतौर निजी ब्राउज़िंग की तरह समान सेटिंग का उपयोग करेगा, और कोई इतिहास याद नहीं रखेगा जब आप वेब ब्राउज़ करते हैं.
 history-private-browsing-permanent =
@@ -725,12 +745,6 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = अपवादों को प्रबंधित करें...
     .accesskey = x
-
-## Privacy Section - Cookie Banner Handling
-
-
-## Privacy Section - Cookie Banner Blocking
-
 
 ## Privacy Section - Address Bar
 
@@ -851,6 +865,8 @@ permissions-notification-link = अधिक जानें
 permissions-notification-pause =
     .label = { -brand-short-name } के पुनः शुरू होने तक अधिसूचना रोकें
     .accesskey = n
+permissions-autoplay2 =
+    .label = ऑटोप्‍ले
 permissions-autoplay = ऑटोप्‍ले
 permissions-autoplay-settings =
     .label = सेटिंग…
@@ -864,6 +880,16 @@ permissions-addon-install-warning =
 permissions-addon-exceptions =
     .label = अपवाद…
     .accesskey = E
+permissions-location2 =
+    .label = स्थान
+permissions-xr2 =
+    .label = Virtual Reality
+permissions-camera2 =
+    .label = कैमरा
+permissions-microphone2 =
+    .label = माइक्रोफोन
+permissions-notification2 =
+    .label = अधिसूचना
 
 ## Privacy Section - Data Collection
 
@@ -879,9 +905,6 @@ addon-recommendations-link = और जानें
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = इस निर्मित विन्यास के लिए डेटा रिपोर्टिंग को असक्रिय किया हैं
-
-## Privacy Section - Website Advertising Preferences
-
 
 ## Privacy Section - Security
 ##
@@ -913,6 +936,7 @@ certs-view =
 certs-devices =
     .label = सुरक्षा उपकरण…
     .accesskey = D
+certs-devices-enable-fips = FIPS सक्रिय करें
 space-alert-over-5gb-settings-button =
     .label = सेटिंग खोलें
     .accesskey = O
@@ -920,9 +944,6 @@ space-alert-over-5gb-settings-button =
 ## Privacy Section - HTTPS-Only
 
 httpsonly-learn-more = अधिक जानें
-
-## DoH Section
-
 
 ## The following strings are used in the Download section of settings
 

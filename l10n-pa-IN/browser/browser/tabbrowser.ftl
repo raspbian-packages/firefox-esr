@@ -8,6 +8,19 @@ tabbrowser-menuitem-close-tab =
     .label = ਟੈਬ ਨੂੰ ਬੰਦ ਕਰੋ
 tabbrowser-menuitem-close =
     .label = ਬੰਦ ਕਰੋ
+# Displayed within the tooltip on tabs inside of a tab group.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+tabbrowser-tab-tooltip-tab-group = { $tabGroupName }
+# Displayed within the tooltip on tabs in a container.
+# Variables:
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-container = { $containerName }
+# Displayed within the tooltip on tabs inside of a tab group if the tab is also in a container.
+# Variables:
+#   $tabGroupName (String): the user-defined name of the current tab group.
+#   $containerName (String): the name of the current container.
+tabbrowser-tab-tooltip-tab-group-container = { $tabGroupName } — { $containerName }
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -149,8 +162,6 @@ tabbrowser-confirm-caretbrowsing-checkbox = ਇਹ ਡਾਈਲਾਗ ਬਾਕ�
 
 ## Confirmation dialog for closing all duplicate tabs
 
-tabbrowser-confirm-close-duplicate-tabs-title = ਸਾਵਧਾਨ
-tabbrowser-confirm-close-duplicate-tabs-text = ਅਸੀਂ ਆਖਰੀ ਸਰਗਰਮ ਟੈਬ ਨੂੰ ਖੁੱਲ੍ਹਾਂ ਰੱਖਾਂਗੇ
 tabbrowser-confirm-close-all-duplicate-tabs-title = ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?
 tabbrowser-confirm-close-all-duplicate-tabs-text = ਅਸੀਂ ਇਸ ਟੈਬ ਵਿੱਚ ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਾਂਗੇ। ਆਖਰੀ ਸਰਗਰਮ ਟੈਬ ਹਮੇਸ਼ਾਂ ਖੁੱਲ੍ਹੀ ਰਹੇਗੀ।
 tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰੋ
@@ -190,6 +201,9 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = ਸਭ { $tabCount } ਟੈਬਾਂ ਦੀ ਸੂਚੀ ਦਿਖਾਓ
 
 ## Tab manager menu buttons
+## Variables:
+##  $tabGroupName (String): The name of the tab group. See also tab-group-name-default, which will be
+##                          used when the group's name is empty.
 
 tabbrowser-manager-mute-tab =
     .tooltiptext = ਟੈਬ ਨੂੰ ਮੌਨ ਕਰੋ
@@ -197,8 +211,16 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = ਟੈਬ ਤੋਂ ਸੁਣੋ
 tabbrowser-manager-close-tab =
     .tooltiptext = ਟੈਬ ਨੂੰ ਬੰਦ ਕਰੋ
+# This is for tab groups that have been "saved and closed" (see tab-group-editor-action-save). It does
+# not include "deleted" tab groups (see tab-group-editor-action-delete).
+tabbrowser-manager-closed-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — ਬੰਦ ਕੀਤਾ
+tabbrowser-manager-current-window-tab-group =
+    .label = { $tabGroupName }
+    .tooltiptext = { $tabGroupName } — ਮੌਜੂਦਾ ਵਿੰਡੋ
 
-## Tab Groups
+##
 
 tab-group-editor-title-create = ਟੈਬ ਗਰੁੱਪ ਬਣਾਓ
 tab-group-editor-title-edit = ਟੈਬ ਗਰੁੱਪ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
@@ -210,22 +232,40 @@ tab-group-editor-cancel =
     .accesskey = C
 tab-group-editor-color-selector =
     .aria-label = ਟੈਬ ਗਰੁੱਪ ਦਾ ਰੰਗ
-tab-group-editor-color-selector-blue = ਨੀਲਾ
-tab-group-editor-color-selector-purple = ਵੈਂਗਣੀ
-tab-group-editor-color-selector-cyan = ਸਿਯਾਨ
-tab-group-editor-color-selector-orange = ਸੰਤਰੀ
-tab-group-editor-color-selector-yellow = ਪੀਲਾ
-tab-group-editor-color-selector-pink = ਗੁਲਾਬੀ
-tab-group-editor-color-selector-green = ਹਰਾ
-tab-group-editor-color-selector-gray = ਸਲੇਟੀ
-tab-group-editor-color-selector-red = ਲਾਲ
-tab-group-menu-header = ਟੈਬ ਗਰੁੱਪ
+tab-group-editor-color-selector2-blue = ਨੀਲਾ
+    .title = ਨੀਲਾ
+tab-group-editor-color-selector2-purple = ਵੈਂਗਣੀ
+    .title = ਵੈਂਗਣੀ
+tab-group-editor-color-selector2-cyan = ਸਿਯਾਨ
+    .title = ਸਿਯਾਨ
+tab-group-editor-color-selector2-orange = ਸੰਤਰੀ
+    .title = ਸੰਤਰੀ
+tab-group-editor-color-selector2-yellow = ਪੀਲਾ
+    .title = ਪੀਲਾ
+tab-group-editor-color-selector2-pink = ਗੁਲਾਬੀ
+    .title = ਗੁਲਾਬੀ
+tab-group-editor-color-selector2-green = ਹਰਾ
+    .title = ਹਰਾ
+tab-group-editor-color-selector2-gray = ਸਲੇਟੀ
+    .title = ਸਲੇਟੀ
+tab-group-editor-color-selector2-red = ਲਾਲ
+    .title = ਲਾਲ
+tab-group-description = { $tabGroupName } — ਟੈਬ ਗਰੁੱਪ
+tab-group-label-tooltip-collapsed = { $tabGroupName } — ਸਮੇਟੇ
+tab-group-label-tooltip-expanded = { $tabGroupName } — ਫਲਾਏ
+tab-group-preview-name =
+    .aria-label = ਸਮੇਟੇ ਗਰੁੱਪ ਵਿੱਚ ਟੈਬਾਂ
 tab-context-unnamed-group =
     .label = ਬੇਨਾਮਾ ਗਰੁੱਪ
 tab-group-name-default = ਬੇਨਾਮਾ ਗਰੁੱਪ
 
-## Variables:
-##  $tabCount (Number): the number of tabs that are affected by the action.
+## When collapsed, the tab group label's aria-description will indicate
+## whether the hover menu is open or closed.
+
+tab-group-preview-open-description = ਟੈਬ ਸੂਚੀ ਨੂੰ ਖੋਲ੍ਹੋ
+tab-group-preview-closed-description = ਟੈਬ ਸੂਚੀ ਬੰਦ ਹੈ
+
+##
 
 tab-context-move-tab-to-new-group =
     .label =
@@ -243,6 +283,8 @@ tab-context-move-tab-to-group =
            *[other] ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਜੋੜੋ
         }
     .accesskey = G
+tab-context-move-tab-to-group-saved-groups =
+    .label = ਗਰੁੱਪ ਬੰਦ ਕੀਤੇ
 tab-group-editor-action-new-tab =
     .label = ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ
 tab-group-editor-action-new-window =
@@ -268,6 +310,16 @@ tab-context-ungroup-tab =
            *[other] ਗਰੁੱਪਾਂ ਵਿੱਚ ਹਟਾਓ
         }
     .accesskey = R
+# When a tab group containing the active tab is collapsed, the active tab
+# remains visible. An indicator appears at the end of the group showing the
+# number of remaining tabs that are hidden by the collapsed group,
+# e.g. "+2" for a group with 3 total tabs.
+tab-group-overflow-count = +{ $tabCount }
+tab-group-overflow-count-tooltip =
+    { $tabCount ->
+        [one] { $tabCount } ਹੋਰ ਟੈਬ
+       *[other] { $tabCount } ਹੋਰ ਟੈਬਾਂ
+    }
 
 ## Open/saved tab group context menu
 
@@ -293,3 +345,22 @@ tab-group-context-open-saved-group-in-this-window =
 # open the tab group in that window.
 tab-group-context-open-saved-group-in-new-window =
     .label = ਗਰੁੱਪ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ
+
+## Split View
+
+# Split view tabs display their respective contents side by side
+# Displayed within the tooltip on tabs inside of a tab split view
+tabbrowser-tab-label-tab-split-view = ਵੰਡੀ ਹੋਈ ਝਲਕ
+# Open a new tab next to the current tab and display their contents side by side
+tab-context-add-split-view =
+    .label = ਵੰਡੀ ਹੋਈ ਝਲਕ ਜੋੜੋ
+    .accesskey = t
+# Display the two selected tabs' contents side by side
+tab-context-open-in-split-view =
+    .label = ਵੰਡੀ ਹੋਈ ਝਲਕ ਵਿੱਚ ਖੋਲ੍ਹੋ
+    .accesskey = t
+# Separate the two split view tabs and display the tabs and their contents as normal
+tab-context-separate-split-view =
+    .label = ਵੰਡੀ ਹੋਈ ਝਲਕ ਵਿੱਚ ਵੱਖਰਾ ਕਰੋ
+    .accesskey = t
+tab-context-badge-new = ਨਵਾਂ

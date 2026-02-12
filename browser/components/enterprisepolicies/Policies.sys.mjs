@@ -26,9 +26,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
   BookmarksPolicies: "resource:///modules/policies/BookmarksPolicies.sys.mjs",
   CustomizableUI: "resource:///modules/CustomizableUI.sys.mjs",
   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
-  PdfJsDefaultPreferences: "resource://pdf.js/PdfJsDefaultPreferences.sys.mjs",
   ProxyPolicies: "resource:///modules/policies/ProxyPolicies.sys.mjs",
-  UrlbarPrefs: "resource:///modules/UrlbarPrefs.sys.mjs",
+  QuickSuggest: "resource:///modules/QuickSuggest.sys.mjs",
   WebsiteFilter: "resource:///modules/policies/WebsiteFilter.sys.mjs",
 });
 
@@ -60,13 +59,13 @@ ChromeUtils.defineLazyGetter(lazy, "log", () => {
  * happens. An object for each policy should be defined, containing
  * callback functions that will be called by the engine.
  *
- * See the _callbacks object in EnterprisePolicies.js for the list of
+ * See the _callbacks object in EnterprisePoliciesParent.sys.mjs for the list of
  * possible callbacks and an explanation of each.
  *
  * Each callback will be called with two parameters:
  * - manager
  *   This is the EnterprisePoliciesManager singleton object from
- *   EnterprisePolicies.js
+ *   EnterprisePoliciesParent.sys.mjs
  *
  * - param
  *   The parameter defined for this policy in policies-schema.json.
@@ -364,9 +363,18 @@ export var Policies = {
   },
 
   BlockAboutProfiles: {
+    onBeforeAddons(manager, param) {
+      if (param) {
+        manager.disallowFeature("profileManagement");
+      }
+    },
     onBeforeUIStartup(manager, param) {
       if (param) {
         blockAboutPage(manager, "about:profiles");
+        blockAboutPage(manager, "about:profilemanager");
+        blockAboutPage(manager, "about:editprofile");
+        blockAboutPage(manager, "about:deleteprofile");
+        blockAboutPage(manager, "about:newprofile");
       }
     },
   },
@@ -509,7 +517,161 @@ export var Policies = {
   },
 
   ContentAnalysis: {
-    // disabling for ESR
+    onBeforeAddons(manager, param) {
+      // For security reasons, all of the Content Analysis related prefs should be locked in
+      // this method, even if the values aren't specified in Enterprise Policies.
+      setPrefIfPresentAndLock(
+        param,
+        "PipePathName",
+        "browser.contentanalysis.pipe_path_name"
+      );
+      if ("AgentTimeout" in param) {
+        if (!Number.isInteger(param.AgentTimeout)) {
+          lazy.log.error(
+            `Non-integer value for AgentTimeout: ${param.AgentTimeout}`
+          );
+        } else {
+          setAndLockPref(
+            "browser.contentanalysis.agent_timeout",
+            param.AgentTimeout
+          );
+        }
+      } else {
+        Services.prefs.lockPref("browser.contentanalysis.agent_timeout");
+      }
+      setPrefIfPresentAndLock(
+        param,
+        "AllowUrlRegexList",
+        "browser.contentanalysis.allow_url_regex_list"
+      );
+      setPrefIfPresentAndLock(
+        param,
+        "DenyUrlRegexList",
+        "browser.contentanalysis.deny_url_regex_list"
+      );
+      setPrefIfPresentAndLock(
+        param,
+        "AgentName",
+        "browser.contentanalysis.agent_name"
+      );
+      setPrefIfPresentAndLock(
+        param,
+        "ClientSignature",
+        "browser.contentanalysis.client_signature"
+      );
+      setPrefIfPresentAndLock(
+        param,
+        "MaxConnectionsCount",
+        "browser.contentanalysis.max_connections"
+      );
+      let resultPrefs = [
+        ["DefaultResult", "default_result"],
+        ["TimeoutResult", "timeout_result"],
+      ];
+      for (let pref of resultPrefs) {
+        if (pref[0] in param) {
+          if (
+            !Number.isInteger(param[pref[0]]) ||
+            param[pref[0]] < 0 ||
+            param[pref[0]] > 2
+          ) {
+            lazy.log.error(
+              `Non-integer or out of range value for ${pref[0]}: ${param[pref[0]]}`
+            );
+            Services.prefs.lockPref(`browser.contentanalysis.${pref[1]}`);
+          } else {
+            setAndLockPref(
+              `browser.contentanalysis.${pref[1]}`,
+              param[pref[0]]
+            );
+          }
+        } else {
+          Services.prefs.lockPref(`browser.contentanalysis.${pref[1]}`);
+        }
+      }
+      let boolPrefs = [
+        ["IsPerUser", "is_per_user"],
+        ["ShowBlockedResult", "show_blocked_result"],
+        ["BypassForSameTabOperations", "bypass_for_same_tab_operations"],
+      ];
+      for (let pref of boolPrefs) {
+        if (pref[0] in param) {
+          setAndLockPref(
+            `browser.contentanalysis.${pref[1]}`,
+            !!param[pref[0]]
+          );
+        } else {
+          Services.prefs.lockPref(`browser.contentanalysis.${pref[1]}`);
+        }
+      }
+      let interceptionPointPrefs = [
+        ["Clipboard", "clipboard"],
+        ["Download", "download"],
+        ["DragAndDrop", "drag_and_drop"],
+        ["FileUpload", "file_upload"],
+        ["Print", "print"],
+      ];
+      if ("InterceptionPoints" in param) {
+        for (let pref of interceptionPointPrefs) {
+          let value = true;
+          if (pref[0] in param.InterceptionPoints) {
+            if ("Enabled" in param.InterceptionPoints[pref[0]]) {
+              value = !!param.InterceptionPoints[pref[0]].Enabled;
+            }
+          }
+          setAndLockPref(
+            `browser.contentanalysis.interception_point.${pref[1]}.enabled`,
+            value
+          );
+        }
+      } else {
+        for (let pref of interceptionPointPrefs) {
+          Services.prefs.lockPref(
+            `browser.contentanalysis.interception_point.${pref[1]}.enabled`
+          );
+        }
+      }
+      let plainTextOnlyPrefs = [
+        ["Clipboard", "clipboard"],
+        ["DragAndDrop", "drag_and_drop"],
+      ];
+      if ("InterceptionPoints" in param) {
+        for (let pref of plainTextOnlyPrefs) {
+          // Need to set and lock this value even if the enterprise
+          // policy isn't set so users can't change it
+          let value = true;
+          if ("InterceptionPoints" in param) {
+            if (pref[0] in param.InterceptionPoints) {
+              if ("PlainTextOnly" in param.InterceptionPoints[pref[0]]) {
+                value = !!param.InterceptionPoints[pref[0]].PlainTextOnly;
+              }
+            }
+          }
+          setAndLockPref(
+            `browser.contentanalysis.interception_point.${pref[1]}.plain_text_only`,
+            value
+          );
+        }
+      } else {
+        for (let pref of plainTextOnlyPrefs) {
+          Services.prefs.lockPref(
+            `browser.contentanalysis.interception_point.${pref[1]}.plain_text_only`
+          );
+        }
+      }
+      if ("Enabled" in param) {
+        let enabled = !!param.Enabled;
+        setAndLockPref("browser.contentanalysis.enabled", enabled);
+        let ca = Cc["@mozilla.org/contentanalysis;1"].getService(
+          Ci.nsIContentAnalysis
+        );
+        ca.isSetByEnterprisePolicy = true;
+      } else {
+        // Probably not strictly necessary, but let's lock everything
+        // to be consistent.
+        Services.prefs.lockPref("browser.contentanalysis.enabled");
+      }
+    },
   },
 
   Cookies: {
@@ -647,9 +809,23 @@ export var Policies = {
 
   DisableBuiltinPDFViewer: {
     onBeforeAddons(manager, param) {
-      if (param) {
-        setAndLockPref("pdfjs.disabled", true);
+      let policies = Services.policies.getActivePolicies();
+      if (
+        policies.Handlers?.mimeTypes?.["application/pdf"] ||
+        policies.Handlers?.extensions?.pdf
+      ) {
+        // If there is an existing Handlers policy modifying PDF behavior,
+        // don't do anything.
+        return;
       }
+      let pdfMIMEInfo = lazy.gMIMEService.getFromTypeAndExtension(
+        "application/pdf",
+        "pdf"
+      );
+      let mimeInfo = {
+        action: param ? "useSystemDefault" : "handleInternally",
+      };
+      processMIMEInfo(mimeInfo, pdfMIMEInfo);
     },
   },
 
@@ -747,9 +923,9 @@ export var Policies = {
   },
 
   DisableFirefoxScreenshots: {
-    onBeforeAddons(manager, param) {
+    onBeforeUIStartup(manager, param) {
       if (param) {
-        setAndLockPref("extensions.screenshots.disabled", true);
+        setAndLockPref("screenshots.browser.component.enabled", false);
       }
     },
   },
@@ -798,14 +974,6 @@ export var Policies = {
     onBeforeUIStartup(manager, param) {
       if (param) {
         manager.disallowFeature("passwordReveal");
-      }
-    },
-  },
-
-  DisablePocket: {
-    onBeforeAddons(manager, param) {
-      if (param) {
-        setAndLockPref("extensions.pocket.enabled", false);
       }
     },
   },
@@ -889,6 +1057,7 @@ export var Policies = {
         setAndLockPref("datareporting.healthreport.uploadEnabled", false);
         setAndLockPref("datareporting.policy.dataSubmissionEnabled", false);
         setAndLockPref("toolkit.telemetry.archive.enabled", false);
+        setAndLockPref("datareporting.usage.uploadEnabled", false);
         blockAboutPage(manager, "about:telemetry");
       }
     },
@@ -1017,7 +1186,35 @@ export var Policies = {
   },
 
   EnableTrackingProtection: {
+    onAllWindowsRestored(manager, param) {
+      if (param.Category) {
+        // browser.contentblocking.category only works as a default pref if
+        // it is locked.
+        PoliciesUtils.setDefaultPref(
+          "browser.contentblocking.category",
+          param.Category,
+          true
+        );
+        let { ContentBlockingPrefs } = ChromeUtils.importESModule(
+          "moz-src:///browser/components/protections/ContentBlockingPrefs.sys.mjs"
+        );
+        // These are always locked because they would reset at
+        // startup anyway.
+        ContentBlockingPrefs.setPrefsToCategory(
+          param.Category,
+          true // locked
+        );
+        ContentBlockingPrefs.matchCBCategory();
+      }
+    },
     onBeforeUIStartup(manager, param) {
+      if ("Exceptions" in param) {
+        addAllowDenyPermissions("trackingprotection", param.Exceptions);
+      }
+      if (param.Category) {
+        // If a category is set, we ignore everything except exceptions.
+        return;
+      }
       if (param.Value) {
         PoliciesUtils.setDefaultPref(
           "privacy.trackingprotection.enabled",
@@ -1059,8 +1256,17 @@ export var Policies = {
           param.Locked
         );
       }
-      if ("Exceptions" in param) {
-        addAllowDenyPermissions("trackingprotection", param.Exceptions);
+      if ("SuspectedFingerprinting" in param) {
+        PoliciesUtils.setDefaultPref(
+          "privacy.fingerprintingProtection",
+          param.SuspectedFingerprinting,
+          param.Locked
+        );
+        PoliciesUtils.setDefaultPref(
+          "privacy.fingerprintingProtection.pbmode",
+          param.SuspectedFingerprinting,
+          param.Locked
+        );
       }
     },
   },
@@ -1165,11 +1371,10 @@ export var Policies = {
           setAndLockPref("extensions.getAddons.showPane", false);
           // Turn off recommendations
           setAndLockPref(
-            "extensions.htmlaboutaddons.recommendations.enable",
+            "extensions.htmlaboutaddons.recommendations.enabled",
             false
           );
-          // Block about:debugging
-          blockAboutPage(manager, "about:debugging");
+          manager.disallowFeature("installTemporaryAddon");
         }
         if ("restricted_domains" in extensionSettings["*"]) {
           let restrictedDomains = Services.prefs
@@ -1313,10 +1518,29 @@ export var Policies = {
           param.Locked
         );
       }
+      if ("Stories" in param) {
+        PoliciesUtils.setDefaultPref(
+          "browser.newtabpage.activity-stream.feeds.system.topstories",
+          param.Stories,
+          param.Locked
+        );
+        PoliciesUtils.setDefaultPref(
+          "browser.newtabpage.activity-stream.feeds.section.topstories",
+          param.Stories,
+          param.Locked
+        );
+      }
       if ("SponsoredPocket" in param) {
         PoliciesUtils.setDefaultPref(
           "browser.newtabpage.activity-stream.showSponsored",
           param.SponsoredPocket,
+          param.Locked
+        );
+      }
+      if ("SponsoredStories" in param) {
+        PoliciesUtils.setDefaultPref(
+          "browser.newtabpage.activity-stream.showSponsored",
+          param.SponsoredStories,
           param.Locked
         );
       }
@@ -1326,7 +1550,7 @@ export var Policies = {
   FirefoxSuggest: {
     onBeforeAddons(manager, param) {
       (async () => {
-        await lazy.UrlbarPrefs.firefoxSuggestScenarioStartupPromise;
+        await lazy.QuickSuggest.initPromise;
         if ("WebSuggestions" in param) {
           PoliciesUtils.setDefaultPref(
             "browser.urlbar.suggest.quicksuggest.nonsponsored",
@@ -1349,6 +1573,27 @@ export var Policies = {
           );
         }
       })();
+    },
+  },
+
+  GenerativeAI: {
+    onBeforeAddons(manager, param) {
+      const defaultValue = "Enabled" in param ? param.Enabled : undefined;
+
+      const features = [
+        ["Chatbot", ["browser.ml.chat.enabled", "browser.ml.chat.page"]],
+        ["LinkPreviews", ["browser.ml.linkPreview.optin"]],
+        ["TabGroups", ["browser.tabs.groups.smart.userEnabled"]],
+      ];
+
+      for (const [key, prefs] of features) {
+        const value = key in param ? param[key] : defaultValue;
+        if (value !== undefined) {
+          for (const pref of prefs) {
+            PoliciesUtils.setDefaultPref(pref, value, param.Locked);
+          }
+        }
+      }
     },
   },
 
@@ -1499,7 +1744,7 @@ export var Policies = {
       if ("Default" in param) {
         setAndLockPref("xpinstall.enabled", param.Default);
         if (!param.Default) {
-          blockAboutPage(manager, "about:debugging");
+          manager.disallowFeature("installTemporaryAddon");
           setAndLockPref(
             "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons",
             false
@@ -1731,6 +1976,15 @@ export var Policies = {
         );
         setDefaultPermission("xr", param.VirtualReality);
       }
+
+      if ("ScreenShare" in param) {
+        addAllowDenyPermissions(
+          "screen",
+          param.ScreenShare.Allow,
+          param.ScreenShare.Block
+        );
+        setDefaultPermission("screen", param.ScreenShare);
+      }
     },
   },
 
@@ -1773,6 +2027,7 @@ export var Policies = {
     onBeforeAddons(manager, param) {
       setAndLockPref("network.http.http3.enable_kyber", param);
       setAndLockPref("security.tls.enable_kyber", param);
+      setAndLockPref("media.webrtc.enable_pq_dtls", param);
     },
   },
 
@@ -1795,20 +2050,28 @@ export var Policies = {
         "keyword.enabled",
         "layers.",
         "layout.",
+        "mathml.disabled",
         "media.",
         "network.",
         "pdfjs.",
         "places.",
         "pref.",
         "print.",
+        "privacy.baselineFingerprintingProtection",
+        "privacy.fingerprintingProtection",
         "privacy.globalprivacycontrol.enabled",
         "privacy.userContext.enabled",
         "privacy.userContext.ui.enabled",
         "signon.",
         "spellchecker.",
+        "svg.context-properties.content.enabled",
+        "svg.disabled",
         "toolkit.legacyUserProfileCustomizations.stylesheets",
         "ui.",
+        "webgl.disabled",
+        "webgl.force-enabled",
         "widget.",
+        "xpinstall.enabled",
         "xpinstall.whitelist.required",
       ];
       if (!AppConstants.MOZ_REQUIRE_SIGNING) {
@@ -1816,6 +2079,7 @@ export var Policies = {
       }
       const allowedSecurityPrefs = [
         "security.block_fileuri_script_with_wrong_mime",
+        "security.csp.reporting.enabled",
         "security.default_personal_cert",
         "security.disable_button.openCertManager",
         "security.disable_button.openDeviceManager",
@@ -1824,10 +2088,12 @@ export var Policies = {
         "security.mixed_content.block_active_content",
         "security.mixed_content.block_display_content",
         "security.mixed_content.upgrade_display_content",
-        "security.osclientcerts.assume_rsa_pss_support",
         "security.osclientcerts.autoload",
         "security.OCSP.enabled",
         "security.OCSP.require",
+        "security.pki.certificate_transparency.disable_for_hosts",
+        "security.pki.certificate_transparency.disable_for_spki_hashes",
+        "security.pki.certificate_transparency.mode",
         "security.ssl.enable_ocsp_stapling",
         "security.ssl.errorReporting.enabled",
         "security.ssl.require_safe_negotiation",
@@ -1835,6 +2101,7 @@ export var Policies = {
         "security.tls.hello_downgrade_check",
         "security.tls.version.enable-deprecated",
         "security.warn_submit_secure_to_insecure",
+        "security.webauthn.always_allow_direct_attestation",
       ];
       const blockedPrefs = [
         "app.update.channel",
@@ -1898,26 +2165,6 @@ export var Policies = {
               case "number":
                 if (!Number.isInteger(param[preference].Value)) {
                   throw new Error(`Non-integer value for ${preference}`);
-                }
-
-                // Because pdfjs prefs are set async, we can't check the
-                // default pref branch to see if they are int or bool, so we
-                // have to get their type from PdfJsDefaultPreferences.
-                if (preference.startsWith("pdfjs.")) {
-                  let preferenceTail = preference.replace("pdfjs.", "");
-                  if (
-                    preferenceTail in lazy.PdfJsDefaultPreferences &&
-                    typeof lazy.PdfJsDefaultPreferences[preferenceTail] ==
-                      "number"
-                  ) {
-                    prefBranch.setIntPref(preference, param[preference].Value);
-                  } else {
-                    prefBranch.setBoolPref(
-                      preference,
-                      !!param[preference].Value
-                    );
-                  }
-                  break;
                 }
 
                 // This is ugly, but necessary. On Windows GPO and macOS
@@ -2046,12 +2293,13 @@ export var Policies = {
         setAndLockPref("privacy.clearOnShutdown.siteSettings", param);
         setAndLockPref("privacy.clearOnShutdown.offlineApps", param);
         setAndLockPref(
-          "privacy.clearOnShutdown_v2.historyFormDataAndDownloads",
+          "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads",
           param
         );
         setAndLockPref("privacy.clearOnShutdown_v2.cookiesAndStorage", param);
         setAndLockPref("privacy.clearOnShutdown_v2.cache", param);
         setAndLockPref("privacy.clearOnShutdown_v2.siteSettings", param);
+        setAndLockPref("privacy.clearOnShutdown_v2.formdata", param);
       } else {
         let locked = true;
         // Needed to preserve original behavior in perpetuity.
@@ -2134,9 +2382,21 @@ export var Policies = {
             param.FormData,
             locked
           );
+
+          PoliciesUtils.setDefaultPref(
+            "privacy.clearOnShutdown_v2.formdata",
+            param.FormData,
+            locked
+          );
         } else {
           PoliciesUtils.setDefaultPref(
             "privacy.clearOnShutdown.formdata",
+            false,
+            lockDefaultPrefs
+          );
+
+          PoliciesUtils.setDefaultPref(
+            "privacy.clearOnShutdown_v2.formdata",
             false,
             lockDefaultPrefs
           );
@@ -2148,11 +2408,11 @@ export var Policies = {
             locked
           );
 
-          // We set historyFormDataAndDownloads to follow lock and pref
-          // settings for history, and deprecate formdata and downloads
+          // We set browsingHistoryAndDownloads to follow lock and pref
+          // settings for history, and deprecate downloads
           // in the new clear on shutdown dialog - Bug 1853996
           PoliciesUtils.setDefaultPref(
-            "privacy.clearOnShutdown_v2.historyFormDataAndDownloads",
+            "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads",
             param.History,
             locked
           );
@@ -2163,7 +2423,7 @@ export var Policies = {
             lockDefaultPrefs
           );
           PoliciesUtils.setDefaultPref(
-            "privacy.clearOnShutdown_v2.historyFormDataAndDownloads",
+            "privacy.clearOnShutdown_v2.browsingHistoryAndDownloads",
             false,
             lockDefaultPrefs
           );
@@ -2246,7 +2506,10 @@ export var Policies = {
                 let engine = Services.search.getEngineByName(engineName);
                 if (engine) {
                   try {
-                    await Services.search.removeEngine(engine);
+                    await Services.search.removeEngine(
+                      engine,
+                      Ci.nsISearchService.CHANGE_REASON_ENTERPRISE
+                    );
                   } catch (ex) {
                     lazy.log.error("Unable to remove the search engine", ex);
                   }
@@ -2408,6 +2671,21 @@ export var Policies = {
     },
   },
 
+  SkipTermsOfUse: {
+    onBeforeAddons(manager, param) {
+      if (param) {
+        setAndLockPref(
+          "datareporting.policy.dataSubmissionPolicyAcceptedVersion",
+          999
+        );
+        setAndLockPref(
+          "datareporting.policy.dataSubmissionPolicyNotifiedTime",
+          Date.now().toString()
+        );
+      }
+    },
+  },
+
   SSLVersionMax: {
     onBeforeAddons(manager, param) {
       let tlsVersion;
@@ -2483,9 +2761,22 @@ export var Policies = {
           param.FeatureRecommendations,
           param.Locked
         );
+
+        // We use the mostRecentTargetLanguages pref to control the
+        // translations panel intro. Setting a language value simulates a
+        // first translation, which skips the intro panel for users with
+        // FeatureRecommendations disabled.
+        const topWebPreferredLanguage = Services.prefs
+          .getComplexValue("intl.accept_languages", Ci.nsIPrefLocalizedString)
+          .data.split(/\s*,\s*/g)[0];
+
+        const preferredLanguage = topWebPreferredLanguage.length
+          ? topWebPreferredLanguage
+          : Services.locale.appLocaleAsBCP47;
+
         PoliciesUtils.setDefaultPref(
-          "browser.translations.panelShown",
-          !param.FeatureRecommendations,
+          "browser.translations.mostRecentTargetLanguages",
+          param.FeatureRecommendations ? "" : preferredLanguage,
           param.Locked
         );
       }
@@ -2503,6 +2794,13 @@ export var Policies = {
         PoliciesUtils.setDefaultPref(
           "browser.preferences.moreFromMozilla",
           param.MoreFromMozilla,
+          param.Locked
+        );
+      }
+      if ("FirefoxLabs" in param) {
+        PoliciesUtils.setDefaultPref(
+          "browser.preferences.experimental",
+          param.FirefoxLabs,
           param.Locked
         );
       }
@@ -2551,6 +2849,28 @@ export var Policies = {
  */
 export function setAndLockPref(prefName, prefValue) {
   PoliciesUtils.setDefaultPref(prefName, prefValue, true);
+}
+
+/**
+ *
+ * setPrefIfPresentAndLock
+ *
+ * Sets the pref to the value param[paramKey] if that exists. Either
+ * way, the pref is locked.
+ *
+ * @param {object} param
+ *        Object with pref values
+ * @param {string} paramKey
+ *        The key to look up the value in param
+ * @param {string} prefName
+ *        The pref to be changed
+ */
+function setPrefIfPresentAndLock(param, paramKey, prefName) {
+  if (paramKey in param) {
+    setAndLockPref(prefName, param[paramKey]);
+  } else {
+    Services.prefs.lockPref(prefName);
+  }
 }
 
 /**
@@ -2727,7 +3047,6 @@ export function runOnce(actionName, callback) {
  *        The callback to be run when the pref value changes
  * @returns {Promise}
  *        A promise that will resolve once the callback finishes running.
- *
  */
 async function runOncePerModification(actionName, policyValue, callback) {
   let prefName = `browser.policies.runOncePerModification.${actionName}`;

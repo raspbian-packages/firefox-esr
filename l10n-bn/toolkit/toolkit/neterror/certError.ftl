@@ -106,10 +106,3 @@ networkProtocolError-title = নেটওয়ার্ক প্রটোকল �
 nssBadCert-title = সতর্কতা: সামনে সম্ভাব্য নিরাপত্তা ঝুঁকি রয়েছে
 nssBadCert-sts-title = সংযুক্ত হয়নি: সম্ভাব্য নিরাপত্তা সমস্যা
 certerror-mitm-title = নিরাপদে এই সাইটে সংযোগ প্রদানে সফ্টওয়্যার { -brand-short-name } কে বাঁধা দিচ্ছে
-
-## Felt Privacy V1 Strings
-
-
-## Variables:
-##   $hostname (String) - Hostname of the website to which the user was trying to connect.
-

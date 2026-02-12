@@ -112,6 +112,8 @@ about-debugging-setup-usb-step-enable-dev-menu2 = Active o menú para desenvolve
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = Active a depuración por USB no menú para desenvolvedores de Android.
 # USB section step by step guide
+about-debugging-setup-usb-step-enable-file-transfer = Activa a transferencia de ficheiros e asegúrate de que o teu dispositivo non estea en modo de só carga.
+# USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = Active a depuración por USB en Firefox no dispositivo Android.
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Conecte o dispositivo Android ao computador.
@@ -311,6 +313,9 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Servizo push
+# Displayed for service workers in runtime pages, to label the origin of a worker.
+about-debugging-worker-origin =
+    .label = Orixe
 # Displayed as title of the inspect button when service worker debugging is disabled.
 about-debugging-worker-inspect-action-disabled =
     .title = A inspección do traballador de servizo está actualmente desactivada para multiproceso { -brand-shorter-name }

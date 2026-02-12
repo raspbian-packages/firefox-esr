@@ -69,6 +69,14 @@ perftools-button-add-directory = Engadir un cartafol
 perftools-button-remove-directory = Retirar o seleccionado
 perftools-button-edit-settings = Editar a gravación…
 
+## More actions menu
+
+perftools-menu-more-actions-button =
+    .title = Máis accións
+perftools-menu-more-actions-restart-with-profiling = Reinicia { -brand-shorter-name } co perfilador de inicio activado
+perftools-menu-more-actions-copy-for-startup = Copiar variables de entorno para o perfilado ao inicio
+perftools-menu-more-actions-copy-for-perf-tests = Copiar parámetros para probas de rendemento
+
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
 perftools-thread-gecko-main =
@@ -143,12 +151,13 @@ perftools-presets-graphics-label = Gráficos
 perftools-presets-graphics-description = Predefinido para investigar erros gráficos en { -brand-shorter-name }.
 perftools-presets-media-label = Multimedia
 perftools-presets-media-description2 = Predefinido para investigar erros de son e de vídeo en { -brand-shorter-name }.
+perftools-presets-ml-label = Aprendizaxe automática
+perftools-presets-ml-description2 = Predefinido para investigar erros de aprendizaxe automática en { -brand-shorter-name }.
 perftools-presets-networking-label = Rede
 perftools-presets-networking-description = Predefinido para investigar erros de rede en { -brand-shorter-name }.
 # "Power" is used in the sense of energy (electricity used by the computer).
 perftools-presets-power-label = Enerxía
 perftools-presets-power-description = Predefinición para investigar erros de uso de enerxía en { -brand-shorter-name }, con baixo consumo de recursos.
+perftools-presets-debug-label = Depurar
+perftools-presets-debug-description = Predefinido para a depuración en { -brand-shorter-name }. Alta sobrecarga, non o uses para traballos de rendemento, senón para centrarte na comprensión do comportamento do navegador.
 perftools-presets-custom-label = Personalizado
-
-##
-

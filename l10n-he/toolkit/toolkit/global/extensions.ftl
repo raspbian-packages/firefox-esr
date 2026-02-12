@@ -15,7 +15,25 @@ webext-perms-header-with-perms = להוסיף את { $extension }? להרחבה 
 webext-perms-header-unsigned = להוסיף את { $extension }? הרחבה זו אינה מאומתת. הרחבות זדוניות יכולות לגנוב מידע אישי או לסכן את המחשב שלך. יש להוסיף אותה רק אם הגיעה ממקור מהימן.
 webext-perms-header-unsigned-with-perms = להוסיף את { $extension }? הרחבה זו אינה מאומתת. הרחבות זדוניות יכולות לגנוב מידע אישי או לסכן את המחשב שלך. יש להוסיף אותה רק אם הגיעה ממקור מהימן. להרחבה זו תהיה ההרשאות הבאות:
 webext-perms-sideload-header = { $extension } נוספה
+webext-perms-optional-perms-header2 = ההרחבה { $extension } מבקשת הרשאות נוספות
 webext-perms-optional-perms-header = ההרחבה { $extension } מבקשת הרשאות נוספות.
+webext-perms-header2 = הוספת { $extension }
+webext-perms-list-intro-unsigned = הרחבה לא מאומתת זו עלולה לסכן את הפרטיות שלך או לפגוע במכשיר שלך. יש להוסיף אותה רק אם הגיעה ממקור מהימן.
+
+## Headers used in the webextension permissions dialog, inside the content.
+
+webext-perms-header-required-perms = הרשאות נדרשות:
+webext-perms-header-optional-settings = הגדרות אופציונליות:
+webext-perms-header-update-required-perms = הרשאות נדרשות חדשות:
+webext-perms-header-optional-required-perms = הרשאות חדשות:
+webext-perms-header-data-collection-perms = איסוף נתונים נדרש:
+webext-perms-header-data-collection-is-none = איסוף נתונים:
+# This is a header used in the add-ons "update" prompt, shown when the new
+# version requires new data collection permissions.
+webext-perms-header-update-data-collection-perms = איסוף נתונים נדרש חדש:
+# This is a header used in the add-ons "optional" prompt, shown when the
+# extension requests new data collection permissions programmatically.
+webext-perms-header-optional-data-collection-perms = איסוף נתונים חדש:
 
 ##
 
@@ -33,6 +51,9 @@ webext-perms-sideload-enable =
 webext-perms-sideload-cancel =
     .label = ביטול
     .accesskey = ב
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text2 = ההרחבה { $extension } עודכנה. עליך לאשר את ההרשאות החדשות לפני שהגרסה המעודכנת תותקן. בחירה ב״ביטול״ תשאיר את גרסת ההרחבה הנוכחית.
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
 webext-perms-update-text = ההרחבה { $extension } עודכנה. עליך לאשר הרשאות חדשות לפני שהגרסה העדכנית תותקן. בחירה באפשרות ״ביטול״ תשאיר את ההרחבה בגרסתה הנוכחית. להרחבה זו תהיה ההרשאות הבאות:
@@ -81,6 +102,29 @@ webext-perms-host-description-one-domain = גישה לנתונים שלך עבו
 #     (the list of domains will follow this string).
 webext-perms-host-description-multiple-domains = גישה לנתונים שלך עבור אתרים ב־{ $domainCount } שמות מתחם
 
+## Strings for data collection permissions in the permission prompt.
+
+webext-perms-description-data-none = המפתח אומר שהרחבה זו אינה דורשת איסוף נתונים.
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some = המפתח אומר שהרחבה זו אוספת: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-update = המפתח אומר שההרחבה תאסוף: { $permissions }
+# Variables:
+#    $permissions (String): a list of data collection permissions formatted with `Intl.ListFormat` using the "narrow" style.
+webext-perms-description-data-some-optional = המפתח אומר שההרחבה רוצה לאסוף: { $permissions }
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-update-text-with-data-collection = ההרחבה { $extension } דורשת הגדרות חדשות לעדכון
+webext-perms-update-list-intro-with-data-collection = ניתן לבטל ולהשאיר את הגרסה וההגדרות הנוכחיות שלך, או לעדכן ולקבל את הגרסה החדשה ולאשר את השינויים.
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection = ההרחבה { $extension } מבקשת הגדרות נוספות
+# Variables:
+#   $extension (String): replaced with the localized name of the extension.
+webext-perms-optional-text-with-data-collection-only = ההרחבה { $extension } מבקשת איסוף נתונים נוספים
+
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent
 ## with the value of webext-site-perms-description-gated-perms-{sitePermission}.
@@ -114,3 +158,8 @@ webext-site-perms-header-unsigned-with-perms = להוסיף את { $extension }?
 
 webext-site-perms-midi = גישה להתקני MIDI
 webext-site-perms-midi-sysex = גישה להתקני MIDI עם תמיכה ב־SysEx
+
+## Colorway theme migration
+
+webext-colorway-theme-migration-notification-message = <b>ערכת הצבעים שלך הוסרה.</b> { -brand-shorter-name } עדכן את אוסף ערכות הצבעים שלו. ניתן למצוא את הגרסאות העדכניות ביותר באתר התוספות.
+webext-colorway-theme-migration-notification-button = קבלת ערכות צבעים מעודכנות

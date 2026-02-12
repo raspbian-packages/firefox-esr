@@ -19,10 +19,6 @@ sidebar-history-date-prev-month =
     .heading = { DATETIME($date, month: "long", year: "numeric") }
 sidebar-history-delete =
     .title = Suprimir de l’istoric
-sidebar-history-sort-by-date =
-    .label = Triar per data
-sidebar-history-sort-by-site =
-    .label = Triar per site
 sidebar-history-clear =
     .label = Escafar l'istoric
 
@@ -40,16 +36,8 @@ sidebar-customize-extensions-header = Extensions de la barra laterala
 sidebar-customize-firefox-tools-header =
     .label = Aisinas de { -brand-product-name }
 sidebar-customize-firefox-settings = Gerir los paramètres de { -brand-short-name }
-sidebar-position-left =
-    .label = Mostrar a man esquèrra
-sidebar-position-right =
-    .label = Mostrar a man drecha
 sidebar-vertical-tabs =
     .label = Onglets verticals
-sidebar-horizontal-tabs =
-    .label = Onglets orizontals
-sidebar-customize-tabs-header =
-    .label = Paramètres dels onglets
 
 ## Labels for sidebar context menu items
 
@@ -72,11 +60,6 @@ sidebar-context-menu-copy-link =
 sidebar-context-menu-close-remote-tab =
     .label = Tampar l’onglet sus { $deviceName }
 
-## Labels for sidebar history context menu items
-
-sidebar-history-context-menu-delete-page =
-    .label = Suprimir de l’istoric
-
 ## Labels for sidebar menu items.
 
 sidebar-menu-synced-tabs-label =
@@ -85,8 +68,6 @@ sidebar-menu-bookmarks-label =
     .label = Marcapaginas
 sidebar-menu-customize-label =
     .label = Personalizar la barra laterala
-sidebar-menu-review-checker-label =
-    .label = Verificador d’avises
 
 ## Tooltips for sidebar menu items.
 
@@ -107,17 +88,8 @@ sidebar-menu-open-bookmarks-tooltip = Dobrir los marcapaginas ({ $shortcut })
 #   $shortcut (String) - The OS specific keyboard shortcut.
 sidebar-menu-close-bookmarks-tooltip = Tampar los marcapaginas ({ $shortcut })
 
-## Headings for sidebar menu panels.
-
-
-## Titles for sidebar menu panels.
-
-
 ## Context for closing synced tabs when hovering over the items
 
 show-sidebars =
     .tooltiptext = Afichar los panèls laterals
     .label = Panèl lateral
-
-## Tooltips for the sidebar toolbar widget.
-

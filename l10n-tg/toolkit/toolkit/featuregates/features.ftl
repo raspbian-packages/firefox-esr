@@ -46,23 +46,3 @@ experimental-features-js-warp-description = Лоиҳаи «Warp»-ро фаъо�
 experimental-features-ime-search =
     .label = Навори нишонӣ: ҳангоми иҷрокунии IME натиҷаҳоро нишон медишад
 experimental-features-ime-search-description = IME (Input Method Editor) абзорест, ки ба шумо барои ворид кардани аломатҳои мураккаб, ба монанди аломатҳои хаттӣ аз забонҳои осиёии шаркӣ ва ҳиндӣ, тавассути клавиатураи стандартӣ имкон медиҳад. Фаъолсозии ин озмоиш лавҳаи навори нишониро ба таври кушод нигоҳ медорад ва ҳангоми истифодаи IME барои вориди матн натиҷаҳои ҷустуҷӯ ва пешниҳодҳоро нишон медиҳад. Ба назар гиред, ки IME метавонад лавҳаеро намоиш диҳад, ки натиҷаҳои навори нишониро маҳкам мекунад, ба ҳамин сабаб, ин хусусият танҳо барои истифода бо IME бе истифодаи ин навъи лавҳа пешниҳод карда мешавад.
-# Auto Picture-in-Picture
-experimental-features-auto-pip =
-    .label = Реҷаи «Расм-дар-расм»: ҳангоми гузариш ба варақаи дигар ба таври худкор кушода шавад
-experimental-features-auto-pip-description = Фаъол кардани реҷаи «Расм-дар-расм» дар видеоҳои фаъол ҳангоми гузариш байни варақаҳо.
-genai-settings-chat-title =
-    .label = Чат-боти зеҳни сунъӣ «AI»
-# Updated sidebar settings
-sidebar-title =
-    .label = Навори ҷонибӣ
-sidebar-description = Ҳангоми тамошо кардани сомонаҳо ба таърих, варақаҳо аз дастгоҳҳои дигар, васеъшавиҳои навори ҷонибӣ ва чизҳои дигар ба осонӣ дастрасӣ пайдо намоед. <a data-l10n-name="connect">Назари худро изҳор намоед</a>
-vertical-tabs-title =
-    .label = Варақаҳои амудӣ
-vertical-tabs-description = Варақаҳоро аз қисми болои браузер ба қисми ҷонибии он ҷойгир намоед. Лозим аст, ки шумо, инчунин, кӯшиш карда, аз навори ҷонибӣ истифода баред. <a data-l10n-name="connect">Назари худро изҳор намоед</a>
-experimental-features-group-developer-tools =
-    .label = Абзорҳои барномасозӣ
-experimental-features-group-webpage-display =
-    .label = Намоиши саҳифаи сомона
-experimental-features-group-customize-browsing =
-    .label = Тарзи истифодаи браузери худро шахсӣ созед
-experimental-features-group-customize-browsing-description = Агар шумо аз ин хусусиятҳо кӯшиш карда, истифода баред, <a data-l10n-name="connect">назари худро дар «Connect» изҳор намоед</a>

@@ -8,12 +8,6 @@
 
 ## Panel
 
-
-## An extension in the main list
-
-
-## Extension's context menu
-
-
-## Notifications
-
+unified-extensions-header-title = افزونه‌ها
+unified-extensions-manage-extensions =
+    .label = مدیریت افزونه‌ها

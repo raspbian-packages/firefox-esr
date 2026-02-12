@@ -82,7 +82,7 @@ about-glean-label-for-log-pings =
 # An in-line button labeled "Apply settings and submit ping" precedes this string.
 about-glean-label-for-controls-submit =
     Натисніть попередню кнопку, щоб позначити всі пінги { -glean-brand-name } своєю міткою і надіслати вибраний пінг.
-    (Усі пінги, надіслані з того часу до перезапуску застосунку, будуть позначені міткою
+    (Усі пінги, надіслані з того часу до перезапуску програми, будуть позначені міткою
     <code>{ $debug-tag }</code>.)
 about-glean-li-for-visit-gdpv =
     <a data-l10n-name="gdpv-tagged-pings-link">Відвідайте сторінку { glean-debug-ping-viewer-brand-name }, щоб побачити пінги з вашою міткою</a>.
@@ -109,7 +109,7 @@ about-glean-adhoc-note =
     Це означає, що категорія та назва метрики має формат
     <code>camelCase</code>, на відміну від Rust і C++ API.
 about-glean-profiler-explanation =
-    Щоб переглянути усі записані показники, ви можете скористатися { -profiler-brand-name }.
+    Щоб переглянути всі записані показники, скористайтеся { -profiler-brand-name }.
     Спочатку ви повинні <a data-l10n-name="firefox-profiler-link">записати профіль продуктивності</a>.
     Після створення профілю виберіть <q>Маркерна діаграма</q> та подивіться на маркери в розділі <q>Телеметрія</q>.
 about-glean-profiler-explanation-profiler =

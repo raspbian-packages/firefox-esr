@@ -30,6 +30,9 @@ appmenu-update-restart2 =
     .secondarybuttonlabel = Elvetés
     .secondarybuttonaccesskey = E
 appmenu-update-restart-message2 = Szerezze be a { -brand-shorter-name } legújabb verzióját. A nyitott lapok és ablakok visszaállnak.
+appmenu-theme-installed =
+    .secondarybuttonlabel = Visszavonás
+    .secondarybuttonaccesskey = V
 appmenu-update-other-instance =
     .label = A { -brand-shorter-name } nem tud automatikusan a legújabb verzióra frissíteni.
     .buttonlabel = A { -brand-shorter-name } frissítése mindenképp
@@ -41,6 +44,12 @@ appmenu-addon-private-browsing-installed2 =
     .buttonlabel = Rendben
     .buttonaccesskey = R
 appmenu-addon-post-install-message3 = Kezelje a kiegészítőit és témáit az alkalmazásmenün keresztül.
+# This string is used in the confirmation popup displayed after an extension
+# has been installed, when the data collection feature is enabled.
+appmenu-addon-post-install-message-with-data-collection = Az engedélyeket és adatbeállításokat bármikor frissítheti a <a data-l10n-name="settings-link">kiegészítő beállításaiban</a>.
+appmenu-addon-post-install-pin-toolbarbutton-checkbox =
+    .label = Kiegészítő rögzítése az eszköztárra
+    .accesskey = r
 appmenu-addon-post-install-incognito-checkbox =
     .label = A kiegészítő futtatásának engedélyezése privát ablakokban
     .accesskey = e

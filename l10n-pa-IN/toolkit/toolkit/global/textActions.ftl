@@ -28,11 +28,6 @@ text-action-copy-shortcut =
 text-action-copy-clean-link =
     .label = ਸਾਫ਼ ਲਿੰਕ ਨੂੰ ਕਾਪੀ ਕਰੋ
     .accesskey = n
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-text-action-strip-on-share =
-    .label = ਸਾਈਟ ਟੋਹ ਤੋਂ ਬਿਨਾਂ ਕਾਪੀ ਕਰੋ
-    .accesskey = n
 text-action-paste =
     .label = ਚੇਪੋ
     .accesskey = P
@@ -73,3 +68,23 @@ text-action-search-text-box-clear =
     .title = ਸਾਫ਼ ਕਰੋ
 text-action-highlight-selection =
     .label = ਚੋਣ ਨੂੰ ਹਾਈਲਾਈਟ ਕਰੋ
+# This adds a comment to selected text within the PDF viewer.
+text-action-comment-selection-1 =
+    .label = ਚੋਣ ਲਈ ਟਿੱਪਣੀ ਜੋੜੋ
+# "Copy Link to Highlight" creates a permanent 'Text Fragment' link
+# to the current selection, and copies it into the user's clipboard.
+text-action-copy-link-to-highlight =
+    .label = ਲਿੰਕ ਨੂੰ ਹਾਈਲਾਈਟ ਲਈ ਕਾਪੀ ਕਰੋ
+# This combines "Copy Link to Highlight" with "Copy Clean Link", ie.
+# it creates a link with a text fragment to the current selection
+# and it strips trackers etc.
+text-action-copy-clean-link-to-highlight =
+    .label = ਸਾਫ਼ ਲਿੰਕ ਨੂੰ ਹਾਈਲਾਈਟ ਲਈ ਕਾਪੀ ਕਰੋ
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-highlight =
+    .label = ਹਾਈਲਾਈਟ ਨੂੰ ਹਟਾਓ
+# If the page has been loaded with a text fragment and text is
+# visibly highlighted, this removes any highlighted sections on the page.
+text-action-remove-all-highlights =
+    .label = ਸਭ ਹਾਈਲਾਈਟਾਂ ਨੂੰ ਹਟਾਓ

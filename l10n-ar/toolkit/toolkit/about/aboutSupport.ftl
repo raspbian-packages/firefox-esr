@@ -141,14 +141,6 @@ media-device-channels = القنوات
 media-device-rate = المعدل
 media-device-latency = الكمون
 
-## Codec support table
-
-
-## Media Content Decryption Modules (CDM)
-## See EME Spec for more explanation for following technical terms
-## https://w3c.github.io/encrypted-media/
-
-
 ##
 
 intl-title = التدويل و التوطين
@@ -338,15 +330,4 @@ policies-error = خطأ
 
 ## Printing section
 
-
-## Remote Settings sections
-
-
-## Normandy sections
-
-
-## Pointing devices
-
-
-## Content Analysis (DLP)
-
+support-printing-modified-settings = إعدادات الطباعة المعدّلة

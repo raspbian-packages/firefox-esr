@@ -149,9 +149,7 @@ main-context-menu-save-link-to-pocket =
     .label = { -pocket-brand-name } වෙත සබැඳිය සුරකින්න
     .accesskey = o
 
-## The access keys for "Copy Link" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-copy-email =
     .label = වි-තැපෑල පිටපත් කරන්න
@@ -162,11 +160,6 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = සබැඳියේ පිටපතක්
     .accesskey = L
-# This command copies the link, removing additional
-# query parameters used to track users across sites.
-main-context-menu-strip-on-share-link =
-    .label = අඩවියේ ලුහුබැඳීම් රහිතව සබැඳියේ පිටපතක්
-    .accesskey = u
 
 ## Media (video/audio) controls
 ##

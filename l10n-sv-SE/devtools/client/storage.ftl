@@ -71,6 +71,7 @@ storage-table-headers-cookies-expires = Upphör / Max-Age
 storage-table-headers-cookies-size = Storlek
 storage-table-headers-cookies-last-accessed = Senaste åtkomst
 storage-table-headers-cookies-creation-time = Skapad
+storage-table-headers-cookies-update-time = Uppdaterad
 storage-table-headers-cache-status = Status
 storage-table-headers-extension-storage-area = Förvaringsutrymme
 
@@ -107,3 +108,11 @@ storage-idb-delete-blocked = Databas “{ $dbName }” kommer att tas bort efter
 # Variables:
 #   $dbName (String) - Name of the database
 storage-idb-delete-error = Databas “{ $dbName }” kunde inte tas bort.
+# Error notification when cookie could not be created (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-create-error = Kaka kunde inte skapas: "{ $errorString }".
+# Error notification when cookie could not be edited (e.g. because it's invalid).
+# Variables:
+#   $errorString (String) - Platform error message
+storage-cookie-edit-error = Kakan kunde inte uppdateras: "{ $errorString }".
