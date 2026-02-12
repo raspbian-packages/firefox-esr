@@ -55,10 +55,10 @@ index eb5b22c0542..52b70b46d21 100644
      EXPORTS.aom += files['ARM64_EXPORTS']
      ASFLAGS += [
 diff --git a/media/libaom/sources.mozbuild b/media/libaom/sources.mozbuild
-index bbf76dee8e1..1bd6308910f 100644
+index ed66596a520..11258e19da2 100644
 --- a/media/libaom/sources.mozbuild
 +++ b/media/libaom/sources.mozbuild
-@@ -1,276 +1,6 @@
+@@ -1,291 +1,6 @@
  # This file is generated. Do not edit.
  
  files = {
@@ -78,7 +78,6 @@ index bbf76dee8e1..1bd6308910f 100644
 -    '../../third_party/aom/aom_ports/bitops.h',
 -    '../../third_party/aom/aom_ports/mem.h',
 -    '../../third_party/aom/aom_ports/sanitizer.h',
--    '../../third_party/aom/aom_scale/aom_scale.h',
 -    '../../third_party/aom/aom_scale/yv12config.h',
 -  ],
 -  'ARM_SOURCES': [
@@ -91,6 +90,7 @@ index bbf76dee8e1..1bd6308910f 100644
 -    '../../third_party/aom/aom_dsp/aom_dsp_rtcd.c',
 -    '../../third_party/aom/aom_dsp/arm/aom_convolve8_neon.c',
 -    '../../third_party/aom/aom_dsp/arm/aom_convolve_copy_neon.c',
+-    '../../third_party/aom/aom_dsp/arm/aom_scaled_convolve8_neon.c',
 -    '../../third_party/aom/aom_dsp/arm/avg_neon.c',
 -    '../../third_party/aom/aom_dsp/arm/avg_pred_neon.c',
 -    '../../third_party/aom/aom_dsp/arm/blend_a64_mask_neon.c',
@@ -117,7 +117,6 @@ index bbf76dee8e1..1bd6308910f 100644
 -    '../../third_party/aom/aom_dsp/arm/highbd_variance_neon.c',
 -    '../../third_party/aom/aom_dsp/arm/intrapred_neon.c',
 -    '../../third_party/aom/aom_dsp/arm/loopfilter_neon.c',
--    '../../third_party/aom/aom_dsp/arm/masked_sad4d_neon.c',
 -    '../../third_party/aom/aom_dsp/arm/masked_sad_neon.c',
 -    '../../third_party/aom/aom_dsp/arm/obmc_sad_neon.c',
 -    '../../third_party/aom/aom_dsp/arm/obmc_variance_neon.c',
@@ -169,8 +168,6 @@ index bbf76dee8e1..1bd6308910f 100644
 -    '../../third_party/aom/aom_mem/aom_mem.c',
 -    '../../third_party/aom/aom_ports/aarch32_cpudetect.c',
 -    '../../third_party/aom/aom_scale/aom_scale_rtcd.c',
--    '../../third_party/aom/aom_scale/generic/aom_scale.c',
--    '../../third_party/aom/aom_scale/generic/gen_scalers.c',
 -    '../../third_party/aom/aom_scale/generic/yv12config.c',
 -    '../../third_party/aom/aom_scale/generic/yv12extend.c',
 -    '../../third_party/aom/aom_util/aom_thread.c',
@@ -178,6 +175,7 @@ index bbf76dee8e1..1bd6308910f 100644
 -    '../../third_party/aom/av1/av1_cx_iface.c',
 -    '../../third_party/aom/av1/av1_dx_iface.c',
 -    '../../third_party/aom/av1/common/alloccommon.c',
+-    '../../third_party/aom/av1/common/arm/av1_convolve_horiz_rs_neon.c',
 -    '../../third_party/aom/av1/common/arm/av1_convolve_scale_neon.c',
 -    '../../third_party/aom/av1/common/arm/av1_inv_txfm_neon.c',
 -    '../../third_party/aom/av1/common/arm/av1_txfm_neon.c',
@@ -318,7 +316,6 @@ index bbf76dee8e1..1bd6308910f 100644
 -    '../../third_party/aom/av1/encoder/superres_scale.c',
 -    '../../third_party/aom/av1/encoder/svc_layercontext.c',
 -    '../../third_party/aom/av1/encoder/temporal_filter.c',
--    '../../third_party/aom/av1/encoder/thirdpass.c',
 -    '../../third_party/aom/av1/encoder/tokenize.c',
 -    '../../third_party/aom/av1/encoder/tpl_model.c',
 -    '../../third_party/aom/av1/encoder/tx_search.c',
@@ -332,14 +329,32 @@ index bbf76dee8e1..1bd6308910f 100644
 -    '../../third_party/aom/third_party/fastfeat/nonmax.c',
 -    '../../third_party/aom/third_party/vector/vector.c',
 -  ],
-   'ARM64_EXPORTS': [
-     '../../third_party/aom/aom/aom.h',
-     '../../third_party/aom/aom/aom_codec.h',
+-  'ARM64_EXPORTS': [
+-    '../../third_party/aom/aom/aom.h',
+-    '../../third_party/aom/aom/aom_codec.h',
+-    '../../third_party/aom/aom/aom_decoder.h',
+-    '../../third_party/aom/aom/aom_encoder.h',
+-    '../../third_party/aom/aom/aom_external_partition.h',
+-    '../../third_party/aom/aom/aom_frame_buffer.h',
+-    '../../third_party/aom/aom/aom_image.h',
+-    '../../third_party/aom/aom/aom_integer.h',
+-    '../../third_party/aom/aom/aomcx.h',
+-    '../../third_party/aom/aom/aomdx.h',
+-    '../../third_party/aom/aom_mem/aom_mem.h',
+-    '../../third_party/aom/aom_ports/aom_timer.h',
+-    '../../third_party/aom/aom_ports/bitops.h',
+-    '../../third_party/aom/aom_ports/mem.h',
+-    '../../third_party/aom/aom_ports/sanitizer.h',
+-    '../../third_party/aom/aom_scale/yv12config.h',
+-  ],
+   'ARM64_SOURCES': [
+     '../../third_party/aom/aom/src/aom_codec.c',
+     '../../third_party/aom/aom/src/aom_decoder.c',
 diff --git a/media/libvpx/sources.mozbuild b/media/libvpx/sources.mozbuild
-index 12c20ede9f3..77fd770abfe 100644
+index c2565c6d15b..298209f55e4 100644
 --- a/media/libvpx/sources.mozbuild
 +++ b/media/libvpx/sources.mozbuild
-@@ -1647,257 +1647,6 @@ files = {
+@@ -1659,257 +1659,6 @@ files = {
      'libvpx/vpx_scale/vpx_scale_rtcd.c',
      'libvpx/vpx_util/vpx_thread.c',
      'libvpx/vpx_util/vpx_write_yuv_frame.c',
@@ -622,31 +637,27 @@ index 7d2d694722e..6e879571ed0 100644
  
  // Currently we only have CPU detection for Linux via /proc/cpuinfo
 diff --git a/third_party/aom/aom_dsp/aom_dsp.cmake b/third_party/aom/aom_dsp/aom_dsp.cmake
-index 6d8e5a961b5..aaa73e20232 100644
+index 9ceb10990d0..58b609815b8 100644
 --- a/third_party/aom/aom_dsp/aom_dsp.cmake
 +++ b/third_party/aom/aom_dsp/aom_dsp.cmake
-@@ -106,15 +106,15 @@ list(APPEND AOM_DSP_COMMON_INTRIN_AVX2
-             "${AOM_ROOT}/third_party/SVT-AV1/EbMemory_SSE4_1.h"
-             "${AOM_ROOT}/third_party/SVT-AV1/synonyms.h")
+@@ -106,13 +106,13 @@ if(CONFIG_SVT_AV1)
+               "${AOM_ROOT}/third_party/SVT-AV1/synonyms.h")
+ endif()
  
 -list(APPEND AOM_DSP_COMMON_INTRIN_NEON
 -            "${AOM_ROOT}/aom_dsp/arm/aom_convolve_copy_neon.c"
 -            "${AOM_ROOT}/aom_dsp/arm/aom_convolve8_neon.c"
--            "${AOM_ROOT}/aom_dsp/arm/fwd_txfm_neon.c"
+-            "${AOM_ROOT}/aom_dsp/arm/aom_scaled_convolve8_neon.c"
 -            "${AOM_ROOT}/aom_dsp/arm/loopfilter_neon.c"
 -            "${AOM_ROOT}/aom_dsp/arm/intrapred_neon.c"
--            "${AOM_ROOT}/aom_dsp/arm/subtract_neon.c"
--            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c"
--            "${AOM_ROOT}/aom_dsp/arm/avg_pred_neon.c")
+-            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c")
 +#list(APPEND AOM_DSP_COMMON_INTRIN_NEON
 +#            "${AOM_ROOT}/aom_dsp/arm/aom_convolve_copy_neon.c"
 +#            "${AOM_ROOT}/aom_dsp/arm/aom_convolve8_neon.c"
-+#            "${AOM_ROOT}/aom_dsp/arm/fwd_txfm_neon.c"
++#            "${AOM_ROOT}/aom_dsp/arm/aom_scaled_convolve8_neon.c"
 +#            "${AOM_ROOT}/aom_dsp/arm/loopfilter_neon.c"
 +#            "${AOM_ROOT}/aom_dsp/arm/intrapred_neon.c"
-+#            "${AOM_ROOT}/aom_dsp/arm/subtract_neon.c"
-+#            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c"
-+#            "${AOM_ROOT}/aom_dsp/arm/avg_pred_neon.c")
++#            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c")
  
  list(APPEND AOM_DSP_COMMON_INTRIN_NEON_DOTPROD
-             "${AOM_ROOT}/aom_dsp/arm/aom_convolve8_neon_dotprod.c")
+             "${AOM_ROOT}/aom_dsp/arm/aom_convolve8_neon_dotprod.c"

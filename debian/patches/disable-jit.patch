@@ -1,45 +1,32 @@
 From: Peter Michael Green <plugwash@raspbian.org>
 Subject: Disable jit.
 
-
----
-
-Index: firefox-esr-128.11.0esr/js/moz.configure
-===================================================================
---- firefox-esr-128.11.0esr.orig/js/moz.configure
-+++ firefox-esr-128.11.0esr/js/moz.configure
-@@ -251,22 +251,22 @@ def jit_default(
-     enable_portable_baseline_interp,
-     enable_explicit_resource_management,
- ):
--    if enable_record_tuple:
--        return False
+diff --git a/js/moz.configure b/js/moz.configure
+index 7a9506d1fe3..55c3aa53d7d 100644
+--- a/js/moz.configure
++++ b/js/moz.configure
+@@ -237,17 +237,17 @@ set_config(
+ # =======================================================
+ @depends(target, "--enable-portable-baseline-interp")
+ def jit_default(target, enable_portable_baseline_interp):
 -    if enable_portable_baseline_interp:
--        return False
--    if enable_explicit_resource_management:
 -        return False
 -    if target.cpu in (
 -        "x86",
 -        "x86_64",
 -        "arm",
 -        "aarch64",
--        "mips32",
 -        "mips64",
 -        "loongarch64",
 -    ):
 -        return True
-+    #if enable_record_tuple:
-+    #    return False
 +    #if enable_portable_baseline_interp:
-+    #    return False
-+    #if enable_explicit_resource_management:
 +    #    return False
 +    #if target.cpu in (
 +    #    "x86",
 +    #    "x86_64",
 +    #    "arm",
 +    #    "aarch64",
-+    #    "mips32",
 +    #    "mips64",
 +    #    "loongarch64",
 +    #):
@@ -47,16 +34,16 @@ Index: firefox-esr-128.11.0esr/js/moz.configure
      return False
  
  
-Index: firefox-esr-128.11.0esr/js/src/jit/shared/AtomicOperations-shared-jit.cpp
-===================================================================
---- firefox-esr-128.11.0esr.orig/js/src/jit/shared/AtomicOperations-shared-jit.cpp
-+++ firefox-esr-128.11.0esr/js/src/jit/shared/AtomicOperations-shared-jit.cpp
-@@ -55,7 +55,8 @@ static bool UnalignedAccessesAreOK() {
+diff --git a/js/src/jit/shared/AtomicOperations-shared-jit.cpp b/js/src/jit/shared/AtomicOperations-shared-jit.cpp
+index d0a2f0c887c..fc495f1b6b7 100644
+--- a/js/src/jit/shared/AtomicOperations-shared-jit.cpp
++++ b/js/src/jit/shared/AtomicOperations-shared-jit.cpp
+@@ -63,7 +63,8 @@ static bool UnalignedAccessesAreOK() {
  #  if defined(__x86_64__) || defined(__i386__)
    return true;
  #  elif defined(__arm__)
--  return !HasAlignmentFault();
-+  //return !HasAlignmentFault();
+-  return !ARMFlags::HasAlignmentFault();
++  //return !ARMFlags::HasAlignmentFault();
 +  return false;
  #  elif defined(__aarch64__)
    // This is not necessarily true but it's the best guess right now.
