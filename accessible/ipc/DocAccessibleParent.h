@@ -325,11 +325,14 @@ class DocAccessibleParent : public RemoteAccessible,
   };
 
   RemoteAccessible* CreateAcc(const AccessibleData& aAccData);
-  void AttachChild(RemoteAccessible* aParent, uint32_t aIndex,
+  bool AttachChild(RemoteAccessible* aParent, uint32_t aIndex,
                    RemoteAccessible* aChild);
   [[nodiscard]] bool CheckDocTree() const;
   xpcAccessibleGeneric* GetXPCAccessible(RemoteAccessible* aProxy);
 
+  /**
+   * Fire an event to both OS and XPCOM consumers.
+   */
   void FireEvent(RemoteAccessible* aAcc, const uint32_t& aType);
 
   /**
@@ -365,9 +368,10 @@ class DocAccessibleParent : public RemoteAccessible,
   uint32_t mPendingShowIndex = 0;
   nsTHashSet<uint64_t> mMovingIDs;
   uint64_t mActorID;
-  bool mTopLevel;
-  bool mTopLevelInContentProcess;
-  bool mShutdown;
+  bool mTopLevel : 1;
+  bool mTopLevelInContentProcess : 1;
+  bool mShutdown : 1;
+  bool mIsInitialTreeDone : 1;
   RefPtr<dom::CanonicalBrowsingContext> mBrowsingContext;
 
   nsTHashSet<RefPtr<dom::BrowserBridgeParent>> mPendingOOPChildDocs;

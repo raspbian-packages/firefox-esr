@@ -7,10 +7,10 @@ Subject: Use the Mozilla Location Service key when the Google Key is not there
  1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/modules/libpref/init/all.js b/modules/libpref/init/all.js
-index c175e77..ccfa5cf 100644
+index 38c98b7..06ffa4b 100644
 --- a/modules/libpref/init/all.js
 +++ b/modules/libpref/init/all.js
-@@ -3072,7 +3072,12 @@ pref("network.tcp.keepalive.idle_time", 600); // seconds; 10 mins
+@@ -3090,7 +3090,12 @@ pref("network.tcp.keepalive.idle_time", 600); // seconds; 10 mins
  
  // All the Geolocation preferences are here.
  //
