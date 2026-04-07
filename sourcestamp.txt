@@ -1,0 +1,2 @@
+20260403140708
+https://hg.mozilla.org/releases/mozilla-esr140/rev/cca515379f569261e903f6e84dcdb0ecdbbe821e
