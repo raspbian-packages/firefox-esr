@@ -89,7 +89,8 @@ class CompositorBridgeParentBase : public PCompositorBridgeParent,
   friend class PCompositorBridgeParent;
 
  public:
-  explicit CompositorBridgeParentBase(CompositorManagerParent* aManager);
+  explicit CompositorBridgeParentBase(CompositorManagerParent* aManager,
+                                      uint32_t aNamespace);
 
   virtual bool SetTestSampleTime(const LayersId& aId, const TimeStamp& aTime) {
     return true;
@@ -147,6 +148,16 @@ class CompositorBridgeParentBase : public PCompositorBridgeParent,
   virtual void NotifyMemoryPressure() {}
   virtual void AccumulateMemoryReport(wr::MemoryReport*) {}
 
+  bool OwnsExternalImageId(const wr::ExternalImageId& aId) const;
+
+  CompositorManagerParent* GetCompositorManager() const {
+    return mCompositorManager;
+  }
+
+  uint32_t GetNamespace() const { return mNamespace; }
+
+  void SetNamespace(uint32_t aNamespace) { mNamespace = aNamespace; }
+
  protected:
   virtual ~CompositorBridgeParentBase();
 
@@ -161,7 +172,7 @@ class CompositorBridgeParentBase : public PCompositorBridgeParent,
   virtual PTextureParent* AllocPTextureParent(
       const SurfaceDescriptor& aSharedData, ReadLockDescriptor& aReadLock,
       const LayersBackend& aBackend, const TextureFlags& aTextureFlags,
-      const LayersId& id, const uint64_t& aSerial,
+      const uint64_t& aSerial,
       const MaybeExternalImageId& aExternalImageId) = 0;
   virtual bool DeallocPTextureParent(PTextureParent* aActor) = 0;
 
@@ -214,6 +225,7 @@ class CompositorBridgeParentBase : public PCompositorBridgeParent,
 
  protected:
   RefPtr<CompositorManagerParent> mCompositorManager;
+  uint32_t mNamespace;
 };
 
 MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(
@@ -236,6 +248,7 @@ class CompositorBridgeParent final : public CompositorBridgeParentBase,
   }
 
   explicit CompositorBridgeParent(CompositorManagerParent* aManager,
+                                  uint32_t aNamespace,
                                   CSSToLayoutDeviceScale aScale,
                                   const TimeDuration& aVsyncRate,
                                   const CompositorOptions& aOptions,
@@ -316,7 +329,7 @@ class CompositorBridgeParent final : public CompositorBridgeParentBase,
   PTextureParent* AllocPTextureParent(
       const SurfaceDescriptor& aSharedData, ReadLockDescriptor& aReadLock,
       const LayersBackend& aLayersBackend, const TextureFlags& aFlags,
-      const LayersId& aId, const uint64_t& aSerial,
+      const uint64_t& aSerial,
       const wr::MaybeExternalImageId& aExternalImageId) override;
   bool DeallocPTextureParent(PTextureParent* actor) override;
 

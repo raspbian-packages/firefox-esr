@@ -557,11 +557,11 @@ class BrowserParent final : public PBrowserParent,
   mozilla::ipc::IPCResult RecvUnlockNativePointer();
 
   /**
-   * The following Send*Event() marks aEvent as posted to remote process if
-   * it succeeded.  So, you can check the result with
-   * aEvent.HasBeenPostedToRemoteProcess().
+   * The following Send*Event() marks aMouseOrPointerEvent as posted to remote
+   * process if it succeeded.  So, you can check the result with
+   * aMouseOrPointerEvent.HasBeenPostedToRemoteProcess().
    */
-  void SendRealMouseEvent(WidgetMouseEvent& aEvent);
+  void SendRealMouseEvent(WidgetMouseEvent& aMouseOrPointerEvent);
 
   void SendRealDragEvent(WidgetDragEvent& aEvent, uint32_t aDragAction,
                          uint32_t aDropEffect, nsIPrincipal* aPrincipal,
@@ -590,6 +590,9 @@ class BrowserParent final : public PBrowserParent,
 
   bool SendSelectionEvent(mozilla::WidgetSelectionEvent& aEvent);
 
+  // TODO(bug 2028623): Mark this function and callers as MOZ_CAN_RUN_SCRIPT.
+  // Current callers hold a strong reference to `this` but MOZ_CAN_RUN_SCRIPT
+  // would enforce that via static analysis.
   MOZ_CAN_RUN_SCRIPT_BOUNDARY bool SendHandleTap(
       TapType aType, const LayoutDevicePoint& aPoint, Modifiers aModifiers,
       const ScrollableLayerGuid& aGuid, uint64_t aInputBlockId,

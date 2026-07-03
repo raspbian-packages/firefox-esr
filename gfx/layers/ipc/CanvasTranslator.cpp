@@ -1587,11 +1587,36 @@ CanvasTranslator::MaybeRecycleDataSurfaceForSurfaceDescriptor(
   if (usedDescriptor.isSome() && usedDescriptor.ref() == aSurfaceDescriptor) {
     MOZ_ASSERT(usedSurf);
     MOZ_ASSERT(usedWrapper);
-    MOZ_ASSERT(aTextureHost->GetSize() == usedSurf->GetSize());
 
-    // Since the data is the same as before, the DataSourceSurfaceWrapper can be
-    // reused.
-    return do_AddRef(usedWrapper);
+    auto* bufferTextureHost = aTextureHost->AsBufferTextureHost();
+    if (bufferTextureHost) {
+      if (usedSurf->GetType() == gfx::SurfaceType::DATA_ALIGNED) {
+        // Buffer of DataSourceSurface is owned by DataSourceSurface
+        MOZ_ASSERT(aTextureHost->GetSize() == usedSurf->GetSize());
+        if (aTextureHost->GetSize() == usedSurf->GetSize()) {
+          // Since the data is the same as before, the DataSourceSurfaceWrapper
+          // can be reused.
+          return do_AddRef(usedWrapper);
+        } else {
+          mUsedDataSurfaceForSurfaceDescriptor = nullptr;
+          mUsedWrapperForSurfaceDescriptor = nullptr;
+          mUsedSurfaceDescriptorForSurfaceDescriptor = Nothing();
+        }
+      } else {
+        // Buffer of DataSourceSurface is owned by BufferTextureHost
+        if (bufferTextureHost->GetBuffer() &&
+            bufferTextureHost->GetBuffer() == usedSurf->GetData() &&
+            aTextureHost->GetSize() == usedSurf->GetSize() &&
+            aTextureHost->GetFormat() == usedSurf->GetFormat()) {
+          // Since the data is the same as before, the DataSourceSurfaceWrapper
+          // can be reused.
+          return do_AddRef(usedWrapper);
+        }
+        mUsedDataSurfaceForSurfaceDescriptor = nullptr;
+        mUsedWrapperForSurfaceDescriptor = nullptr;
+        mUsedSurfaceDescriptorForSurfaceDescriptor = Nothing();
+      }
+    }
   }
 
   usedWrapper = nullptr;
@@ -1643,7 +1668,6 @@ CanvasTranslator::LookupSourceSurfaceFromSurfaceDescriptor(
   RefPtr<VideoBridgeParent> parent =
       VideoBridgeParent::GetSingleton(sdrd.source());
   if (!parent) {
-    MOZ_ASSERT_UNREACHABLE("unexpected to be called");
     gfxCriticalNote << "TexUnpackSurface failed to get VideoBridgeParent";
     return nullptr;
   }

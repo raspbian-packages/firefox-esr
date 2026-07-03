@@ -341,7 +341,7 @@ CompositorBridgeChild* WebRenderBridgeChild::GetCompositorBridgeChild() {
   return static_cast<CompositorBridgeChild*>(Manager());
 }
 
-TextureForwarder* WebRenderBridgeChild::GetTextureForwarder() {
+RefPtr<TextureForwarder> WebRenderBridgeChild::GetTextureForwarder() {
   return static_cast<TextureForwarder*>(GetCompositorBridgeChild());
 }
 
@@ -575,9 +575,8 @@ void WebRenderBridgeChild::DeallocResourceShmem(RefCountedShmem& aShm) {
 
 void WebRenderBridgeChild::Capture() { this->SendCapture(); }
 
-void WebRenderBridgeChild::StartCaptureSequence(const nsCString& aPath,
-                                                uint32_t aFlags) {
-  this->SendStartCaptureSequence(aPath, aFlags);
+void WebRenderBridgeChild::StartCaptureSequence(uint32_t aFlags) {
+  this->SendStartCaptureSequence(aFlags);
 }
 
 void WebRenderBridgeChild::StopCaptureSequence() {

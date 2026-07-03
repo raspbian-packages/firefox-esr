@@ -1451,7 +1451,8 @@ HTMLMediaElement::MediaLoadListener::OnStartRequest(nsIRequest* aRequest) {
       NS_SUCCEEDED(rv = element->InitializeDecoderForChannel(
                        channel, getter_AddRefs(mNextListener))) &&
       mNextListener) {
-    rv = mNextListener->OnStartRequest(aRequest);
+    nsCOMPtr<nsIStreamListener> nextListener = mNextListener;
+    rv = nextListener->OnStartRequest(aRequest);
   } else {
     // If InitializeDecoderForChannel() returned an error, fire a network error.
     if (NS_FAILED(rv) && !mNextListener) {
@@ -1471,8 +1472,8 @@ HTMLMediaElement::MediaLoadListener::OnStartRequest(nsIRequest* aRequest) {
 NS_IMETHODIMP
 HTMLMediaElement::MediaLoadListener::OnStopRequest(nsIRequest* aRequest,
                                                    nsresult aStatus) {
-  if (mNextListener) {
-    return mNextListener->OnStopRequest(aRequest, aStatus);
+  if (nsCOMPtr<nsIStreamListener> nextListener = mNextListener) {
+    return nextListener->OnStopRequest(aRequest, aStatus);
   }
   return NS_OK;
 }
@@ -1488,7 +1489,8 @@ HTMLMediaElement::MediaLoadListener::OnDataAvailable(nsIRequest* aRequest,
         "canceled this request");
     return NS_BINDING_ABORTED;
   }
-  return mNextListener->OnDataAvailable(aRequest, aStream, aOffset, aCount);
+  nsCOMPtr<nsIStreamListener> nextListener = mNextListener;
+  return nextListener->OnDataAvailable(aRequest, aStream, aOffset, aCount);
 }
 
 NS_IMETHODIMP
@@ -2161,6 +2163,7 @@ NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(HTMLMediaElement,
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mMediaKeys)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mIncomingMediaKeys)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mSelectedVideoStreamTrack)
+  tmp->mSelectedVideoStreamTrackGraph = nullptr;
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mPendingPlayPromises)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mSeekDOMPromise)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mSetMediaKeysDOMPromise)
@@ -2882,17 +2885,24 @@ void HTMLMediaElement::NotifyMediaTrackEnabled(dom::MediaTrack* aTrack) {
 
       mSelectedVideoStreamTrack = t->GetVideoStreamTrack();
       mSelectedVideoStreamTrack->AddPrincipalChangeObserver(this);
-      if (mMediaStreamRenderer) {
-        mMediaStreamRenderer->AddTrack(mSelectedVideoStreamTrack);
+      if (!mSelectedVideoStreamTrackGraph) {
+        mSelectedVideoStreamTrackGraph = mSelectedVideoStreamTrack->Graph();
       }
-      if (mSecondaryMediaStreamRenderer) {
-        mSecondaryMediaStreamRenderer->AddTrack(mSelectedVideoStreamTrack);
+      if (mSelectedVideoStreamTrackGraph ==
+          mSelectedVideoStreamTrack->Graph()) {
+        if (mMediaStreamRenderer) {
+          mMediaStreamRenderer->AddTrack(mSelectedVideoStreamTrack);
+        }
+        if (mSecondaryMediaStreamRenderer) {
+          mSecondaryMediaStreamRenderer->AddTrack(mSelectedVideoStreamTrack);
+        }
+        if (mMediaInfo.HasVideo()) {
+          mMediaInfo.mVideo.SetAlpha(mSelectedVideoStreamTrack->HasAlpha());
+        }
+        nsContentUtils::CombineResourcePrincipals(
+            &mSrcStreamVideoPrincipal,
+            mSelectedVideoStreamTrack->GetPrincipal());
       }
-      if (mMediaInfo.HasVideo()) {
-        mMediaInfo.mVideo.SetAlpha(mSelectedVideoStreamTrack->HasAlpha());
-      }
-      nsContentUtils::CombineResourcePrincipals(
-          &mSrcStreamVideoPrincipal, mSelectedVideoStreamTrack->GetPrincipal());
     }
   }
 
@@ -5484,6 +5494,7 @@ void HTMLMediaElement::EndSrcMediaStreamPlayback() {
     mSelectedVideoStreamTrack->RemovePrincipalChangeObserver(this);
   }
   mSelectedVideoStreamTrack = nullptr;
+  mSelectedVideoStreamTrackGraph = nullptr;
 
   MOZ_ASSERT_IF(mSecondaryMediaStreamRenderer,
                 !mMediaStreamRenderer == !mSecondaryMediaStreamRenderer);

@@ -146,7 +146,7 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
       const wr::RenderReasons& aReasons) override;
   mozilla::ipc::IPCResult RecvCapture() override;
   mozilla::ipc::IPCResult RecvStartCaptureSequence(
-      const nsACString& path, const uint32_t& aFlags) override;
+      const uint32_t& aFlags) override;
   mozilla::ipc::IPCResult RecvStopCaptureSequence() override;
   mozilla::ipc::IPCResult RecvSyncWithCompositor() override;
 
@@ -246,6 +246,11 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
 
   bool MatchesNamespace(const wr::FontInstanceKey& aFontKey) const {
     return aFontKey.mNamespace == mIdNamespace;
+  }
+
+  bool OwnsExternalImageId(const wr::ExternalImageId& aId) const {
+    return static_cast<uint32_t>(wr::AsUint64(aId) >> 32) ==
+           mIdNamespace.mHandle;
   }
 
   void FlushRendering(wr::RenderReasons aReasons, bool aBlocking);

@@ -44,7 +44,7 @@ VideoBridgeParent::VideoBridgeParent(VideoBridgeSource aSource)
   }
 }
 
-VideoBridgeParent::~VideoBridgeParent() {
+void VideoBridgeParent::UnregisterSingleton() {
   auto videoBridgeFromProcess = sVideoBridgeFromProcess.Lock();
   for (auto& bridgeParent : *videoBridgeFromProcess) {
     if (bridgeParent == this) {
@@ -52,6 +52,8 @@ VideoBridgeParent::~VideoBridgeParent() {
     }
   }
 }
+
+VideoBridgeParent::~VideoBridgeParent() { UnregisterSingleton(); }
 
 /* static */
 void VideoBridgeParent::Open(Endpoint<PVideoBridgeParent>&& aEndpoint,
@@ -80,7 +82,6 @@ RefPtr<VideoBridgeParent> VideoBridgeParent::GetSingleton(
     case VideoBridgeSource::RddProcess:
     case VideoBridgeSource::GpuProcess:
     case VideoBridgeSource::MFMediaEngineCDMProcess:
-      MOZ_ASSERT((*videoBridgeFromProcess)[aSource.value()]);
       return RefPtr{(*videoBridgeFromProcess)[aSource.value()]};
     default:
       MOZ_CRASH("Unhandled case");
@@ -99,16 +100,16 @@ already_AddRefed<TextureHost> VideoBridgeParent::LookupTextureAsync(
 
   MOZ_ASSERT(mCompositorThreadHolder->IsInThread());
 
-  auto* actor = mTextureMap[aSerial];
-  if (NS_WARN_IF(!actor)) {
+  const auto i = mTextureMap.find(aSerial);
+  if (NS_WARN_IF(i == mTextureMap.end())) {
     return nullptr;
   }
 
-  if (NS_WARN_IF(aContentId != TextureHost::GetTextureContentId(actor))) {
+  if (NS_WARN_IF(aContentId != i->second.mContentId)) {
     return nullptr;
   }
 
-  return do_AddRef(TextureHost::AsTextureHost(actor));
+  return do_AddRef(i->second.mTextureHost);
 }
 
 already_AddRefed<TextureHost> VideoBridgeParent::LookupTexture(
@@ -120,12 +121,12 @@ already_AddRefed<TextureHost> VideoBridgeParent::LookupTexture(
     return nullptr;
   }
 
-  auto* actor = mTextureMap[aSerial];
-  if (actor) {
-    if (NS_WARN_IF(aContentId != TextureHost::GetTextureContentId(actor))) {
+  auto i = mTextureMap.find(aSerial);
+  if (i != mTextureMap.end()) {
+    if (NS_WARN_IF(aContentId != i->second.mContentId)) {
       return nullptr;
     }
-    return do_AddRef(TextureHost::AsTextureHost(actor));
+    return do_AddRef(i->second.mTextureHost);
   }
 
   // We cannot block on the Compositor thread because that is the thread we get
@@ -166,16 +167,16 @@ already_AddRefed<TextureHost> VideoBridgeParent::LookupTexture(
     lock.Wait();
   }
 
-  actor = mTextureMap[aSerial];
-  if (!actor) {
+  i = mTextureMap.find(aSerial);
+  if (NS_WARN_IF(i == mTextureMap.end())) {
     return nullptr;
   }
 
-  if (NS_WARN_IF(aContentId != TextureHost::GetTextureContentId(actor))) {
+  if (NS_WARN_IF(aContentId != i->second.mContentId)) {
     return nullptr;
   }
 
-  return do_AddRef(TextureHost::AsTextureHost(actor));
+  return do_AddRef(i->second.mTextureHost);
 }
 
 void VideoBridgeParent::ActorDestroy(ActorDestroyReason aWhy) {
@@ -192,6 +193,8 @@ void VideoBridgeParent::ActorDestroy(ActorDestroyReason aWhy) {
     mClosed = true;
     mCompositorThreadHolder = nullptr;
   }
+
+  UnregisterSingleton();
 }
 
 /* static */
@@ -259,13 +262,21 @@ PTextureParent* VideoBridgeParent::AllocPTextureParent(
   }
 
   MonitorAutoLock lock(mMonitor);
-  mTextureMap[aSerial] = parent;
+  mTextureMap.insert(
+      {aSerial, {TextureHost::AsTextureHost(parent), aContentId}});
   return parent;
 }
 
 bool VideoBridgeParent::DeallocPTextureParent(PTextureParent* actor) {
-  MonitorAutoLock lock(mMonitor);
-  mTextureMap.erase(TextureHost::GetTextureSerial(actor));
+  RefPtr<TextureHost> textureHost;
+  {
+    MonitorAutoLock lock(mMonitor);
+    auto i = mTextureMap.find(TextureHost::GetTextureSerial(actor));
+    if (i != mTextureMap.end()) {
+      textureHost = std::move(i->second.mTextureHost);
+      mTextureMap.erase(i);
+    }
+  }
   return TextureHost::DestroyIPDLActor(actor);
 }
 

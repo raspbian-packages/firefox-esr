@@ -211,7 +211,7 @@ const char* const ApplicationReputationService::kBinaryFileExtensions[] = {
     ".class",  // Java
     //".cmd", exec // Windows executable
     //".com", exec // Windows executable
-    ".command",        // Mac script
+    //".command", exec  // Mac script
     ".configprofile",  // Configuration file for Apple systems
     ".cpgz",           // Mac archive
     ".cpi",            // Control Panel Item. Executable used for adding icons
@@ -434,7 +434,7 @@ const char* const ApplicationReputationService::kBinaryFileExtensions[] = {
     ".scptd",  // AppleScript
     //".scr", exec         // Windows
     //".sct", exec         // Windows shell
-    ".search-ms",  // Windows
+    //".search-ms", exec         // Windows Saved Search
     ".seplugin",   // AppleScript
     ".service",    // Systemd service unit file
     //".settingcontent-ms", exec // Windows settings

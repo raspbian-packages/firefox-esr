@@ -930,6 +930,8 @@ cairo_cff_font_read_private_dict (cairo_cff_font_t   *font,
     if (operand) {
         decode_integer (operand, &offset);
         p = ptr + offset;
+        if (unlikely (p < font->data || p > font->data_end))
+            return CAIRO_INT_STATUS_UNSUPPORTED;
         status = cff_index_read (local_sub_index, &p, font->data_end);
 	if (unlikely (status))
 	    return status;
@@ -1080,6 +1082,10 @@ cairo_cff_font_read_cid_fontdict (cairo_cff_font_t *font, unsigned char *ptr)
         }
         operand = decode_integer (operand, &size);
         decode_integer (operand, &offset);
+        if (unlikely (offset < 0 || (unsigned long)offset > font->data_length)) {
+            status = CAIRO_INT_STATUS_UNSUPPORTED;
+            goto fail;
+        }
         status = cff_dict_init (&font->fd_private_dict[i]);
 	if (unlikely (status))
             goto fail;
@@ -1199,6 +1205,8 @@ cairo_cff_font_read_top_dict (cairo_cff_font_t *font)
     operand = cff_dict_get_operands (font->top_dict, CHARSTRINGS_OP, &size);
     decode_integer (operand, &offset);
     p = font->data + offset;
+    if (unlikely (p < font->data || p > font->data_end))
+        return CAIRO_INT_STATUS_UNSUPPORTED;
     status = cff_index_read (&font->charstrings_index, &p, font->data_end);
     if (unlikely (status))
         goto fail;
@@ -1211,7 +1219,7 @@ cairo_cff_font_read_top_dict (cairo_cff_font_t *font)
 
 	 decode_integer (operand, &offset);
 	 font->charset = font->data + offset;
-	 if (font->charset >= font->data_end)
+	 if (unlikely (font->charset < font->data || font->charset >= font->data_end))
 	      return CAIRO_INT_STATUS_UNSUPPORTED;
     }
 
@@ -1221,27 +1229,36 @@ cairo_cff_font_read_top_dict (cairo_cff_font_t *font)
     if (font->is_cid) {
         operand = cff_dict_get_operands (font->top_dict, FDSELECT_OP, &size);
         decode_integer (operand, &offset);
-        status = cairo_cff_font_read_fdselect (font, font->data + offset);
+        p = font->data + offset;
+        if (unlikely (p < font->data || p > font->data_end))
+            return CAIRO_INT_STATUS_UNSUPPORTED;
+        status = cairo_cff_font_read_fdselect (font, p);
 	if (unlikely (status))
 	    goto fail;
 
         operand = cff_dict_get_operands (font->top_dict, FDARRAY_OP, &size);
         decode_integer (operand, &offset);
-        status = cairo_cff_font_read_cid_fontdict (font, font->data + offset);
+        p = font->data + offset;
+        if (unlikely (p < font->data || p > font->data_end))
+            return CAIRO_INT_STATUS_UNSUPPORTED;
+        status = cairo_cff_font_read_cid_fontdict (font, p);
 	if (unlikely (status))
 	    goto fail;
     } else {
         operand = cff_dict_get_operands (font->top_dict, PRIVATE_OP, &size);
         operand = decode_integer (operand, &size);
         decode_integer (operand, &offset);
-	status = cairo_cff_font_read_private_dict (font,
+        p = font->data + offset;
+        if (unlikely (p < font->data || p > font->data_end))
+            return CAIRO_INT_STATUS_UNSUPPORTED;
+        status = cairo_cff_font_read_private_dict (font,
                                                    font->private_dict,
 						   &font->local_sub_index,
 						   &font->local_sub_bias,
 						   &font->local_subs_used,
                                                    &font->default_width,
                                                    &font->nominal_width,
-						   font->data + offset,
+						   p,
 						   size);
 	if (unlikely (status))
 	    goto fail;
@@ -1413,7 +1430,11 @@ cairo_cff_font_subset_dict_string(cairo_cff_font_t   *font,
     if (sid < NUM_STD_STRINGS)
         return CAIRO_STATUS_SUCCESS;
 
-    element = _cairo_array_index (&font->strings_index, sid - NUM_STD_STRINGS);
+    sid -= NUM_STD_STRINGS;
+    if (sid >= (int)_cairo_array_num_elements (&font->strings_index))
+        return CAIRO_INT_STATUS_UNSUPPORTED;
+
+    element = _cairo_array_index (&font->strings_index, sid);
     sid = NUM_STD_STRINGS + _cairo_array_num_elements (&font->strings_subset_index);
     status = cff_index_append (&font->strings_subset_index, element->data, element->length);
     if (unlikely (status))
@@ -1599,7 +1620,7 @@ cairo_cff_parse_charstring (cairo_cff_font_t *font,
             if (font->is_cid) {
                 fd = font->fdselect[glyph_id];
 		sub_num = font->type2_stack_top_value + font->fd_local_sub_bias[fd];
-		if (sub_num >= (int)_cairo_array_num_elements(&font->fd_local_sub_index[fd]))
+		if (sub_num < 0 || sub_num >= (int)_cairo_array_num_elements(&font->fd_local_sub_index[fd]))
 		    return CAIRO_INT_STATUS_UNSUPPORTED;
                 element = _cairo_array_index (&font->fd_local_sub_index[fd], sub_num);
                 if (! font->fd_local_subs_used[fd][sub_num]) {
@@ -1608,7 +1629,7 @@ cairo_cff_parse_charstring (cairo_cff_font_t *font,
 		}
             } else {
 		sub_num = font->type2_stack_top_value + font->local_sub_bias;
-		if (sub_num >= (int)_cairo_array_num_elements(&font->local_sub_index))
+		if (sub_num < 0 || sub_num >= (int)_cairo_array_num_elements(&font->local_sub_index))
 		    return CAIRO_INT_STATUS_UNSUPPORTED;
                 element = _cairo_array_index (&font->local_sub_index, sub_num);
                 if (! font->local_subs_used[sub_num] ||
@@ -1634,7 +1655,7 @@ cairo_cff_parse_charstring (cairo_cff_font_t *font,
 		font->type2_seen_first_int = FALSE;
 
 	    sub_num = font->type2_stack_top_value + font->global_sub_bias;
-	    if (sub_num >= (int)_cairo_array_num_elements(&font->global_sub_index))
+	    if (sub_num < 0 || sub_num >= (int)_cairo_array_num_elements(&font->global_sub_index))
 		return CAIRO_INT_STATUS_UNSUPPORTED;
 	    element = _cairo_array_index (&font->global_sub_index, sub_num);
             if (! font->global_subs_used[sub_num] ||
@@ -1866,6 +1887,10 @@ cairo_cff_font_subset_fontdict (cairo_cff_font_t  *font)
 	}
 
         fd = font->fdselect[gid];
+        if (fd < 0 || (unsigned int) fd >= font->num_fontdicts) {
+            free (reverse_map);
+            return CAIRO_INT_STATUS_UNSUPPORTED;
+        }
         if (reverse_map[fd] < 0) {
             font->fd_subset_map[font->num_subset_fontdicts] = fd;
             reverse_map[fd] = font->num_subset_fontdicts++;

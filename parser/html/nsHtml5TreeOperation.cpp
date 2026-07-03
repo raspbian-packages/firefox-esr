@@ -280,6 +280,17 @@ nsresult nsHtml5TreeOperation::Append(nsIContent* aNode, nsIContent* aParent,
       return NS_OK;
     }
   }
+
+  if (MOZ_UNLIKELY(aNode->HasChildren()) &&
+      aParent->IsInclusiveDescendantOf(aNode)) {
+    // "If it is not possible to insert element at the adjusted insertion
+    // location, abort these steps."
+    // But see https://github.com/whatwg/html/issues/12494
+    return NS_OK;
+  }
+
+  Maybe<AutoSetThrowOnDynamicMarkupInsertionCounter>
+      throwOnDynamicMarkupInsertionCounter;
   Maybe<nsHtml5AutoPauseUpdate> autoPause;
   Maybe<AutoCEReaction> autoCEReaction;
   DocGroup* docGroup = aParent->OwnerDoc()->GetDocGroup();
@@ -292,6 +303,7 @@ nsresult nsHtml5TreeOperation::Append(nsIContent* aNode, nsIContent* aParent,
   if (autoCEReaction.isSome() && docGroup &&
       docGroup->CustomElementReactionsStack()
           ->IsElementQueuePushedForCurrentRecursionDepth()) {
+    throwOnDynamicMarkupInsertionCounter.emplace(aBuilder->GetDocument());
     autoPause.emplace(aBuilder);
   }
   return rv;
@@ -525,7 +537,7 @@ nsIContent* nsHtml5TreeOperation::CreateHTMLElement(
   if (customElementDefinition) {
     // This will cause custom element constructors to run.
     AutoSetThrowOnDynamicMarkupInsertionCounter
-        throwOnDynamicMarkupInsertionCounter(document);
+        throwOnDynamicMarkupInsertionCounter(aBuilder->GetDocument());
     nsHtml5AutoPauseUpdate autoPauseContentUpdate(aBuilder);
     {
       nsAutoMicroTask mt;
@@ -970,13 +982,22 @@ nsresult nsHtml5TreeOperation::Perform(nsHtml5TreeOpExecutor* aBuilder,
         return NS_OK;
       }
 
+      nsIContent* node = *aOperation.mTemplateNode;
+      nsIContent* host = *aOperation.mHost;
+
+      if (MOZ_UNLIKELY(node->GetParentNode())) {
+        Detach(node, mBuilder);
+        if (MOZ_UNLIKELY(node->GetParentNode())) {
+          // Can this happen? If it can, give up.
+          return NS_OK;
+        }
+      }
+
       // We failed to attach a new shadow root, so instead attach a template
       // element and return its content.
-      nsHtml5TreeOperation::Append(*aOperation.mTemplateNode, *aOperation.mHost,
-                                   mBuilder);
+      nsHtml5TreeOperation::Append(node, host, mBuilder);
       *aOperation.mFragHandle =
-          static_cast<HTMLTemplateElement*>(*aOperation.mTemplateNode)
-              ->Content();
+          static_cast<HTMLTemplateElement*>(node)->Content();
       nsContentUtils::LogSimpleConsoleError(
           u"Failed to attach Declarative Shadow DOM."_ns, "DOM"_ns,
           mBuilder->GetDocument()->IsInPrivateBrowsing(),
@@ -988,6 +1009,9 @@ nsresult nsHtml5TreeOperation::Perform(nsHtml5TreeOpExecutor* aBuilder,
       nsIContent* table = *(aOperation.mTable);
       nsIContent* stackParent = *(aOperation.mStackParent);
       nsIContent* fosterParent = GetFosterParent(table, stackParent);
+      if (fosterParent) {
+        mBuilder->HoldElement(do_AddRef(fosterParent));
+      }
       *aOperation.mParentHandle = fosterParent;
       return NS_OK;
     }

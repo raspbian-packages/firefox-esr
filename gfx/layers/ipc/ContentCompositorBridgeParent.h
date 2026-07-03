@@ -26,8 +26,10 @@ class ContentCompositorBridgeParent final : public CompositorBridgeParentBase {
   friend class CompositorBridgeParent;
 
  public:
-  explicit ContentCompositorBridgeParent(CompositorManagerParent* aManager)
-      : CompositorBridgeParentBase(aManager), mDestroyCalled(false) {}
+  explicit ContentCompositorBridgeParent(CompositorManagerParent* aManager,
+                                         uint32_t aNamespace)
+      : CompositorBridgeParentBase(aManager, aNamespace),
+        mDestroyCalled(false) {}
 
   void ActorDestroy(ActorDestroyReason aWhy) override;
 
@@ -122,7 +124,7 @@ class ContentCompositorBridgeParent final : public CompositorBridgeParentBase {
   PTextureParent* AllocPTextureParent(
       const SurfaceDescriptor& aSharedData, ReadLockDescriptor& aReadLock,
       const LayersBackend& aLayersBackend, const TextureFlags& aFlags,
-      const LayersId& aId, const uint64_t& aSerial,
+      const uint64_t& aSerial,
       const wr::MaybeExternalImageId& aExternalImageId) override;
 
   bool DeallocPTextureParent(PTextureParent* actor) override;

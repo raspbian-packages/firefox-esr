@@ -41,9 +41,6 @@ namespace mozilla::widget {
 class TSFEmptyTextStore;
 class TSFTextStore;
 class TSFTextStoreBase;
-struct IMENotificationRequests;
-struct InputContext;
-struct InputContextAction;
 
 class TSFUtils final {
  public:
@@ -250,6 +247,12 @@ class TSFUtils final {
         .acpStart = 0,
         .acpEnd = 0,
         .style = {.ase = TS_AE_NONE, .fInterimChar = FALSE}};
+  }
+
+  static TS_SELECTION_ACP SelectionACPCollapsedAtStart() {
+    return TS_SELECTION_ACP{.acpStart = 0,
+                            .acpEnd = 0,
+                            .style = {.ase = TS_AE_END, .fInterimChar = FALSE}};
   }
 
  private:

@@ -2121,7 +2121,33 @@ class CGDefineHTMLAttributeSlots(CGThing):
 
 
 def finalizeHook(descriptor, gcx, obj):
+    def cleanUpObservableArrayProxy(descriptor, obj):
+        ret = ""
+        parent = descriptor.interface.parent
+        if parent:
+            ret += cleanUpObservableArrayProxy(
+                descriptor.getDescriptor(parent.identifier.name), obj
+            )
+        for m in descriptor.interface.members:
+            if m.isAttr() and m.type.isObservableArray():
+                ret += fill(
+                    """
+                    {
+                      JS::Value val = JS::GetReservedSlot(${obj}, ${slot});
+                      if (!val.isUndefined()) {
+                        JSObject* obj = &val.toObject();
+                        js::SetProxyReservedSlot(obj, OBSERVABLE_ARRAY_DOM_INTERFACE_SLOT, JS::UndefinedValue());
+                      }
+                    }
+                    """,
+                    obj=obj,
+                    slot=memberReservedSlot(m, descriptor),
+                )
+        return ret
+
     finalize = "JS::SetReservedSlot(%s, DOM_OBJECT_SLOT, JS::UndefinedValue());\n" % obj
+    finalize += cleanUpObservableArrayProxy(descriptor, obj)
+
     if descriptor.interface.getExtendedAttribute("LegacyOverrideBuiltIns"):
         finalize += fill(
             """
@@ -2145,20 +2171,6 @@ def finalizeHook(descriptor, gcx, obj):
             """,
             obj=obj,
         )
-    for m in descriptor.interface.members:
-        if m.isAttr() and m.type.isObservableArray():
-            finalize += fill(
-                """
-                {
-                  JS::Value val = JS::GetReservedSlot(obj, ${slot});
-                  if (!val.isUndefined()) {
-                    JSObject* obj = &val.toObject();
-                    js::SetProxyReservedSlot(obj, OBSERVABLE_ARRAY_DOM_INTERFACE_SLOT, JS::UndefinedValue());
-                  }
-                }
-                """,
-                slot=memberReservedSlot(m, descriptor),
-            )
     iface = getReflectedHTMLAttributesIface(descriptor)
     if iface:
         finalize += "%s::ReflectedHTMLAttributeSlots::Finalize(%s);\n" % (
@@ -4683,7 +4695,7 @@ class CGWrapWithCacheMethod(CGAbstractMethod):
         failureCode = dedent(
             """
             aCache->ReleaseWrapper(aObject);
-            aCache->ClearWrapper();
+            aCache->ClearWrapperOnWrapFailure();
             return false;
             """
         )
@@ -23213,7 +23225,9 @@ class CGIterableMethodGenerator(CGGeneric):
         CGGeneric.__init__(self, createIterator)
 
 
-def getObservableArrayBackingObject(descriptor, attr, errorReturn="return false;\n"):
+def getObservableArrayBackingObject(
+    descriptor, attr, objName="obj", errorReturn="return false;\n"
+):
     """
     Generate code to get/create a JS backing list for an observableArray attribute
     from the declaration slot.
@@ -23228,7 +23242,7 @@ def getObservableArrayBackingObject(descriptor, attr, errorReturn="return false;
         """
         JS::Rooted<JSObject*> backingObj(cx);
         bool created = false;
-        if (!GetObservableArrayBackingObject(cx, obj, ${slot},
+        if (!GetObservableArrayBackingObject(cx, ${objName}, ${slot},
                 &backingObj, &created, ${namespace}::ObservableArrayProxyHandler::getInstance(),
                 self)) {
           $*{errorReturn}
@@ -23237,8 +23251,9 @@ def getObservableArrayBackingObject(descriptor, attr, errorReturn="return false;
           PreserveWrapper(self);
         }
         """,
-        namespace=toBindingNamespace(MakeNativeName(attr.identifier.name)),
+        objName=objName,
         slot=memberReservedSlot(attr, descriptor),
+        namespace=toBindingNamespace(MakeNativeName(attr.identifier.name)),
         errorReturn=errorReturn,
         selfType=descriptor.nativeType,
     )
@@ -23350,12 +23365,18 @@ class CGObservableArrayProxyHandler_callback(ClassMethod):
             $*{convertType}
 
             $*{preCallback}
-            JS::Value val = js::GetProxyReservedSlot(aProxy, OBSERVABLE_ARRAY_DOM_INTERFACE_SLOT);
-            auto* interface = static_cast<${ifaceType}*>(val.toPrivate());
-            MOZ_ASSERT(interface);
+            const JS::Value& val = js::GetProxyReservedSlot(aProxy, OBSERVABLE_ARRAY_DOM_INTERFACE_SLOT);
+            if (MOZ_LIKELY(!val.isUndefined())) {
+              auto* interface = static_cast<${ifaceType}*>(val.toPrivate());
+              MOZ_ASSERT(interface);
 
-            ErrorResult rv;
-            MOZ_KnownLive(interface)->${methodName}(${callbackArgs});
+              ErrorResult rv;
+              MOZ_KnownLive(interface)->${methodName}(${callbackArgs});
+              if (rv.MaybeSetPendingException(cx)) {
+                return false;
+              }
+            }
+
             $*{postCallback}
             """,
             preConversion=self.preConversion(),
@@ -23399,7 +23420,7 @@ class CGObservableArrayProxyHandler_OnDeleteItem(
     def postCallback(self):
         return dedent(
             """
-            return !rv.MaybeSetPendingException(cx);
+            return true;
             """
         )
 
@@ -23464,10 +23485,6 @@ class CGObservableArrayProxyHandler_SetIndexedValue(
     def postCallback(self):
         return dedent(
             """
-            if (rv.MaybeSetPendingException(cx)) {
-              return false;
-            }
-
             if (!JS_SetElement(aCx, aBackingList, aIndex, aValue)) {
               return false;
             }
@@ -23530,7 +23547,9 @@ class CGObservableArraySetterGenerator(CGGeneric):
     def __init__(self, descriptor, attr):
         assert attr.isAttr()
         assert attr.type.isObservableArray()
-        getBackingObject = getObservableArrayBackingObject(descriptor, attr)
+        getBackingObject = getObservableArrayBackingObject(
+            descriptor, attr, objName="unwrappedObj"
+        )
         setElement = dedent(
             """
             if (!JS_SetElement(cx, backingObj, i, val)) {
@@ -23557,15 +23576,22 @@ class CGObservableArraySetterGenerator(CGGeneric):
                   return false;
                 }
 
-                ${getBackingObject}
-                const ObservableArrayProxyHandler* handler = GetObservableArrayProxyHandler(backingObj);
-                if (!handler->SetLength(cx, backingObj, 0)) {
-                  return false;
-                }
+                JS::Rooted<JSObject*> unwrappedObj(cx, js::UncheckedUnwrap(obj, /* stopAtWindowProxy = */ false));
+                MOZ_ASSERT(IsDOMObject(unwrappedObj));
+                {
+                  JSAutoRealm ar(cx, unwrappedObj);
 
-                JS::Rooted<JS::Value> val(cx);
-                for (size_t i = 0; i < arg0.Length(); i++) {
-                  $*{conversion}
+                  $*{getBackingObject}
+
+                  const ObservableArrayProxyHandler* handler = GetObservableArrayProxyHandler(backingObj);
+                  if (!handler->SetLength(cx, backingObj, 0)) {
+                    return false;
+                  }
+
+                  JS::Rooted<JS::Value> val(cx);
+                  for (size_t i = 0; i < arg0.Length(); i++) {
+                    $*{conversion}
+                  }
                 }
                 """,
                 conversion=conversion,
@@ -23611,7 +23637,7 @@ class CGObservableArrayHelperFunctionGenerator(CGHelperFunctionGenerator):
                     getObservableArrayBackingObject(
                         descriptor,
                         attr,
-                        dedent(
+                        errorReturn=dedent(
                             """
                             aRv.Throw(NS_ERROR_UNEXPECTED);
                             return%s;

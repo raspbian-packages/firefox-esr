@@ -53,6 +53,7 @@ const char* const sExecutableExts[] = {
   ".chm",
   ".cmd",
   ".com",
+  ".command",     // Mac script
   ".cpl",
   ".crt",
   ".der",
@@ -115,6 +116,7 @@ const char* const sExecutableExts[] = {
   ".scf",         // Windows explorer command
   ".scr",
   ".sct",
+  ".search-ms",  // Windows Saved Search
   ".settingcontent-ms",
   ".shb",
   ".shs",

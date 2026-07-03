@@ -770,8 +770,8 @@ void HttpChannelChild::DoOnStatus(nsIRequest* aRequest, nsresult status) {
       !(mLoadFlags & LOAD_BACKGROUND)) {
     nsAutoCString host;
     mURI->GetHost(host);
-    mProgressSink->OnStatus(aRequest, status,
-                            NS_ConvertUTF8toUTF16(host).get());
+    nsCOMPtr<nsIProgressEventSink> progressSink(mProgressSink);
+    progressSink->OnStatus(aRequest, status, NS_ConvertUTF8toUTF16(host).get());
   }
 }
 
@@ -791,7 +791,8 @@ void HttpChannelChild::DoOnProgress(nsIRequest* aRequest, int64_t progress,
     // OnProgress
     //
     if (progress > 0) {
-      mProgressSink->OnProgress(aRequest, progress, progressMax);
+      nsCOMPtr<nsIProgressEventSink> progressSink(mProgressSink);
+      progressSink->OnProgress(aRequest, progress, progressMax);
     }
   }
 
@@ -3264,6 +3265,13 @@ void HttpChannelChild::ActorDestroy(ActorDestroyReason aWhy) {
     mIPCActorDeleted = true;
     mCanceled = true;
   }
+
+  // Any queued OnStartRequest/OnDataAvailable/OnStopRequest events are safe to
+  // discard: in the non-Deletion path HandleAsyncAbort() has already called
+  // DoNotifyListener() to deliver OnStart+OnStop to the consumer, so the
+  // queued events would be no-ops (guarded by mIPCActorDeleted/mCanceled).
+  // In the Deletion path the channel completed normally so the queue is empty.
+  mEventQ->DiscardQueuedEvents();
 }
 
 mozilla::ipc::IPCResult HttpChannelChild::RecvLogBlockedCORSRequest(

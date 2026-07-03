@@ -1,4 +1,4 @@
-firefox-esr (140.9.0esr-1+rpi1) forky-staging; urgency=medium
+firefox-esr (140.12.0esr-1+rpi1) forky-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -35,7 +35,71 @@ firefox-esr (140.9.0esr-1+rpi1) forky-staging; urgency=medium
   * Update rust target hack to accomodate changes in upstream target selection.
   * Workaround asm bug with bx lr (see: https://github.com/EmbarkStudios/crash-handling/issues/5)
 
- -- Raspbian forward porter <root@raspbian.org>  Sun, 05 Apr 2026 13:30:38 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Fri, 03 Jul 2026 17:06:46 +0000
+
+firefox-esr (140.12.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2026-58, also known as:
+    CVE-2026-12289, CVE-2026-12290, CVE-2026-12291, CVE-2026-12292,
+    CVE-2026-12294, CVE-2026-12295, CVE-2026-12298, CVE-2026-12296,
+    CVE-2026-12297, CVE-2026-12299, CVE-2026-12329, CVE-2026-12302,
+    CVE-2026-12304, CVE-2026-12305, CVE-2026-12306, CVE-2026-12307,
+    CVE-2026-12308, CVE-2026-12309, CVE-2026-12310, CVE-2026-12311,
+    CVE-2026-12312, CVE-2026-12313, CVE-2026-12314, CVE-2026-12315,
+    CVE-2026-12330, CVE-2026-12324, CVE-2026-12325, CVE-2026-12327,
+    CVE-2026-12328.
+
+ -- Mike Hommey <glandium@debian.org>  Tue, 16 Jun 2026 08:51:26 +0900
+
+firefox-esr (140.11.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2026-48, also known as:
+    CVE-2026-8946, CVE-2026-8388, CVE-2026-8947, CVE-2026-8391,
+    CVE-2026-8401, CVE-2026-8950, CVE-2026-8953, CVE-2026-8954,
+    CVE-2026-8955, CVE-2026-8956, CVE-2026-8957, CVE-2026-8958,
+    CVE-2026-8961, CVE-2026-8962, CVE-2026-8968, CVE-2026-8970,
+    CVE-2026-8974, CVE-2026-8975.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 20 May 2026 07:48:20 +0900
+
+firefox-esr (140.10.2esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2026-41, also known as:
+    CVE-2026-8090, CVE-2026-8094, CVE-2026-8092.
+
+ -- Mike Hommey <glandium@debian.org>  Fri, 08 May 2026 08:22:51 +0900
+
+firefox-esr (140.10.1esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2026-36, also known as:
+    CVE-2026-7320, CVE-2026-7321, CVE-2026-7322, CVE-2026-7323.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 29 Apr 2026 07:57:41 +0900
+
+firefox-esr (140.10.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2026-32, also known as:
+    CVE-2026-6746, CVE-2026-6747, CVE-2026-6748, CVE-2026-6749,
+    CVE-2026-6750, CVE-2026-6751, CVE-2026-6752, CVE-2026-6753,
+    CVE-2026-6754, CVE-2026-6757, CVE-2026-6761, CVE-2026-6762,
+    CVE-2026-6763, CVE-2026-6764, CVE-2026-6765, CVE-2026-6769,
+    CVE-2026-6770, CVE-2026-6771, CVE-2026-6776, CVE-2026-6785,
+    CVE-2026-6786.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 22 Apr 2026 14:21:00 +0900
+
+firefox-esr (140.9.1esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2026-27, also known as:
+    CVE-2026-5732, CVE-2026-5731, CVE-2026-5734.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 08 Apr 2026 07:01:40 +0900
 
 firefox-esr (140.9.0esr-1) unstable; urgency=medium
 

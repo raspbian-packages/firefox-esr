@@ -587,9 +587,13 @@ FFmpegVideoDecoder<LIBAV_VER>::FFmpegVideoDecoder(
 }
 
 FFmpegVideoDecoder<LIBAV_VER>::~FFmpegVideoDecoder() {
-#ifdef CUSTOMIZED_BUFFER_ALLOCATION
-  MOZ_DIAGNOSTIC_ASSERT(mAllocatedImages.IsEmpty(),
-                        "Should release all shmem buffers before destroy!");
+#ifdef CUSTOMIZED_BUFFER_ALLOCATION_ASSERT_ENABLED
+  // ffmpeg should have cleared all of its strong references to the decoded data
+  // buffers.
+  if (mImageTracker) {
+    MOZ_DIAGNOSTIC_ASSERT(mImageTracker->IsEmpty(),
+                          "Should release all shmem buffers before destroy!");
+  }
 #endif
 }
 
@@ -676,9 +680,9 @@ static int GetVideoBufferWrapper(struct AVCodecContext* aCodecContext,
 
 static void ReleaseVideoBufferWrapper(void* opaque, uint8_t* data) {
   if (opaque) {
-    FFMPEGV_LOG("ReleaseVideoBufferWrapper: PlanarYCbCrImage=%p", opaque);
-    RefPtr<ImageBufferWrapper> image = static_cast<ImageBufferWrapper*>(opaque);
-    image->ReleaseBuffer();
+    FFMPEGV_LOG("ReleaseVideoBufferWrapper: ImageBufferWrapper=%p", opaque);
+    RefPtr image = dont_AddRef(static_cast<ImageBufferWrapper*>(opaque));
+    image->StopTracking();
   }
 }
 
@@ -906,9 +910,20 @@ int FFmpegVideoDecoder<LIBAV_VER>::GetVideoBuffer(
 #  endif
   MOZ_ASSERT(aFrame->data[0] && aFrame->data[1] && aFrame->data[2]);
 
-  // This will hold a reference to image, and the reference would be dropped
-  // when ffmpeg tells us that the buffer is no longer needed.
-  auto imageWrapper = MakeRefPtr<ImageBufferWrapper>(image.get(), this);
+#  ifdef CUSTOMIZED_BUFFER_ALLOCATION_ASSERT_ENABLED
+  if (!mImageTracker) {
+    mImageTracker = MakeRefPtr<ImageBufferTracker>();
+  }
+  auto imageWrapper =
+      MakeRefPtr<ImageBufferWrapper>(std::move(image), mImageTracker);
+#  else
+  auto imageWrapper = MakeRefPtr<ImageBufferWrapper>(std::move(image));
+#  endif
+
+  // This will hold a strong reference to imageWrapper, and the reference will
+  // be dropped when ffmpeg tells us that the buffer is no longer needed. Since
+  // the wrapper keeps image alive, it will prevent recycling until ffmpeg is
+  // done with the buffer.
   aFrame->buf[0] =
       mLib->av_buffer_create(aFrame->data[0], dataSize.value(),
                              ReleaseVideoBufferWrapper, imageWrapper.get(), 0);
@@ -917,10 +932,12 @@ int FFmpegVideoDecoder<LIBAV_VER>::GetVideoBuffer(
     return AVERROR(EINVAL);
   }
 
+  auto* imageWrapperPtr = imageWrapper.forget().take();
+  imageWrapperPtr->StartTracking();
+
   FFMPEG_LOG("Created av buffer, buf=%p, data=%p, image=%p, sz=%d",
-             aFrame->buf[0], aFrame->data[0], imageWrapper.get(),
+             aFrame->buf[0], aFrame->data[0], imageWrapperPtr,
              dataSize.value());
-  mAllocatedImages.Insert(imageWrapper.get());
   mIsUsingShmemBufferForDecode = Some(true);
   return 0;
 }
@@ -1077,6 +1094,14 @@ void FFmpegVideoDecoder<LIBAV_VER>::DecodeStats::UpdateDecodeTimes(
 }
 #endif
 
+static bool IsKeyFrame(const AVFrame* aFrame) {
+#if LIBAVCODEC_VERSION_MAJOR > 61
+  return !!(aFrame->flags & AV_FRAME_FLAG_KEY);
+#else
+  return !!aFrame->key_frame;
+#endif
+}
+
 MediaResult FFmpegVideoDecoder<LIBAV_VER>::DoDecode(
     MediaRawData* aSample, uint8_t* aData, int aSize, bool* aGotFrame,
     MediaDataDecoder::DecodedData& aResults) {
@@ -1191,6 +1216,12 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::DoDecode(
 
     mDecodeStats.UpdateDecodeTimes(mFrame);
 
+    int64_t fpos =
+#  if LIBAVCODEC_VERSION_MAJOR > 61
+        packet->pos;
+#  else
+        mFrame->pkt_pos;
+#  endif
     MediaResult rv;
 #  ifdef MOZ_USE_HWDECODE
     if (IsHardwareAccelerated()) {
@@ -1205,11 +1236,11 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::DoDecode(
             RESULT_DETAIL("HW decoding is slow, switching back to SW decode"));
       }
       if (mUsingV4L2) {
-        rv = CreateImageV4L2(mFrame->pkt_pos, GetFramePts(mFrame),
-                             Duration(mFrame), aResults);
+        rv = CreateImageV4L2(fpos, GetFramePts(mFrame), Duration(mFrame),
+                             aResults);
       } else {
-        rv = CreateImageVAAPI(mFrame->pkt_pos, GetFramePts(mFrame),
-                              Duration(mFrame), aResults);
+        rv = CreateImageVAAPI(fpos, GetFramePts(mFrame), Duration(mFrame),
+                              aResults);
       }
 
       // If VA-API/V4L2 playback failed, just quit. Decoder is going to be
@@ -1221,8 +1252,8 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::DoDecode(
         return rv;
       }
 #    elif defined(MOZ_ENABLE_D3D11VA)
-      rv = CreateImageD3D11(mFrame->pkt_pos, GetFramePts(mFrame),
-                            Duration(mFrame), aResults);
+      rv = CreateImageD3D11(fpos, GetFramePts(mFrame), Duration(mFrame),
+                            aResults);
 #    else
       return MediaResult(NS_ERROR_DOM_MEDIA_DECODE_ERR,
                          RESULT_DETAIL("No HW decoding implementation!"));
@@ -1230,8 +1261,7 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::DoDecode(
     } else
 #  endif
     {
-      rv = CreateImage(mFrame->pkt_pos, GetFramePts(mFrame), Duration(mFrame),
-                       aResults);
+      rv = CreateImage(fpos, GetFramePts(mFrame), Duration(mFrame), aResults);
     }
     if (NS_FAILED(rv)) {
       return rv;
@@ -1568,14 +1598,14 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::CreateImage(
 #  endif
   if (mIsUsingShmemBufferForDecode && *mIsUsingShmemBufferForDecode &&
       !requiresCopy) {
-    RefPtr<ImageBufferWrapper> wrapper = static_cast<ImageBufferWrapper*>(
+    auto* wrapper = static_cast<ImageBufferWrapper*>(
         mLib->av_buffer_get_opaque(mFrame->buf[0]));
     MOZ_ASSERT(wrapper);
-    FFMPEG_LOGV("Create a video data from a shmem image=%p", wrapper.get());
+    FFMPEG_LOGV("Create a video data from a shmem image=%p", wrapper);
     v = VideoData::CreateFromImage(
         mInfo.mDisplay, aOffset, TimeUnit::FromMicroseconds(aPts),
         TimeUnit::FromMicroseconds(aDuration), wrapper->AsImage(),
-        !!mFrame->key_frame, TimeUnit::FromMicroseconds(-1));
+        IsKeyFrame(mFrame), TimeUnit::FromMicroseconds(-1));
   }
 #endif
 #if defined(MOZ_WIDGET_GTK) && defined(MOZ_USE_HWDECODE)
@@ -1602,7 +1632,7 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::CreateImage(
         v = VideoData::CreateFromImage(
             mInfo.mDisplay, aOffset, TimeUnit::FromMicroseconds(aPts),
             TimeUnit::FromMicroseconds(aDuration), surface->GetAsImage(),
-            !!mFrame->key_frame, TimeUnit::FromMicroseconds(-1));
+            IsKeyFrame(mFrame), TimeUnit::FromMicroseconds(-1));
       } else {
         FFMPEG_LOG("Failed to uploaded video data to DMABuf");
       }
@@ -1615,7 +1645,7 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::CreateImage(
     Result<already_AddRefed<VideoData>, MediaResult> r =
         VideoData::CreateAndCopyData(
             mInfo, mImageContainer, aOffset, TimeUnit::FromMicroseconds(aPts),
-            TimeUnit::FromMicroseconds(aDuration), b, !!mFrame->key_frame,
+            TimeUnit::FromMicroseconds(aDuration), b, IsKeyFrame(mFrame),
             TimeUnit::FromMicroseconds(-1),
             mInfo.ScaledImageRect(mFrame->width, mFrame->height),
             mImageAllocator);
@@ -1688,7 +1718,7 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::CreateImageVAAPI(
   RefPtr<VideoData> vp = VideoData::CreateFromImage(
       mInfo.mDisplay, aOffset, TimeUnit::FromMicroseconds(aPts),
       TimeUnit::FromMicroseconds(aDuration), surface->GetAsImage(),
-      !!mFrame->key_frame, TimeUnit::FromMicroseconds(-1));
+      IsKeyFrame(mFrame), TimeUnit::FromMicroseconds(-1));
 
   if (!vp) {
     return MediaResult(NS_ERROR_DOM_MEDIA_DECODE_ERR,
@@ -1737,7 +1767,7 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::CreateImageV4L2(
   RefPtr<VideoData> vp = VideoData::CreateFromImage(
       mInfo.mDisplay, aOffset, TimeUnit::FromMicroseconds(aPts),
       TimeUnit::FromMicroseconds(aDuration), surface->GetAsImage(),
-      !!mFrame->key_frame, TimeUnit::FromMicroseconds(-1));
+      IsKeyFrame(mFrame), TimeUnit::FromMicroseconds(-1));
 
   if (!vp) {
     return MediaResult(NS_ERROR_DOM_MEDIA_DECODE_ERR,
@@ -2175,7 +2205,7 @@ MediaResult FFmpegVideoDecoder<LIBAV_VER>::CreateImageD3D11(
 
   RefPtr<VideoData> v = VideoData::CreateFromImage(
       mInfo.mDisplay, aOffset, TimeUnit::FromMicroseconds(aPts),
-      TimeUnit::FromMicroseconds(aDuration), image, !!mFrame->key_frame,
+      TimeUnit::FromMicroseconds(aDuration), image, IsKeyFrame(mFrame),
       TimeUnit::FromMicroseconds(-1));
   if (!v) {
     nsPrintfCString msg("D3D image allocation error");
