@@ -1,0 +1,36 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+report-broken-site-mainview-title = Eman hondatutako gunearen berri
+report-broken-site-panel-header =
+    .label = Eman hondatutako gunearen berri
+    .title = Eman hondatutako gunearen berri
+report-broken-site-panel-url = URLa
+report-broken-site-panel-reason-label = Zer dago hondatuta?
+report-broken-site-panel-reason-optional-label = Zer dago hondatuta? (aukerakoa)
+report-broken-site-panel-reason-choose =
+    .label = Aukeratu arrazoia
+report-broken-site-panel-reason-load =
+    .label = Gunea ez da kargatzen
+report-broken-site-panel-reason-slow2 =
+    .label = Gunea mantso doa
+report-broken-site-panel-reason-content2 =
+    .label = Edukia falta da
+report-broken-site-panel-reason-other =
+    .label = Beste zerbait
+report-broken-site-panel-description-label = Azaldu arazoa
+report-broken-site-panel-description-optional-label = Azaldu arazoa (aukerakoa)
+report-broken-site-panel-send-more-info-link = Bidali informazio gehiago
+report-broken-site-panel-button-cancel =
+    .label = Utzi
+report-broken-site-panel-button-okay =
+    .label = Ados
+report-broken-site-panel-button-send =
+    .label = Bidali
+report-broken-site-panel-report-sent-label = Zure txostena bidali da
+report-broken-site-panel-report-sent-header =
+    .label = Zure txostena bidali da
+    .title = Zure txostena bidali da
+report-broken-site-panel-invalid-url-label = Idatzi baliozko URLa
+report-broken-site-panel-missing-reason-label = Aukeratu arrazoia
