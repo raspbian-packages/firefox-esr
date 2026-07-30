@@ -1,2 +1,2 @@
-20260609153453
-https://hg.mozilla.org/releases/mozilla-esr140/rev/7df86525c2c876c7c92320e49c3e0771f7a605c0
+20260715202519
+https://hg.mozilla.org/releases/mozilla-esr140/rev/7ecdab99b603b94d2ed335990200f8b4b20de1d7

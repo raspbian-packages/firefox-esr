@@ -1,4 +1,4 @@
-firefox-esr (140.12.0esr-1+rpi1) forky-staging; urgency=medium
+firefox-esr (140.13.0esr-2+rpi1) forky-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -35,7 +35,35 @@ firefox-esr (140.12.0esr-1+rpi1) forky-staging; urgency=medium
   * Update rust target hack to accomodate changes in upstream target selection.
   * Workaround asm bug with bx lr (see: https://github.com/EmbarkStudios/crash-handling/issues/5)
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 03 Jul 2026 17:06:46 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 30 Jul 2026 02:24:25 +0000
+
+firefox-esr (140.13.0esr-2) unstable; urgency=medium
+
+  * python/mach/mach/command_util.py: Fix AST parsing in DecoratorVisitor for
+    Python 3.14. bz#1993797.
+  * python/mozbuild/mozbuild/frontend/reader.py,
+    python/mozbuild/mozbuild/vendor/rewrite_mozbuild.py: Change uses of
+    ast.Str with ast.Constant. bz#1969769.
+  * python/mozbuild/mozbuild/vendor/vendor_python.py,
+    third_party/python/jsonschema/jsonschema/validators.py: Patch jsonschema
+    to work with Python 3.14+. bz#1983736.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 22 Jul 2026 09:18:35 +0900
+
+firefox-esr (140.13.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2026-70, also known as:
+    CVE-2026-15718, CVE-2026-15719, CVE-2026-16349, CVE-2026-16350,
+    CVE-2026-16362, CVE-2026-16351, CVE-2026-16352, CVE-2026-16363,
+    CVE-2026-16353, CVE-2026-16354, CVE-2026-16368, CVE-2026-16369,
+    CVE-2026-16355, CVE-2026-16356, CVE-2026-16357, CVE-2026-16371,
+    CVE-2026-16374, CVE-2026-16375, CVE-2026-16377, CVE-2026-16379,
+    CVE-2026-16358, CVE-2026-16381, CVE-2026-16383, CVE-2026-16387,
+    CVE-2026-16390, CVE-2026-16391, CVE-2026-16359, CVE-2026-16396,
+    CVE-2026-16405, CVE-2026-16412, CVE-2026-16360, CVE-2026-16361.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 22 Jul 2026 08:00:36 +0900
 
 firefox-esr (140.12.0esr-1) unstable; urgency=medium
 

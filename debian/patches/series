@@ -1,3 +1,6 @@
+fixes/Bug-1983713-Use-non-deprecated-ast-value.-r-firefox-.patch
+fixes/Bug-1969769-Change-uses-of-ast.Str-with-ast.Constant.patch
+fixes/Bug-1983736-Patch-jsonschema-to-work-with-Python-3.1.patch
 debian-hacks/Avoid-wrong-sessionstore-data-to-keep-windows-out-of.patch
 debian-hacks/Add-another-preferences-directory-for-applications-p.patch
 debian-hacks/Add-a-2-minutes-timeout-on-xpcshell-tests.patch
