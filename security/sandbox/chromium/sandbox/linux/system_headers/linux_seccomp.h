@@ -5,6 +5,8 @@
 #ifndef SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_SECCOMP_H_
 #define SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_SECCOMP_H_
 
+#include <signal.h>  // for SYS_SECCOMP
+
 // The Seccomp2 kernel ABI is not part of older versions of glibc.
 // As we can't break compilation with these versions of the library,
 // we explicitly define all missing symbols.
