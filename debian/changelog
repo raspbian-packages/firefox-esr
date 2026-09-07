@@ -1,4 +1,4 @@
-firefox-esr (140.13.0esr-2+rpi1) forky-staging; urgency=medium
+firefox-esr (140.14.0esr-2+rpi1) forky-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -35,7 +35,30 @@ firefox-esr (140.13.0esr-2+rpi1) forky-staging; urgency=medium
   * Update rust target hack to accomodate changes in upstream target selection.
   * Workaround asm bug with bx lr (see: https://github.com/EmbarkStudios/crash-handling/issues/5)
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 30 Jul 2026 02:24:25 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Mon, 07 Sep 2026 07:59:29 +0000
+
+firefox-esr (140.14.0esr-2) unstable; urgency=medium
+
+  * third_party/rust/glslopt/.cargo-checksum.json,
+    third_party/rust/glslopt/glsl-optimizer/include/c11/threads_posix.h:
+    Fix conficting types for once_flag and call_once. Fixes: #1128875.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 19 Aug 2026 09:51:19 +0900
+
+firefox-esr (140.14.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2026-70, also known as:
+    CVE-2026-74934, CVE-2026-74935, CVE-2026-74936, CVE-2026-74939,
+    CVE-2026-74940, CVE-2026-74941, CVE-2026-74942, CVE-2026-74943,
+    CVE-2026-74944, CVE-2026-74945, CVE-2026-74946, CVE-2026-74948,
+    CVE-2026-74949, CVE-2026-74953, CVE-2026-74957, CVE-2026-74959,
+    CVE-2026-74960, CVE-2026-74962, CVE-2026-74963, CVE-2026-74964,
+    CVE-2026-74965, CVE-2026-74967, CVE-2026-74969, CVE-2026-74971,
+    CVE-2026-74972, CVE-2026-74973, CVE-2026-74974, CVE-2026-74976,
+    CVE-2026-74983, CVE-2026-74987, CVE-2026-74990.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 19 Aug 2026 08:11:51 +0900
 
 firefox-esr (140.13.0esr-2) unstable; urgency=medium
 

@@ -284,6 +284,7 @@ nsXMLContentSink::DidBuildModel(bool aTerminated) {
       }
     }
 
+    mDocumentChildren.Clear();
     mXSLTProcessor->SetSourceContentModel(source);
     // Since the processor now holds a reference to us we drop our reference
     // to it to avoid owning cycles
@@ -904,6 +905,9 @@ bool nsXMLContentSink::SetDocElement(int32_t aNameSpaceID, nsAtom* aTagName,
 
   if (!mDocumentChildren.IsEmpty()) {
     for (nsIContent* child : mDocumentChildren) {
+      if (MOZ_UNLIKELY(child->GetParentNode())) {
+        child->Remove();
+      }
       mDocument->AppendChildTo(child, false, IgnoreErrors());
     }
     mDocumentChildren.Clear();
@@ -925,7 +929,7 @@ bool nsXMLContentSink::SetDocElement(int32_t aNameSpaceID, nsAtom* aTagName,
   }
 
   IgnoredErrorResult rv;
-  mDocument->AppendChildTo(mDocElement, NotifyForDocElement(), rv);
+  mDocument->AppendChild(*mDocElement, rv);
   if (rv.Failed()) {
     // If we return false here, the caller will bail out because it won't
     // find a parent content node to append to, which is fine.
@@ -1001,6 +1005,9 @@ nsresult nsXMLContentSink::HandleStartElement(
     if (!SetDocElement(nameSpaceID, localName, content) && appendContent) {
       NS_ENSURE_TRUE(parent, NS_ERROR_UNEXPECTED);
 
+      if (MOZ_UNLIKELY(content->GetParentNode())) {
+        content->Remove();
+      }
       parent->AppendChildTo(content, false, IgnoreErrors());
     }
   }
