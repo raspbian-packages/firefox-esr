@@ -1,0 +1,304 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = नया टैब
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = नया टैब
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } row
+           *[other] { $num } rows
+        }
+home-restore-defaults-srd =
+    .label = डिफ़ॉल्ट पुनः स्थापित करें
+    .accesskey = R
+home-mode-choice-custom-srd =
+    .label = संशोधित URLs
+home-mode-choice-blank-srd =
+    .label = खाली पृष्ठ
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = प्रायोजित कहानियां
+home-prefs-highlights-option-visited-pages-srd =
+    .label = देखे गए पृष्ठ
+home-prefs-highlights-options-bookmarks-srd =
+    .label = बुकमार्क
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = सबसे हालिया डाउनलोड
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = खोजें
+    .title = खोजें
+newtab-search-box-input =
+    .aria-label = वेब पर खोजें
+    .placeholder = वेब पर खोजें
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = खोज ईंजन जोड़ें
+newtab-topsites-add-shortcut-header = नया शॉर्टकट
+newtab-topsites-edit-shortcut-header = शॉर्टकट संपादित करें
+newtab-topsites-title-label = शीर्षक
+newtab-topsites-title-input =
+    .placeholder = एक शीर्षक दर्ज करें
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = एक URL टाइप करें अथवा पेस्ट करें
+newtab-topsites-url-validation = मान्य URL आवश्यक
+newtab-topsites-image-url-label = कस्टम छवि URL
+newtab-topsites-use-custom-image-link = कस्टम छवि का उपयोग करें
+newtab-topsites-use-image-link = कस्टम छवि का उपयोग करें…
+newtab-topsites-image-validation = छवि लोड करने में विफल । किसी भिंन URL का प्रयास करें ।
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = रद्द करें
+newtab-topsites-delete-history-button = इतिहास से मिटाएँ
+newtab-topsites-save-button = सहेजें
+newtab-topsites-preview-button = पूर्वावलोकन
+newtab-topsites-add-button = जोड़ें
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = क्या वाकई आप इस पृष्ठ का हर उदाहरण के अपने इतिहास से हटाना चाहते हैं?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = इस क्रिया को पहले जैसा नहीं किया जा सकता है.
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = मेन्यू खोलें
+    .title = मेन्यू खोलें
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = { $title } के लिए कॉन्टेक्स्ट मेनू खोलें
+    .title = मेन्यू खोलें
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = संपादित करें
+newtab-menu-open-new-window = एक नई विंडो में खोलें
+newtab-menu-open-new-private-window = एक नई निजी विंडो में खोलें
+newtab-menu-dismiss = निरस्त करें
+newtab-menu-pin = पिन करें
+newtab-menu-unpin = पिन हटाएँ
+newtab-menu-delete-history = इतिहास से मिटाएँ
+newtab-menu-show-privacy-info = हमारे प्रायोजक और आपकी गोपनीयता
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = बुकमार्क हटाएँ
+# Bookmark is a verb here.
+newtab-menu-bookmark = बुकमार्क
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = डाउनलोड लिंक कॉपी करें
+newtab-menu-go-to-download-page = डाउनलोड पृष्ठ पर जाएं
+newtab-menu-remove-download = इतिहास से हटाएँ
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] फाइंडर में दिखाएँ
+       *[other] संग्राहक फोल्डर खोलें
+    }
+newtab-menu-open-file = फ़ाइल खोलें
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = देखी गई
+newtab-label-bookmarked = बुकमार्क लगाया हुआ
+newtab-label-removed-bookmark = बुकमार्क हटाया गया
+newtab-label-recommended = लोकप्रिय
+newtab-label-saved = { -pocket-brand-name } में सहेजा
+newtab-label-download = डाउनलोड की गई
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } . द्वारा प्रायोजित
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = { $sponsor } द्वारा प्रायोजित
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } मिनट
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = गोपनीयता नीति
+
+## Section Headers.
+
+newtab-section-header-topsites = सर्वोच्च साइटें
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = ब्राउज़िंग प्रारंभ करें, और हम कुछ प्रमुख आलेख, विडियो, तथा अन्य पृष्ठों को प्रदर्शित करेंगे जिन्हें आपने हाल ही में देखा या पुस्तचिन्हित किया है.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = आपने सब पढ़ लिया!
+newtab-discovery-empty-section-topstories-content = और कहानियों के लिए कुछ बाद में वापस देखें।
+newtab-discovery-empty-section-topstories-try-again-button = पुनः प्रयास करें
+newtab-discovery-empty-section-topstories-loading = लोड हो रहा है...
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = उफ़, कुछ गलत इस सामग्री लोड हो गया ।
+newtab-error-fallback-refresh-link = पुन: प्रयास करने के लिए पृष्ठ ताज़ा करें ।
+
+## Solid Colors
+
+newtab-wallpaper-blue = नीला
+newtab-wallpaper-light-blue = हल्का नीला
+newtab-wallpaper-light-green = हल्का हरा
+newtab-wallpaper-green = हरा
+newtab-wallpaper-yellow = पीला
+newtab-wallpaper-orange = नारंगी
+newtab-wallpaper-pink = गुलाबी
+newtab-wallpaper-light-pink = हल्का गुलाबी
+newtab-wallpaper-red = लाल
+newtab-wallpaper-brown = भूरा
+
+## Firefox wallpaper descriptions used for screen readers
+
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = न्यूयॉर्क
+newtab-clock-city-us-los-angeles = लॉस एंजेलिस
+newtab-clock-city-us-chicago = शिकागो
+newtab-clock-city-us-san-francisco = सैन फ्रांसिस्को
+newtab-clock-city-us-san-diego = सैन डिएगो
+newtab-clock-city-us-dallas = डैलस
+newtab-clock-city-us-houston = ह्युस्टन
+newtab-clock-city-us-philadelphia = फिलाडेल्फिया
+newtab-clock-city-us-atlanta = अटलांटा
+newtab-clock-city-us-washington-dc = वॉशिंगटन डी॰ सी॰
+newtab-clock-city-us-boston = बोस्टन
+newtab-clock-city-us-miami = मियामी
+newtab-clock-city-us-seattle = सीऐटल
+newtab-clock-city-us-denver = डॅनवर
+newtab-clock-city-us-honolulu = होनोलूलू
+newtab-clock-city-us-anchorage = एंकोरेज
+newtab-clock-city-de-berlin = बर्लिन
+newtab-clock-city-de-munich = म्यूनिख
+newtab-clock-city-de-frankfurt = फ़्रैंकफ़र्ट
+newtab-clock-city-de-hamburg = हैम्बर्ग
+newtab-clock-city-fr-paris = पैरिस
+newtab-clock-city-fr-lyon = ल्यों
+newtab-clock-city-fr-marseille = मार्सेय
+newtab-clock-city-fr-toulouse = तुलूज़
+newtab-clock-city-in-kolkata = कोलकाता
+newtab-clock-city-in-mumbai = मुम्बई
+newtab-clock-city-in-delhi = दिल्ली
+newtab-clock-city-in-bangalore = बेंगलुरु
+newtab-clock-city-cn-shanghai = शंघाई
+newtab-clock-city-cn-beijing = बीजिंग
+newtab-clock-city-cn-shenzhen = शेन्झेन
+newtab-clock-city-br-sao-paulo = साओ पाउलो
+newtab-clock-city-br-rio-de-janeiro = रियो डि जेनेरो
+newtab-clock-city-br-brasilia = ब्रासीलिया
+newtab-clock-city-id-jakarta = जकार्ता
+newtab-clock-city-id-surabaya = सुराबया
+newtab-clock-city-id-makassar = माकास्सार
+newtab-clock-city-ca-toronto = टोरण्टो
+newtab-clock-city-ca-montreal = मॉन्ट्रियल
+newtab-clock-city-ca-vancouver = वैंकूवर
+newtab-clock-city-au-sydney = सिडनी
+newtab-clock-city-au-perth = पर्थ
+newtab-clock-city-au-adelaide = एडिलेड
+newtab-clock-city-pl-warsaw = वारसॉ
+newtab-clock-city-pl-krakow = क्राकुव
+newtab-clock-city-jp-tokyo = टोक्यो
+newtab-clock-city-jp-osaka = ओसाका
+newtab-clock-city-mx-mexico-city = मेक्सिको नगर
+newtab-clock-city-mx-guadalajara = ग्वादालाख़ारा
+newtab-clock-city-it-rome = रोम
+newtab-clock-city-it-milan = मिलानो
+newtab-clock-city-ru-moscow = मास्को
+newtab-clock-city-ru-saint-petersburg = सेंट पीटर्सबर्ग
+newtab-clock-city-gb-london = लंदन
+newtab-clock-city-gb-birmingham = बर्मिंघम
+newtab-clock-city-es-madrid = मद्रिद
+newtab-clock-city-es-barcelona = बार्सिलोना
+newtab-clock-city-nl-amsterdam = ऐम्स्टर्डैम
+newtab-clock-city-ch-zurich = ज़्यूरिख़
+newtab-clock-city-at-vienna = वियना
+newtab-clock-city-cz-prague = प्राग
+newtab-clock-city-ar-buenos-aires = ब्यूनस आयर्स
+newtab-clock-city-gr-athens = एथेंस
+newtab-clock-city-hu-budapest = बुडापेस्ट
+newtab-clock-city-be-brussels = ब्रसेल्स
+newtab-clock-city-ua-kyiv = कीव
+newtab-clock-city-fi-helsinki = हेलसिंकी
+newtab-clock-city-co-bogota = बोगोटा
+newtab-clock-city-ph-manila = मनीला
+newtab-clock-city-tr-istanbul = इस्तांबुल
+newtab-clock-city-my-kuala-lumpur = कुआलालम्पुर
+newtab-clock-city-eg-cairo = क़ाहिरा
+newtab-clock-city-se-stockholm = स्टॉकहोम
+newtab-clock-city-ro-bucharest = बुख़ारेस्ट
+newtab-clock-city-th-bangkok = बैंकॉक
+newtab-clock-city-ng-lagos = लागोस
+newtab-clock-city-tw-taipei = ताइपे
+newtab-clock-city-za-johannesburg = जोहानिसबर्ग
+newtab-clock-city-cl-santiago = सेण्टियागो
+newtab-clock-city-pk-karachi = कराची
+newtab-clock-city-bg-sofia = सोफिया
+newtab-clock-city-sg-singapore = सिंगापुर
+newtab-clock-city-hk-hong-kong = हांगकांग
+newtab-clock-city-sa-riyadh = रियाद
+newtab-clock-city-dk-copenhagen = कोपनहेगन
+newtab-clock-city-pe-lima = लीमा
+newtab-clock-city-ke-nairobi = नायरोबी
+newtab-clock-city-nz-auckland = ऑक्लैण्ड
+newtab-clock-city-kr-seoul = सियोल
+newtab-clock-city-lt-vilnius = विल्नुस
+newtab-clock-city-ie-dublin = डबलिन
+newtab-clock-city-ae-dubai = दुबई
+newtab-clock-city-lv-riga = रीगा
+newtab-clock-city-pt-lisbon = लिस्बन
+newtab-clock-city-ir-tehran = तेहरान
+newtab-clock-city-bd-dhaka = ढाका
+newtab-clock-city-ec-guayaquil = गावकील
+newtab-clock-city-vn-ho-chi-minh-city = हो ची मिन्ह सिटी
+newtab-clock-city-np-kathmandu = काठमांडू
+newtab-clock-city-mm-yangon = यांगून
