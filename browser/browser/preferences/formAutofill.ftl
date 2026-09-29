@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Sparade adresser
+autofill-manage-addresses-list-header = Adresser
+autofill-manage-payment-methods-title = Sparade betalningsmetoder
+autofill-manage-cards-list-header = Kort
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Ta bort
+autofill-manage-add-button = Lägg till…
+autofill-manage-edit-button = Redigera…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Spara adress?
+address-capture-save-doorhanger-description = Spara information i { -brand-short-name } så att du snabbt kan fylla i formulär.
+address-capture-update-doorhanger-header = Uppdatera adress?
+address-capture-edit-doorhanger-header = Redigera adress
+address-capture-save-button =
+    .label = Spara
+    .accessKey = S
+address-capture-not-now-button =
+    .label = Inte nu
+    .accessKey = n
+address-capture-never-save-addresses-button =
+    .label = Spara aldrig adresser
+    .accessKey = a
+address-capture-cancel-button =
+    .label = Avbryt
+    .accessKey = A
+address-capture-update-button =
+    .label = Uppdatera
+    .accessKey = U
+address-capture-manage-address-button =
+    .label = Adressinställningar
+address-capture-learn-more-button =
+    .label = Läs mer
+address-capture-open-menu-button =
+    .aria-label = Öppna meny
+address-capture-edit-address-link = Redigera adress
+    .aria-label = Redigera adress
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Lägg till adress
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Redigera adress
+autofill-address-name = Namn
+autofill-address-organization = Organisation
+autofill-address-street-address = Gatuadress
+autofill-address-street = Gatuadress
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Grannskap
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Samhälle eller stadsdel
+autofill-address-island = Ö
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Bygd
+autofill-address-city = Ort
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Distrikt
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Postort
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Förort
+autofill-address-province = Län
+autofill-address-state = Region
+autofill-address-county = Grevskap
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Socken
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Prefektur
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Yta
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Avdelning
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Emirat
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Oblast
+# Postal code field used in India (IN).
+autofill-address-pin = Pin
+autofill-address-postal-code = Postnummer
+# Postal code field.
+autofill-address-zip = Postnummer
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eircode
+
+##
+
+autofill-address-country = Land eller region
+autofill-address-country-only = Land
+autofill-address-tel = Telefon
+autofill-address-email = E-post
+autofill-cancel-button = Avbryt
+autofill-save-button = Spara
+autofill-country-warning-message-2 = Autofyll av formulär är för närvarande endast tillgänglig i vissa länder
+autofill-country-warning-message = Autofyll av formulär är för närvarande endast tillgänglig för vissa länder.
+autofill-message-tooltip = Visa meddelande om autofyll
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Lägg till kort
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Redigera kort
+autofill-card-number-2 =
+    .label = Kortnummer
+autofill-card-number = Kortnummer
+autofill-card-invalid-number = Ange ett giltigt kortnummer
+autofill-card-name-on-card-2 =
+    .label = Namn på kort
+autofill-card-expires-month-2 =
+    .label = Förfaller månad
+autofill-card-expires-year-2 =
+    .label = Förfaller år
+autofill-card-billing-address-2 =
+    .label = Fakturaadress
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = Namn på kort
+autofill-card-expires-month = Utg. månad
+autofill-card-expires-year = Utg. år
+autofill-card-billing-address = Fakturaadress
+autofill-card-network = Korttyp
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = kreditkort, kredit, kort, betalkort, betal, plånbok, kassa
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Lägg till pass
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = Redigera pass
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = Namn
+autofill-passport-country =
+    .label = Land
+autofill-passport-number =
+    .label = Nummer
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = Utgivningsdatum
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = Utgångsdatum
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = MM
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = DD
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = ÅÅÅÅ
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = Spara pass?
+passport-capture-save-doorhanger-description = Spara information i { -brand-short-name } så att du snabbt kan fylla i formulär.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = Spara
+    .accessKey = S
+passport-capture-not-now-button =
+    .label = Inte nu
+    .accessKey = n
+passport-capture-never-save-button =
+    .label = Spara aldrig pass
+    .accessKey = a
