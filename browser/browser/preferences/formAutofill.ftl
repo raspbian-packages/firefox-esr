@@ -1,0 +1,121 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Tansiwin ittwakelsen
+autofill-manage-addresses-list-header = Tansiwin
+autofill-manage-payment-methods-title = Isseklas tarrayin n uxelleṣ
+autofill-manage-cards-list-header = Tikarḍiwin
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Kkes
+autofill-manage-add-button = Rnu…
+autofill-manage-edit-button = Ẓreg…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Sekles tansa?
+address-capture-save-doorhanger-description = Sekles talɣut deg { -brand-short-name } i wakken ad tizmireḍ ad teččareḍ tiferkiyin s zzerb.
+address-capture-update-doorhanger-header = Leqqem tansa?
+address-capture-edit-doorhanger-header = Ẓreg tansa
+address-capture-save-button =
+    .label = Sekles
+    .accessKey = S
+address-capture-not-now-button =
+    .label = Mačči tura
+    .accessKey = M
+address-capture-cancel-button =
+    .label = Sefsex
+    .accessKey = S
+address-capture-update-button =
+    .label = Leqqem
+    .accessKey = L
+address-capture-manage-address-button =
+    .label = Iɣewwaren n tansa
+address-capture-learn-more-button =
+    .label = Issin ugar
+address-capture-open-menu-button =
+    .aria-label = Ldi umuɣ
+address-capture-edit-address-link = Ẓreg tansa
+    .aria-label = Ẓreg tansa
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Rnu tansa
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Ẓreg tansa
+autofill-address-name = Isem
+autofill-address-organization = Takebbanit
+autofill-address-street-address = Tansa n taddart
+autofill-address-street = Tansa n taddart
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Taddart
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Taddart neɣ adrum
+autofill-address-island = Tigzirt
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Tamurt
+autofill-address-city = Aɣrem
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Tamnaḍt
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Sader
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Tamnaḍt
+autofill-address-province = Tamnaḍt
+autofill-address-state = Addad
+autofill-address-county = Tamurt
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Taparicit
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Azegdu
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Tamnaḍt
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Agezdu
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Tageldit
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Tamnaḍt
+# Postal code field used in India (IN).
+autofill-address-pin = Pin
+autofill-address-postal-code = Tangalt n pusṭa
+# Postal code field.
+autofill-address-zip = Tangalt n pusṭa
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Tangalt n irlanda
+
+##
+
+autofill-address-country = Tamnaḍt neɣ tamurt
+autofill-address-country-only = Tamurt
+autofill-address-tel = Tiliɣri
+autofill-address-email = Imayl
+autofill-cancel-button = Sefsex
+autofill-save-button = Sekles
+autofill-country-warning-message = Tura akka taččart tawurmant n iferka tella kan i kra tmura.
+autofill-message-tooltip = Sken izen yerzan taččart tawurmant
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Rnu takarḍa
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Ẓreg takarḍa
+autofill-card-number-2 =
+    .label = Uṭṭun n tkeṛḍa
+autofill-card-number = Uṭṭun n tkeṛḍa
+autofill-card-invalid-number = Ma ulac aɣilif, sekcem uṭṭun n tkeṛḍa ameɣtu
+autofill-card-name-on-card-2 =
+    .label = Isem deg tkarḍa
+autofill-card-billing-address-2 =
+    .label = Tansa n tuzna n tfaturt
+autofill-card-name-on-card = Isem deg tkarḍa
+autofill-card-expires-month = Aggur n tagara
+autofill-card-expires-year = Aseggas n tagara
+autofill-card-billing-address = Tansa n tuzna n tfaturt
+autofill-card-network = Tawsit n tkarḍa
