@@ -1,0 +1,440 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = { -brand-shorter-name }-frissítés letöltése
+appmenuitem-banner-update-available =
+    .label = Frissítés érhető el – letöltés most
+appmenuitem-banner-update-manual =
+    .label = Frissítés érhető el – letöltés most
+appmenuitem-banner-update-unsupported =
+    .label = Nem lehet frissíteni – a rendszer nem kompatibilis
+appmenuitem-banner-update-restart =
+    .label = Frissítés érhető el – újraindítás most
+appmenu-nova-update-title = Újraindítás a { -brand-short-name } frissítéséhez
+appmenu-nova-update-description = A lapjai újra meg fognak nyílni.
+appmenu-nova-fxa-sign-in = Bejelentkezés
+appmenu-nova-switch-device-promo =
+    .message = Hamarosan új eszközt kap? Vigye magával a { -brand-short-name } böngészőt!
+appmenu-nova-switch-device-link = Hogyan költöztesse át az adatait
+appmenuitem-new-tab =
+    .label = Új lap
+appmenuitem-new-window =
+    .label = Új ablak
+appmenuitem-new-private-window =
+    .label = Új privát ablak
+appmenuitem-history =
+    .label = Előzmények
+appmenuitem-tab-groups =
+    .label = Lapcsoportok
+appmenuitem-downloads =
+    .label = Letöltések
+appmenuitem-passwords =
+    .label = Jelszavak
+appmenuitem-extensions-and-themes =
+    .label = Kiegészítők és témák
+appmenuitem-extensions =
+    .label = Kiegészítők
+appmenuitem-print =
+    .label = Nyomtatás…
+appmenuitem-find-in-page =
+    .label = Keresés az oldalon…
+appmenuitem-translate =
+    .label = Oldal fordítása…
+appmenuitem-zoom =
+    .value = Nagyítás
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = A { -brand-product-name } megosztása
+appmenuitem-more-tools =
+    .label = További eszközök
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = Súgó és jelentés
+appmenuitem-help =
+    .label = Súgó
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Kilépés
+           *[other] Kilépés
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Alkalmazásmenü megnyitása
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Alkalmazásmenü bezárása
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Beállítások
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Nagyítás
+appmenuitem-zoom-reduce =
+    .label = Kicsinyítés
+appmenuitem-fullscreen =
+    .label = Teljes képernyő
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Jelentkezzen be a Syncbe…
+appmenu-remote-tabs-turn-on-sync =
+    .label = Szinkronizálás bekapcsolása…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Több lap megjelenítése
+    .tooltiptext = Több lap megjelenítése erről az eszközről
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Inaktív lapok
+    .tooltiptext = Az eszköz inaktív lapjainak megtekintése
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Nincsenek nyitott lapok
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Kapcsolja be a lapszinkronizálást a más készülékeiről származó lapok listájának megjelenítéséhez.
+appmenu-remote-tabs-opensettings =
+    .label = Beállítások
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Szeretné a más eszközein megnyitott lapjait itt látni?
+appmenu-remote-tabs-connectdevice =
+    .label = Másik eszköz csatlakoztatása
+appmenu-remote-tabs-welcome = Tekintse meg a más eszközökről származó lapok listáját.
+appmenu-remote-tabs-unverified = A fiókját ellenőrizni kell.
+appmenuitem-fxa-toolbar-sync-now2 = Szinkronizálás most
+appmenuitem-fxa-sign-in = Jelentkezzen be a { -brand-product-name }ba
+appmenuitem-fxa-manage-account = Fiók kezelése
+fxa-menu-sync-status-on = Szinkronizálás be
+fxa-menu-sync-status-off = Szinkronizálás ki
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = Szinkronizálja az adatait
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Az adatai nem szinkronizálódnak
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Bekapcsolás
+fxa-menu-sync-status-turn-on-button-aria-label = Bekapcsolás
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Jelentkezzen be a szinkronizáláshoz
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = A(z) { $deviceName } szinkronizálása most
+fxa-menu-manage-sync-settings =
+    .label = Szinkronizálási beállítások kezelése
+fxa-menu-add-device =
+    .label = Eszköz hozzáadása
+fxa-menu-manage-devices =
+    .label = Eszközök kezelése
+fxa-menu-device-missing =
+    .label = Nem látja az eszközét?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Összes eszköz
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Összes eszköz
+fxa-menu-get-firefox-mobile =
+    .label = Szerezze be a { -brand-product-name }ot Androidra és iOS-re
+fxa-menu-secure-sync-subpanel =
+    .title = Biztonságos szinkronizálás
+appmenu-account-header = Fiók
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Utoljára szinkronizálva: { $time }
+    .label = Utoljára szinkronizálva: { $time }
+appmenu-fxa-sync-and-save-data2 = Adatok szinkronizálása és mentése
+appmenu-fxa-signed-in-label = Bejelentkezés
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = Jelentkezzen be a szinkronizáláshoz
+appmenu-fxa-sign-in-promo-message = Vigye magával az adatait mindenhová
+appmenu-fxa-sign-in-promo-button =
+    .label = Bejelentkezés
+appmenu-fxa-setup-sync =
+    .label = Szinkronizálás bekapcsolása…
+appmenu-fxa-setup-sync-new = Bekapcsolás
+appmenuitem-save-page =
+    .label = Oldal mentése…
+appmenuitem-fxa-sync-off-title = A Sync ki van kapcsolva
+appmenuitem-fxa-sync-off-description = Védje és érje el bárhol könyvjelzőit, jelszavait és egyebeit.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Profilkészítő
+    .tooltiptext = Teljesítményprofil rögzítése
+profiler-popup-button-recording =
+    .label = Profilkészítő
+    .tooltiptext = A profilkészítő profilt rögzít
+profiler-popup-button-capturing =
+    .label = Profilkészítő
+    .tooltiptext = A profilkészítő profilt fogad
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = További információk felfedése
+profiler-popup-description-title =
+    .value = Felvétel, elemzés, megosztás
+profiler-popup-description = Dolgozzon együtt a teljesítményproblémák kijavításán azáltal, hogy profilokat oszt meg a csapatával.
+profiler-popup-learn-more-button =
+    .label = További tudnivalók
+profiler-popup-settings =
+    .value = Beállítások
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Beállítások szerkesztése…
+profiler-popup-recording-screen = Felvétel…
+profiler-popup-start-recording-button =
+    .label = Felvétel indítása
+profiler-popup-discard-button =
+    .label = Elvetés
+profiler-popup-capture-button =
+    .label = Rögzítés
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = A profilozó panel megnyitása
+    .tooltiptext = A profilozó panel megnyitása
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Ajánlott előbeállítás a legtöbb webalkalmazás hibakereséséhez, alacsony pluszköltséggel.
+profiler-popup-presets-web-developer-label =
+    .label = Webfejlesztő
+profiler-popup-presets-firefox-description = Javasolt előbeállítás a { -brand-shorter-name } profilozásához.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Előbeállítás a { -brand-shorter-name } grafikai hibáinak kivizsgálásához.
+profiler-popup-presets-graphics-label =
+    .label = Grafika
+profiler-popup-presets-media-description2 = Előbeállítás a { -brand-shorter-name } hang- és videóhibáinak kivizsgálásához.
+profiler-popup-presets-media-label =
+    .label = Média
+profiler-popup-presets-ml-description = Előbeállítás a { -brand-shorter-name } gépi tanulási hibáinak kivizsgálásához.
+profiler-popup-presets-ml-label =
+    .label = Gépi tanulás
+profiler-popup-presets-networking-description = Előbeállítás a { -brand-shorter-name } hálózati hibák kivizsgálásához.
+profiler-popup-presets-networking-label =
+    .label = Hálózat
+profiler-popup-presets-networking-with-logs-description = Előbeállítás a { -brand-shorter-name } hálózati hibáinak kivizsgálásához, beleértve a hálózati naplókat. Ezek a naplók bizalmas információkat tartalmazhatnak, például a felkeresett webcímeket.
+profiler-popup-presets-networking-with-logs-label =
+    .label = Hálózatépítés naplókkal
+profiler-popup-presets-power-description = Előbeállítás a { -brand-shorter-name } energiagazdálkodási hibáinak kivizsgálásához, alacsony többletfogyasztással.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Energiagazdálkodás
+profiler-popup-presets-debug-description = Előbeállítás a { -brand-shorter-name }ban való hibakereséshez. Magas többletterhelés, ne teljesítménykritikus munkához használja, hanem a böngésző viselkedésének megértéséhez.
+profiler-popup-presets-debug-label =
+    .label = Hibakeresés
+profiler-popup-presets-web-compat-description = Ajánlott előbeállítás a weboldalak webes kompatibilitási problémáinak kereséséhez, nem pedig a teljesítmény követéséhez.
+profiler-popup-presets-web-compat-label =
+    .label = Webkompatibilitás
+profiler-popup-presets-custom-label =
+    .label = Egyéni
+
+##
+
+appmenu-manage-history =
+    .label = Előzmények kezelése
+appmenu-restore-session =
+    .label = Előző munkamenet helyreállítása
+appmenu-clear-history =
+    .label = Előzmények törlése…
+appmenu-recent-history-subheader = Közelmúltbeli előzmények
+appmenu-recently-closed-tabs =
+    .label = Nemrég bezárt lapok
+appmenu-recently-closed-windows =
+    .label = Nemrég bezárt ablakok
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Keresés előzményei
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = Maradjon szinkronban az összes eszközén
+appmenu-sync-promo-signin-cta = Bejelentkezés
+appmenu-sync-promo-turnonsync =
+    .heading = Szinkronizálja a lapjait és az előzményeit
+appmenu-sync-promo-turnonsync-cta = Szinkronizálás bekapcsolása
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = Vegye át a mobilos lapjait
+appmenu-sync-promo-connectdevice-cta = Csatlakoztasson egy eszközt
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = Vigye magával a könyvjelzőit
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = Vigye magával a könyvjelzőit
+
+## Help panel
+
+appmenu-help-header =
+    .title = { -brand-shorter-name } súgó
+appmenu-about =
+    .label = A { -brand-shorter-name } névjegye
+    .accesskey = A
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = A { -brand-product-name } megosztása
+    .accesskey = m
+appmenu-get-help =
+    .label = Segítség kérése
+    .accesskey = S
+appmenu-help-more-troubleshooting-info =
+    .label = Több hibakeresési információ
+    .accesskey = T
+appmenu-help-share-ideas =
+    .label = Ötletek és visszajelzések megosztása…
+    .accesskey = o
+appmenu-help-switch-device =
+    .label = Váltás új eszközre
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = Súgó és jelentés
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Hibaelhárítási mód…
+    .accesskey = m
+appmenu-help-exit-troubleshoot-mode =
+    .label = Hibakeresési mód kikapcsolása
+    .accesskey = m
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Félrevezető oldal jelentése…
+    .accesskey = F
+appmenu-help-not-deceptive =
+    .label = Ez nem félrevezető oldal…
+    .accesskey = n
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Eszköztár testreszabása…
+appmenu-abouttranslations =
+    .label = Fordítás…
+appmenu-edit-pdf =
+    .label = PDF szerkesztése…
+appmenu-developer-tools-subheader = Böngészőeszközök
+appmenu-developer-tools-extensions =
+    .label = Kiegészítők fejlesztőknek
+appmenuitem-report-broken-site =
+    .label = Hibás webhely bejelentése
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Jelentkezzen be a fiókjába
+appmenuitem-monitor-title2 = Előzze meg a személyazonosság-lopást
+appmenuitem-monitor-description2 = Kapjon figyelmeztetéseket az adatvédelmi incidensekről
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = A { -monitor-brand-short-name } adatvédelmi incidensekről szóló figyelmeztetései
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Kapjon figyelmeztetést az adatvédelmi incidensekről
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = Tartsa bizalmasan az e-mail-címét
+appmenuitem-relay-description2 = Segít megakadályozni a levélszemetet a postaládájában
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = E-mail-maszkok megtekintése
+appmenuitem-relay-description = Maszkolja a valódi e-mail-címét és telefonszámát
+appmenuitem-services-relay-description = E-mail-maszkok irányítópultjának elindítása
+appmenuitem-vpn-title2 = Rejtse el a helyét a { -mozilla-vpn-brand-name } segítségével
+appmenuitem-vpn-description5 = Szerezzen extra védelmet az eszközök között
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = A { -mozilla-vpn-brand-name } letöltése
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Kapjon teljes eszközvédelmet
+appmenu-services-header = Saját szolgáltatások
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Adatvédelmi eszközök
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Próbálja ki a Mozilla más védelmi eszközeit:
+
+## Profiles panel
+
+appmenu-other-profiles = Egyéb profilok
+appmenu-manage-profiles =
+    .label = Profilok kezelése
+appmenu-copy-profile =
+    .label = Profil másolása
+appmenu-create-profile2 =
+    .label = Új profil létrehozása
+appmenu-create-profile =
+    .label = Új profil
+appmenu-edit-profile =
+    .aria-label = Profil szerkesztése
+appmenu-edit-this-profile =
+    .label = Profil szerkesztése
+appmenu-profile-current-in-use = Jelenleg használt profil
+fxa-menu-create-profile-subpanel =
+    .title = Új profil létrehozása
+fxa-menu-create-profile-heading = Emelje új szintre a böngészését egy új profillal
+fxa-menu-create-profile-description = Tartsa külön a munkához és a személyes böngészéshez tartozó könyvjelzőit, jelszavait és előzményeit.
+fxa-menu-create-profile-confirm =
+    .label = Új profil létrehozása
+fxa-menu-create-profile-learn-more =
+    .label = Mik azok a profilok?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = A { -brand-product-name } megosztása
+appmenuitem-share-firefox-description = Hívjon meg valakit, hogy azt a böngészőt válassza, amely az adatvédelmet helyezi előtérbe
+appmenu-profiles-2 =
+    .label = Profilok
+appmenu-profiles-header = Profilok
+appmenu-all-profiles =
+    .label = Összes profil
+appmenu-secure-sync-header = Biztonságos szinkronizálás
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Legújabb címkék
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] { $tabCount } szinkronizált lap megtekintése
+           *[other] { $tabCount } szinkronizált lap megtekintése
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Jelenlegi oldal küldése erre az eszközre

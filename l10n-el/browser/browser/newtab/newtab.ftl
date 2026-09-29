@@ -1,0 +1,1913 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Νέα καρτέλα
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = Προσαρμογή σελίδας
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = Προσαρμογή
+newtab-customize-panel-label =
+    .label = Προσαρμογή
+newtab-settings-dialog-label =
+    .aria-label = Ρυθμίσεις
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+newtab-card-dismiss-button =
+    .aria-label = Απόρριψη
+    .title = Απόρριψη
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-title =
+    .label = Αρχική σελίδα
+home-homepage-new-windows =
+    .label = Νέα παράθυρα
+home-homepage-new-tabs =
+    .label = Νέες καρτέλες
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-button =
+    .label = Επιλογή συγκεκριμένου ιστοτόπου
+
+## Custom URLs subpage
+
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-card-header =
+    .label = Διευθύνσεις ιστοτόπων
+home-custom-homepage-address =
+    .placeholder = Εισαγάγετε διεύθυνση
+home-custom-homepage-address-button =
+    .label = Προσθήκη διεύθυνσης
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-results =
+    .label = Δεν έχουν προστεθεί ακόμα ιστότοποι.
+home-custom-homepage-delete-address-button =
+    .aria-label = Διαγραφή διεύθυνσης
+    .title = Διαγραφή διεύθυνσης
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with-prompt =
+    .label = Αντικατάσταση με
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-current-pages-button =
+    .label = Τρέχουσες ανοικτές σελίδες
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-bookmarks-button =
+    .label = Σελιδοδείκτες…
+
+## Firefox Home content
+
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
+home-prefs-search-header2 =
+    .label = Αναζήτηση
+home-prefs-stories-header2 =
+    .description = Εξαιρετικό περιεχόμενο από την οικογένεια του { -brand-product-name }
+    .label = Άρθρα
+home-prefs-widgets-header =
+    .label = Γραφικά στοιχεία
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = Λίστες
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = Αντίστροφη μέτρηση
+# Sports is a widget on New Tab showing sports scores and schedules.
+home-prefs-sports-widget-header =
+    .label = Αθλήματα
+# Clock is a widget on New Tab that displays time zones around the world.
+home-prefs-clocks-header =
+    .label = Ρολόι
+# Privacy is a widget on New Tab that shows tracking protection activity.
+home-prefs-privacy-header =
+    .label = Απόρρητο
+# Crossword is a widget on New Tab that shows a daily crossword puzzle.
+home-prefs-crossword-widget-header =
+    .label = Σταυρόλεξο
+# Stocks is a widget on New Tab that shows stock ticker prices.
+home-prefs-stocks-header =
+    .label = Μετοχές
+# Picture of the day is a widget on New Tab that shows a daily Wikimedia Commons image.
+home-prefs-picture-header =
+    .label = Εικόνα της ημέρας
+# Recent searches is a widget on New Tab that shows the user's recent searches.
+home-prefs-recent-searches-header =
+    .label = Πρόσφατες αναζητήσεις
+home-prefs-mission-message2 =
+    .message = Οι χορηγοί μας υποστηρίζουν την αποστολή μας για ένα καλύτερο διαδίκτυο.
+home-prefs-manage-topics-link2 =
+    .label = Διαχείριση θεμάτων
+home-prefs-choose-wallpaper-link2 =
+    .label = Επιλογή ταπετσαρίας
+home-prefs-firefox-logo-header =
+    .label = Λογότυπο { -brand-short-name }
+# Informational message bar that appears in the Firefox Home section when the options are disabled.
+# The user must select Firefox Home as their homepage for either new tabs or new windows to enable
+# the features in settings.
+home-prefs-firefox-home-disabled-notice =
+    .message = Για να χρησιμοποιήσετε αυτές τις λειτουργίες, ρυθμίστε τις νέες καρτέλες ή τα νέα παράθυρα στην { -firefox-home-brand-name }.
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } σειρά
+           *[other] { $num } σειρές
+        }
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = Επέκταση ({ $extension })
+home-restore-defaults-srd =
+    .label = Επαναφορά προεπιλογών
+    .accesskey = Ε
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (Προεπιλογή)
+home-mode-choice-custom-srd =
+    .label = Προσαρμοσμένα URL…
+home-mode-choice-blank-srd =
+    .label = Κενή σελίδα
+home-prefs-shortcuts-header-srd =
+    .label = Συντομεύσεις
+home-prefs-shortcuts-select =
+    .aria-label = Συντομεύσεις
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = Χορηγούμενες συντομεύσεις
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Χορηγούμενα άρθρα
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Σελίδες που έχετε επισκεφθεί
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Σελιδοδείκτες
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Πιο πρόσφατες λήψεις
+home-prefs-recent-activity-header-srd =
+    .label = Πρόσφατη δραστηριότητα
+home-prefs-recent-activity-select =
+    .aria-label = Πρόσφατη δραστηριότητα
+home-prefs-weather-header-srd =
+    .label = Καιρός
+home-prefs-support-firefox-header-srd =
+    .label = Υποστηρίξτε το { -brand-product-name }
+home-prefs-mission-message-learn-more-link-srd = Μάθετε πώς
+
+## Strings for the Privacy widget
+
+# Context menu item linking to more information about the Privacy widget.
+newtab-privacy-menu-learn-more = Μάθετε περισσότερα
+# Accessible name for the Privacy widget container. The widget shows no visible
+# title, so screen readers rely on this label to identify it.
+newtab-privacy-widget-label =
+    .aria-label = Απόρρητο
+
+## Privacy widget — count readout
+
+# Label shown under the large tracker-count number, appearing like:
+# Line 1: 86
+# Line 2: Trackers blocked today
+# Translations can be adjusted to "Today's blocked trackers" or something
+# similar if this fixed order causes issues.
+# Variables:
+#   $count (number) - Number of trackers blocked today
+newtab-privacy-trackers-blocked-today =
+    { $count ->
+        [one] Αποκλεισμένος ιχνηλάτης σήμερα
+       *[other] Αποκλεισμένοι ιχνηλάτες σήμερα
+    }
+# Second line of the readout, under the large number and "Trackers blocked
+# today". Counts the sites those trackers were blocked on. The English is
+# shortened from "Blocked across { $count } sites" — translate it that fuller way
+# if the short fragment doesn't work in your language.
+# Variables:
+#   $count (number) - Number of sites where trackers were blocked
+newtab-privacy-across-sites =
+    { $count ->
+        [one] Σε { $count } ιστότοπο
+       *[other] Σε { $count } ιστοτόπους
+    }
+
+## Privacy widget — empty state
+
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty = Το { -brand-short-name } αποκλείει ιχνηλάτες κατά την περιήγησή σας. Θα τους βλέπετε εδώ.
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty-state = Το { -brand-short-name } αποκλείει αυτόματα τους ιχνηλάτες, διατηρώντας απόρρητο το μεγαλύτερο μέρος της δραστηριότητάς σας.
+# "A running tally" is an informal way to say a total that keeps updating as it goes.
+# Here we are referring to the number of trackers blocked, which increases as the user browses.
+# An alternative can be "See a running total here"
+newtab-privacy-empty-state-tally = Δείτε εδώ το σύνολο που ενημερώνεται συνεχώς.
+
+## Privacy widget — Enhanced Tracking Protection off state
+
+# Shown when the user has turned off the Enhanced Tracking Protection setting.
+newtab-privacy-etp-off-faster-browsing = Ταχύτερη περιήγηση. Λιγότεροι ιχνηλάτες.
+newtab-privacy-etp-off-turn-on-tracking = Ενεργοποιήστε την προστασία από καταγραφή στις ρυθμίσεις για έναρξη αποκλεισμού.
+
+## Privacy widget — informational messages
+##
+## Rotating "info" secondary messages. Each message has a body plus a matched
+## "-cta" button label sharing the same id stem (the CTA button isn't rendered
+## yet; the labels are authored so the pairing is ready).
+
+newtab-privacy-message-info-1 = Το { -brand-short-name } αποκλείει αυτόματα ιχνηλάτες κατά την περιήγησή σας.
+newtab-privacy-message-info-1-cta = Προβολή μέτρων προστασίας
+newtab-privacy-message-info-2 = Ο αποκλεισμός ιχνηλατών εμποδίζει την καταγραφή σας από εταιρείες στο διαδίκτυο.
+newtab-privacy-message-info-2-cta = Προβολή μέτρων προστασίας
+newtab-privacy-message-info-3 = Πολλοί ιστότοποι περιέχουν ιχνηλάτες, με αποτέλεσμα να μπορούν να σας καταγράφουν στο διαδίκτυο εταιρείες που δεν έχετε επισκεφθεί.
+newtab-privacy-message-info-3-cta = Προβολή μέτρων προστασίας
+newtab-privacy-message-info-4 = Επιλέγοντας το { -brand-short-name }, επιλέγετε την προστασία από προεπιλογή.
+newtab-privacy-message-info-4-cta = Προβολή μέτρων προστασίας
+newtab-privacy-message-info-5 = Ο αποκλεισμός ιχνηλατών σημαίνει ότι λιγότερες εταιρείες μπορούν να σας καταγράφουν σε όλους τους ιστοτόπους.
+newtab-privacy-message-info-5-cta = Προβολή μέτρων προστασίας
+newtab-privacy-message-info-6 = Διατηρήστε τα δεδομένα σας στο { -brand-short-name }. Δεν τα πωλούμε ποτέ, σε αντίθεση με άλλα προγράμματα περιήγησης.
+newtab-privacy-message-info-6-cta = Μάθετε περισσότερα
+newtab-privacy-message-info-7 = Δείτε ποιους ιχνηλάτες απέκλεισε το { -brand-short-name }.
+newtab-privacy-message-info-7-cta = Προβολή μέτρων προστασίας
+newtab-privacy-message-info-8 = Κάνοντας περιήγηση με το { -brand-short-name }, υποστηρίζετε την αποστολή της { -vendor-short-name } για ένα καλύτερο διαδίκτυο.
+newtab-privacy-message-info-8-cta = Μάθετε περισσότερα
+newtab-privacy-message-info-9 = Ορίστε το { -brand-short-name } ως το προεπιλεγμένο πρόγραμμα περιήγησής σας για ενσωματωμένη ιδιωτικότητα.
+newtab-privacy-message-info-9-cta = Ορισμός ως προεπιλογή
+newtab-privacy-message-info-10 = Αποθηκεύστε κωδικούς πρόσβασης στο { -brand-short-name } για χρήση ισχυρών, μοναδικών στοιχείων σύνδεσης παντού.
+newtab-privacy-message-info-10-cta = Μετάβαση στους κωδικούς πρόσβασης
+newtab-privacy-message-info-11 = Μάθετε πώς το { -brand-short-name } βοηθά στη διατήρηση της ιδιωτικότητας της περιήγησής σας.
+newtab-privacy-message-info-11-cta = Μάθετε περισσότερα
+newtab-privacy-message-info-12 = Ο αποκλεισμός ιχνηλατών συμβάλλει στην εξοικονόμηση εύρους ζώνης σε πακέτα με περιορισμένα δεδομένα.
+newtab-privacy-message-info-12-cta = Προβολή μέτρων προστασίας
+newtab-privacy-message-info-13 = Το { -brand-short-name } αποκλείει ιχνηλάτες, ελευθερώνοντας εύρος ζώνης για ομαλότερο streaming.
+newtab-privacy-message-info-13-cta = Προβολή μέτρων προστασίας
+
+## Privacy widget — promotional messages
+##
+## Rotating "promo" secondary messages suggesting another Firefox feature. Each
+## has a body plus a matched "-cta" button label.
+
+newtab-privacy-message-promo-monitor-1 = Μάθετε αν τα προσωπικά σας δεδομένα έχουν εμφανιστεί σε κάποια παραβίαση δεδομένων.
+newtab-privacy-message-promo-monitor-1-cta = Μάθετε περισσότερα
+newtab-privacy-message-promo-monitor-2 = Προστατέψτε τα δεδομένα σας με τη δωρεάν εποπτεία για παραβιάσεις δεδομένων, για έως και 20 email.
+newtab-privacy-message-promo-monitor-2-cta = Μάθετε περισσότερα
+newtab-privacy-message-promo-signin-1 = Διατηρήστε κρυπτογραφημένους τους σελιδοδείκτες, τους κωδικούς πρόσβασης και τις καρτέλες σας, σε όλες τις συσκευές σας, με τον λογαριασμό { -vendor-short-name } σας.
+newtab-privacy-message-promo-signin-1-cta = Σύνδεση
+newtab-privacy-message-promo-vpn-1 = Κάνετε αγορές σε δημόσια Wi-Fi; Ενεργοποιήστε το ενσωματωμένο VPN για επιπλέον προστασία.
+newtab-privacy-message-promo-vpn-1-cta = Άνοιγμα VPN
+newtab-privacy-message-promo-vpn-2 = Χρησιμοποιείτε το Wi-Fi ενός αεροδρομίου; Προστατέψτε την περιήγησή σας ενεργοποιώντας το ενσωματωμένο VPN.
+newtab-privacy-message-promo-vpn-2-cta = Άνοιγμα VPN
+newtab-privacy-message-promo-vpn-3 = Ενεργοποιήστε το ενσωματωμένο VPN για να διατηρήσετε την τοποθεσία σας πιο ιδιωτική.
+newtab-privacy-message-promo-vpn-3-cta = Άνοιγμα VPN
+newtab-privacy-message-promo-private-window-1 = Δοκιμάστε ένα ιδιωτικό παράθυρο για πιο ιδιωτική περιήγηση όταν χρησιμοποιείτε έναν κοινόχρηστο υπολογιστή.
+newtab-privacy-message-promo-private-window-1-cta = Άνοιγμα ιδιωτικού παραθύρου
+newtab-privacy-message-promo-relay-1 = Κρατήστε το πραγματικό σας email για τα άτομα που εμπιστεύεστε· χρησιμοποιήστε μια μάσκα email για εγγραφές σε ιστοτόπους.
+newtab-privacy-message-promo-relay-1-cta = Απόκτηση μασκών
+newtab-privacy-message-promo-relay-2 = Προστατέψτε τα εισερχόμενά σας από ανεπιθύμητα μηνύματα με τη δωρεάν απόκρυψη email.
+newtab-privacy-message-promo-relay-2-cta = Απόκτηση μασκών
+newtab-privacy-message-promo-relay-3 = Αποκτήστε 50 δωρεάν μάσκες email για να διατηρήσετε το πραγματικό σας email ιδιωτικό.
+newtab-privacy-message-promo-relay-3-cta = Απόκτηση μασκών
+
+## Privacy widget — celebration messages
+##
+## Earned "celebration" moments (milestones, daily cap, streak, first
+## protection). Count-bearing ones interpolate { $count }.
+
+# Variables:
+#   $count (number) - Trackers blocked this week
+newtab-privacy-message-milestone-week =
+    { $count ->
+        [one] { $count } αποκλεισμένος ιχνηλάτης αυτήν την εβδομάδα. Δείτε τι εμποδίζει για εσάς το { -brand-short-name }
+       *[other] { $count } αποκλεισμένοι ιχνηλάτες αυτήν την εβδομάδα. Δείτε τι εμποδίζει για εσάς το { -brand-short-name }
+    }
+newtab-privacy-message-milestone-week-cta = Προβολή μέτρων προστασίας
+# Variables:
+#   $count (number) - Trackers blocked this month
+newtab-privacy-message-milestone-month =
+    { $count ->
+        [one] { $count } αποκλεισμένος ιχνηλάτης αυτόν τον μήνα. Ένα μικρό βήμα για την ιδιωτικότητα. Ένα μεγάλο βήμα για την ηρεμία και την ασφάλεια.
+       *[other] { $count } αποκλεισμένοι ιχνηλάτες αυτόν τον μήνα. Ένα μικρό βήμα για την ιδιωτικότητα. Ένα μεγάλο βήμα για την ηρεμία και την ασφάλεια.
+    }
+newtab-privacy-message-milestone-month-cta = Προβολή μέτρων προστασίας
+# Variables:
+#   $count (number) - Trackers blocked this year
+newtab-privacy-message-milestone-year =
+    { $count ->
+        [one] { $count } αποκλεισμένος ιχνηλάτης αυτό το έτος. Αυτός ήταν ένας δυναμικός χρόνος για την προστασία του απορρήτου σας.
+       *[other] { $count } αποκλεισμένοι ιχνηλάτες αυτό το έτος. Αυτός ήταν ένας δυναμικός χρόνος για την προστασία του απορρήτου σας.
+    }
+newtab-privacy-message-milestone-year-cta = Προβολή μέτρων προστασίας
+# Variables:
+#   $count (number) - Trackers blocked all-time
+newtab-privacy-message-milestone-total =
+    { $count ->
+        [one] { $count } αποκλεισμένος ιχνηλάτης. Αυτή είναι σημαντική πρόοδος προς την ιδιωτικότητα, με τους δικούς σας όρους.
+       *[other] { $count } αποκλεισμένοι ιχνηλάτες. Αυτή είναι σημαντική πρόοδος προς την ιδιωτικότητα, με τους δικούς σας όρους.
+    }
+newtab-privacy-message-milestone-total-cta = Προβολή μέτρων προστασίας
+# Shown when today's blocked-tracker count reaches the display cap ("100+").
+newtab-privacy-message-daily-cap = (100+ αποκλεισμένοι ιχνηλάτες σήμερα.) Λιγότεροι ιχνηλάτες, περισσότερη ιδιωτικότητα.
+newtab-privacy-message-daily-cap-cta = Προβολή μέτρων προστασίας
+# Variables:
+#   $count (number) - Consecutive days the user has had trackers blocked
+newtab-privacy-message-streak =
+    { $count ->
+        [one] Προστατεύεστε { $count } συνεχόμενη ημέρα.
+       *[other] Προστατεύεστε { $count } συνεχόμενες ημέρες.
+    }
+newtab-privacy-message-streak-cta = Προβολή μέτρων προστασίας
+# Shown the first time the tracker count goes above zero.
+newtab-privacy-message-first-protection = Συνεχίστε την περιήγηση, το { -brand-short-name } θα συνεχίσει να κάνει αποκλεισμό.
+newtab-privacy-message-first-protection-cta = Προβολή μέτρων προστασίας
+
+## Strings for the Stocks widget
+
+# Context menu item linking to more information about the Stocks widget.
+newtab-stocks-menu-learn-more = Μάθετε περισσότερα
+# Shown in the Stocks widget when its data could not be loaded.
+newtab-stocks-error-not-available = Δεν διατίθενται δεδομένα μετοχών.
+# "Stocks widget options" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-stocks-widget-menu-button =
+    .aria-label = Επιλογές γραφικού στοιχείου μετοχών
+    .title = Επιλογές γραφικού στοιχείου μετοχών
+# Accessible name for the Stocks widget; hidden because the list dropdown is
+# shown in place of the title.
+newtab-stocks-widget-title = Μετοχές
+# "Markets" is the default list of market ETFs. The value is shown in the menu,
+# and .label is shown on the button that opens it.
+newtab-stocks-list-markets = Αγορές
+    .label = Αγορές
+# "Watchlist" is the user's list of stocks to follow. The value is shown in the
+# menu, and .label is shown on the button that opens it.
+newtab-stocks-list-watchlist = Λίστα παρακολούθησης
+    .label = Λίστα παρακολούθησης
+# Context menu item that opens the stock search (by company name or ticker symbol).
+newtab-stocks-menu-search-stocks = Αναζήτηση με όνομα ή σύμβολο
+
+## Screen-reader summary of a stock ticker.
+## Variables:
+##   $name (String) - the full fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+##   $change (String) - the day's percentage change, e.g. "+2.1%".
+##   $price (String) - the last price, e.g. "$559.44".
+
+# Stock increased (went up) during the day
+newtab-stocks-ticker-status-up = { $name }, άνοδος { $change }, { $price }
+# Stock decreased (went down) during the day
+newtab-stocks-ticker-status-down = { $name }, πτώση { $change }, { $price }
+# Stock didn't change during the day
+newtab-stocks-ticker-status-flat = { $name }, χωρίς μεταβολή, { $change }, { $price }
+
+## Stocks widget watchlist add and remove controls
+
+# Tooltip and screen-reader label for the button that adds a stock to the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+newtab-stocks-add-to-watchlist =
+    .aria-label = Προσθήκη του { $name } στη λίστα παρακολούθησης
+    .title = Προσθήκη του { $name } στη λίστα παρακολούθησης
+# Tooltip and screen-reader label for the button that removes a stock from the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-remove-from-watchlist =
+    .aria-label = Αφαίρεση του { $name } από τη λίστα παρακολούθησης
+    .title = Αφαίρεση του { $name } από τη λίστα παρακολούθησης
+# Visually hidden text on a Markets row whose stock is already in the watchlist, so
+# screen readers announce that it is saved. Removal happens on the Watchlist tab.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-in-watchlist = Το { $name } βρίσκεται στη λίστα παρακολούθησής σας
+# Announced to screen readers after a stock is added to the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-added-to-watchlist = Προστέθηκε το { $name } στη λίστα παρακολούθησης
+# Announced to screen readers after a stock is removed from the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-removed-from-watchlist = Αφαιρέθηκε το { $name } από τη λίστα παρακολούθησης
+
+## Stocks widget ticker search
+
+# Placeholder and screen-reader label for the ticker search input.
+newtab-stocks-search-input =
+    .aria-label = Αναζήτηση με όνομα ή σύμβολο
+    .placeholder = Αναζήτηση με όνομα ή σύμβολο
+# "Search results" is the accessible label for the list of tickers matching the
+# search. It means "results of the search", not "search within the results".
+newtab-stocks-search-results =
+    .aria-label = Αποτελέσματα αναζήτησης
+# "Back" is an icon-only button in the search panel header that returns to the
+# widget — the attributes are consumed as tooltip/screen-reader label only. The
+# button never renders visible text.
+newtab-stocks-search-back-button =
+    .aria-label = Πίσω
+    .title = Πίσω
+# Shown when a ticker search returns no matching symbols.
+# Variables:
+#   $query (String) - the text the user searched for.
+newtab-stocks-search-no-results = Κανένα αποτέλεσμα για «{ $query }»
+# Shown while a ticker search is running; also announced to screen readers.
+newtab-stocks-search-loading = Φόρτωση…
+# Shown when a ticker search fails to reach the service.
+newtab-stocks-search-error = Δεν ήταν δυνατή η αναζήτηση αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.
+# Shown below successful search results when the watchlist is already full.
+# Variables:
+#   $limit (Number) - the maximum number of stocks the watchlist can hold.
+newtab-stocks-watchlist-full =
+    { $limit ->
+        [one] Μπορείτε να προσθέσετε έως και { $limit } μετοχή. Αφαιρέστε μία για να προσθέσετε κάποια άλλη.
+       *[other] Μπορείτε να προσθέσετε έως και { $limit } μετοχές. Αφαιρέστε μία για να προσθέσετε κάποια άλλη.
+    }
+
+## Strings for the Picture of the Day widget
+
+# Title shown at the top of the widget, with the source name appended.
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-header = Εικόνα της ημέρας · Wikimedia Commons
+# Shorter title shown at the top of the widget, without the source name.
+newtab-picture-header-main = Εικόνα της ημέρας
+# Attribution line shown under the title once a picture loads: an author
+# credit, a link to the picture's source page, and a link to its license.
+# "©" is the copyright symbol.
+# $author (string) - the name of the image's author.
+newtab-picture-attribution-author = © { $author }
+# Link to the picture's source page (its Wikimedia Commons file page).
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-attribution-source-link = Wikimedia Commons
+# Screen-reader label for the license link; the visible text is the license
+# name (for example "CC BY-SA 4.0") provided with the picture.
+# $license (string) - the name of the license.
+newtab-picture-attribution-license =
+    .aria-label = Προβολή της άδειας { $license }
+# Tooltip and screen-reader label for the icon-only button that opens the
+# widget's context menu. The button never renders visible text.
+newtab-picture-widget-menu-button =
+    .aria-label = Επιλογές εικόνας ημέρας
+    .title = Επιλογές εικόνας ημέρας
+# Button that sets the current picture as the New Tab background wallpaper. The
+# button collapses to an icon when not hovered/focused, so .title is its tooltip.
+newtab-picture-set-wallpaper =
+    .aria-label = Ορισμός σημερινής εικόνας ως ταπετσαρίας
+    .label = Ορισμός ταπετσαρίας
+    .title = Ορισμός ταπετσαρίας
+# Context menu item that opens the New Tab customization panel.
+newtab-picture-menu-manage-wallpaper = Διαχείριση ταπετσαρίας
+# Context menu item that hides today’s picture, replacing it with an existing
+# wallpaper.
+newtab-picture-menu-hide-photo = Απόκρυψη σημερινής εικόνας
+# Context menu item that restores today’s picture after it has been hidden.
+newtab-picture-menu-show-photo = Εμφάνιση σημερινής εικόνας
+# Context menu item linking to more information about the widget.
+newtab-picture-menu-learn-more = Μάθετε περισσότερα
+# Icon button shown on the widget once the picture is hidden; restores it.
+newtab-picture-show-button =
+    .aria-label = Εμφάνιση σημερινής εικόνας
+    .title = Εμφάνιση σημερινής εικόνας
+# Shown when there is no new picture to display yet.
+newtab-picture-check-back = Επιστρέψτε αύριο για μια νέα εικόνα
+# Screen-reader text alternative for the picture; fallback used when the source
+# provides no localized description.
+newtab-picture-image-alt = Εικόνα της ημέρας από το Wikimedia Commons
+
+## Strings for the Recent Searches widget
+
+# Widget heading; also the widget's accessible name.
+newtab-recent-searches-widget-title = Πρόσφατες αναζητήσεις
+# Screen reader label for the widget's icon-only menu button.
+newtab-recent-searches-widget-menu-button =
+    .aria-label = Επιλογές πρόσφατων αναζητήσεων
+# Context menu item linking to more information about the widget.
+newtab-recent-searches-menu-learn-more = Μάθετε περισσότερα
+# Tab listing the searches the user has made recently.
+newtab-recent-searches-tab-recent = Πρόσφατες αναζητήσεις
+# Tab listing what is trending with the user's search engine.
+newtab-recent-searches-tab-trending = Τάσεις
+# Informs the user which engine the trending results come from.
+# Variables:
+#   $engine (string) - Name of the default search engine, e.g. "Google".
+newtab-recent-searches-trending-attribution = μέσω { $engine }
+# Relative time shown for a search made less than a minute ago.
+newtab-recent-searches-just-now = Μόλις τώρα
+# Screen reader label for the button that forgets one listed search.
+# Variables:
+#   $search (string) - The search the row shows, e.g. "puffin colonies".
+newtab-recent-searches-row-remove =
+    .aria-label = Αφαίρεση του «{ $search }» από τις πρόσφατες αναζητήσεις
+
+## Recent searches widget — empty states
+
+# Shown in place of the list when the user has made no searches recently.
+newtab-recent-searches-empty-recent = Οι πρόσφατες αναζητήσεις σας θα εμφανίζονται εδώ, ώστε να μπορείτε να επιστρέφετε σε αυτές ανά πάσα στιγμή.
+# Shown in place of the list when there are no trending search results.
+newtab-recent-searches-empty-trending = Οι δημοφιλείς αναζητήσεις δεν είναι διαθέσιμες αυτήν τη στιγμή.
+
+## Strings for the navigable panels that new tab content area can be
+## split into.
+
+newtab-spaces-tab-stories = Άρθρα
+newtab-spaces-tab-widgets = Γραφικά στοιχεία
+newtab-spaces-tab-activity = Δραστηριότητα
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Αναζήτηση
+    .title = Αναζήτηση
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = Αναζήτηση με { $engine } ή εισαγωγή διεύθυνσης
+newtab-search-box-handoff-text-no-engine = Αναζήτηση ή εισαγωγή διεύθυνσης
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = Αναζήτηση με { $engine } ή εισαγωγή διεύθυνσης
+    .placeholder = Αναζήτηση με { $engine } ή εισαγωγή διεύθυνσης
+    .title = Αναζήτηση με { $engine } ή εισαγωγή διεύθυνσης
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = Αναζήτηση ή εισαγωγή διεύθυνσης
+    .placeholder = Αναζήτηση ή εισαγωγή διεύθυνσης
+    .title = Αναζήτηση ή εισαγωγή διεύθυνσης
+newtab-search-box-text = Αναζήτηση στο διαδίκτυο
+newtab-search-box-input =
+    .aria-label = Αναζήτηση στο διαδίκτυο
+    .placeholder = Αναζήτηση στο διαδίκτυο
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Προσθήκη μηχανής αναζήτησης
+newtab-topsites-add-shortcut-header = Νέα συντόμευση
+newtab-topsites-edit-shortcut-header = Επεξεργασία συντόμευσης
+newtab-topsites-add-shortcut-label = Προσθήκη συντόμευσης
+newtab-topsites-add-shortcut-title =
+    .aria-label = Προσθήκη συντόμευσης
+    .title = Προσθήκη συντόμευσης
+newtab-shortcuts-pinned-area = Καρφιτσωμένη περιοχή
+newtab-topsites-title-label = Τίτλος
+newtab-topsites-title-input =
+    .placeholder = Εισαγωγή τίτλου
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Εισαγωγή ή επικόλληση URL
+newtab-topsites-url-validation = Απαιτείται έγκυρο URL
+newtab-topsites-image-url-label = URL προσαρμοσμένης εικόνας
+newtab-topsites-use-custom-image-link = Χρήση προσαρμοσμένης εικόνας
+newtab-topsites-use-image-link = Χρήση προσαρμοσμένης εικόνας…
+newtab-topsites-image-validation = Αποτυχία φόρτωσης εικόνας. Δοκιμάστε ένα διαφορετικό URL.
+newtab-topsites-clear-input =
+    .aria-label = Απαλοιφή κειμένου
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Ακύρωση
+newtab-topsites-delete-history-button = Διαγραφή από ιστορικό
+newtab-topsites-save-button = Αποθήκευση
+newtab-topsites-preview-button = Προεπισκόπηση
+newtab-topsites-add-button = Προσθήκη
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Θέλετε σίγουρα να διαγράψετε κάθε παρουσία της σελίδας από το ιστορικό σας;
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = Χορηγία
+
+## Label used by screen readers for pinned top sites
+
+# Variables:
+#   $title (string) - The label or hostname of the site.
+topsite-label-pinned =
+    .aria-label = { $title } (καρφιτσώθηκε)
+    .title = { $title }
+
+## Top Sites - Web notifications hover card
+
+# Variables:
+#   $site (string) - The label or hostname of the site the notifications are from.
+newtab-topsites-hover-card-header = Ειδοποιήσεις από το { $site }
+# Relative time shown for a notification posted less than a minute ago.
+newtab-topsites-hover-card-just-now = Μόλις τώρα
+newtab-topsites-hover-card-mark-all-read =
+    .aria-label = Επισήμανση όλων ως αναγνωσμένων
+    .title = Επισήμανση όλων ως αναγνωσμένων
+newtab-topsites-hover-card-settings =
+    .aria-label = Ρυθμίσεις ειδοποιήσεων
+    .title = Ρυθμίσεις ειδοποιήσεων
+newtab-topsites-hover-card-dismiss =
+    .aria-label = Απόρριψη
+    .title = Απόρριψη
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Άνοιγμα μενού
+    .title = Άνοιγμα μενού
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Άνοιγμα μενού επιλογών για το { $title }
+    .title = Άνοιγμα μενού
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Επεξεργασία
+newtab-menu-add-topsite = Προσθήκη νέας συντόμευσης
+newtab-menu-open-new-window = Άνοιγμα σε νέο παράθυρο
+newtab-menu-open-new-private-window = Άνοιγμα σε νέο ιδιωτικό παράθυρο
+newtab-menu-dismiss = Απόρριψη
+newtab-menu-pin = Καρφίτσωμα
+newtab-menu-unpin = Ξεκαρφίτσωμα
+newtab-menu-delete-history = Διαγραφή από ιστορικό
+newtab-menu-show-privacy-info = Οι χορηγοί μας και το απόρρητό σας
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = Αναφορά
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Φραγή
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow-topic = Άρση παρακολούθησης
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = Μάθετε περισσότερα
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = Διαχείριση χορηγούμενου περιεχομένου
+newtab-menu-our-sponsors-and-your-privacy = Οι χορηγοί μας και το απόρρητό σας
+newtab-menu-report-this-ad = Αναφορά διαφήμισης
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Αφαίρεση σελιδοδείκτη
+# Bookmark is a verb here.
+newtab-menu-bookmark = Προσθήκη σελιδοδείκτη
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Αντιγραφή συνδέσμου λήψης
+newtab-menu-go-to-download-page = Μετάβαση στη σελίδα λήψης
+newtab-menu-remove-download = Αφαίρεση από το ιστορικό
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Εμφάνιση στο Finder
+       *[other] Άνοιγμα φακέλου λήψης
+    }
+newtab-menu-open-file = Άνοιγμα αρχείου
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Από ιστορικό
+newtab-label-bookmarked = Από σελιδοδείκτες
+newtab-label-removed-bookmark = Ο σελιδοδείκτης αφαιρέθηκε
+newtab-label-recommended = Τάσεις
+newtab-label-saved = Αποθηκεύτηκε στο { -pocket-brand-name }
+newtab-label-download = Λήψεις
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · Χορηγία
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = Χορηγία από { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } λεπ.
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = Χορηγία
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Δήλωση απορρήτου
+
+## Section Headers.
+
+newtab-section-header-topsites = Κορυφαίοι ιστότοποι
+newtab-section-header-recent-activity = Πρόσφατη δραστηριότητα
+newtab-section-header-stories = Άρθρα που σας βάζουν σε σκέψεις
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Σημερινές επιλογές για εσάς
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Ξεκινήστε την περιήγηση και θα σας δείξουμε μερικά υπέροχα άρθρα, βίντεο και άλλες σελίδες που έχετε επισκεφθεί πρόσφατα ή έχετε προσθέσει στους σελιδοδείκτες σας.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Δεν υπάρχει κάτι νεότερο. Ελέγξτε αργότερα για περισσότερα άρθρα. Δεν μπορείτε να περιμένετε; Επιλέξτε κάποιο δημοφιλές θέμα και βρείτε ακόμα περισσότερα ενδιαφέροντα άρθρα από όλο το διαδίκτυο.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = Τελειώσατε!
+newtab-discovery-empty-section-topstories-content = Ελέγξτε ξανά αργότερα για περισσότερα άρθρα.
+newtab-discovery-empty-section-topstories-try-again-button = Δοκιμή ξανά
+newtab-discovery-empty-section-topstories-loading = Φόρτωση…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Ωχ! Αυτή η ενότητα σχεδόν φορτώθηκε, αλλά όχι πλήρως.
+
+## Strings for the story cards carousel
+
+# Identifies the current carousel slide to screen reader users.
+# Variables:
+#   $index - the position of this slide
+#   $total - how many slides there are
+newtab-carousel-slide =
+    .aria-label = { $index } από { $total }
+# Button that goes to the previous carousel slide.
+newtab-carousel-previous =
+    .aria-label = Προηγούμενο
+# Button that goes to the next carousel slide.
+newtab-carousel-next =
+    .aria-label = Επόμενο
+# Button that pauses autoplay on the carousel.
+newtab-carousel-pause =
+    .aria-label = Παύση αυτόματης αναπαραγωγής
+# Button that resumes autoplay on the carousel.
+newtab-carousel-play =
+    .aria-label = Συνέχιση αυτόματης αναπαραγωγής
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Ωχ, κάτι πήγε στραβά κατά τη φόρτωση του περιεχομένου.
+newtab-error-fallback-refresh-link = Ανανεώστε τη σελίδα για να δοκιμάσετε ξανά.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = Ιστότοποι από σελιδοδείκτες ή ιστορικό
+    .label = Συντομεύσεις
+newtab-custom-shortcuts-nova =
+    .label = Συντομεύσεις
+newtab-custom-web-notifications-toggle =
+    .description = Εμφάνιση ειδοποιήσεων από τους ιστότοπούς σας στις συντομεύσεις τους
+    .label = Ειδοποιήσεις ιστότοπου
+newtab-custom-row-description =
+    .description = Αριθμός σειρών
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } σειρά
+           *[other] { $num } σειρές
+        }
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be having a description under "Recommended stories" anymore
+newtab-custom-stories-toggle =
+    .description = Εξαιρετικό περιεχόμενο από την οικογένεια του { -brand-product-name }
+    .label = Προτεινόμενα άρθρα
+newtab-recommended-stories-toggle =
+    .label = Προτεινόμενα άρθρα
+newtab-custom-stories-personalized-toggle =
+    .label = Άρθρα
+newtab-custom-stories-personalized-checkbox =
+    .label = Εξατομικευμένα άρθρα με βάση τη δραστηριότητά σας
+newtab-custom-stories-personalized-checkbox-label = Εξατομικευμένα άρθρα με βάση τη δραστηριότητά σας
+newtab-custom-weather-toggle =
+    .description = Σημερινή πρόγνωση με μια ματιά
+    .label = Καιρός
+newtab-custom-widget-weather-toggle =
+    .label = Καιρός
+newtab-custom-widget-lists-toggle =
+    .label = Λίστες
+newtab-custom-widget-timer-toggle =
+    .label = Αντίστροφη μέτρηση
+newtab-custom-widget-clock-toggle =
+    .label = Ρολόι
+newtab-custom-widget-sports-toggle2 =
+    .label = Αθλήματα
+newtab-custom-widget-privacy-toggle =
+    .label = Απόρρητο
+newtab-custom-widget-stocks-toggle =
+    .label = Μετοχές
+newtab-custom-widget-picture-toggle =
+    .label = Εικόνα της ημέρας
+newtab-custom-widget-recent-searches-toggle =
+    .label = Πρόσφατες αναζητήσεις
+newtab-custom-widget-section-title = Γραφικά στοιχεία
+newtab-custom-widget-section-toggle =
+    .label = Γραφικά στοιχεία
+newtab-widget-manage-title = Γραφικά στοιχεία
+newtab-widget-manage-widget-button =
+    .label = Διαχείριση γραφικών στοιχείων
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .aria-label = Κλείσιμο μενού
+    .title = Κλείσιμο
+newtab-custom-settings = Διαχείριση περισσότερων ρυθμίσεων
+
+## Customization Menu
+
+# An arrow button that goes back from a sub-panel in the customize panel, such as a wallpaper category, to the main Customize panel.
+newtab-customize-panel-back-button =
+    .aria-label = Πίσω στην Προσαρμογή
+    .title = Πίσω στην Προσαρμογή
+
+## New Tab Appearance (browser theme picker)
+
+# Title of the browser theme ("Appearance") section in the customize panel.
+newtab-custom-appearance-section-title = Εμφάνιση
+# Button that opens the full browser theme selection view.
+newtab-appearance-more-themes-button =
+    .label = Προβολή περισσότερων θεμάτων
+# Title of the full theme selection sub-panel, also used as its back button label.
+newtab-appearance-manage-title = Θέματα του { -brand-product-name }
+# Header for the list of the user's already-installed themes in the full theme panel.
+newtab-appearance-your-themes-header = Τα θέματά σας
+# Button that enables an already-installed theme.
+newtab-appearance-enable-theme-button =
+    .label = Ενεργοποίηση
+# Button that disables the active theme and reverts to the default.
+newtab-appearance-disable-theme-button =
+    .label = Απενεργοποίηση
+# Button that installs a theme.
+newtab-appearance-install-theme-button =
+    .label = Εγκατάσταση θέματος
+# Button/link on the full theme panel that opens the complete list of available themes.
+newtab-appearance-explore-more-themes-button = Εξερευνήστε περισσότερα θέματα
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = Ταπετσαρίες
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = Επαναφορά προεπιλογής
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = Μεταφόρτωση εικόνας
+newtab-wallpaper-add-an-image = Προσθήκη εικόνας
+newtab-wallpaper-custom-color = Επιλογή χρώματος
+newtab-wallpaper-toggle-title =
+    .label = Ταπετσαρίες
+# Variables
+#   $file_size (number) - The number of the maximum image file size (in MB) that may be uploaded
+newtab-wallpaper-error-max-file-size = Η εικόνα υπερέβη το όριο μεγέθους των { $file_size }MB. Δοκιμάστε να μεταφορτώσετε ένα μικρότερο αρχείο.
+newtab-wallpaper-error-upload-file-type = Δεν ήταν δυνατή η μεταφόρτωση του αρχείου σας. Δοκιμάστε ξανά με ένα άλλο αρχείο εικόνας.
+newtab-wallpaper-light-red-panda = Κόκκινο πάντα
+newtab-wallpaper-light-mountain = Λευκό βουνό
+newtab-wallpaper-light-sky = Ουρανός με μοβ και ροζ σύννεφα
+newtab-wallpaper-light-color = Μπλε, ροζ και κίτρινα σχήματα
+newtab-wallpaper-light-landscape = Μπλε ορεινό τοπίο ομίχλης
+newtab-wallpaper-light-beach = Παραλία με φοίνικα
+newtab-wallpaper-dark-aurora = Βόρειο σέλας
+newtab-wallpaper-dark-color = Κόκκινα και μπλε σχήματα
+newtab-wallpaper-dark-panda = Κόκκινο πάντα στο δάσος
+newtab-wallpaper-dark-sky = Αστικό τοπίο με νυχτερινό ουρανό
+newtab-wallpaper-dark-mountain = Ορεινό τοπίο
+newtab-wallpaper-dark-city = Μοβ αστικό τοπίο
+newtab-wallpaper-dark-fox-anniversary = Μια αλεπού στο πεζοδρόμιο κοντά σε ένα δάσος
+newtab-wallpaper-light-fox-anniversary = Μια αλεπού μέσα σε γρασίδι, με ένα ομιχλώδες ορεινό τοπίο
+
+## "Your images" is the folder of wallpapers someone has saved. A saved wallpaper
+## can be a file they uploaded, a Picture of the Day they chose to keep, or a
+## Firefox wallpaper kept for them when it was retired.
+
+newtab-wallpaper-your-images = Οι εικόνες σας
+# Accessible name for the tile that opens the "Your images" folder in the
+# wallpaper picker. The tile shows one of the saved images and has no text of
+# its own, so this is all a screen reader has to go on.
+newtab-wallpaper-your-images-folder =
+    .aria-label = Οι εικόνες σας, ταπετσαρίες που έχετε αποθηκεύσει
+# Read by screen readers for a saved image that has a name of its own: a kept
+# Picture of the Day, or a Firefox wallpaper kept when it was retired. An image
+# someone added themselves is numbered instead, see the string below.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-your-images-item = { $name }
+# Read by screen readers for an image someone added themselves. Firefox counts
+# these as they are saved rather than keeping the name of their file.
+# Variables:
+#   $number (number) - Which saved image this is, counting from one
+newtab-wallpaper-your-images-item-numbered = Εικόνα { $number }
+# Each saved image has its own remove button. The tooltip stays short because
+# a name can be long and some locales put it before the verb, which would push
+# "remove" out of view. The full name is on the label a screen reader reads.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-remove-image =
+    .aria-label = Αφαίρεση του «{ $name }»
+    .title = Αφαίρεση εικόνας
+# The remove button for an image someone added themselves. .title is the
+# tooltip and .aria-label is what a screen reader reads.
+# Variables:
+#   $number (number) - Which saved image this is, counting from one
+newtab-wallpaper-remove-image-numbered =
+    .aria-label = Αφαίρεση εικόνας { $number }
+    .title = Αφαίρεση εικόνας { $number }
+newtab-wallpaper-remove-image-title = Αφαίρεση εικόνας;
+# "This action" refers to removing a saved wallpaper image.
+newtab-wallpaper-remove-image-body = Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.
+newtab-wallpaper-remove-image-confirm = Αφαίρεση
+newtab-wallpaper-remove-image-cancel = Ακύρωση
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = Αμιγή χρώματα
+newtab-wallpaper-colors = Χρώματα
+newtab-wallpaper-blue = Μπλε
+newtab-wallpaper-light-blue = Ανοιχτό μπλε
+newtab-wallpaper-light-purple = Ανοιχτό μωβ
+newtab-wallpaper-light-green = Ανοιχτό πράσινο
+newtab-wallpaper-green = Πράσινο
+newtab-wallpaper-beige = Μπεζ
+newtab-wallpaper-yellow = Κίτρινο
+newtab-wallpaper-orange = Πορτοκαλί
+newtab-wallpaper-pink = Ροζ
+newtab-wallpaper-light-pink = Ανοιχτό ροζ
+newtab-wallpaper-red = Κόκκινο
+newtab-wallpaper-dark-blue = Σκούρο μπλε
+newtab-wallpaper-dark-purple = Σκούρο μωβ
+newtab-wallpaper-dark-green = Σκούρο πράσινο
+newtab-wallpaper-brown = Καφέ
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = Αφηρημένο
+newtab-wallpaper-abstract-green = Πράσινα σχήματα
+newtab-wallpaper-abstract-blue = Μπλε σχήματα
+newtab-wallpaper-abstract-purple = Μοβ σχήματα
+newtab-wallpaper-abstract-orange = Πορτοκαλί σχήματα
+newtab-wallpaper-gradient-orange = Διαβάθμιση πορτοκαλί και ροζ
+newtab-wallpaper-abstract-blue-purple = Μπλε και μοβ σχήματα
+newtab-wallpaper-abstract-white-curves = Λευκό με σκιασμένες καμπύλες
+newtab-wallpaper-abstract-purple-green = Διαβάθμιση μοβ και πράσινου φωτός
+newtab-wallpaper-abstract-blue-purple-waves = Μπλε και μοβ κυματιστές μορφές
+newtab-wallpaper-abstract-black-waves = Μαύρες κυματιστές μορφές
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = Φωτογραφίες
+newtab-wallpaper-beach-at-sunrise = Παραλία στην ανατολή του ήλιου
+newtab-wallpaper-beach-at-sunset = Παραλία στη δύση του ήλιου
+newtab-wallpaper-storm-sky = Ουρανός με καταιγίδα
+newtab-wallpaper-sky-with-pink-clouds = Ουρανός με ροζ σύννεφα
+newtab-wallpaper-red-panda-yawns-in-a-tree = Κόκκινο πάντα που χασμουριέται σε ένα δέντρο
+newtab-wallpaper-white-mountains = Λευκά βουνά
+newtab-wallpaper-hot-air-balloons = Αερόστατα διάφορων χρωμάτων στο φως της ημέρας
+newtab-wallpaper-starry-canyon = Μπλε έναστρη νύχτα
+newtab-wallpaper-suspension-bridge = Γκρι φωτογραφία με μια κρεμαστή γέφυρα κατά τη διάρκεια της ημέρας
+newtab-wallpaper-sand-dunes = Λευκοί αμμόλοφοι
+newtab-wallpaper-palm-trees = Φιγούρες κοκοφοινίκων κατά τη «χρυσή ώρα»
+newtab-wallpaper-blue-flowers = Κοντινή φωτογραφία ανθισμένων λουλουδιών με μπλε πέταλα
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Φωτογραφία από <a data-l10n-name="name-link">{ $author_string }</a> στο <a data-l10n-name="webpage-link">{ $webpage_string }</a>
+newtab-wallpaper-feature-highlight-header = Δοκιμάστε μια πινελιά χρώματος
+newtab-wallpaper-feature-highlight-content = Δώστε νέα εμφάνιση στη νέα σας καρτέλα με ταπετσαρίες.
+newtab-wallpaper-feature-highlight-button = Το κατάλαβα
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = Κλείσιμο αναδυόμενου παραθύρου
+    .title = Απόρριψη
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+newtab-wallpaper-firefox-orange = Μια αλεπού στη δεξιά άκρη με πορτοκαλί φόντο
+newtab-wallpaper-firefox-colorful-sky = Πορτοκαλί κύματα σε έναν μοβ νυχτερινό ουρανό
+newtab-wallpaper-firefox-desert-dark = Μια αλεπού καθισμένη σε μια σκούρα μοβ έρημο
+newtab-wallpaper-firefox-desert-light = Μια αλεπού που τρέχει σε μια ανοιχτόχρωμη έρημο
+newtab-wallpaper-firefox-hills-dark = Μια αλεπού που τρέχει πάνω από σκουρόχρωμους λόφους
+newtab-wallpaper-firefox-hills-light = Μια αλεπού που τρέχει πάνω από ανοιχτόχρωμους λόφους
+newtab-wallpaper-firefox-tail-dark = Η ουρά μιας αλεπούς σε σκουρόχρωμο φόντο
+newtab-wallpaper-firefox-tail-light = Η ουρά μιας αλεπούς σε ανοιχτόχρωμο φόντο
+newtab-wallpaper-firefox-side-kit-dark = Μια αλεπού στα αριστερά, σε σκουρόχρωμο φόντο
+newtab-wallpaper-firefox-side-kit-light = Μια αλεπού στα αριστερά, σε ανοιχτόχρωμο φόντο
+newtab-wallpaper-firefox-sitting-hill-dark = Μια αλεπού καθισμένη σε σκούρους μοβ λόφους
+newtab-wallpaper-firefox-sitting-hill-light = Μια αλεπού καθισμένη σε ανοιχτόχρωμους λόφους
+newtab-wallpaper-firefox-peak-dark = Το πρόσωπο μιας αλεπούς στην αριστερή άκρη, σε σκουρόχρωμο φόντο
+newtab-wallpaper-firefox-peak-light = Το πρόσωπο μιας αλεπούς στην αριστερή άκρη, σε ανοιχτόχρωμο φόντο
+newtab-wallpaper-firefox-sky-dark = Σκούροι μοβ λόφοι κάτω από τον νυχτερινό ουρανό
+newtab-wallpaper-firefox-sky-light = Ανοιχτόχρωμοι λόφοι κάτω από τον γαλήνιο ουρανό
+
+## Firefox
+
+newtab-wallpaper-category-title-firefox = { -brand-product-name }
+
+## Celestial
+
+# “Celestial” referring to astronomy; positioned in or relating to the sky,
+# or outer space as observed in astronomy.
+# Not to be confused with religious definition of the word.
+newtab-wallpaper-category-title-celestial = Ουράνια
+newtab-wallpaper-celestial-lunar-eclipse = Έκλειψη Σελήνης
+newtab-wallpaper-celestial-earth-night = Νυχτερινή φωτογραφία από τη χαμηλή τροχιά της Γης
+newtab-wallpaper-celestial-starry-sky = Έναστρος ουρανός
+newtab-wallpaper-celestial-eclipse-time-lapse = Έκλειψη Σελήνης σε βαθμιαία παρέλευση χρόνου
+newtab-wallpaper-celestial-black-hole = Εικονογράφηση γαλαξία με μια μαύρη τρύπα
+newtab-wallpaper-celestial-river = Δορυφορική εικόνα ποταμού
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ Χορηγία
+newtab-weather-menu-change-location = Αλλαγή τοποθεσίας
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = Αναζήτηση τοποθεσίας
+    .placeholder = Αναζήτηση τοποθεσίας
+newtab-weather-cancel-input =
+    .aria-label = Ακύρωση
+    .title = Ακύρωση
+# "Current" refers to the user's physical/geographic location detected via geolocation.
+newtab-weather-change-location-search-use-current =
+    .label = Χρήση τρέχουσας τοποθεσίας
+newtab-weather-menu-weather-display = Προβολή καιρού
+newtab-weather-todays-forecast = Πρόγνωση ημέρας
+newtab-weather-see-full-forecast = Προβολή πλήρους πρόγνωσης
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = Απλή
+newtab-weather-menu-change-weather-display-simple = Εναλλαγή σε απλή προβολή
+newtab-weather-menu-weather-display-option-detailed = Λεπτομερής
+newtab-weather-menu-change-weather-display-detailed = Εναλλαγή σε λεπτομερή προβολή
+newtab-weather-menu-temperature-units = Μονάδες θερμοκρασίας
+newtab-weather-menu-temperature-option-fahrenheit = Φαρενάιτ
+newtab-weather-menu-temperature-option-celsius = Κελσίου
+newtab-weather-menu-change-temperature-units-fahrenheit = Εναλλαγή σε Φαρενάιτ
+newtab-weather-menu-change-temperature-units-celsius = Εναλλαγή σε Κελσίου
+newtab-weather-menu-learn-more = Μάθετε περισσότερα
+newtab-weather-menu-detect-my-location = Εντοπισμός τοποθεσίας
+# This message is shown if user is working offline
+newtab-weather-error-not-available = Τα δεδομένα καιρού δεν είναι διαθέσιμα αυτήν τη στιγμή.
+newtab-weather-opt-in-see-weather = Θέλετε να δείτε τον καιρό για την τοποθεσία σας;
+newtab-weather-opt-in-not-now =
+    .label = Όχι τώρα
+newtab-weather-opt-in-yes =
+    .label = Ναι
+newtab-weather-opt-in-headline = Λάβετε την τοπική πρόγνωση καιρού
+newtab-weather-opt-in-use-location =
+    .label = Χρήση τοποθεσίας
+newtab-weather-opt-in-choose-location = Επιλογή τοποθεσίας
+# We'll be showing static (fake) weather data if the user has not opted in to using their location
+newtab-weather-static-city = Νέα Υόρκη
+# "Highest" here refers to the highest temperature of the day
+newtab-weather-high =
+    .aria-label = Υψηλή
+# "Lowest" here refers to the lowest temperature of the day
+newtab-weather-low =
+    .aria-label = Χαμηλή
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast-description =
+    .aria-description = { $provider } ∙ Χορηγία
+    .title = Προβολή πρόγνωσης στο { $provider }
+
+## Topic Labels
+
+newtab-topic-label-business = Επιχειρήσεις
+newtab-topic-label-career = Καριέρα
+newtab-topic-label-education = Εκπαίδευση
+newtab-topic-label-arts = Ψυχαγωγία
+newtab-topic-label-food = Φαγητό
+newtab-topic-label-health = Υγεία
+newtab-topic-label-hobbies = Παιχνίδια
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Οικονομικά
+newtab-topic-label-society-parenting = Ανατροφή παιδιών
+newtab-topic-label-government = Πολιτική
+newtab-topic-label-education-science = Επιστήμη
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Αυτοβελτίωση
+newtab-topic-label-sports = Αθλήματα
+newtab-topic-label-tech = Τεχνολογία
+newtab-topic-label-travel = Ταξίδια
+newtab-topic-label-home = Σπίτι και κήπος
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Επιλέξτε θέματα για να βελτιώσετε τη ροή σας
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Επιλέξτε δύο ή περισσότερα θέματα. Οι ειδικοί επιμελητές μας δίνουν προτεραιότητα σε άρθρα που ταιριάζουν με τα ενδιαφέροντά σας. Κάντε ενημέρωση ανά πάσα στιγμή.
+newtab-topic-selection-save-button = Αποθήκευση
+newtab-topic-selection-cancel-button = Ακύρωση
+newtab-topic-selection-button-maybe-later = Ίσως αργότερα
+newtab-topic-selection-privacy-link = Μάθετε πώς προστατεύουμε και διαχειριζόμαστε τα δεδομένα
+newtab-topic-selection-button-update-interests = Ενημερώστε τα ενδιαφέροντά σας
+newtab-topic-selection-button-pick-interests = Επιλέξτε τα ενδιαφέροντά σας
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Ακολουθήστε
+# Variables:
+#   $topic (string) - Topic that the user can follow
+newtab-section-follow-button-label =
+    .aria-label = Παρακολούθηση του «{ $topic }»
+newtab-section-following-button = Ακολουθείται
+newtab-section-unfollow-button = Άρση παρακολούθησης
+# Variables:
+#   $topic (string) - Topic that the user is following and can unfollow
+newtab-section-unfollow-button-label =
+    .aria-label = Ακολουθείτε: Διακοπή παρακολούθησης του «{ $topic }»
+# A modal may appear next to the Follow button, directing users to try out the feature
+newtab-section-follow-highlight-title = Βελτιστοποιήστε τη ροή σας
+newtab-section-follow-highlight-subtitle = Ακολουθήστε τα ενδιαφέροντά σας για να δείτε περισσότερα από αυτά που σας αρέσουν.
+
+## Topic navigation
+## A row of buttons above the stories, each scrolling the page to that topic's section.
+
+newtab-topic-navigation-label =
+    .aria-label = Θέματα
+# Opens a menu listing the topics that did not fit in the row.
+newtab-topic-navigation-more-button = Περισσότερα
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Φραγή
+newtab-section-blocked-button = Φραγή
+newtab-section-unblock-button = Άρση φραγής
+# Variables:
+#   $topic (string) - Name of topic that user is following
+newtab-section-follow-topic =
+    .aria-label = Παρακολούθηση του «{ $topic }»
+# Variables:
+#   $topic (string) - Name of topic that user is unfollowing
+newtab-section-unfollow-topic =
+    .aria-label = Διακοπή παρακολούθησης του «{ $topic }»
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic =
+    .aria-label = Αποκλεισμός του «{ $topic }»
+# Variables:
+#   $topic (string) - Name of topic that user is unblocking
+newtab-section-unblock-topic =
+    .aria-label = Άρση αποκλεισμού του «{ $topic }»
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-topic-p1 = Θέλετε σίγουρα να αποκλείσετε αυτό το θέμα;
+newtab-section-confirm-block-topic-p2 = Τα αποκλεισμένα θέματα δεν θα εμφανίζονται πλέον στη ροή σας.
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = Αποκλεισμός του «{ $topic }»
+newtab-section-block-cancel-button = Ακύρωση
+
+## Strings for custom wallpaper highlight
+
+newtab-section-mangage-topics-title = Θέματα
+newtab-section-manage-topics-button-v2 =
+    .label = Διαχείριση θεμάτων
+newtab-section-mangage-topics-followed-topics = Ακολουθούνται
+newtab-section-mangage-topics-followed-topics-empty-state = Δεν έχετε παρακολουθήσει κανένα θέμα ακόμα.
+newtab-section-mangage-topics-blocked-topics = Αποκλεισμένα
+newtab-section-mangage-topics-blocked-topics-empty-state = Δεν έχετε αποκλείσει κανένα θέμα ακόμα.
+newtab-custom-wallpaper-title = Οι προσαρμοσμένες ταπετσαρίες έφτασαν
+# 'Make firefox yours" means to customize or personalize
+newtab-custom-wallpaper-subtitle = Μεταφορτώστε τη δική σας ταπετσαρία ή επιλέξτε ένα προσαρμοσμένο χρώμα για να κάνετε το { -brand-product-name } δικό σας.
+newtab-custom-wallpaper-cta = Δοκιμή
+
+## Strings for new user activation custom wallpaper highlight
+
+newtab-new-user-custom-wallpaper-title = Επιλέξτε μια ταπετσαρία για να κάνετε το { -brand-product-name } δικό σας
+newtab-new-user-custom-wallpaper-subtitle = Νιώστε άνετα σε κάθε νέα καρτέλα με προσαρμοσμένες ταπετσαρίες και χρώματα.
+newtab-new-user-custom-wallpaper-cta = Δοκιμή τώρα
+
+## Strings for Nova wallpaper feature highlight
+
+newtab-wallpaper-feature-highlight-title = Μόλις κατέφτασαν νέες ταπετσαρίες
+newtab-wallpaper-feature-highlight-subtitle = Επιλέξτε την αγαπημένη σας και κάντε κάθε νέα καρτέλα σαν το σπίτι σας.
+newtab-wallpaper-feature-highlight-cta = Επιλογή ταπετσαρίας
+
+## Strings for download mobile highlight
+
+newtab-download-mobile-highlight-title = Λήψη του { -brand-product-name } για κινητές συσκευές
+# "Scan the code" refers to scanning the QR code that appears above the body text that leads to Firefox for mobile download.
+newtab-download-mobile-highlight-body-variant-a = Σαρώστε τον κωδικό για ασφαλή περιήγηση εν κινήσει.
+newtab-download-mobile-highlight-body-variant-b = Συνεχίστε από εκεί που σταματήσατε με τον συγχρονισμό καρτελών, κωδικών πρόσβασης και άλλων δεδομένων.
+newtab-download-mobile-highlight-body-variant-c = Γνωρίζατε ότι μπορείτε να χρησιμοποιείτε το { -brand-product-name } εν κινήσει; Το ίδιο πρόγραμμα περιήγησης, στην τσέπη σας.
+newtab-download-mobile-highlight-image =
+    .aria-label = Κωδικός QR για τη λήψη του { -brand-product-name } για κινητές συσκευές
+
+## Strings for shortcuts highlight
+
+newtab-shortcuts-highlight-title = Τα αγαπημένα σας, στα χέρια σας
+newtab-shortcuts-highlight-subtitle = Προσθέστε μια συντόμευση για να έχετε κοντά σας τους αγαπημένους ιστοτόπους σας.
+
+## Strings for reporting issues with ads and content
+
+newtab-report-content-why-reporting-this =
+    .label = Γιατί το αναφέρετε αυτό;
+newtab-report-ads-reason-not-interested =
+    .label = Δεν ενδιαφέρομαι
+newtab-report-ads-reason-inappropriate =
+    .label = Είναι ακατάλληλο
+newtab-report-ads-reason-seen-it-too-many-times =
+    .label = Το έχω δει πάρα πολλές φορές
+newtab-report-content-wrong-category =
+    .label = Λάθος κατηγορία
+newtab-report-content-outdated =
+    .label = Παρωχημένο
+newtab-report-content-inappropriate-offensive =
+    .label = Ακατάλληλο ή προσβλητικό
+newtab-report-content-spam-misleading =
+    .label = Ανεπιθύμητο ή παραπλανητικό
+newtab-report-content-requires-payment-subscription =
+    .label = Απαιτεί πληρωμή ή συνδρομή
+newtab-report-content-requires-payment-subscription-learn-more = Μάθετε περισσότερα
+newtab-report-cancel = Ακύρωση
+newtab-report-submit = Υποβολή
+newtab-toast-thanks-for-reporting =
+    .message = Ευχαριστούμε για την αναφορά σας.
+newtab-toast-widgets-hidden =
+    .message = Επιλέξτε το εικονίδιο μολυβιού για να προσθέσετε γραφικά στοιχεία ανά πάσα στιγμή.
+# Variables:
+#   $topic (string) - Topic that the user has followed
+newtab-section-toast-follow =
+    .message = Ακολουθείτε πλέον το θέμα «{ $topic }».
+# Variables:
+#   $topic (string) - Topic that the user has unfollowed
+newtab-section-toast-unfollow =
+    .message = Δεν ακολουθείτε πλέον το θέμα «{ $topic }».
+# Variables:
+#   $topic (string) - Topic that the user has blocked
+newtab-section-toast-block =
+    .message = Δεν θα βλέπετε πλέον άρθρα σχετικά με το θέμα «{ $topic }».
+
+## Strings for task / to-do list productivity widget
+
+# "Add one" means adding a new task to the list (e.g., "Walk the dog")
+newtab-widget-lists-empty-cta = Οι δυνατότητες είναι απεριόριστες. Προσθέστε μια νέα.
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = Νέο
+newtab-widget-lists-label-beta =
+    .label = Beta
+# When tasks have been previous marked as complete, they will appear in their own separate list beneath incomplete items
+# Variables:
+#   $number (number) - Amount of list items marked complete
+newtab-widget-lists-completed-list = Ολοκληρωμένες ({ $number })
+newtab-widget-lists-celebration-headline = Καλή δουλειά
+newtab-widget-lists-celebration-subhead = Όλα ολοκληρωμένα
+newtab-widget-task-list-menu-copy = Αντιγραφή
+newtab-widget-lists-menu-edit = Επεξεργασία ονόματος λίστας
+newtab-widget-lists-menu-edit2 =
+    .aria-label = Επεξεργασία ονόματος λίστας
+newtab-widget-lists-menu-create = Δημιουργία νέας λίστας
+newtab-widget-lists-menu-delete = Διαγραφή λίστας
+newtab-widget-lists-menu-copy = Αντιγραφή λίστας στο πρόχειρο
+newtab-widget-lists-menu-learn-more = Μάθετε περισσότερα
+# "Change" is a verb here: the button switches which list is shown
+newtab-widget-lists-change-list =
+    .aria-label = Αλλαγή λίστας
+    .title = Αλλαγή λίστας
+newtab-widget-lists-button-add-item = Προσθήκη στοιχείου
+newtab-widget-lists-input-add-an-item2 =
+    .aria-label = Προσθήκη στοιχείου
+    .placeholder = Προσθήκη στοιχείου
+newtab-widget-lists-input-error = Συμπεριλάβετε κείμενο για να προσθέσετε ένα στοιχείο.
+newtab-widget-lists-input-menu-open-link = Άνοιγμα συνδέσμου
+newtab-widget-lists-input-menu-move-up = Μετακίνηση πάνω
+newtab-widget-lists-input-menu-move-down = Μετακίνηση κάτω
+newtab-widget-lists-input-menu-delete = Διαγραφή
+newtab-widget-lists-input-menu-edit = Επεξεργασία
+newtab-widget-lists-input-menu-edit2 =
+    .aria-label = Επεξεργασία στοιχείου
+newtab-widget-lists-edit-clear =
+    .aria-label = Ακύρωση
+    .title = Ακύρωση
+# Lists is a noun, as in "options for the lists"
+newtab-widget-lists-menu-button =
+    .aria-label = Επιλογές λιστών
+# the + symbol emphasises the functionality of adding a new list
+newtab-widget-lists-dropdown-create =
+    .label = + Δημιουργία νέας λίστας
+newtab-widget-lists-name-label-default =
+    .label = Λίστα εργασιών
+newtab-widget-lists-name-label-checklist =
+    .label = Λίστα ελέγχου
+newtab-widget-lists-name-placeholder-default =
+    .placeholder = Λίστα εργασιών
+newtab-widget-lists-name-placeholder-checklist2 =
+    .aria-label = Επεξεργασία ονόματος λίστας
+    .placeholder = Λίστα ελέγχου
+# The placeholder value of the name field for a newly created list
+newtab-widget-lists-name-placeholder-new2 =
+    .aria-label = Επεξεργασία ονόματος λίστας
+    .placeholder = Νέα λίστα
+newtab-widget-section-title = Γραφικά στοιχεία
+newtab-widget-menu-hide = Απόκρυψη γραφικού στοιχείου
+newtab-widget-menu-change-size = Αλλαγή μεγέθους
+# Parent label for a submenu in the widget menu that reorders the widget
+# among its siblings. "Left" and "Right" appear as items inside this submenu.
+newtab-widget-menu-move = Μετακίνηση
+# Submenu item under "Move"; moves the widget one position to the left.
+# RTL locales should translate this as "Right".
+newtab-widget-menu-move-left = Αριστερά
+# Submenu item under "Move"; moves the widget one position to the right.
+# RTL locales should translate this as "Left".
+newtab-widget-menu-move-right = Δεξιά
+newtab-widget-size-small = Μικρό
+newtab-widget-size-medium = Μεσαίο
+newtab-widget-size-large = Μεγάλο
+# Tooltip for hide all widgets button
+newtab-widget-section-hide-all-button =
+    .aria-label = Απόκρυψη όλων των γραφικών στοιχείων
+    .title = Απόκρυψη γραφικών στοιχείων
+newtab-widget-section-maximize =
+    .aria-label = Ανάπτυξη όλων των γραφικών στοιχείων σε πλήρες μέγεθος
+    .title = Ανάπτυξη γραφικών στοιχείων
+newtab-widget-section-minimize =
+    .aria-label = Σύμπτυξη όλων των γραφικών στοιχείων σε μικρό μέγεθος
+    .title = Ελαχιστοποίηση γραφικών στοιχείων
+# Shown on the widgets section header button while the section is
+# auto-minimized to its title row, to open the section back up.
+newtab-widget-section-show-widgets =
+    .aria-label = Εμφάνιση ενότητας γραφικών στοιχείων
+    .title = Εμφάνιση γραφικών στοιχείων
+newtab-widget-section-menu-button =
+    .aria-label = Άνοιγμα μενού γραφικών στοιχείων
+    .title = Μενού γραφικών στοιχείων
+newtab-widget-add-widgets-button =
+    .aria-label = Προσθήκη γραφικού στοιχείου
+    .title = Προσθήκη γραφικού στοιχείου
+newtab-widget-section-menu-manage = Διαχείριση γραφικών στοιχείων
+newtab-widget-section-menu-hide-all = Απόκρυψη γραφικών στοιχείων
+newtab-widget-section-menu-learn-more = Μάθετε περισσότερα
+newtab-widget-section-feedback = Πείτε μας τη γνώμη σας
+# Button shown when additional widgets are hidden beyond the
+# first row, allowing users to show them.
+newtab-widget-section-show-more =
+    .label = Εμφάνιση περισσότερων γραφικών στοιχείων
+# Button shown when the widgets row is expanded to multiple rows,
+# allowing users to collapse it back to one row.
+newtab-widget-section-show-less =
+    .label = Εμφάνιση λιγότερων γραφικών στοιχείων
+newtab-widget-lists-name-default = Λίστα ελέγχου
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+newtab-widget-timer-notification-title = Αντίστροφη μέτρηση
+newtab-widget-timer-notification-focus = Ο χρόνος συγκέντρωσης τελείωσε. Πολύ καλή δουλειά! Χρειάζεστε ένα διάλειμμα;
+newtab-widget-timer-notification-break = Το διάλειμμά σας τελείωσε. Έτοιμοι για συγκέντρωση;
+newtab-widget-timer-notification-warning = Οι ειδοποιήσεις είναι ανενεργές
+newtab-widget-timer-mode-focus =
+    .label = Συγκέντρωση
+newtab-widget-timer-mode-break =
+    .label = Διάλειμμα
+newtab-widget-timer-label-play =
+    .label = Έναρξη
+newtab-widget-timer-label-pause =
+    .label = Παύση
+newtab-widget-timer-reset =
+    .title = Επαναφορά
+newtab-widget-timer-menu-notifications = Απενεργοποίηση ειδοποιήσεων
+newtab-widget-timer-menu-notifications-on = Ενεργοποίηση ειδοποιήσεων
+newtab-widget-timer-menu-learn-more = Μάθετε περισσότερα
+newtab-widget-timer-menu-button =
+    .aria-label = Επιλογές αντίστροφης μέτρησης
+# The title displays above a set of top news headlines.
+newtab-daily-briefing-card-title = Κορυφαίες επικεφαλίδες
+newtab-daily-briefing-card-menu-dismiss = Απόρριψη
+# Variables:
+#   $minutes (number) - Time since the feed has been refreshed
+newtab-daily-briefing-card-timestamp = Ενημερώθηκε πριν από { $minutes }λ
+newtab-widget-message-title = Παραμείνετε συγκεντρωμένοι με τις λίστες και την ενσωματωμένη αντίστροφη μέτρηση
+# to-dos stands for "things to do".
+newtab-widget-message-copy = Από γρήγορες υπενθυμίσεις έως καθημερινές υποχρεώσεις, συνεδρίες συγκέντρωσης έως διαλείμματα: επικεντρωθείτε και ολοκληρώστε τις εργασίες σας εγκαίρως.
+# One spot refers to a dedicated section on new tab to manage and use widgets
+newtab-widget-message-focus-forecasts-title = Ένα μέρος για συγκέντρωση, προγνώσεις καιρού και πολλά άλλα
+newtab-widget-message-focus-forecasts-body = Κάντε την ημέρα σας πιο ομαλή με τα γραφικά στοιχεία του { -brand-product-name }. Δείτε τον καιρό, μείνετε προσηλωμένοι στις υποχρεώσεις σας ή παρακολουθήστε την ώρα σε όλο τον κόσμο.
+# "Make Firefox yours" refers to about:newtab. The call to action here ("Try it now")
+# is to customize the new tab page with a background image or color from
+# the built-in wallpaper collection or uploading your own image.
+newtab-promo-card-title-addons = Κάντε το { -brand-product-name } δικό σας
+newtab-promo-card-body-addons = Επιλέξτε μια ταπετσαρία από τη συλλογή μας ή δημιουργήστε τη δική σας.
+newtab-promo-card-cta-addons = Δοκιμή τώρα
+newtab-promo-card-title = Υποστηρίξτε το { -brand-product-name }
+newtab-promo-card-body = Οι χορηγοί μας υποστηρίζουν την αποστολή μας για ένα καλύτερο διαδίκτυο
+newtab-promo-card-cta = Μάθετε περισσότερα
+newtab-promo-card-dismiss-button =
+    .aria-label = Απόρριψη
+    .title = Απόρριψη
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-start-aria =
+    .aria-label =
+        { $minutes ->
+            [one] Έναρξη αντίστροφης μέτρησης { $minutes } λεπτού
+           *[other] Έναρξη αντίστροφης μέτρησης { $minutes } λεπτών
+        }
+newtab-widget-timer-pause-aria =
+    .aria-label = Παύση αντίστροφης μέτρησης
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-spinbutton-name =
+    .aria-label =
+        { $minutes ->
+            [one] { $minutes } λεπτό
+           *[other] { $minutes } λεπτά
+        }
+newtab-widget-timer-decrease-min =
+    .title = Μείωση κατά 1 λεπτό
+newtab-widget-timer-increase-min =
+    .title = Αύξηση κατά 1 λεπτό
+newtab-widget-timer-mode-group =
+    .aria-label = Λειτουργία αντίστροφης μέτρησης
+# Small label shown beneath the live time while the focus timer is running or paused.
+newtab-widget-timer-running-focus = Συγκέντρωση
+# Small label shown beneath the live time while the break timer is running or paused.
+newtab-widget-timer-running-break = Διάλειμμα
+# Context-menu item to hide the Timer widget. Replaces the shared "Hide widget"
+# copy with a widget-specific string per the Nova design.
+newtab-widget-timer-menu-hide = Απόκρυψη αντίστροφης μέτρησης
+# Heading shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-heading-focus = Καλή δουλειά
+# Heading shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-heading-break = Το διάλειμμά σας τελείωσε
+# Message shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-message-focus = Χρειάζεστε διάλειμμα;
+# Message shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-message-break = Έτοιμοι για συγκέντρωση;
+
+##
+
+newtab-sports-widget-menu-follow-teams = Παρακολούθηση ομάδων
+newtab-sports-widget-menu-view-schedule = Προβολή προγράμματος
+newtab-sports-widget-menu-view-upcoming = Προβολή επερχόμενων
+newtab-sports-widget-menu-view-results = Προβολή αποτελεσμάτων
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-menu-key-dates = Σημαντικές ημερομηνίες
+newtab-sports-widget-menu-learn-more = Μάθετε περισσότερα
+# “Keep tabs on” is an informal expression meaning to stay updated on, stay informed on, or regularly follow something (in this case, World Cup matches and updates).
+newtab-sports-widget-keep-tabs = Παρακολουθήστε το Παγκόσμιο Κύπελλο
+newtab-sports-widget-get-updates = Λάβετε ενημερώσεις αγώνων σε πραγματικό χρόνο και πολλά άλλα.
+newtab-sports-widget-follow-teams =
+    .label = Παρακολούθηση ομάδων
+newtab-sports-widget-view-matches =
+    .label = Προβολή αγώνων
+# Variables:
+#   $number (number) - Maximum number of teams a user can choose to follow in the team selection state
+newtab-sports-widget-follow-teams-title =
+    { $number ->
+       *[other] Ακολουθήστε έως και { $number } ομάδες
+    }
+newtab-sports-widget-choose-wallpaper =
+    .label = Επιλογή ταπετσαρίας
+newtab-sports-widget-skip = Παράλειψη
+newtab-sports-widget-search-country =
+    .aria-label = Αναζήτηση χώρας
+    .placeholder = Αναζήτηση χώρας
+newtab-sports-widget-cancel = Ακύρωση
+newtab-sports-widget-back-button =
+    .aria-label = Πίσω
+newtab-sports-widget-done-button =
+    .label = Τέλος
+# Shown in the follow-teams list for a team that has been knocked out of the tournament.
+# Variables:
+#   $teamName (string) - the localized team name (e.g. "Canada").
+newtab-sports-widget-team-name-eliminated = { $teamName } (αποκλείστηκε)
+newtab-sports-widget-view-all =
+    .label = Προβολή όλων
+newtab-sports-widget-show-less =
+    .label = Εμφάνιση λιγότερων
+# Toggle that filters the list of teams the user follows
+newtab-sports-widget-followed-only-toggle =
+    .label = Μόνο ομάδες που ακολουθείτε
+# Status shown when more matches are being fetched.
+newtab-sports-widget-loading-more = Φόρτωση περισσότερων αγώνων…
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch =
+    .label = Παρακολούθηση
+    .title = Παρακολούθηση ζωντανά
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch-icon =
+    .aria-label = Παρακολούθηση ζωντανά
+    .title = Παρακολούθηση ζωντανά
+newtab-sports-widget-watch-dialog-close =
+    .aria-label = Κλείσιμο
+    .title = Κλείσιμο
+# Tag: user can watch without paying (sign-in may still be required).
+newtab-sports-widget-watch-stream-free = Δωρεάν
+# Tag: user can start watching via a trial; continued access may require payment after it ends.
+newtab-sports-widget-watch-stream-free-trial = Δωρεάν δοκιμή
+# Tag: provider offers both a no-cost or trial path and a paid path.
+newtab-sports-widget-watch-stream-free-paid = Δωρεάν και επί πληρωμή
+# Tag: user must pay to watch (subscription, TV provider, premium plan, or add-on).
+newtab-sports-widget-watch-stream-paid = Επί πληρωμή
+# Note: provider only streams some matches, not the full tournament.
+newtab-sports-widget-watch-stream-select-games-only = Επιλογή ορισμένων αγώνων
+# Heading for the list of streaming services available in the user’s country/region.
+newtab-sports-widget-watch-available-region = Διαθέσιμο στην περιοχή σας
+# Heading for the list of streaming services available outside the user’s country/region.
+newtab-sports-widget-watch-available-other-regions = Άλλες περιοχές
+# Button that opens the provider’s stream page in a new tab.
+newtab-sports-widget-watch-play =
+    .aria-label = Άνοιγμα μετάδοσης
+    .title = Άνοιγμα μετάδοσης
+newtab-sports-widget-group-stage = Φάση ομίλων
+newtab-sports-widget-group-a = Όμιλος Α
+newtab-sports-widget-group-b = Όμιλος Β
+newtab-sports-widget-group-c = Όμιλος Γ
+newtab-sports-widget-group-d = Όμιλος Δ
+newtab-sports-widget-group-e = Όμιλος Ε
+newtab-sports-widget-group-f = Όμιλος ΣΤ
+newtab-sports-widget-group-g = Όμιλος Ζ
+newtab-sports-widget-group-h = Όμιλος Η
+newtab-sports-widget-group-i = Όμιλος Θ
+newtab-sports-widget-group-j = Όμιλος Ι
+newtab-sports-widget-group-k = Όμιλος Κ
+newtab-sports-widget-group-l = Όμιλος Λ
+newtab-sports-widget-round-32 = Φάση των 32
+newtab-sports-widget-round-16 = Φάση των 16
+newtab-sports-widget-quarter-finals = Προημιτελικοί
+# The "LIVE" string is meant to be uppercase in English, but other languages and locales may vary in how they handle this.
+newtab-sports-widget-live = ΖΩΝΤΑΝΑ
+newtab-custom-widget-live-refresh =
+    .aria-label = Ανανέωση βαθμολογιών
+    .title = Ανανέωση βαθμολογιών
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-key-dates = Σημαντικές ημερομηνίες
+newtab-sports-widget-upcoming = Επερχόμενοι
+# Used for a match currently ongoing
+newtab-sports-widget-now = Τώρα
+newtab-sports-widget-results = Αποτελέσματα
+newtab-sports-widget-semi-finals = Ημιτελικοί
+newtab-sports-widget-bronze-finals = Αγώνας τρίτης θέσης
+# Final is the final match for 1st place.
+newtab-sports-widget-final = Τελικός
+# Variables:
+#   $start (Date) - Start date of a tournament stage
+#   $end (Date) - End date of a tournament stage
+newtab-sports-widget-key-date-range = { DATETIME($start, day: "numeric", month: "short") } – { DATETIME($end, day: "numeric", month: "short") }
+# Variables:
+#   $date (Date) - Date of a single tournament event
+newtab-sports-widget-key-date = { DATETIME($date, day: "numeric", month: "short") }
+newtab-sports-widget-delayed = Καθυστέρησε
+newtab-sports-widget-postponed = Αναβλήθηκε
+newtab-sports-widget-suspended = Διακόπηκε
+newtab-sports-widget-cancelled = Ακυρώθηκε
+newtab-sports-widget-information = Πληροφορίες για τον αγώνα
+newtab-sports-widget-no-live-data = Τα δεδομένα ζωντανού αγώνα δεν ενημερώνονται αυτήν τη στιγμή
+newtab-sports-widget-view-results-link = Προβολή αποτελεσμάτων
+newtab-sports-widget-third-place = Τρίτη θέση
+# Runner-up is the team in 2nd place.
+newtab-sports-widget-runner-up = Φιναλίστ
+newtab-sports-widget-champions = Πρωταθλητές
+newtab-sports-widget-world-cup-champions = Πρωταθλητές Παγκοσμίου Κυπέλλου 2026
+# Compact champions label for the medium-size widget result card; the larger
+# card uses newtab-sports-widget-world-cup-champions.
+newtab-sports-widget-world-cup-champions-short = Πρωταθλητές 2026
+# Variables:
+#   $date (Date) - The match start time
+newtab-sports-widget-match-time = { DATETIME($date, hour: "2-digit", minute: "2-digit") }
+newtab-sports-widget-match-full-time = Κανονική διάρκεια
+newtab-sports-widget-match-halftime = Ημίχρονο
+newtab-sports-widget-match-extra-time = Παράταση
+newtab-sports-widget-match-penalties = Πέναλτι
+# Separator shown between two teams in a placeholder match row when no upcoming
+# match details are available yet.
+newtab-sports-widget-match-vs = εναντίον
+# Note shown in the Upcoming tab when no match details are available yet.
+newtab-sports-widget-no-upcoming-matches = Μείνετε συντονισμένοι για λεπτομέρειες του επερχόμενου αγώνα
+
+## Sports widget live-games pagination. Shown when 2+ matches are live at the same time
+
+# arrow button that goes to the previous page of live matches.
+newtab-sports-widget-pagination-previous =
+    .aria-label = Προηγούμενο
+    .title = Προηγούμενο
+# arrow button that goes to the next page of live matches.
+newtab-sports-widget-pagination-next =
+    .aria-label = Επόμενο
+    .title = Επόμενο
+# Dot indicator that jumps directly to a given live match.
+# $index (number) - 1-based position of this dot in the list.
+# $total (number) - Total number of live matches.
+newtab-sports-widget-pagination-dot =
+    .aria-label = Ζωντανός αγώνας { $index } από { $total }
+    .title = Ζωντανός αγώνας { $index } από { $total }
+
+## Accessible labels for match rows in the sports widget. These are read by
+## screen readers to announce the match details and status.
+## Variables shared by all messages in this group:
+##   $homeTeam (String) - The full name of the home team (e.g. "Mexico")
+##   $awayTeam (String) - The full name of the away team (e.g. "Russia")
+
+# A finished match row (regular full-time result).
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+newtab-sports-widget-match-aria-label-results =
+    .aria-label = { $homeTeam }, { $homeScore } εναντίον { $awayTeam }, { $awayScore }
+# A finished match row that went to a penalty shootout.
+# Parenthesized values are the shootout score.
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+#   $homePenalty (number) - The home team's penalty shootout score
+#   $awayPenalty (number) - The away team's penalty shootout score
+newtab-sports-widget-match-aria-label-results-penalties =
+    .aria-label = { $homeTeam }, { $homeScore } ({ $homePenalty }) εναντίον { $awayTeam }, { $awayScore } ({ $awayPenalty })
+# A match that is currently in progress.
+# Variables:
+#   $homeScore (number) - The home team's current score
+#   $awayScore (number) - The away team's current score
+newtab-sports-widget-match-aria-label-now =
+    .aria-label = Ζωντανά: { $homeTeam }, { $homeScore } εναντίον { $awayTeam }, { $awayScore }
+# An upcoming scheduled match row. Announces kickoff time and date.
+# Variables:
+#   $date (Date) - The scheduled kickoff date/time
+newtab-sports-widget-match-aria-label-upcoming =
+    .aria-label = { $homeTeam } εναντίον { $awayTeam }, { DATETIME($date, hour: "numeric", minute: "numeric") }, { DATETIME($date, day: "numeric", month: "long") }
+# An upcoming match row whose status is "delayed".
+newtab-sports-widget-match-aria-label-upcoming-delayed =
+    .aria-label = { $homeTeam } εναντίον { $awayTeam }, καθυστέρησε
+# An upcoming match row whose status is "postponed".
+newtab-sports-widget-match-aria-label-upcoming-postponed =
+    .aria-label = { $homeTeam } εναντίον { $awayTeam }, αναβλήθηκε
+# An upcoming match row whose status is "suspended".
+newtab-sports-widget-match-aria-label-upcoming-suspended =
+    .aria-label = { $homeTeam } εναντίον { $awayTeam }, ανεστάλη
+# An upcoming match row whose status is "cancelled".
+newtab-sports-widget-match-aria-label-upcoming-cancelled =
+    .aria-label = { $homeTeam } εναντίον { $awayTeam }, ακυρώθηκε
+
+## Sports widget — team names (FIFA country codes)
+## Only includes names not adequately covered by standard country-code
+## internationalization tooling.
+
+newtab-sports-widget-team-name-label-bih =
+    .label = Βοσνία και Ερζεγοβίνη
+newtab-sports-widget-team-name-label-civ =
+    .label = Ακτή Ελεφαντοστού
+newtab-sports-widget-team-name-label-cod =
+    .label = Λ.Δ. Κονγκό
+newtab-sports-widget-team-name-label-eng =
+    .label = Αγγλία
+newtab-sports-widget-team-name-label-sco =
+    .label = Σκωτία
+# Placeholder used in a match row's aria-label for an undecided team (shown visually as "--").
+newtab-sports-widget-team-tbd = Θα καθοριστεί
+
+## Sports widget OMC messages
+## Shown as on-screen messages promoting the Sports widget and World Cup wallpapers.
+
+newtab-sports-widget-message-wallpapers-title = Ξεκινήστε το Παγκόσμιο Κύπελλο με νέες ταπετσαρίες
+newtab-sports-widget-message-wallpapers-body = Φέρτε λίγη από την ατμόσφαιρα των αγώνων στο πρόγραμμα περιήγησής σας, καθ' όλη τη διάρκεια του τουρνουά.
+newtab-sports-widget-message-wallpapers-cta = Επιλογή ταπετσαρίας
+newtab-sports-widget-message-wallpapers-semifinals-title = Αποκτήστε μια νέα ταπετσαρία για τους ημιτελικούς
+newtab-sports-widget-message-wallpapers-semifinals-body = Προετοιμάστε το έδαφος για τους μεγαλύτερους αγώνες του Παγκοσμίου Κυπέλλου.
+newtab-sports-widget-message-add-widgets-cta =
+    .label = Προσθήκη γραφικών στοιχείων
+newtab-sports-widget-message-day-in-play-title = Διατηρήστε την ημέρα σας γεμάτη δράση με τα γραφικά στοιχεία του { -brand-product-name }
+newtab-sports-widget-message-day-in-play-body = Ακολουθήστε το Παγκόσμιο Κύπελλο, μείνετε προσηλωμένοι στις υποχρεώσεις σας, παρακολουθήστε την ώρα σε όλο τον κόσμο και πολλά άλλα.
+newtab-sports-widget-message-explore-widgets-cta =
+    .label = Εξερεύνηση γραφικών στοιχείων
+
+## Survey prompts shown after the World Cup to gather feedback on the widgets experience.
+
+newtab-sports-widget-message-survey-title = Βοηθήστε μας να βελτιώσουμε τα γραφικά στοιχεία
+newtab-sports-widget-message-survey-body = Το Παγκόσμιο Κύπελλο τελείωσε. Μοιραστείτε τα σχόλιά σας σχετικά με την εμπειρία σας.
+newtab-sports-widget-message-survey-widget-title = Πώς ήταν το γραφικό στοιχείο του Παγκοσμίου Κυπέλλου;
+newtab-sports-widget-message-survey-widget-body = Μοιραστείτε τα σχόλιά σας για να μας βοηθήσετε να βελτιώσουμε τα μελλοντικά γραφικά στοιχεία. Στη συνέχεια, δοκιμάστε το νέο γραφικό στοιχείο στη συλλογή σας.
+newtab-sports-widget-message-survey-cta =
+    .label = Συμμετοχή στην έρευνα
+
+## Strings for activation window message variants. In certain experiment configurations,
+## the strings from these variants may be displayed in a message below the search input
+## for the first 48 hours of a new profile's lifetime. Some messages include buttons with
+## labels, but not all.
+
+newtab-activation-window-message-dismiss-button =
+    .aria-label = Απόρριψη
+    .title = Απόρριψη
+# "This space" refers to about:newtab. The call to action here ("make it your own")
+# is to customize newtab with a background image or colour, or by tweaking the
+# existing widgetry that appears on it.
+newtab-activation-window-message-customization-focus-header = Κάντε αυτόν τον χώρο δικό σας
+newtab-activation-window-message-customization-focus-message = Επιλέξτε μια νέα ταπετσαρία, προσθέστε συντομεύσεις για αγαπημένους σας ιστοτόπους και ενημερωθείτε για άρθρα που σας ενδιαφέρουν.
+newtab-activation-window-message-customization-focus-primary-button =
+    .label = Έναρξη προσαρμογής
+# "This space" refers to about:newtab. The sentiment of "plays by your rules" is
+# meant to evoke the idea that newtab is malleable and customizable. The call to
+# action is to customize newtab with a background image or colour, or by tweaking
+# the existing widgetry that appears on it.
+newtab-activation-window-message-values-focus-header = Αυτός ο χώρος ακολουθεί τους δικούς σας κανόνες
+newtab-activation-window-message-values-focus-message = Το { -brand-product-name } σάς επιτρέπει να περιηγείστε όπως σας αρέσει, με έναν πιο προσωπικό τρόπο για να ξεκινήσετε τη μέρα σας στο διαδίκτυο. Κάντε το { -brand-product-name } δικό σας.
+
+## Strings for the Clock widget
+
+# Context menu item: toggle the clock card off.
+newtab-clock-widget-menu-hide = Απόκρυψη ρολογιού
+newtab-clock-widget-menu-learn-more = Μάθετε περισσότερα
+newtab-clock-widget-menu-edit = Επεξεργασία ρολογιών
+newtab-clock-widget-menu-switch-to-12h = Εναλλαγή σε 12ωρη μορφή
+newtab-clock-widget-menu-switch-to-24h = Εναλλαγή σε 24ωρη μορφή
+newtab-clock-widget-label-your-clocks = Τα ρολόγια σας
+newtab-clock-widget-search-location-input =
+    .aria-label = Αναζήτηση πόλης
+    .label = Τοποθεσία
+    .placeholder = Αναζήτηση πόλης
+# "Nickname (optional)" refers to a custom, user-defined label for a saved location
+# (e.g., "Home", "Office", or "School") to make it easier to recognize.
+# Not to be translated as a legal name, username, or alias used for identity verification.
+newtab-clock-widget-input-nickname =
+    .aria-label = Ψευδώνυμο (προαιρετικό)
+    .label = Ψευδώνυμο (προαιρετικό)
+    .placeholder = Προσθήκη ψευδώνυμου
+# "Add new clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-button-add =
+    .aria-label = Προσθήκη νέου ρολογιού
+    .title = Προσθήκη νέου ρολογιού
+newtab-clock-widget-button-add-clock = Προσθήκη
+newtab-clock-widget-button-cancel = Ακύρωση
+newtab-clock-widget-button-back =
+    .aria-label = Πίσω
+    .title = Πίσω
+newtab-clock-widget-button-edit-clock =
+    .aria-label = Επεξεργασία ρολογιού
+    .title = Επεξεργασία ρολογιού
+newtab-clock-widget-button-save = Αποθήκευση
+newtab-clock-widget-button-remove-clock =
+    .aria-label = Αφαίρεση ρολογιού
+    .title = Αφαίρεση ρολογιού
+# Accessible name for a clock row in the "Your clocks" management panel
+# when the row has no user-provided nickname. Read aloud by screen
+# readers when focus lands on the row.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+newtab-clock-widget-edit-item =
+    .aria-label = { $city }
+# Accessible name for a clock row when a user nickname has been set.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+#   $nickname (string) - The user-provided nickname for the row.
+newtab-clock-widget-edit-item-with-nickname =
+    .aria-label = { $city }, ψευδώνυμο: { $nickname }
+newtab-clock-widget-add-clock-form =
+    .aria-label = Προσθήκη ρολογιού
+newtab-clock-widget-edit-clock-form =
+    .aria-label = Επεξεργασία ρολογιού
+# "Search results" is the accessible label for the listbox dropdown that appears
+# below the location search field, listing matching cities as the user types.
+# It means "results of the search", not "search within the results".
+newtab-clock-widget-search-results =
+    .aria-label = Αποτελέσματα αναζήτησης
+# Fallback row in the search results that lets the user add a city that is
+# not in the list. $city (String) is the text the user has typed.
+newtab-clock-widget-add-custom = Προσθήκη του «{ $city }» ως προσαρμοσμένου ρολογιού
+# Text field for the display name of a user-added custom clock.
+newtab-clock-widget-custom-city-input =
+    .aria-label = Όνομα πόλης
+    .label = Όνομα πόλης
+    .placeholder = Όνομα ρολογιού
+# Searchable time-zone field shown when adding a custom clock. The user
+# types a city they know and picks it to set the clock's time zone.
+newtab-clock-widget-custom-timezone-input =
+    .aria-label = Ζώνη ώρας
+    .label = Ζώνη ώρας
+    .placeholder = Αναζήτηση πόλης, ζώνης ώρας ή μετατόπιση UTC
+newtab-clock-widget-custom-zone-results =
+    .aria-label = Αποτελέσματα ζώνης ώρας
+# Shown in the time-zone picker when the search matches no time zones.
+newtab-clock-widget-custom-zone-no-results = Δεν υπάρχει αντίστοιχη ζώνη ώρας
+# Returns from the custom clock form back to the city search.
+newtab-clock-widget-custom-back = Πίσω
+# Shown in place of the search results when the user's query does not match any
+# supported city — e.g. typing a misspelled name or a place not in the IANA
+# time zone list.
+newtab-clock-widget-search-no-results = Καμία αντιστοιχία
+# "Open menu for clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-menu-button =
+    .aria-label = Άνοιγμα μενού για ρολόι
+    .title = Άνοιγμα μενού για ρολόι
+# $nickname (String) - The user-defined nickname for a saved clock location (e.g., "Home", "Office").
+newtab-clock-widget-label-nickname-with-value = Ψευδώνυμο: { $nickname }
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = Νέα Υόρκη
+newtab-clock-city-us-los-angeles = Λος Άντζελες
+newtab-clock-city-us-chicago = Σικάγο
+newtab-clock-city-us-san-francisco = Σαν Φρανσίσκο
+newtab-clock-city-us-san-diego = Σαν Ντιέγκο
+newtab-clock-city-us-dallas = Ντάλας
+newtab-clock-city-us-houston = Χιούστον
+newtab-clock-city-us-philadelphia = Φιλαδέλφεια
+newtab-clock-city-us-atlanta = Ατλάντα
+newtab-clock-city-us-washington-dc = Ουάσινγκτον
+newtab-clock-city-us-boston = Βοστώνη
+newtab-clock-city-us-miami = Μαϊάμι
+newtab-clock-city-us-seattle = Σιάτλ
+newtab-clock-city-us-denver = Ντένβερ
+newtab-clock-city-us-honolulu = Χονολουλού
+newtab-clock-city-us-anchorage = Ανκορέιτζ
+newtab-clock-city-de-berlin = Βερολίνο
+newtab-clock-city-de-munich = Μόναχο
+newtab-clock-city-de-frankfurt = Φρανκφούρτη
+newtab-clock-city-de-hamburg = Αμβούργο
+newtab-clock-city-fr-paris = Παρίσι
+newtab-clock-city-fr-lyon = Λυών
+newtab-clock-city-fr-marseille = Μασσαλία
+newtab-clock-city-fr-toulouse = Τουλούζη
+newtab-clock-city-in-kolkata = Καλκούτα
+newtab-clock-city-in-mumbai = Μουμπάι
+newtab-clock-city-in-delhi = Δελχί
+newtab-clock-city-in-bangalore = Μπανγκαλόρ
+newtab-clock-city-cn-shanghai = Σαγκάη
+newtab-clock-city-cn-beijing = Πεκίνο
+newtab-clock-city-cn-shenzhen = Σεντσέν
+newtab-clock-city-br-sao-paulo = Σάο Πάολο
+newtab-clock-city-br-rio-de-janeiro = Ρίο Ντε Τζανέιρο
+newtab-clock-city-br-brasilia = Μπραζίλια
+newtab-clock-city-id-jakarta = Τζακάρτα
+newtab-clock-city-id-surabaya = Σουραμπάγια
+newtab-clock-city-id-makassar = Μακασάρ
+newtab-clock-city-ca-toronto = Τορόντο
+newtab-clock-city-ca-montreal = Μόντρεαλ
+newtab-clock-city-ca-vancouver = Βανκούβερ
+newtab-clock-city-au-sydney = Σίδνεϊ
+newtab-clock-city-au-perth = Περθ
+newtab-clock-city-au-adelaide = Αδελαΐδα
+newtab-clock-city-pl-warsaw = Βαρσοβία
+newtab-clock-city-pl-krakow = Κρακοβία
+newtab-clock-city-jp-tokyo = Τόκιο
+newtab-clock-city-jp-osaka = Οσάκα
+newtab-clock-city-mx-mexico-city = Πόλη του Μεξικού
+newtab-clock-city-mx-guadalajara = Γουαδαλαχάρα
+newtab-clock-city-it-rome = Ρώμη
+newtab-clock-city-it-milan = Μιλάνο
+newtab-clock-city-ru-moscow = Μόσχα
+newtab-clock-city-ru-saint-petersburg = Αγία Πετρούπολη
+newtab-clock-city-gb-london = Λονδίνο
+newtab-clock-city-gb-birmingham = Μπέρμιγχαμ
+newtab-clock-city-es-madrid = Μαδρίτη
+newtab-clock-city-es-barcelona = Βαρκελώνη
+newtab-clock-city-nl-amsterdam = Άμστερνταμ
+newtab-clock-city-ch-zurich = Ζυρίχη
+newtab-clock-city-at-vienna = Βιέννη
+newtab-clock-city-cz-prague = Πράγα
+newtab-clock-city-ar-buenos-aires = Μπουένος Άιρες
+newtab-clock-city-gr-athens = Αθήνα
+newtab-clock-city-hu-budapest = Βουδαπέστη
+newtab-clock-city-be-brussels = Βρυξέλλες
+newtab-clock-city-ua-kyiv = Κίεβο
+newtab-clock-city-fi-helsinki = Ελσίνκι
+newtab-clock-city-co-bogota = Μπογκοτά
+newtab-clock-city-ph-manila = Μανίλα
+newtab-clock-city-tr-istanbul = Κωνσταντινούπολη
+newtab-clock-city-my-kuala-lumpur = Κουάλα Λουμπούρ
+newtab-clock-city-eg-cairo = Κάιρο
+newtab-clock-city-se-stockholm = Στοκχόλμη
+newtab-clock-city-ro-bucharest = Βουκουρέστι
+newtab-clock-city-th-bangkok = Μπανγκόκ
+newtab-clock-city-ng-lagos = Λάγος
+newtab-clock-city-tw-taipei = Ταϊπέι
+newtab-clock-city-za-johannesburg = Γιοχάνεσμπουργκ
+newtab-clock-city-cl-santiago = Σαντιάγο
+newtab-clock-city-pk-karachi = Καράτσι
+newtab-clock-city-bg-sofia = Σόφια
+newtab-clock-city-sg-singapore = Σιγκαπούρη
+newtab-clock-city-hk-hong-kong = Χονγκ Κονγκ
+newtab-clock-city-sa-riyadh = Ριάντ
+newtab-clock-city-dk-copenhagen = Κοπεγχάγη
+newtab-clock-city-pe-lima = Λίμα
+newtab-clock-city-ke-nairobi = Ναϊρόμπι
+newtab-clock-city-nz-auckland = Όκλαντ
+newtab-clock-city-kr-seoul = Σεούλ
+newtab-clock-city-lt-vilnius = Βίλνιους
+newtab-clock-city-ie-dublin = Δουβλίνο
+newtab-clock-city-ae-dubai = Ντουμπάι
+newtab-clock-city-lv-riga = Ρίγα
+newtab-clock-city-pt-lisbon = Λισαβόνα
+newtab-clock-city-ir-tehran = Τεχεράνη
+newtab-clock-city-bd-dhaka = Ντάκα
+newtab-clock-city-ec-guayaquil = Γουαγιακίλ
+newtab-clock-city-vn-ho-chi-minh-city = Πόλη Χο Τσι Μινχ
+newtab-clock-city-np-kathmandu = Κατμαντού
+newtab-clock-city-mm-yangon = Γιανγκόν

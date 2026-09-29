@@ -1,0 +1,113 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+about-networking-title = O omrežjih
+about-networking-http = HTTP
+about-networking-http-clear-cache-button = Počisti predpomnilnik HTTP
+about-networking-sockets = Vtičnice
+about-networking-dns = DNS
+about-networking-dns-clear-cache-button = Počisti predpomnilnik DNS
+about-networking-dns-trr-url = Spletni naslov DoH
+about-networking-dns-trr-mode = Način DoH
+about-networking-dns-suffix = Pripona DNS
+about-networking-websockets = WebSockets
+about-networking-alt-svc = Alt-Svc
+about-networking-alt-svc-origin = Izvor
+about-networking-alt-svc-alternate = Nadomestno
+about-networking-alt-svc-alpn = ALPN
+about-networking-alt-svc-validated = Potrjeno
+about-networking-alt-svc-ttl = TTL
+about-networking-alt-svc-origin-attributes-suffix = Izolacijski ključ
+about-networking-ssl-tokens = Žetoni TLS
+# $count (Number) - Number of cached TLS resumption tokens
+about-networking-ssl-tokens-summary-count =
+    { $count ->
+        [one] { $count } žeton
+        [two] { $count } žetona
+        [few] { $count } žetoni
+       *[other] { $count } žetonov
+    }
+# $count (Number) - Number of cached tokens that have already expired
+about-networking-ssl-tokens-summary-expired =
+    { $count ->
+        [one] ({ $count } pretečen)
+        [two] ({ $count } pretečena)
+        [few] ({ $count } pretečeni)
+       *[other] ({ $count } pretečenih)
+    }
+# $decompressedLength (Number) - Total uncompressed size in bytes across all tokens
+# $compressedLength (Number) - Total compressed size in bytes across all tokens
+# $saved (Number) - Percentage of space saved by compression
+about-networking-ssl-tokens-summary-compression = { $decompressedLength } → { $compressedLength } B (prihranek: { $saved } %)
+# $used (Number) - Cache size currently in use, in kilobytes
+# $capacity (Number) - Total cache capacity, in kilobytes
+# $percent (Number) - Percentage of the cache capacity currently in use
+about-networking-ssl-tokens-summary-capacity = { $used }/{ $capacity } KB ({ $percent } %)
+about-networking-ssl-tokens-tokens-column = Žetoni
+about-networking-ssl-tokens-expires = Poteče
+about-networking-ssl-tokens-certificate = Potrdilo
+# $count (Number) - Number of tokens sharing this row's host and certificate
+about-networking-ssl-tokens-token-list =
+    { $count ->
+        [one] { $count } žeton
+        [two] { $count } žetona
+        [few] { $count } žetoni
+       *[other] { $count } žetonov
+    }
+about-networking-ssl-tokens-restored =
+    .alt = Obnovljen iz shrambe
+    .title = Obnovljen iz shrambe
+about-networking-ssl-tokens-new =
+    .alt = Nov to sejo
+    .title = Nov to sejo
+about-networking-ssl-tokens-expired =
+    .alt = Pretečen
+    .title = Pretečen
+# $tokenLength (Number) - Total size in bytes of the raw TLS resumption token(s)
+# $decompressedLength (Number) - Total size in bytes before compression
+# $compressedLength (Number) - Total size in bytes after compression
+about-networking-ssl-tokens-compression-details =
+    .title = Žetoni: { $tokenLength } B. Kodirani: { $decompressedLength } → { $compressedLength } B.
+about-networking-ssl-tokens-ev-status = Potrdilo EV
+about-networking-ssl-tokens-ct-status = Stanje preglednosti potrdila
+about-networking-ssl-tokens-built-in-root = Vgrajen koren
+# $count (Number) - Number of certs in the succeeded cert chain
+about-networking-ssl-tokens-cert-chain = Veriga potrdil ({ $count })
+about-networking-refresh = Osveži
+about-networking-auto-refresh = Samodejno osveži vsake 3 sekunde
+about-networking-hostname = Ime gostitelja
+about-networking-port = Vrata
+about-networking-http-version = Različica HTTP
+about-networking-ssl = SSL
+about-networking-active = Aktivno
+about-networking-idle = Mirovanje
+about-networking-host = Gostitelj
+about-networking-type = Vrsta
+about-networking-sent = Poslano
+about-networking-received = Prejeto
+about-networking-family = Družina
+about-networking-trr = TRR
+about-networking-addresses = Naslovi
+about-networking-expires = Poteče (sekunde)
+about-networking-originAttributesSuffix = Izolacijski ključ
+about-networking-flags = Dodatne zastavice
+about-networking-messages-sent = Poslano sporočil
+about-networking-messages-received = Prejeto sporočil
+about-networking-bytes-sent = Poslano bajtov
+about-networking-bytes-received = Prejeto bajtov
+about-networking-logging = Beleženje
+about-networking-dns-lookup = Iskanje DNS
+about-networking-dns-lookup-button = Razreši
+about-networking-dns-domain = Domena:
+about-networking-dns-lookup-table-column = IP-ji
+about-networking-dns-https-rrs-lookup-table-column = RR-ji HTTP
+about-networking-networkid = ID omrežja
+about-networking-networkid-id = ID omrežja
+# Note: do not translate about:logging, as it is a URL.
+about-networking-moved-about-logging = Ta stran se je preselila na <a data-l10n-name="about-logging-url">about:logging</a>.
+
+## Link is intended as "network link"
+
+about-networking-networkid-is-up = Povezava je vzpostavljena
+about-networking-networkid-status-known = Stanje povezave je znano

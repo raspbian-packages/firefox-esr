@@ -1,0 +1,24 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# "Search" is a verb, as in "Search through tabs".
+all-tabs-menu-search-tabs =
+    .label = Kekanöx taq Ruwi'
+all-tabs-menu-new-user-context =
+    .label = K'ak'a' k'ojlib'äl ruwi'
+all-tabs-menu-hidden-tabs =
+    .label = Ewan taq Ruwi'
+all-tabs-menu-close-duplicate-tabs =
+    .label = Ketz'apïx kamulun taq ruwi'
+all-tabs-menu-view-all-tabs =
+    .label = Ketz'et ronojel ri taq ruwi'
+# This opens the sub view listing _all_ open and saved tab groups.
+all-tabs-menu-tab-groups-show-all =
+    .label = Tik'ut ronojel
+# This is header for the sub view listing _all_ open and saved tab groups.
+all-tabs-menu-tab-groups-sub-view =
+    .title = Molaj taq ruwi'
+# "Search" is a verb, as in "Search through all tabs".
+all-tabs-menu-search-all-tabs =
+    .label = Tikanöx pa ronojel taq ruwi'

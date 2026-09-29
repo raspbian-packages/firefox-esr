@@ -1,0 +1,97 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# The title of the experiment should be kept in English as it may be referenced
+# by various online articles and is technical in nature.
+experimental-features-media-jxl =
+    .label = Mediji: JPEG XL
+experimental-features-media-jxl-description = Če je ta možnost omogočena, { -brand-short-name } podpira format JPEG XL (JXL). Gre za izboljšan slikovni format, ki omogoča pretvorbo iz klasičnih datotek JPEG brez izgub. Za več podrobnosti si oglejte <a data-l10n-name="bugzilla">hrošč 1539075</a>.
+# JS JIT Warp project
+experimental-features-js-warp =
+    .label = JavaScript JIT: Warp
+experimental-features-js-warp-description = Omogoči Warp, projekt, katerega cilj je izboljšanje delovanja JavaScripta in porabe pomnilnika.
+# Search during IME
+experimental-features-ime-search =
+    .label = Naslovna vrstica: prikaži rezultate med sestavljanjem IME
+experimental-features-ime-search-description = IME (Urejevalnik metode vnosa) je orodje, ki omogoča vnos kompleksnih simbolov, kot so tisti iz vzhodnoazijskih ali indijskih pisav, preko standardne tipkovnice. Z omogočanjem tega poskusa bo plošča z naslovno vrstico ostala prikazana, vključno z rezultati iskanja in predlogi, medtem ko boste z IME vnašali besedilo. Upoštevajte, da lahko IME prikaže ploščo, ki prekriva rezultate v naslovni vrstici, zato je ta nastavitev priporočljiva le za IME, ki ne uporablja takšne plošče.
+experimental-features-group-developer-tools =
+    .label = Razvojna orodja
+experimental-features-group-webpage-display =
+    .label = Prikaz spletnih strani
+experimental-features-group-customize-browsing =
+    .label = Prilagodite svoje brskanje
+experimental-features-group-productivity =
+    .label = Produktivnost
+experimental-features-group-newtab-widgets =
+    .label = Pripomočki na { -firefox-home-brand-name(sklon: "mestnik") }
+# New Tab Custom Wallpapers
+experimental-features-custom-wallpaper =
+    .label = Izberite ozadje ali barvo po meri za stran novega zavihka
+experimental-features-custom-wallpaper-description = Naložite lastno ozadje ali izberite poljubno barvo ozadja novih zavihkov.
+# Link Previews with AI
+experimental-features-link-previews =
+    .label = Predogledi povezav
+experimental-features-link-previews-description =
+    { PLATFORM() ->
+        [macos] Če želite izvedeti več o spletni strani, preden kliknete nanjo, podržite miškin kazalec na povezavi in pritisnite Shift (⇧) in Option (⌥) ali Alt. Predogledi lahko vsebujejo podatke, kot sta naslov in čas branja. Na nekaterih spletnih straneh lahko umetna inteligenca prebere tudi besedilo strani in ga povzame v glavnih poudarkih. Umetna inteligenca je optimizirana za branje in ustvarjanje angleških besedil. Da bi zagotovili vašo zasebnost, se umetna inteligenca izvaja lokalno v vašem računalniku. <a data-l10n-name="connect">Sporočite povratne informacije</a>
+       *[other] Če želite izvedeti več o spletni strani, preden kliknete nanjo, podržite miškin kazalec na povezavi in pritisnite Shift + Alt. Predogledi lahko vsebujejo podatke, kot sta naslov in čas branja. Na nekaterih spletnih straneh lahko umetna inteligenca prebere tudi besedilo strani in ga povzame v glavnih poudarkih. Umetna inteligenca je optimizirana za branje in ustvarjanje angleških besedil. Da bi zagotovili vašo zasebnost, se umetna inteligenca izvaja lokalno v vašem računalniku. <a data-l10n-name="connect">Sporočite povratne informacije</a>
+    }
+# This version of the link previews description does not mention AI.
+experimental-features-link-previews-description-no-ai =
+    { PLATFORM() ->
+        [macos] Če želite izvedeti več o spletni strani, pred klikom pomaknite miško nad povezavo in pritisnite Shift (⇧) in Option (⌥) ali Alt. Predogledi lahko vključujejo podrobnosti, kot sta naslov in čas branja. <a data-l10n-name="connect">Sporočite povratne informacije</a>
+       *[other] Če želite izvedeti več o spletni strani, pred klikom pomaknite miško nad povezavo in pritisnite Shift + Alt. Predogledi lahko vključujejo podrobnosti, kot sta naslov in čas branja. <a data-l10n-name="connect">Sporočite povratne informacije</a>
+    }
+# New Tab Sections with follow and block
+experimental-features-newtab-sections-follow-block =
+    .label = Tematski razdelki in možnost sledenja/blokiranja za zgodbe na novem zavihku
+experimental-features-newtab-sections-follow-block-description = Organizirajte zgodbe na strani novega zavihka v tematske odseke (Šport, Hrana, Zabava …) za večjo strukturiranost in preglednost. Nova kontrolnika Sledi in Blokiraj vam omogočata izbiro vsebine, ki naj se prikazuje. <a data-l10n-name="connect">Sporočite povratne informacije</a>
+# Firefox Web Apps
+experimental-features-fx-web-apps =
+    .label = Dodajte si strani v opravilno vrstico
+# “Add tab to taskbar” is found in the tooltip text of `-taskbar-tab-urlbar-button-open`.
+experimental-features-fx-web-apps-description = Spletna mesta, ki jih pogosto obiskujete, lahko odprete kot spletne aplikacije neposredno iz opravilne vrstice. Poiščite ikono »Dodaj zavihek v opravilno vrstico« desno od naslovne vrstice, da zaženete spletno mesto v poenostavljenem oknu z vsemi zaščitami, ki jih nudi { -brand-product-name }. <a data-l10n-name="connect">Delite svoje mnenje</a>
+
+## New Tab Productivity Widgets
+
+# Lists Widget
+experimental-features-newtab-widget-lists =
+    .label = Seznami na { -firefox-home-brand-name(sklon: "mestnik") }
+experimental-features-newtab-widget-lists-new =
+    .label = Seznami
+experimental-features-newtab-widget-lists-description = Imejte seznam opravil vedno pri roki, ko odprete nov zavihek. Od pakirnih do nakupovalnih seznamov – načrtujte v { -brand-product-name }u. <a data-l10n-name="connect">Delite svoje mnenje</a>
+# Timer Widget
+experimental-features-newtab-widget-timer =
+    .label = Časovnik na { -firefox-home-brand-name(sklon: "mestnik") }
+experimental-features-newtab-widget-timer-new =
+    .label = Časovnik
+experimental-features-newtab-widget-timer-description = Nastavite časovnik, da ostanete osredotočeni, da vas spodbuja k vztrajnosti ali vas opomni, da si vzamete čas zase. <a data-l10n-name="connect">Delite svoje mnenje</a>
+# Lists and Timer Widget (Combined)
+experimental-features-newtab-widget-lists-and-timer =
+    .label = Seznami in časovnik na { -firefox-home-brand-name(sklon: "mestnik") }
+experimental-features-newtab-widget-lists-and-timer-description = Imejte seznam opravil vedno pri roki, ko odprete nov zavihek. Od pakirnih do nakupovalnih seznamov – načrtujte v { -brand-product-name }u. Nastavite časovnik, da ostanete osredotočeni, da vas spodbuja k vztrajnosti ali vas opomni, da si vzamete čas zase. <a data-l10n-name="connect">Delite svoje mnenje</a>
+# Weather Widget
+experimental-features-newtab-widget-weather =
+    .label = Vremenska napoved
+experimental-features-newtab-widget-weather-description = Oglejte si današnjo vremensko napoved po urah. <a data-l10n-name="connect">Delite svoje mnenje</a>
+# Picture of the Day Widget
+experimental-features-newtab-widget-picture-of-the-day =
+    .label = Slika dneva
+experimental-features-newtab-widget-picture-of-the-day-description = Popestrite svoj dan z vsakodnevnim navdihom. Vsak dan vas čaka nova slika, zanimivo dejstvo in sveža tapeta v hipu. <a data-l10n-name="connect">Delite svoje mnenje</a>
+# Clocks Widget
+experimental-features-newtab-widget-clocks =
+    .label = Ura
+experimental-features-newtab-widget-clocks-description = Dodajte do štiri poljubno poimenovane ure in spremljajte, koliko je ura v krajih, ki so vam pomembni. <a data-l10n-name="connect">Sporočite povratne informacije</a>
+# Semantic History Search
+experimental-features-semantic-history-search =
+    .label = Semantično iskanje po zgodovini
+experimental-features-semantic-history-search-description = Z lokalnim modelom strojnega učenja lahko { -brand-product-name } na podlagi razumevanja naravnega jezika v naslovni vrstici predlaga vnose iz zgodovine, ki so povezani z vašimi iskanji. <a data-l10n-name="connect">Delite svoje mnenje</a>
+# Tab Notes
+experimental-features-tab-notes =
+    .label = Zapiski zavihka
+experimental-features-tab-notes-description = Zapiski na zavihkih so poskusna zmogljivost, ki omogoča dodajanje samolepljivih listkov na zavihke brskalnika. Zabeležite si vsebino, opomnike ali naslednje korake, da boste ob vrnitvi vedeli, zakaj ste zavihek odprli. Veseli bomo vaših povratnih informacij, saj želimo to zmogljivost še izboljšati. <a data-l10n-name="connect">Delite svoje mnenje</a>
+# Streamlined Tab Context Menu
+experimental-features-tab-context-menu =
+    .label = Poenostavljen meni zavihkov
+experimental-features-tab-context-menu-description = Ob desnem kliku na zavihek se prikaže poenostavljen meni, ki omogoča lažji dostop do najpogostejših dejanj. <a data-l10n-name="connect">Delite svoje mnenje</a>

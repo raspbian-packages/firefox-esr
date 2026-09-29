@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Αποθηκευμένες διευθύνσεις
+autofill-manage-addresses-list-header = Διευθύνσεις
+autofill-manage-payment-methods-title = Αποθηκευμένες μέθοδοι πληρωμής
+autofill-manage-cards-list-header = Κάρτες
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Αφαίρεση
+autofill-manage-add-button = Προσθήκη…
+autofill-manage-edit-button = Επεξεργασία…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Αποθήκευση διεύθυνσης;
+address-capture-save-doorhanger-description = Αποθηκεύστε πληροφορίες στο { -brand-short-name } για να μπορείτε να συμπληρώνετε γρήγορα φόρμες.
+address-capture-update-doorhanger-header = Ενημέρωση διεύθυνσης;
+address-capture-edit-doorhanger-header = Επεξεργασία διεύθυνσης
+address-capture-save-button =
+    .label = Αποθήκευση
+    .accessKey = Α
+address-capture-not-now-button =
+    .label = Όχι τώρα
+    .accessKey = χ
+address-capture-never-save-addresses-button =
+    .label = Να μην αποθηκεύονται ποτέ διευθύνσεις
+    .accessKey = ν
+address-capture-cancel-button =
+    .label = Ακύρωση
+    .accessKey = κ
+address-capture-update-button =
+    .label = Ενημέρωση
+    .accessKey = ν
+address-capture-manage-address-button =
+    .label = Ρυθμίσεις διεύθυνσης
+address-capture-learn-more-button =
+    .label = Μάθετε περισσότερα
+address-capture-open-menu-button =
+    .aria-label = Άνοιγμα μενού
+address-capture-edit-address-link = Επεξεργασία διεύθυνσης
+    .aria-label = Επεξεργασία διεύθυνσης
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Προσθήκη διεύθυνσης
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Επεξεργασία διεύθυνσης
+autofill-address-name = Όνομα
+autofill-address-organization = Εταιρεία
+autofill-address-street-address = Διεύθυνση
+autofill-address-street = Διεύθυνση
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Γειτονιά
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Χωριό ή κωμόπολη
+autofill-address-island = Νησί
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Κοινότητα
+autofill-address-city = Πόλη
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Συνοικία
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Πόλη αποστολής
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Προάστιο
+autofill-address-province = Επαρχία
+autofill-address-state = Περιφέρεια
+autofill-address-county = Κομητεία
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Ενορία
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Νομαρχία
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Περιοχή
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Τμήμα
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Εμιράτο
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Oblast
+# Postal code field used in India (IN).
+autofill-address-pin = Pin
+autofill-address-postal-code = Ταχυδρομικός κώδικας
+# Postal code field.
+autofill-address-zip = Ταχ. κώδικας
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eircode
+
+##
+
+autofill-address-country = Χώρα ή περιοχή
+autofill-address-country-only = Χώρα
+autofill-address-tel = Τηλέφωνο
+autofill-address-email = Email
+autofill-cancel-button = Ακύρωση
+autofill-save-button = Αποθήκευση
+autofill-country-warning-message-2 = Η αυτόματη συμπλήρωση φορμών διατίθεται προς το παρόν μόνο σε ορισμένες χώρες.
+autofill-country-warning-message = Η αυτόματη συμπλήρωση φορμών διατίθεται μόνο σε ορισμένες χώρες προς το παρόν.
+autofill-message-tooltip = Προβολή μηνύματος σχετικά με την αυτόματη συμπλήρωση
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Προσθήκη κάρτας
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Επεξεργασία κάρτας
+autofill-card-number-2 =
+    .label = Αριθμός κάρτας
+autofill-card-number = Αριθμός κάρτας
+autofill-card-invalid-number = Εισαγάγετε έναν έγκυρο αριθμό κάρτας
+autofill-card-name-on-card-2 =
+    .label = Όνομα στην κάρτα
+autofill-card-expires-month-2 =
+    .label = Μήνας λήξης
+autofill-card-expires-year-2 =
+    .label = Έτος λήξης
+autofill-card-billing-address-2 =
+    .label = Διεύθυνση χρέωσης
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = Όνομα στην κάρτα
+autofill-card-expires-month = Μήνας λήξης
+autofill-card-expires-year = Έτος λήξης
+autofill-card-billing-address = Διεύθυνση χρέωσης
+autofill-card-network = Τύπος κάρτας
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = πιστωτικές κάρτες, πιστωτική, πιστωτικές, κάρτα, κάρτες, χρεωστικές κάρτες, χρεωστική, πορτοφόλι, ταμείο, αγορά
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Προσθήκη διαβατηρίου
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = Επεξεργασία διαβατηρίου
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = Όνομα
+autofill-passport-country =
+    .label = Χώρα
+autofill-passport-number =
+    .label = Αριθμός
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = Ημερομηνία έκδοσης
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = Ημερομηνία λήξης
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = ΜΜ
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = ΗΗ
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = ΕΕΕΕ
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = Αποθήκευση διαβατηρίου;
+passport-capture-save-doorhanger-description = Αποθηκεύστε πληροφορίες στο { -brand-short-name } για να μπορείτε να συμπληρώνετε γρήγορα φόρμες.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = Αποθήκευση
+    .accessKey = Α
+passport-capture-not-now-button =
+    .label = Όχι τώρα
+    .accessKey = χ
+passport-capture-never-save-button =
+    .label = Να μην γίνεται ποτέ αποθήκευση διαβατηρίων
+    .accessKey = Ν

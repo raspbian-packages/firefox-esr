@@ -1,0 +1,243 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+toolbar-button-firefox-view-2 =
+    .label = { -firefoxview-brand-name }
+    .tooltiptext = Տեսնել վերջին դիտարկումները տարբեր պատուհաններում և սարքերում
+menu-tools-firefox-view =
+    .label = { -firefoxview-brand-name }
+    .accesskey = F
+firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
+firefoxview-page-label =
+    .label = { -firefoxview-brand-name }
+# Used instead of the localized relative time when a timestamp is within a minute or so of now
+firefoxview-just-now-timestamp = Հենց հիմա
+firefoxview-syncedtabs-signin-header-2 = Ձեր { -brand-product-name }-ը ձեր բոլոր սարքերի վրա
+firefoxview-syncedtabs-signin-description-2 = Ձեր հեռախոսում և այլ սարքերում բացված ներդիրները տեսնելու համար մուտք գործեք կամ գրանցվեք հաշիվ ստեղծելու համար: Հաշիվ ունենալով կարող եք նաև համաժամեցնել ձեր գաղտնաբառերը, պատմությունը և այլն:
+# The verb “Go” is implied but omitted from the headline: “[Go] from laptop to phone, seamlessly”
+firefoxview-syncedtabs-signin-header-3 = Նոութբուքից հեռախոս՝ անխափան
+firefoxview-syncedtabs-signin-description-3 = Պահեք ձեր զննարկիչը միացված տարբեր սարքերում՝ ներդիրները, գաղտնաբառերը և պատմությունը՝ բոլորը համաժամեցված։
+firefoxview-syncedtabs-signin-primarybutton-2 = Մուտք գործել
+firefoxview-syncedtabs-adddevice-header-2 = Վերցրեք ներդիրները ցանկացած վայրից
+firefoxview-syncedtabs-adddevice-description-2 = Մուտք գործեք { -brand-product-name } ձեր հեռախոսից կամ մեկ այլ համակարգչից՝ այստեղ ներդիրները տեսնելու համար: Իմացեք, թե ինչպես <a data-l10n-name="url">միացնել լրացուցիչ սարքեր</a>:
+firefoxview-syncedtabs-adddevice-primarybutton = Փորձեք { -brand-product-name }-ը բջջայինի համար
+# "Your tabs called" - this is playful messaging indicating that a user can find their synced tabs on their phone.
+firefoxview-syncedtabs-adddevice-header-3 = Ձեր ներդիրները զանգահարեցին։ Դրանք ձեր հեռախոսում են։
+firefoxview-syncedtabs-adddevice-description-3 = Սկանավորեք QR կոդը՝ { -brand-product-name }-ը բջջային հեռախոսի համար ստանալու և ձեր բաց ներդիրները և այլն համաժամեցնելու համար: Իմացեք, թե ինչպես <a data-l10n-name="url">միացնել լրացուցիչ սարքեր</a>:
+firefoxview-tabpickup-synctabs-primarybutton = Համաժամեցված ներդիրները
+firefoxview-tabpickup-synctabs-primarybutton-2 = Միացնել ներդիրների համաժամացումը
+firefoxview-syncedtabs-synctabs-header = Թարմացրեք ձեր համաժամացման կարգավորումները
+firefoxview-syncedtabs-synctabs-description = Այլ սարքերից ներդիրները տեսնելու համար անհրաժեշտ է համաժամեցնել ձեր բաց ներդիրները։
+firefoxview-syncedtabs-synctabs-header-2 = Ներդիրների համաժամեցումն անջատված է
+firefoxview-syncedtabs-synctabs-description-2 = Միացրեք համաժամեցումը՝ ձեր բոլոր ներդիրները այլ սարքերից ստանալու համար։
+firefoxview-syncedtabs-loading-header = Համաժամացում
+firefoxview-syncedtabs-loading-description = Երբ այն ավարտվի, դուք կտեսնեք բոլոր բացված ներդիրները այլ սարքերում: Ստուգեք կրկին շուտով:
+firefoxview-syncedtabs-loading-header-2 = Ձեր ներդիրները բեռնվում են…
+firefoxview-syncedtabs-loading-description-2 = Համաժամեցումն ընթացքի մեջ է։ Ներդիրները շուտով կլինեն այստեղ։
+firefoxview-tabpickup-fxa-admin-disabled-header = Ձեր կազմակերպությունն անջատել է համաժամացումը
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name }-ը չի կարողանում համաժամացնել ներդիրները սարքերի միջև, քանզի Ձեր կազմակերպությունն անջատել է համաժամացումը:
+firefoxview-tabpickup-fxa-admin-disabled-header-2 = Ներդիրների համաժամեցումն անջատված է
+firefoxview-tabpickup-fxa-disabled-by-policy-description-2 = Ձեր կազմակերպությունը արգելափակել է այս գործառույթը։
+firefoxview-tabpickup-network-offline-header = Ստուգեք կապակցումը համացանցին
+firefoxview-tabpickup-network-offline-description = Եթե դուք օգտվում եք հրապատից կամ փոխանորդից, ստուգեք, թե արդյոք { -brand-short-name }-ն ունի համացանցին հասանելիության թույլտվություն:
+firefoxview-tabpickup-network-offline-primarybutton = Կրկին փորձել
+firefoxview-tabpickup-network-offline-header-2 = { -brand-short-name }-ը չի կարողանում միանալ այս պահին
+firefoxview-tabpickup-network-offline-description-2 = Հնարավոր է՝ դուք անջատված եք, կամ ինչ-որ բան կարող է խոչընդոտել կապը։
+firefoxview-tabpickup-sync-error-header = Մենք խնդիրներ ունենք համաժամեցման հետ
+firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name }-ը այս պահին չի կարողանում կապ հաստատել համաժամեցման ծառայության հետ։ Փորձեք կրկին մի քանի րոպեից։
+# “Sync hit a snag” means that the sync process is having a problem and can’t connect.
+firefoxview-tabpickup-sync-error-header-2 = Սինխրոնիզացումը խափանվեց
+firefoxview-tabpickup-generic-sync-error-description-2 = { -brand-short-name }-ը չկարողացավ միանալ։ Մի պահ սպասեք, ապա կրկին փորձեք։
+firefoxview-tabpickup-sync-error-primarybutton = Կրկին փորձել
+firefoxview-tabpickup-sync-disconnected-header = Շարունակելու համար միացրեք համաժամացումը
+firefoxview-tabpickup-sync-disconnected-description = Ձեր ներդիրները ստանալու համար դուք պետք է թույլատրեք համաժամեցումը { -brand-short-name }-ում։
+firefoxview-tabpickup-sync-disconnected-primarybutton = Միացրեք համաժամացումը կարգավորումներում
+firefoxview-tabpickup-password-locked-header = Ներդիրները դիտելու համար մուտքագրեք Հիմնական գաղտնաբառը
+firefoxview-tabpickup-password-locked-description = Ձեր ներդիրները ստանալու համար պետք է մուտքագրեք Հիմնական գաղտնաբառը { -brand-short-name }-ի համար:
+firefoxview-tabpickup-password-locked-link = Իմանալ ավելին
+firefoxview-tabpickup-password-locked-primarybutton = Մուտքագրել Հիմնական գաղտնաբառը
+firefoxview-syncedtab-password-locked-link = <a data-l10n-name="syncedtab-password-locked-link">Իմանալ ավելին</a>
+firefoxview-tabpickup-password-locked-header-2 = Բացեք ներդիրները ձեր հիմնական գաղտնաբառով
+firefoxview-tabpickup-password-locked-description-2 = Ձեր գաղտնիության համար համաժամեցված ներդիրները պաշտպանված են: Մուտքագրեք ձեր { -brand-short-name } հիմնական գաղտնաբառը՝ ձեր մյուս սարքերից ներդիրները տեսնելու համար:
+firefoxview-tabpickup-signed-out-header = Մուտք գործեք՝ կրկին կապակցվելու համար
+firefoxview-tabpickup-signed-out-description2 = Վերամիանալու և ձեր ներդիրները ստանալու համար մուտք գործեք ձեր հաշիվ։
+firefoxview-tabpickup-signed-out-primarybutton = Մուտք գործել
+firefoxview-tabpickup-signed-out-header-2 = Մուտք գործեք՝ ձեր ներդիրները տեսնելու համար
+firefoxview-tabpickup-signed-out-description-2 = Վերամիացեք՝ այլ սարքերից ներդիրները դիտելու համար։
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Բաց թողնել { $tabTitle }-ը
+# Variables:
+#   $targetURI (string) - URL that will be opened in the new tab
+firefoxview-tabs-list-tab-button =
+    .title = Բացել { $targetURI }-ը նոր ներդիրում
+firefoxview-collapse-button-show =
+    .title = Ցուցադրել ցուցակը
+firefoxview-collapse-button-hide =
+    .title = Թաքցնել ցուցակը
+firefoxview-overview-nav = Վերջերս դիտարկվող
+    .title = Վերջերս դիտարկվող
+firefoxview-overview-header = Վերջերս դիտարկվող
+    .title = Վերջերս դիտարկվող
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Պատմություն
+    .title = Պատմություն
+firefoxview-history-header = Պատմություն
+firefoxview-history-context-delete = Ջնջել Պատմությունից
+    .accesskey = D
+firefoxview-history-context-forget-site = Մոռանալ այս կայքի մասին
+    .accesskey = F
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Բացել ներդիրները
+    .title = Բացել ներդիրները
+firefoxview-opentabs-header = Բացել ներդիրները
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Վերջերս փակված ներդիրներ
+    .title = Վերջերս փակված ներդիրներ
+firefoxview-recently-closed-header = Վերջերս փակված ներդիրներ
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Ներդիրներն այլ սարքերից
+    .title = Ներդիրներն այլ սարքերից
+firefoxview-synced-tabs-header = Ներդիրներ այլ սարքերից
+
+##
+
+# Used for a link in collapsible cards, in the ’Recent browsing’ page of Firefox View
+firefoxview-view-all-link = Դիտել բոլորը
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Պատուհան՝ { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Պատուհան՝ { $winID } (ընթացիկ)
+firefoxview-show-more = Ցուցադրել ավելին
+firefoxview-show-less = Ցուցադրել ավելի քիչ
+firefoxview-show-all = Ցուցադրել բոլորը
+firefoxview-search-text-box-clear-button =
+    .title = Մաքրել
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Որոնում
+# Placeholder for the input field to search in history ("search" is a verb).
+firefoxview-search-text-box-history =
+    .placeholder = Որոնման պատմություն
+# Placeholder for the input field to search in bookmarks ("search" is a verb).
+firefoxview-search-text-box-bookmarks =
+    .placeholder = Որոնել էջանիշեր
+# Placeholder for the input field to search in recently closed tabs ("search" is a verb).
+firefoxview-search-text-box-recentlyclosed =
+    .placeholder = Որոնել վերջերս փակված ներդիրները
+# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
+firefoxview-search-text-box-tabs =
+    .placeholder = Որոնել ներդիրներ
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-opentabs =
+    .placeholder = Որոնել բաց ներդիրները
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+firefoxview-search-results-header = «{ $query }»-ի որոնման արդյունքները
+# Variables:
+#   $count (Number) - The number of visits matching the search query.
+firefoxview-search-results-count =
+    { $count ->
+        [one] { $count } կայք
+       *[other] { $count } կայք
+    }
+# Message displayed when a search is performed and no matching results were found.
+# Variables:
+#   $query (String) - The search query.
+firefoxview-search-results-empty = «{ $query }»-ի համար արդյունքներ չկան
+firefoxview-sort-history-by-date-label = Տեսակավորել ըստ՝ ամսաթվի
+firefoxview-sort-history-by-site-label = Տեսակավորել ըստ՝ կայքի
+firefoxview-sort-open-tabs-by-recency-label = Տեսակավորել ըստ՝ վերջին գործողության
+firefoxview-sort-open-tabs-by-order-label = Տեսակավորել ըստ` ներդիրի հերթականության
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Այսօր - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Երեկ - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+firefoxview-history-site-localhost = (տեղային ֆայլեր)
+
+##
+
+firefoxview-show-all-history = Ցուցադրել ամբողջ պատմությունը
+
+## Message displayed in Firefox View when the user has no history data
+
+firefoxview-history-empty-header = Վերադարձեք այնտեղ, որտեղ եղել եք
+firefoxview-history-empty-description = Ինչպես որ դիտարկում եք, ձեր այցելած էջերը կցուցադրվեն այստեղ:
+firefoxview-history-empty-description-two = Ձեր գաղտնիության պաշտպանությունը մեր գործունեության հիմքում է։ Ահա թե ինչու դուք կարող եք վերահսկել { -brand-short-name }-ի կողմից հիշվող գործունեությունը ձեր <a data-l10n-name="history-settings-url">պատմության կարգավորումներում</a>։
+
+##
+
+# Button text for choosing a browser within the ’Import history from another browser’ banner
+firefoxview-choose-browser-button = Ընտրեք դիտարկիչը
+    .title = Ընտրեք դիտարկիչը
+
+## Message displayed in Firefox View when the user has chosen to never remember History
+
+# “Off the record” is an English phrase journalists use when a conversation will not be recorded or reported on. It’s meant to convey that users’ history activity will not be recorded or shown.
+firefoxview-dont-remember-history-empty-header-3 = Դուք գրառումից դուրս եք
+
+##
+
+# This label is read by screen readers when focusing the close button for the "Import history from another browser" banner in Firefox View
+firefoxview-import-history-close-button =
+    .aria-label = Փակել
+    .title = Փակել
+
+## Text displayed in a dismissable banner to import bookmarks/history from another browser
+
+firefoxview-import-history-header = Ներմուծել պատմությունը այլ դիտարկիչից
+
+## Message displayed in Firefox View when the user has no recently closed tabs data
+
+firefoxview-recentlyclosed-empty-header = Շու՞տ եք փակել ներդիրը:
+
+## This message is displayed below the name of another connected device when it doesn't have any open tabs.
+
+firefoxview-syncedtabs-device-notabs = Այս սարքում ներդիրներ չեն բացվել
+firefoxview-syncedtabs-connect-another-device = Միանալ այլ սարքի
+firefoxview-pinned-tabs =
+    .title = Ամրացված ներդիրները
+firefoxview-tabs =
+    .title = Ներդիրներ
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Փոխարկվել { $tabTitle }-ին
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Փոխարկել (էջանշված) { $tabTitle }-ին
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (էջանշված) { $url }

@@ -1,0 +1,412 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = కొత్త ట్యాబు
+newtab-settings-dialog-label =
+    .aria-label = అమరికలు
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-title =
+    .label = ముంగిలిపేజీ
+home-homepage-new-tabs =
+    .label = కొత్త ట్యాబు
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } వరుస
+           *[other] { $num } వరుసలు
+        }
+home-restore-defaults-srd =
+    .label = అప్రమేయాలను పునరుద్ధరించు
+    .accesskey = R
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (అప్రమేయం)
+home-mode-choice-custom-srd =
+    .label = అభిమత URLలు…
+home-mode-choice-blank-srd =
+    .label = ఖాళీ పేజీ
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = ప్రాయోజిక కథనాలు
+home-prefs-highlights-option-visited-pages-srd =
+    .label = చూసిన పేజీలు
+home-prefs-highlights-options-bookmarks-srd =
+    .label = ఇష్టాంశాలు
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = ఇటీవలి దింపుకోలు
+home-prefs-recent-activity-header-srd =
+    .label = ఇటీవలి కార్యకలాపం
+home-prefs-recent-activity-select =
+    .aria-label = ఇటీవలి కార్యకలాపం
+home-prefs-weather-header-srd =
+    .label = వాతావరణం
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = వెతకండి
+    .title = వెతకండి
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = { $engine }‌తో వెతకండి లేదా చిరునామాను ఇవ్వండి
+newtab-search-box-handoff-text-no-engine = వెతకండి లేదా చిరునామాను ఇవ్వండి
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = { $engine }‌తో వెతకండి లేదా చిరునామాను ఇవ్వండి
+    .placeholder = { $engine }‌తో వెతకండి లేదా చిరునామాను ఇవ్వండి
+    .title = { $engine }‌తో వెతకండి లేదా చిరునామాను ఇవ్వండి
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = వెతకండి లేదా చిరునామాను ఇవ్వండి
+    .placeholder = వెతకండి లేదా చిరునామాను ఇవ్వండి
+    .title = వెతకండి లేదా చిరునామాను ఇవ్వండి
+newtab-search-box-text = జాలంలో వెతకండి
+newtab-search-box-input =
+    .aria-label = జాలంలో వెతకండి
+    .placeholder = జాలంలో వెతకండి
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = శోధన యంత్రాన్ని జోడించండి
+newtab-topsites-title-label = శీర్షిక
+newtab-topsites-title-input =
+    .placeholder = శీర్షికను నమోదు చేయండి
+newtab-topsites-url-label = చిరునామా
+newtab-topsites-url-input =
+    .placeholder = URL ను టైప్ చేయండి లేదా అతికించండి
+newtab-topsites-url-validation = చెల్లుబాటు అయ్యే URL అవసరం
+newtab-topsites-image-url-label = అభిమత చిత్రపు చిరునామా
+newtab-topsites-use-custom-image-link = అభిమత చిత్రాన్ని వాడు
+newtab-topsites-use-image-link = అభిమత చిత్రాన్ని వాడు…
+newtab-topsites-image-validation = చిత్రాన్ని లోడు చెయ్యలేకపోయాం. మరో చిరునామా ప్రయత్నించండి.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = రద్దుచేయి
+newtab-topsites-delete-history-button = చరిత్ర నుంచి తీసివేయి
+newtab-topsites-save-button = భద్రపరచు
+newtab-topsites-preview-button = మునుజూపు
+newtab-topsites-add-button = చేర్చు
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = మీరు మీ చరిత్ర నుండి ఈ పేజీ యొక్క ప్రతి ఉదాహరణకు తొలగించాలనుకుంటున్నారా?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = ఈ చర్యను రద్దు చేయలేము.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = ప్రాయోజితం
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = మెనూని తెరువు
+    .title = మెనూని తెరువు
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = { $title } కోసం సందర్భోచిత మెనూని తెరవు
+    .title = మెనూని తెరువు
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = మార్చు
+newtab-menu-open-new-window = కొత్త విండోలో తెరువు
+newtab-menu-open-new-private-window = కొత్త వ్యక్తిగత విండోలో తెరువు
+newtab-menu-dismiss = విస్మరించు
+newtab-menu-pin = పిన్ను
+newtab-menu-unpin = పిన్ను తీసివేయి
+newtab-menu-delete-history = చరిత్ర నుంచి తీసివేయి
+newtab-menu-show-privacy-info = మా స్పాన్సర్లు & మీ అంతరంగికత
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = ఇంకా తెలుసుకోండి
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = ఇష్టాంశాన్ని తొలగించు
+# Bookmark is a verb here.
+newtab-menu-bookmark = ఇష్టాంశం
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = దింపుకోలు లంకెను కాపీచేయి
+newtab-menu-go-to-download-page = దింపుకోళ్ళ పేజీకి వెళ్ళు
+newtab-menu-remove-download = చరిత్ర నుండి తొలగించు
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] ఫైండర్‌లో చూపించు
+       *[other] కలిగిఉన్న సంచయాన్ని తెరువు
+    }
+newtab-menu-open-file = దస్త్రాన్ని తెరువు
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = సందర్శించారు
+newtab-label-bookmarked = ఇష్టాంశంగా గుర్తుపెట్టారు
+newtab-label-removed-bookmark = ఇష్టాంశం తొలగించబడింది
+newtab-label-recommended = ట్రెండింగ్
+newtab-label-saved = { -pocket-brand-name }లో భద్రపరచినది
+newtab-label-download = దింపుకున్నవి
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · ప్రాయోజితం
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = { $sponsor }చే ప్రాయోజితం
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } నిమి
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = అంతరంగికత గమనిక
+
+## Section Headers.
+
+newtab-section-header-topsites = మేటి సైట్లు
+newtab-section-header-recent-activity = ఇటీవలి కార్యకలాపం
+newtab-section-header-stories = ఆలోచింపజేసే కథనాలు
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = మీ కోసం నేటి ఎంపికలు
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = విహారించడం మొదలుపెట్టండి, మీరు ఈమధ్య చూసిన లేదా ఇష్టపడిన గొప్ప వ్యాసాలను, వీడియోలను, ఇతర పేజీలను ఇక్కడ చూపిస్తాం.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = మీరు అన్నీ చూసేసారు!
+newtab-discovery-empty-section-topstories-content = మరిన్న కథనాల కోసం కాసేపటి తర్వాత చూడండి.
+newtab-discovery-empty-section-topstories-try-again-button = మళ్ళీ ప్రయత్నించు
+newtab-discovery-empty-section-topstories-loading = వస్తోంది…
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = అయ్యో, ఈ విషయం తేవడంలో ఏదో తప్పు దొర్లింది.
+newtab-error-fallback-refresh-link = మళ్ళీ ప్రయత్నించడానికి పేజీని రీఫ్రెష్ చెయ్యండి.
+
+## New Tab Appearance (browser theme picker)
+
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } వరుస
+           *[other] { $num } వరుసలు
+        }
+newtab-custom-stories-personalized-toggle =
+    .label = కథనాలు
+newtab-custom-weather-toggle =
+    .description = నేటి వాతావరణ అంచనా
+    .label = వాతావరణం
+newtab-custom-widget-lists-toggle =
+    .label = జాబితాలు
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = నిండు రంగులు
+newtab-wallpaper-blue = నీలం
+newtab-wallpaper-light-blue = లేత నీలం
+newtab-wallpaper-light-green = లేత ఆకుపచ్చ
+newtab-wallpaper-green = పచ్చ
+newtab-wallpaper-yellow = పసుపు
+newtab-wallpaper-red = ఎరుపు
+newtab-wallpaper-dark-blue = ముదురు నీలం
+newtab-wallpaper-dark-green = ముదురాకుపచ్చ
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = ఛాయాచిత్రాలు
+newtab-wallpaper-beach-at-sunrise = ఉషాతీరం
+newtab-wallpaper-beach-at-sunset = సంధ్యాతీరం
+newtab-wallpaper-feature-highlight-button = అర్థమైంది
+
+## New Tab Weather
+
+newtab-weather-menu-temperature-units = ఉష్ణోగ్రత యూనిట్లు
+newtab-weather-menu-temperature-option-celsius = సెల్సియస్
+newtab-weather-menu-learn-more = ఇంకా తెలుసుకోండి
+newtab-weather-opt-in-yes =
+    .label = అవును
+
+## Topic Labels
+
+newtab-topic-label-business = వ్యాపారం
+newtab-topic-label-career = వృత్తి
+newtab-topic-label-education = విద్య
+newtab-topic-label-arts = వినోదం
+newtab-topic-label-food = ఆహారం
+newtab-topic-label-health = ఆరోగ్యం
+newtab-topic-label-hobbies = ఆటలు
+newtab-topic-label-government = రాజకీయాలు
+newtab-topic-label-education-science = విజ్ఞానం
+newtab-topic-label-sports = క్రీడలు
+newtab-topic-label-tech = సాంకేతికం
+newtab-topic-label-travel = ప్రయాణం
+newtab-topic-label-home = ఇల్లు & తోట
+
+## Topic Selection Modal
+
+newtab-topic-selection-save-button = భద్రపరుచు
+newtab-topic-selection-cancel-button = రద్దుచేయి
+newtab-topic-selection-button-maybe-later = బహుశా తర్వాత
+newtab-topic-selection-button-update-interests = మీ ఆసక్తులను తాజాకరించండి
+newtab-topic-selection-button-pick-interests = మీ ఆసక్తులను ఎంచుకోండి
+
+## Strings for reporting issues with ads and content
+
+newtab-report-content-requires-payment-subscription-learn-more = ఇంకా తెలుసుకోండి
+newtab-report-cancel = రద్దుచేయి
+
+## Strings for task / to-do list productivity widget
+
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = కొత్తది
+newtab-widget-lists-label-beta =
+    .label = బీటా
+newtab-widget-lists-menu-learn-more = ఇంకా తెలుసుకోండి
+newtab-widget-lists-input-menu-delete = తొలగించు
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+newtab-widget-timer-menu-learn-more = ఇంకా తెలుసుకోండి
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = న్యూయార్క్
+newtab-clock-city-us-los-angeles = లాస్ ఏంజలెస్
+newtab-clock-city-us-chicago = చికాగో
+newtab-clock-city-us-san-francisco = శాన్ ఫ్రాన్సిస్కో
+newtab-clock-city-us-san-diego = శాన్ డియాగో
+newtab-clock-city-us-dallas = డల్లాస్
+newtab-clock-city-us-houston = హ్యూస్టన్
+newtab-clock-city-us-philadelphia = ఫిలడెల్ఫియా
+newtab-clock-city-us-atlanta = అట్లాంటా
+newtab-clock-city-us-washington-dc = వాషింగ్టన్
+newtab-clock-city-us-boston = బోస్టన్
+newtab-clock-city-us-miami = మయామి
+newtab-clock-city-us-seattle = సియాటెల్
+newtab-clock-city-us-denver = డెన్వర్
+newtab-clock-city-us-honolulu = హోనోలూలు
+newtab-clock-city-us-anchorage = ఆంకరేజ్
+newtab-clock-city-de-berlin = బెర్లిన్
+newtab-clock-city-de-munich = మ్యూనిక్
+newtab-clock-city-de-frankfurt = ఫ్రాంక్ఫుర్ట్
+newtab-clock-city-de-hamburg = హ్యాంబర్గ్
+newtab-clock-city-fr-paris = పారిస్
+newtab-clock-city-fr-lyon = లియాన్
+newtab-clock-city-fr-marseille = మార్సే
+newtab-clock-city-fr-toulouse = టులూజ్
+newtab-clock-city-in-kolkata = కోల్‌కత
+newtab-clock-city-in-mumbai = ముంబై
+newtab-clock-city-in-delhi = ఢిల్లీ
+newtab-clock-city-in-bangalore = బెంగుళూరు
+newtab-clock-city-cn-shanghai = షాంఘై
+newtab-clock-city-cn-beijing = బీజింగ్
+newtab-clock-city-cn-shenzhen = షెన్‌జెన్
+newtab-clock-city-br-sao-paulo = సావో పాలో
+newtab-clock-city-br-rio-de-janeiro = రియో డి జనీరో
+newtab-clock-city-br-brasilia = బ్రసీలియా
+newtab-clock-city-id-jakarta = జకార్తా
+newtab-clock-city-id-surabaya = సురబాయ
+newtab-clock-city-id-makassar = మకాసర్
+newtab-clock-city-ca-toronto = టొరంటో
+newtab-clock-city-ca-montreal = మాంట్రియల్
+newtab-clock-city-ca-vancouver = వాంకోవర్
+newtab-clock-city-au-sydney = సిడ్నీ
+newtab-clock-city-au-perth = పెర్త్
+newtab-clock-city-au-adelaide = అడిలైడ్
+newtab-clock-city-pl-warsaw = వార్సా
+newtab-clock-city-pl-krakow = క్రాకోవ్
+newtab-clock-city-jp-tokyo = టోక్యో
+newtab-clock-city-jp-osaka = ఒసాకా
+newtab-clock-city-mx-mexico-city = మెక్సికో సిటీ
+newtab-clock-city-mx-guadalajara = గ్వడలజర
+newtab-clock-city-it-rome = రోమ్
+newtab-clock-city-it-milan = మిలన్
+newtab-clock-city-ru-moscow = మాస్కో
+newtab-clock-city-ru-saint-petersburg = సెయింట్ పీటర్స్‌బర్గ్
+newtab-clock-city-gb-london = లండన్
+newtab-clock-city-gb-birmingham = బర్మింగ్‌హామ్
+newtab-clock-city-es-madrid = మద్రిడ్
+newtab-clock-city-es-barcelona = బార్సిలోనా
+newtab-clock-city-nl-amsterdam = ఆమ్‌స్టర్‌డ్యామ్
+newtab-clock-city-ch-zurich = జ్యూరిక్
+newtab-clock-city-at-vienna = వియెన్నా
+newtab-clock-city-cz-prague = ప్రాహా
+newtab-clock-city-ar-buenos-aires = బ్యూనస్ ఏరీస్
+newtab-clock-city-gr-athens = ఏథెన్స్
+newtab-clock-city-hu-budapest = బుడాపెస్ట్
+newtab-clock-city-be-brussels = బ్రసెల్స్
+newtab-clock-city-ua-kyiv = క్యివ్
+newtab-clock-city-fi-helsinki = హెల్సింకీ
+newtab-clock-city-co-bogota = బోగోటా
+newtab-clock-city-ph-manila = మనీలా
+newtab-clock-city-tr-istanbul = ఇస్తాంబుల్
+newtab-clock-city-my-kuala-lumpur = క్వాలాలంపూర్
+newtab-clock-city-eg-cairo = కైరో
+newtab-clock-city-se-stockholm = స్టాక్‌హోమ్
+newtab-clock-city-ro-bucharest = బుఖారెస్ట్
+newtab-clock-city-th-bangkok = బ్యాంకాక్
+newtab-clock-city-ng-lagos = లాగోస్
+newtab-clock-city-tw-taipei = తాయిపెయ్
+newtab-clock-city-za-johannesburg = జోహాన్స్బర్గ్
+newtab-clock-city-cl-santiago = సాంటియాగో
+newtab-clock-city-pk-karachi = కరాచీ
+newtab-clock-city-bg-sofia = సోఫియా
+newtab-clock-city-sg-singapore = సింగపూరు
+newtab-clock-city-hk-hong-kong = హాంగ్‌కాంగ్
+newtab-clock-city-sa-riyadh = రియాధ్
+newtab-clock-city-dk-copenhagen = కోపెన్‌హాగన్
+newtab-clock-city-pe-lima = లీమా
+newtab-clock-city-ke-nairobi = నైరోబి
+newtab-clock-city-nz-auckland = ఆక్లాండ్
+newtab-clock-city-kr-seoul = సియొల్
+newtab-clock-city-lt-vilnius = విల్నియస్
+newtab-clock-city-ie-dublin = డబ్లిన్
+newtab-clock-city-ae-dubai = దుబాయ్
+newtab-clock-city-lv-riga = రీగా
+newtab-clock-city-pt-lisbon = లిస్బన్
+newtab-clock-city-ir-tehran = టెహరాన్
+newtab-clock-city-bd-dhaka = ఢాకా
+newtab-clock-city-ec-guayaquil = గ్వాయాక్విల్
+newtab-clock-city-vn-ho-chi-minh-city = హో చి మిన్హ్ నగరం
+newtab-clock-city-np-kathmandu = ఖాట్మండు
+newtab-clock-city-mm-yangon = యాంగోన్
