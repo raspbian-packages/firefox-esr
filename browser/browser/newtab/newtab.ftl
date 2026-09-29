@@ -1,0 +1,1817 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = 新标签页
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = 定制此页面
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = 定制
+newtab-customize-panel-label =
+    .label = 定制
+newtab-settings-dialog-label =
+    .aria-label = 设置
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+newtab-card-dismiss-button =
+    .aria-label = 知道了
+    .title = 知道了
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-title =
+    .label = 主页
+home-homepage-new-windows =
+    .label = 新窗口
+home-homepage-new-tabs =
+    .label = 新标签页
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-button =
+    .label = 选择特定网站
+
+## Custom URLs subpage
+
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-card-header =
+    .label = 网址
+home-custom-homepage-address =
+    .placeholder = 输入地址
+home-custom-homepage-address-button =
+    .label = 添加地址
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-results =
+    .label = 未添加网站。
+home-custom-homepage-delete-address-button =
+    .aria-label = 删除地址
+    .title = 删除地址
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with-prompt =
+    .label = 替换为
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-current-pages-button =
+    .label = 当前打开的页面
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-bookmarks-button =
+    .label = 书签…
+
+## Firefox Home content
+
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
+home-prefs-search-header2 =
+    .label = 搜索
+home-prefs-stories-header2 =
+    .description = 由 { -brand-product-name } 系列产品推荐的精选内容
+    .label = 文章
+home-prefs-widgets-header =
+    .label = 小组件
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = 清单
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = 计时器
+# Sports is a widget on New Tab showing sports scores and schedules.
+home-prefs-sports-widget-header =
+    .label = 体育
+# Clock is a widget on New Tab that displays time zones around the world.
+home-prefs-clocks-header =
+    .label = 时钟
+# Privacy is a widget on New Tab that shows tracking protection activity.
+home-prefs-privacy-header =
+    .label = 隐私保护
+# Crossword is a widget on New Tab that shows a daily crossword puzzle.
+home-prefs-crossword-widget-header =
+    .label = 填字游戏
+# Stocks is a widget on New Tab that shows stock ticker prices.
+home-prefs-stocks-header =
+    .label = 股市
+# Picture of the day is a widget on New Tab that shows a daily Wikimedia Commons image.
+home-prefs-picture-header =
+    .label = 每日一图
+# Recent searches is a widget on New Tab that shows the user's recent searches.
+home-prefs-recent-searches-header =
+    .label = 近期搜索
+home-prefs-mission-message2 =
+    .message = 建设一个更好的互联网的使命，离不开我们赞助商的支持。
+home-prefs-manage-topics-link2 =
+    .label = 管理主题
+home-prefs-choose-wallpaper-link2 =
+    .label = 选择壁纸
+home-prefs-firefox-logo-header =
+    .label = { -brand-short-name } 徽标
+# Informational message bar that appears in the Firefox Home section when the options are disabled.
+# The user must select Firefox Home as their homepage for either new tabs or new windows to enable
+# the features in settings.
+home-prefs-firefox-home-disabled-notice =
+    .message = 将新标签页或新窗口设置为 { -firefox-home-brand-name }以使用此功能。
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label = { $num } 行
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = 扩展（{ $extension }）
+home-restore-defaults-srd =
+    .label = 恢复默认设置
+    .accesskey = R
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name }（默认）
+home-mode-choice-custom-srd =
+    .label = 自定义网址…
+home-mode-choice-blank-srd =
+    .label = 空白页
+home-prefs-shortcuts-header-srd =
+    .label = 快捷方式
+home-prefs-shortcuts-select =
+    .aria-label = 快捷方式
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = 赞助商网站
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = 赞助内容
+home-prefs-highlights-option-visited-pages-srd =
+    .label = 访问过的页面
+home-prefs-highlights-options-bookmarks-srd =
+    .label = 书签
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = 最近下载
+home-prefs-recent-activity-header-srd =
+    .label = 近期动态
+home-prefs-recent-activity-select =
+    .aria-label = 近期动态
+home-prefs-weather-header-srd =
+    .label = 天气
+home-prefs-support-firefox-header-srd =
+    .label = 支持 { -brand-product-name }
+home-prefs-mission-message-learn-more-link-srd = 了解其方式
+
+## Strings for the Privacy widget
+
+# Context menu item linking to more information about the Privacy widget.
+newtab-privacy-menu-learn-more = 详细了解
+# Accessible name for the Privacy widget container. The widget shows no visible
+# title, so screen readers rely on this label to identify it.
+newtab-privacy-widget-label =
+    .aria-label = 隐私保护
+
+## Privacy widget — count readout
+
+# Label shown under the large tracker-count number, appearing like:
+# Line 1: 86
+# Line 2: Trackers blocked today
+# Translations can be adjusted to "Today's blocked trackers" or something
+# similar if this fixed order causes issues.
+# Variables:
+#   $count (number) - Number of trackers blocked today
+newtab-privacy-trackers-blocked-today = 今天拦截的跟踪器数量
+# Second line of the readout, under the large number and "Trackers blocked
+# today". Counts the sites those trackers were blocked on. The English is
+# shortened from "Blocked across { $count } sites" — translate it that fuller way
+# if the short fragment doesn't work in your language.
+# Variables:
+#   $count (number) - Number of sites where trackers were blocked
+newtab-privacy-across-sites = 涉及 { $count } 个网站
+
+## Privacy widget — empty state
+
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty = { -brand-short-name } 会在您浏览时拦截跟踪器。拦截情况将显示在这里。
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty-state = { -brand-short-name } 会自动拦截跟踪器，让您的活动更私密。
+# "A running tally" is an informal way to say a total that keeps updating as it goes.
+# Here we are referring to the number of trackers blocked, which increases as the user browses.
+# An alternative can be "See a running total here"
+newtab-privacy-empty-state-tally = 在此查看实时计数。
+
+## Privacy widget — Enhanced Tracking Protection off state
+
+newtab-privacy-etp-off-turn-on-tracking = 前往“设置”开启跟踪保护，即可开始拦截。
+
+## Privacy widget — informational messages
+##
+## Rotating "info" secondary messages. Each message has a body plus a matched
+## "-cta" button label sharing the same id stem (the CTA button isn't rendered
+## yet; the labels are authored so the pairing is ready).
+
+newtab-privacy-message-info-1 = { -brand-short-name } 会在您浏览时自动拦截跟踪器。
+newtab-privacy-message-info-1-cta = 查看保护信息
+newtab-privacy-message-info-2 = 拦截跟踪器有助于阻止大公司在网络上跟踪您。
+newtab-privacy-message-info-2-cta = 查看保护信息
+newtab-privacy-message-info-3 = 许多网站都藏有跟踪器，使得您未曾打过交道的公司也可以在网络上跟踪您。
+newtab-privacy-message-info-3-cta = 查看保护信息
+newtab-privacy-message-info-4 = 选择 { -brand-short-name }，即是选择无需您费心的保护功能。
+newtab-privacy-message-info-4-cta = 查看保护信息
+newtab-privacy-message-info-5 = 拦截跟踪器后，大公司将更难跨网站跟踪您。
+newtab-privacy-message-info-5-cta = 查看保护信息
+newtab-privacy-message-info-6 = 用 { -brand-short-name } 守护您的数据。我们绝不会出售您的数据，无论其他浏览器作何选择。
+newtab-privacy-message-info-6-cta = 详细了解
+newtab-privacy-message-info-7 = 看看 { -brand-short-name } 拦截了哪些跟踪器。
+newtab-privacy-message-info-7-cta = 查看保护信息
+newtab-privacy-message-info-8 = 使用 { -brand-short-name } 浏览，即是在支持 { -vendor-short-name } 的使命：建设更好的网络。
+newtab-privacy-message-info-8-cta = 详细了解
+newtab-privacy-message-info-9 = 将 { -brand-short-name } 设为默认浏览器，享受内置隐私保护。
+newtab-privacy-message-info-9-cta = 设为默认
+newtab-privacy-message-info-10 = 将密码保存在 { -brand-short-name } 中，即可随时随地取用高强度且唯一的登录信息。
+newtab-privacy-message-info-10-cta = 转到密码
+newtab-privacy-message-info-11 = 了解 { -brand-short-name } 如何帮助您更私密地浏览。
+newtab-privacy-message-info-11-cta = 详细了解
+newtab-privacy-message-info-12 = 使用限量数据流量套餐时，拦截跟踪器有助于节省带宽。
+newtab-privacy-message-info-12-cta = 查看保护信息
+newtab-privacy-message-info-13 = { -brand-short-name } 会拦截跟踪器，从而释放带宽，让流播放更流畅。
+newtab-privacy-message-info-13-cta = 查看保护信息
+
+## Privacy widget — promotional messages
+##
+## Rotating "promo" secondary messages suggesting another Firefox feature. Each
+## has a body plus a matched "-cta" button label.
+
+newtab-privacy-message-promo-monitor-1 = 看看您的个人信息是否出现在数据外泄事件中。
+newtab-privacy-message-promo-monitor-1-cta = 详细了解
+newtab-privacy-message-promo-monitor-2 = 使用免费的数据外泄事件监控来保护您的信息，最多可监控 20 个邮箱。
+newtab-privacy-message-promo-monitor-2-cta = 详细了解
+newtab-privacy-message-promo-signin-1 = 使用 { -vendor-short-name } 账户，跨设备同步并加密保护书签、密码和标签页。
+newtab-privacy-message-promo-signin-1-cta = 登录
+newtab-privacy-message-promo-vpn-1 = 使用公共 Wi-Fi 购物？开启内置 VPN，获得额外防护。
+newtab-privacy-message-promo-vpn-1-cta = 打开 VPN
+newtab-privacy-message-promo-vpn-2 = 在使用机场 Wi-Fi？开启内置 VPN，保护您的浏览。
+newtab-privacy-message-promo-vpn-2-cta = 打开 VPN
+newtab-privacy-message-promo-vpn-3 = 开启内置 VPN，更好隐藏您的真实位置。
+newtab-privacy-message-promo-vpn-3-cta = 打开 VPN
+newtab-privacy-message-promo-private-window-1 = 与他人共用计算机时，建议使用隐私窗口，让浏览更有隐私。
+newtab-privacy-message-promo-private-window-1-cta = 打开隐私窗口
+newtab-privacy-message-promo-relay-1 = 将马甲邮箱用于注册账户，把真实邮箱留给信任的人。
+newtab-privacy-message-promo-relay-1-cta = 获取马甲邮箱
+newtab-privacy-message-promo-relay-2 = 使用免费的马甲邮箱，保护收件箱免受垃圾邮件侵扰。
+newtab-privacy-message-promo-relay-2-cta = 获取马甲邮箱
+newtab-privacy-message-promo-relay-3 = 获取 50 个免费马甲邮箱，帮助隐藏真实邮箱地址。
+newtab-privacy-message-promo-relay-3-cta = 获取马甲邮箱
+
+## Privacy widget — celebration messages
+##
+## Earned "celebration" moments (milestones, daily cap, streak, first
+## protection). Count-bearing ones interpolate { $count }.
+
+newtab-privacy-message-milestone-week-cta = 查看保护信息
+# Variables:
+#   $count (number) - Trackers blocked this month
+newtab-privacy-message-milestone-month = 本月已拦截 { $count } 个跟踪器。隐私一小步，心安一大步。
+newtab-privacy-message-milestone-month-cta = 查看保护信息
+# Variables:
+#   $count (number) - Trackers blocked this year
+newtab-privacy-message-milestone-year = 今年已拦截 { $count } 个跟踪器。这一年对您的隐私保护，卓有成效。
+newtab-privacy-message-milestone-year-cta = 查看保护信息
+newtab-privacy-message-milestone-total-cta = 查看保护信息
+newtab-privacy-message-daily-cap-cta = 查看保护信息
+# Variables:
+#   $count (number) - Consecutive days the user has had trackers blocked
+newtab-privacy-message-streak = 您已连续受保护 { $count } 天。
+newtab-privacy-message-streak-cta = 查看保护信息
+# Shown the first time the tracker count goes above zero.
+newtab-privacy-message-first-protection = 继续浏览，{ -brand-short-name } 将持续拦截。
+newtab-privacy-message-first-protection-cta = 查看保护信息
+
+## Strings for the Stocks widget
+
+# Context menu item linking to more information about the Stocks widget.
+newtab-stocks-menu-learn-more = 详细了解
+# Shown in the Stocks widget when its data could not be loaded.
+newtab-stocks-error-not-available = 无法获取股市数据。
+# "Stocks widget options" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-stocks-widget-menu-button =
+    .aria-label = 股市小组件选项
+    .title = 股市小组件选项
+# Accessible name for the Stocks widget; hidden because the list dropdown is
+# shown in place of the title.
+newtab-stocks-widget-title = 股市
+# "Markets" is the default list of market ETFs. The value is shown in the menu,
+# and .label is shown on the button that opens it.
+newtab-stocks-list-markets = 市场
+    .label = 市场
+# "Watchlist" is the user's list of stocks to follow. The value is shown in the
+# menu, and .label is shown on the button that opens it.
+newtab-stocks-list-watchlist = 关注列表
+    .label = 关注列表
+# Context menu item that opens the stock search (by company name or ticker symbol).
+newtab-stocks-menu-search-stocks = 搜索名称或代码
+
+## Screen-reader summary of a stock ticker.
+## Variables:
+##   $name (String) - the full fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+##   $change (String) - the day's percentage change, e.g. "+2.1%".
+##   $price (String) - the last price, e.g. "$559.44".
+
+# Stock increased (went up) during the day
+newtab-stocks-ticker-status-up = { $name }，上涨 { $change }，{ $price }
+# Stock decreased (went down) during the day
+newtab-stocks-ticker-status-down = { $name }，下跌 { $change }，{ $price }
+# Stock didn't change during the day
+newtab-stocks-ticker-status-flat = { $name }，平盘，{ $change }，{ $price }
+
+## Stocks widget watchlist add and remove controls
+
+# Tooltip and screen-reader label for the button that adds a stock to the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+newtab-stocks-add-to-watchlist =
+    .aria-label = 添加 { $name } 到关注列表
+    .title = 添加 { $name } 到关注列表
+# Tooltip and screen-reader label for the button that removes a stock from the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-remove-from-watchlist =
+    .aria-label = 从关注列表移除“{ $name }”
+    .title = 从关注列表移除“{ $name }”
+# Visually hidden text on a Markets row whose stock is already in the watchlist, so
+# screen readers announce that it is saved. Removal happens on the Watchlist tab.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-in-watchlist = “{ $name }”已在关注列表中
+# Announced to screen readers after a stock is added to the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-added-to-watchlist = 已将“{ $name }”添加到关注列表
+# Announced to screen readers after a stock is removed from the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-removed-from-watchlist = 已将“{ $name }”从关注列表移除
+
+## Stocks widget ticker search
+
+# Placeholder and screen-reader label for the ticker search input.
+newtab-stocks-search-input =
+    .aria-label = 搜索名称或代码
+    .placeholder = 搜索名称或代码
+# "Search results" is the accessible label for the list of tickers matching the
+# search. It means "results of the search", not "search within the results".
+newtab-stocks-search-results =
+    .aria-label = 搜索结果
+# "Back" is an icon-only button in the search panel header that returns to the
+# widget — the attributes are consumed as tooltip/screen-reader label only. The
+# button never renders visible text.
+newtab-stocks-search-back-button =
+    .aria-label = 返回
+    .title = 返回
+# Shown when a ticker search returns no matching symbols.
+# Variables:
+#   $query (String) - the text the user searched for.
+newtab-stocks-search-no-results = 未找到“{ $query }”的相关结果
+# Shown while a ticker search is running; also announced to screen readers.
+newtab-stocks-search-loading = 正在加载…
+# Shown when a ticker search fails to reach the service.
+newtab-stocks-search-error = 目前无法搜索，请稍后再试。
+# Shown below successful search results when the watchlist is already full.
+# Variables:
+#   $limit (Number) - the maximum number of stocks the watchlist can hold.
+newtab-stocks-watchlist-full = 最多可添加 { $limit } 支股票。请先移除一支股票，再添加其他股票。
+
+## Strings for the Picture of the Day widget
+
+# Title shown at the top of the widget, with the source name appended.
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-header = 每日一图 · 维基共享资源
+# Shorter title shown at the top of the widget, without the source name.
+newtab-picture-header-main = 每日一图
+# Attribution line shown under the title once a picture loads: an author
+# credit, a link to the picture's source page, and a link to its license.
+# "©" is the copyright symbol.
+# $author (string) - the name of the image's author.
+newtab-picture-attribution-author = © { $author }
+# Link to the picture's source page (its Wikimedia Commons file page).
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-attribution-source-link = 维基共享资源
+# Screen-reader label for the license link; the visible text is the license
+# name (for example "CC BY-SA 4.0") provided with the picture.
+# $license (string) - the name of the license.
+newtab-picture-attribution-license =
+    .aria-label = 查看 { $license } 许可协议
+# Tooltip and screen-reader label for the icon-only button that opens the
+# widget's context menu. The button never renders visible text.
+newtab-picture-widget-menu-button =
+    .aria-label = 每日一图选项
+    .title = 每日一图选项
+# Button that sets the current picture as the New Tab background wallpaper. The
+# button collapses to an icon when not hovered/focused, so .title is its tooltip.
+newtab-picture-set-wallpaper =
+    .aria-label = 将今日图片设置为壁纸
+    .label = 设为壁纸
+    .title = 设为壁纸
+# Context menu item that opens the New Tab customization panel.
+newtab-picture-menu-manage-wallpaper = 管理壁纸
+# Context menu item that hides today’s picture, replacing it with an existing
+# wallpaper.
+newtab-picture-menu-hide-photo = 隐藏今日图片
+# Context menu item that restores today’s picture after it has been hidden.
+newtab-picture-menu-show-photo = 显示今日图片
+# Context menu item linking to more information about the widget.
+newtab-picture-menu-learn-more = 详细了解
+# Icon button shown on the widget once the picture is hidden; restores it.
+newtab-picture-show-button =
+    .aria-label = 显示今日图片
+    .title = 显示今日图片
+# Shown when there is no new picture to display yet.
+newtab-picture-check-back = 明天再来看看有没有新照片吧
+# Screen-reader text alternative for the picture; fallback used when the source
+# provides no localized description.
+newtab-picture-image-alt = 维基共享资源 · 每日一图
+
+## Strings for the Recent Searches widget
+
+# Widget heading; also the widget's accessible name.
+newtab-recent-searches-widget-title = 近期搜索
+# Screen reader label for the widget's icon-only menu button.
+newtab-recent-searches-widget-menu-button =
+    .aria-label = “近期搜索”选项
+# Context menu item linking to more information about the widget.
+newtab-recent-searches-menu-learn-more = 详细了解
+
+## Strings for the navigable panels that new tab content area can be
+## split into.
+
+newtab-spaces-tab-stories = 文章
+newtab-spaces-tab-widgets = 小组件
+newtab-spaces-tab-activity = 动态
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = 搜索
+    .title = 搜索
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = 使用 { $engine } 搜索，或者输入网址
+newtab-search-box-handoff-text-no-engine = 搜索或输入网址
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = 使用 { $engine } 搜索，或者输入网址
+    .placeholder = 使用 { $engine } 搜索，或者输入网址
+    .title = 使用 { $engine } 搜索，或者输入网址
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = 搜索或输入网址
+    .placeholder = 搜索或输入网址
+    .title = 搜索或输入网址
+newtab-search-box-text = 网上搜索
+newtab-search-box-input =
+    .aria-label = 网上搜索
+    .placeholder = 网上搜索
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = 添加搜索引擎
+newtab-topsites-add-shortcut-header = 新建快捷方式
+newtab-topsites-edit-shortcut-header = 编辑快捷方式
+newtab-topsites-add-shortcut-label = 添加快捷方式
+newtab-topsites-add-shortcut-title =
+    .aria-label = 添加快捷方式
+    .title = 添加快捷方式
+newtab-shortcuts-pinned-area = 固定区域
+newtab-topsites-title-label = 标题
+newtab-topsites-title-input =
+    .placeholder = 输入标题
+newtab-topsites-url-label = 网址
+newtab-topsites-url-input =
+    .placeholder = 输入或粘贴网址
+newtab-topsites-url-validation = 需要有效的网址
+newtab-topsites-image-url-label = 自定义图像网址
+newtab-topsites-use-custom-image-link = 使用自定义图像
+newtab-topsites-use-image-link = 使用自定义图像…
+newtab-topsites-image-validation = 图像加载失败。请尝试其他网址。
+newtab-topsites-clear-input =
+    .aria-label = 清除文本
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = 取消
+newtab-topsites-delete-history-button = 从历史记录中删除
+newtab-topsites-save-button = 保存
+newtab-topsites-preview-button = 预览
+newtab-topsites-add-button = 添加
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = 您确定要删除此页面在您的历史记录中的所有记录吗？
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = 此操作无法撤销。
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = 赞助推广
+
+## Label used by screen readers for pinned top sites
+
+# Variables:
+#   $title (string) - The label or hostname of the site.
+topsite-label-pinned =
+    .aria-label = { $title }（已固定）
+    .title = { $title }
+
+## Top Sites - Web notifications hover card
+
+# Variables:
+#   $site (string) - The label or hostname of the site the notifications are from.
+newtab-topsites-hover-card-header = 来自 { $site } 的通知
+# Relative time shown for a notification posted less than a minute ago.
+newtab-topsites-hover-card-just-now = 刚刚
+newtab-topsites-hover-card-mark-all-read =
+    .aria-label = 标为已读
+    .title = 标为已读
+newtab-topsites-hover-card-settings =
+    .aria-label = 通知设置
+    .title = 通知设置
+newtab-topsites-hover-card-dismiss =
+    .aria-label = 知道了
+    .title = 知道了
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = 打开菜单
+    .title = 打开菜单
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = 打开 { $title } 的快捷菜单
+    .title = 打开菜单
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = 编辑
+newtab-menu-add-topsite = 添加新快捷方式
+newtab-menu-open-new-window = 新建窗口打开
+newtab-menu-open-new-private-window = 新建隐私浏览窗口打开
+newtab-menu-dismiss = 隐藏
+newtab-menu-pin = 固定
+newtab-menu-unpin = 取消固定
+newtab-menu-delete-history = 从历史记录中删除
+newtab-menu-show-privacy-info = 我们的赞助商＆您的隐私
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = 反馈
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = 屏蔽
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow-topic = 取消关注
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = 详细了解
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = 管理赞助内容
+newtab-menu-our-sponsors-and-your-privacy = 我们的赞助商与您的隐私
+newtab-menu-report-this-ad = 举报此广告
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = 删除书签
+# Bookmark is a verb here.
+newtab-menu-bookmark = 添加书签
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = 复制下载链接
+newtab-menu-go-to-download-page = 前往下载页面
+newtab-menu-remove-download = 从历史记录中移除
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] 在访达中显示
+       *[other] 打开所在文件夹
+    }
+newtab-menu-open-file = 打开文件
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = 曾经访问
+newtab-label-bookmarked = 已加书签
+newtab-label-removed-bookmark = 书签已移除
+newtab-label-recommended = 趋势
+newtab-label-saved = 已保存到 { -pocket-brand-name }
+newtab-label-download = 已下载
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · 赞助
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = 由 { $sponsor } 赞助
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } 分钟
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = 赞助推广
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = 隐私声明
+
+## Section Headers.
+
+newtab-section-header-topsites = 常用网站
+newtab-section-header-recent-activity = 近期动态
+newtab-section-header-stories = 精选文章
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = 今日专属荐读
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = 开始网上冲浪之旅吧，之后这里会显示您最近看过或加了书签的精彩文章、视频与其他页面。
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = 所有文章都读完了。待会再来看是否有新文章。等不及？那么请选择热门主题，从网上找到更多好文章。
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = 都读完了！
+newtab-discovery-empty-section-topstories-content = 待会再来看是否有新文章。
+newtab-discovery-empty-section-topstories-try-again-button = 重试
+newtab-discovery-empty-section-topstories-loading = 正在加载…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = 哎呀！无法完全加载此版块。
+
+## Strings for the story cards carousel
+
+# Identifies the current carousel slide to screen reader users.
+# Variables:
+#   $index - the position of this slide
+#   $total - how many slides there are
+newtab-carousel-slide =
+    .aria-label = 第 { $index } 篇，共 { $total } 篇
+# Button that goes to the previous carousel slide.
+newtab-carousel-previous =
+    .aria-label = 上一篇
+# Button that goes to the next carousel slide.
+newtab-carousel-next =
+    .aria-label = 上一篇
+# Button that pauses autoplay on the carousel.
+newtab-carousel-pause =
+    .aria-label = 暂停自动播放
+# Button that resumes autoplay on the carousel.
+newtab-carousel-play =
+    .aria-label = 恢复自动播放
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = 哎呀，加载内容时发生错误。
+newtab-error-fallback-refresh-link = 刷新页面以重试。
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = 您保存或访问过的网站
+    .label = 快捷方式
+newtab-custom-shortcuts-nova =
+    .label = 快捷方式
+newtab-custom-web-notifications-toggle =
+    .description = 在网站快捷方式上显示来自该网站的通知
+    .label = 网站通知
+newtab-custom-row-description =
+    .description = 行数
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+           *[other] { $num } 行
+        }
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be having a description under "Recommended stories" anymore
+newtab-custom-stories-toggle =
+    .description = 由 { -brand-product-name } 推荐的精选内容
+    .label = 推荐文章
+newtab-recommended-stories-toggle =
+    .label = 推荐文章
+newtab-custom-stories-personalized-toggle =
+    .label = 文章
+newtab-custom-stories-personalized-checkbox =
+    .label = 根据您的阅读记录为您推荐文章
+newtab-custom-stories-personalized-checkbox-label = 根据您的阅读记录为您推荐文章
+newtab-custom-weather-toggle =
+    .description = 速览今日天气预报
+    .label = 天气
+newtab-custom-widget-weather-toggle =
+    .label = 天气
+newtab-custom-widget-lists-toggle =
+    .label = 清单
+newtab-custom-widget-timer-toggle =
+    .label = 计时器
+newtab-custom-widget-clock-toggle =
+    .label = 时钟
+newtab-custom-widget-sports-toggle2 =
+    .label = 体育
+newtab-custom-widget-privacy-toggle =
+    .label = 隐私保护
+newtab-custom-widget-stocks-toggle =
+    .label = 股市
+newtab-custom-widget-picture-toggle =
+    .label = 每日一图
+newtab-custom-widget-recent-searches-toggle =
+    .label = 近期搜索
+newtab-custom-widget-section-title = 小组件
+newtab-custom-widget-section-toggle =
+    .label = 小组件
+newtab-widget-manage-title = 小组件
+newtab-widget-manage-widget-button =
+    .label = 管理小组件
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .aria-label = 关闭菜单
+    .title = 关闭
+newtab-custom-settings = 管理更多设置
+
+## Customization Menu
+
+# An arrow button that goes back from a sub-panel in the customize panel, such as a wallpaper category, to the main Customize panel.
+newtab-customize-panel-back-button =
+    .aria-label = 返回“定制”
+    .title = 返回“定制”
+
+## New Tab Appearance (browser theme picker)
+
+# Title of the browser theme ("Appearance") section in the customize panel.
+newtab-custom-appearance-section-title = 外观
+# Button that opens the full browser theme selection view.
+newtab-appearance-more-themes-button =
+    .label = 查看更多主题
+# Title of the full theme selection sub-panel, also used as its back button label.
+newtab-appearance-manage-title = { -brand-product-name } 主题
+# Header for the list of the user's already-installed themes in the full theme panel.
+newtab-appearance-your-themes-header = 您的主题
+# Button that enables an already-installed theme.
+newtab-appearance-enable-theme-button =
+    .label = 启用
+# Button that disables the active theme and reverts to the default.
+newtab-appearance-disable-theme-button =
+    .label = 禁用
+# Button that installs a theme.
+newtab-appearance-install-theme-button =
+    .label = 安装主题
+# Button/link on the full theme panel that opens the complete list of available themes.
+newtab-appearance-explore-more-themes-button = 探索更多主题
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = 壁纸
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = 重置为默认设置
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = 上传图像
+newtab-wallpaper-add-an-image = 添加图像
+newtab-wallpaper-custom-color = 选择颜色
+newtab-wallpaper-toggle-title =
+    .label = 壁纸
+# Variables
+#   $file_size (number) - The number of the maximum image file size (in MB) that may be uploaded
+newtab-wallpaper-error-max-file-size = 图像超出文件大小上限（{ $file_size }MB），请尝试上传较小的文件。
+newtab-wallpaper-error-upload-file-type = 无法上传文件，请尝试使用图像文件。
+newtab-wallpaper-light-red-panda = 小熊猫
+newtab-wallpaper-light-mountain = 白山山脉
+newtab-wallpaper-light-sky = 漂浮着粉紫色云的天空
+newtab-wallpaper-light-color = 蓝色、粉色和黄色的形状
+newtab-wallpaper-light-landscape = 淡蓝薄雾笼罩下的山地景观
+newtab-wallpaper-light-beach = 生长着棕榈树的海滩
+newtab-wallpaper-dark-aurora = 极光
+newtab-wallpaper-dark-color = 红色和蓝色的形状
+newtab-wallpaper-dark-panda = 躲在森林里的小熊猫
+newtab-wallpaper-dark-sky = 夜空下的城市景观
+newtab-wallpaper-dark-mountain = 山地景观
+newtab-wallpaper-dark-city = 紫色城市景观
+newtab-wallpaper-dark-fox-anniversary = 树林旁边人行道上的狐狸
+newtab-wallpaper-light-fox-anniversary = 迷蒙山景中草地上的狐狸
+
+## "Your images" is the folder of wallpapers someone has saved. A saved wallpaper
+## can be a file they uploaded, a Picture of the Day they chose to keep, or a
+## Firefox wallpaper kept for them when it was retired.
+
+newtab-wallpaper-your-images = 您的图片
+# Accessible name for the tile that opens the "Your images" folder in the
+# wallpaper picker. The tile shows one of the saved images and has no text of
+# its own, so this is all a screen reader has to go on.
+newtab-wallpaper-your-images-folder =
+    .aria-label = 您保存的图片、壁纸
+# Read by screen readers for a saved image that has a name of its own: a kept
+# Picture of the Day, or a Firefox wallpaper kept when it was retired. An image
+# someone added themselves is numbered instead, see the string below.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-your-images-item = { $name }
+# Read by screen readers for an image someone added themselves. Firefox counts
+# these as they are saved rather than keeping the name of their file.
+# Variables:
+#   $number (number) - Which saved image this is, counting from one
+newtab-wallpaper-your-images-item-numbered = 图片 { $number }
+# Each saved image has its own remove button. The tooltip stays short because
+# a name can be long and some locales put it before the verb, which would push
+# "remove" out of view. The full name is on the label a screen reader reads.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-remove-image =
+    .aria-label = 移除“{ $name }”
+    .title = 移除图片
+# The remove button for an image someone added themselves. .title is the
+# tooltip and .aria-label is what a screen reader reads.
+# Variables:
+#   $number (number) - Which saved image this is, counting from one
+newtab-wallpaper-remove-image-numbered =
+    .aria-label = 移除图片 { $number }
+    .title = 移除图片 { $number }
+newtab-wallpaper-remove-image-title = 确定要移除图片吗？
+# "This action" refers to removing a saved wallpaper image.
+newtab-wallpaper-remove-image-body = 此操作不可撤销。
+newtab-wallpaper-remove-image-confirm = 移除
+newtab-wallpaper-remove-image-cancel = 取消
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = 纯色
+newtab-wallpaper-colors = 颜色
+newtab-wallpaper-blue = 蓝色
+newtab-wallpaper-light-blue = 淡蓝色
+newtab-wallpaper-light-purple = 淡紫色
+newtab-wallpaper-light-green = 淡绿色
+newtab-wallpaper-green = 绿色
+newtab-wallpaper-beige = 米色
+newtab-wallpaper-yellow = 黄色
+newtab-wallpaper-orange = 橙色
+newtab-wallpaper-pink = 粉色
+newtab-wallpaper-light-pink = 淡粉色
+newtab-wallpaper-red = 红色
+newtab-wallpaper-dark-blue = 深蓝色
+newtab-wallpaper-dark-purple = 深紫色
+newtab-wallpaper-dark-green = 深绿色
+newtab-wallpaper-brown = 棕色
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = 抽象
+newtab-wallpaper-abstract-green = 绿色形状
+newtab-wallpaper-abstract-blue = 蓝色形状
+newtab-wallpaper-abstract-purple = 紫色形状
+newtab-wallpaper-abstract-orange = 橙色形状
+newtab-wallpaper-gradient-orange = 橙粉渐变
+newtab-wallpaper-abstract-blue-purple = 蓝紫渐变
+newtab-wallpaper-abstract-white-curves = 白色带阴影曲线
+newtab-wallpaper-abstract-purple-green = 紫绿光渐变
+newtab-wallpaper-abstract-blue-purple-waves = 蓝色和紫色的波浪形状
+newtab-wallpaper-abstract-black-waves = 黑色波浪形状
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = 摄影
+newtab-wallpaper-beach-at-sunrise = 海滩日出
+newtab-wallpaper-beach-at-sunset = 海滩日落
+newtab-wallpaper-storm-sky = 电闪雷鸣
+newtab-wallpaper-sky-with-pink-clouds = 飘着粉色云朵的天空
+newtab-wallpaper-red-panda-yawns-in-a-tree = 在树上打哈欠的小熊猫
+newtab-wallpaper-white-mountains = 皑白山脉
+newtab-wallpaper-hot-air-balloons = 白天各种颜色的热气球
+newtab-wallpaper-starry-canyon = 蓝色星空
+newtab-wallpaper-suspension-bridge = 白天时的灰色全悬索桥照片
+newtab-wallpaper-sand-dunes = 白色沙丘
+newtab-wallpaper-palm-trees = 魔术光下的椰子树侧影
+newtab-wallpaper-blue-flowers = 蓝瓣花绽放的近景照片
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = 照片由 <a data-l10n-name="name-link">{ $author_string }</a> 发布于 <a data-l10n-name="webpage-link">{ $webpage_string }</a>
+newtab-wallpaper-feature-highlight-header = 试用新色彩
+newtab-wallpaper-feature-highlight-content = 选张壁纸，给新标签页加点新鲜感。
+newtab-wallpaper-feature-highlight-button = 知道了
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = 关闭弹窗
+    .title = 知道了
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## Firefox
+
+newtab-wallpaper-category-title-firefox = { -brand-product-name }
+
+## Celestial
+
+# “Celestial” referring to astronomy; positioned in or relating to the sky,
+# or outer space as observed in astronomy.
+# Not to be confused with religious definition of the word.
+newtab-wallpaper-category-title-celestial = 天体
+newtab-wallpaper-celestial-lunar-eclipse = 月食
+newtab-wallpaper-celestial-earth-night = 从近地轨道拍摄的夜晚照片
+newtab-wallpaper-celestial-starry-sky = 星空
+newtab-wallpaper-celestial-eclipse-time-lapse = 月食延时照片
+newtab-wallpaper-celestial-black-hole = 黑洞星空图
+newtab-wallpaper-celestial-river = 河流卫星图
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ 赞助
+newtab-weather-menu-change-location = 更改位置
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = 搜索位置
+    .placeholder = 搜索位置
+newtab-weather-cancel-input =
+    .aria-label = 取消
+    .title = 取消
+# "Current" refers to the user's physical/geographic location detected via geolocation.
+newtab-weather-change-location-search-use-current =
+    .label = 使用当前位置
+newtab-weather-menu-weather-display = 天气信息显示方式
+newtab-weather-todays-forecast = 今日预报
+newtab-weather-see-full-forecast = 查看完整预报
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = 简明
+newtab-weather-menu-change-weather-display-simple = 切换到简明视图
+newtab-weather-menu-weather-display-option-detailed = 详细
+newtab-weather-menu-change-weather-display-detailed = 切换到详细视图
+newtab-weather-menu-temperature-units = 温度单位
+newtab-weather-menu-temperature-option-fahrenheit = 华氏度
+newtab-weather-menu-temperature-option-celsius = 摄氏度
+newtab-weather-menu-change-temperature-units-fahrenheit = 切换为华氏度
+newtab-weather-menu-change-temperature-units-celsius = 切换为摄氏度
+newtab-weather-menu-learn-more = 详细了解
+newtab-weather-menu-detect-my-location = 检测我的位置
+# This message is shown if user is working offline
+newtab-weather-error-not-available = 目前无法获取天气数据。
+newtab-weather-opt-in-see-weather = 您想看到当前位置的天气信息吗？
+newtab-weather-opt-in-not-now =
+    .label = 暂时不要
+newtab-weather-opt-in-yes =
+    .label = 好的
+newtab-weather-opt-in-headline = 获取您当地的天气预报
+newtab-weather-opt-in-use-location =
+    .label = 使用位置信息
+newtab-weather-opt-in-choose-location = 选择位置
+# We'll be showing static (fake) weather data if the user has not opted in to using their location
+newtab-weather-static-city = 纽约市
+# "Highest" here refers to the highest temperature of the day
+newtab-weather-high =
+    .aria-label = 最高
+# "Lowest" here refers to the lowest temperature of the day
+newtab-weather-low =
+    .aria-label = 最低
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast-description =
+    .aria-description = { $provider } ∙ 赞助
+    .title = 在“{ $provider }”上查看天气预报
+
+## Topic Labels
+
+newtab-topic-label-business = 商业
+newtab-topic-label-career = 职场
+newtab-topic-label-education = 教育
+newtab-topic-label-arts = 娱乐
+newtab-topic-label-food = 饮食
+newtab-topic-label-health = 健康
+newtab-topic-label-hobbies = 游戏
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = 理财
+newtab-topic-label-society-parenting = 育儿
+newtab-topic-label-government = 政治
+newtab-topic-label-education-science = 科学
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = 自我提升
+newtab-topic-label-sports = 体育
+newtab-topic-label-tech = 科技
+newtab-topic-label-travel = 旅行
+newtab-topic-label-home = 家庭与园艺
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = 选择主题，让推送内容更合您胃口
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = 请选择两个或更多主题。我们的专业采编团队会按照您的喜好，优先呈上专属推荐，您还可以随时刷新。
+newtab-topic-selection-save-button = 保存
+newtab-topic-selection-cancel-button = 取消
+newtab-topic-selection-button-maybe-later = 以后再说
+newtab-topic-selection-privacy-link = 了解我们保护和管理数据的方式
+newtab-topic-selection-button-update-interests = 更新您感兴趣的主题
+newtab-topic-selection-button-pick-interests = 选择您感兴趣的主题
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = 关注
+# Variables:
+#   $topic (string) - Topic that the user can follow
+newtab-section-follow-button-label =
+    .aria-label = 关注“{ $topic }”
+newtab-section-following-button = 正在关注
+newtab-section-unfollow-button = 取消关注
+# Variables:
+#   $topic (string) - Topic that the user is following and can unfollow
+newtab-section-unfollow-button-label =
+    .aria-label = 正在关注：取消关注“{ $topic }”
+# A modal may appear next to the Follow button, directing users to try out the feature
+newtab-section-follow-highlight-title = 优化推荐内容
+newtab-section-follow-highlight-subtitle = 随心所好，悦见更多。
+
+## Topic navigation
+## A row of buttons above the stories, each scrolling the page to that topic's section.
+
+newtab-topic-navigation-label =
+    .aria-label = 主题
+# Opens a menu listing the topics that did not fit in the row.
+newtab-topic-navigation-more-button = 更多
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = 屏蔽
+newtab-section-blocked-button = 已屏蔽
+newtab-section-unblock-button = 取消屏蔽
+# Variables:
+#   $topic (string) - Name of topic that user is following
+newtab-section-follow-topic =
+    .aria-label = 关注“{ $topic }”
+# Variables:
+#   $topic (string) - Name of topic that user is unfollowing
+newtab-section-unfollow-topic =
+    .aria-label = 取消关注“{ $topic }”
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic =
+    .aria-label = 屏蔽“{ $topic }”
+# Variables:
+#   $topic (string) - Name of topic that user is unblocking
+newtab-section-unblock-topic =
+    .aria-label = 取消屏蔽“{ $topic }”
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-topic-p1 = 确定要屏蔽此主题吗？
+newtab-section-confirm-block-topic-p2 = 将不再向您推送被屏蔽的主题。
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = 屏蔽“{ $topic }”
+newtab-section-block-cancel-button = 取消
+
+## Strings for custom wallpaper highlight
+
+newtab-section-mangage-topics-title = 主题
+newtab-section-manage-topics-button-v2 =
+    .label = 管理主题
+newtab-section-mangage-topics-followed-topics = 已关注
+newtab-section-mangage-topics-followed-topics-empty-state = 没有已关注的主题。
+newtab-section-mangage-topics-blocked-topics = 已屏蔽
+newtab-section-mangage-topics-blocked-topics-empty-state = 没有已屏蔽的主题
+newtab-custom-wallpaper-title = 在此处自定义壁纸
+# 'Make firefox yours" means to customize or personalize
+newtab-custom-wallpaper-subtitle = 自行上传壁纸或选取自定义颜色，让 { -brand-product-name } 更有个性。
+newtab-custom-wallpaper-cta = 试试看
+
+## Strings for new user activation custom wallpaper highlight
+
+newtab-new-user-custom-wallpaper-title = 选张壁纸，让 { -brand-product-name } 独具个性
+newtab-new-user-custom-wallpaper-subtitle = 自定义壁纸和颜色，让新标签页亲切如家。
+newtab-new-user-custom-wallpaper-cta = 现在就试试
+
+## Strings for Nova wallpaper feature highlight
+
+newtab-wallpaper-feature-highlight-title = 新鲜壁纸到货
+newtab-wallpaper-feature-highlight-subtitle = 选择您最爱的壁纸，让每次打开新标签页都亲切如归家。
+newtab-wallpaper-feature-highlight-cta = 选择壁纸
+
+## Strings for download mobile highlight
+
+newtab-download-mobile-highlight-title = 下载移动版 { -brand-product-name }
+# "Scan the code" refers to scanning the QR code that appears above the body text that leads to Firefox for mobile download.
+newtab-download-mobile-highlight-body-variant-a = 扫码下载移动版本，随时随地安全浏览。
+newtab-download-mobile-highlight-body-variant-b = 同步标签页、密码等信息，随时从上次看到的地方继续浏览。
+newtab-download-mobile-highlight-body-variant-c = 您还可以将 { -brand-product-name } 随身带着走。相同体验，装入口袋。
+newtab-download-mobile-highlight-image =
+    .aria-label = 移动版 { -brand-product-name } 的下载二维码
+
+## Strings for shortcuts highlight
+
+newtab-shortcuts-highlight-title = 顺手就能打开常用网站
+newtab-shortcuts-highlight-subtitle = 添加快捷方式，一键打开常用网站。
+
+## Strings for reporting issues with ads and content
+
+newtab-report-content-why-reporting-this =
+    .label = 此内容存在什么问题？
+newtab-report-ads-reason-not-interested =
+    .label = 不感兴趣
+newtab-report-ads-reason-inappropriate =
+    .label = 内容不当
+newtab-report-ads-reason-seen-it-too-many-times =
+    .label = 推荐次数过多
+newtab-report-content-wrong-category =
+    .label = 分类错误
+newtab-report-content-outdated =
+    .label = 过时
+newtab-report-content-inappropriate-offensive =
+    .label = 不适宜或具有冒犯性
+newtab-report-content-spam-misleading =
+    .label = 垃圾信息或具有误导性
+newtab-report-content-requires-payment-subscription =
+    .label = 需要付款或订阅
+newtab-report-content-requires-payment-subscription-learn-more = 详细了解
+newtab-report-cancel = 取消
+newtab-report-submit = 提交
+newtab-toast-thanks-for-reporting =
+    .message = 感谢反馈。
+newtab-toast-widgets-hidden =
+    .message = 选择铅笔图标，随时重新添加小组件。
+# Variables:
+#   $topic (string) - Topic that the user has followed
+newtab-section-toast-follow =
+    .message = 您现已关注{ $topic }。
+# Variables:
+#   $topic (string) - Topic that the user has unfollowed
+newtab-section-toast-unfollow =
+    .message = 您已不再关注{ $topic }。
+# Variables:
+#   $topic (string) - Topic that the user has blocked
+newtab-section-toast-block =
+    .message = 将不再显示{ $topic }文章。
+
+## Strings for task / to-do list productivity widget
+
+# "Add one" means adding a new task to the list (e.g., "Walk the dog")
+newtab-widget-lists-empty-cta = 立即添加任务，开启无限可能。
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = 新功能
+newtab-widget-lists-label-beta =
+    .label = 测试版
+# When tasks have been previous marked as complete, they will appear in their own separate list beneath incomplete items
+# Variables:
+#   $number (number) - Amount of list items marked complete
+newtab-widget-lists-completed-list = 已完成（{ $number }）
+newtab-widget-lists-celebration-headline = 真棒
+newtab-widget-lists-celebration-subhead = 已全部完成
+newtab-widget-task-list-menu-copy = 复制
+newtab-widget-lists-menu-edit = 编辑清单名称
+newtab-widget-lists-menu-edit2 =
+    .aria-label = 编辑清单名称
+newtab-widget-lists-menu-create = 创建新清单
+newtab-widget-lists-menu-delete = 删除此清单
+newtab-widget-lists-menu-copy = 复制清单到剪贴板
+newtab-widget-lists-menu-learn-more = 详细了解
+# "Change" is a verb here: the button switches which list is shown
+newtab-widget-lists-change-list =
+    .aria-label = 更换清单
+    .title = 更换清单
+newtab-widget-lists-button-add-item = 添加项目
+newtab-widget-lists-input-add-an-item2 =
+    .aria-label = 添加项目
+    .placeholder = 添加项目
+newtab-widget-lists-input-error = 请输入项目名称
+newtab-widget-lists-input-menu-open-link = 打开链接
+newtab-widget-lists-input-menu-move-up = 上移
+newtab-widget-lists-input-menu-move-down = 下移
+newtab-widget-lists-input-menu-delete = 删除
+newtab-widget-lists-input-menu-edit = 编辑
+newtab-widget-lists-input-menu-edit2 =
+    .aria-label = 编辑项目
+newtab-widget-lists-edit-clear =
+    .aria-label = 取消
+    .title = 取消
+# Lists is a noun, as in "options for the lists"
+newtab-widget-lists-menu-button =
+    .aria-label = 清单选项
+# the + symbol emphasises the functionality of adding a new list
+newtab-widget-lists-dropdown-create =
+    .label = + 创建新清单
+newtab-widget-lists-name-label-default =
+    .label = 任务清单
+newtab-widget-lists-name-label-checklist =
+    .label = 核对清单
+newtab-widget-lists-name-placeholder-default =
+    .placeholder = 任务清单
+newtab-widget-lists-name-placeholder-checklist2 =
+    .aria-label = 编辑清单名称
+    .placeholder = 核对清单
+# The placeholder value of the name field for a newly created list
+newtab-widget-lists-name-placeholder-new2 =
+    .aria-label = 编辑清单名称
+    .placeholder = 新清单
+newtab-widget-section-title = 小组件
+newtab-widget-menu-hide = 隐藏小组件
+newtab-widget-menu-change-size = 更改大小
+# Parent label for a submenu in the widget menu that reorders the widget
+# among its siblings. "Left" and "Right" appear as items inside this submenu.
+newtab-widget-menu-move = 移动到
+# Submenu item under "Move"; moves the widget one position to the left.
+# RTL locales should translate this as "Right".
+newtab-widget-menu-move-left = 左侧
+# Submenu item under "Move"; moves the widget one position to the right.
+# RTL locales should translate this as "Left".
+newtab-widget-menu-move-right = 右侧
+newtab-widget-size-small = 小
+newtab-widget-size-medium = 中
+newtab-widget-size-large = 大
+# Tooltip for hide all widgets button
+newtab-widget-section-hide-all-button =
+    .aria-label = 隐藏所有小组件
+    .title = 隐藏小组件
+newtab-widget-section-maximize =
+    .aria-label = 将所有小组件展开为完整大小
+    .title = 展开小组件
+newtab-widget-section-minimize =
+    .aria-label = 将所有小组件收缩为紧凑大小
+    .title = 最小化小组件
+# Shown on the widgets section header button while the section is
+# auto-minimized to its title row, to open the section back up.
+newtab-widget-section-show-widgets =
+    .aria-label = 显示小组件版块
+    .title = 显示小组件
+newtab-widget-section-menu-button =
+    .aria-label = 打开小组件菜单
+    .title = 小组件菜单
+newtab-widget-add-widgets-button =
+    .aria-label = 添加小组件
+    .title = 添加小组件
+newtab-widget-section-menu-manage = 管理小组件
+newtab-widget-section-menu-hide-all = 隐藏小组件
+newtab-widget-section-menu-learn-more = 详细了解
+newtab-widget-section-feedback = 告诉我们您的想法
+# Button shown when additional widgets are hidden beyond the
+# first row, allowing users to show them.
+newtab-widget-section-show-more =
+    .label = 显示更多小组件
+# Button shown when the widgets row is expanded to multiple rows,
+# allowing users to collapse it back to one row.
+newtab-widget-section-show-less =
+    .label = 折叠小组件
+newtab-widget-lists-name-default = 核对清单
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+newtab-widget-timer-notification-title = 计时器
+newtab-widget-timer-notification-focus = 专注时间结束，真棒！要休息一下吗？
+newtab-widget-timer-notification-break = 休息时间结束。准备好继续专注了吗？
+newtab-widget-timer-notification-warning = 通知已关闭
+newtab-widget-timer-mode-focus =
+    .label = 专注
+newtab-widget-timer-mode-break =
+    .label = 休息
+newtab-widget-timer-label-play =
+    .label = 开始
+newtab-widget-timer-label-pause =
+    .label = 暂停
+newtab-widget-timer-reset =
+    .title = 重置
+newtab-widget-timer-menu-notifications = 关闭通知
+newtab-widget-timer-menu-notifications-on = 开启通知
+newtab-widget-timer-menu-learn-more = 详细了解
+newtab-widget-timer-menu-button =
+    .aria-label = 计时器选项
+# The title displays above a set of top news headlines.
+newtab-daily-briefing-card-title = 头条新闻
+newtab-daily-briefing-card-menu-dismiss = 知道了
+# Variables:
+#   $minutes (number) - Time since the feed has been refreshed
+newtab-daily-briefing-card-timestamp = { $minutes } 分钟前更新
+newtab-widget-message-title = 借助清单和内置计时器，聚焦重点、保持专注。
+# to-dos stands for "things to do".
+newtab-widget-message-copy = 从快捷提醒到日常待办，从专注时段到放松片刻，既能帮您管理任务，又可助您把握时间。
+# One spot refers to a dedicated section on new tab to manage and use widgets
+newtab-widget-message-focus-forecasts-title = 凝神专注、查看天气预报，尽在一处。另有更多实用功能。
+newtab-widget-message-focus-forecasts-body = 借助 { -brand-product-name } 小组件，顺畅完成每日工作。查看天气预报、记录任务、掌握世界各地时间，尽在一处。
+# "Make Firefox yours" refers to about:newtab. The call to action here ("Try it now")
+# is to customize the new tab page with a background image or color from
+# the built-in wallpaper collection or uploading your own image.
+newtab-promo-card-title-addons = 让 { -brand-product-name } 更具个性
+newtab-promo-card-body-addons = 从我们的精选壁纸中挑选一张，也可以自己创作。
+newtab-promo-card-cta-addons = 现在就试试
+newtab-promo-card-title = 支持 { -brand-product-name }
+newtab-promo-card-body = 建设一个更好的互联网的使命，离不开我们赞助商的支持
+newtab-promo-card-cta = 详细了解
+newtab-promo-card-dismiss-button =
+    .aria-label = 知道了
+    .title = 知道了
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-start-aria =
+    .aria-label = 启动 { $minutes } 分钟计时器
+newtab-widget-timer-pause-aria =
+    .aria-label = 暂停计时器
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-spinbutton-name =
+    .aria-label = { $minutes } 分钟
+newtab-widget-timer-decrease-min =
+    .title = 减少 1 分钟
+newtab-widget-timer-increase-min =
+    .title = 增加 1 分钟
+newtab-widget-timer-mode-group =
+    .aria-label = 计时器模式
+# Small label shown beneath the live time while the focus timer is running or paused.
+newtab-widget-timer-running-focus = 专注
+# Small label shown beneath the live time while the break timer is running or paused.
+newtab-widget-timer-running-break = 休息
+# Context-menu item to hide the Timer widget. Replaces the shared "Hide widget"
+# copy with a widget-specific string per the Nova design.
+newtab-widget-timer-menu-hide = 隐藏计时器
+# Heading shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-heading-focus = 辛苦了
+# Heading shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-heading-break = 休息时间结束
+# Message shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-message-focus = 需要休息吗？
+# Message shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-message-break = 准备好专注了吗？
+
+##
+
+newtab-sports-widget-menu-follow-teams = 关注球队
+newtab-sports-widget-menu-view-schedule = 查看赛程
+newtab-sports-widget-menu-view-upcoming = 查看即将进行的比赛
+newtab-sports-widget-menu-view-results = 查看比赛结果
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-menu-key-dates = 重要日期
+newtab-sports-widget-menu-learn-more = 详细了解
+# “Keep tabs on” is an informal expression meaning to stay updated on, stay informed on, or regularly follow something (in this case, World Cup matches and updates).
+newtab-sports-widget-keep-tabs = 全程关注世界杯
+newtab-sports-widget-get-updates = 获取实时赛况等信息。
+newtab-sports-widget-follow-teams =
+    .label = 关注球队
+newtab-sports-widget-view-matches =
+    .label = 查看比赛
+# Variables:
+#   $number (number) - Maximum number of teams a user can choose to follow in the team selection state
+newtab-sports-widget-follow-teams-title = 最多可关注 { $number } 支球队
+newtab-sports-widget-choose-wallpaper =
+    .label = 选择壁纸
+newtab-sports-widget-skip = 跳过
+newtab-sports-widget-search-country =
+    .aria-label = 搜索国家/地区
+    .placeholder = 搜索国家/地区
+newtab-sports-widget-cancel = 取消
+newtab-sports-widget-back-button =
+    .aria-label = 返回
+newtab-sports-widget-done-button =
+    .label = 完成
+# Shown in the follow-teams list for a team that has been knocked out of the tournament.
+# Variables:
+#   $teamName (string) - the localized team name (e.g. "Canada").
+newtab-sports-widget-team-name-eliminated = { $teamName }（已淘汰）
+newtab-sports-widget-view-all =
+    .label = 查看全部
+newtab-sports-widget-show-less =
+    .label = 收起
+# Toggle that filters the list of teams the user follows
+newtab-sports-widget-followed-only-toggle =
+    .label = 仅显示关注的球队
+# Status shown when more matches are being fetched.
+newtab-sports-widget-loading-more = 正在加载更多比赛…
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch =
+    .label = 观看
+    .title = 观看直播
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch-icon =
+    .aria-label = 观看直播
+    .title = 观看直播
+newtab-sports-widget-watch-dialog-close =
+    .aria-label = 关闭
+    .title = 关闭
+# Tag: user can watch without paying (sign-in may still be required).
+newtab-sports-widget-watch-stream-free = 免费
+# Tag: user can start watching via a trial; continued access may require payment after it ends.
+newtab-sports-widget-watch-stream-free-trial = 免费试看
+# Tag: provider offers both a no-cost or trial path and a paid path.
+newtab-sports-widget-watch-stream-free-paid = 免费和付费
+# Tag: user must pay to watch (subscription, TV provider, premium plan, or add-on).
+newtab-sports-widget-watch-stream-paid = 付费
+# Note: provider only streams some matches, not the full tournament.
+newtab-sports-widget-watch-stream-select-games-only = 仅特定比赛
+# Heading for the list of streaming services available in the user’s country/region.
+newtab-sports-widget-watch-available-region = 您所在地区的观看方式
+# Heading for the list of streaming services available outside the user’s country/region.
+newtab-sports-widget-watch-available-other-regions = 其他地区
+# Button that opens the provider’s stream page in a new tab.
+newtab-sports-widget-watch-play =
+    .aria-label = 在线观看
+    .title = 在线观看
+newtab-sports-widget-group-stage = 小组赛阶段
+newtab-sports-widget-group-a = A 组
+newtab-sports-widget-group-b = B 组
+newtab-sports-widget-group-c = C 组
+newtab-sports-widget-group-d = D 组
+newtab-sports-widget-group-e = E 组
+newtab-sports-widget-group-f = F 组
+newtab-sports-widget-group-g = G 组
+newtab-sports-widget-group-h = H 组
+newtab-sports-widget-group-i = I 组
+newtab-sports-widget-group-j = J 组
+newtab-sports-widget-group-k = K 组
+newtab-sports-widget-group-l = L 组
+newtab-sports-widget-round-32 = 十六分之一决赛
+newtab-sports-widget-round-16 = 八分之一决赛
+newtab-sports-widget-quarter-finals = 四分之一决赛
+# The "LIVE" string is meant to be uppercase in English, but other languages and locales may vary in how they handle this.
+newtab-sports-widget-live = 进行中
+newtab-custom-widget-live-refresh =
+    .aria-label = 刷新比分
+    .title = 刷新比分
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-key-dates = 重要日期
+newtab-sports-widget-upcoming = 即将进行
+# Used for a match currently ongoing
+newtab-sports-widget-now = 进行中
+newtab-sports-widget-results = 比赛结果
+newtab-sports-widget-semi-finals = 半决赛
+newtab-sports-widget-bronze-finals = 三四名决赛
+# Final is the final match for 1st place.
+newtab-sports-widget-final = 决赛
+# Variables:
+#   $start (Date) - Start date of a tournament stage
+#   $end (Date) - End date of a tournament stage
+newtab-sports-widget-key-date-range = { DATETIME($start, day: "numeric", month: "short") } – { DATETIME($end, day: "numeric", month: "short") }
+# Variables:
+#   $date (Date) - Date of a single tournament event
+newtab-sports-widget-key-date = { DATETIME($date, day: "numeric", month: "short") }
+newtab-sports-widget-delayed = 推迟
+newtab-sports-widget-postponed = 改期
+newtab-sports-widget-suspended = 中断
+newtab-sports-widget-cancelled = 取消
+newtab-sports-widget-information = 本场比赛信息
+newtab-sports-widget-no-live-data = 目前未在更新实时比赛数据
+newtab-sports-widget-view-results-link = 查看比赛结果
+newtab-sports-widget-third-place = 季军
+# Runner-up is the team in 2nd place.
+newtab-sports-widget-runner-up = 亚军
+newtab-sports-widget-champions = 冠军
+newtab-sports-widget-world-cup-champions = 2026 年世界杯冠军
+# Compact champions label for the medium-size widget result card; the larger
+# card uses newtab-sports-widget-world-cup-champions.
+newtab-sports-widget-world-cup-champions-short = 2026 年世界杯冠军
+# Variables:
+#   $date (Date) - The match start time
+newtab-sports-widget-match-time = { DATETIME($date, hour: "2-digit", minute: "2-digit") }
+newtab-sports-widget-match-full-time = 全场
+newtab-sports-widget-match-halftime = 中场
+newtab-sports-widget-match-extra-time = 加时赛
+newtab-sports-widget-match-penalties = 点球决胜
+# Separator shown between two teams in a placeholder match row when no upcoming
+# match details are available yet.
+newtab-sports-widget-match-vs = vs
+# Note shown in the Upcoming tab when no match details are available yet.
+newtab-sports-widget-no-upcoming-matches = 敬请期待下一场比赛的详情
+
+## Sports widget live-games pagination. Shown when 2+ matches are live at the same time
+
+# arrow button that goes to the previous page of live matches.
+newtab-sports-widget-pagination-previous =
+    .aria-label = 上一页
+    .title = 上一页
+# arrow button that goes to the next page of live matches.
+newtab-sports-widget-pagination-next =
+    .aria-label = 下一页
+    .title = 下一页
+# Dot indicator that jumps directly to a given live match.
+# $index (number) - 1-based position of this dot in the list.
+# $total (number) - Total number of live matches.
+newtab-sports-widget-pagination-dot =
+    .aria-label = 进行中的比赛（第 { $index }/{ $total } 场）
+    .title = 进行中的比赛（第 { $index }/{ $total } 场）
+
+## Accessible labels for match rows in the sports widget. These are read by
+## screen readers to announce the match details and status.
+## Variables shared by all messages in this group:
+##   $homeTeam (String) - The full name of the home team (e.g. "Mexico")
+##   $awayTeam (String) - The full name of the away team (e.g. "Russia")
+
+# A finished match row (regular full-time result).
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+newtab-sports-widget-match-aria-label-results =
+    .aria-label = { $homeTeam }对{ $awayTeam }，{ $homeScore } 比 { $awayScore }
+# A finished match row that went to a penalty shootout.
+# Parenthesized values are the shootout score.
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+#   $homePenalty (number) - The home team's penalty shootout score
+#   $awayPenalty (number) - The away team's penalty shootout score
+newtab-sports-widget-match-aria-label-results-penalties =
+    .aria-label = { $homeTeam }对{ $awayTeam }，{ $homeScore } 比 { $awayScore }，点球决胜 { $homePenalty } 比 { $awayPenalty }
+# A match that is currently in progress.
+# Variables:
+#   $homeScore (number) - The home team's current score
+#   $awayScore (number) - The away team's current score
+newtab-sports-widget-match-aria-label-now =
+    .aria-label = 进行中：{ $homeTeam }对{ $awayTeam }，{ $homeScore } 比 { $awayScore }
+# An upcoming scheduled match row. Announces kickoff time and date.
+# Variables:
+#   $date (Date) - The scheduled kickoff date/time
+newtab-sports-widget-match-aria-label-upcoming =
+    .aria-label = { $homeTeam }对{ $awayTeam }，{ DATETIME($date, day: "numeric", month: "long") } { DATETIME($date, hour: "numeric", minute: "numeric") }
+# An upcoming match row whose status is "delayed".
+newtab-sports-widget-match-aria-label-upcoming-delayed =
+    .aria-label = { $homeTeam } 对 { $awayTeam }，推迟
+# An upcoming match row whose status is "postponed".
+newtab-sports-widget-match-aria-label-upcoming-postponed =
+    .aria-label = { $homeTeam } 对 { $awayTeam }，改期
+# An upcoming match row whose status is "suspended".
+newtab-sports-widget-match-aria-label-upcoming-suspended =
+    .aria-label = { $homeTeam } 对 { $awayTeam }，中断
+# An upcoming match row whose status is "cancelled".
+newtab-sports-widget-match-aria-label-upcoming-cancelled =
+    .aria-label = { $homeTeam } 对 { $awayTeam }，取消
+
+## Sports widget — team names (FIFA country codes)
+## Only includes names not adequately covered by standard country-code
+## internationalization tooling.
+
+newtab-sports-widget-team-name-label-bih =
+    .label = 波黑
+newtab-sports-widget-team-name-label-civ =
+    .label = 科特迪瓦
+newtab-sports-widget-team-name-label-cod =
+    .label = 刚果
+newtab-sports-widget-team-name-label-eng =
+    .label = 英格兰
+newtab-sports-widget-team-name-label-sco =
+    .label = 苏格兰
+# Placeholder used in a match row's aria-label for an undecided team (shown visually as "--").
+newtab-sports-widget-team-tbd = 待定
+
+## Sports widget OMC messages
+## Shown as on-screen messages promoting the Sports widget and World Cup wallpapers.
+
+newtab-sports-widget-message-wallpapers-title = 换上新壁纸，迎接世界杯
+newtab-sports-widget-message-wallpapers-body = 赛事期间，将赛场活力注入浏览器
+newtab-sports-widget-message-wallpapers-cta = 选择壁纸
+newtab-sports-widget-message-wallpapers-semifinals-title = 换上新壁纸，迎接半决赛
+newtab-sports-widget-message-wallpapers-semifinals-body = 迎接最盛大的世界杯比赛。
+newtab-sports-widget-message-add-widgets-cta =
+    .label = 添加小组件
+newtab-sports-widget-message-day-in-play-title = 使用 { -brand-product-name } 小组件，全天候关注精彩赛事
+newtab-sports-widget-message-day-in-play-body = 关注世界杯、记录任务、掌握世界各地时间，另有更多实用功能。
+newtab-sports-widget-message-explore-widgets-cta =
+    .label = 探索小组件
+
+## Survey prompts shown after the World Cup to gather feedback on the widgets experience.
+
+newtab-sports-widget-message-survey-title = 帮助我们改进小组件
+newtab-sports-widget-message-survey-body = 世界杯已落下帷幕，欢迎分享您对此次体验的反馈。
+newtab-sports-widget-message-survey-widget-title = 世界杯小组件使用体验如何？
+newtab-sports-widget-message-survey-widget-body = 分享您的反馈意见可帮助我们改进未来的小组件。后续，欢迎体验新的小组件。
+newtab-sports-widget-message-survey-cta =
+    .label = 填写问卷
+
+## Strings for activation window message variants. In certain experiment configurations,
+## the strings from these variants may be displayed in a message below the search input
+## for the first 48 hours of a new profile's lifetime. Some messages include buttons with
+## labels, but not all.
+
+newtab-activation-window-message-dismiss-button =
+    .aria-label = 知道了
+    .title = 知道了
+# "This space" refers to about:newtab. The call to action here ("make it your own")
+# is to customize newtab with a background image or colour, or by tweaking the
+# existing widgetry that appears on it.
+newtab-activation-window-message-customization-focus-header = 定制这片空间，打造专属天地
+newtab-activation-window-message-customization-focus-message = 挑选新壁纸、添加常用网站的快捷方式、随时关注您感兴趣的文章。
+newtab-activation-window-message-customization-focus-primary-button =
+    .label = 开始定制
+# "This space" refers to about:newtab. The sentiment of "plays by your rules" is
+# meant to evoke the idea that newtab is malleable and customizable. The call to
+# action is to customize newtab with a background image or colour, or by tweaking
+# the existing widgetry that appears on it.
+newtab-activation-window-message-values-focus-header = 这片空间，由您做主
+newtab-activation-window-message-values-focus-message = { -brand-product-name } 可让您以更具个性的方式开启网络上的新一天，按自己喜欢的方式来浏览。让 { -brand-product-name } 有您的个性。
+
+## Strings for the Clock widget
+
+# Context menu item: toggle the clock card off.
+newtab-clock-widget-menu-hide = 隐藏时钟
+newtab-clock-widget-menu-learn-more = 详细了解
+newtab-clock-widget-menu-edit = 编辑时钟
+newtab-clock-widget-menu-switch-to-12h = 切换为 12 小时制
+newtab-clock-widget-menu-switch-to-24h = 切换为 24 小时制
+newtab-clock-widget-label-your-clocks = 您的时钟
+newtab-clock-widget-search-location-input =
+    .aria-label = 搜索城市
+    .label = 位置
+    .placeholder = 搜索城市
+# "Nickname (optional)" refers to a custom, user-defined label for a saved location
+# (e.g., "Home", "Office", or "School") to make it easier to recognize.
+# Not to be translated as a legal name, username, or alias used for identity verification.
+newtab-clock-widget-input-nickname =
+    .aria-label = 别名（选填）
+    .label = 别名（选填）
+    .placeholder = 添加别名
+# "Add new clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-button-add =
+    .aria-label = 添加新时钟
+    .title = 添加新时钟
+newtab-clock-widget-button-add-clock = 添加
+newtab-clock-widget-button-cancel = 取消
+newtab-clock-widget-button-back =
+    .aria-label = 返回
+    .title = 返回
+newtab-clock-widget-button-edit-clock =
+    .aria-label = 编辑时钟
+    .title = 编辑时钟
+newtab-clock-widget-button-save = 保存
+newtab-clock-widget-button-remove-clock =
+    .aria-label = 移除时钟
+    .title = 移除时钟
+# Accessible name for a clock row in the "Your clocks" management panel
+# when the row has no user-provided nickname. Read aloud by screen
+# readers when focus lands on the row.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+newtab-clock-widget-edit-item =
+    .aria-label = { $city }
+# Accessible name for a clock row when a user nickname has been set.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+#   $nickname (string) - The user-provided nickname for the row.
+newtab-clock-widget-edit-item-with-nickname =
+    .aria-label = { $city }，别名：{ $nickname }
+newtab-clock-widget-add-clock-form =
+    .aria-label = 添加时钟
+newtab-clock-widget-edit-clock-form =
+    .aria-label = 编辑时钟
+# "Search results" is the accessible label for the listbox dropdown that appears
+# below the location search field, listing matching cities as the user types.
+# It means "results of the search", not "search within the results".
+newtab-clock-widget-search-results =
+    .aria-label = 搜索结果
+# Fallback row in the search results that lets the user add a city that is
+# not in the list. $city (String) is the text the user has typed.
+newtab-clock-widget-add-custom = 将“{ $city }”添加为自定义时钟
+# Text field for the display name of a user-added custom clock.
+newtab-clock-widget-custom-city-input =
+    .aria-label = 城市名
+    .label = 城市名
+    .placeholder = 为时钟命名
+# Searchable time-zone field shown when adding a custom clock. The user
+# types a city they know and picks it to set the clock's time zone.
+newtab-clock-widget-custom-timezone-input =
+    .aria-label = 时区
+    .label = 时区
+    .placeholder = 输入城市、时区或 UTC 时差搜索
+newtab-clock-widget-custom-zone-results =
+    .aria-label = 时区结果
+# Shown in the time-zone picker when the search matches no time zones.
+newtab-clock-widget-custom-zone-no-results = 没有匹配的时区
+# Returns from the custom clock form back to the city search.
+newtab-clock-widget-custom-back = 返回
+# Shown in place of the search results when the user's query does not match any
+# supported city — e.g. typing a misspelled name or a place not in the IANA
+# time zone list.
+newtab-clock-widget-search-no-results = 无匹配结果
+# "Open menu for clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-menu-button =
+    .aria-label = 打开时钟菜单
+    .title = 打开时钟菜单
+# $nickname (String) - The user-defined nickname for a saved clock location (e.g., "Home", "Office").
+newtab-clock-widget-label-nickname-with-value = 别名：{ $nickname }
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = 纽约
+newtab-clock-city-us-los-angeles = 洛杉矶
+newtab-clock-city-us-chicago = 芝加哥
+newtab-clock-city-us-san-francisco = 旧金山
+newtab-clock-city-us-san-diego = 圣迭戈
+newtab-clock-city-us-dallas = 达拉斯
+newtab-clock-city-us-houston = 休斯敦
+newtab-clock-city-us-philadelphia = 费城
+newtab-clock-city-us-atlanta = 亚特兰大
+newtab-clock-city-us-washington-dc = 华盛顿哥伦比亚特区
+newtab-clock-city-us-boston = 波士顿
+newtab-clock-city-us-miami = 迈阿密
+newtab-clock-city-us-seattle = 西雅图
+newtab-clock-city-us-denver = 丹佛
+newtab-clock-city-us-honolulu = 火奴鲁鲁
+newtab-clock-city-us-anchorage = 安克雷奇
+newtab-clock-city-de-berlin = 柏林
+newtab-clock-city-de-munich = 慕尼黑
+newtab-clock-city-de-frankfurt = 法兰克福
+newtab-clock-city-de-hamburg = 汉堡
+newtab-clock-city-fr-paris = 巴黎
+newtab-clock-city-fr-lyon = 里昂
+newtab-clock-city-fr-marseille = 马赛
+newtab-clock-city-fr-toulouse = 图卢兹
+newtab-clock-city-in-kolkata = 加尔各答
+newtab-clock-city-in-mumbai = 孟买
+newtab-clock-city-in-delhi = 德里
+newtab-clock-city-in-bangalore = 班加罗尔
+newtab-clock-city-cn-shanghai = 上海
+newtab-clock-city-cn-beijing = 北京
+newtab-clock-city-cn-shenzhen = 深圳
+newtab-clock-city-br-sao-paulo = 圣保罗
+newtab-clock-city-br-rio-de-janeiro = 里约热内卢
+newtab-clock-city-br-brasilia = 巴西利亚
+newtab-clock-city-id-jakarta = 雅加达
+newtab-clock-city-id-surabaya = 泗水
+newtab-clock-city-id-makassar = 望加锡
+newtab-clock-city-ca-toronto = 多伦多
+newtab-clock-city-ca-montreal = 蒙特利尔
+newtab-clock-city-ca-vancouver = 温哥华
+newtab-clock-city-au-sydney = 悉尼
+newtab-clock-city-au-perth = 珀斯
+newtab-clock-city-au-adelaide = 阿德莱德
+newtab-clock-city-pl-warsaw = 华沙
+newtab-clock-city-pl-krakow = 克拉科夫
+newtab-clock-city-jp-tokyo = 东京
+newtab-clock-city-jp-osaka = 大阪
+newtab-clock-city-mx-mexico-city = 墨西哥城
+newtab-clock-city-mx-guadalajara = 瓜达拉哈拉
+newtab-clock-city-it-rome = 罗马
+newtab-clock-city-it-milan = 米兰
+newtab-clock-city-ru-moscow = 莫斯科
+newtab-clock-city-ru-saint-petersburg = 圣彼得堡
+newtab-clock-city-gb-london = 伦敦
+newtab-clock-city-gb-birmingham = 伯明翰
+newtab-clock-city-es-madrid = 马德里
+newtab-clock-city-es-barcelona = 巴塞罗那
+newtab-clock-city-nl-amsterdam = 阿姆斯特丹
+newtab-clock-city-ch-zurich = 苏黎世
+newtab-clock-city-at-vienna = 维也纳
+newtab-clock-city-cz-prague = 布拉格
+newtab-clock-city-ar-buenos-aires = 布宜诺斯艾利斯
+newtab-clock-city-gr-athens = 雅典
+newtab-clock-city-hu-budapest = 布达佩斯
+newtab-clock-city-be-brussels = 布鲁塞尔
+newtab-clock-city-ua-kyiv = 基辅
+newtab-clock-city-fi-helsinki = 赫尔辛基
+newtab-clock-city-co-bogota = 波哥大
+newtab-clock-city-ph-manila = 马尼拉
+newtab-clock-city-tr-istanbul = 伊斯坦布尔
+newtab-clock-city-my-kuala-lumpur = 吉隆坡
+newtab-clock-city-eg-cairo = 开罗
+newtab-clock-city-se-stockholm = 斯德哥尔摩
+newtab-clock-city-ro-bucharest = 布加勒斯特
+newtab-clock-city-th-bangkok = 曼谷
+newtab-clock-city-ng-lagos = 拉各斯
+newtab-clock-city-tw-taipei = 台北
+newtab-clock-city-za-johannesburg = 约翰内斯堡
+newtab-clock-city-cl-santiago = 圣地亚哥
+newtab-clock-city-pk-karachi = 卡拉奇
+newtab-clock-city-bg-sofia = 索非亚
+newtab-clock-city-sg-singapore = 新加坡
+newtab-clock-city-hk-hong-kong = 香港
+newtab-clock-city-sa-riyadh = 利雅得
+newtab-clock-city-dk-copenhagen = 哥本哈根
+newtab-clock-city-pe-lima = 利马
+newtab-clock-city-ke-nairobi = 内罗毕
+newtab-clock-city-nz-auckland = 奥克兰
+newtab-clock-city-kr-seoul = 首尔
+newtab-clock-city-lt-vilnius = 维尔纽斯
+newtab-clock-city-ie-dublin = 都柏林
+newtab-clock-city-ae-dubai = 迪拜
+newtab-clock-city-lv-riga = 里加
+newtab-clock-city-pt-lisbon = 里斯本
+newtab-clock-city-ir-tehran = 德黑兰
+newtab-clock-city-bd-dhaka = 达卡
+newtab-clock-city-ec-guayaquil = 瓜亚基尔
+newtab-clock-city-vn-ho-chi-minh-city = 胡志明市
+newtab-clock-city-np-kathmandu = 加德满都
+newtab-clock-city-mm-yangon = 仰光
