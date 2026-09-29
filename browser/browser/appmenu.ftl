@@ -1,0 +1,399 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = ينزّل تحديث { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = يتوفّر تحديث — نزّله الآن
+appmenuitem-banner-update-manual =
+    .label = يتوفّر تحديث — نزّله الآن
+appmenuitem-banner-update-unsupported =
+    .label = تعذّر التحديث — النظام غير متطابق
+appmenuitem-banner-update-restart =
+    .label = يتوفّر تحديث — أعِد التشغيل
+appmenu-nova-fxa-sign-in = لِج
+appmenu-nova-switch-device-promo =
+    .message = هل ستحصل على جهازًا جديدًا قريبًا؟ خذ معك { -brand-short-name }!
+appmenu-nova-switch-device-link = كيفية نقل بياناتك
+appmenuitem-new-tab =
+    .label = لسان جديد
+appmenuitem-new-window =
+    .label = نافذة جديدة
+appmenuitem-new-private-window =
+    .label = نافذة خاصة جديدة
+appmenuitem-history =
+    .label = التأريخ
+appmenuitem-tab-groups =
+    .label = مجموعات الألسنة
+appmenuitem-downloads =
+    .label = التنزيلات
+appmenuitem-passwords =
+    .label = كلمات السر
+appmenuitem-extensions-and-themes =
+    .label = الامتدادات والسمات
+appmenuitem-extensions =
+    .label = الامتدادات
+appmenuitem-print =
+    .label = اطبع…
+appmenuitem-find-in-page =
+    .label = ابحث في الصفحة…
+appmenuitem-translate =
+    .label = ترجم الصفحة…
+appmenuitem-zoom =
+    .value = قرّب
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = شارك { -brand-product-name }
+appmenuitem-more-tools =
+    .label = أدوات أكثر
+appmenuitem-help =
+    .label = مساعدة
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] غادِر
+           *[other] اخرج
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = افتح قائمة التطبيق
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = أغلِق قائمة التطبيق
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = الإعدادات
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = قرّب
+appmenuitem-zoom-reduce =
+    .label = بعّد
+appmenuitem-fullscreen =
+    .label = ملء الشاشة
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = لِج كي تبدأ المزامنة…
+appmenu-remote-tabs-turn-on-sync =
+    .label = فعّل المزامنة…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = أظهِر ألسنة أكثر
+    .tooltiptext = اعرض المزيد من الألسنة من هذا الجهاز
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = الألسنة غير النشطة
+    .tooltiptext = أظهِر الألسنة غير النشطة على هذا الجهاز
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = لا ألسنة مفتوحة
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = فعّل مزامنة الألسنة لعرض قائمة بالألسنة من أجهزتك الأخرى.
+appmenu-remote-tabs-opensettings =
+    .label = الإعدادات
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = أتريد رؤية ألسنتك من الأجهزة الأخرى هنا؟
+appmenu-remote-tabs-connectdevice =
+    .label = صِلْ جهازا آخر
+appmenu-remote-tabs-welcome = اعرض قائمة بالألسنة من أجهزتك الأخرى.
+appmenu-remote-tabs-unverified = يجب تأكيد حسابك.
+appmenuitem-fxa-toolbar-sync-now2 = زامِن الآن
+appmenuitem-fxa-sign-in = لِج إلى { -brand-product-name }
+appmenuitem-fxa-manage-account = أدِر الحساب
+fxa-menu-sync-status-on = التزامن يعمل
+fxa-menu-sync-status-off = التزامن متوقف
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = زامِن بياناتك
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = لا تتم مزامنة بياناتك
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = شغّل
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = لِج كي تبدأ المزامنة
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = زامِن { $deviceName } الآن
+fxa-menu-manage-sync-settings =
+    .label = أدِر إعدادات المزامنة
+fxa-menu-add-device =
+    .label = أضف جهازًا
+fxa-menu-manage-devices =
+    .label = أدِر أجهزتك
+fxa-menu-device-missing =
+    .label = ألا ترى جهازك؟
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = كل الأجهزة
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = كل الأجهزة
+fxa-menu-get-firefox-mobile =
+    .label = احصل على { -brand-product-name } لنظامي أندرويد أو iOS
+fxa-menu-secure-sync-subpanel =
+    .title = مزامنة آمنة
+appmenu-account-header = الحساب
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = كانت آخر مزامنة { $time }
+    .label = كانت آخر مزامنة { $time }
+appmenu-fxa-sync-and-save-data2 = زامِن واحفظ البيانات
+appmenu-fxa-signed-in-label = لِج
+appmenu-fxa-setup-sync =
+    .label = فعّل المزامنة…
+appmenu-fxa-setup-sync-new = فعّل
+appmenuitem-save-page =
+    .label = احفظ الصفحة باسم…
+appmenuitem-fxa-sync-off-title = التزامن متوقف
+appmenuitem-fxa-sync-off-description = احمِ و اطلع على علاماتك وكلمات سرك والمزيد في أي مكان.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = محلّل الأداء
+    .tooltiptext = سجّل تحليلًا بالأداء
+profiler-popup-button-recording =
+    .label = محلّل الأداء
+    .tooltiptext = يُسجّل المحلّل تحليلًا
+profiler-popup-button-capturing =
+    .label = محلّل الأداء
+    .tooltiptext = محلّل الأداء يلتقط ملفًا شخصيًا
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = اعرض معلومات أكثر
+profiler-popup-description-title =
+    .value = سجّل ثمّ حلّل ثمّ شارِك
+profiler-popup-description = تعاوَن على حلّ مشاكل الأداء بنشر تحليلات الأداء ومشاركتها مع فريقك.
+profiler-popup-learn-more-button =
+    .label = اطّلع على المزيد
+profiler-popup-settings =
+    .value = الإعدادات
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = عدّل الإعدادات…
+profiler-popup-recording-screen = يسجّل…
+profiler-popup-start-recording-button =
+    .label = ابدأ التسجيل
+profiler-popup-discard-button =
+    .label = أهمِل
+profiler-popup-capture-button =
+    .label = التقِط
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = افتح لوحة محلّل الأداء
+    .tooltiptext = افتح لوحة محلّل الأداء
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = الإعداد المسبق الموصى به لتنقيح أغلبية تطبيقات الوِب دون استهلاك موارد كثيرة.
+profiler-popup-presets-web-developer-label =
+    .label = مطوّري الوب
+profiler-popup-presets-firefox-description = الإعداد المسبق الموصى به لتحليل أداء { -brand-shorter-name }.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = إعداد مسبق للتحقيق في أخطاء الرسومات في { -brand-shorter-name }.
+profiler-popup-presets-graphics-label =
+    .label = الرسوميات
+profiler-popup-presets-media-description2 = إعداد مسبق للتحرّي عن مشاكل الصوت والفيديو في { -brand-shorter-name }.
+profiler-popup-presets-media-label =
+    .label = الوسائط
+profiler-popup-presets-ml-description = الإعداد المسبق لتشخيص أخطاء التعلُّم الآلي في { -brand-shorter-name }
+profiler-popup-presets-ml-label =
+    .label = التعلم الآلي
+profiler-popup-presets-networking-description = إعداد مسبق للتحرّي عن مشاكل الشبكة في { -brand-shorter-name }.
+profiler-popup-presets-networking-label =
+    .label = الشبكة
+profiler-popup-presets-networking-with-logs-description = إعداد مسبق للتحقيق في أخطاء الشبكة في { -brand-shorter-name }، بما في ذلك سجلات الشبكة. قد تحتوي هذه السجلات على معلومات حساسة مثل عناوين المواقع التي تزورها.
+profiler-popup-presets-networking-with-logs-label =
+    .label = التواصل الشبكي باستخدام السجلات
+profiler-popup-presets-power-description = إعداد مسبق للتحرّي عن العلل التي تستخدم الطاقة في { -brand-shorter-name }، مع حمل منخفض.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = طاقة
+profiler-popup-presets-debug-description = إعداد مسبق للتنقيح في { -brand-shorter-name }. تكلفة إضافية عالية، لا تستخدمه لأعمال الأداء ولكن استخدمه للتركيز على فهم سلوك المتصفح.
+profiler-popup-presets-debug-label =
+    .label = نقّح
+profiler-popup-presets-web-compat-description = الإعداد المسبق الموصى به لتصحيح أخطاء توافق الوِب في مواقع الوِب، بدلاً من تتبع الأداء.
+profiler-popup-presets-web-compat-label =
+    .label = توافق الوِب
+profiler-popup-presets-custom-label =
+    .label = مخصّص
+
+##
+
+appmenu-manage-history =
+    .label = أدِر التأريخ
+appmenu-restore-session =
+    .label = استعد الجلسة السابقة
+appmenu-clear-history =
+    .label = امسح التأريخ الحالي…
+appmenu-recent-history-subheader = التأريخ القريب
+appmenu-recently-closed-tabs =
+    .label = الألسنة المُغلقة مؤخرًا
+appmenu-recently-closed-windows =
+    .label = النوافذ المغلقة مؤخرًا
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = ابحث في التأريخ
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = حافظ على مزامنة البيانات عبر جميع الأجهزة
+appmenu-sync-promo-signin-cta = لِج
+appmenu-sync-promo-turnonsync =
+    .heading = زامِن الألسنة والتأريخ
+appmenu-sync-promo-turnonsync-cta = فعّل المزامنة
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = احصل على ألسنتك من جوّالك
+appmenu-sync-promo-connectdevice-cta = أوصِل جهازًا
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = أحضر معك علاماتك
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = خُذ معك علاماتك أينما ذهبت
+
+## Help panel
+
+appmenu-help-header =
+    .title = مساعدة { -brand-shorter-name }
+appmenu-about =
+    .label = عن { -brand-shorter-name }
+    .accesskey = ع
+appmenu-get-help =
+    .label = احصل على مُساعدة
+    .accesskey = س
+appmenu-help-more-troubleshooting-info =
+    .label = معلومات أكثر عن مواجهة الأعطال
+    .accesskey = ه
+appmenu-help-share-ideas =
+    .label = شارك الأفكار والتعليقات...
+    .accesskey = ك
+appmenu-help-switch-device =
+    .label = التبديل إلى جهاز جديد
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = وضع مواجهة الأعطال
+    .accesskey = ه
+appmenu-help-exit-troubleshoot-mode =
+    .label = عطّل وضع مواجهة الأعطال
+    .accesskey = ع
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = أبلغ عن موقع مخادع…
+    .accesskey = ع
+appmenu-help-not-deceptive =
+    .label = هذا ليس موقعًا مخادعًا…
+    .accesskey = خ
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = خصّص شريط الأدوات…
+appmenu-abouttranslations =
+    .label = ترجم…
+appmenu-developer-tools-subheader = أدوات المتصفّح
+appmenu-developer-tools-extensions =
+    .label = الامتدادات التي تخصّ المطوّرين
+appmenuitem-report-broken-site =
+    .label = أبلِغ عن موقع معطوب
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = لِج إلى حسابك
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = { -monitor-brand-short-name } تنبيهات اختراق البيانات
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = احصل على تنبيهات تسريب البيانات
+appmenuitem-relay-title = { -relay-brand-short-name }
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = اعرض أقنعة البريد الإلكتروني
+appmenuitem-relay-description = أخفِ بريدك الإلكتروني ورقم هاتفك الحقيقي
+appmenuitem-services-relay-description = إطلاق لوحة معلومات أقنعة البريد الإلكتروني
+appmenuitem-vpn-description5 = احصل على حماية إضافية عبر جميع الأجهزة
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = احصل على حماية كاملة للجهاز
+appmenu-services-header = خدماتي
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = أدوات الخصوصية
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = جرّب أدوات الحماية الأخرى من Mozilla:
+
+## Profiles panel
+
+appmenu-other-profiles = ملفات تعريف أخرى
+appmenu-manage-profiles =
+    .label = أدِر ملفات التعريف
+appmenu-copy-profile =
+    .label = انسخ هذا الملف الشخصي
+appmenu-create-profile2 =
+    .label = أنشئ ملف شخصي جديد
+appmenu-create-profile =
+    .label = ملف شخصي جديد
+appmenu-edit-profile =
+    .aria-label = حرّر الملف الشخصي
+appmenu-edit-this-profile =
+    .label = حرّر هذا الملف الشخصي
+appmenu-profile-current-in-use = الملف الشخصي الحالي قيد الاستخدام
+fxa-menu-create-profile-subpanel =
+    .title = أنشئ ملف شخصي جديد
+fxa-menu-create-profile-heading = ارتقِ بتجربة تصفُحك من خلال ملف شخصي جديد
+fxa-menu-create-profile-description = احتفظ علاماتك وكلمات السرك وتأريخ تصفحك بشكل منفصل بين تصفح العمل والتصفح الشخصي.
+fxa-menu-create-profile-confirm =
+    .label = أنشِئ ملفًا شخصيًا
+fxa-menu-create-profile-learn-more =
+    .label = ما هي الملفات الشخصية؟
+appmenu-profiles-2 =
+    .label = ملفات تعريف
+appmenu-profiles-header = ملفات شخصية
+appmenu-all-profiles =
+    .label = كل الملفات الشخصية
+appmenu-secure-sync-header = مزامنة آمنة
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = الألسنة الحديثة
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = أرسل الصفحة الحالية إلى هذا الجهاز
