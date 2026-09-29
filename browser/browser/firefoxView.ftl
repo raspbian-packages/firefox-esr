@@ -1,0 +1,255 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+toolbar-button-firefox-view-2 =
+    .label = { -firefoxview-brand-name }
+    .tooltiptext = Nejnowše pśeglědowanje pśez wokna a rědy pokazaś
+menu-tools-firefox-view =
+    .label = { -firefoxview-brand-name }
+    .accesskey = F
+firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
+firefoxview-page-label =
+    .label = { -firefoxview-brand-name }
+# Used instead of the localized relative time when a timestamp is within a minute or so of now
+firefoxview-just-now-timestamp = Rowno
+firefoxview-syncedtabs-signin-header-2 = Waš { -brand-product-name } na wšych wašych rědach
+firefoxview-syncedtabs-signin-description-2 = Aby swóje wócynjone rejtariki na swójom telefonje a drugich rědach wiźeł, pśizjawśo se abo registrěrujśo se za konto. Z kontom móžośo teke swóje gronidła, swóju historiju a wěcej synchronizěrowaś.
+# The verb “Go” is implied but omitted from the headline: “[Go] from laptop to phone, seamlessly”
+firefoxview-syncedtabs-signin-header-3 = Direktnje z laptopa do telefona
+firefoxview-syncedtabs-signin-description-3 = Wóstańśo ze swójim pśeglědowanim na wšych rědach zwězany – rejtariki, gronidła a historija, wšykno w synchronizaciji.
+firefoxview-syncedtabs-signin-primarybutton-2 = Pśizjawiś
+firefoxview-syncedtabs-adddevice-header-2 = Wobstarajśo se rejtariki wóte wšuźi
+firefoxview-syncedtabs-adddevice-description-2 = Pśizjawśo pla { -brand-product-name } na swójom telefonje abo drugem licadle, aby rejtariki how wiźeł. Zgóńśo, kak móžośo <a data-l10n-name="url">pśidatne rědy zwězaś</a>.
+firefoxview-syncedtabs-adddevice-primarybutton = Wopytajśo { -brand-product-name } za mobilny rěd
+# "Your tabs called" - this is playful messaging indicating that a user can find their synced tabs on their phone.
+firefoxview-syncedtabs-adddevice-header-3 = Waše rejtariki su se wótwołali. Su na wašom telefonje.
+firefoxview-syncedtabs-adddevice-description-3 = Scannujśo QR-kod, aby { -brand-product-name } za swój mobilny telefon dostał a synchronizěrujśo swóje wócynjone rejtariki a wěcej. Zgóńśo, kak móžośo <a data-l10n-name="url">pśidatne rědy zwězaś</a>.
+firefoxview-tabpickup-synctabs-primarybutton = Wócynjone rejtariki synchronizěrowaś
+firefoxview-tabpickup-synctabs-primarybutton-2 = Synchronizaciju rejtarikow zmóžniś
+firefoxview-syncedtabs-synctabs-header = Aktualizěrujśo swóje synchronizaciske nastajenja
+firefoxview-syncedtabs-synctabs-description = Aby rejtariki z drugich rědow wiźeł, musyśo swóje wócynjone rejtariki synchronizěrowaś.
+firefoxview-syncedtabs-synctabs-header-2 = Synchronizacija rejtarikow jo znjemóžnjona
+firefoxview-syncedtabs-synctabs-description-2 = Zmóžniśo synchronizaciju zasej, aby wšykne swóje rejtariki z drugich rědow wobstarał.
+firefoxview-syncedtabs-loading-header = Synchronizěrujo se
+firefoxview-syncedtabs-loading-description = Gaž to jo dokóńcone, buźośo rejtariki wiźeś, kótarež su na drugich rědach wócynjone. Pśiźćo skóro mimo.
+firefoxview-syncedtabs-loading-header-2 = Waše rejtariki se wobstaruju…
+firefoxview-syncedtabs-loading-description-2 = Synchronizacija běžy. Rejtariki budu skóro how.
+firefoxview-tabpickup-fxa-admin-disabled-header = Waša organizacija jo znjemóžniła synchronizaciju
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } njamóžo rejtariki mjazy rědami synchronizěrowaś, dokulaž waša organizacija jo znjemóžniła synchronizěrowanje.
+firefoxview-tabpickup-fxa-admin-disabled-header-2 = Synchronizacija rejtarikow jo znjemóžnjona
+firefoxview-tabpickup-fxa-disabled-by-policy-description-2 = Waša organizacija jo toś tu funkciju blokěrowała.
+firefoxview-tabpickup-network-offline-header = Pśeglědujśo swój internetny zwisk
+firefoxview-tabpickup-network-offline-description = Jolic wognjowu murju abo proksy wužywaśo, pśeglědujśo, lěc { -brand-short-name } ma pšawo na pśistup k internetoju.
+firefoxview-tabpickup-network-offline-primarybutton = Hyšći raz wopytaś
+firefoxview-tabpickup-network-offline-header-2 = { -brand-short-name } tuchylu njamóžo zwězaś
+firefoxview-tabpickup-network-offline-description-2 = Sćo snaź offline abo něco zwisk blokěrujo.
+firefoxview-tabpickup-sync-error-header = Mamy problemy ze synchronizaciju
+firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } njamóžo tuchylu synchronizěrowańsku słužbu dojśpiś. Wopytajśo za někotare wokognuśa hyšći raz.
+# “Sync hit a snag” means that the sync process is having a problem and can’t connect.
+firefoxview-tabpickup-sync-error-header-2 = Synchronizacija jo na problem starcyła
+firefoxview-tabpickup-generic-sync-error-description-2 = { -brand-short-name } njejo mógł zwězaś. Cakajśo wokognuśe a wopytajśo pótom hyšći raz.
+firefoxview-tabpickup-sync-error-primarybutton = Hyšći raz wopytaś
+firefoxview-tabpickup-sync-disconnected-header = Zmóžniśo synchronizaciju, aby pókšacował
+firefoxview-tabpickup-sync-disconnected-description = Za pśistup k swójim rejtarikam musyśo synchronizaciju w { -brand-short-name } dowóliś.
+firefoxview-tabpickup-sync-disconnected-primarybutton = Synchronizaciju w nastajenjach zmóžniś
+firefoxview-tabpickup-password-locked-header = Zapódajśo swójo głowne gronidło, aby rejtariki pokazał
+firefoxview-tabpickup-password-locked-description = Za pśistup k swójim rejtarikam musyśo głowne gronidło za { -brand-short-name } zapódaś.
+firefoxview-tabpickup-password-locked-link = Dalšne informacije
+firefoxview-tabpickup-password-locked-primarybutton = Głowne gronidło zapódaś
+firefoxview-syncedtab-password-locked-link = <a data-l10n-name="syncedtab-password-locked-link">Dalšne informacije</a>
+firefoxview-tabpickup-password-locked-header-2 = Wótblokěrujśo rejtariki ze swójim głownym gronidłom
+firefoxview-tabpickup-password-locked-description-2 = Synchronizěrowane rejtariki se za wašu priwatnosć šćitaju. Zapódajśo swóje głowne gronidło { -brand-short-name }, aby rejtariki ze swójich drugich rědow wiźeł.
+firefoxview-tabpickup-signed-out-header = Pśizjawśo se, aby zasej zwězał
+firefoxview-tabpickup-signed-out-description2 = Aby se zasej zwězował a pśistup k swójim rejtarikam měł, pśizjawśo se pla swójogo konta.
+firefoxview-tabpickup-signed-out-primarybutton = Pśizjawiś
+firefoxview-tabpickup-signed-out-header-2 = Pśizjawśo se, aby swóje rejtariki wiźeł
+firefoxview-tabpickup-signed-out-description-2 = Zwěžćo znowego, aby rejtariki z drugich rědow pokazał.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = { $tabTitle } zachyśiś
+# Variables:
+#   $targetURI (string) - URL that will be opened in the new tab
+firefoxview-tabs-list-tab-button =
+    .title = { $targetURI } w nowem rejtariku wócyniś
+firefoxview-collapse-button-show =
+    .title = Lisćinu pokazaś
+firefoxview-collapse-button-hide =
+    .title = Lisćinu schowaś
+firefoxview-overview-nav = Njedawno woglědane
+    .title = Njedawno woglědane
+firefoxview-overview-header = Njedawno woglědane
+    .title = Njedawno woglědane
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historija
+    .title = Historija
+firefoxview-history-header = Historija
+firefoxview-history-context-delete = Z historije lašowaś
+    .accesskey = Z
+firefoxview-history-context-forget-site = Toś to sedło zabyś…
+    .accesskey = z
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Wócynjone rejtarki
+    .title = Wócynjone rejtarki
+firefoxview-opentabs-header = Wócynjone rejtariki
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Rowno zacynjone rejtariki
+    .title = Rowno zacynjone rejtariki
+firefoxview-recently-closed-header = Rowno zacynjone rejtariki
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Rejtariki z drugich rědow
+    .title = Rejtariki z drugich rědow
+firefoxview-synced-tabs-header = Rejtariki z drugich rědow
+
+##
+
+# Used for a link in collapsible cards, in the ’Recent browsing’ page of Firefox View
+firefoxview-view-all-link = Wšykne pokazaś
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Wokno { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Wokno { $winID } (aktualne)
+firefoxview-show-more = Wěcej pokazaś
+firefoxview-show-less = Mjenjej pokazaś
+firefoxview-show-all = Wšykne pokazaś
+firefoxview-search-text-box-clear-button =
+    .title = Wuprozniś
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Pytaś
+# Placeholder for the input field to search in history ("search" is a verb).
+firefoxview-search-text-box-history =
+    .placeholder = Historiju pśepytaś
+# Placeholder for the input field to search in bookmarks ("search" is a verb).
+firefoxview-search-text-box-bookmarks =
+    .placeholder = Cytańske znamjenja pśepytaś
+# Placeholder for the input field to search in recently closed tabs ("search" is a verb).
+firefoxview-search-text-box-recentlyclosed =
+    .placeholder = Njedawno zacynjone rejtariki pytaś
+# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
+firefoxview-search-text-box-tabs =
+    .placeholder = Rejtariki pśepytaś
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-opentabs =
+    .placeholder = Wócynjone rejtariki pytaś
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+firefoxview-search-results-header = Pytańske wuslědki za „{ $query }“
+# Variables:
+#   $count (Number) - The number of visits matching the search query.
+firefoxview-search-results-count =
+    { $count ->
+        [one] { $count } sedło
+        [two] { $count } sedle
+        [few] { $count } sedła
+       *[other] { $count } sedłow
+    }
+# Message displayed when a search is performed and no matching results were found.
+# Variables:
+#   $query (String) - The search query.
+firefoxview-search-results-empty = Žedne wuslědki za „{ $query }“
+firefoxview-sort-history-by-date-label = Pó datumje sortěrowaś
+firefoxview-sort-history-by-site-label = Pó sedle sortěrowaś
+firefoxview-sort-open-tabs-by-recency-label = Pó nejnowšej aktiwiśe sortěrowaś
+firefoxview-sort-open-tabs-by-order-label = Pó pórěźe rejtarikow sortěrowaś
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Źinsa – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Cora – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+firefoxview-history-site-localhost = (lokalne dataje)
+
+##
+
+firefoxview-show-all-history = Wšu historiju pokazaś
+
+## Message displayed in Firefox View when the user has no history data
+
+firefoxview-history-empty-header = Wrośćo se tam, źož sćo był
+firefoxview-history-empty-description = Mjaztym až pśeglědujośo, se boki, kótarež se woglědujośo, how nalicyju.
+firefoxview-history-empty-description-two = Šćit wašeje priwatnosći jo naša wutšobina pótrjebnosć. Togodla móžośo aktiwitu,  na kótaruž se { -brand-short-name } dopomina, we wašych <a data-l10n-name="history-settings-url">nastajenjach historije</a> wóźiś.
+# This appears when a user does not have browsing history yet.
+# This is indicating that a users browsers history will be found here when they start browsing.
+firefoxview-history-empty-header-2 = Waš slěd pśeglědowanja se how zachopina
+firefoxview-history-empty-description-2 = Gaž se boku woglědujośo, se waša historija how zjawijo. Kontrolěrujśo, což se w <a data-l10n-name="history-settings-url">nastajenjach</a> składujo.
+
+##
+
+# Button text for choosing a browser within the ’Import history from another browser’ banner
+firefoxview-choose-browser-button = Wubjeŕśo wobglědowak
+    .title = Wubjeŕśo wobglědowak
+
+## Message displayed in Firefox View when the user has chosen to never remember History
+
+firefoxview-dont-remember-history-empty-header-2 = Maśo kontrolu wó tom, což se { -brand-short-name } markujo
+firefoxview-dont-remember-history-empty-description-one = Tuchylu se { -brand-short-name } wašu pśeglědowańsku aktiwitu njemarkujo. Aby to změnił, <a data-l10n-name="history-settings-url-two">aktualizěrujśo nastajenja swójeje historije</a>.
+# “Off the record” is an English phrase journalists use when a conversation will not be recorded or reported on. It’s meant to convey that users’ history activity will not be recorded or shown.
+firefoxview-dont-remember-history-empty-header-3 = Wašo pśeglědowanje se njeskładujo
+firefoxview-dont-remember-history-empty-description-2 = { -brand-short-name } wašu historiju tuchylu njeskładujo. Změńśo to kuždy cas w <a data-l10n-name="history-settings-url-two">nastajenjach</a>.
+
+##
+
+# This label is read by screen readers when focusing the close button for the "Import history from another browser" banner in Firefox View
+firefoxview-import-history-close-button =
+    .aria-label = Zacyniś
+    .title = Zacyniś
+
+## Text displayed in a dismissable banner to import bookmarks/history from another browser
+
+firefoxview-import-history-header = Historiju z drugego wobglědowaka importěrowaś
+firefoxview-import-history-description = Cyńśo { -brand-short-name } k swójomu spušćobnemu wobglědowakoju. Importěrujśo pśeglědowańsku historiju, cytańske znamjenja a wěcej.
+
+## Message displayed in Firefox View when the user has no recently closed tabs data
+
+firefoxview-recentlyclosed-empty-header = Rejtarik jo se zacynił pśejěsno?
+firefoxview-recentlyclosed-empty-description = How namakajośo rejtariki, kótarež sćo njedawno zacynił, aby mógał je malsnje zasej wócyniś.
+firefoxview-recentlyclosed-empty-description-two = Aby starše rejtariki namakał, glědajśo do <a data-l10n-name="history-url">pśeglědowańskeje historije</a>.
+
+## This message is displayed below the name of another connected device when it doesn't have any open tabs.
+
+firefoxview-syncedtabs-device-notabs = Žedne rejtariki na toś tom rěźe wócynjone
+firefoxview-syncedtabs-connect-another-device = Z drugim rědom zwězaś
+firefoxview-pinned-tabs =
+    .title = Pśipěte rejtariki
+firefoxview-tabs =
+    .title = Rejtariki
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = K { $tabTitle } pśejś
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = K (ako cytańske znamje skłaźonemu) { $tabTitle } pśejś
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Cytańske znamje) { $url }
