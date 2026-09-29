@@ -1,0 +1,128 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+fxa-toolbar-sync-syncing2 = Wird synchronisiert…
+sync-disconnect-dialog-title2 = Trennen?
+sync-disconnect-dialog-body = { -brand-product-name } beendet die Synchronisation mit Ihrem Konto, löscht aber keine Surf-Daten auf diesem Gerät.
+sync-disconnect-dialog-button = Trennen
+fxa-signout-dialog-title2 = Von Ihrem Konto abmelden?
+fxa-signout-dialog-body = Synchronisierte Daten bleiben weiter in Ihrem Konto.
+fxa-signout-dialog2-button = Abmelden
+fxa-signout-dialog2-checkbox = Daten von diesem Gerät löschen (Passwörter, Chronik, Lesezeichen usw.)
+fxa-menu-sync-settings =
+    .label = Synchronisationseinstellungen
+fxa-menu-turn-on-sync =
+    .value = Synchronisation aktivieren
+fxa-menu-turn-on-sync-default = Synchronisation aktivieren
+fxa-menu-connect-another-device =
+    .label = Weiteres Gerät verbinden…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] An Gerät senden
+            [one] Tab an Gerät senden
+           *[other] { $tabCount } Tabs an Gerät senden
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-mobile =
+    .label =
+        { $tabCount ->
+            [1] An Mobilgerät senden
+            [one] { $tabCount } Tab an Mobilgerät senden
+           *[other] { $tabCount } Tabs an Mobilgerät senden
+        }
+fxa-menu-send-to-mobile-device-missing2 = Sie sehen Ihr Gerät nicht?
+fxviewtabrow-send-to-mobile-not-verified = Konto nicht verifiziert
+fxviewtabrow-send-to-mobile-verify-account = Verifizieren Sie Ihr Konto
+fxa-menu-send-to-mobile-turn-on-sync = Synchronisation zum Senden von Tabs aktivieren
+fxa-menu-send-to-mobile-connect-device = Verbinden Sie ein Gerät, um Tabs zu senden
+# This is shown dynamically within "Send tab to device" in fxa menu.
+fxa-menu-send-tab-to-device-syncnotready =
+    .label = Geräte werden synchronisiert…
+# This is shown within "Send tab to device" in fxa menu if account is not configured.
+fxa-menu-send-tab-to-device-description = Tab sofort an alle Geräte senden, auf denen Sie angemeldet sind.
+fxa-menu-sign-out =
+    .label = Abmelden…
+fxa-menu-sync-description = Greifen Sie von überall aus auf Ihr Web zu
+# Subtitle shown under the account email on the signed-in account button in the
+# account menu, indicating that activating it opens account management.
+fxa-menu-manage-account-subtitle = Konto verwalten
+# Promo shown in the account menu when the user is signed out and no previously
+# signed-in account is remembered, prompting them to sign in and sync.
+fxa-menu-sign-in-promo-heading = Zum Synchronisieren anmelden
+fxa-menu-sign-in-promo-message = Verwenden Sie Ihre Daten überall
+fxa-menu-sign-in-promo-button =
+    .label = Anmelden
+# Card shown in the account menu when a previously signed-in account is
+# remembered but the user needs to sign in again. Shows the remembered email,
+# a reason, and a button to sign back in.
+fxa-menu-signed-out-sign-in-button =
+    .label = Anmelden
+# Reason shown when the session expired or credentials are no longer valid.
+fxa-menu-signed-out-message-login-failed = Sie sind abgemeldet
+# Reason shown when the remembered account still needs to verify their email.
+fxa-menu-signed-out-message-unverified = Einrichtung abschließen
+# Shown by the same card, and by the app menu's sign-in row, once the user has
+# signed out - the account they signed out of can no longer be identified, so
+# this copy stands in for the email.
+fxa-menu-signed-out-title = Zum Synchronisieren anmelden
+fxa-menu-signed-out-description = Sie sind abgemeldet
+fxa-avatar-sign-in = Anmelden
+fxa-avatar-sign-up = Registrieren
+fxa-avatar-tooltip =
+    .tooltiptext = Melden Sie sich mit Ihrem Konto an
+sync-setup-verify-continue = Weiter
+sync-setup-verify-title = Warnung: Daten zusammenführen
+sync-setup-verify-heading = Wirklich zur Synchronisation anmelden?
+# The user was previously signed into sync. This dialog confirms to the user
+# that they will be merging the data from the previously signed in into the newly signed in one
+# Variables:
+#   $email - Email address of a user previously signed into sync.
+sync-setup-verify-description = Ein anderer Benutzer war zuvor auf diesem Computer für die Synchronisation angemeldet. Bei der Anmeldung werden die Lesezeichen, Passwörter und anderen Einstellungen dieses Browsers mit den Daten von { $email } zusammengeführt.
+
+## The following strings are for displaying elements in the FxA send tab submenu to prompt users to sign in, enable sync, pair a device, troubleshoot device issues, or verify account.
+
+fxa-menu-send-to-mobile-sign-in = Melden Sie sich an, um Tabs zu versenden
+
+## Sync warning strings that support the browser profiles feature, these will be shown when the user might be merging data
+
+# Dialog 1 - different account signing in without option to merge
+sync-profile-different-account-title = Kontenlimit für dieses Profil erreicht
+sync-profile-different-account-header = Dieses Profil wurde zuvor mit einem anderen Konto synchronisiert
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+sync-profile-different-account-description = Um Ihre Daten organisiert und sicher zu halten, kann jedes { -brand-product-name }-Profil nur mit einem Konto synchronisiert werden. Um sich mit { $acctEmail } anzumelden, erstellen Sie ein neues Profil.
+# Dialog 1 - different account signing in with merge option
+sync-profile-different-account-title-merge = Profil mit anderem Konto synchronisiert
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+#   $profileName (String) - Name of the current profile
+sync-profile-different-account-description-merge = Um Ihre Daten zu organisieren und zu schützen, empfehlen wir, ein neues Profil zu erstellen, um sich mit { $acctEmail } anzumelden. Wenn Sie weiterhin auf diesem Profil synchronisieren, werden Daten von beiden Konten dauerhaft unter "{ $profileName }" zusammengeführt.
+# Dialog 2 - account signed in on another profile without option to merge
+sync-account-in-use-header = Konto wird bereits verwendet
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+#   $otherProfile (String) - Name of the other profile that is associated with the account
+sync-account-in-use-header-merge = { $acctEmail } ist bereits mit dem Profil "{ $otherProfile }" angemeldet
+sync-account-in-use-description = Sie können dieses Konto nur mit einem Profil auf diesem Computer verknüpfen.
+# Dialog 2 - account signed in on another profile with merge option
+sync-account-already-signed-in-header = Dieses Konto ist mit einem anderen Profil angemeldet. Beide Profile synchronisieren?
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+#   $currentProfile (String): Name of the current profile signing in
+#   $otherProfile (String): Name of the profile that is already signed in
+sync-account-in-use-description-merge = { $acctEmail } ist auf diesem Computer mit dem Profil "{ $otherProfile }" angemeldet. Wenn das Profil "{ $currentProfile }" synchronisiert wird, werden Daten aus beiden Profilen, wie Passwörter und Lesezeichen, dauerhaft kombiniert.
+# Variables:
+#   $profileName (String) - Name of the profile to switch to
+sync-button-switch-profile = Zu "{ $profileName }" wechseln
+sync-button-create-profile = Neues Profil erstellen
+sync-button-sync-and-merge = Daten synchronisieren und zusammenführen
+# Variables:
+#   $profileName (String) - Name of the profile to switch to
+sync-button-sync-profile = "{ $profileName }" synchronisieren
