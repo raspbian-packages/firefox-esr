@@ -1,0 +1,527 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Onglet novèl
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = Personalizar aquesta pagina
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = Personalizar
+newtab-customize-panel-label =
+    .label = Personalizar
+newtab-settings-dialog-label =
+    .aria-label = Paramètres
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-windows =
+    .label = Fenèstra novèla
+home-homepage-new-tabs =
+    .label = Onglets novèls
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } linha
+           *[other] { $num } linhas
+        }
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = Extension ({ $extension })
+home-restore-defaults-srd =
+    .label = Restablir los paramètres per defaut
+    .accesskey = R
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (per defaut)
+home-mode-choice-custom-srd =
+    .label = Adreças personalizadas…
+home-mode-choice-blank-srd =
+    .label = Pagina voida
+home-prefs-shortcuts-header-srd =
+    .label = Acorchis
+home-prefs-shortcuts-select =
+    .aria-label = Acorchis
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = Acorchis pairinejats
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Articles pairinejats
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Paginas visitadas
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Marcapaginas
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Telecargament mai recent
+home-prefs-recent-activity-header-srd =
+    .label = Activitat recenta
+home-prefs-recent-activity-select =
+    .aria-label = Activitat recenta
+home-prefs-weather-header-srd =
+    .label = Metèo
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Recercar
+    .title = Recercar
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = Recercar amb { $engine } o picar una adreça
+newtab-search-box-handoff-text-no-engine = Picar un tèrme de recercar o una adreça
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = Recercar amb { $engine } o picar una adreça
+    .placeholder = Recercar amb { $engine } o picar una adreça
+    .title = Recercar amb { $engine } o picar una adreça
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = Picar un tèrme de recercar o una adreça
+    .placeholder = Picar un tèrme de recercar o una adreça
+    .title = Picar un tèrme de recercar o una adreça
+newtab-search-box-text = Recercar sul web
+newtab-search-box-input =
+    .aria-label = Recercar sul web
+    .placeholder = Recercar sul web
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Apondre un motor de recèrca
+newtab-topsites-add-shortcut-header = Acorchi novèl
+newtab-topsites-edit-shortcut-header = Modificar acorchi
+newtab-topsites-add-shortcut-label = Apondre un acorchi
+newtab-topsites-add-shortcut-title =
+    .aria-label = Apondre un acorchi
+    .title = Apondre un acorchi
+newtab-topsites-title-label = Títol
+newtab-topsites-title-input =
+    .placeholder = Picar un títol
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Picar o pegar una URL
+newtab-topsites-url-validation = Una URLvalida es requesida
+newtab-topsites-image-url-label = URL de l'imatge personalizat
+newtab-topsites-use-custom-image-link = Utilizar un imatge personalizat
+newtab-topsites-use-image-link = Utilizar un imatge personalizat…
+newtab-topsites-image-validation = L’imatge a pas capitat de se cargar. Ensajatz una URL diferenta.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Anullar
+newtab-topsites-delete-history-button = Suprimir de l’istoric
+newtab-topsites-save-button = Enregistrar
+newtab-topsites-preview-button = Apercebut
+newtab-topsites-add-button = Apondre
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Volètz vertadièrament suprimir l’istoric de totas las instàncias d’aquesta pagina ?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Impossible d'anullar aquesta accion.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = Esponsorizat
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Dobrir lo menú
+    .title = Dobrir lo menú
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Dobrir lo menú contextual de { $title }
+    .title = Dobrir lo menú
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Modificar
+newtab-menu-open-new-window = Dobrir lo ligam dins una fenèstra novèla
+newtab-menu-open-new-private-window = Dobrir lo ligam dins una fenèstra privada
+newtab-menu-dismiss = Tirar
+newtab-menu-pin = Penjar
+newtab-menu-unpin = Despenjar
+newtab-menu-delete-history = Suprimir de l’istoric
+newtab-menu-show-privacy-info = Nòstres esponsòrs e vòstra vida privada
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = Ne saber mai
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Suprimir lo marcapagina
+# Bookmark is a verb here.
+newtab-menu-bookmark = Marcar aquesta pagina
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Copiar lo ligam de telecargament
+newtab-menu-go-to-download-page = Anar a la pagina de telecargament
+newtab-menu-remove-download = Tirar de l’istoric
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Mostrar dins Finder
+       *[other] Dobrir lo repertòri ont se tròba
+    }
+newtab-menu-open-file = Dobrir lo fichièr
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Visitat
+newtab-label-bookmarked = Apondut als marcapaginas
+newtab-label-removed-bookmark = Marcapaginas suprimit
+newtab-label-recommended = Tendéncia
+newtab-label-saved = Pagina enregistrada dins { -pocket-brand-name }
+newtab-label-download = Telecargat
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · Pairinejat
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = Pairinejat per { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } min
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Politica de confidencialitat
+
+## Section Headers.
+
+newtab-section-header-topsites = Sites favorits
+newtab-section-header-recent-activity = Activitat recenta
+newtab-section-header-stories = Articles suggerits
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Començatz de navegar e aquí vos mostrarem los melhors articles, vidèos e autras paginas qu’avètz visitadas o apondudas als marcapaginas.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = Sètz ja a jorn.
+newtab-discovery-empty-section-topstories-content = Tornatz mai tard per descobrir mai d’articles.
+newtab-discovery-empty-section-topstories-try-again-button = Tornar ensajar
+newtab-discovery-empty-section-topstories-loading = Cargament…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Ops ! Sembla qu’aquesta seccion es pas complètament cargada.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Ops, una error s’es producha en cargant aqueste contengut.
+newtab-error-fallback-refresh-link = Actualizatz la pagina per tornar ensajar.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = Los sites qu’enregistratz o consultatz
+    .label = Acorchis
+newtab-custom-shortcuts-nova =
+    .label = Acorchis
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } linha
+           *[other] { $num } linhas
+        }
+newtab-custom-weather-toggle =
+    .description = Lo bulletin metèo d’uèi dins un ai
+    .label = Metèo
+newtab-custom-settings = Gerir mai de paramètres
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = Fonzes
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = Reïnicializar
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = Enviar un imatge
+newtab-wallpaper-toggle-title =
+    .label = Fonzes
+newtab-wallpaper-light-red-panda = Panda ros
+newtab-wallpaper-light-mountain = Montanha blanca
+newtab-wallpaper-light-color = Fòrmas blavas, ròsas e jaunas
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = Colors unidas
+newtab-wallpaper-blue = Blau
+newtab-wallpaper-light-blue = Blau clar
+newtab-wallpaper-light-purple = Violet clar
+newtab-wallpaper-light-green = Verd clar
+newtab-wallpaper-green = Verd
+newtab-wallpaper-beige = Burèl
+newtab-wallpaper-yellow = Jaune
+newtab-wallpaper-orange = Irange
+newtab-wallpaper-pink = Ròse
+newtab-wallpaper-light-pink = Ròse clar
+newtab-wallpaper-red = Roge
+newtab-wallpaper-dark-blue = Blau fosc
+newtab-wallpaper-dark-purple = Violet fosc
+newtab-wallpaper-dark-green = Verd fosc
+newtab-wallpaper-brown = Marron
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = Abstrach
+newtab-wallpaper-abstract-green = Fòrmas verdas
+newtab-wallpaper-abstract-blue = Fòrmas blavas
+newtab-wallpaper-abstract-purple = Fòrmas violetas
+newtab-wallpaper-abstract-orange = Fòrmas iranjas
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = Fotografias
+newtab-wallpaper-beach-at-sunrise = Plaja a l’alba
+newtab-wallpaper-storm-sky = Cèl auratjós
+newtab-wallpaper-white-mountains = Montanhas blancas
+newtab-wallpaper-feature-highlight-header = Ensajatz de colors novèlas
+newtab-wallpaper-feature-highlight-content = Donatz una aparéncia mai fresca a la pagina Onglets novèls amb un fons d’ecran.
+newtab-wallpaper-feature-highlight-button = Comprés
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = Tampar la fenèstra
+    .title = Ignorar
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ Esponsorizat
+newtab-weather-menu-change-location = Modificar lo luòc
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = Cercar un luòc
+    .placeholder = Cercar un luòc
+newtab-weather-menu-weather-display = Afichatge metèo
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = Simple
+newtab-weather-menu-change-weather-display-simple = Bascular a la vista simplificada
+newtab-weather-menu-weather-display-option-detailed = Detalhat
+newtab-weather-menu-change-weather-display-detailed = Bascular a la vista detalhada
+newtab-weather-menu-temperature-units = Unitats de temperatura
+newtab-weather-menu-temperature-option-fahrenheit = Fahrenheit
+newtab-weather-menu-temperature-option-celsius = Celsius
+newtab-weather-menu-change-temperature-units-fahrenheit = Passar en Fahrenheit
+newtab-weather-menu-change-temperature-units-celsius = Passar en Celsius
+newtab-weather-menu-learn-more = Ne saber mai
+# This message is shown if user is working offline
+newtab-weather-error-not-available = Las informacions meteorologicas son pas disponiblas ara.
+newtab-weather-opt-in-see-weather = Volètz veire lo temps per vòstra localisazion ?
+newtab-weather-opt-in-not-now =
+    .label = Pas ara
+newtab-weather-opt-in-yes =
+    .label = Òc
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast-description =
+    .aria-description = { $provider } ∙ Esponsorizat
+    .title = Mostrar la prevision metèo de { $provider }
+
+## Topic Labels
+
+newtab-topic-label-business = Afars
+newtab-topic-label-career = Carrièra
+newtab-topic-label-education = Educacion
+newtab-topic-label-arts = Léser
+newtab-topic-label-food = Manjar
+newtab-topic-label-health = Santat
+newtab-topic-label-hobbies = Jòc vidèo
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Argent
+newtab-topic-label-society-parenting = Parents
+newtab-topic-label-government = Politica
+newtab-topic-label-education-science = Sciéncia
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Astúcias de vida
+newtab-topic-label-sports = Espòrts
+newtab-topic-label-tech = Tecnologia
+newtab-topic-label-travel = Viatge
+newtab-topic-label-home = Ostal e òrt
+
+## Topic Selection Modal
+
+newtab-topic-selection-save-button = Enregistrar
+newtab-topic-selection-cancel-button = Anullar
+newtab-topic-selection-button-maybe-later = Benlèu mai tard
+newtab-topic-selection-privacy-link = Descobrissètz cossí protegissèm e gerissèm vòstras donadas
+newtab-topic-selection-button-update-interests = Metre a jorn vòstres interèsses
+newtab-topic-selection-button-pick-interests = Causir vòstres interèsses
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-unblock-button = Desblocar
+
+## Strings for shortcuts highlight
+
+newtab-shortcuts-highlight-subtitle = Apondre un acorchi per gardar vòstres sites preferits a un clic.
+
+## Strings for task / to-do list productivity widget
+
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = Nòu
+newtab-widget-lists-menu-create = Crear una lista novèla
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+# Variables:
+#   $minutes (number) - Time since the feed has been refreshed
+newtab-daily-briefing-card-timestamp = Actualizat fa { $minutes } min.
+
+## Strings for activation window message variants. In certain experiment configurations,
+## the strings from these variants may be displayed in a message below the search input
+## for the first 48 hours of a new profile's lifetime. Some messages include buttons with
+## labels, but not all.
+
+newtab-activation-window-message-customization-focus-message = Causissètz un fons d'ecran novèl, apondètz d’acorchis cap a vòstres sites preferits e demoratz al fial de las istòrias que vos interèssan.
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = Nòva York
+newtab-clock-city-us-los-angeles = Los Angeles
+newtab-clock-city-us-chicago = Chicago
+newtab-clock-city-us-san-francisco = San Francisco
+newtab-clock-city-us-san-diego = San Diego
+newtab-clock-city-us-dallas = Dallas
+newtab-clock-city-us-houston = Houston
+newtab-clock-city-us-philadelphia = Filadèlfia
+newtab-clock-city-us-atlanta = Atlanta
+newtab-clock-city-us-washington-dc = Washington D.C.
+newtab-clock-city-us-boston = Boston
+newtab-clock-city-us-miami = Miami
+newtab-clock-city-us-seattle = Seattle
+newtab-clock-city-us-denver = Denver
+newtab-clock-city-us-honolulu = Honolulu
+newtab-clock-city-us-anchorage = Anchorage
+newtab-clock-city-de-berlin = Berlin
+newtab-clock-city-de-munich = Munic
+newtab-clock-city-de-frankfurt = Francfòrt de Men
+newtab-clock-city-de-hamburg = Amborg
+newtab-clock-city-fr-paris = París
+newtab-clock-city-fr-lyon = Lion
+newtab-clock-city-fr-marseille = Marselha
+newtab-clock-city-fr-toulouse = Tolosa
+newtab-clock-city-in-kolkata = Calcuta
+newtab-clock-city-in-mumbai = Mumbai
+newtab-clock-city-in-delhi = Delhi
+newtab-clock-city-in-bangalore = Bengaluru
+newtab-clock-city-cn-shanghai = Shanghai
+newtab-clock-city-cn-beijing = Pequin
+newtab-clock-city-cn-shenzhen = Shenzhen
+newtab-clock-city-br-sao-paulo = São Paulo
+newtab-clock-city-br-rio-de-janeiro = Rio de Janeiro
+newtab-clock-city-br-brasilia = Brasília
+newtab-clock-city-id-jakarta = Jakarta
+newtab-clock-city-id-surabaya = Surabaya
+newtab-clock-city-id-makassar = Makassar
+newtab-clock-city-ca-toronto = Toronto
+newtab-clock-city-ca-montreal = Montreal
+newtab-clock-city-ca-vancouver = Vancouver
+newtab-clock-city-au-sydney = Sydney
+newtab-clock-city-au-perth = Perth
+newtab-clock-city-au-adelaide = Adelaïda
+newtab-clock-city-pl-warsaw = Varsòvia
+newtab-clock-city-pl-krakow = Cracòvia
+newtab-clock-city-jp-tokyo = prefectura de Tòquio
+newtab-clock-city-jp-osaka = Osaka
+newtab-clock-city-mx-mexico-city = Ciutat de Mexic
+newtab-clock-city-mx-guadalajara = Guadalajara
+newtab-clock-city-it-rome = Roma
+newtab-clock-city-it-milan = Milan
+newtab-clock-city-ru-moscow = Moscòu
+newtab-clock-city-ru-saint-petersburg = Sant Petersborg
+newtab-clock-city-gb-london = Londres
+newtab-clock-city-gb-birmingham = Birmingham
+newtab-clock-city-es-madrid = Madrid
+newtab-clock-city-es-barcelona = Barcelona
+newtab-clock-city-nl-amsterdam = Amsterdam
+newtab-clock-city-ch-zurich = Zuric
+newtab-clock-city-at-vienna = Viena
+newtab-clock-city-cz-prague = Praga
+newtab-clock-city-ar-buenos-aires = Buenos Aires
+newtab-clock-city-gr-athens = Atenas
+newtab-clock-city-hu-budapest = Budapèst
+newtab-clock-city-be-brussels = Brussèlas
+newtab-clock-city-ua-kyiv = Kyiiv
+newtab-clock-city-fi-helsinki = Helsinki
+newtab-clock-city-co-bogota = Bogotà
+newtab-clock-city-ph-manila = Manila
+newtab-clock-city-tr-istanbul = Istambol
+newtab-clock-city-my-kuala-lumpur = Kuala Lumpur
+newtab-clock-city-eg-cairo = Lo Caire
+newtab-clock-city-se-stockholm = Estocòlme
+newtab-clock-city-ro-bucharest = Bucarèst
+newtab-clock-city-th-bangkok = Bangkòk
+newtab-clock-city-ng-lagos = Lagos
+newtab-clock-city-tw-taipei = Taipei
+newtab-clock-city-za-johannesburg = Johannesburg
+newtab-clock-city-cl-santiago = Santiago
+newtab-clock-city-pk-karachi = Karachi
+newtab-clock-city-bg-sofia = Sòfia
+newtab-clock-city-sg-singapore = Singapor
+newtab-clock-city-hk-hong-kong = Hong Kong
+newtab-clock-city-sa-riyadh = Riyad
+newtab-clock-city-dk-copenhagen = Copenaga
+newtab-clock-city-pe-lima = Lima
+newtab-clock-city-ke-nairobi = Nairòbi
+newtab-clock-city-nz-auckland = Auckland
+newtab-clock-city-kr-seoul = Seol
+newtab-clock-city-lt-vilnius = Vílnius
+newtab-clock-city-ie-dublin = Dublin
+newtab-clock-city-ae-dubai = Dubai
+newtab-clock-city-lv-riga = Riga
+newtab-clock-city-pt-lisbon = Lisbona
+newtab-clock-city-ir-tehran = Teheran
+newtab-clock-city-bd-dhaka = Dhaka
+newtab-clock-city-ec-guayaquil = Guayaquil
+newtab-clock-city-vn-ho-chi-minh-city = Ho Chi Minh
+newtab-clock-city-np-kathmandu = Katmandó
+newtab-clock-city-mm-yangon = Rangon

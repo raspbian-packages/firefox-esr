@@ -1,0 +1,253 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Neuvo feuggio
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = Neuvi feuggi
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } riga
+           *[other] { $num } righe
+        }
+home-restore-defaults-srd =
+    .label = Repiggia predefinii
+    .accesskey = R
+home-mode-choice-custom-srd =
+    .label = Indirissi cliénti...
+home-mode-choice-blank-srd =
+    .label = Pagina gianca
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Stöie sponsorizæ
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Pagine vixitæ
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Segnalibbri
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Urtimi descaregamenti
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Çerca
+    .title = Çerca
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Azonzi motô de riçerca
+newtab-topsites-title-label = Titolo
+newtab-topsites-title-input =
+    .placeholder = Scrivi 'n titolo
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Scrivi ò incòlla URL
+newtab-topsites-url-validation = Serve 'na URL bonn-a
+newtab-topsites-image-url-label = URL da inmagine personalizâ
+newtab-topsites-use-custom-image-link = Adeuvia inagine personalizâ
+newtab-topsites-use-image-link = Adeuvia inagine personalizâ…
+newtab-topsites-image-validation = Erô into caregamento de l'inmagine. Preuva 'n atra URL.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Anulla
+newtab-topsites-delete-history-button = Scancella da-a stöia
+newtab-topsites-save-button = Sarva
+newtab-topsites-preview-button = Anteprimma
+newtab-topsites-add-button = Azonzi
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Te seguo de scancelâ tutte e ripetiçioin de sta pagina da stöia?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Sta açion a no se peu anulâ.
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Arvi menû
+    .title = Arvi menû
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Arvi into menû contesto pe { $title }
+    .title = Arvi menû
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Cangia
+newtab-menu-open-new-window = Arvi in neuvo barcon
+newtab-menu-open-new-private-window = Arvi in neuvo barcon privòu
+newtab-menu-dismiss = Scancella
+newtab-menu-pin = Azonzi a-a bacheca
+newtab-menu-unpin = Leva da bacheca
+newtab-menu-delete-history = Scancella da-a stöia
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Scancella segnalibbro
+# Bookmark is a verb here.
+newtab-menu-bookmark = Azonzi a-i segnalibbri
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Còpia indirisso òrigine
+newtab-menu-go-to-download-page = Vanni a-a pagina de descaregamento
+newtab-menu-remove-download = Scancella da-a stöia
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Fanni vedde in Finder
+       *[other] Arvi cartella
+    }
+newtab-menu-open-file = Arvi schedaio
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Vixitou
+newtab-label-bookmarked = Azonto a-i segnalibbri
+newtab-label-recommended = De tentensa
+newtab-label-saved = Sarvou in { -pocket-brand-name }
+newtab-label-download = Descaregou
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } men
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Informativa in sciâ privacy
+
+## Section Headers.
+
+newtab-section-header-topsites = I megio sciti
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Iniçia a navegâ e, in sta seçion, saian mostræ articoli, video e atre pagine vixitæ de fresco ò azonti a-i segnalibbri.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-try-again-button = Preuva torna
+newtab-discovery-empty-section-topstories-loading = Carego…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Ahime mi! Emmo squæxi caregou sta seçion ma no semmo ariescîi a caregâla tutta.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Ahime mi, gh'é quarche problema into caregamento de sto contegnuo.
+newtab-error-fallback-refresh-link = Agiorna pagina pe provâ torna.
+
+## New Tab Appearance (browser theme picker)
+
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } riga
+           *[other] { $num } righe
+        }
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = Niorche
+newtab-clock-city-us-los-angeles = Los Angeles
+newtab-clock-city-us-philadelphia = Philadelphia
+newtab-clock-city-us-atlanta = Atlanta
+newtab-clock-city-us-washington-dc = Washington D.C.
+newtab-clock-city-us-boston = Boston
+newtab-clock-city-us-denver = Denver
+newtab-clock-city-us-honolulu = Honolulu
+newtab-clock-city-de-berlin = Berlin
+newtab-clock-city-de-munich = Monego de Bavèa
+newtab-clock-city-de-frankfurt = Francoforte inscio Men
+newtab-clock-city-de-hamburg = Ambûrgo
+newtab-clock-city-fr-paris = Parìggi
+newtab-clock-city-fr-lyon = Lion
+newtab-clock-city-fr-marseille = Marsiggia
+newtab-clock-city-fr-toulouse = Toulouse
+newtab-clock-city-cn-beijing = Pechin
+newtab-clock-city-br-sao-paulo = São Paulo
+newtab-clock-city-br-rio-de-janeiro = Rio de Janeiro
+newtab-clock-city-br-brasilia = Braxilia
+newtab-clock-city-id-jakarta = Giacarta
+newtab-clock-city-ca-toronto = Toronto
+newtab-clock-city-au-sydney = Sydney
+newtab-clock-city-au-perth = Perth
+newtab-clock-city-pl-warsaw = Varsavvia
+newtab-clock-city-jp-tokyo = Tòkyo
+newtab-clock-city-mx-mexico-city = Çittæ do Mescico
+newtab-clock-city-it-rome = Romma
+newtab-clock-city-it-milan = Milan
+newtab-clock-city-ru-moscow = Mosca
+newtab-clock-city-ru-saint-petersburg = San Peoburgo
+newtab-clock-city-gb-london = Londra
+newtab-clock-city-gb-birmingham = Birmingham
+newtab-clock-city-es-madrid = Madrid
+newtab-clock-city-es-barcelona = Barçelónn-a
+newtab-clock-city-nl-amsterdam = Amsterdam
+newtab-clock-city-ch-zurich = Zurïgo
+newtab-clock-city-at-vienna = Vienna
+newtab-clock-city-cz-prague = Praga
+newtab-clock-city-ar-buenos-aires = Bonesàire
+newtab-clock-city-gr-athens = Aten
+newtab-clock-city-hu-budapest = Budapest
+newtab-clock-city-be-brussels = Bruxelles
+newtab-clock-city-ua-kyiv = Kiev
+newtab-clock-city-fi-helsinki = Helsinki
+newtab-clock-city-co-bogota = Bogotá
+newtab-clock-city-ph-manila = Manilla
+newtab-clock-city-my-kuala-lumpur = Kuala Lumpur
+newtab-clock-city-eg-cairo = O Cairo
+newtab-clock-city-se-stockholm = Stoccolma
+newtab-clock-city-ro-bucharest = Bucarest
+newtab-clock-city-th-bangkok = Bangkòk
+newtab-clock-city-tw-taipei = Taipei
+newtab-clock-city-cl-santiago = Santiago
+newtab-clock-city-bg-sofia = Sòfia
+newtab-clock-city-sg-singapore = Scingapô
+newtab-clock-city-hk-hong-kong = Hong Kong
+newtab-clock-city-sa-riyadh = Riyadh
+newtab-clock-city-dk-copenhagen = Copenaghen
+newtab-clock-city-pe-lima = Lima
+newtab-clock-city-ke-nairobi = Nairobi
+newtab-clock-city-kr-seoul = Seoul
+newtab-clock-city-lt-vilnius = Vilnius
+newtab-clock-city-ie-dublin = Dublin
+newtab-clock-city-ae-dubai = Dubai
+newtab-clock-city-lv-riga = Riga
+newtab-clock-city-pt-lisbon = Lisbonn-a
+newtab-clock-city-ir-tehran = Teheran
+newtab-clock-city-bd-dhaka = Dhaka
+newtab-clock-city-vn-ho-chi-minh-city = Ho Chi Minh
+newtab-clock-city-np-kathmandu = Katmandu

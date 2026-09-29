@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Kundaharape ñongatupyre
+autofill-manage-addresses-list-header = Kundaharape
+autofill-manage-payment-methods-title = Mba’éicha ehepyme’ẽta
+autofill-manage-cards-list-header = Kuatia’atã
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Mboguete
+autofill-manage-add-button = Embojuaju…
+autofill-manage-edit-button = Mbosako’i…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = ¿Eñongatu kundaharape?
+address-capture-save-doorhanger-description = Eñongatu marandu { -brand-short-name } ndive ehai hag̃ua myanyhẽha pya’e.
+address-capture-update-doorhanger-header = ¿Embohekopyahu kundaharape?
+address-capture-edit-doorhanger-header = Embosako’i kundaharape
+address-capture-save-button =
+    .label = Ñongatu
+    .accessKey = S
+address-capture-not-now-button =
+    .label = Ani ko’ág̃a
+    .accessKey = N
+address-capture-never-save-addresses-button =
+    .label = Aníke eñongatu kundaharape
+    .accessKey = v
+address-capture-cancel-button =
+    .label = Heja
+    .accessKey = C
+address-capture-update-button =
+    .label = Mbohekopyahu
+    .accessKey = U
+address-capture-manage-address-button =
+    .label = Kundaharape ñemboheko
+address-capture-learn-more-button =
+    .label = Kuaave
+address-capture-open-menu-button =
+    .aria-label = Embojuruja poravorã
+address-capture-edit-address-link = Embosako’i kundaharape
+    .aria-label = Embosako’i kundaharape
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Embojuaju kundaharape
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Embosako’i kundaharape
+autofill-address-name = Téra
+autofill-address-organization = Atyguasu
+autofill-address-street-address = Kundaharape
+autofill-address-street = Tape réra
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Jeikohaguasu
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Okaraygua térã táva
+autofill-address-island = Ymbytépe
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Táva
+autofill-address-city = Táva
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Tavarã
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Post town
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Tembe’ygua
+autofill-address-province = Tetãpehẽ
+autofill-address-state = Tekotee
+autofill-address-county = Kondado
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Parrokia
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Prefectura
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Tendaguasu
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Tetãvore
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Emirato
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Tendaguasu ijeheguíva
+# Postal code field used in India (IN).
+autofill-address-pin = Pin
+autofill-address-postal-code = Código postal
+# Postal code field.
+autofill-address-zip = ZIP ayvu
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eircode
+
+##
+
+autofill-address-country = Tetã térã tendaguasu
+autofill-address-country-only = Tetã
+autofill-address-tel = Pumbyry
+autofill-address-email = Ñandutiveve
+autofill-cancel-button = Heja
+autofill-save-button = Ñongatu
+autofill-country-warning-message-2 = Pe myanyhẽha ijeheguíva ko’ág̃a ikatu ojepuru ndahetái tetãme.
+autofill-country-warning-message = Pe myanyhẽha ijeheguíva ko’ág̃a ikatu ojeporu ndahetái tetãme.
+autofill-message-tooltip = Ehecha ñe’ẽmondo myanyhẽjehegui rehegua
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Embojuaju kuatia’atã
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Embosako’i kuatia’atã
+autofill-card-number-2 =
+    .label = Kuatia’atã papapy
+autofill-card-number = Kuatia’atã papapy
+autofill-card-invalid-number = Ikatúpa emoinge kuatia’atã papapy oikóva
+autofill-card-name-on-card-2 =
+    .label = Kuatia’atã réra
+autofill-card-expires-month-2 =
+    .label = Oikóta jasy peve
+autofill-card-expires-year-2 =
+    .label = Hu’ãta ary
+autofill-card-billing-address-2 =
+    .label = Kundaharape ñemondo hag̃ua
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = Kuatia’atã réra
+autofill-card-expires-month = Exp. Jasy
+autofill-card-expires-year = Exp. Ary
+autofill-card-billing-address = Kundaharape ñemondo hag̃ua
+autofill-card-network = Peteĩchagua kuatia’atã
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = kuatia’atã ñemurã, jedeverã, kuatia’atã, kuatia’atã débito, débito, viruryru, hepyme’ẽ
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Embojuaju pasaporte
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = Embosako’i pasaporte
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = Téra
+autofill-passport-country =
+    .label = Tetã
+autofill-passport-number =
+    .label = Papapy
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = Osẽha arange
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = Hu’ãha arange
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = MM
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = DD
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = YYYY
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = ¿Eñongatu pasaporte?
+passport-capture-save-doorhanger-description = Eñongatu marandu { -brand-short-name } ndive ehai hag̃ua myanyhẽha pya’e.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = Ñongatu
+    .accessKey = S
+passport-capture-not-now-button =
+    .label = Ani ko’ág̃a
+    .accessKey = w
+passport-capture-never-save-button =
+    .label = Aníke eñongatu pasaporteita
+    .accessKey = N

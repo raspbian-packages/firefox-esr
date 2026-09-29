@@ -1,0 +1,140 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Saglabātās adreses
+autofill-manage-addresses-list-header = Adreses
+autofill-manage-payment-methods-title = Saglabātie maksājumu veidi
+autofill-manage-cards-list-header = Kartes
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Noņemt
+autofill-manage-add-button = Pievienot…
+autofill-manage-edit-button = Labot…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Saglabāt adresi?
+address-capture-save-doorhanger-description = Saglabājiet informāciju { -brand-short-name }, lai varētu ātri aizpildīt veidlapas.
+address-capture-update-doorhanger-header = Atjaunināt adresi?
+address-capture-edit-doorhanger-header = Labot adresi
+address-capture-save-button =
+    .label = Saglabāt
+    .accessKey = S
+address-capture-not-now-button =
+    .label = Ne tagad
+    .accessKey = N
+address-capture-never-save-addresses-button =
+    .label = Nekad nesaglabāt adreses
+    .accessKey = n
+address-capture-cancel-button =
+    .label = Atcelt
+    .accessKey = C
+address-capture-update-button =
+    .label = Atjaunināt
+    .accessKey = j
+address-capture-manage-address-button =
+    .label = Adreses iestatījumi
+address-capture-learn-more-button =
+    .label = Uzzināt vairāk
+address-capture-open-menu-button =
+    .aria-label = Atvērt izvēlni
+address-capture-edit-address-link = Labot adresi
+    .aria-label = Labot adresi
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Pievienot adresi
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Labot adresi
+autofill-address-name = Nosaukums
+autofill-address-organization = Uzņēmums
+autofill-address-street-address = Ielas adrese
+autofill-address-street = Adrese
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Apkaime
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Ciemats vai pilsēta
+autofill-address-island = Sala
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Pilsētas apkaime
+autofill-address-city = Pilsēta
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Rajons
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Pasta pilsēta
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Priekšpilsēta
+autofill-address-province = Rajons
+autofill-address-state = Štats
+autofill-address-county = Apgabals
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Ciems
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Prefektūra
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Apgabals
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Nodaļa
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Emirāts
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Apgabals
+# Postal code field used in India (IN).
+autofill-address-pin = Pin
+autofill-address-postal-code = Pasta indekss
+# Postal code field.
+autofill-address-zip = Pasta indekss
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eirkode
+
+##
+
+autofill-address-country = Štats vai reģions
+autofill-address-country-only = Valsts
+autofill-address-tel = Telefons
+autofill-address-email = Epasts
+autofill-cancel-button = Atcelt
+autofill-save-button = Saglabāt
+autofill-country-warning-message-2 = Veidlapu automātiskā aizpilde šobrīd ir pieejama tikai noteiktās valstīs
+autofill-country-warning-message = Veidlapu automātiskā aizpilde šobrīd ir pieejama tikai noteiktās valstīs.
+autofill-message-tooltip = Skatīt ziņojumu par automātisko aizpildīšanu
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Pievienot karti
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Labot karti
+autofill-card-number-2 =
+    .label = Kartes numurs
+autofill-card-number = Kartes numurs
+autofill-card-invalid-number = Lūdzu, ievadiet derīgu kredītkartes numuru
+autofill-card-name-on-card-2 =
+    .label = Kartes īpašnieks
+autofill-card-billing-address-2 =
+    .label = Rēķina adrese
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = Kartes īpašnieks
+autofill-card-expires-month = Der.t. mēnesis
+autofill-card-expires-year = Der.t. gads
+autofill-card-billing-address = Rēķina adrese
+autofill-card-network = Kartes veids
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = kredītkartes, kredīts, kartes, debetkartes, debets, maks, norēķināšanās
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Pievienot pasi

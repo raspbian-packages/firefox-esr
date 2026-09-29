@@ -1,0 +1,114 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+about-networking-title = about:networking
+about-networking-http = HTTP
+about-networking-http-clear-cache-button = Wyczyść pamięć podręczną HTTP
+about-networking-sockets = Socket
+about-networking-dns = DNS
+about-networking-dns-clear-cache-button = Wyczyść pamięć podręczną DNS
+about-networking-dns-trr-url = Adres DoH
+about-networking-dns-trr-mode = Tryb DoH
+about-networking-dns-suffix = Przyrostek DNS
+about-networking-websockets = WebSocket
+about-networking-alt-svc = Alt-Svc
+about-networking-alt-svc-origin = Źródło
+about-networking-alt-svc-alternate = Alternatywne
+about-networking-alt-svc-alpn = ALPN
+about-networking-alt-svc-validated = Zweryfikowane
+about-networking-alt-svc-ttl = TTL
+about-networking-alt-svc-origin-attributes-suffix = Klucz izolacji
+about-networking-ssl-tokens = Tokeny TLS
+# $count (Number) - Number of cached TLS resumption tokens
+about-networking-ssl-tokens-summary-count =
+    { $count ->
+        [one] { $count } token
+        [few] { $count } tokeny
+       *[many] { $count } tokenów
+    }
+# $count (Number) - Number of cached tokens that have already expired
+about-networking-ssl-tokens-summary-expired =
+    { $count ->
+        [one] ({ $count } wygasł)
+        [few] ({ $count } wygasły)
+       *[many] ({ $count } wygasło)
+    }
+# $decompressedLength (Number) - Total uncompressed size in bytes across all tokens
+# $compressedLength (Number) - Total compressed size in bytes across all tokens
+# $saved (Number) - Percentage of space saved by compression
+about-networking-ssl-tokens-summary-compression = { $decompressedLength } → { $compressedLength } B (zaoszczędzono { $saved }%)
+# $used (Number) - Cache size currently in use, in kilobytes
+# $capacity (Number) - Total cache capacity, in kilobytes
+# $percent (Number) - Percentage of the cache capacity currently in use
+about-networking-ssl-tokens-summary-capacity = { $used }/{ $capacity } KB ({ $percent }%)
+about-networking-ssl-tokens-partition-key = Klucz przegrody
+about-networking-ssl-tokens-tokens-column = Tokeny
+about-networking-ssl-tokens-expires = Wygasa
+about-networking-ssl-tokens-certificate = Certyfikat
+# $count (Number) - Number of tokens sharing this row's host and certificate
+about-networking-ssl-tokens-token-list =
+    { $count ->
+        [one] { $count } token
+        [few] { $count } tokeny
+       *[many] { $count } tokenów
+    }
+about-networking-ssl-tokens-restored =
+    .alt = Przywrócone z pamięci
+    .title = Przywrócone z pamięci
+about-networking-ssl-tokens-new =
+    .alt = Nowe w tej sesji
+    .title = Nowe w tej sesji
+about-networking-ssl-tokens-expired =
+    .alt = Wygasłe
+    .title = Wygasłe
+# $tokenLength (Number) - Total size in bytes of the raw TLS resumption token(s)
+# $decompressedLength (Number) - Total size in bytes before compression
+# $compressedLength (Number) - Total size in bytes after compression
+about-networking-ssl-tokens-compression-details =
+    .title = Tokeny: { $tokenLength } B. Zakodowane: { $decompressedLength } → { $compressedLength } B.
+about-networking-ssl-tokens-ev-status = Certyfikat EV
+about-networking-ssl-tokens-ct-status = Stan przejrzystości certyfikatu
+about-networking-ssl-tokens-overridable-error = Kategoria błędów możliwych do zignorowania
+about-networking-ssl-tokens-built-in-root = Wbudowany główny
+# $count (Number) - Number of certs in the succeeded cert chain
+about-networking-ssl-tokens-cert-chain = Łańcuch certyfikatów ({ $count })
+# $count (Number) - Number of certs seen during the TLS handshake
+about-networking-ssl-tokens-handshake-certs = Certyfikaty negocjacji ({ $count })
+about-networking-refresh = Odśwież
+about-networking-auto-refresh = Automatyczne odświeżanie co 3 sekundy
+about-networking-hostname = Nazwa hosta
+about-networking-port = Port
+about-networking-http-version = Wersja HTTP
+about-networking-ssl = SSL
+about-networking-active = Aktywnych
+about-networking-idle = Bezczynnych
+about-networking-host = Host
+about-networking-type = Typ
+about-networking-sent = Wysłano
+about-networking-received = Odebrano
+about-networking-family = Protokół
+about-networking-trr = TRR
+about-networking-addresses = Adresy
+about-networking-expires = Wygasa (w sekundach)
+about-networking-originAttributesSuffix = Klucz izolacji
+about-networking-flags = Dodatkowe flagi
+about-networking-messages-sent = Wysłano wiadomości
+about-networking-messages-received = Odebrano wiadomości
+about-networking-bytes-sent = Wysłano bajtów
+about-networking-bytes-received = Odebrano bajtów
+about-networking-logging = Logging
+about-networking-dns-lookup = Przeszukiwanie DNS
+about-networking-dns-lookup-button = Wyszukaj
+about-networking-dns-domain = Domena:
+about-networking-dns-lookup-table-column = Adresy IP
+about-networking-dns-https-rrs-lookup-table-column = RR protokołu HTTPS
+about-networking-networkid = Identyfikator sieci
+about-networking-networkid-id = Identyfikator sieci
+# Note: do not translate about:logging, as it is a URL.
+about-networking-moved-about-logging = Ta strona została przeniesiona do <a data-l10n-name="about-logging-url">about:logging</a>.
+
+## Link is intended as "network link"
+
+about-networking-networkid-is-up = Łącze jest aktywne
+about-networking-networkid-status-known = Stan łącza jest znany

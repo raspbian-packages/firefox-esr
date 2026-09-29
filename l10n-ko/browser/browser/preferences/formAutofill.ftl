@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = 저장된 주소
+autofill-manage-addresses-list-header = 주소
+autofill-manage-payment-methods-title = 저장된 결제 수단
+autofill-manage-cards-list-header = 카드
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = 삭제
+autofill-manage-add-button = 추가…
+autofill-manage-edit-button = 수정…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = 주소를 저장하시겠습니까?
+address-capture-save-doorhanger-description = 양식을 빠르게 채울 수 있도록 정보를 { -brand-short-name }에 저장하세요.
+address-capture-update-doorhanger-header = 주소를 업데이트하시겠습니까?
+address-capture-edit-doorhanger-header = 주소 편집
+address-capture-save-button =
+    .label = 저장
+    .accessKey = S
+address-capture-not-now-button =
+    .label = 나중에
+    .accessKey = N
+address-capture-never-save-addresses-button =
+    .label = 주소 저장 안 함
+    .accessKey = v
+address-capture-cancel-button =
+    .label = 취소
+    .accessKey = C
+address-capture-update-button =
+    .label = 업데이트
+    .accessKey = U
+address-capture-manage-address-button =
+    .label = 주소 설정
+address-capture-learn-more-button =
+    .label = 더 알아보기
+address-capture-open-menu-button =
+    .aria-label = 메뉴 열기
+address-capture-edit-address-link = 주소 편집
+    .aria-label = 주소 편집
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = 주소 추가
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = 주소 편집
+autofill-address-name = 이름
+autofill-address-organization = 조직
+autofill-address-street-address = 도로 주소
+autofill-address-street = 도로 주소
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = 단지
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = 마을 또는 읍
+autofill-address-island = 섬
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = 타운랜드
+autofill-address-city = 도시
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = 군/구
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = 포스트타운
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = 근교
+autofill-address-province = 주
+autofill-address-state = 주
+autofill-address-county = 주
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = 교구
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = 현
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = 지역
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = 도/시
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = 부서
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = 토후국
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = 주
+# Postal code field used in India (IN).
+autofill-address-pin = 우편 번호
+autofill-address-postal-code = 우편 번호
+# Postal code field.
+autofill-address-zip = 우편 번호
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = 우편 번호
+
+##
+
+autofill-address-country = 국가 또는 지역
+autofill-address-country-only = 국가
+autofill-address-tel = 전화
+autofill-address-email = 이메일
+autofill-cancel-button = 취소
+autofill-save-button = 저장
+autofill-country-warning-message-2 = 양식 자동 채우기는 현재 일부 국가에서만 사용할 수 있습니다.
+autofill-country-warning-message = 양식 자동 채우기는 현재 일부 국가에서만 사용할 수 있습니다.
+autofill-message-tooltip = 자동 채우기에 대한 메시지 보기
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = 카드 추가
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = 카드 편집
+autofill-card-number-2 =
+    .label = 카드 번호
+autofill-card-number = 카드 번호
+autofill-card-invalid-number = 유효한 카드 번호를 입력하세요
+autofill-card-name-on-card-2 =
+    .label = 카드상의 이름
+autofill-card-expires-month-2 =
+    .label = 만료월
+autofill-card-expires-year-2 =
+    .label = 만료년
+autofill-card-billing-address-2 =
+    .label = 청구 주소
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = 카드상의 이름
+autofill-card-expires-month = 만료월
+autofill-card-expires-year = 만료년
+autofill-card-billing-address = 청구 주소
+autofill-card-network = 카드 종류
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = 신용 카드, 신용, 카드, 직불 카드, 직불, 지갑, 결제
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = 여권 추가
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = 여권 편집
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = 이름
+autofill-passport-country =
+    .label = 국가
+autofill-passport-number =
+    .label = 번호
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = 발급일
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = 만료일
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = 월
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = 일
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = 년
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = 여권을 저장하시겠습니까?
+passport-capture-save-doorhanger-description = 양식을 빠르게 채울 수 있도록 정보를 { -brand-short-name }에 저장하세요.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = 저장
+    .accessKey = S
+passport-capture-not-now-button =
+    .label = 나중에
+    .accessKey = w
+passport-capture-never-save-button =
+    .label = 여권 저장 안 함
+    .accessKey = N

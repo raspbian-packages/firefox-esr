@@ -1,0 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+default-browser-agent-task-description = Standardny nadawk agenta wobglědowaka kontrolěrujo, gaž se standard z { -brand-short-name } do drugego wobglědowaka změnja. Jolic se změna pód suspektnymi wobstojnosćami stawa, buźo wužywarje napominaś, nic wěcej ako dwójcy slědk do  { -brand-short-name } změniś. Toś ten nadawk se awtomatiski pśez { -brand-short-name } instalěrujo a instalěrujo se zasej, gaž se { -brand-short-name } aktualizěrujo. Aby toś ten nadawk znjemóžnił, aktualizěrujśo nastajenje „default-browser-agent.enabled“ na boku about:config abo nastajenje pśedewześowego pšawidla  „DisableDefaultBrowserAgent“ { -brand-short-name }.
+default-browser-notification-privacy-header-text = Cośo pśi { -brand-short-name } wóstaś?
+default-browser-notification-privacy-body-text = Waš standard jo se změnił. Wrośćo se k { -brand-short-name } za zatwarjonu priwatnosć a šćit.
+default-browser-notification-yes-button-text = Jo
+default-browser-notification-privacy-no-button-text = Ně, źěkujom se

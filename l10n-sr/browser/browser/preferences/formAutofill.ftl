@@ -1,0 +1,184 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Сачуване адресе
+autofill-manage-addresses-list-header = Адресе
+autofill-manage-payment-methods-title = Сачувани начини плаћања
+autofill-manage-cards-list-header = Картице
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Обриши
+autofill-manage-add-button = Додај...
+autofill-manage-edit-button = Измени...
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Сачувај адресу?
+address-capture-save-doorhanger-description = Сачувај податак у { -brand-short-name } за брзо попуњавање образаца.
+address-capture-update-doorhanger-header = Ажурирај адресу?
+address-capture-edit-doorhanger-header = Измени адресу
+address-capture-save-button =
+    .label = Сачувај
+    .accessKey = С
+address-capture-not-now-button =
+    .label = Не сада
+    .accessKey = н
+address-capture-cancel-button =
+    .label = Откажи
+    .accessKey = О
+address-capture-update-button =
+    .label = Ажурирај
+    .accessKey = А
+address-capture-manage-address-button =
+    .label = Подешавања адресе
+address-capture-learn-more-button =
+    .label = Сазнајте више
+address-capture-open-menu-button =
+    .aria-label = Отвори мени
+address-capture-edit-address-link = Измени адресу
+    .aria-label = Измени адресу
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Додај адресу
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Измени адресу
+autofill-address-name = Име
+autofill-address-organization = Организација
+autofill-address-street-address = Адреса
+autofill-address-street = Адреса
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Суседство
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Село или град
+autofill-address-island = Острво
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Варош
+autofill-address-city = Град
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Област
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Поштански град
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Предграђе
+autofill-address-province = Општина
+autofill-address-state = Држава
+autofill-address-county = Округ
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Парохија
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Префектура
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Зона
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Одељење
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Емират
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Област
+# Postal code field used in India (IN).
+autofill-address-pin = Поштански код
+autofill-address-postal-code = Поштански број
+# Postal code field.
+autofill-address-zip = Zip код
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eircode
+
+##
+
+autofill-address-country = Држава или покрајна
+autofill-address-country-only = Држава
+autofill-address-tel = Телефон
+autofill-address-email = Е-пошта
+autofill-cancel-button = Откажи
+autofill-save-button = Сачувај
+autofill-country-warning-message = Аутоматско попуњавање форми тренутно није доступно само у одређеним државама.
+autofill-message-tooltip = Погледајте поруку о аутоматском попуњавању
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Додај картицу
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Уреди картицу
+autofill-card-number-2 =
+    .label = Број картице
+autofill-card-number = Број картице
+autofill-card-invalid-number = Унесите исправан број картице
+autofill-card-name-on-card-2 =
+    .label = Име на картици
+autofill-card-expires-month-2 =
+    .label = Истиче месеца
+autofill-card-expires-year-2 =
+    .label = Истиче године
+autofill-card-billing-address-2 =
+    .label = Адреса за наплату
+autofill-card-name-on-card = Име на картици
+autofill-card-expires-month = Месец ист.
+autofill-card-expires-year = Година ист.
+autofill-card-billing-address = Адреса за наплату
+autofill-card-network = Тип картице
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = кредитне картице, кредит, картице, дебитне картице, дебит, новчаник, плаћање, kreditne kartice, kredit, kartice, debitne kartice, debit, novčanik, plaćanje
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Додавање пасоша
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = Уређивање пасоша
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = Назив
+autofill-passport-country =
+    .label = Држава
+autofill-passport-number =
+    .label = Број
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = Датум издавања
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = Датум истека
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = ММ
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = ДД
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = ГГГГ
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = Сачувати пасош?
+passport-capture-save-doorhanger-description = Сачувајте податке у { -brand-short-name }-у како бисте могли брзо да попуните обрасце.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = Сачувај
+    .accessKey = С
+passport-capture-not-now-button =
+    .label = Не сада
+    .accessKey = Н
+passport-capture-never-save-button =
+    .label = Никада не чувај пасоше
+    .accessKey = к
