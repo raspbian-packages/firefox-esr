@@ -1,0 +1,73 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Preview strings for the custom browser-icon feature (Bug 2049877), which
+### will show these strings in about:settings.
+
+# Entry in the Appearance pane (Windows only) that opens the browser-icon
+# subpage. The browser icon is the icon shown on the desktop, taskbar, and
+# Start Menu.
+appearance-browser-icon-entry-group =
+    .label = Ikona prohlížeče
+    .description = Vyberte si vlastní ikonu pro hlavní panel, plochu a nabídku Start.
+appearance-browser-icon-button =
+    .label = Změnit ikonu prohlížeče
+
+## Strings for the "Browser icon" sub-page (Windows only), opened from the
+## "Change browser icon" button in the Appearance settings. The sub-page lets
+## people choose which icon appears on the taskbar, desktop, and Start Menu.
+
+appearance-browser-icon-subpage-title =
+    .heading = Další ikony
+
+## Icons are organized into two groups: "Standard" and "Special". The icons in
+## the "Special" group only become available when the user has set the browser
+## as the default and pinned its launcher to the taskbar.
+
+appearance-browser-icon-basic-group =
+    .label = Standardní
+appearance-browser-icon-bonus-group =
+    .label = Speciální
+
+##
+
+# “Bonus” means “additional” in this context
+appearance-browser-icon-requirement =
+    .message =
+        { -brand-short-name.case-status ->
+            [with-cases] Dokončete nastavení a odemkněte bonusové ikony lišek, abyste si mohli { -brand-short-name(case: "acc") } ještě více přizpůsobit.
+           *[no-cases] Dokončete nastavení a odemkněte bonusové ikony lišek, abyste si mohli aplikaci { -brand-short-name } ještě více přizpůsobit.
+        }
+# Shown in place of appearance-browser-icon-requirement once the bonus icons are
+# unlocked (the browser is both the default and pinned to the taskbar).
+appearance-browser-icon-unlocked =
+    .message = Odemkli jste všechny bonusové ikony!
+appearance-browser-icon-set-default-button =
+    .label = Nastavit na výchozí
+appearance-browser-icon-pin-button =
+    .label = Připnout na lištu
+
+## Icon names
+
+appearance-browser-icon-default =
+    .label = Výchozí
+appearance-browser-icon-retro2004 =
+    .label = Retro 2004
+appearance-browser-icon-retro2017 =
+    .label = Retro 2017
+appearance-browser-icon-pride =
+    .label = Hrdost
+appearance-browser-icon-minimal =
+    .label = Minimalistická
+# Kit is the name of the new Firefox mascot, it shouldn't be translated.
+appearance-browser-icon-kit =
+    .label = Kit
+appearance-browser-icon-pixelated =
+    .label = Pixelová
+# @heyheymomodraws is the social-media handle of the icon's author and must be
+# kept verbatim - do not translate or otherwise change it.
+appearance-browser-icon-momo =
+    .label = Momo
+    .description = Autor: @heyheymomodraws
