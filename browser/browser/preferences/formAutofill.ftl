@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Gordetako helbideak
+autofill-manage-addresses-list-header = Helbideak
+autofill-manage-payment-methods-title = Gordetako ordainketa-metodoak
+autofill-manage-cards-list-header = Txartelak
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Kendu
+autofill-manage-add-button = Gehitu…
+autofill-manage-edit-button = Editatu…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Helbidea gorde?
+address-capture-save-doorhanger-description = Gorde informazioa { -brand-short-name }(e)n inprimakiak di-da batean betetzeko.
+address-capture-update-doorhanger-header = Helbidea eguneratu?
+address-capture-edit-doorhanger-header = Editatu helbidea
+address-capture-save-button =
+    .label = Gorde
+    .accessKey = G
+address-capture-not-now-button =
+    .label = Une honetan ez
+    .accessKey = z
+address-capture-never-save-addresses-button =
+    .label = Inoiz ez gorde helbiderik
+    .accessKey = d
+address-capture-cancel-button =
+    .label = Utzi
+    .accessKey = U
+address-capture-update-button =
+    .label = Eguneratu
+    .accessKey = E
+address-capture-manage-address-button =
+    .label = Helbidearen ezarpenak
+address-capture-learn-more-button =
+    .label = Argibide gehiago
+address-capture-open-menu-button =
+    .aria-label = Ireki menua
+address-capture-edit-address-link = Editatu helbidea
+    .aria-label = Editatu helbidea
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Gehitu helbidea
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Editatu helbidea
+autofill-address-name = Izena
+autofill-address-organization = Erakundea
+autofill-address-street-address = Helbidea
+autofill-address-street = Helbidea
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Auzoa
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Herria
+autofill-address-island = Irla
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Herria
+autofill-address-city = Hiria
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Eskualdea
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Posta-herria
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Auzoa
+autofill-address-province = Probintzia
+autofill-address-state = Estatua
+autofill-address-county = Konderria
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Parrokia
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Prefektura
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Eremua
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Saila
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Emiratua
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Oblast
+# Postal code field used in India (IN).
+autofill-address-pin = Posta-kodea
+autofill-address-postal-code = Posta-kodea
+# Postal code field.
+autofill-address-zip = Posta-kodea
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eircode
+
+##
+
+autofill-address-country = Herrialdea edo eskualdea
+autofill-address-country-only = Herrialdea
+autofill-address-tel = Telefonoa
+autofill-address-email = Helbide elektronikoa
+autofill-cancel-button = Utzi
+autofill-save-button = Gorde
+autofill-country-warning-message-2 = Inprimakiak automatikoki betetzea momentuz zenbait herrialdetan dago erabilgarri soilik
+autofill-country-warning-message = Inprimakiak automatikoki betetzea momentuz zenbait herrialdetan dago erabilgarri soilik.
+autofill-message-tooltip = Ikusi betetze automatikoaren mezua
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Gehitu txartela
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Editatu txartela
+autofill-card-number-2 =
+    .label = Txartelaren zenbakia
+autofill-card-number = Txartelaren zenbakia
+autofill-card-invalid-number = Idatzi baliozko txartel-zenbakia
+autofill-card-name-on-card-2 =
+    .label = Txarteleko izena
+autofill-card-expires-month-2 =
+    .label = Iraungitze-hilabetea
+autofill-card-expires-year-2 =
+    .label = Iraungitze-urtea
+autofill-card-billing-address-2 =
+    .label = Fakturazio-helbidea
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = Txarteleko izena
+autofill-card-expires-month = Am. hilabetea
+autofill-card-expires-year = Am. urtea
+autofill-card-billing-address = Fakturazio-helbidea
+autofill-card-network = Txartel mota
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = kreditu-txartelak, kreditu, txartelak, debitu-txartelak, debitu, erosketa, ordainketa
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Gehitu pasaportea
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = Editatu pasaportea
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = Izena
+autofill-passport-country =
+    .label = Herrialdea
+autofill-passport-number =
+    .label = Zenbakia
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = Jaulkitze-data
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = Iraungitze-data
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = HH
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = EE
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = UUUU
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = Gorde pasaportea?
+passport-capture-save-doorhanger-description = Gorde informazioa { -brand-short-name }(e)n inprimakiak di-da batean betetzeko.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = Gorde
+    .accessKey = G
+passport-capture-not-now-button =
+    .label = Une honetan ez
+    .accessKey = n
+passport-capture-never-save-button =
+    .label = Inoiz ez gorde pasaporterik
+    .accessKey = n
