@@ -1,0 +1,253 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+toolbar-button-firefox-view-2 =
+    .label = { -firefoxview-brand-name }
+    .tooltiptext = Montri ĵusan retumon en ĉiuj fenestroj kaj aparatoj
+menu-tools-firefox-view =
+    .label = { -firefoxview-brand-name }
+    .accesskey = F
+firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
+firefoxview-page-label =
+    .label = { -firefoxview-brand-name }
+# Used instead of the localized relative time when a timestamp is within a minute or so of now
+firefoxview-just-now-timestamp = Ĵus
+firefoxview-syncedtabs-signin-header-2 = Via { -brand-product-name } en ĉiuj viaj aparatoj
+firefoxview-syncedtabs-signin-description-2 = Por vidi langetojn malfermitaj en via telefono kaj aliaj aparatoj, komencu seancon aŭ kreu konton. Per konto vi povas ankaŭ speguli viajn pasvortojn, historion, kaj pli.
+# The verb “Go” is implied but omitted from the headline: “[Go] from laptop to phone, seamlessly”
+firefoxview-syncedtabs-signin-header-3 = Senpene iri el la komputilo al la telefono
+firefoxview-syncedtabs-signin-description-3 = Tenu vian retumon konektita inter aparatoj — langetojn, pasvortojn kaj historion, ĉiujn spegulitajn.
+firefoxview-syncedtabs-signin-primarybutton-2 = Komenci seancon
+firefoxview-syncedtabs-adddevice-header-2 = Reprenu viajn langetojn kie ajn vi estas
+firefoxview-syncedtabs-adddevice-description-2 = Komencu seancon de { -brand-product-name } en via telefono aŭ alia komputilo por vidi la ĉi tieajn langetojn. Jen pli da informo pri <a data-l10n-name="url">konekto de aldonaj aparatoj</a>.
+firefoxview-syncedtabs-adddevice-primarybutton = Provu { -brand-product-name } por poŝaparatoj
+# "Your tabs called" - this is playful messaging indicating that a user can find their synced tabs on their phone.
+firefoxview-syncedtabs-adddevice-header-3 = Langetoj spegulitaj, ili estas en via telefono.
+firefoxview-syncedtabs-adddevice-description-3 = Saknu la kodon QR por elŝuti { -brand-product-name } por poŝaparatoj kaj komenci speguli viajn malfermitajn langetojn kaj pli. Malkovru kiel <a data-l10n-name="url">konekti aldonajn aparatojn</a>.
+firefoxview-tabpickup-synctabs-primarybutton = Speguli malfermitajn langetojn
+firefoxview-tabpickup-synctabs-primarybutton-2 = Ŝalti speguladon de langetoj
+firefoxview-syncedtabs-synctabs-header = Ĝisdatigi viajn spegulajn agordojn
+firefoxview-syncedtabs-synctabs-description = Por vidi langetojn el aliaj aparatoj, vi bezonas speguli viajn malfermitajn langetojn.
+firefoxview-syncedtabs-synctabs-header-2 = La spegulado de langetoj estas malŝaltita
+firefoxview-syncedtabs-synctabs-description-2 = Reŝaltu speguladon por ricevi ĉiujn langetojn el viaj aliaj aparatoj.
+firefoxview-syncedtabs-loading-header = Nuntempe spegulanta
+firefoxview-syncedtabs-loading-description = Kiam tio finiĝos, vi vidos langetojn, kiuj etas malfermitaj en aliaj aparatoj. Rekontrolu baldaŭ.
+firefoxview-syncedtabs-loading-header-2 = Langetoj ricevataj…
+firefoxview-syncedtabs-loading-description-2 = Spegulado farata. Viaj langetoj estos baldaŭ ĉi tie.
+firefoxview-tabpickup-fxa-admin-disabled-header = Via organizo malaktivigis la speguladon
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } ne povas speguli langetojn inter aparatoj ĉar via organizo malaktivigis la speguladon.
+firefoxview-tabpickup-fxa-admin-disabled-header-2 = La spegulado de langetoj estas malŝaltita
+firefoxview-tabpickup-fxa-disabled-by-policy-description-2 = Via organizo blokis tiun ĉi trajton.
+firefoxview-tabpickup-network-offline-header = Kontrolu vian retaliron
+firefoxview-tabpickup-network-offline-description = Se vi uzas retbarilon aŭ retperanton, kontrolu ĉu { -brand-short-name } rajtas aliri la reton.
+firefoxview-tabpickup-network-offline-primarybutton = Klopodi denove
+firefoxview-tabpickup-network-offline-header-2 = { -brand-short-name } ne povas konektiĝi nun
+firefoxview-tabpickup-network-offline-description-2 = Vi povus esti malkonektita aŭ io povus bloki la konekton.
+firefoxview-tabpickup-sync-error-header = Problemo evitas normalan speguladon
+firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } ne povas nuntempe aliri la spegulan servon. Klopodu denove post iom da tempo.
+# “Sync hit a snag” means that the sync process is having a problem and can’t connect.
+firefoxview-tabpickup-sync-error-header-2 = Okazis problemo dum spegulado
+firefoxview-tabpickup-generic-sync-error-description-2 = { -brand-short-name } ne povas konektiĝi. Atendu iomete kaj provu denove.
+firefoxview-tabpickup-sync-error-primarybutton = Klopodi denove
+firefoxview-tabpickup-sync-disconnected-header = Ŝalti speguladon por daŭrigi
+firefoxview-tabpickup-sync-disconnected-description = Por rehavi viajn langetojn, vi bezonos permesi speguladon en { -brand-short-name }.
+firefoxview-tabpickup-sync-disconnected-primarybutton = Ŝalti speguladon en agordoj
+firefoxview-tabpickup-password-locked-header = Por vidi langetojn, tajpu vian ĉefan pasvorton
+firefoxview-tabpickup-password-locked-description = Por rehavi viajn langetojn, vi devos tajpi la ĉefan pasvorton de { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Pli da informo
+firefoxview-tabpickup-password-locked-primarybutton = Tajpi ĉefan pasvorton
+firefoxview-syncedtab-password-locked-link = <a data-l10n-name="syncedtab-password-locked-link">Pli da informo</a>
+firefoxview-tabpickup-password-locked-header-2 = Malbloki langetojn per via ĉefa pasvorto
+firefoxview-tabpickup-password-locked-description-2 = Por respekti vian privatecon, spegulitaj langetoj estas protektitaj. Tajpu la ĉefan pasvorton de { -brand-short-name } por vidi langetojn el viaj aliaj aparatoj.
+firefoxview-tabpickup-signed-out-header = Komenci seancon por rekonekti
+firefoxview-tabpickup-signed-out-description2 = Por rekonektiĝi kaj repreni viajn langetojn, komencu seancon en via konto.
+firefoxview-tabpickup-signed-out-primarybutton = Komenci seancon
+firefoxview-tabpickup-signed-out-header-2 = Komencu seancon por vidi viajn langetojn
+firefoxview-tabpickup-signed-out-description-2 = Rekonektiĝu por vidi langetojn el aliaj aparatoj.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Ignori { $tabTitle }
+# Variables:
+#   $targetURI (string) - URL that will be opened in the new tab
+firefoxview-tabs-list-tab-button =
+    .title = Malfermi { $targetURI } en nova langeto
+firefoxview-collapse-button-show =
+    .title = Montri liston
+firefoxview-collapse-button-hide =
+    .title = Kaŝi liston
+firefoxview-overview-nav = Ĵusa retumo
+    .title = Ĵusa retumo
+firefoxview-overview-header = Ĵusa retumo
+    .title = Ĵusa retumo
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historio
+    .title = Historio
+firefoxview-history-header = Historio
+firefoxview-history-context-delete = Forigi el historio
+    .accesskey = F
+firefoxview-history-context-forget-site = Forgesi tiun ĉi retejon…
+    .accesskey = F
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Malfermitaj langetoj
+    .title = Malfermitaj langetoj
+firefoxview-opentabs-header = Malfermitaj langetoj
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Antaŭ nelonge fermitaj langetoj
+    .title = Antaŭ nelonge fermitaj langetoj
+firefoxview-recently-closed-header = Antaŭ nelonge fermitaj langetoj
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Langetoj el aliaj aparatoj
+    .title = Langetoj el aliaj aparatoj
+firefoxview-synced-tabs-header = Langetoj el aliaj aparatoj
+
+##
+
+# Used for a link in collapsible cards, in the ’Recent browsing’ page of Firefox View
+firefoxview-view-all-link = Vidi ĉion
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Fenestro { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Fenestro { $winID } (Nuna)
+firefoxview-show-more = Montri pli
+firefoxview-show-less = Montri malpli
+firefoxview-show-all = Montri ĉiujn
+firefoxview-search-text-box-clear-button =
+    .title = Viŝi
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Serĉi
+# Placeholder for the input field to search in history ("search" is a verb).
+firefoxview-search-text-box-history =
+    .placeholder = Serĉi en historio
+# Placeholder for the input field to search in bookmarks ("search" is a verb).
+firefoxview-search-text-box-bookmarks =
+    .placeholder = Serĉi en legosignoj
+# Placeholder for the input field to search in recently closed tabs ("search" is a verb).
+firefoxview-search-text-box-recentlyclosed =
+    .placeholder = Serĉi en ĵuse fermitaj langetoj
+# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
+firefoxview-search-text-box-tabs =
+    .placeholder = Serĉi langetojn
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-opentabs =
+    .placeholder = Serĉi malfermitajn langetojn
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+firefoxview-search-results-header = Serĉaj rezultoj por “{ $query }”
+# Variables:
+#   $count (Number) - The number of visits matching the search query.
+firefoxview-search-results-count =
+    { $count ->
+        [one] { $count } retejo
+       *[other] { $count } retejoj
+    }
+# Message displayed when a search is performed and no matching results were found.
+# Variables:
+#   $query (String) - The search query.
+firefoxview-search-results-empty = Neniu rezulto por “{ $query }”
+firefoxview-sort-history-by-date-label = Ordigi laŭ dato
+firefoxview-sort-history-by-site-label = Ordigi laŭ retejo
+firefoxview-sort-open-tabs-by-recency-label = Ordigi laŭ ĵusa aktiveco
+firefoxview-sort-open-tabs-by-order-label = Ordigi laŭ la ordo de langetoj
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Hodiaŭ - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Hieraŭ - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+firefoxview-history-site-localhost = (lokaj dosieroj)
+
+##
+
+firefoxview-show-all-history = Montri la tutan historion
+
+## Message displayed in Firefox View when the user has no history data
+
+firefoxview-history-empty-header = Reiru al retejo, kie vi jam estis
+firefoxview-history-empty-description = La paĝoj vizititaj dum via retumo estos listigitaj ĉi tie.
+firefoxview-history-empty-description-two = Protekto de via privateco estas kerna afero por ni. Tial vi povas regi kion { -brand-short-name } memoras en la <a data-l10n-name="history-settings-url">agordoj de historio</a>.
+# This appears when a user does not have browsing history yet.
+# This is indicating that a users browsers history will be found here when they start browsing.
+firefoxview-history-empty-header-2 = Via retuma historio komenciĝas ĉi tie
+firefoxview-history-empty-description-2 = Dum vi retumas via historio aperos ĉi tie. Regu tion, kio estos memorita en la <a data-l10n-name="history-settings-url">agordoj</a>.
+
+##
+
+# Button text for choosing a browser within the ’Import history from another browser’ banner
+firefoxview-choose-browser-button = Elekti retumilon
+    .title = Elekti retumilon
+
+## Message displayed in Firefox View when the user has chosen to never remember History
+
+firefoxview-dont-remember-history-empty-header-2 = Vi decidas, kion { -brand-short-name } memoros
+firefoxview-dont-remember-history-empty-description-one = Nun { -brand-short-name } ne memoras vian retumon. Por ŝanĝi tion, <a data-l10n-name="history-settings-url-two">modifu viajn agordojn pri historio</a>.
+# “Off the record” is an English phrase journalists use when a conversation will not be recorded or reported on. It’s meant to convey that users’ history activity will not be recorded or shown.
+firefoxview-dont-remember-history-empty-header-3 = Via retuma historio ne estos registrita.
+firefoxview-dont-remember-history-empty-description-2 = { -brand-short-name } ne konservas vian historion nun. Vi povas ŝanĝi tion iam ajn en la <a data-l10n-name="history-settings-url-two">agordoj</a>.
+
+##
+
+# This label is read by screen readers when focusing the close button for the "Import history from another browser" banner in Firefox View
+firefoxview-import-history-close-button =
+    .aria-label = Fermi
+    .title = Fermi
+
+## Text displayed in a dismissable banner to import bookmarks/history from another browser
+
+firefoxview-import-history-header = Importi datumojn el alia retumilo
+firefoxview-import-history-description = Igu { -brand-short-name } via ĉefa retumilo. Importu vian retuman historion, legosignojn kaj pli.
+
+## Message displayed in Firefox View when the user has no recently closed tabs data
+
+firefoxview-recentlyclosed-empty-header = Ĉu langeto tro rapide fermita?
+firefoxview-recentlyclosed-empty-description = Ĉi tie vi trovos la langetojn vi antaŭ nelonge fermis, tiel ke vi povos rapide remalfermi iun ajn el ili.
+firefoxview-recentlyclosed-empty-description-two = Por trovi pli malnovajn langetojn, vidu vian <a data-l10n-name="history-url">retuman historion</a>.
+
+## This message is displayed below the name of another connected device when it doesn't have any open tabs.
+
+firefoxview-syncedtabs-device-notabs = Nenlu langeto malfermita en tiu ĉi aparato
+firefoxview-syncedtabs-connect-another-device = Konekti alian aparaton
+firefoxview-pinned-tabs =
+    .title = Alpinglitaj langetoj
+firefoxview-tabs =
+    .title = Langetoj
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Iri al { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Iri al (legosigno) { $tabTitle }
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Legosigno) { $url }
