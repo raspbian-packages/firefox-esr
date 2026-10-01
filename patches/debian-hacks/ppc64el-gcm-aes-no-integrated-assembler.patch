@@ -1,0 +1,18 @@
+--- a/security/nss/lib/freebl/ppc-gcm-wrap.gyp
++++ b/security/nss/lib/freebl/ppc-gcm-wrap.gyp
+@@ -19,6 +19,15 @@
+         'defines': [
+           'FREEBL_NO_DEPEND',
+         ],
++        'cflags': [
++          '-no-integrated-as',
++        ],
++        'cflags_mozilla': [
++          '-no-integrated-as',
++        ],
++        'asflags_mozilla': [
++          '-no-integrated-as',
++        ],
+       }],
+     ],
+   },
