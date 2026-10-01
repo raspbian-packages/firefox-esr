@@ -19,6 +19,15 @@
         'defines': [
           'FREEBL_NO_DEPEND',
         ],
+        'cflags': [
+          '-no-integrated-as',
+        ],
+        'cflags_mozilla': [
+          '-no-integrated-as',
+        ],
+        'asflags_mozilla': [
+          '-no-integrated-as',
+        ],
       }],
     ],
   },
