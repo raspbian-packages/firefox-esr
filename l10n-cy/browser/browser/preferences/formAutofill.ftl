@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Cyfeiriadau wedi'u cadw
+autofill-manage-addresses-list-header = Cyfeiriadau
+autofill-manage-payment-methods-title = Dulliau talu wedi'u cadw
+autofill-manage-cards-list-header = Cardiau
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Tynnu
+autofill-manage-add-button = Ychwanegu…
+autofill-manage-edit-button = Golygu…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Cadw cyfeiriad?
+address-capture-save-doorhanger-description = Cadw manylion i { -brand-short-name } er mwyn i chi allu llenwi ffurflenni'n gyflym.
+address-capture-update-doorhanger-header = Diweddaru'r cyfeiriad?
+address-capture-edit-doorhanger-header = Golygu cyfeiriad
+address-capture-save-button =
+    .label = Cadw
+    .accessKey = C
+address-capture-not-now-button =
+    .label = Nid nawr
+    .accessKey = N
+address-capture-never-save-addresses-button =
+    .label = Peidio byth cadw cyfeiriadau
+    .accessKey = b
+address-capture-cancel-button =
+    .label = Diddymu
+    .accessKey = D
+address-capture-update-button =
+    .label = Diweddaru
+    .accessKey = i
+address-capture-manage-address-button =
+    .label = Gosodiadau cyfeiriad
+address-capture-learn-more-button =
+    .label = Darllen rhagor
+address-capture-open-menu-button =
+    .aria-label = Agor dewislen
+address-capture-edit-address-link = Golygu cyfeiriad
+    .aria-label = Golygu cyfeiriad
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Ychwanegu cyfeiriad
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Golygu cyfeiriad
+autofill-address-name = Enw
+autofill-address-organization = Corff
+autofill-address-street-address = Cyfeiriad Stryd
+autofill-address-street = Cyfeiriad Stryd
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Cymdogaeth
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Pentref eu Dref
+autofill-address-island = Ynys
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Tref
+autofill-address-city = Tref/Dinas
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Ardal
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Tref Post
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Maestref
+autofill-address-province = Ardal/Talaith
+autofill-address-state = Sir
+autofill-address-county = Sir
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Plwyf
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Rhaglawiaeth
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Ardal
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Adran
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Emirad
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Oblast
+# Postal code field used in India (IN).
+autofill-address-pin = Pinio
+autofill-address-postal-code = Cod Post
+# Postal code field.
+autofill-address-zip = Cod Zip
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eircode
+
+##
+
+autofill-address-country = Gwlad neu Ranbarth
+autofill-address-country-only = Gwlad
+autofill-address-tel = Ffôn
+autofill-address-email = E-bost
+autofill-cancel-button = Diddymu
+autofill-save-button = Cadw
+autofill-country-warning-message-2 = Dim ond ar gyfer rhai gwledydd penodol y mae awtolenwi ffurflenni ar gael ar hyn o bryd
+autofill-country-warning-message = Dim ond ar gyfer rhai gwledydd y mae Awtolanw Ffurflenni ar gael ar hyn o bryd.
+autofill-message-tooltip = Gweld neges am awtolenwi
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Ychwanegu cerdyn
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Golygu cerdyn
+autofill-card-number-2 =
+    .label = Rhif y Cerdyn
+autofill-card-number = Rhif y Cerdyn
+autofill-card-invalid-number = Rhowch rif cerdyn dilys
+autofill-card-name-on-card-2 =
+    .label = Enw ar y Cerdyn
+autofill-card-expires-month-2 =
+    .label = Yn dod i ben mis
+autofill-card-expires-year-2 =
+    .label = Yn dod i ben blwyddyn
+autofill-card-billing-address-2 =
+    .label = Cyfeiriad Archebion
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = Enw ar y Cerdyn
+autofill-card-expires-month = Mis Dod i Ben
+autofill-card-expires-year = Blwyddyn Daw i Ben
+autofill-card-billing-address = Cyfeiriad Archebion
+autofill-card-network = Mathau o Gerdyn
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = cardiau credyd, credyd, cardiau, cardiau debyd, debyd, waled, talu
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Ychwanegu pasbort
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = Golygu pasbort
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = Enw
+autofill-passport-country =
+    .label = Gwlad
+autofill-passport-number =
+    .label = Rhif
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = Dyddiad cyhoeddi
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = Dyddiad dod i ben
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = MM
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = DD
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = BBBB
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = Cadw pasbort?
+passport-capture-save-doorhanger-description = Cadw manylion i { -brand-short-name } er mwyn i chi allu llenwi ffurflenni'n gyflym.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = Cadw
+    .accessKey = C
+passport-capture-not-now-button =
+    .label = Nid nawr
+    .accessKey = n
+passport-capture-never-save-button =
+    .label = Peidio byth cadw pasbort
+    .accessKey = P

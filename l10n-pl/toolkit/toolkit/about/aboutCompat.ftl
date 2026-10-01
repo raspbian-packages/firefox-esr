@@ -1,0 +1,22 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+label-disable = Wyłącz
+label-enable = Włącz
+label-interventions = Interwencje
+# Variables:
+#   $bug (string) - Bug number
+label-more-information = Więcej informacji: zgłoszenie { $bug }
+text-disabled-in-about-config = Ta funkcja została wyłączona za pomocą about:config
+text-no-interventions = Żadne interwencje nie są stosowane
+text-page-title = Zgodność w Internecie
+
+## Do not translate "SmartBlock". For reference, SmartBlock is a feature
+## of Firefox anti-tracking which fixes website breakage caused when
+## trackers are blocked, by acting just enough like those trackers to fix the
+## breakage. SmartBlock also contains special fixes for sites broken by
+## Firefox's Total Cookie Protection feature.
+
+label-smartblock = Poprawki SmartBlock
+text-no-smartblock = Żadne poprawki SmartBlock nie są stosowane

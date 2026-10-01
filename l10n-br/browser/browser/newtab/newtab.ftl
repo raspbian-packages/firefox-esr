@@ -1,0 +1,543 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Ivinell nevez
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = Personelaat ar bejenn-mañ
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = Personelaat
+newtab-customize-panel-label =
+    .label = Personelaat
+newtab-settings-dialog-label =
+    .aria-label = Arventennoù
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = Ivinelloù nevez
+
+## Firefox Home content
+
+home-prefs-firefox-logo-header =
+    .label = Logo { -brand-short-name }
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } renk
+            [two] { $num } renk
+            [few] { $num } renk
+            [many] { $num } a renkoù
+           *[other] { $num } renk
+        }
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = Askouezh ({ $extension })
+home-restore-defaults-srd =
+    .label = Assav an arventennoù dre ziouer
+    .accesskey = A
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (Dre ziouer)
+home-mode-choice-custom-srd =
+    .label = URLoù personelaet…
+home-mode-choice-blank-srd =
+    .label = Pajenn wenn
+home-prefs-shortcuts-header-srd =
+    .label = Berradennoù
+home-prefs-shortcuts-select =
+    .aria-label = Berradennoù
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = Berradennoù paeroniet
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Istorioù paeroniet
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Pajennoù gweladennet
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Sinedoù
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Pellgargadurioù nevez
+home-prefs-recent-activity-header-srd =
+    .label = Oberiantiz a-nevez
+home-prefs-recent-activity-select =
+    .aria-label = Oberiantiz a-nevez
+home-prefs-weather-header-srd =
+    .label = Liv an amzer
+home-prefs-support-firefox-header-srd =
+    .label = Skoazellit { -brand-product-name }
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Klask
+    .title = Klask
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = Klask gant { $engine } pe skrivañ ur chomlecʼh
+newtab-search-box-handoff-text-no-engine = Klask pe skrivañ ur chomlecʼh
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = Klask gant { $engine } pe skrivañ ur chomlecʼh
+    .placeholder = Klask gant { $engine } pe skrivañ ur chomlecʼh
+    .title = Klask gant { $engine } pe skrivañ ur chomlecʼh
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = Klask pe skrivañ ur chomlecʼh
+    .placeholder = Klask pe skrivañ ur chomlecʼh
+    .title = Klask pe skrivañ ur chomlecʼh
+newtab-search-box-text = Klask er web
+newtab-search-box-input =
+    .aria-label = Klask er web
+    .placeholder = Klask er web
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Ouzhpennañ ul lusker klask
+newtab-topsites-add-shortcut-header = Berradenn nevez
+newtab-topsites-edit-shortcut-header = Kemmañ ar verradenn
+newtab-topsites-add-shortcut-label = Ouzhpennañ ur verradenn
+newtab-topsites-add-shortcut-title =
+    .aria-label = Ouzhpennañ ur verradenn
+    .title = Ouzhpennañ ur verradenn
+newtab-topsites-title-label = Titl
+newtab-topsites-title-input =
+    .placeholder = Enankañ un titl
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Skrivit pe pegit un URL
+newtab-topsites-url-validation = URL talvoudek azgoulennet
+newtab-topsites-image-url-label = URL ar skeudenn personelaet
+newtab-topsites-use-custom-image-link = Ober gant ur skeudenn personelaet
+newtab-topsites-use-image-link = Ober gant ur skeudenn personelaet…
+newtab-topsites-image-validation = N'haller ket kargan ar skeudenn. Klaskit gant un URL disheñvel.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Nullañ
+newtab-topsites-delete-history-button = Dilemel eus ar roll istor
+newtab-topsites-save-button = Enrollañ
+newtab-topsites-preview-button = Alberz
+newtab-topsites-add-button = Ouzhpennañ
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Sur oc'h e fell deoc'h dilemel kement eriol eus ar bajenn-mañ diouzh ho roll istor?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Ne c'haller ket dizober ar gwezh-mañ.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = Paeroniet
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Digeriñ al lañser
+    .title = Digeriñ al lañser
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Digeriñ al lañser kemperzhel evit { $title }
+    .title = Digeriñ al lañser
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Embann
+newtab-menu-open-new-window = Digeriñ e-barzh ur prenestr nevez
+newtab-menu-open-new-private-window = Digeriñ e-barzh ur prenestr merdeiñ prevez nevez
+newtab-menu-dismiss = Argas
+newtab-menu-pin = Spilhennañ
+newtab-menu-unpin = Dispilhennañ
+newtab-menu-delete-history = Dilemel eus ar roll istor
+newtab-menu-show-privacy-info = Hor c’hevelerien hag ho puhez prevez
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Stankañ
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = Gouzout hiroc’h
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-our-sponsors-and-your-privacy = Hor c’hevelerien hag ho puhez prevez
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Dilemel ar sined
+# Bookmark is a verb here.
+newtab-menu-bookmark = Sined
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Eilañ ere ar pellgargadur
+newtab-menu-go-to-download-page = Mont da bajenn ar pellgargadur
+newtab-menu-remove-download = Dilemel diwar ar roll
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Diskouez e Finder
+       *[other] Digeriñ an teuliad a endalc'h ar restr
+    }
+newtab-menu-open-file = Digeriñ ar restr
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Gweladennet
+newtab-label-bookmarked = Lakaet er sinedoù
+newtab-label-removed-bookmark = Sined dilamet
+newtab-label-recommended = Brudet
+newtab-label-saved = Enrollet e { -pocket-brand-name }
+newtab-label-download = Pellgarget
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · paeroniet
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = Paeroniet gant { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } munutenn
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = Paeroniet
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Evezhiadennoù a-fet buhez prevez
+
+## Section Headers.
+
+newtab-section-header-topsites = Lec'hiennoù pennañ
+newtab-section-header-recent-activity = Oberiantiz a-nevez
+newtab-section-header-stories = Boued spered
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Krogit da verdeiñ hag e tiskouezimp deoc’h pennadoù, videoioù ha pajennoù all gweladennet pe lakaet er sinedoù nevez ’zo.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = Echuet eo ganeoc'h!
+newtab-discovery-empty-section-topstories-content = Distroit amañ diwezhatoc'h evit lenn pennadoù all.
+newtab-discovery-empty-section-topstories-try-again-button = Klaskit en-dro
+newtab-discovery-empty-section-topstories-loading = O kargañ…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Chaous! N'eo ket bet karget ar gevrenn en he fezh.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Chaous, un dra bennak a zo a-dreuz en ur gargañ an endalc'had.
+newtab-error-fallback-refresh-link = Adkargit ar bajenn evit klask en-dro.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = Lec'hiennoù bet enrollet pe gweladennet ganeoc'h
+    .label = Berradennoù
+newtab-custom-shortcuts-nova =
+    .label = Berradennoù
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } renk
+            [two] { $num } renk
+            [few] { $num } renk
+            [many] { $num } a renkoù
+           *[other] { $num } renk
+        }
+newtab-custom-settings = Merañ muioc'h a arventennoù
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = Drekleurioù
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = Kas ur skeudenn
+newtab-wallpaper-custom-color = Dibab ul liv
+newtab-wallpaper-toggle-title =
+    .label = Drekleurioù
+newtab-wallpaper-light-red-panda = Panda ruz
+newtab-wallpaper-light-mountain = Menez gwenn
+newtab-wallpaper-light-sky = Oabl gant koumoul limestra ha roz
+newtab-wallpaper-light-color = Furmoù glas, roz ha melen
+newtab-wallpaper-light-landscape = Menezioù gant ur vrumenn c’hlas
+newtab-wallpaper-light-beach = Traezhenn gant ur balmezenn
+newtab-wallpaper-dark-aurora = Tarzh-gouloù
+newtab-wallpaper-dark-color = Furmoù ruz ha glas
+newtab-wallpaper-dark-panda = Panda ruz kuzhet er c’hoad
+newtab-wallpaper-dark-mountain = Menezioù
+
+## Solid Colors
+
+newtab-wallpaper-blue = Glas
+newtab-wallpaper-light-blue = Glas sklaer
+newtab-wallpaper-light-purple = Limestra sklaer
+newtab-wallpaper-light-green = Gwer sklaer
+newtab-wallpaper-green = Gwer
+newtab-wallpaper-yellow = Melen
+newtab-wallpaper-orange = Orañjez
+newtab-wallpaper-pink = Roz
+newtab-wallpaper-light-pink = Roz sklaer
+newtab-wallpaper-red = Ruz
+newtab-wallpaper-dark-blue = Glas teñval
+newtab-wallpaper-dark-purple = Limestra teñval
+newtab-wallpaper-dark-green = Gwer teñval
+newtab-wallpaper-brown = Gell
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = Difetis
+newtab-wallpaper-abstract-green = Furmoù gwer
+newtab-wallpaper-abstract-blue = Furmoù glas
+newtab-wallpaper-abstract-purple = Furmoù limestra
+newtab-wallpaper-abstract-orange = Furmoù orañjez
+newtab-wallpaper-abstract-blue-purple = Furmoù limestra hag orañjez
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = Fotoioù
+newtab-wallpaper-beach-at-sunrise = Traezhenn e-pad ar sav-heol
+newtab-wallpaper-beach-at-sunset = Traezhenn e-pad ar c’huzh-heol
+newtab-wallpaper-storm-sky = Oabl arnevek
+newtab-wallpaper-sky-with-pink-clouds = Oabl gant koumoul roz
+newtab-wallpaper-red-panda-yawns-in-a-tree = Panda ruz o vazailhat en ur wezenn
+newtab-wallpaper-white-mountains = Menezioù gwenn
+newtab-wallpaper-starry-canyon = Bolz an neñv steredennet glas
+newtab-wallpaper-sand-dunes = Tevennoù traezh gwenn
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Foto gant <a data-l10n-name="name-link">{ $author_string }</a> war <a data-l10n-name="webpage-link">{ $webpage_string }</a>
+newtab-wallpaper-feature-highlight-button = Komprenet am eus
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = Serriñ an diflugell
+    .title = Argas
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## Celestial
+
+newtab-wallpaper-celestial-lunar-eclipse = Fallaenn loar
+newtab-wallpaper-celestial-starry-sky = Neñv steredennet
+newtab-wallpaper-celestial-river = Skeudenn-loarell ur stêr
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ Paeroniet
+newtab-weather-menu-change-location = Cheñch al lec’h
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = Klask ul lec’h
+    .placeholder = Klask ul lec’h
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = Eeun
+newtab-weather-menu-weather-display-option-detailed = Munudoù
+newtab-weather-menu-temperature-units = Unanenn wrezverk
+newtab-weather-menu-temperature-option-fahrenheit = Fahrenheit
+newtab-weather-menu-temperature-option-celsius = Celsius
+newtab-weather-menu-change-temperature-units-fahrenheit = Lakaat e Fahrenheit
+newtab-weather-menu-change-temperature-units-celsius = Lakaat e Celsius
+newtab-weather-menu-learn-more = Gouzout hiroc’h
+
+## Topic Labels
+
+newtab-topic-label-education = Deskadurezh
+newtab-topic-label-arts = Dudi
+newtab-topic-label-food = Boued
+newtab-topic-label-health = Yec’hed
+newtab-topic-label-hobbies = C’hoarioù video
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Arc’hant
+newtab-topic-label-society-parenting = Desaverezh/bugaleaj
+newtab-topic-label-government = Politikerezh
+newtab-topic-label-education-science = Skiantoù
+newtab-topic-label-sports = Sportoù
+newtab-topic-label-tech = Teknologiezh
+newtab-topic-label-travel = Beajiñ
+newtab-topic-label-home = Ti ha liorzherezh
+
+## Topic Selection Modal
+
+newtab-topic-selection-save-button = Enrollañ
+newtab-topic-selection-cancel-button = Nullañ
+newtab-topic-selection-button-maybe-later = Diwezhatoc’h marteze
+newtab-topic-selection-button-update-interests = Hizivait hoc’h interestoù
+newtab-topic-selection-button-pick-interests = Dibabit hoc’h interestoù
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Heuliañ
+newtab-section-following-button = O heuliañ
+newtab-section-unfollow-button = Na heuliañ ken
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Stankañ
+newtab-section-blocked-button = Stanket
+
+## Confirmation modal for blocking a section
+
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = Stankañ { $topic }
+
+## Strings for custom wallpaper highlight
+
+newtab-section-mangage-topics-followed-topics = O heuliañ
+newtab-section-mangage-topics-blocked-topics = Stanket
+newtab-custom-wallpaper-cta = Esaeañ
+
+## Strings for reporting issues with ads and content
+
+newtab-report-cancel = Nullañ
+newtab-report-submit = Kas
+
+## Strings for task / to-do list productivity widget
+
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = Nevez
+newtab-widget-lists-menu-create = Krouiñ ur roll nevez
+newtab-widget-lists-input-menu-open-link = Digeriñ an ere
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = New York
+newtab-clock-city-us-los-angeles = Los Angeles
+newtab-clock-city-us-san-francisco = San Francisco
+newtab-clock-city-us-san-diego = San Diego
+newtab-clock-city-us-dallas = Dallas
+newtab-clock-city-us-houston = Houston
+newtab-clock-city-us-philadelphia = Philadelphia
+newtab-clock-city-us-washington-dc = Washington D.C.
+newtab-clock-city-us-boston = Boston
+newtab-clock-city-us-miami = Miami
+newtab-clock-city-us-seattle = Seattle
+newtab-clock-city-us-denver = Denver
+newtab-clock-city-us-honolulu = Honolulu
+newtab-clock-city-us-anchorage = Anchorage
+newtab-clock-city-de-berlin = Berlin
+newtab-clock-city-de-munich = München
+newtab-clock-city-de-frankfurt = Frankfurt am Main
+newtab-clock-city-de-hamburg = Hamburg
+newtab-clock-city-fr-paris = Pariz
+newtab-clock-city-fr-lyon = Lyon
+newtab-clock-city-fr-marseille = Marsilha
+newtab-clock-city-fr-toulouse = Toloza
+newtab-clock-city-in-kolkata = Kolkata
+newtab-clock-city-in-mumbai = Mumbai
+newtab-clock-city-in-delhi = Delhi
+newtab-clock-city-in-bangalore = Bengaluru
+newtab-clock-city-cn-shanghai = Shanghai
+newtab-clock-city-cn-beijing = Beijing
+newtab-clock-city-cn-shenzhen = Shenzhen
+newtab-clock-city-br-sao-paulo = São Paulo
+newtab-clock-city-br-rio-de-janeiro = Rio de Janeiro
+newtab-clock-city-br-brasilia = Brasília
+newtab-clock-city-id-jakarta = Jakarta
+newtab-clock-city-id-surabaya = Surabaya
+newtab-clock-city-ca-toronto = Toronto
+newtab-clock-city-ca-montreal = Montreal
+newtab-clock-city-ca-vancouver = Vancouver
+newtab-clock-city-au-sydney = Sydney
+newtab-clock-city-au-perth = Perth
+newtab-clock-city-au-adelaide = Adelaide
+newtab-clock-city-pl-warsaw = Varsovia
+newtab-clock-city-pl-krakow = Kraków
+newtab-clock-city-jp-tokyo = Tokyo
+newtab-clock-city-jp-osaka = Osaka
+newtab-clock-city-mx-mexico-city = Kêr-Vec'hiko
+newtab-clock-city-mx-guadalajara = Guadalajara
+newtab-clock-city-it-rome = Roma
+newtab-clock-city-it-milan = Milano
+newtab-clock-city-ru-moscow = Moskov
+newtab-clock-city-ru-saint-petersburg = Sant-Petersbourg
+newtab-clock-city-gb-london = Londrez
+newtab-clock-city-gb-birmingham = Birmingham
+newtab-clock-city-es-madrid = Madrid
+newtab-clock-city-es-barcelona = Barcelona
+newtab-clock-city-nl-amsterdam = Amsterdam
+newtab-clock-city-ch-zurich = Zürich
+newtab-clock-city-at-vienna = Vienna
+newtab-clock-city-cz-prague = Praha
+newtab-clock-city-ar-buenos-aires = Buenos Aires
+newtab-clock-city-gr-athens = Aten
+newtab-clock-city-hu-budapest = Budapest
+newtab-clock-city-be-brussels = Brusel
+newtab-clock-city-ua-kyiv = Kyyiv
+newtab-clock-city-fi-helsinki = Helsinki
+newtab-clock-city-co-bogota = Bogotá
+newtab-clock-city-ph-manila = Manila
+newtab-clock-city-tr-istanbul = Istanbul
+newtab-clock-city-my-kuala-lumpur = Kuala Lumpur
+newtab-clock-city-eg-cairo = Kaero
+newtab-clock-city-se-stockholm = Stockholm
+newtab-clock-city-ro-bucharest = Bukarest
+newtab-clock-city-th-bangkok = Bangkok
+newtab-clock-city-ng-lagos = Lagos
+newtab-clock-city-tw-taipei = Taipei
+newtab-clock-city-za-johannesburg = Johannesburg
+newtab-clock-city-cl-santiago = Santiago
+newtab-clock-city-pk-karachi = Karachi
+newtab-clock-city-bg-sofia = Sofia
+newtab-clock-city-sg-singapore = Singapour
+newtab-clock-city-hk-hong-kong = Hong Kong
+newtab-clock-city-sa-riyadh = Riyadh
+newtab-clock-city-dk-copenhagen = Kopenhagen
+newtab-clock-city-pe-lima = Lima
+newtab-clock-city-ke-nairobi = Nairobi
+newtab-clock-city-nz-auckland = Auckland
+newtab-clock-city-kr-seoul = Seoul
+newtab-clock-city-lt-vilnius = Vilnius
+newtab-clock-city-ie-dublin = Dulenn
+newtab-clock-city-ae-dubai = Dubai
+newtab-clock-city-lv-riga = Riga
+newtab-clock-city-pt-lisbon = Lisboa
+newtab-clock-city-ir-tehran = Tehran
+newtab-clock-city-bd-dhaka = Dhaka
+newtab-clock-city-ec-guayaquil = Guayaquil
+newtab-clock-city-vn-ho-chi-minh-city = Kêr Hô-Chi-Minh
+newtab-clock-city-np-kathmandu = Kathmandu
+newtab-clock-city-mm-yangon = Yangon

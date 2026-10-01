@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+profiledowngrade-window2 =
+    .style = min-width: 490px;
+    .title = Έχετε εκκινήσει μια παλαιότερη έκδοση του { -brand-product-name }
+profiledowngrade-window-create =
+    .label = Δημιουργία νέου προφίλ
+profiledowngrade-sync2 = Η χρήση μιας παλαιότερης έκδοσης του { -brand-product-name } μπορεί να καταστρέψει τους σελιδοδείκτες και το ιστορικό περιήγησης που έχουν ήδη αποθηκευτεί σε ένα υπάρχον προφίλ του { -brand-product-name }. Για να προστατέψετε τις πληροφορίες σας, δημιουργήστε ένα νέο προφίλ για αυτήν την εγκατάσταση του { -brand-short-name }. Μπορείτε πάντα να συνδεθείτε με έναν λογαριασμό για να συγχρονίσετε τους σελιδοδείκτες και το ιστορικό περιήγησης μεταξύ των προφίλ.
+profiledowngrade-nosync = Η χρήση μιας παλαιότερης έκδοσης του { -brand-product-name } μπορεί να καταστρέψει τους σελιδοδείκτες και το ιστορικό περιήγησης που έχουν ήδη αποθηκευτεί σε ένα υπάρχον προφίλ του { -brand-product-name }. Για να προστατέψετε τις πληροφορίες σας, δημιουργήστε ένα νέο προφίλ για αυτήν την εγκατάσταση του { -brand-short-name }.
+profiledowngrade-quit =
+    .label =
+        { PLATFORM() ->
+            [windows] Έξοδος
+           *[other] Τερματισμός
+        }

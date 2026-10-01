@@ -1,0 +1,2210 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+global-privacy-control-description =
+    .label = Уведомяване на сайтовете да не продават или споделят мои данни
+    .accesskey = с
+non-technical-privacy-group =
+    .label = Предпочитания за поверителност към сайтовете
+do-not-track-removal3 =
+    .message = Вече не поддържаме функцията „Без проследяване“.
+non-technical-privacy-heading =
+    .label = Допълнителни защити
+preferences-privacy-relay-available =
+    .description = Скрива истинския ви имейл адрес, за да предпази входящата ви поща от спам.
+    .label = Предлагане на имейл маски от { -relay-brand-name }
+# Do not translate.
+# "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
+# included to facilitate power-user search of the about:preferences page.
+global-privacy-control-search = Global Privacy Control (GPC)
+settings-page-title = Настройки
+category-nav-heading =
+    .heading = Настройки
+# This is used to determine the width of the search field in about:preferences,
+# in order to make the entire placeholder string visible
+#
+# Please keep the placeholder string short to avoid truncation.
+#
+# Notice: The value of the `.style` attribute is a CSS string, and the `width`
+# is the name of the CSS property. It is intended only to adjust the element's width.
+# Do not translate.
+search-input-box2 =
+    .placeholder = Търсене в настройките
+    .style = width: 15.4em
+managed-notice = Вашият браузър се управлява от вашата организация.
+managed-notice-info-icon =
+    .alt = Информация
+managed-notice-nav =
+    .label = Вашият браузър се управлява от вашата организация.
+category-list =
+    .aria-label = Категории
+pane-general-title = Основни
+pane-home-title = Начална страница
+pane-home-startup-title2 = Начало и стартиране
+    .title = Начало и стартиране
+pane-search-title2 = Търсене
+    .title = Търсене
+pane-privacy-title3 = Поверителност и защита
+    .title = Поверителност и защита
+pane-privacy-section =
+    .heading = Поверителност и защита
+pane-sync-title3 = Синхронизиране
+pane-ai-controls-title2 = AI контроли
+    .title = AI контроли
+pane-about-firefox-title = Относно { -brand-short-name }
+    .title = { pane-about-firefox-title }
+pane-appearance-title = Външен вид
+    .title = { pane-appearance-title }
+pane-downloads-title2 = Изтегляния
+    .title = Изтегляния
+pane-downloads3 =
+    .heading = Изтегляния
+pane-accessibility-title = Достъпност
+    .title = { pane-accessibility-title }
+pane-languages-title2 = Езици
+    .title = Езици
+preferences-languages-header3 =
+    .heading = Езици
+settings-pane-labs-title2 = { -firefoxlabs-brand-name }
+    .title = { -firefoxlabs-brand-name }
+settings-pane-labs-header =
+    .heading = { -firefoxlabs-brand-name }
+pane-experimental-description4 = Опитайте нашите експериментални функции! Те са в процес на разработка, което може да повлияе на работата на { -brand-short-name }. Получаваме данни за използването от ваша страна на тези функции само ако сте включили <a data-l10n-name="data-collection">технически данни и данни за взаимодействие</a>.
+pane-experimental-reset =
+    .label = Възстановяване на стандартните настройки
+    .accesskey = С
+help-button-label2 = Поддръжка на { -brand-short-name }
+    .title = Поддръжка на { -brand-short-name }
+addons-button-label2 = Разширения и теми
+    .title = Разширения и теми
+focus-search =
+    .key = f
+close-button =
+    .aria-label = Затваряне
+do-not-track-removal2 =
+    .label = Вече не поддържаме сигнала „Без проследяване“.
+applications-setting-new-file-types =
+    .label = Какво да направи { -brand-short-name } с другите файлове?
+
+## Browser Restart Dialog
+
+feature-enable-requires-restart = Приложението { -brand-short-name } трябва да бъде рестартирано, за да бъде включена тази възможност.
+feature-disable-requires-restart = Приложението { -brand-short-name } трябва да бъде рестартирано, за да бъде изключена тази възможност.
+should-restart-title = Рестартиране на { -brand-short-name }
+should-restart-ok = Рестартиране на { -brand-short-name }
+cancel-no-restart-button = Отказ
+restart-later = Рестартиране по-късно
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
+# This string is shown to notify the user that the password manager setting
+# is being controlled by an extension
+extension-controlling-password-saving = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ управлява тази настройка.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlling-web-notifications = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ управлява тази настройка.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlling-privacy-containers = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ има изискване за изолирани раздели.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlling-websites-content-blocking-all-trackers = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ управлява тази настройка.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlling-proxy-config = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ управлява как { -brand-short-name } се свързва с интернет.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Отворете <img data-l10n-name="addons-icon"/> Добавки в менюто <img data-l10n-name="menu-icon"/>, за да включите разширението.
+extension-controlled-enable-2 = За да активирате отново това разширение, посетете <a data-l10n-name="addons-link">Разширения и теми</a>.
+# This string is shown to notify the user that their home page or new tab preferences
+# are being controlled by an extension.
+extension-controlling-homepage = { $name } управлява някои от настройките на началната ви страница.
+
+## Preferences UI Search Results
+
+search-results-header = Резултати
+# `<span data-l10n-name="query"></span>` will be replaced by the search term.
+search-results-empty-message2 = Съжаляваме! В настройките няма резултати за „<span data-l10n-name="query"></span>“.
+search-results-help-link = Имате нужда от помощ? Посетете <a data-l10n-name="url">поддръжката за { -brand-short-name }</a>
+
+## General Section
+
+always-check-default =
+    .label = Винаги да се проверява дали { -brand-short-name } е браузър по подразбиране
+    .accesskey = В
+startup-restore-windows-and-tabs =
+    .label = Отваряне на последните прозорци и раздели
+    .accesskey = п
+startup-windows-launch-on-login-profile-disabled =
+    .message = Включете настройката като отметнете „{ profile-manager-use-selected.label }“ в прозореца „Избор на потребителски профил“.
+windows-launch-on-login =
+    .label = Автоматично отваряне на { -brand-short-name } при стартиране на компютъра
+    .accesskey = А
+windows-launch-on-login-disabled = Тази настройка е изключена в Windows. За да я промените, посетете <a data-l10n-name="startup-link">Приложения > Стартиране</a> в Настройки на Windows.
+# Option to also opens a new tab, in addition to restoring previous tabs and windows
+windows-launch-on-login-open-new-tab =
+    .label = Отваря и нов раздел
+    .accesskey = н
+disable-extension =
+    .label = Изключване на разширението
+preferences-data-migration-group =
+    .description = Пренесете отметките, паролите, историята, разширенията и данните за автоматично попълване от друг браузър.
+    .label = Внасяне на данни от друг браузър
+preferences-data-migration-button =
+    .label = Внасяне на данни
+    .accesskey = н
+preferences-profiles-group-header =
+    .heading = Профили
+preferences-profiles-subpane-description =
+    .description = Всеки профил има отделни данни и настройки за сърфиране, включително история, пароли и други.
+preferences-profiles-section-header =
+    .description = Всеки профил има отделни данни и настройки за сърфиране, включително история, пароли и други.
+    .label = Профили
+preferences-manage-profiles-button =
+    .label = Управление на профилите
+preferences-profiles-settings-button =
+    .label = Настройки
+# This string labels the entire copy profile section in the profiles sub-pane.
+preferences-copy-profile-header =
+    .description = Новият профил ще копира вашите настройки, добавки, история и запазени данни, като отметки и пароли, но не и информацията за вашия акаунт или синхронизиране.
+    .label = Копиране на съществуващ профил
+# This string sits next to the copy controls, both the copy-profile-select
+# drop-down and the copy-profile-button, so that the user understands they
+# need to first pick a profile to copy, and then click the copy button.
+preferences-profile-to-copy =
+    .label = Профил за копиране
+# This string is a placeholder that will be shown in a drop-down list of
+# profiles. The user will select a profile, then click the copy button
+# to make a copy of that profile.
+preferences-copy-profile-select = Изберете профил
+preferences-copy-profile-button = Копиране
+tabs-browsing-section =
+    .heading = Раздели и сърфиране
+pane-tabs-browsing-title2 = Раздели и сърфиране
+    .title = Раздели и сърфиране
+tabs-group-header2 =
+    .label = Раздели
+tabs-opening-heading =
+    .label = Отваряне
+tabs-interaction-heading =
+    .label = Взаимодействия
+tabs-containers-heading =
+    .label = Контейнери
+tabs-closing-heading =
+    .label = Затваряне
+ctrl-tab-recently-used-order =
+    .label = Ctrl+Tab обикаля разделите в реда на използване
+    .accesskey = б
+open-new-link-as-tabs =
+    .label = Отваряне на препратките в раздели вместо в нови прозорци
+    .accesskey = р
+open-external-link-next-to-active-tab =
+    .label = Отваряне на връзки от приложения до вашия активен раздел
+ask-on-close-multiple-tabs =
+    .label = Потвърждаване при затваряне на няколко раздела
+    .accesskey = з
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Потвърждаване при изход с { $quitKey }
+    .accesskey = и
+warn-on-open-many-tabs =
+    .label = Предупреждаване, ако отваряне на няколко раздела може да забави { -brand-short-name }
+    .accesskey = а
+switch-to-new-tabs-2 =
+    .label = При отваряне на препратка или медия в нов раздел, да се превключва към него
+    .accesskey = П
+show-tabs-in-taskbar =
+    .label = Преглед на разделите в лентата със задачите на Windows
+    .accesskey = с
+browser-containers-enabled-2 =
+    .label = Използване на изолирани раздели
+    .accesskey = И
+browser-containers-learn-more = Научете повече
+browser-containers-settings-2 =
+    .label = Управление на настройките
+    .accesskey = У
+containers-disable-alert-title = Затваряне на всички изолирани раздели?
+startup-group =
+    .label = Стартиране
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
+containers-disable-alert-desc =
+    { $tabCount ->
+        [one] Ако сега изключите Изолирани раздели { $tabCount } изолиран раздел ще бъде затворен. Желаете ли да изключите изолираните раздели?
+       *[other] Ако сега изключите Изолирани раздели { $tabCount } изолирани раздела ще бъде затворени. Желаете ли да изключите изолираните раздели?
+    }
+containers-disable-alert-ok-button =
+    { $tabCount ->
+        [one] Затваряне на { $tabCount } изолиран раздел
+       *[other] Затваряне на { $tabCount } изолирани раздела
+    }
+
+##
+
+containers-disable-alert-cancel-button = Оставяне включено
+containers-remove-alert-title = Премахване на изолатора?
+# Variables:
+#   $count (number) - Number of tabs that will be closed.
+containers-remove-alert-msg =
+    { $count ->
+        [one] Ако сега премахнете този изолатор, { $count } раздел ще бъде затворен. Наистина ли желаете да премахнете този изолатор?
+       *[other] Ако сега премахнете този изолатор, { $count } негови раздела ще бъдат затворени. Наистина ли желаете да премахнете този изолатор?
+    }
+containers-remove-ok-button = Премахване
+containers-remove-cancel-button = Запазване
+settings-tabs-show-image-in-preview =
+    .label = Показване на визуализация, когато задържите курсора на мишката върху раздел
+    .accessKey = х
+settings-tabs-drag-to-create-tab-groups =
+    .label = Плъзнете разделите заедно, за да създадете групи от раздели
+browser-layout-header2 =
+    .label = Оформление на браузъра
+browser-layout-horizontal-tabs2 =
+    .description = Раздели отгоре
+    .label = Хоризонтални раздели
+    .title = Раздели отгоре
+browser-layout-vertical-tabs2 =
+    .description = Раздели в страничната лента
+    .label = Вертикални раздели
+    .title = Раздели в страничната лента
+browser-layout-show-sidebar2 =
+    .description = Бърз достъп до отметки, раздели от вашия телефон, AI чат ботове и други екстри, без да напускате основния изглед на браузъра.
+    .label = Странична лента
+page-navigation-group =
+    .label = Навигация в страницата
+
+## General Section - Language & Appearance
+
+language-and-appearance-header = Език и изглед
+appearance-group2 =
+    .description = Някои уебсайтове могат да променят цветовете си, за да отговорят на вашите предпочитания. Изберете вашата цветова схема.
+    .label = Външен вид на страниците
+preferences-web-appearance-choice-auto3 =
+    .label = От системата
+    .title = Автоматично променяне на фона и съдържанието на уебсайтовете въз основа на системните настройки и темата { -brand-short-name }.
+preferences-web-appearance-choice-light2 =
+    .label = Светла
+    .title = Да се ползва светъл външен вид за фон и съдържание на страниците.
+preferences-web-appearance-choice-dark2 =
+    .label = Тъмна
+    .title = Да се ползва тъмен външен вид за фон и съдържание на страниците.
+web-appearance-group =
+    .aria-label = Външен вид на страниците
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning3 =
+    .message = Настройките ви за контрол на контраста имат предимство пред външния вид на сайта.
+preferences-web-appearance-link =
+    .label = Управлявайте темите на { -brand-short-name } в Управление на добавки
+preferences-contrast-control-group =
+    .description = Уебсайтовете използват разнообразни цветове за преден план и фон. За постоянен контраст можете да използвате едни и същи цветове във всички уебсайтове.
+    .label = Контраст на уебсайта
+preferences-contrast-control-radio-group =
+    .label = Замяна на цветовете
+preferences-contrast-control-use-platform-settings =
+    .label = Автоматично (използване на системните настройки)
+    .accesskey = А
+preferences-contrast-control-off =
+    .label = Изключено
+    .accesskey = И
+preferences-contrast-control-custom =
+    .label = По избор
+    .accesskey = з
+preferences-colors-manage-button2 =
+    .label = Управление на цветове
+    .accesskey = ц
+preferences-colors-manage-button =
+    .label = Управление на цветове…
+    .accesskey = ц
+preferences-fonts-header2 =
+    .label = Шрифтове
+preferences-default-zoom-label =
+    .label = Мащабиране по подразбиране
+    .accesskey = м
+# Variables:
+#   $percentage (number) - Zoom percentage value
+preferences-default-zoom-value =
+    .label = { $percentage }%
+preferences-zoom-text-only =
+    .label = Само на текста
+    .accesskey = т
+preferences-text-zoom-override-warning2 =
+    .message = Ако „Мащабиране само на текста“ е включено и мащабирането по подразбиране не е 100%, някои сайтове може да не показват съдържанието правилно.
+language-header = Език
+choose-language-description = Избор на език при показване на многоезични страници
+website-language-heading =
+    .description = Някои уеб страници могат да се показват на няколко езика. Изберете езици в предпочитания от вас ред.
+    .label = Език на уебсайта
+website-preferred-language =
+    .label = Предпочитани езици
+website-add-language =
+    .label = Добавяне на език
+website-add-language-button =
+    .aria-label = Добавяне на избрания език
+    .title = Добавяне на избрания език
+# The pattern used to generate strings presented to the user in the
+# website languages selection list.
+#
+# Example:
+#   Icelandic
+#   Spanish (Chile)
+#
+# Variables:
+#   $locale (String) - A name of the locale (for example: "Icelandic", "Spanish (Chile)")
+website-remove-language-button =
+    .aria-label = Премахване на { $locale }
+    .title = Премахване на { $locale }
+choose-button =
+    .label = Избиране…
+    .accesskey = И
+choose-browser-language-description = Изберете езиците, на които да бъдат показвани менютата, съобщенията и известията от { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Допълнителни езици…
+    .accesskey = з
+confirm-browser-language-change-description = Рестартирайте { -brand-short-name }, за да бъдат приложени промените
+confirm-browser-language-change-button = Прилагане и рестартиране
+browser-language-heading =
+    .description = Изберете езика, който ще се използва за показване на менюта, съобщения и известия от { -brand-short-name }.
+    .label = Език на браузъра
+browser-language-preferred-label =
+    .label = Предпочитан език
+browser-language-fallback-label =
+    .description = Използва се, когато преводът на предпочитания език е непълен.
+    .label = Резервен език
+browser-language-install-error =
+    .message = { -brand-short-name } в момента не може да обнови езиците. Проверете връзката с интернет или опитайте отново.
+fx-translate-web-pages = { -translations-brand-name }
+translate-exceptions =
+    .label = Изключения…
+    .accesskey = з
+settings-translations-header =
+    .aria-label = Преводи
+    .description = Превеждане на страници или избран текст. За да защитим поверителността ви, преводите остават на вашето устройство.
+    .label = Преводи
+settings-translations-offer-to-translate-label =
+    .label = Предлагане на превод на цялата страница
+settings-translations-more-settings-button =
+    .description = Задайте предпочитания за езици, уебсайтове и офлайн превод.
+    .label = Още настройки за превод
+settings-translations-subpage-header =
+    .heading = Още настройки за превод
+settings-translations-subpage-speed-up-translation-header =
+    .description = Сваляне на езикови пакети за по-бърз превод и работа офлайн.
+    .label = Ускорен превод
+settings-translations-subpage-automatic-translation-header =
+    .label = Автоматичен превод
+settings-translations-subpage-always-translate-header =
+    .label = Тези езици винаги се превеждат
+settings-translations-subpage-never-translate-header =
+    .label = Никога да не се превеждат тези езици
+settings-translations-subpage-never-translate-sites-header =
+    .label = Тези сайтове никога да не бъдат превеждани
+# The icon placeholders show the translations button and the settings gear in the urlbar panel.
+settings-translations-subpage-never-translate-sites-description = За да добавите сайт, отворете панела за преводи <img data-l10n-name="translations-icon"/>, изберете <img data-l10n-name="settings-icon"/> настройки за превод, след което изберете „Тези сайтове никога да не бъдат превеждани“
+settings-translations-subpage-language-select-option =
+    .label = Добавяне на език
+settings-translations-subpage-language-add-button =
+    .aria-label = Добавяне на език
+    .title = Добавяне на език
+settings-translations-subpage-download-languages-header =
+    .label = Изтегляне на езици
+settings-translations-subpage-download-languages-select-option =
+    .label = Изберете език
+settings-translations-subpage-download-languages-button =
+    .aria-label = Изтегляне на език
+    .title = Изтегляне на език
+# Variables:
+#   $language (string) - Localized name of the language to download.
+#   $size (string) - Download size in megabytes, formatted for the locale.
+settings-translations-subpage-download-language-option = { $language } ({ $size } MB)
+    .label = { $language } ({ $size } MB)
+settings-translations-subpage-no-languages-downloaded =
+    .label = Няма изтеглени езици
+settings-translations-subpage-no-languages-added =
+    .label = Няма добавени езици
+settings-translations-subpage-download-progress = Изтеглянето се извършва…
+# Variables:
+#   $language (string) - The localized display name of the language.
+#   $size (string) - The download size of the language in megabytes.
+settings-translations-subpage-download-error = Не може да се изтегли { $language } ({ $size } MB)
+settings-translations-subpage-download-retry-button =
+    .label = Опитайте отново
+# Variables:
+#   $language (string) - The localized display name of the language.
+#   $size (string) - The download size of the language in megabytes.
+settings-translations-subpage-download-delete-confirm = Изтриване на { $language } ({ $size } MB)?
+settings-translations-subpage-download-delete-button =
+    .label = Изтриване
+settings-translations-subpage-download-cancel-button =
+    .label = Отмяна
+settings-translations-subpage-no-sites-added =
+    .label = Няма добавени сайтове
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Използване настройките на вашата операционна система за „{ $localeName }“, за форматирането на датата, часовете, числата и други величини.
+settings-spellcheck-header =
+    .label = Проверка на правописа
+check-user-spelling =
+    .label = Проверяване на правописа при въвеждане
+    .accesskey = в
+spellcheck-download-dictionaries =
+    .label = Изтегляне на речници
+spellcheck-promo =
+    .heading = Как да използвате проверка на правописа
+    .message = Кликнете с десен бутон върху текстово поле, за да пуснете/спрете правописната проверка или да смените езика. Функцията не се поддържа от всички полета.
+
+## General Section - Files and Applications
+
+files-and-applications-title = Файлове и приложения
+download-save-files-header =
+    .label = Запазване на файловете в
+download-save-where-3 =
+    .aria-label = Запазване на файловете в
+download-always-ask-where2 =
+    .label = Питане къде да бъдат запазвани файловете преди изтегляне
+    .accesskey = П
+download-private-browsing-delete2 =
+    .label = Изтриване на изтегляния на поверителен прозорец при затваряне
+    .accesskey = з
+applications-header = Приложения
+applications-description = Изберете как { -brand-short-name } управлява изтеглените файлове или приложенията, които използвате докато разглеждате.
+applications-setting2 =
+    .description = Изберете как { -brand-short-name } да обработва изтеглените файлове и съдържание.
+    .label = Файлове и приложения
+applications-filter =
+    .placeholder = Търсене на видове файлове и приложения
+applications-type-column =
+    .label = Вид на съдържанието
+    .accesskey = В
+applications-type-heading = Вид на съдържанието
+applications-action-column =
+    .label = Действие
+    .accesskey = Д
+applications-action-heading = Действие
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = файл { $extension }
+applications-action-save =
+    .label = Запазване на файла
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = Използване на { $app-name }
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = Използване на { $app-name } (по подразбиране)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Използване на приложението по подразбиране в macOS
+            [windows] Използване на приложението по подразбиране в Windows
+           *[other] Използване на системното приложение по подразбиране
+        }
+applications-use-other =
+    .label = Използване на друго…
+applications-select-helper = Избиране на помощно приложение
+applications-manage-app =
+    .label = Подробности за приложение…
+applications-always-ask =
+    .label = Винаги да пита
+# Variables:
+#   $type-description (string) - Description of the type (e.g "Portable Document Format")
+#   $type (string) - The MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (string) - File extension (e.g .TXT)
+#   $type (string) - The MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+applications-open-inapp =
+    .label = Отваряне във { -brand-short-name }
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+## Firefox updates
+
+applications-handle-new-file-types-description = Какво да направи { -brand-short-name } с другите файлове?
+applications-save-for-new-types =
+    .label = Запазване на файлове
+    .accesskey = з
+applications-save-for-new-types2 =
+    .label = Автоматично запазване на файловете
+    .accesskey = А
+applications-ask-before-handling =
+    .label = Питане за отваряне или за запазване на файловете
+    .accesskey = П
+applications-ask-before-handling2 =
+    .label = Питане за отваряне или запазване на файлове
+    .accesskey = з
+drm-group =
+    .label = Съдържание с цифрови права (DRM)
+play-drm-content =
+    .label = Изпълняване на съдържание под DRM
+    .accesskey = И
+play-drm-content-learn-more = Научете повече
+# Variables:
+# $version (string) - Firefox version
+update-application-version = Издание { $version } <a data-l10n-name="learn-more">Новото в това издание</a>
+update-history-2 =
+    .label = Хронология на обновяванията
+    .accesskey = х
+update-application-installation =
+    .label = Инсталиране
+update-application-radio-group =
+    .aria-label = Инсталиране
+update-application-auto-2 =
+    .label = Автоматично инсталиране на обновявания (препоръчително)
+    .accesskey = А
+update-application-check-choose-2 =
+    .label = Да се проверява за актуализации, но да бъдат инсталирани след потвърждаване
+    .accesskey = п
+update-application-background-enabled =
+    .label = Когато { -brand-short-name } не е пуснат
+    .accesskey = н
+update-application-warning-cross-user-setting-2 =
+    .message = Тази настройка ще бъде приложена към всички профили в Windows и всички профили на { -brand-short-name }, използващи тази инсталация на { -brand-short-name }.
+update-application-suppress-prompts-2 =
+    .label = Показване на по-малко напомняния за актуализации
+    .accesskey = м
+update-setting-write-failure-title2 = Грешка при запазване на настройки
+# Variables:
+#   $path (string) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message2 =
+    Поради възникнала грешка { -brand-short-name } не запази промяната. Обърнете внимание, че промяната на тази настройка за обновяване изисква права за запис във файла по-долу. Вие или системния администратор може да успеете да разрешите проблема като предоставите на групата потребители пълни права над този файл.
+    
+    Във файлa „{ $path }“ не може да бъде записвано.
+update-in-progress-title = Обновяване е в процес на изпълнение
+update-in-progress-message = Желаете ли { -brand-short-name } да продължи с обновяването?
+update-in-progress-ok-button = &Отхвърляне
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Продължаване
+
+## About Firefox
+
+about-firefox-header =
+    .heading = Относно { -brand-short-name }
+
+## Firefox updates
+
+update-application-heading =
+    .description = Актуализациите подобряват скоростта, стабилността и сигурността на { -brand-short-name }.
+    .label = Актуализации на { -brand-short-name }
+update-application-suppress-prompts-heading =
+    .label = Известия
+update-application-updates-managed-by-os =
+    .message = Обновяванията се управляват от вашата операционна система
+
+## Firefox support
+
+support-application-heading =
+    .description = Отстранявайте проблеми или споделяйте идеи с общността.
+    .label = Поддръжка на { -brand-short-name }
+support-get-help =
+    .label = Получете помощ
+support-share-ideas =
+    .label = Споделяне на идеи и обратна връзка
+
+## General Section - Performance
+
+performance-settings-learn-more = Научете повече
+performance-allow-hw-accel =
+    .label = Използване на хардуерно ускоряване, ако е налично
+    .accesskey = х
+performance-limit-content-process-option = Процеси за обработка на съдържание
+    .accesskey = с
+performance-limit-content-process-enabled-desc = Допълнителни процеси за обработка на съдържание може да подобрят производителността при използване на повече раздели за сметка на повече използвана памет.
+performance-limit-content-process-blocked-desc = Променянето на броя на процесите за съдържание е възможно само при многопроцесен { -brand-short-name }. <a data-l10n-name="learn-more">Научете как да проверите дали многопроцесността е включена</a>
+# Variables:
+#   $num (number) - Default value of the `dom.ipc.processCount` pref.
+performance-default-content-process-count =
+    .label = { $num } (по подразбиране)
+performance-group =
+    .label = Производителност
+performance-use-recommended-settings-checkbox-2 =
+    .description = Тези настройки са съобразени с вашия хардуер и операционна система.
+    .label = Използвайте препоръчителните настройки за производителността
+    .accesskey = И
+
+## Accessibility page
+
+browsing-use-autoscroll =
+    .label = Автоматично плъзгане
+    .accesskey = А
+keyboard-and-scrolling-group =
+    .label = Навигация и прелистване с клавиатурата
+motion-and-link-group =
+    .label = Движение и връзки (препратки)
+browsing-use-smooth-scrolling =
+    .label = Плавно плъзгане
+    .accesskey = л
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Лентите за превъртане да са винаги видими
+    .accesskey = Л
+browsing-always-underline-links =
+    .label = Препратките да са винаги подчертани
+    .accesskey = п
+browsing-use-onscreen-keyboard =
+    .label = Показване на клавиатура за докосване, при необходимост
+    .accesskey = д
+browsing-use-cursor-navigation =
+    .label = Използване на каретка за придвижване в страниците
+    .accesskey = к
+browsing-use-full-keyboard-navigation =
+    .label = Използвайте клавиша Tab, за да премествате фокуса между контролите на формулярите и връзките
+    .accesskey = T
+browsing-search-on-start-typing =
+    .label = Търсене на текст при започване на въвеждане
+    .accesskey = Т
+settings-media-group =
+    .label = Медия
+browsing-picture-in-picture-toggle-enabled-2 =
+    .label = Използване на картина в картината
+    .accesskey = в
+browsing-picture-in-picture-enable-when-switching-tabs =
+    .label = Продължаване на възпроизвеждането на видеоклипове в картина в картината, когато превключвате разделите
+    .accesskey = ч
+browsing-media-control =
+    .label = Управление на медия чрез клавиатура, слушалки или виртуално устройство
+    .accesskey = У
+recommendations-group =
+    .label = Препоръки
+browsing-cfr-recommendations =
+    .label = Препоръчване на разширения
+    .accesskey = П
+browsing-cfr-features =
+    .label = Препоръчване на възможности
+    .accesskey = в
+browsing-group =
+    .label = Разглеждане
+preferences-accessibility-header =
+    .heading = Достъпност
+preferences-default-zoom-select =
+    .aria-label = Мащабиране по подразбиране
+preferences-fonts-family =
+    .label = Семейство шрифтове
+    .accesskey = С
+preferences-fonts-size =
+    .label = Размер на шрифта
+    .accesskey = Р
+preferences-fonts-advanced-settings =
+    .label = Разширени настройки
+    .accesskey = з
+
+## General Section - Proxy
+
+network-proxy-group2 =
+    .description = Настройте как { -brand-short-name } да се свърже с Интернет.
+    .label = Настройки на прокси
+network-proxy-connection-settings2 =
+    .description = Промяната на тези настройки може да причини проблеми с връзките
+    .label = Конфигуриране на прокси
+    .accesskey = К
+
+## Home Section
+
+home-new-windows-tabs-header = Нови прозорци и раздели
+home-new-windows-tabs-description2 = Изберете какво да виждате при отваряне на началната страница, нови прозорци или раздели.
+home-section =
+    .heading = Начало и стартиране
+
+## Home Section - Default Browser
+
+home-default-browser-title =
+    .label = Браузър по подразбиране
+is-default-browser-2 =
+    .message = { -brand-short-name } е вашият браузър по подразбиране. Добър избор.
+is-not-default-browser-2 =
+    .message = Ехо-о, { -brand-short-name } не е вашият стандартен браузър.
+set-as-my-default-browser-2 =
+    .label = Задаване като стандартен
+    .accesskey = с
+
+## Custom Homepage subpage
+
+home-homepage-mode-label = Начална страница и нови прозорци
+home-newtabs-mode-label = Нов раздел
+home-restore-defaults =
+    .label = Стандартни настройки
+    .accesskey = с
+home-mode-choice-default-fx =
+    .label = { -firefox-home-brand-name } (По подразбиране)
+home-mode-choice-custom =
+    .label = Потребителски адреси…
+home-mode-choice-blank =
+    .label = Празна страница
+home-homepage-custom-url =
+    .placeholder = Въведете адрес…
+# This button is shown when the homepage is managed by an extension and is placed below extension-controlling-homepage.
+home-homepage-manage-extension-button =
+    .label = Управление на разширението
+# This string has a special case for '1' and [other] (default). If necessary for
+# your language, you can add {$tabCount} to your translations and use the
+# standard CLDR forms, or only use the form for [other] if both strings should
+# be identical.
+use-current-pages =
+    .label =
+        { $tabCount ->
+            [1] Текущата страница
+           *[other] Текущите страници
+        }
+    .accesskey = Т
+choose-bookmark =
+    .label = Отметка…
+    .accesskey = О
+home-homepage-title =
+    .label = Начална страница
+home-homepage-new-windows =
+    .label = Нови прозорци
+home-homepage-new-tabs =
+    .label = Нов раздел
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = Разширение ({ $extension })
+home-custom-homepage-header = Персонализирана начална страница
+home-custom-homepage-subpage =
+    .heading = Персонализирана начална страница
+
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header2 = Съдържание на { -firefox-home-brand-name }
+home-prefs-content-description2 = Изберете съдържанието, което искате на { -firefox-home-brand-name }.
+home-prefs-search-header =
+    .label = Търсене в Мрежата
+home-prefs-shortcuts-header =
+    .label = Преки пътища
+home-prefs-shortcuts-description = Страници за преглед по-късно
+home-prefs-shortcuts-by-option-sponsored =
+    .label = Спонсорирани препратки
+home-prefs-recommended-by-header-generic =
+    .label = Препоръчани истории
+home-prefs-recommended-by-description-generic = Изключително съдържание, подбрано от семейството на { -brand-product-name }
+home-prefs-stories-header =
+    .label = Истории
+home-prefs-stories-description = Персонализирани истории въз основа на вашата активност
+
+##
+
+home-prefs-recommended-by-learn-more = Как работи
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Платени публикации
+home-prefs-highlights-option-visited-pages =
+    .label = Посетени страници
+home-prefs-highlights-options-bookmarks =
+    .label = Отметки
+home-prefs-highlights-option-most-recent-download =
+    .label = Последни изтегляния
+home-prefs-recent-activity-header =
+    .label = Последна активност
+home-prefs-recent-activity-description = Избрани страници и съдържание
+home-prefs-weather-header =
+    .label = Времето
+home-prefs-weather-description = Днешната прогноза
+home-prefs-weather-learn-more-link = Научете повече
+# "Support" here means to help sustain or contribute to something, especially through funding or sponsorship.
+home-prefs-support-firefox-header =
+    .label = Подкрепете { -brand-product-name }
+home-prefs-mission-message = Нашите спонсори подкрепят мисията ни да изградим по-добър интернет
+home-prefs-mission-message-learn-more-link = Разберете как
+home-prefs-manage-topics-link = Управление на теми
+home-prefs-choose-wallpaper-link = Избор на тапет
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } ред
+           *[other] { $num } реда
+        }
+
+## Search Section
+
+search-show-suggestions-option =
+    .label = Показване на предложения за търсене
+    .accesskey = к
+search-show-suggestions-url-bar-option =
+    .label = Показване на предложения при търсене в резултатите от адресната лента
+    .accesskey = р
+# This string describes what the user will observe when the system
+# prioritizes search suggestions over browsing history in the results
+# that extend down from the address bar. In the original English string,
+# "before" refers to location (appearing most proximate to), not time
+# (appearing before).
+search-show-suggestions-above-history-option-2 =
+    .label = Показване на предложения за търсене преди историята на сърфиране в резултатите от адресната лента
+search-show-suggestions-private-windows-2 =
+    .label = Предложения за търсене в поверителни прозорци
+search-suggestions-cant-show-2 =
+    .message = Предложения при търсене в резултатите на адресната лента няма да бъдат показвани, защото { -brand-short-name } е настроен да не запазва историята на разглеждане.
+addressbar-header-1 =
+    .description = Изберете кои предложения да се показват в адресната лента
+    .label = Адресна лента
+# When Firefox Suggest is enabled, this replaces `addressbar-header-1`.
+addressbar-header-firefox-suggest-2 =
+    .description = Показване на предложения от { -brand-short-name } и нашите партньори в адресната лента.
+    .label = { -firefox-suggest-brand-name }
+# With this option enabled, while on a SERP, the URL normally displayed in the
+# address bar will be replaced with the search term used to generate that SERP.
+search-show-search-term-option-2 =
+    .label = Показване на думите на търсенето в адресната лента на страниците с резултати
+search-separate-default-engine-2 =
+    .label = Използване на друга търсеща машина по подразбиране в поверителните прозорци
+    .accesskey = д
+search-separate-default-engine-dropdown =
+    .aria-label = Търсеща машина по подразбиране в поверителни прозорци
+search-suggestions-header-2 =
+    .label = Предложения от търсещите машини
+search-one-click-header2 = Преки пътища за търсене
+search-one-click-desc = Изберете допълнителни търсещи машини, които да се показват под адресната лента и лентата за търсене при въвеждане на текст.
+search-one-click-header-3 =
+    .description = Изберете кои търсачки и преки пътища да се показват в адресната лента.
+    .label = Допълнителни търсещи машини
+update-search-engine-success =
+    .message = Търсещата машина беше обновена успешно
+search-edit-engine-2 =
+    .title = Промяна на търсеща машина
+search-delete-engine =
+    .title = Изтриване на търсеща машина
+search-enable-engine =
+    .title = Включване на търсещата машина
+search-outlink-to-extensions-page =
+    .title = Управление в разширения и теми
+search-choose-engine-column =
+    .label = Търсеща машина
+search-choose-keyword-column =
+    .label = Ключова дума
+search-restore-default =
+    .label = Връщане на стандартните
+    .accesskey = В
+search-remove-engine =
+    .label = Премахване
+    .accesskey = П
+search-add-engine =
+    .label = Добавяне
+    .accesskey = Д
+search-add-engine-2 =
+    .label = Добавяне на търсеща машина
+    .accesskey = Д
+search-edit-engine =
+    .label = Редактиране
+    .accesskey = Р
+search-find-more-link = Други търсещи машини
+search-filtering-for-add-engine = Добавяне на машина
+# This warning is displayed when the chosen keyword is already in use
+# ('Duplicate' is an adjective)
+search-keyword-warning-title = Дублиране на ключовата дума
+# Variables:
+#   $name (string) - Name of a search engine.
+search-keyword-warning-engine = Избрали сте ключова дума, която вече се използва от „{ $name }“. Моля, изберете друга.
+search-keyword-warning-bookmark = Избрали сте дума, която вече се използва от отметка. Моля, изберете друга.
+# This warning is displayed when the chosen name is already in use.
+# Variables:
+#   $name (string) - Name of a search engine.
+edit-engine-name-warning-duplicate = Вече има търсеща машина с име „{ $name }“. Моля, изберете друго име.
+remove-engine-confirmation = Сигурни ли сте, че искате да премахнете тази търсеща машина?
+remove-engine-remove = Премахване
+remove-addon-engine-alert = За да премахнете тази търсачка, премахнете свързаната добавка.
+search-engine-group =
+    .label = Стандартна търсеща машина
+search-default-engine =
+    .aria-label = Стандартна търсеща машина
+# Header for the search section ("search" is a noun).
+search-section =
+    .heading = Търсене
+
+## Containers Section
+
+containers-section-header2 =
+    .heading = Настройки на контейнера
+containers-card-header2 =
+    .description = Разделете „бисквитките“ по контейнери, за да можете да използвате различни акаунти на един и същ сайт и да ограничите проследяването между сайтове.
+    .label = Контейнери
+containers-add-button2 =
+    .label = Добавяне на нов контейнер
+    .accesskey = к
+containers-new-tab-check3 =
+    .label = Изберете контейнер за всеки нов раздел
+    .accesskey = И
+containers-new-tab-check2 =
+    .description = Това ще отвори менюто на контейнерите всеки път, когато натиснете бутона за отваряне на нов раздел.
+    .label = Изберете контейнер за всеки нов раздел
+    .accesskey = И
+containers-settings-button2 =
+    .title = Настройки
+containers-remove-button3 =
+    .title = Изтриване
+containers-remove-button2 =
+    .title = Премахване
+
+## Account and sync
+
+sync-group-label =
+    .label = Sync
+account-group-label2 =
+    .label = Профил
+account-disabled-group =
+    .description = Настройките за сметката не са достъпни.
+    .label = Сметка
+account-placeholder2 =
+    .description = Влезте и запазете данните си поверителни, криптирани и незабавно достъпни навсякъде, където използвате { -brand-short-name }.
+    .label = Не сте вписани
+account-sync-section =
+    .heading = Профил и синхронизиране
+pane-account-sync-title2 = Профил и синхронизиране
+    .title = Профил и синхронизиране
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
+sync-signedout-caption = Вземете Мрежата със себе си
+sync-signedout-description2 = Синхронизирайте вашите отметки, история, раздели, добавки и настройки с всички ваши устройства.
+sync-signedout-account-signin3 =
+    .label = Вписване за синхронизиране…
+    .accesskey = и
+sync-signedout-account-signin-4 =
+    .label = Влезте в профила си, за да започнете синхронизирането
+    .accesskey = В
+sync-signedout-account-short =
+    .label = Вписване
+    .accesskey = В
+# This message contains two links and two icon images.
+#   `<img data-l10n-name="android-icon"/>` - Android logo icon
+#   `<a data-l10n-name="android-link">` - Link to Android Download
+#   `<img data-l10n-name="ios-icon">` - iOS logo icon
+#   `<a data-l10n-name="ios-link">` - Link to iOS Download
+#
+# They can be moved within the sentence as needed to adapt
+# to your language, but should not be changed or translated.
+sync-mobile-promo = Изтеглете Firefox за <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> или <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a>, за да синхронизирате с мобилното си устройство.
+
+## Firefox account - Signed in
+
+sync-profile-picture-with-alt =
+    .alt = Промяна снимката на профила
+    .tooltiptext = Промяна снимката на профила
+sync-profile-picture-account-problem =
+    .alt = Профилна снимка
+fxa-login-rejected-warning =
+    .alt = Предупреждение
+sync-sign-out =
+    .label = Излизане…
+    .accesskey = з
+sync-sign-out2 =
+    .label = Излизане
+    .accesskey = з
+sync-manage-account = Управление на профила
+    .accesskey = У
+sync-manage-account2 =
+    .label = Управление на профила
+    .accesskey = У
+
+## Variables
+## $email (string) - Email used for Firefox account
+## $name (string) - Name used for Firefox account
+
+sync-signedin-unverified = { $email } не е проверен.
+sync-signedin-unverified2 =
+    .description = Проверете входящата си поща, за да потвърдите акаунта си и да го направите официален.
+    .label = { $email } все още не е потвърден
+sync-signedin-login-failure = Моля, впишете се, за да се свържете наново { $email }
+sync-signedin-login-failure2 =
+    .description = Влезте отново, за да синхронизирате данните си.
+    .label = Излизали сте от { $email }
+sync-account-signed-in =
+    .label = { $email }
+sync-account-signed-in-display-name =
+    .description = { $email }
+    .label = { $name }
+
+##
+
+sync-verify-account =
+    .label = Потвърждаване на профила
+    .accesskey = т
+sync-remove-account =
+    .label = Премахване на профил
+    .accesskey = п
+sync-sign-in =
+    .label = Вписване
+    .accesskey = В
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Синхронизиране: ВКЛЮЧЕНО
+prefs-syncing-on-2 =
+    .label = Синхронизиране: ВКЛ.
+prefs-syncing-off = Синхронизиране: ИЗКЛЮЧЕНО
+prefs-syncing-off-2 =
+    .description = Включете синхронизацията, за да получите вашите отметки, пароли, история и други неща на всяко ваше устройство.
+    .label = Синхронизиране: ИЗКЛ.
+prefs-sync-turn-on-syncing =
+    .label = Включване синхронизиране
+    .accesskey = с
+prefs-sync-turn-on-syncing-2 =
+    .label = Включване синхронизиране
+    .accesskey = с
+prefs-sync-offer-setup-label2 = Синхронизирайте вашите отметки, история, раздели, добавки и настройки с всички ваши устройства.
+prefs-sync-now-button =
+    .label = Синхронизиране
+    .accesskey = с
+prefs-sync-now-button-2 =
+    .label = Синхронизиране
+    .accesskey = с
+prefs-syncing-button =
+    .label = Синхронизиране…
+prefs-syncing-button-2 =
+    .label = Синхронизиране…
+    .title = Синхронизиране
+
+## The list of things currently syncing.
+
+sync-syncing-across-devices-heading = Синхронизирате следните елементи на всички ваши свързани устройства:
+sync-syncing-across-devices-heading-2 = Синхронизирани данни между устройствата
+sync-syncing-across-devices-empty-state2 =
+    .description = Все още не синхронизирате нищо… Започнете синхронизирането, за да имате всички данни на всички устройства.
+    .label = Управление на синхронизирани данни
+sync-currently-syncing-bookmarks = Отметки
+sync-currently-syncing-history = История
+sync-currently-syncing-tabs = Отворени раздели
+sync-currently-syncing-passwords = Пароли
+sync-currently-syncing-addresses = Адреси
+sync-currently-syncing-payment-methods = Начини на плащане
+sync-currently-syncing-addons = Добавки
+sync-currently-syncing-settings = Настройки
+sync-manage-options =
+    .label = Управление на синхронизиране…
+    .accesskey = с
+sync-manage-options-2 =
+    .label = Управление на синхронизираните данни
+    .accesskey = У
+settings-sync-disconnect-button =
+    .label = Изключване
+
+## The "Choose what to sync" dialog.
+
+sync-engine-bookmarks =
+    .label = Отметки
+    .accesskey = О
+sync-engine-history =
+    .label = История
+    .accesskey = И
+sync-engine-tabs =
+    .label = Отворени раздели
+    .tooltiptext = Списък с разделите от всички устройства
+    .accesskey = р
+sync-engine-passwords =
+    .label = Пароли
+    .tooltiptext = Паролите, които сте запазили
+    .accesskey = П
+sync-engine-addresses =
+    .label = Адреси
+    .tooltiptext = Запазени адреси (само от настолния)
+    .accesskey = а
+sync-engine-payment-methods2 =
+    .label = Начини на плащане
+    .tooltiptext = Име, номер и дата на валидност на картата
+    .accesskey = н
+sync-engine-addons =
+    .label = Добавки
+    .tooltiptext = Разширения и теми за настолния Firefox
+    .accesskey = в
+sync-engine-settings =
+    .label = Настройки
+    .tooltiptext = Променени настройки
+    .accesskey = с
+sync-choose-what-to-sync-dialog4 =
+    .buttonlabelaccept = Запазване
+    .buttonlabelextra2 = Изключване…
+    .buttonaccesskeyaccept = з
+    .buttonaccesskeyextra2 = и
+    .style = min-width: 36em;
+    .title = Управлявайте какво се синхронизира на всички свързани устройства
+
+## The device name controls.
+
+sync-device-name-header = Име на текущото устройство
+sync-device-name-header-2 =
+    .label = Име на текущото устройство
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Име на текущото устройство
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Преименуване
+    .accesskey = м
+sync-device-name-change =
+    .label = Преименуване…
+    .accesskey = м
+sync-device-name-cancel =
+    .label = Отказ
+    .accesskey = о
+sync-device-name-save =
+    .label = Запазване
+    .accesskey = З
+sync-connect-another-device = Добавяне на устройство
+sync-connect-another-device-2 =
+    .label = Добавяне на устройство
+
+## Privacy Section
+
+privacy-header = Поверителност на браузъра
+
+## Privacy Panel Settings
+
+# "Logins" is the former term for "Passwords". Users should find password settings
+# by searching for the former term "logins". It's not displayed in the UI.
+pane-privacy-passwords-header = Пароли
+    .searchkeywords = данни за вход
+forms-passwords-header =
+    .aria-label = Пароли
+    .label = Пароли
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
+forms-ask-to-save-passwords =
+    .label = Питане за запазване на паролите
+    .accesskey = а
+forms-manage-password-exceptions =
+    .label = Управление на изключенията при пароли
+    .accesskey = з
+forms-exceptions =
+    .label = Изключения…
+    .accesskey = к
+forms-suggest-passwords =
+    .label = Предлагане на силни пароли
+    .accesskey = с
+forms-breach-alerts =
+    .label = Показване на известия за изтекли пароли от взломени страници
+    .accesskey = и
+forms-breach-alerts-learn-more-link = Научете повече
+preferences-relay-integration-checkbox2 =
+    .label = Предложения за маскирани имейли от { -relay-brand-name }, с цел защита адреса на ел. поща
+    .accesskey = д
+relay-integration-learn-more-link = Научете повече
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-usernames-and-passwords =
+    .label = Автоматично попълване на потребителски имена и пароли
+    .accesskey = А
+forms-fill-usernames-and-passwords-2 =
+    .label = Запазване и автоматично попълване на потребителски имена и пароли
+    .accesskey = п
+forms-saved-passwords =
+    .label = Запазени пароли
+    .accesskey = п
+forms-saved-passwords-2 =
+    .label = Управление на запазени пароли
+    .accesskey = з
+forms-saved-passwords-searchkeywords = В компютъра са запазени регистрациите в следните сайтове
+# Header for additional protections when managing password settings.
+forms-additional-protections-header =
+    .label = Допълнителни защити
+forms-primary-pw-use =
+    .label = Използване на главна парола
+    .accesskey = г
+forms-primary-pw-use-2 =
+    .description = Добавя допълнителен слой сигурност, за да защити запазените ви пароли.
+    .label = Използване на главна парола
+    .accesskey = г
+forms-primary-pw-set =
+    .label = Задаване на главна парола
+forms-primary-pw-on-2 = Главната парола е <strong>ВКЛЮЧЕНА</strong>
+forms-primary-pw-on =
+    .label = Главната парола е ВКЛЮЧЕНА
+forms-primary-pw-change-2 =
+    .label = Промяна на основната парола
+# Label for button to disable primary password.
+forms-primary-pw-turn-off =
+    .label = Изключете го
+# This operation requires the user to authenticate with the operating system (device sign-in)
+forms-os-reauth =
+    .label = Изисква се влизане в устройство за попълването и управлението на паролите
+forms-os-reauth-2 =
+    .label = Изисква се вписване от устройство за управление на паролите
+forms-primary-pw-learn-more-link = Научете повече
+# This string uses the former name of the Primary Password feature
+# ("Master Password" in English) so that the preferences can be found
+# when searching for the old name. The accesskey is unused.
+forms-master-pw-change =
+    .label = Промяна на главна парола…
+    .accesskey = г
+forms-primary-pw-change =
+    .label = Промяна на главна парола…
+    .accesskey = П
+# Leave this message empty if the translation for "Primary Password" matches
+# "Master Password" in your language. If you're editing the FTL file directly,
+# use { "" } as the value.
+forms-primary-pw-former-name = { "" }
+forms-primary-pw-fips-title = В момента сте в режим на FIPS. FIPS изисква непразна главна парола.
+forms-master-pw-fips-desc = Грешка при промяна на паролата
+forms-windows-sso =
+    .label = Позволява еднократно вписване от Windows за профили в Microsoft, за работа и за училище
+forms-windows-sso-learn-more-link = Научете повече
+forms-windows-sso-desc = Управление на профили в настройките на устройството
+windows-passkey-settings-label = Управляване на ключ-паролите в системните настройки
+privacy-panel-settings-header =
+    .description = Получете помощ за защитата на вашата информация онлайн в { -brand-short-name }.
+    .label = Настройки на панела за поверителност
+# By “breach message” we mean the UI messaging shown when Firefox detects that a
+# site the user has interacted with has been involved in a known data breach
+privacy-panel-breach-alerts =
+    .label = Показване на съобщенията за пробив
+    .accesskey = с
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Primary Password.
+primary-password-os-auth-dialog-message-win = За да създадете главна парола тук, въведете данните за вход в Windows. Това помага за защитата на сигурността на вашите профили.
+# This message can be seen by trying to add a Primary Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+primary-password-os-auth-dialog-message-macosx = създадете главна парола
+master-password-os-auth-dialog-caption = { -brand-full-name }
+# The macOS string is preceded by the operating system with "Firefox is trying to ".
+autofill-creditcard-os-dialog-message =
+    { PLATFORM() ->
+        [macos] променя настройките за начините на плащане
+       *[other] { -brand-short-name } се опитва да промени настройките за начините на плащане. Използвайте вашето устройство за вписване, за да разрешите това.
+    }
+autofill-creditcard-os-auth-dialog-caption = { -brand-full-name }
+
+## Privacy section - Autofill
+
+autofill-payment-methods-header =
+    .aria-label = Начини на плащане
+autofill-payment-methods-checkbox-message-2 =
+    .label = Запазване и автоматично попълване на информация за плащане
+    .accesskey = З
+autofill-payment-methods-manage-payments-title =
+    .heading = Управление на начините за плащане
+autofill-payment-methods-manage-payments-button =
+    .label = Управление на методите за плащане
+    .accesskey = У
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox-2 =
+    .label = Изисква се влизане в устройство за попълването и управлението на начините за плащане
+    .accesskey = в
+autofill-payment-methods-add-button = Добавяне на начин на плащане
+payments-list-header =
+    .label = Начини на плащане
+payments-delete-payment-prompt-title = Изтриване на този начин на плащане?
+payments-delete-payment-prompt-confirm-button = Изтриване
+payments-delete-payment-prompt-cancel-button = Отказ
+payments-delete-payment-button-label =
+    .aria-label = Изтриване
+payments-edit-payment-button-label =
+    .aria-label = Редактиране
+# This message is displayed when no payment methods such as credit card are stored in Firefox
+payments-no-payments-stored-message =
+    .label = Няма добавени начини на плащане
+autofill-addresses-checkbox-message =
+    .label = Запазване и автоматично попълване на адреси
+    .accesskey = а
+autofill-addresses-manage-addresses-button =
+    .label = Управление на адреси и други
+    .accesskey = У
+addresses-list-header =
+    .label = Адреси
+addreses-delete-address-button-label =
+    .aria-label = Изтриване
+addreses-edit-address-button-label =
+    .aria-label = Редактиране
+addresses-delete-address-prompt-title = Изтриване на този адрес?
+addresses-delete-address-prompt-confirm-button = Изтриване
+addresses-delete-address-prompt-cancel-button = Отказ
+autofill-addresses-add-button = Добавяне на нов адрес
+autofill-addresses-manage-addresses-title =
+    .heading = Управление на адреси и други
+# This message is displayed when no addresses are stored in Firefox
+addresses-no-addresses-stored-message =
+    .label = Няма добавени адреси
+autofill-personal-info-manage-button =
+    .label = Управление на личната информация
+pane-passwords-autofill-title2 = Пароли и автоматично попълване
+    .title = Пароли и автоматично попълване
+preferences-passwords-autofill-header =
+    .heading = Пароли и автоматично попълване
+# These values are displayed for each credit card record listed on the Manage Payment methods
+# settings page.
+# Variables:
+#   $cardNumber (string) - The obscured credit card number (for example: ********* 2423)
+#   $expDate (string) - The obscured expiry date of the credit card (for example: XX/2027)
+payment-moz-box-item =
+    .description = { $expDate }
+    .label = { $cardNumber }
+addresses-group =
+    .label = Адреси и други
+payments-group =
+    .label = Начини на плащане
+
+## Privacy Section - History
+
+history-remember-option-never2 =
+    .description = Всеки прозорец действа като поверителен прозорец. Когато е включено, разширенията трябва да бъдат разрешени.
+    .label = Никога не помни историята
+history-remember-option-custom2 =
+    .label = Персонализиране на историята
+history-remember-description4 =
+    .aria-label = { history-group.label }
+    .description = { -brand-short-name } ще пази историята на разглеждане, изтегляния и търсене.
+history-dontremember-description4 =
+    .aria-label = { history-group.label }
+    .description = { -brand-short-name } ще използва същите настройки като при поверително разглеждане и няма да помни никаква история, докато сте в интернет.
+history-custom-description4 =
+    .aria-label = { history-group.label }
+    .description = { -brand-short-name } ще използва потребителските настройки за вашето сърфиране, изтеглянията на файлове, формите и историята на търсенията.
+history-private-browsing-permanent =
+    .label = Винаги включено поверително разглеждане
+    .accesskey = п
+history-remember-browser-option =
+    .label = Запазване на история на разглеждане и изтегляния
+    .accesskey = и
+history-remember-search-option =
+    .label = Запазване на история на търсения и формуляри
+    .accesskey = ф
+history-clear-on-close-option =
+    .label = Изчистване на история при изход от { -brand-short-name }
+    .accesskey = И
+history-clear-on-close-settings =
+    .label = Настройки…
+    .accesskey = Н
+history-shutdown-exceptions =
+    .label = Управление на изключенията
+    .accesskey = У
+history-clear-button =
+    .label = Изчистване на историята…
+    .accesskey = и
+history-header2 =
+    .heading = История
+history-section-header =
+    .description = Изберете това, което искате { -brand-short-name } да запомни, когато затворите браузъра.
+    .label = История
+history-custom-section-header =
+    .description = Персонализирайте какво искате { -brand-short-name } да запомни, когато затворите браузъра.
+    .label = Разширени настройки
+history-custom-button =
+    .label = Изберете какво искате { -brand-short-name } да запомни
+history-group =
+    .label = История
+history-mode-radio-group =
+    .aria-label = История
+history-remember-option-all2 =
+    .label = Запомняне на историята
+
+## Privacy Section - Site Data
+
+sitedata-total-size-calculating = Изчисляване на размера на данните и склада…
+# Variables:
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size3 = Уеб страниците в момента заемат <strong>{ $value } { $unit }</strong> дисково пространство.
+sitedata-learn-more = Научете повече
+sitedata-delete-on-close2 =
+    .label = Изчистване на бисквитки и данни на страници всеки път, когато затваряте { -brand-short-name }
+    .accesskey = ч
+sitedata-delete-on-close-private-browsing3 =
+    .message = Въз основа на вашите настройки за пазене на история { -brand-short-name } изтрива бисквитки и данни от сайтове от вашата сесията при затваряне на браузъра.
+sitedata-delete-on-close-private-browsing4 =
+    .heading = Историята няма да бъде запазена.
+    .message = { -brand-short-name } ще изчиства „бисквитките“ и данните от сайтовете от вашата сесия, когато затворите браузъра.
+sitedata-option-block-cross-site-trackers =
+    .label = Проследяване в различни сайтове
+sitedata-option-block-cross-site-tracking-cookies =
+    .label = Междусайтови проследяващи бисквитки
+sitedata-option-block-cross-site-cookies2 =
+    .label = Изолиране на междусайтови бисквитки
+sitedata-option-block-unvisited =
+    .label = Бисквитки от непосетени страници
+sitedata-option-block-all-cross-site-cookies =
+    .label = Всички междусайтови бисквитки (може да наруши работата на някои страници)
+sitedata-option-block-all =
+    .label = Всички бисквитки (ще наруши работата на страниците)
+sitedata-clear2 =
+    .label = Изчистване на данните за сърфирането
+    .accesskey = ч
+sitedata-settings2 =
+    .label = Управление на данните от сърфирането
+    .accesskey = д
+sitedata-cookies-exceptions =
+    .label = Изключения…
+    .accesskey = з
+sitedata-cookies-exceptions2 =
+    .description = Можете да посочите кои уебсайтове винаги или никога не са разрешени за използване на бисквитки и данни за сайта.
+    .label = Управление на изключенията
+    .accesskey = и
+sitedata-heading =
+    .description = Управлявайте вашите бисквитки, история, кеш, данни за сайтове и др.
+    .label = Данни за сърфирането
+sitedata-settings3 =
+    .label = Изчистване на данни за конкретни сайтове
+    .accesskey = ч
+sitedata-cookies-exceptions3 =
+    .description = Изберете как конкретни сайтове обработват бисквитки и данни за сайта.
+    .label = Управление на изключенията
+    .accesskey = У
+cookies-site-data-group =
+    .label = Бисквитки и данни на страници
+
+## Privacy Section - Cookie Banner Blocking
+
+cookie-banner-blocker-header = Блокиране на банери за бисквитки
+cookie-banner-blocker-description = Когато сайт попита дали може да използва бисквитки в режим на поверително разглеждане, { -brand-short-name } автоматично отказва вместо вас. Само за сайтове, които поддържат тази функция.
+cookie-banner-learn-more = Научете повече
+cookie-banner-blocker-checkbox-label =
+    .label = Автоматично отказване на банерите за бисквитки
+
+## Search Section
+
+addressbar-locbar-history-option =
+    .label = История на разглеждане
+    .accesskey = р
+addressbar-locbar-bookmarks-option =
+    .label = Отметки
+    .accesskey = О
+addressbar-locbar-clipboard-option =
+    .label = Клипборд
+    .accesskey = к
+addressbar-locbar-openpage-option =
+    .label = Отворени раздели
+    .accesskey = р
+# Shortcuts refers to the shortcut tiles on the new tab page, previously known as top sites. Translation should be consistent.
+addressbar-locbar-shortcuts-option =
+    .label = Преки пътища
+    .accesskey = щ
+addressbar-locbar-topsites-option =
+    .label = Предпочитани страници
+    .accesskey = с
+addressbar-locbar-engines-option-1 =
+    .label = Предлагане на търсещи машини за използване
+    .accesskey = т
+addressbar-locbar-quickactions-option =
+    .label = Бързи действия
+    .accesskey = д
+addressbar-locbar-showrecentsearches-option-2 =
+    .label = Скорошни търсения
+    .accesskey = т
+addressbar-locbar-showtrendingsuggestions-option-2 =
+    .label = Популярни предложения за търсене
+    .accesskey = П
+# Toggles whether suggestions are obtained from Firefox Suggest or not (local or online).
+addressbar-locbar-suggest-all-option-2 =
+    .description = Получавайте предложения от мрежата, свързани с вашето търсене.
+    .label = Предложения от { -brand-short-name }
+addressbar-locbar-suggest-sponsored-option-2 =
+    .description = Подкрепете { -brand-short-name } с показване на спонсорирани предложения.
+    .label = Предложения от спонсори
+# This string is used for a checkbox in the settings UI that opts the
+# user into "online" Firefox Suggest, allowing them to receive suggestions from
+# Mozilla's Merino server.
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since the online suggest is created and maintained
+# by Mozilla.
+addressbar-firefox-suggest-online =
+    .label = Извличане на предложения от Mozilla, докато пишете
+addressbar-dismissed-suggestions-label-2 =
+    .description = Възстановяване на отхвърлените предложения от спонсори и { -brand-short-name }.
+    .label = Отхвърлени предложения
+addressbar-restore-dismissed-suggestions-button-2 =
+    .label = Възстановяване на предложенията
+
+## Privacy Section - Content Blocking
+
+content-blocking-enhanced-tracking-protection = Подобрена защита от проследяване
+content-blocking-section-top-level-description = Проследяващите сайтове ви следват онлайн, като събират информация за вашите навици и интереси. { -brand-short-name } спира много от тях, както и други злонамерени скриптове.
+content-blocking-learn-more = Научете повече
+content-blocking-fpi-incompatibility-warning = Използвате изолация от първа страна (FPI), която отменя някои от настройките на бисквитките на { -brand-short-name }.
+# There is no need to translate "Resist Fingerprinting (RFP)". This is a
+# feature that can only be enabled via about:config, and it's not exposed to
+# standard users (e.g. via Settings).
+content-blocking-rfp-incompatibility-warning = Използвате Resist Fingerprinting (RFP), което заменя някои от настройките за защита на { -brand-short-name }. Това може да наруши работата на отделни сайтове.
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Стандартна
+    .accesskey = с
+enhanced-tracking-protection-setting-strict =
+    .label = Строга
+    .accesskey = т
+enhanced-tracking-protection-setting-custom =
+    .label = По избор
+    .accesskey = и
+
+##
+
+content-blocking-etp-standard-desc = Баланс между защита и бързодействие. Страниците ще се зареждат нормално.
+content-blocking-etp-strict-desc = По-високо ниво на защита, но някои страници може да не работят.
+content-blocking-etp-custom-desc = Изберете какво проследяване и кои скриптове да спрете.
+content-blocking-etp-blocking-desc = { -brand-short-name } ще спира следните неща:
+content-blocking-private-windows = Проследяващо съдържание в поверителните прозорци
+content-blocking-cross-site-cookies-in-all-windows2 = Междусайтови бисквитки във всички прозорци
+content-blocking-cross-site-tracking-cookies = Бисквитки за следене в различни сайтове
+content-blocking-all-cross-site-cookies-private-windows = Междусайтови бисквитки в поверителни прозорци
+content-blocking-isolate-cross-site-cookies = Изолиране на бисквитките от трети страни
+content-blocking-social-media-trackers = Проследяване от социални мрежи
+content-blocking-all-cookies = Всички бисквитки
+content-blocking-unvisited-cookies = Бисквитки от непосетени страници
+content-blocking-all-windows-tracking-content = Проследяващо съдържание във всички прозорци
+content-blocking-all-cross-site-cookies = Всички междусайтови бисквитки
+content-blocking-cryptominers = Скриптове за добиване на криптовалути
+content-blocking-fingerprinters = Снемане на цифров отпечатък
+# The known fingerprinters are those that are known for collecting browser fingerprints from user devices. And
+# the suspected fingerprinters are those that we are uncertain about browser fingerprinting activities. But they could
+# possibly acquire browser fingerprints because of the behavior on accessing APIs that expose browser fingerprints.
+content-blocking-known-and-suspected-fingerprinters = Познати и подозрителни скриптове, които събират данни
+# "Contains" here means "isolates", "limits".
+content-blocking-etp-standard-tcp-rollout-description = Цялостната защита изолира бисквитките само до страницата която посещавате, така че  проследяващите скриптове да не могат ви следват в други сайтове.
+content-blocking-etp-standard-tcp-rollout-learn-more = Научете повече
+content-blocking-etp-standard-tcp-title = Включва цялостна защита на бисквитките, най-мощната ни поверителна функция
+content-blocking-warning-title-2 = Някои сайтове може да се счупят при строга защита от проследяване
+content-blocking-warning-title-custom = Някои сайтове може да се счупят при потребителска защита от проследяване
+# “Fix site issues” references the string content-blocking-exceptions-subheader
+content-blocking-and-isolating-etp-warning-description-4 = { -brand-short-name } препоръчва използването на настройките „Отстраняване на проблеми със сайта“, за да намалите повредените функции и съдържание на сайта. Ако някой сайт изглежда повреден, опитайте да изключите защитата от проследяване, за да зареди цялото съдържание.
+content-blocking-warning-learn-how = Научете как
+content-blocking-baseline-exceptions-3 =
+    .description = Помага за зареждане на сайтове и функции чрез деблокиране само на основни елементи, които могат да съдържат тракери. Покрива най-често срещаните проблеми.
+    .label = Поправяне на големи проблеми със сайта (препоръчително)
+# This option to fix minor site issues must be used with the option to fix major site issues (string content-blocking-baseline-exceptions-3)
+content-blocking-convenience-exceptions-3 =
+    .description = Възстановяване на неща като видеоклипове в статия или секции за коментари чрез отблокиране на елементи, които могат да съдържат тракери. Това може да намали проблемите на сайта, но предлага по-малко защита. Трябва да се използва с поправки за основни проблеми.
+    .label = Поправяне на незначителни проблеми със сайта
+content-blocking-baseline-uncheck-warning-dialog-title = Сигурни ли сте, че искате да изключите корекциите?
+content-blocking-baseline-uncheck-warning-dialog-body = Тази настройка помага за отстраняването на най-често срещаните проблеми със сайта. Ако е изключено някои сайтове може да не работят, а { -brand-short-name } няма да може да помогне за отстраняването на тези проблеми.
+content-blocking-baseline-uncheck-warning-dialog-ok-button = Изключване на корекциите
+content-blocking-baseline-uncheck-warning-dialog-cancel-button = Дръжте корекциите включени
+content-blocking-reload-description = За да бъдат приложени промените, разделите трябва да бъдат презаредени.
+content-blocking-reload-tabs-button =
+    .label = Презареждане на всички раздели
+    .accesskey = р
+content-blocking-tracking-content-label =
+    .label = Проследяващо съдържание
+    .accesskey = п
+content-blocking-tracking-protection-option-all-windows =
+    .label = Във всички прозорци
+    .accesskey = в
+content-blocking-option-private =
+    .label = Само в поверителните прозорци
+    .accesskey = о
+content-blocking-cookies-label =
+    .label = Бисквитки
+    .accesskey = б
+content-blocking-expand-section =
+    .tooltiptext = Повече информация
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Скриптове за добиване на криптовалути
+    .accesskey = к
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+#
+# The known fingerprinters are those that are known for collecting browser fingerprints from user devices.
+content-blocking-known-fingerprinters-label =
+    .label = Познати скриптове, които събират данни
+    .accesskey = з
+# The suspected fingerprinters are those that we are uncertain about browser fingerprinting activities. But they could
+# possibly acquire browser fingerprints because of the behavior on accessing APIs that expose browser fingerprints.
+content-blocking-suspected-fingerprinters-label =
+    .label = Подозрителни скриптове, които събират данни
+    .accesskey = р
+
+## Privacy Section - Tracking
+
+tracking-manage-exceptions =
+    .label = Изключения…
+    .accesskey = и
+
+## Privacy Section - Permissions
+
+permissions-notification-pause =
+    .label = Спиране на известията до рестарт на { -brand-short-name }
+    .accesskey = з
+permissions-autoplay2 =
+    .label = Автоматично възпроизвеждане
+permissions-block-popups2 =
+    .label = Блокиране на изскачащи прозорци и пренасочвания от трети страни
+    .accesskey = Б
+# "popup" is a misspelling that is more popular than the correct spelling of
+# "pop-up" so it's included as a search keyword, not displayed in the UI.
+permissions-block-popups-exceptions-button4 =
+    .description = Добавяне на уебсайтове, които могат да отварят изскачащи прозорци и да използват пренасочвания на трети страни.
+    .label = Управление на изключенията
+    .searchkeywords = изскачащи прозорци
+    .accesskey = е
+permissions-addon-install-warning3 =
+    .label = Показване на предупреждение при опит на уебстраница да инсталира разширения
+    .accesskey = П
+permissions-addon-exceptions2 =
+    .label = Изберете кои уебсайтове могат да инсталират разширения
+    .accesskey = И
+permissions-location2 =
+    .label = Местоположение
+permissions-localhost2 =
+    .label = Приложения и услуги за устройството
+permissions-local-network2 =
+    .label = Устройства в локалната мрежа
+permissions-xr2 =
+    .label = Виртуална реалност
+permissions-camera2 =
+    .label = Камера
+permissions-microphone2 =
+    .label = Микрофон
+# Privacy permission for sound output devices.
+permissions-speaker2 =
+    .label = Говорители
+permissions-notification2 =
+    .label = Известия
+permissions-header3 =
+    .description = Управление на това до какво уебсайтовете имат достъп, какво могат да контролират или задействат.
+    .label = Разрешения
+permissions-data-section =
+    .heading = Права и данни
+pane-permissions-data-title2 = Права и данни
+    .title = Права и данни
+
+## Privacy Section - Data Collection
+
+backup-multi-profile-warning-message =
+    .message = За да сте сигурни, че тази промяна е включена във вашите резервни копия, отворете всеки профил и изберете „Архивиране сега“ в настройките.
+nimbus-rollouts =
+    .description = Промените ще стават дистанционно.
+    .label = Разрешаване на { -brand-short-name } да подобрява функциите, производителността и стабилността между актуализациите
+addon-recommendations3 =
+    .description = Получавайте препоръки за разширения, за да подобрите изживяването си при сърфиране.
+    .label = Разрешаване на препоръки за персонализирани разширения
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Докладването на данни е изключено за тази конфигурация на изданието.
+collection-backlogged-crash-reports2 =
+    .label = Автоматично изпращане на доклади за сривове
+    .accesskey = А
+collection-backlogged-crash-reports-description = Това помага на { -vendor-short-name } да диагностицира и отстранява проблеми с браузъра. Докладите може да включват лични или чувствителни данни.
+# Promotional message displayed in the Settings panes to inform users of the new redesign
+settings-redesign-promo =
+    .heading = Същите настройки, нов облик!
+    .message = Реорганизирахме тази страница, за да я направим по-удобна за работа. Личните ви настройки не са променени и всичко си е на мястото. Съвет: използвайте търсенето, за да откриете директно това, което ви трябва.
+settings-redesign-promo-dismiss-button =
+    .label = Разбрах
+privacy-segmentation-section-header = Нови функции, които подобряват вашето сърфиране
+privacy-segmentation-section-description = Когато предлагаме функции, които използват вашите данни, за да ви дадат по-лично изживяване:
+privacy-segmentation-radio-off =
+    .label = Използвайте препоръките от { -brand-product-name }
+privacy-segmentation-radio-on =
+    .label = Показване на подробна информация
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+data-collection =
+    .description = Стремим се да ви предоставяме възможности и да събираме само минимума данни, необходими за подобряване на { -brand-product-name }, което ще е от полза за всички.
+    .label = Събиране и използване на данни от { -brand-short-name }
+    .searchkeywords = събиране данни
+data-collection-link = Вижте Политиката за лични данни
+data-collection-preferences-across-profiles =
+    .message = Тези настройки важат за всеки профил в { -brand-product-name } на това устройство.
+data-collection-profiles-link = Преглед на всички профили
+data-collection-health-report-telemetry-disabled =
+    .message = Вече не позволявате на { -vendor-short-name } да събира технически данни и данни за взаимодействията. Всички стари данни ще бъдат изтрити в рамките на 30 дни.
+data-collection-health-report =
+    .description = Това ни помага да подобрим възможностите, производителността и стабилността на { -brand-product-name }.
+    .label = Изпращане на технически данни и данни за взаимодействие към { -vendor-short-name }
+    .accesskey = т
+data-collection-health-report-disabled =
+    .description = Изпращането на данни е забранено за тази конфигурация.
+    .label = Изпращане на технически данни и данни за взаимодействие към { -vendor-short-name }
+    .accesskey = р
+data-collection-run-studies =
+    .description = { -brand-short-name } на случаен принцип избира потребители да тестват функции, което помага за подобряване на качеството за всички.
+    .label = Разрешаване на { -brand-short-name } да извършва проучвания на функции
+data-collection-studies-link =
+    .label = Преглед на изследванията на { -brand-short-name }
+data-collection-backlogged-crash-reports =
+    .description = Това помага на { -vendor-short-name } да диагностицира и отстранява проблеми с браузъра. Докладите могат да включват лични или чувствителни данни.
+    .label = Автоматично изпращане на доклади за срив
+    .accesskey = А
+data-collection-usage-ping =
+    .description = Това помага на { -vendor-short-name } да направи приблизителна преценка на броя активни потребители.
+    .label = Ежедневно изпращане на сигнал до { -vendor-short-name }, че продуктът се ползва
+    .accesskey = Е
+
+## Privacy Section - Security
+##
+## It is important that wording follows the guidelines outlined on this page:
+## https://developers.google.com/safe-browsing/developers_guide_v2#AcceptableUsage
+
+security-header = Защита
+browsing-protection-group2 =
+    .description = Опасните сайтове и изтегляния могат да изложат на риск вашите данни и вашето устройство. { -brand-short-name } автоматично ги блокира и ви предупреждава за рисков или нежелан софтуер.
+    .label = Защита от измамно съдържание и опасен софтуер
+security-enable-safe-browsing =
+    .label = Блокиране на опасно и измамно съдържание
+    .accesskey = Б
+security-enable-safe-browsing-link = Научете повече
+security-safe-browsing-warning =
+    .message = Изключването на тази функция намалява защитата срещу измами, злонамерени сайтове и опасни изтегляния.
+security-block-downloads =
+    .label = Блокиране на опасни изтегляния
+    .accesskey = т
+security-block-uncommon-software =
+    .label = Предупреждаване при нежелан или рядко срещан софтуер
+    .accesskey = н
+
+## Privacy Section - Certificates
+
+certs-thirdparty-toggle =
+    .label = Разрешаване на { -brand-short-name } автоматично да се доверява на кореновите сертификати на трети страни, които инсталирате
+    .accesskey = т
+certs-devices-enable-fips = Включване на FIPS
+space-alert-over-5gb-settings-button =
+    .label = Към Настройки
+    .accesskey = с
+space-alert-over-5gb-message2 = Дисковото пространство на <strong>{ -brand-short-name } е на свършване.</strong> Съдържанието на страниците може да не се показва правилно. Можете да изчистите съхранените данни в Настройки > Поверителност и защита > Бисквитки и данни на страници.
+space-alert-under-5gb-message2 = Дисковото пространство на <strong>{ -brand-short-name } е на свършване.</strong> Съдържанието на страницата може да не се показва правилно. За да оптимизирате употребата на вашия диск и да имате едно по-добро сърфиране кликнете бутона „Научете повече“.
+certs-description3 =
+    .description = Конфигурирайте сертификатите, които { -brand-short-name } използва за проверка на сигурни връзки.
+    .label = Сертификати
+certs-view2 =
+    .label = Управление на сертификати
+    .accesskey = с
+certs-devices2 =
+    .label = Управление на устройства за сигурност
+    .accesskey = г
+
+## Privacy Section - HTTPS-Only
+
+httpsonly-learn-more2 = Как работи режимът „Само HTTPS“
+httpsonly-radio-enabled =
+    .label = Включване на режим „само HTTPS“ за всички прозорци
+httpsonly-radio-enabled-pbm =
+    .label = Активиране на режим „само HTTPS“ само за поверителни прозорци
+httpsonly-radio-disabled3 =
+    .description = Въпреки това е възможно { -brand-short-name } да подобри някои връзки.
+    .label = Без активиране на режима „само HTTPS“.
+httpsonly-group =
+    .description = Позволява само сигурни връзки към уебсайтове. { -brand-short-name } ще попита, преди да се свърже несигурно.
+    .label = Режим „само HTTPS“.
+httpsonly-label2 =
+    .aria-label = { httpsonly-group.label }
+
+## DoH Section
+
+preferences-doh-header = DNS през HTTPS
+dns-over-https-group2 =
+    .description = Системата за имена на домейни през HTTPS (DoH) криптира DNS заявките към сайтовете, така че за интернет доставчика ви или за трети страни е по-трудно да разберат кои уебсайтове предстои да посетите.
+    .label = DNS през HTTPS
+preferences-doh-description2 = Системата за имена на домейни (DNS) през HTTPS изпраща вашата DNS заявка през шифрована връзка, създавайки сигурен DNS и затруднявайки трети страни да видят кой уебсайт искате да посетите.
+# Variables:
+#   $status (string) - The status of the DoH connection
+preferences-doh-status = Състояние: { $status }
+# Variables:
+#   $name (string) - The name of the DNS over HTTPS resolver. If a custom resolver is used, the name will be the domain of the URL.
+preferences-doh-resolver = Доставчик: { $name }
+# This is displayed instead of $name in preferences-doh-resolver
+# when the DoH URL is not a valid URL
+preferences-doh-bad-url = Невалиден URL
+preferences-doh-steering-status = Използване на местен доставчик
+preferences-doh-status-active = Включено
+preferences-doh-status-disabled = Изключено
+# Variables:
+#   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
+preferences-doh-status-not-active = Неактивен ({ $reason })
+preferences-doh-group-message2 = Активиране на DNS през HTTPS използвайки:
+preferences-doh-radio-group =
+    .aria-label = Активиране на DNS през HTTPS използвайки:
+preferences-doh-expand-section =
+    .tooltiptext = Повече информация
+preferences-doh-setting-default =
+    .label = Защита по подразбиране
+    .accesskey = д
+preferences-doh-default-desc = { -brand-short-name } определя кога да използва защитен DNS, за да подсигури вашата поверителност.
+preferences-doh-default-detailed-desc-1 = Ползва защитен DNS в региони, където е наличен
+preferences-doh-default-detailed-desc-2 = Използва вашия DNS ресолвер по подразбиране, ако има проблем с доставчика на сигурен DNS
+preferences-doh-default-detailed-desc-3 = Използва местен доставчик, ако е възможно
+preferences-doh-default-detailed-desc-4 = Изключване, когато VPN, родителски контрол или корпоративни политики са активни
+preferences-doh-default-detailed-desc-5 = Не се ползва, когато мрежата казва на { -brand-short-name }, че не трябва да използва защитен DNS
+preferences-doh-setting-enabled =
+    .label = Повишена защита
+    .accesskey = и
+preferences-doh-enabled-desc = Вие определяте кога да се използва защитен DNS и избирате своя доставчик.
+preferences-doh-enabled-detailed-desc-1 = Използва се избран от вас доставчик
+preferences-doh-enabled-detailed-desc-2 = Използва се вашият стандартен DNS (от доставчика ви на интернет), само ако има проблем със сигурния DNS.
+preferences-doh-setting-strict =
+    .label = Максимална защита
+    .accesskey = М
+preferences-doh-strict-desc = { -brand-short-name } винаги ще използва защитен DNS. Ще видите предупреждение относно риск за сигурността, преди да се ползва вашият системен DNS.
+preferences-doh-strict-detailed-desc-1 = Използва се само избраният от вас доставчик
+preferences-doh-strict-detailed-desc-2 = Винаги да се предупреждава, ако не е наличен защитен DNS
+preferences-doh-strict-detailed-desc-3 = Ако защитеният DNS не е наличен, сайтовете няма да зареждат или да работят правилно.
+preferences-doh-setting-off =
+    .label = Изключено
+    .accesskey = о
+preferences-doh-off-desc = Използва се вашият DNS по подразбиране (от доставчика ви на Интернет).
+preferences-doh-select-resolver = Изберете доставчик:
+preferences-doh-manage-exceptions =
+    .label = Управление на изключенията…
+    .accesskey = и
+preferences-doh-overview-default =
+    .description = Използване на сигурен DNS в райони, където е наличен.
+    .label = Защита по подразбиране
+preferences-doh-overview-custom =
+    .description = Винаги се ползва защитен DNS с контрол върху доставчика и възможност за резервен вариант,
+    .label = По избор
+preferences-doh-overview-off =
+    .description = Използване на вашия DNS ресолвер по подразбиране.
+    .label = Изключено
+preferences-doh-advanced-button =
+    .label = Разширени настройки
+preferences-doh-advanced-section =
+    .description = Системата за имена на домейни през HTTPS (DoH) криптира DNS заявките към сайтовете, така че за интернет доставчика ви или за трети страни е по-трудно да разберат кои уебсайтове предстои да посетите.
+    .label = Разширени настройки
+preferences-doh-manage-exceptions2 =
+    .label = Управление на изключенията
+    .accesskey = и
+preferences-doh-radio-default =
+    .description = Използвайте защитен DNS в региони, където е наличен
+    .label = По подразбиране
+preferences-doh-radio-custom =
+    .description = Винаги използвайте защитен DNS с контрол върху вашия доставчик и обратно поведение
+    .label = По избор
+preferences-doh-radio-off =
+    .description = Използвайте вашия DNS ресолвер по подразбиране
+    .label = Изключено
+preferences-doh-fallback-label =
+    .label = Предупреждаване винаги, ако защитен DNS не е наличен
+preferences-doh-status-item-off =
+    .message = DNS през HTTPS е изключен
+# Variables:
+#   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
+#   $name (string) - The name of the DNS over HTTPS resolver. If a custom resolver is used, the name will be the domain of the URL.
+preferences-doh-status-item-not-active =
+    .message = DNS през HTTPS не работи, защото срещнахме грешка ({ $reason }) при опит за използване на доставчика { $name }
+# Variables:
+#   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
+preferences-doh-status-item-not-active-bad-url =
+    .message = DNS през HTTPS не работи, защото получихме невалиден URL ({ $reason })
+# Variables:
+#   $name (string) - The name of the DNS over HTTPS resolver. If a custom resolver is used, the name will be the domain of the URL.
+preferences-doh-status-item-active =
+    .message = DNS през HTTPS използва доставчика { $name }
+# Variables:
+#   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
+#   $name (string) - The name of the DNS over HTTPS resolver. If a custom resolver is used, the name will be the domain of the URL.
+preferences-doh-status-item-not-active-local =
+    .message = DNS през HTTPS не работи, защото се натъкнахме на грешка ({ $reason }) при опит за използване на местния доставчик { $name }
+# Variables:
+#   $name (string) - The name of the DNS over HTTPS resolver. If a custom resolver is used, the name will be the domain of the URL.
+preferences-doh-status-item-active-local =
+    .message = DNS през HTTPS използва местния доставчик { $name }
+preferences-doh-select-resolver-label =
+    .label = Изберете доставчик:
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item =
+    .label = { $name }
+    .tooltiptext = Използвайте този доставчик за разрешаване на DNS през HTTPS
+preferences-doh-custom-provider-label =
+    .aria-label = Въведете адрес на доставчик по избор
+preferences-doh-header2 =
+    .heading = DNS през HTTPS
+
+## Connection and software security section
+
+preferences-connection-header =
+    .heading = Защита на връзките и софтуера
+preferences-connection-link-section =
+    .description = Вижте как връзките остават сигурни, вредният софтуер е блокиран и уебсайтовете се проверяват.
+    .label = Защита на връзките и софтуера
+preferences-connection-link-button =
+    .label = Разширени настройки
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Плот
+downloads-folder-name = Изтегляния
+
+## Appearance page
+
+preferences-appearance-header =
+    .heading = Външен вид
+browser-theme-group =
+    .description = Стилизирайте { -brand-short-name } по ваш начин. Тематичните цветове се отнасят за лентите с инструменти, менютата и съобщенията.
+    .label = Тема на браузъра
+browser-theme-manage-link =
+    .label = Управление на темите на { -brand-short-name }
+appearance-window-density-group =
+    .description = Регулирайте разстоянието около елементите на прозореца като лента с инструменти, раздели и странична лента.
+    .label = Плътност на прозореца
+appearance-window-density-radio-group =
+    .aria-label = Плътност на прозореца
+appearance-window-density-automatic =
+    .description = Стандартно, компактно или сензорно разстояние се прилага автоматично
+    .label = Автоматично (по подразбиране)
+appearance-window-density-automatic-no-touch =
+    .description = Стандартното или компактно разстояние се прилага автоматично
+    .label = Автоматично (по подразбиране)
+appearance-window-density-standard =
+    .description = Балансирани разстояния за повечето екрани
+    .label = Стандартен
+appearance-window-density-auto-touch-mode =
+    .label = Използване на адаптирани интервали за режим на таблет
+appearance-window-density-compact =
+    .description = Намалено разстояние за по-малки екрани
+    .label = Компактна
+appearance-window-density-touch =
+    .description = Увеличени елементи на интерфейса и по-големи интерактивни бутони, оптимизирани за работа с тъчскрийн.
+    .label = Докосване
+related-settings-group =
+    .label = Свързани настройки
+related-settings-accessibility-link =
+    .label = Персонализирайте настройките за мащабиране и шрифт в секцията Достъпност
+related-settings-home-link =
+    .label = Персонализирайте { -firefox-home-brand-name }
+related-settings-tabs-browsing-link =
+    .label = Персонализирайте оформлението на браузъра
+
+## AI controls page
+
+preferences-ai-controls-description = Винаги имате избор в { -brand-short-name }, включително дали да използвате функции, подобрени с AI. Очаквайте още контроли скоро.
+preferences-ai-controls-block-ai-label = Блокиране на AI подобренията
+preferences-ai-controls-block-ai =
+    .label = { preferences-ai-controls-block-ai-label }
+preferences-ai-controls-block-ai-description = Блокирането означава, че няма да виждате нови или текущи подобрения на AI в { -brand-short-name } или изскачащи прозорци за тях. <a data-l10n-name="link">Получете повече подробности</a> за това какво е включено и как да контролирате традиционните функции за машинно обучение, като предложения и препоръки за търсене.
+preferences-ai-controls-blocked-message =
+    .message = Новите и текущите подобрения на AI са блокирани по подразбиране. За да отблокирате конкретна функция, използвайте контролите по-долу.
+preferences-ai-controls-on-device-group =
+    .description = Тo използва малки AI модели, които се изтеглят на вашето устройство, ако използвате функцията. Този подход помага за защита на вашата поверителност.
+    .label = AI на устройството
+preferences-ai-controls-translations-control =
+    .description = Безпроблемно сърфиране в Интернет на предпочитания от вас език.
+    .label = Превеждане
+preferences-ai-controls-translations-more-link = Още настройки за преводите
+preferences-ai-controls-pdfjs-control =
+    .description = Когато добавяте изображения към PDF файлове, това добавя описания, за да ги направи достъпни.
+    .label = Алтернативен текст на изображение във визуализатор на PDF на { -brand-short-name }
+preferences-ai-controls-tab-group-suggestions-control =
+    .description = Получете предложения за назоваване и организиране на вашите раздели.
+    .label = Предложения за групи раздели
+preferences-ai-controls-key-points-control =
+    .description = Преглед на резюме преди отваряне на линка.
+    .label = Ключови моменти при визуализация на връзки
+preferences-ai-controls-sidebar-chatbot-group =
+    .description = Задържане на чатбота на екрана при сърфиране. Избор между Anthropic Claude, ChatGPT, Copilot, Google Gemini и Le Chat Mistral.
+    .label = Доставчици на чатбот с AI в страничната лента
+preferences-ai-controls-sidebar-chatbot-control =
+    .label = Чатбот в страничната лента
+# This option means that a user will see the feature and can use it.
+preferences-ai-controls-state-available =
+    .label = Налично
+# This option means a user has opted in to use the feature.
+preferences-ai-controls-state-enabled =
+    .label = Включен
+# This option means the user won't see and can't use the feature. For on-device AI, any models already downloaded are removed.
+preferences-ai-controls-state-blocked =
+    .label = Забранен
+preferences-ai-controls-state-description-before = Какво означават настройките:
+preferences-ai-controls-state-description-available = <strong>Наличнo:</strong> Ще видите функцията и можете да я използвате.
+preferences-ai-controls-state-description-enabled = <strong>Включено:</strong> Избрали сте да използвате тази функция.
+preferences-ai-controls-state-description-blocked = <strong>Забранено:</strong> Функцията не се вижда и няма да може да се използва. Изтеглените AI модели върху вашето устройство се премахват.
+preferences-ai-controls-block-confirmation-heading = Забраняване на AИ подобренията?
+preferences-ai-controls-block-confirmation-description = Няма да виждате нови или текущи подобрения на AI в { -brand-short-name } или изскачащи прозорци за тях. След това можете да деблокирате всичко, което искате да продължите да използвате
+preferences-ai-controls-block-confirmation-features-start = Какво ще бъде блокирано:
+preferences-ai-controls-block-confirmation-translations = Преводи
+preferences-ai-controls-block-confirmation-pdfjs = Алтернативен текст на изображение във визуализатор на PDF на { -brand-short-name }
+preferences-ai-controls-block-confirmation-tab-group-suggestions = Предложения за групиране на раздели
+preferences-ai-controls-block-confirmation-key-points = Информация при визуализация на връзки
+preferences-ai-controls-block-confirmation-sidebar-chatbot = Доставчици на чат-ботове в страничната лента
+preferences-ai-controls-block-confirmation-features-after = Блокирането засяга и разширения, които използват AI, предоставен от { -brand-short-name }.
+preferences-ai-controls-block-confirmation-cancel =
+    .label = Отказ
+preferences-ai-controls-block-confirmation-confirm =
+    .label = Забраняване
+preferences-ai-controls-header3 =
+    .heading = AI контрол
+
+## Privacy and security status card
+
+security-privacy-status-ok-header = { -brand-short-name } е нащрек
+# This is the header above a section telling the user about problems in their settings
+security-privacy-status-problem-header = { -brand-short-name } препоръчва подобрения на сигурността
+security-privacy-status-ok-label = Подобрената защита от проследяване е включена
+security-privacy-status-problem-label = Открихме настройки, засягащи защитата ви
+security-privacy-status-problem-helper-label = Преглед на проблемите
+security-privacy-status-pending-trackers-label = Преглед на броя на блокираните проследявания от { -brand-short-name } през последния месец
+# This label tells the user how many trackers we have blocked for them.
+# Variables:
+#   $trackerCount (Number) - Number of trackers we have blocked in the last month
+security-privacy-status-trackers-label =
+    { $trackerCount ->
+        [one] { $trackerCount } тракера са блокирани през последния месец
+       *[other] { $trackerCount } тракера са блокирани през последния месец
+    }
+# This string appears under "Enhanced Tracking Protection is on" when a user has enabled "Strict" in Enhanced Tracking Protection advanced settings
+security-privacy-status-strict-enabled-label = Имате <a data-l10n-name="strict-tracking-protection">строга защита</a>
+# This string appears under "Enhanced Tracking Protection is on" when a user has enabled "Custom" in Enhanced Tracking Protection advanced settings
+security-privacy-status-custom-enabled-label = Разполагате с <a data-l10n-name="custom-tracking-protection">персонализирана защита</a>
+security-privacy-status-up-to-date-label = Разполагате с най-новото и безопасно издание на { -brand-short-name }
+security-privacy-status-update-needed-label = Налична е нова версия на { -brand-short-name }.
+security-privacy-status-update-error-label = { -brand-short-name } среща проблем със собствената си актуализация
+security-privacy-status-update-checking-label = { -brand-short-name } проверява за актуализации
+security-privacy-status-update-needed-description = Актуализирайте за последните поправки за скорост, стабилност и защита.
+security-privacy-status-update-button-label =
+    .label = Обновяване на { -brand-short-name }
+security-privacy-image-warning =
+    .alt = Щит с удивителен знак, изразяващ загриженост относно вашите предупреждения за сигурност
+security-privacy-image-ok =
+    .alt = Щит с отметка, показващ, че нямате нерешени проблеми със сигурността
+security-privacy-issue-card =
+    .heading = Предупреждения за сигурността
+issue-card-reset-button =
+    .label = Нулиране
+issue-card-dismiss-button =
+    .aria-label = Отхвърляне
+    .tooltiptext = Отхвърляне
+
+## Enhanced Tracking Protection (ETP) status section
+
+preferences-etp-status-header =
+    .description = Сайтовете използват тракери, за да ви следят онлайн и да ви показват неприятни реклами. { -brand-short-name } ви защитава, докато сърфирате, като блокира тракерите автоматично, така че вие ​​контролирате дигиталната си следа.
+    .label = Подобрена защита от проследяване
+preferences-etp-level-radio-group =
+    .aria-label = Подобрена защита от проследяване
+preferences-etp-level-standard =
+    .description = Силни, надеждни защити, които работят гладко с повечето сайтове.
+    .label = Стандартно (по подразбиране)
+preferences-etp-level-strict =
+    .description = По-силна защита, която блокира повечето тракери, но може да причини прекъсване на някои сайтове.
+    .label = Строга
+preferences-etp-level-custom =
+    .description = Изберете кои защити да включите или да изключите.
+    .label = По избор
+preferences-etp-status-advanced-button =
+    .label = Разширени настройки
+preferences-etp-status-protections-dashboard-link =
+    .description = Вижте колко скрити проследяващи елемента е блокирал { -brand-short-name } за вас, включително тракери от социални медии, дигитални отпечатъци и копачи на криптовалута.
+    .label = Преглед на таблото за персонализирани защити
+preferences-etp-header =
+    .heading = Подобрена защита от проследяване
+preferences-etp-advanced-settings-group =
+    .description = Уебсайтовете използват проследяващи елементи, за да следят активността ви онлайн и да ви показват натрапчиви реклами. { -brand-short-name } ви осигурява щит при сърфиране, като блокира повечето от тях автоматично, за да контролирате сами своите цифрови следи.
+    .label = Разширени настройки
+preferences-etp-customize-button =
+    .label = Персонализирайте защитата от проследяване
+preferences-etp-reload-tabs-hint =
+    .message = Презаредете разделите, за да бъдат приложени тези промени.
+preferences-etp-reload-tabs-hint-button =
+    .label = Презареждане на всички раздели
+preferences-etp-rfp-warning-message =
+    .message = Използвате резистентно снемане на пръстови отпечатъци (RFP), което заменя някои от настройките за защита от пръстови отпечатъци на { -brand-short-name }. Това може да наруши работата на някои сайтове.
+preferences-etp-level-warning-message =
+    .heading = Внимание! Някои сайтове може да не работят според очакванията.
+    .message = Някои сайтове вграждат тракери (елементи за проследяване) във функциите или съдържанието си. Когато { -brand-short-name } ги блокира, сайтът може да изглежда развален. Опитайте да използвате „Докладване на проблем със сайта“ или изключете защитата от проследяване за този сайт.
+preferences-etp-manage-exceptions-button =
+    .description = Управлявайте уебсайтове, където е деактивирана подобрената защита от проследяване.
+    .label = Управление на изключенията
+preferences-etp-customize-header =
+    .heading = Персонализирайте защитата от проследяване
+preferences-etp-reset =
+    .description = Възстановяване на настройките на предварително зададено ниво на защита.
+    .label = Нулиране на настройките
+preferences-etp-reset-standard-button =
+    .label = Нулиране до стандартно
+preferences-etp-reset-strict-button =
+    .label = Нулиране до строга защита
+preferences-etp-custom-control-group =
+    .description = Изберете кои функции за защита да бъдат активирани или деактивирани.
+    .label = Защита от проследяване
+preferences-etp-custom-cookies-enabled =
+    .label = Бисквитки
+preferences-etp-custom-cookie-behavior =
+    .aria-label = Бисквитки
+preferences-etp-custom-cookie-behavior-accept-all =
+    .label = Разрешаване на всички бисквитки
+preferences-etp-custom-cookie-behavior-block-cross-site-cookies =
+    .label = Блокиране на бисквитки в различни сайтове
+preferences-etp-custom-cookie-behavior-isolate-cross-site-cookies =
+    .label = Изолиране на междусайтови бисквитки
+preferences-etp-custom-cookie-behavior-block-unvisited =
+    .label = Блокиране на бисквитки от непосетени страници
+preferences-etp-custom-cookie-behavior-block-all-cross-site-cookies =
+    .label = Блокиране на всички междусайтови бисквитки (може да наруши работата на някои страници)
+preferences-etp-custom-cookie-behavior-block-all =
+    .label = Блокиране на всички бисквитки (ще наруши работата на страниците)
+preferences-etp-custom-tracking-protection-enabled =
+    .label = Проследяващо съдържание
+preferences-etp-custom-tracking-protection-enabled-context =
+    .aria-label = Проследяващо съдържание
+preferences-etp-custom-crypto-mining-protection-enabled =
+    .label = Добиване на криптовалути
+preferences-etp-custom-known-fingerprinting-protection-enabled =
+    .label = Познати скриптове, които събират данни
+preferences-etp-custom-suspect-fingerprinting-protection-enabled =
+    .label = Подозрителни скриптове, които събират данни
+preferences-etp-custom-suspect-fingerprinting-protection-enabled-context =
+    .aria-label = Съмнения за снемане на цифрови отпечатъци
+
+## Warnings section
+
+security-privacy-issue-warning-fingerprinters =
+    .description = Това може да позволи на някои тракери да ви следват без бисквитки.
+    .label = Известните скриптове не са блокирани
+security-privacy-issue-warning-third-party-cookies =
+    .description = Бисквитките от трети страни се ползват за проследяване при посещаване на различни сайтове.
+    .label = Бисквитките от трети страни са разрешени
+security-privacy-issue-warning-password-manager =
+    .description = Мениджърите на пароли ви помагат да съхранявате силни пароли за вашите акаунти.
+    .label = Управлението на пароли е изключено
+security-privacy-issue-warning-popup-blocker =
+    .description = Изскачащите прозорци са досадни и потенциално вредни.
+    .label = Блокирането на изскачащи прозорци е изключено
+security-privacy-issue-warning-extension-install =
+    .description = Сайтовете могат да инсталират разширения към { -brand-short-name } без да питат.
+    .label = Сайтовете могат да инсталират разширения
+security-privacy-issue-warning-safe-browsing =
+    .description = Вашето излагане на измами и злонамерен софтуер от уебсайтове е увеличено.
+    .label = Опасно и измамно съдържание не се блокира
+security-privacy-issue-warning-doh =
+    .description = DNS през HTTPS крие какви сайтове посещавате от вашия мрежов доставчик.
+    .label = DNS през HTTPS е изключен
+security-privacy-issue-warning-ech =
+    .description = Клиентът за шифроване Hello скрива кои сайтове посещавате от вашия доставчик на интернет.
+    .label = Клиентът за шифроване Hello е изключен
+security-privacy-issue-warning-proxy-autodetection =
+    .description = Автоматичното конфигуриране на прокси може да позволи на ненадеждни мрежи да наблюдават вашата дейност.
+    .label = Автоматичното конфигуриране на прокси е включено

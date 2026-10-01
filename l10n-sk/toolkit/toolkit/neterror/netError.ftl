@@ -1,0 +1,253 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Error page titles
+
+neterror-page-title = Problém pri načítaní stránky
+certerror-page-title = Varovanie: možné bezpečnostné riziko
+certerror-sts-page-title = Nepripojené: možné bezpečnostné riziko
+neterror-blocked-by-policy-page-title = Zablokovaná stránka
+neterror-captive-portal-page-title = Prihlásiť sa do siete
+neterror-dns-not-found-title = Server sa nenašiel
+neterror-malformed-uri-page-title = Neplatná URL adresa
+general-body-title = Buďte opatrní. Niečo nie je v poriadku.
+problem-with-this-site-title = Zdá sa, že s touto stránkou je problém
+
+## Error page actions
+
+neterror-advanced-button = Rozšírené…
+neterror-copy-to-clipboard-button = Kopírovať text do schránky
+neterror-learn-more-link = Ďalšie informácie…
+neterror-open-portal-login-page-button = Otvoriť prihlasovaciu stránku k sieti
+neterror-override-exception-button = Rozumiem riziku a chcem pokračovať
+neterror-pref-reset-button = Obnoviť predvolené nastavenia
+neterror-return-to-previous-page-button = Prejsť naspäť
+neterror-return-to-previous-page-recommended-button = Prejsť naspäť (odporúča sa)
+neterror-try-again-button-2 = Skúsiť znova
+    .accesskey = S
+neterror-add-exception-button = Vždy pokračovať pre túto stránku
+neterror-settings-button = Zmeniť nastavenia DNS
+neterror-view-certificate-link = Zobraziť certifikát
+
+## Search call-to-action shown on the online dnsNotFound error page when
+## browser.netError.searchCTA.enabled is true. Offers a one-click web search
+## derived from the address that failed to resolve.
+
+neterror-search-cta-title = Táto stránka je nedostupná
+# $hostname (String) - The host of the address that failed to load, including
+# any subdomains, for example "docs.example.com". The host is emphasized.
+neterror-search-cta-intro2 = Nepodarilo sa pripojiť k serveru na adrese <strong>{ $hostname }</strong>.
+# $domain (String) - The host of the address that failed to load, including any
+# subdomains, for example "docs.example.com".
+neterror-search-cta-intro = Nepodarilo sa pripojiť k serveru na adrese { $domain }.
+# Heading above the list of recovery hints on the search CTA error page.
+neterror-search-cta-things-to-try = Vyskúšajte tieto kroky:
+neterror-search-cta-hint-check-address = Skontrolujte adresu webovej stránky
+# Shown when no Search button is offered, so no specific query can be named.
+neterror-search-cta-hint-search = Vyhľadajte stránku na webe
+# Shown when the Search button is offered, naming the exact query it will run.
+# $query (String) - The search query derived from the address that failed to
+# load, beginning with the site's name, for example "example best hiking
+# boots". The query and the quotation marks around it are emphasized.
+neterror-search-cta-hint-search-query = Vyhľadajte na webe výraz <strong>“{ $query }”</strong>
+# .tooltiptext doubles as the button's accessible description, so it explains
+# that results open in a new tab.
+neterror-search-cta-search-button =
+    .label = Hľadať
+    .tooltiptext = Otvorí výsledky vyhľadávania na novej karte
+    .accesskey = H
+neterror-search-cta-reload-button =
+    .label = Obnoviť
+    .accesskey = O
+# Shown in place of the Search button while the search option is being prepared.
+neterror-search-cta-loading = Načítava sa
+# Shown in place of the Search button when the user clicks it but connectivity
+# has dropped since the page loaded, so the search cannot be performed.
+neterror-search-cta-offline = Zdá sa, že ste offline. Znova sa pripojte a skúste to znova.
+# $error (String) - The error code, for example "dnsNotFound".
+neterror-search-cta-error-code = Kód chyby: { $error }
+# The search CTA's own "Learn more" link text (no trailing ellipsis).
+neterror-search-cta-learn-more = Ďalšie informácie
+
+##
+
+neterror-pref-reset = Zdá sa, že príčinou môžu byť vaše nastavenia zabezpečenia internetu. Chceli by ste obnoviť predvolené nastavenia?
+
+## Shown on about:neterror and about:certerror when the SSLKEYLOGFILE
+## environment variable is set, which causes { -brand-short-name } to log TLS
+## session keys that can be used to decrypt encrypted network traffic.
+
+neterror-sslkeylogging-warning =
+    .heading = Vaše pripojenie nemusí byť súkromné
+    .message = Aplikácia alebo služba môže vidieť vašu šifrovanú prevádzku z tejto stránky.
+
+## Specific error messages
+
+neterror-generic-error = { -brand-short-name } nedokáže z nejakého dôvodu načítať stránku.
+neterror-load-error-try-again = Stránka môže byť dočasne nedostupná alebo zaneprázdnená. Svoj pokus opakujte neskôr.
+neterror-load-error-connection = Ak sa nedá načítať žiadna stránka, skontrolujte pripojenie počítača k sieti.
+neterror-load-error-firewall = Ak sú počítač alebo sieť chránené firewallom alebo serverom proxy, uistite sa, či má { -brand-short-name } povolený prístup k webu.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Ak sa pokúšate načítať stránku lokálnej siete, skontrolujte, či má { -brand-short-name } v nastaveniach ochrany súkromia a zabezpečenia systému macOS udelené oprávnenia pre lokálnu sieť.
+neterror-http-error-page = Skontrolujte, či ste adresu webovej stránky zadali správne.
+neterror-http-empty-response = Skontrolujte, či ste správne zadali adresu webovej stránky, a skúste to znova o chvíľu.
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-http-empty-response-description = Server { $hostname } odoslal späť prázdnu stránku.
+neterror-captive-portal = Pre prístup na internet sa musíte najprv prihlásiť k tejto sieti.
+# Variables:
+# $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
+neterror-dns-not-found-with-suggestion = Chceli ste prejsť na <a data-l10n-name="website">{ $hostAndPath }</a>?
+neterror-dns-not-found-hint-header = <strong>Ak ste zadali správnu adresu, môžete:</strong>
+neterror-dns-not-found-hint-try-again = Skúsiť to znova neskôr
+neterror-dns-not-found-hint-check-network = Skontrolovať pripojenie k sieti
+neterror-dns-not-found-hint-firewall = Skontrolovať, či má { -brand-short-name } oprávnenie na prístup na web (môžete byť pripojený, ale za bránou firewall)
+neterror-dns-not-found-hint-check-network-2 = Skontrolujte pripojenie k sieti.
+neterror-dns-not-found-hint-firewall-2 = Skontrolujte, či má { -brand-short-name } oprávnenie na prístup na web (možno ste pripojení, ale za firewallom).
+neterror-dns-not-found-offline-hint-header = <strong>Čo s tým môžete urobiť?</strong>
+neterror-dns-not-found-offline-hint-different-device = Skúste sa pripojiť na inom zariadení.
+neterror-dns-not-found-offline-hint-modem = Skontrolujte svoj modem alebo smerovač.
+neterror-dns-not-found-offline-hint-reconnect = Odpojte sa a znova pripojte k sieti Wi‑Fi.
+
+## TRR-only specific messages
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+neterror-dns-not-found-trr-only-reason2 = { -brand-short-name } nedokáže ochrániť vašu žiadosť o adresu tohto webu prostredníctvom nášho zabezpečeného poskytovateľa DNS. Tu je dôvod:
+neterror-dns-not-found-trr-third-party-warning2 = Môžete pokračovať s vaším predvoleným nástrojom na prekladanie DNS. Tretia strana však môže vidieť, aké webové stránky navštevujete.
+neterror-dns-not-found-trr-only-could-not-connect = { -brand-short-name(case: "dat") } sa nepodarilo pripojiť k { $trrDomain }.
+neterror-dns-not-found-trr-only-timeout = Pripojenie k { $trrDomain } trvalo dlhšie, ako sa očakávalo.
+neterror-dns-not-found-trr-unknown-host2 = Táto stránka nebola pomocou servera { $trrDomain } nájdená.
+neterror-dns-not-found-trr-server-problem = Vyskytol sa problém s { $trrDomain }.
+neterror-dns-not-found-bad-trr-url = Neplatná adresa URL.
+neterror-dns-not-found-system-sleep = Systém je v režime spánku.
+neterror-dns-not-found-trr-unknown-problem = Neočakávaný problém.
+
+##
+
+neterror-file-not-found-filename = Skontrolujte názov súboru, napríklad malé a veľké písmená alebo iné preklepy.
+neterror-file-not-found-moved = Skontrolujte, či súbor nebol premenovaný, presunutý alebo odstránený.
+# Variables:
+#   $path (String) - Path of the local file that could not be found.
+neterror-file-not-found-intro = { -brand-short-name } nevie nájsť súbor na adrese <strong>{ $path }</strong>. Buď neexistuje, alebo je cesta nesprávna.
+neterror-file-not-found-what-can-you-do = Ak ste adresu zadali manuálne, skontrolujte, či v názve alebo ceste k súboru nie sú chyby v písaní veľkých písmen alebo preklepy. Ak ste klikli na uloženú záložku alebo odkaz, súbor mohol byť od uloženia presunutý, premenovaný alebo odstránený. Skúste ho nájsť pomocou správcu súborov alebo nedávneho vyhľadávania.
+neterror-access-denied = Mohol byť odstránený, premiestnený alebo vám v prístupe bránia jeho oprávnenia.
+neterror-unknown-protocol = Na otvorenie tejto adresy možno bude potrebné nainštalovať ďalší softvér.
+neterror-redirect-loop = Tento problém môže nastať pri nepovolení, resp. odmietnutí cookies.
+neterror-unknown-socket-type-client-config = Môže to byť spôsobené chybou konfigurácie vášho klienta.
+neterror-not-cached-intro = Požadovaný dokument sa nenachádza vo vyrovnávacej pamäti { -brand-short-name(case: "gen") }.
+neterror-not-cached-sensitive = Z bezpečnostných dôvodov { -brand-short-name } automaticky nežiada o opätovné načítanie citlivých dokumentov.
+neterror-not-cached-try-again = Kliknutím na tlačidlo Skúsiť znova požiadate o opätovné načítanie dokumentu.
+neterror-net-offline = Ak chcete prejsť do režimu online a opätovne načítať obsah stránky, kliknite na tlačidlo “Skúsiť znova".
+neterror-proxy-resolve-failure-settings = Skontrolujte, či je nastavenie servera proxy správne.
+neterror-proxy-resolve-failure-connection = Skontrolujte, či funguje pripojenie počítača k sieti.
+neterror-proxy-resolve-failure-firewall = Ak sú počítač alebo sieť chránené bránou firewall alebo serverom proxy, uistite sa, či má { -brand-short-name } povolený prístup k webu.
+neterror-proxy-connect-failure-settings = Skontrolujte nastavenia proxy servera.
+neterror-proxy-connect-failure-contact-admin = Obráťte sa na správcu siete a skontrolujte, či server proxy funguje.
+neterror-content-encoding-error = Obráťte sa na vlastníkov stránky a informujte ich o tomto probléme.
+neterror-unsafe-content-type = Obráťte sa na vlastníkov stránky a informujte ich o tomto probléme.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = { -brand-short-name } nedôveruje lokalite { $hostname }, pretože pripojenie nie je bezpečné. Skúste zmeniť adresu URL na HTTPS.
+neterror-nss-failure-not-verified = Stránku nemožno zobraziť, pretože pravosť prijímaných údajov sa nedá overiť.
+neterror-nss-failure-contact-website = Obráťte sa na vlastníkov stránky a informujte ich o tomto probléme.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+certerror-intro = Aplikácia { -brand-short-name } rozpoznala potenciálne bezpečnostné riziko a stránku <b>{ $hostname }</b> nenačítala. Ak sa napriek tomu rozhodnete danú stránku navštíviť, útočníci sa môžu pokúsiť odcudziť vaše informácie, ako napríklad heslá, e‑mailové adresy alebo údaje o platobných kartách.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+certerror-sts-intro = Aplikácia { -brand-short-name } rozpoznala potenciálne bezpečnostné riziko a stránku <b>{ $hostname }</b> nenačítala, pretože táto webová stránka vyžaduje zabezpečené pripojenie.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+certerror-expired-cert-intro = Aplikácia { -brand-short-name } rozpoznala problém a stránku <b>{ $hostname }</b> nenačítala. Webová stránka je buď zle nastavená alebo hodiny na vašom počítači nejdú správne.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+# $mitm (String) - The name of the software intercepting communications between you and the website (or “man in the middle”)
+certerror-mitm = <b>{ $hostname }</b> je pravdepodobne bezpečná stránka, ale nie je možné s ňou nadviazať zabezpečené pripojenie. Tento problém spôsobuje softvér <b>{ $mitm }</b>, ktorý je buď umiestnený vo vašom počítači alebo v sieti.
+neterror-corrupted-content-intro = Požadovanú stránku nemožno zobraziť, pretože pri prenose údajov došlo k chybe.
+neterror-corrupted-content-contact-website = Kontaktujte prosím vlastníkov webovej stránky a informujte ich o tomto probléme.
+# Do not translate "SSL_ERROR_UNSUPPORTED_VERSION".
+neterror-sslv3-used = Rozšírené informácie: SSL_ERROR_UNSUPPORTED_VERSION
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-inadequate-security-intro = <b>{ $hostname }</b> využíva technológiu zabezpečenia, ktorá je zastaraná a zraniteľná voči útokom. Útočník by mohol jednoducho odhaliť informácie, o ktorých ste si mysleli, že sú v bezpečí. Správca webovej stránky ju bude musieť pred jej ďalšou návštevou opraviť.
+# Do not translate "NS_ERROR_NET_INADEQUATE_SECURITY".
+neterror-inadequate-security-code = Kód chyby: NS_ERROR_NET_INADEQUATE_SECURITY
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+# $now (Date) - The current datetime, to be formatted as a date
+neterror-clock-skew-error = Váš počítač si myslí, že je { DATETIME($now, dateStyle: "medium") }, čo bráni aplikácii { -brand-short-name } bezpečne sa spojiť so serverom. Ak chcete navštíviť <b>{ $hostname }</b>, upravte nastavenia dátumu a času vo vašom počítači na správne hodnoty a obnovte <b>{ $hostname }</b>.
+neterror-network-protocol-error-intro = Stránka, ktorú sa pokúšate navštíviť nemôže byť zobrazená, pretože bola zistená chyba v sieťovom protokole.
+neterror-network-protocol-error-contact-website = Kontaktujte, prosím, vlastníkov stránky a informujte ich o tomto probléme.
+certerror-expired-cert-second-para = Pravdepodobne stránke vypršala platnosť certifikátu, čo bráni aplikácii { -brand-short-name } bezpečne sa pripojiť. Ak sa napriek tomu rozhodnete stránku navštíviť, útočníci sa môžu pokúsiť ukradnúť vaše informácie, ako sú heslá, e‑mailové adresy alebo čísla platobných kariet.
+certerror-expired-cert-sts-second-para = Pravdepodobne stránke vypršala platnosť certifikátu, čo bráni aplikácii { -brand-short-name } bezpečne sa pripojiť.
+certerror-what-can-you-do-about-it-title = Čo s tým môžete urobiť?
+certerror-unknown-issuer-what-can-you-do-about-it-website = Tento problém je pravdepodobne na strane webovej stránky a vy ho, bohužiaľ, nedokážete vyriešiť.
+certerror-unknown-issuer-what-can-you-do-about-it-contact-admin = Ak ste pripojení do firemnej siete alebo používate antivírusový program, kontaktujte podporu svojej firmy, respektíve antivírusového programu. O probléme môžete taktiež informovať správcu webovej stránky.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+# $now (Date) - The current datetime, to be formatted as a date
+certerror-expired-cert-what-can-you-do-about-it-clock = Hodiny vášho počítača sú nastavené na { DATETIME($now, dateStyle: "medium") }. Uistite sa, že v nastaveniach systému máte v počítači nastavený správny dátum, čas a časové pásmo, a potom obnovte stránku <b>{ $hostname }</b>.
+certerror-expired-cert-what-can-you-do-about-it-contact-website = Ak máte čas nastavený správne, pravdepodobne je webová stránka zle nastavená a vy tento problém nedokážete vyriešiť. O probléme môžete informovať správcu webovej stránky.
+certerror-bad-cert-domain-what-can-you-do-about-it = Tento problém je pravdepodobne na strane webovej stránky a vy ho, bohužiaľ, nedokážete vyriešiť. O probléme môžete informovať správcu webovej stránky.
+certerror-mitm-what-can-you-do-about-it-antivirus = Ak váš antivírusový program obsahuje funkciu skenovania šifrovaných spojení (často nazývaná ako “skenovanie webu” alebo “skenovanie https”), môžete túto funkciu skúsiť vypnúť. Ak to nepomôže, môžete skúsiť antivírusový program odstrániť a preinštalovať.
+certerror-mitm-what-can-you-do-about-it-corporate = Ak ste na firemnej sieti, kontaktujte jej IT oddelenie.
+# Variables:
+# $mitm (String) - The name of the software intercepting communications between you and the website (or “man in the middle”)
+certerror-mitm-what-can-you-do-about-it-attack = Ak <b>{ $mitm }</b> nepoznáte, môže ísť o útok a nemali by ste pokračovať v pokusoch o pripojenie sa k tejto stránke.
+# Variables:
+# $mitm (String) - The name of the software intercepting communications between you and the website (or “man in the middle”)
+certerror-mitm-what-can-you-do-about-it-attack-sts = Ak <b>{ $mitm }</b> nepoznáte, môže ísť o útok a bohužiaľ nie je možné urobiť nič, aby ste sa mohli pripojiť k tejto stránke.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+certerror-what-should-i-do-bad-sts-cert-explanation = Server <b>{ $hostname }</b> má bezpečnostnú politiku HTTP Strict Transport Security (HSTS), čo znamená, že { -brand-short-name } sa k nemu môže pripojiť iba pomocou zabezpečeného spojenia. Na návštevu tohto webu nemôžete pridať výnimku.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Pravdepodobne nič, pretože je pravdepodobné, že je problém so samotnou stránkou.
+certerror-blocked-by-corp-headers-description = Niekedy webové stránky nastavujú ochranu pre seba a ľudí, ako ste vy, pred nechcenými interakciami s inými webmi.
+certerror-coop-learn-more = Ďalšie informácie o zásadách Cross Origin Opener Policies (COOP)
+certerror-coep-learn-more = Ďalšie informácie o zásadách Cross Origin Embedder Policies (COEP)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Kód chyby: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+
+fp-neterror-offline-body-title = Zdá sa, že sa vyskytol problém s vaším internetovým pripojením
+
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name } nedokáže vytvoriť zabezpečené pripojenie k serveru na adrese { $hostname }.
+fp-neterror-offline-intro = { -brand-short-name } sa nemôže pripojiť k serveru na adrese <strong>{ $hostname }</strong>
+fp-neterror-offline-intro-2 = { -brand-short-name } sa nemôže pripojiť k serveru na adrese <strong>{ $hostname }</strong>.
+fp-neterror-net-timeout-intro = Server na adrese <strong>{ $hostname }</strong> odpovedá príliš dlho.
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+#   $responsestatus (Number) - HTTP response status code (e.g., 404).
+#   $responsestatustext (String) - HTTP response status text (e.g., "Not Found", always in English).
+fp-neterror-http-error-intro = Server na adrese <strong>{ $hostname }</strong> odoslal späť chybu: { $responsestatus } { $responsestatustext }
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-neterror-invalid-header-value-intro = <strong>{ $hostname }</strong> poslal späť hlavičku s prázdnymi znakmi, ktoré štandardy zabezpečenia webu nepovoľujú.
+fp-neterror-content-encoding-intro = Stránka nemôže byť zobrazená, pretože používa neplatnú alebo nepodporovanú formu kompresie.
+fp-neterror-coop-coep-intro = { -brand-short-name } nenačítal túto stránku, pretože vyzerá to tak, že konfigurácia zabezpečenia nezodpovedá predchádzajúcej stránke.
+fp-neterror-blocked-by-policy-intro = Prístup k tejto stránke alebo serveru bol zablokovaný vašou organizáciou.
+fp-neterror-http-auth-disabled-intro = Niekto, kto predstiera, že je webom, by sa mohol pokúsiť ukradnúť veci, ako je vaše používateľské meno, heslo alebo e‑mailovú adresu.
+fp-neterror-http-auth-disabled-secure-connection = Táto stránka vyžaduje zabezpečené pripojenie a na jej návštevu nie je možné pridať výnimku.
+fp-neterror-why-did-this-happen = Prečo sa to stalo?
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Zdá sa, že táto stránka používa starý softvér so známymi bezpečnostnými problémami.
+fp-neterror-http-auth-disabled-why-dangerous-body = { -brand-short-name } nedôveruje serveru { $hostname }, pretože pripojenie nie je zabezpečené.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = Uistite sa, že používate najnovšiu verziu { -brand-short-name(case: "gen") }. V ponuke prejdite na Pomocník > O aplikácii { -brand-short-name }. Ak používate najnovšiu verziu { -brand-short-name(case: "gen") }, problém je s najväčšou pravdepodobnosťou na samotnej stránke.
+fp-neterror-offline-what-can-you-do-body = Skúste sa pripojiť na inom zariadení. Skontrolujte modem alebo smerovač. Odpojte sa a znova sa pripojte k sieti Wi‑Fi.
+fp-neterror-http-auth-disabled-what-can-you-do-body = Skúste zmeniť URL adresu na HTTPS. Je však pravdepodobné, že problém je na samotnej stránke.
+# This string appears after the following string: "Why did this happen?" (fp-neterror-why-did-this-happen)
+fp-neterror-coop-coep-why-did-this-happen-body = Webové stránky si niekedy nastavia ochranu pred nechcenými interakciami s inými stránkami.
+fp-learn-more-about-https-connections = Ďalšie informácie o pripojeniach HTTPS
+fp-neterror-vpn-error-title = Nepodarilo sa pripojiť k VPN
+fp-neterror-vpn-error-description = Skúste to znova o pár minút.
+fp-neterror-denied-port-access = Táto adresa používa sieťový port, ktorý je normálne používaný na iné účely ako prehliadanie webu. { -brand-short-name } zrušil z dôvodu ochrany túto požiadavku.

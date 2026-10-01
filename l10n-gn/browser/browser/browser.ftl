@@ -1,0 +1,1595 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } Ñeikundaha ñemi
+# This MUST match the translation of "BRIEF_APP_DESC" in custom.properties
+browser-shortcut-description = Ñeikundaha pya’e ha hekoñemíva
+# This is the initial default title for the browser window.
+# It gets updated based on loaded tabs or private browsing state.
+browser-main-window-default-title = { -brand-full-name }
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — Kundaha ñemi
+       *[other] { -brand-full-name } Kundaha ñemi
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = Kundaha ñemi
+popups-infobar-dont-show-message2 =
+    .label = Ani ehechauka ko ñe’ẽmondo ovetã iñapysẽva térã mbohapejey mbohapyháva gotyo ojejokóma
+    .accesskey = D
+edit-popup-settings2 =
+    .label = Eñangareko ovetã apysẽ ñemboheko ha moma’ẽ mohapyhávare…
+    .accesskey = M
+urlbar-identity-button =
+    .aria-label = Ehecha marandu ko tenda pegua
+
+## Tooltips for images appearing in the address bar
+
+urlbar-services-notification-anchor =
+    .tooltiptext = Eike ñe’ẽmondo ñemohenda ra’ãngarupápe
+urlbar-web-notification-anchor =
+    .tooltiptext = Emoambue eipotárõ oñemog̃uahẽ ndéve ñemomarandu ko ñandutirenda omondóva.
+urlbar-midi-notification-anchor =
+    .tooltiptext = Eike ta’ãngarupa MIDI pe
+urlbar-serial-notification-anchor =
+    .tooltiptext = Embojuruja mba’erupa hysýiva
+urlbar-eme-notification-anchor =
+    .tooltiptext = Eñangareko DRM software jeporu rehe
+urlbar-web-authn-anchor =
+    .tooltiptext = Eike pe ñanduti mboajeha rupápe
+urlbar-canvas-notification-anchor =
+    .tooltiptext = Ñangareko Moñeĩ Oñeguehohẽ hag̃ua Canvas
+urlbar-web-rtc-share-microphone-notification-anchor =
+    .tooltiptext = Eiporuhína neñe’ẽatãha ko tenda ndive
+urlbar-default-notification-anchor =
+    .tooltiptext = Eike ñe’ẽmondo rupápe
+urlbar-geolocation-notification-anchor =
+    .tooltiptext = Tendaite jerurepy rupa ijurujáva
+urlbar-localhost-notification-anchor =
+    .tooltiptext = Eñangareko mba’e’okápe jeike ko tendápe g̃uarã
+urlbar-local-network-notification-anchor =
+    .tooltiptext = Eñangareko ñandutípe jeike jeporu joja ko tenda ndive
+urlbar-xr-notification-anchor =
+    .tooltiptext = Embojuruja ñemoneĩ rupa añetegua ñanduti rehegua
+urlbar-storage-access-anchor =
+    .tooltiptext = Embojuruja kundahára rembiapo ñemoneĩ rupa
+urlbar-web-rtc-share-screen-notification-anchor =
+    .tooltiptext = Eñangareko moherakuã nerovetã térã mba’erechaha ko tenda ndive
+urlbar-indexed-db-notification-anchor =
+    .tooltiptext = Eguereko ñangarekoha rekaha. Eikutu Esc eguereko jey hag̃ua pe ñangarekoha.
+urlbar-password-notification-anchor =
+    .tooltiptext = Eike ñe’ẽmondo rupa ñe’ẽñemi ñongatuhápe
+urlbar-web-rtc-share-devices-notification-anchor =
+    .tooltiptext = Eñangareko moherakuã nerovetã térã mba’erechaha ko tenda ndive
+# "Speakers" is used in a general sense that might include headphones or
+# another audio output connection.
+urlbar-web-rtc-share-speaker-notification-anchor =
+    .tooltiptext = Eñangareko ñe’ẽatãha moherakuãre ko tenda ndive
+urlbar-autoplay-notification-anchor =
+    .tooltiptext = Embojuruja ñemboheta ijeheguíva ra’ãngarupa
+urlbar-persistent-storage-notification-anchor =
+    .tooltiptext = Mba’ekuaarã mboheta ñembyaty hi’arekuaávape
+urlbar-addons-notification-anchor =
+    .tooltiptext = Eike ñe’ẽmondo moĩmbaha ñemohenda ra’ãngarupápe
+urlbar-search-tips-confirm = Oĩma, aikumbýma
+urlbar-search-tips-confirm-short = Aikũmby
+urlbar-result-menu-button =
+    .title = Poravorã ijurujáva
+urlbar-result-menu-button-feedback = Ñe’ẽpoi
+    .title = Poravorã ijurujáva
+urlbar-result-menu-learn-more2 = Kuaave
+    .accesskey = L
+urlbar-result-menu-remove-from-history2 = Emboguepa tembiasakuégui
+    .accesskey = R
+urlbar-result-menu-tip-get-help2 = Eipota pytyvõ
+    .accesskey = h
+urlbar-result-menu-dismiss-suggestion2 = Ehejarei ko ñemoñe’ẽ
+    .accesskey = D
+urlbar-result-menu-manage-firefox-suggest2 = Eñangareko { -firefox-suggest-brand-name }
+    .accesskey = M
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location2 = Emombe’u tendaite oĩ’ỹha
+urlbar-result-menu-show-less-frequently2 = Ehechauka sa’ive eikóvo
+urlbar-result-menu-dont-show-weather-suggestions2 = Ani ehechauka je’epy arapytu rehegua
+# Shown in the urlbar input field context menu to dismiss an adaptive autofill
+# suggestion.
+urlbar-input-dismiss-autofill =
+    .label = Ehejarei ko ñemoñe’ẽ
+    .accesskey = i
+# Shown in the urlbar input field context menu to remove an adaptive autofill
+# URL from history.
+urlbar-input-remove-from-history =
+    .label = Embogue tembiasakuégui
+    .accesskey = e
+urlbar-result-menu-learn-more =
+    .label = Kuaave
+    .accesskey = L
+urlbar-result-menu-remove-from-history =
+    .label = Emboguepa tembiasakuégui
+    .accesskey = R
+urlbar-result-menu-tip-get-help =
+    .label = Eipota pytyvõ
+    .accesskey = h
+urlbar-result-menu-dismiss-suggestion =
+    .label = Ehejarei ko ñemoñe’ẽ
+    .accesskey = D
+urlbar-result-menu-manage-firefox-suggest =
+    .label = Eñangareko { -firefox-suggest-brand-name }
+    .accesskey = M
+# Some urlbar suggestions show the user's approximate location as automatically
+# detected by Firefox (e.g., weather suggestions), and this menu item lets the
+# user tell Firefox that the location is not accurate. Typically the location
+# will be a city name, or a city name combined with the name of its parent
+# administrative division (e.g., a province, prefecture, or state).
+urlbar-result-menu-report-inaccurate-location =
+    .label = Emombe’u tendaite oĩ’ỹha
+urlbar-result-menu-show-less-frequently =
+    .label = Ehechauka sa’ive eikóvo
+urlbar-result-menu-dont-show-weather-suggestions =
+    .label = Ani ehechauka je’epy arapytu rehegua
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = Eike poravorãme
+# A message shown in the urlbar when the user submits feedback on a suggestion
+# (e.g., it shows an inaccurate location, it's shown too often, etc.).
+urlbar-feedback-acknowledgment = Aguyje nde jehaipyrére
+# A message shown in the urlbar when the user dismisses weather suggestions.
+# Weather suggestions won't be shown at all anymore.
+urlbar-dismissal-acknowledgment-weather = Aguyje ne remiandu rehe. Nderehechamoʼãvéima je’epy arapytu rehegua.
+
+## Prompts users to use the Urlbar when they open a new tab or visit the
+## homepage of their default search engine.
+## Variables:
+##  $engineName (String): The name of the user's default search engine. e.g. "Google" or "DuckDuckGo".
+
+urlbar-search-tips-onboard = Ehai sa’ive, ejuhuve: Eheka { $engineName } kundaharape rendaite guive.
+urlbar-search-tips-redirect-2 = Eñepyrũ eheka kundaharape rendápe ehecha hag̃ua { $engineName } ñe’ẽporã ha iñeikundaha rembiasakue.
+# Prompts users to use the Urlbar when they are typing in the domain of a
+# search engine, e.g. google.com or amazon.com.
+urlbar-tabtosearch-onboard = Eiporavo ko jeike pya’eha ejuhu pya’eve hag̃ua ehekáva.
+
+## Local search mode indicator labels in the urlbar
+
+urlbar-search-mode-bookmarks = Techaukahakuéra
+urlbar-search-mode-tabs = Tendaykekuéra
+urlbar-search-mode-history = Tembiasakue
+urlbar-search-mode-actions = Ñemongu’e
+
+##
+
+urlbar-geolocation-blocked =
+    .tooltiptext = Ejokóma marandu ejuhukuaa hag̃ua ko ñanduti renda.
+urlbar-localhost-blocked =
+    .tooltiptext = Ejokóma umi mba’e’okápe jeikekuaa ñanduti roguépe g̃uarã.
+urlbar-local-network-blocked =
+    .tooltiptext = Ejokóma umi mba’e’okápe jeikekuaa ko ñandutípe g̃uarã.
+urlbar-xr-blocked =
+    .tooltiptext = Ejokóma mba’e’okápe jeike añetegua ñanduti ko tendápe g̃uarã.
+urlbar-web-notifications-blocked =
+    .tooltiptext = Ejokóma ñemomarandu ko ñanduti rendápe g̃uarã.
+urlbar-camera-blocked =
+    .tooltiptext = Ejokóma ne ta’ãngamýi ko ñanduti rendápe g̃uarã.
+urlbar-microphone-blocked =
+    .tooltiptext = Ejokóma ne ñe’ẽatãha ko ñanduti rendápe g̃uarã.
+urlbar-screen-blocked =
+    .tooltiptext = Ejokóma ko ñanduti renda emoherakuã hag̃ua ne mba’erechaha.
+urlbar-persistent-storage-blocked =
+    .tooltiptext = Ejokóma mba’ekuaarã ñembyaty hi’aréva ko ñanduti renda pegua.
+urlbar-popup-blocked2 =
+    .tooltiptext = Ejokóma ovetã apysẽ ha moma’ẽ mohapyha ko ñanduti rendápe g̃uarãre.
+urlbar-autoplay-media-blocked =
+    .tooltiptext = Ejokóma ñemboheta ijeheguíva mba’epu rehegua ko ñanduti rendápe g̃uarã.
+urlbar-canvas-blocked =
+    .tooltiptext = Ejokoukákuri kuaapy canvas rehegua ñeguenohẽ ko ñandutirendápe g̃uarã.
+urlbar-midi-blocked =
+    .tooltiptext = Ejokóma MIDI pe jeike ko ñanduti rendápe g̃uarã.
+urlbar-serial-blocked =
+    .tooltiptext = Ejokóma mbojuajuhaitépe jeike ko ñanduti roguépe g̃uarã.
+urlbar-install-blocked =
+    .tooltiptext = Ejokóma tembiporu’i ñemohenda ko ñandutípe g̃uarã.
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
+urlbar-star-edit-bookmark =
+    .tooltiptext = Ko techaukaha mbosako’i ({ $shortcut })
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
+urlbar-star-add-bookmark =
+    .tooltiptext = Kuatiarogue ({ $shortcut }) mbojoapy
+urlbar-split-view-button =
+    .aria-label = Jehecha vorepyre
+    .tooltiptext = Jehecha vorepyre
+
+## Searchbar context menu
+
+clear-search-history =
+    .label = Tembiasakue jeheka mopotĩ
+    .accesskey = H
+
+## Page Action Context Menu
+
+page-action-manage-extension2 =
+    .label = Eñangareko jepysokuére…
+    .accesskey = E
+page-action-remove-extension2 =
+    .label = Emboguete jepysokue
+    .accesskey = v
+
+## Auto-hide Context Menu
+
+full-screen-autohide =
+    .label = Tembiporu renda moñemi
+    .accesskey = H
+full-screen-exit =
+    .label = Mba’erechaha tuichavéva rekógui ñesẽ
+    .accesskey = F
+
+## Search Engine selection buttons (one-offs)
+
+# This string prompts the user to use the list of search shortcuts in
+# the Urlbar and searchbar.
+search-one-offs-with-title = Ko’ág̃a, eheka hendive:
+search-one-offs-change-settings-compact-button =
+    .tooltiptext = Jeheka mba’epytyvõrã moambue
+search-one-offs-context-open-new-tab =
+    .label = Tendayke pyahúpe jeheka
+    .accesskey = T
+search-one-offs-context-set-as-default =
+    .label = Emopyenda ijypykuévaramo ha jehekaha mongu’eha
+    .accesskey = D
+search-one-offs-context-set-as-default-private =
+    .label = Emoĩ jehekaha mongu’eha ijypykuévaramo ovetã ñemíme
+    .accesskey = P
+# Search engine one-off buttons with an @alias shortcut/keyword.
+# Variables:
+#  $engineName (String): The name of the engine.
+#  $alias (String): The @alias shortcut/keyword.
+search-one-offs-engine-with-alias =
+    .tooltiptext = { $engineName } ({ $alias })
+# Shown when adding new engines from the address bar shortcut buttons or context
+# menu, or from the search bar shortcut buttons.
+# Variables:
+#  $engineName (String): The name of the engine.
+search-one-offs-add-engine =
+    .aria-label = Embojuaju jehekaha mongu’eha “{ $engineName }”
+    .label = Embojuaju “{ $engineName }”
+    .tooltiptext = Embojuaju jehekaha mongu’eha “{ $engineName }”
+# When more than 5 engines are offered by a web page, they are grouped in a
+# submenu using this as its label.
+search-one-offs-add-engine-menu =
+    .label = Hekaha mbojoapy
+
+## Local search mode one-off buttons
+## Variables:
+##  $restrict (String): The restriction token corresponding to the search mode.
+##    Restriction tokens are special characters users can type in the urlbar to
+##    restrict their searches to certain sources (e.g., "*" to search only
+##    bookmarks).
+
+search-one-offs-bookmarks =
+    .tooltiptext = Techaukahakuéra ({ $restrict })
+search-one-offs-tabs =
+    .tooltiptext = Tendaykekuéra ({ $restrict })
+search-one-offs-history =
+    .tooltiptext = Tebiasakue ({ $restrict })
+search-one-offs-actions =
+    .tooltiptext = Ñemongu’e ({ $restrict })
+
+## QuickActions are shown in the urlbar as the user types a matching string
+## The -cmd- strings are comma separated list of keywords that will match
+## the action. English commas should be used, i.e. ,
+
+# Opens the about:addons page in the home / recommendations section
+quickactions-addons = Ehecha Moĩmbaha
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = jepysokue, téma, tembiporu’i, tembiporu’ikuéra
+# Opens preferences page at AI controls
+quickactions-manageai = Emongu’e IA mbohekoha
+quickactions-cmd-manageai = eipe’a ai, embogue ai, eñangareko ai
+# Opens the bookmarks library window
+quickactions-bookmarks2 = Eñangareko techaukaháre
+quickactions-cmd-bookmarks = techaukaha
+# Opens a SUMO article explaining how to clear history
+quickactions-clearrecenthistory = Tembiasakue ramovéva ñembogue
+quickactions-cmd-clearrecenthistory2 = kookieita, embogue kookie, kache, embogue kache, ñeikundaha mba’ekuaarã, embogue ñeikundaha mba’ekuaarã, tembiasakue, embogue tembiasakue ipyahúva
+# Opens about:downloads page
+quickactions-downloads2 = Ehecha ñemboguejy
+quickactions-cmd-downloads = ñemboguejy
+# Opens about:addons page in the extensions section
+quickactions-extensions = Eñangareko jepysokuére
+quickactions-cmd-extensions2 = jepysokue, moĩmbaha, moĩmbahakuéra
+# Opens Firefox View
+quickactions-firefoxview = Embojuruja { -firefoxview-brand-name }
+# English is using "view" and "open view", since the feature name is
+# "Firefox View". If you have translated the name in your language, you
+# should use a word related to the existing translation.
+quickactions-cmd-firefoxview = Embojuruja { -firefoxview-brand-name }, { -firefoxview-brand-name }, mbojuruja recha, jehecha
+# Opens SUMO home page
+quickactions-help = { -brand-product-name } ñepytyvõ
+quickactions-cmd-help = pytyvõ, pytyvõha
+# Opens the devtools web inspector
+quickactions-inspector2 = Embojuruja tembiporu mboguatahárape g̃uarã
+quickactions-cmd-inspector2 = hechahára, devtools, tembiporu mboguatahárape g̃uarã
+# Opens the devtools eyedropper to pick a color from the page
+quickactions-colorpicker = Eiporavo sa’y
+quickactions-cmd-colorpicker = sa’y poravoha, tykypapaha, sa’y poravo
+# Opens Firefox Library
+quickactions-cmd-library = Arandukaty
+quickactions-library = Embojuruja Arandukaty
+# Opens about:logins
+quickactions-logins2 = Eñangareko ñe’ẽñemíre
+quickactions-cmd-logins = tembiapo ñepyrũ, ñe’ẽñemi
+# Mutes all tabs playing audio
+quickactions-mute = Emokirirĩ tendayke mba’epugua
+# List of words that would trigger the "mute tabs" action from the address bar.
+# Replace with idiomatic expressions in your language to silence something or
+# someone.
+quickactions-cmd-mute = ekirirĩ, shhhh, sssssh
+# Opens the print dialog
+quickactions-print2 = Emonguatia kuatiarogue
+quickactions-cmd-print = Mbokuatia
+# Opens the print dialog at the save to PDF option
+quickactions-savepdf = Eñongatu kuatiarogue PDF ramo
+quickactions-cmd-savepdf2 = pdf, eñongatu kuatiarogue
+# Opens about:pdf, the PDF editor landing page
+quickactions-editpdf = Embojuruja PDF mbosako’iha
+quickactions-cmd-editpdf = pdf
+# Opens a new private browsing window
+quickactions-private2 = Embojuruja ovetã ñemi
+quickactions-cmd-private = Ñeikundaha ñemigua
+# Opens a SUMO article explaining how to refresh
+quickactions-refresh = Eguerujey { -brand-short-name }
+quickactions-cmd-refresh = Mbopiro’y
+# Restarts the browser
+quickactions-restart = Emoñepyrũjey { -brand-short-name }
+quickactions-cmd-restart = Moñepyrũjey
+# Opens the screenshot tool
+quickactions-screenshot3 = Ejapyhy mba’erechaha
+quickactions-cmd-screenshot2 = mba’erechaha japyhy, ejapyhy mba’erechaha
+# Opens about:translations
+quickactions-translate = Moñe’ẽasa
+quickactions-cmd-translate = moñe’ẽasa
+# Opens about:preferences
+quickactions-settings2 = Eñangareko ehayhuvévare
+# "manage" should match the corresponding command, which is “Manage settings” in English.
+quickactions-cmd-settings2 = ñemboheko, guerohory, poravorã, ñangareko
+# Opens about:addons page in the themes section
+quickactions-themes = Eñangareko témare
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-themes2 = téma, moĩmbaha, mbojuaju
+# Opens a SUMO article explaining how to update the browser
+quickactions-update = Embohekopyahu { -brand-short-name }
+quickactions-cmd-update = mbohekopyahu
+# Opens the view-source UI with current pages source
+quickactions-viewsource2 = Ehecha ayvu reñoiha
+quickactions-cmd-viewsource2 = ehecha ayvu reñoiha, teñoiha, kuatiarogue ayvu reñoiha
+# Opens about:preferences:experimental (Firefox Labs)
+quickactions-labs = Embojuruja { -firefoxlabs-brand-name }
+quickactions-cmd-labs = labs, mba’epyahu
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Eikuaave mbopya’eha rehegua
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Eikutu jetavulaha eiporavo hag̃ua:
+
+## Bookmark Panel
+
+bookmarks-add-bookmark = Embojuaju Techaukaha
+bookmarks-edit-bookmark = Embosako’i Techaukaha
+bookmark-panel-cancel =
+    .label = Heja
+    .accesskey = C
+# Variables:
+#  $count (number): number of bookmarks that will be removed
+bookmark-panel-remove =
+    .label =
+        { $count ->
+            [one] Techaukaha ñemboguete
+           *[other] { $count } techaukaha ñemboguete
+        }
+    .accesskey = R
+bookmark-panel-show-editor-checkbox =
+    .label = Ehechauka mbosako’iha eñongatúvo
+    .accesskey = S
+bookmark-panel-save-button =
+    .label = Ñongatu
+# Width of the bookmark panel.
+# Should be large enough to fully display the Done and
+# Cancel/Remove Bookmark buttons.
+bookmark-panel =
+    .style = min-width: 23em
+
+## Identity Panel
+
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+identity-site-information = Marandu tenda rehegua { $host } peg̃uarã
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+identity-header-security-with-host =
+    .title = Jeikeha hekorosãva { $host } peg̃uarã
+identity-connection-not-secure = Jeikekatu’ỹ
+identity-connection-secure = Jeikekatu
+identity-connection-failure = Jeike oiko’ỹva
+identity-connection-internal = Kóva { -brand-short-name } jeroviáva; kuatiarogue.
+identity-connection-file = Ko kuatiarogue oñeñongatu mohendahápe.
+identity-connection-associated = Ko kuatiarogue oñemyanyhẽ ambue kuatiarogue guive.
+identity-extension-page = Ko kuatiarogue oñemyanyhẽ jepysokue guive.
+identity-active-blocked = { -brand-short-name } ojokóma ko kuatiarogue pehẽ ijerovia’ỹha.
+identity-custom-root = Jeike ohechapyréva mboajepyre me’ẽha Mozilla omoneĩ’ỹva.
+identity-passive-loaded = Ko kuatiarogue pehẽ heta hendápe nda’ijeroviapái (mba’era’ãngáramo).
+identity-active-loaded = Ndereguerekói pa’ũ ko kuatiaroguépe g̃uarã.
+identity-weak-encryption = Ko kuatiarogue oiporu ñangarekoha ikangýva.
+identity-https-only-connection-upgraded = (HTTPS hekopyahupyre)
+identity-https-only-label2 = Hekopyahúta ijehegui ko tenda jeike rekokatu reheve
+identity-https-only-dropdown-on =
+    .label = Myandy
+identity-https-only-dropdown-off =
+    .label = Mbogue
+identity-https-only-dropdown-off-temporarily =
+    .label = Jepe’a sapy’agua
+identity-https-only-info-turn-on3 = Emyandy HTTPS rekopyahurã ko tendápe g̃uarã eipotáramo { -brand-short-name } ombohekopyahu nde jeike ikatu vove.
+identity-https-only-info-turn-off3 = Pe tenda ndoikoporãirõ, ikatu emboguese HTTPS rekopyahurã emyanyhẽjey hag̃ua tenda eiporúvo HTTP hekorosã’ỹva.
+identity-https-only-info-no-upgrade = Ndaikatúi embohekopyahu jeike HTTP guive.
+identity-permissions-storage-access-header = Kookie tenda ojuasáva
+identity-permissions-storage-access-hint = Ko’ãva ikatu oiporu kookie ha tenda ojuasáva mba’ekuaarã eime aja ko tendápe.
+identity-permissions-storage-access-learn-more = Kuaave
+identity-permissions-reload-hint = Ikatu hína kuatiarogue emyanyhẽjey umi moambuepyre oñemboheko hag̃ua.
+identity-clear-site-data =
+    .label = Emopotĩ kookie ha mba’ekuaarã tendágui…
+identity-connection-not-secure-security-view = Nde jeike nahekorosãi ko tendápe.
+identity-connection-verified = Eikehína tekorosãme ko tendápe.
+identity-ev-owner-label2 = Mboajepyre osẽmava
+identity-verifier-label2 = Ojehechámava
+identity-ev-owner-label = Mboajepyre osẽmava:
+identity-verifier-label = Ohecháva:
+# "qualified" here refers to the qualified website authentication certificate presented by the site.
+identity-etsi = Ojehecharamo he’iháicha pe Tekoguatarã (UE) 2024/1183.
+identity-description-custom-root2 = Mozilla nomoneĩri ko mboajepyre me’ẽhápe. Ikatu oñembojuaju apopyvusu oku’éva térã ñangarekoha rupive.
+identity-cert-exception-overridden = Embojuapy peteĩ mba’e tekorosãrã ko tendápe g̃uarã.
+identity-remove-cert-exception =
+    .label = Emongue oĩ’ỹva
+    .accesskey = R
+identity-description-insecure = Nde jeike ko tendápe naiñemíri. Marandu remondóva ikatu ohecha ambue tapicha (ñe’ẽñemíramo, ñe’ẽmondo, kuatia’atã ñemurã ha ambueve).
+identity-description-weak-cipher-intro = Nde jeike ko ñanduti rendápe oiporu ñangarekoha ikangýva ha naiñemíri.
+identity-description-weak-cipher-risk = Ambue tapichakuéra ikatu ohecha nemarandu térã omoambue ñanduti kuatiarogue reko.
+identity-description-active-blocked2 = { -brand-short-name } ojokóma ko kuatiarogue pehẽ ijerovia’ỹha.
+identity-description-passive-loaded = Nde jeike naiñemíri ha nemarandu remoingéva ko tendápe ikatu ohecha ambue tapicha.
+identity-description-passive-loaded-insecure2 = Ñanduti renda oguereko hetepy ndaijeroviapáiva (mba’era’ãngáramo).
+identity-description-passive-loaded-mixed2 = { -brand-short-name } ojokóramo jepe heta retepy, oĩ gueteri tetepy kuatiaroguépe ndaijegueroviapáiva (mba’era’ãngáramo).
+identity-description-active-loaded = Ko ñanduti renda oguereko hetepy ndaijeroviapáiva (guiõramo) ha nde jeike pype naiñemíri.
+identity-description-active-loaded-insecure = Marandu remondóva ko kuatiaroguépe ikatu ohecha ambue tapicha (ñe’ẽñemíramo, ñe’ẽmondo, kuatia’atã ñemurã ha ambue).
+identity-description-tls-key-logging-heading = Nde jeike ikatuhína ndahekoñemíri
+identity-description-tls-key-logging-message = Tembiporu’i térã mba’eporurã ikatu ohecha jeike ipapapýva ko tenda rehegua.
+identity-more-info-link-text =
+    .label = Maranduve
+
+## Window controls
+
+browser-window-minimize-button =
+    .tooltiptext = Momichĩ
+browser-window-maximize-button =
+    .tooltiptext = Mbotuicha
+browser-window-restore-down-button =
+    .tooltiptext = Embojevyjey Yvýgotyo
+browser-window-close-button =
+    .tooltiptext = Mboty
+# Clicking this button closes the window and returns to the tab where it was opened from
+browser-window-return-to-opener =
+    .tooltiptext = Jevyjey
+
+## Bookmarks toolbar items
+
+browser-import-button2 =
+    .label = Techaukaha jegueru…
+    .tooltiptext = Egueru techaukaha ambue kundaháragui { -brand-short-name }-pe.
+bookmarks-toolbar-empty-message = Eike pya’e hag̃ua, emoĩ nde rechaukaha techaukaha rembiporu rendápe. <a data-l10n-name="manage-bookmarks">Eñangareko techaukaháre…</a>
+
+## WebRTC Pop-up notifications
+
+popup-select-camera-device =
+    .value = Ta’ãnganohẽha:
+    .accesskey = C
+popup-select-camera-icon =
+    .tooltiptext = Ta’ãnganohẽha
+popup-select-microphone-device =
+    .value = Ñe’ẽatãha:
+    .accesskey = M
+popup-select-microphone-icon =
+    .tooltiptext = Ñe’ẽatãha
+popup-select-speaker-icon =
+    .tooltiptext = Ñe’ẽatãhakuéra
+popup-select-window-or-screen =
+    .label = Ovetã térã mba’erechaha:
+    .accesskey = W
+popup-all-windows-shared = Oñemosarambíta opaite ovetã ojehecháva mba’erechahápe.
+
+## WebRTC window or screen share tab switch warning
+
+sharing-warning-window = Emoherakuãhína { -brand-short-name }. Ambue tapicha ikatu ohecha ohasávo ovetã pyahúpe.
+sharing-warning-screen = Emoherakuã mba’erechaha tuichavéva. Ambue tapicha ikatu ohecha ohasávo ovetã pyahúpe.
+sharing-warning-proceed-to-tab =
+    .label = Eho tendayképe
+sharing-warning-disable-for-session =
+    .label = Eipe’a ñemo’ã ko tendápe g̃uarã
+
+## WebSerial "select a port" popup
+
+webserial-select-port-label = Eiporavo mbojuajuhaite hysýiva:
+webserial-no-ports-available = Ndaipóri mbojuajuhaite eiporukuaáva
+
+## URL Bar
+
+# This string is used as an accessible name to the "X" button that cancels a custom search mode (i.e. exits the Amazon.com search mode).
+urlbar-search-mode-indicator-close =
+    .aria-label = Mboty
+# This placeholder is used when not in search mode and the user's default search
+# engine is unknown.
+urlbar-placeholder =
+    .placeholder = Ñe’ẽreka ýrõ kundaharape
+# This placeholder is used when not in search mode and searching in the urlbar
+# is disabled via the keyword.enabled pref.
+urlbar-placeholder-keyword-disabled =
+    .placeholder = Ehai kundaharape
+# This placeholder is used in search mode with search engines that search the
+# entire web.
+# Variables
+#  $name (String): the name of a search engine that searches the entire Web
+#  (e.g. Google).
+urlbar-placeholder-search-mode-web-2 =
+    .aria-label = Eheka { $name } ndive
+    .placeholder = Eheka ñandutípe
+# This placeholder is used in search mode with search engines that search a
+# specific site (e.g., Amazon).
+# Variables
+#  $name (String): the name of a search engine that searches a specific site
+#  (e.g. Amazon).
+urlbar-placeholder-search-mode-other-engine =
+    .aria-label = Eheka { $name }
+    .placeholder = Emoinge ñe’ẽ ehekaséva
+# This placeholder is used when searching bookmarks.
+urlbar-placeholder-search-mode-other-bookmarks =
+    .aria-label = Eheka techaukahápe
+    .placeholder = Emoinge ñe’ẽ ehekaséva
+# This placeholder is used when searching history.
+urlbar-placeholder-search-mode-other-history =
+    .aria-label = Eheka tembiasakuépe
+    .placeholder = Emoinge ñe’ẽ ehekaséva
+# This placeholder is used when searching open tabs.
+urlbar-placeholder-search-mode-other-tabs =
+    .aria-label = Eheka tendayképe
+    .placeholder = Emoinge ñe’ẽ ehekaséva
+# This placeholder is used when searching quick actions.
+urlbar-placeholder-search-mode-other-actions =
+    .aria-label = Jeku’e jehekarã
+    .placeholder = Emoinge ñe’ẽ ehekaséva
+# Variables
+#  $name (String): the name of the user's default search engine
+urlbar-placeholder-with-name =
+    .placeholder = Eheka { $name } ndive térã emoinge kundaharape
+# Variables
+#  $component (String): the name of the component which forces remote control.
+#    Example: "DevTools", "Marionette", "RemoteAgent".
+urlbar-remote-control-notification-anchor2 =
+    .tooltiptext = Kundahára oĩ ñangarekoha okaygua poguýpe (mba’ere: { $component })
+urlbar-permissions-granted =
+    .tooltiptext = Oñeme’ẽ ko ñanduti rendápe ñemoneĩ jo’a.
+urlbar-switch-to-tab =
+    .value = Tendayképe jeguerova:
+# Used to indicate that a selected autocomplete entry is provided by an extension.
+urlbar-extension =
+    .value = Jepysokue:
+urlbar-go-button2 =
+    .title = Kundaharape renda URL-pe jeho
+urlbar-page-action-button =
+    .tooltiptext = Kuatiarogue rembiapo
+urlbar-revert-button =
+    .tooltiptext = Ehechauka kundaharape kundaha rupápe
+
+## "Last visited" and "bookmarked" explanation strings. For bookmarks and urlbar
+## results with last-visited dates like history and top sites, these strings
+## explain why the result is shown.
+
+# Used when the private browsing engine differs from the default engine.
+# The "with" format was chosen because the search engine name can end with
+# "Search", and we would like to avoid strings like "Search MSN Search".
+# Variables
+#  $engine (String): the name of a search engine
+urlbar-result-action-search-in-private-w-engine = Eheka { $engine } ndive ovetã ñemíme
+# Used when the private browsing engine is the same as the default engine.
+urlbar-result-action-search-in-private = Eheka ovetã ñemíme
+# The "with" format was chosen because the search engine name can end with
+# "Search", and we would like to avoid strings like "Search MSN Search".
+# Variables
+#  $engine (String): the name of a search engine
+urlbar-result-action-search-w-engine = Eheka { $engine } ndive
+urlbar-result-action-sponsored = Pytyvõpyréva
+urlbar-result-action-switch-tab = Tendayképe jeguerova
+urlbar-result-action-move-tab-to-split-view = Eguerova tendayke hechaha ivorévape
+urlbar-result-action-visit = Jeho
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Emoambue tendayke · <span>{ $container }</span>-pe
+# Used when the target tab is in a tab group that doesn't have a label.
+urlbar-result-action-tab-group-unnamed = Aty hera’ỹva
+# Allows the user to visit a URL that was previously copied to the clipboard.
+urlbar-result-action-visit-from-clipboard = Jeike kuatiajokoha guive
+# Directs a user to press the Tab key to perform a search with the specified
+# engine.
+# Variables
+#  $engine (String): the name of a search engine that searches the entire Web
+#  (e.g. Google).
+urlbar-result-action-before-tabtosearch-web = Eikutu Tab eheka hag̃ua { $engine } ndive
+# Directs a user to press the Tab key to perform a search with the specified
+# engine.
+# Variables
+#  $engine (String): the name of a search engine that searches a specific site
+#  (e.g. Amazon).
+urlbar-result-action-before-tabtosearch-other = Eikutu Tab eheka hag̃ua { $engine }
+# Variables
+#  $engine (String): the name of a search engine that searches the entire Web
+#  (e.g. Google).
+urlbar-result-action-tabtosearch-web = Eheka { $engine } ndive kundaharape renda guive
+# Variables
+#  $engine (String): the name of a search engine that searches a specific site
+#  (e.g. Amazon).
+urlbar-result-action-tabtosearch-other-engine = Eheka { $engine } ndive kundaharape renda guive
+# Action text for copying to clipboard.
+urlbar-result-action-copy-to-clipboard = Monguatia
+# The string returned for an undefined calculator result such as when dividing by 0
+urlbar-result-action-undefined-calculator-result = ojekuaa’ỹva
+# The sub title of an add-on suggestion in the urlbar.
+urlbar-result-addons-subtitle = { -brand-product-name } jepysokue
+# The sub title of a mdn suggestion in the urlbar.
+urlbar-result-mdn-subtitle = { -mdn-brand-name }
+# The sub title of a Yelp suggestion in the urlbar.
+urlbar-result-yelp-subtitle = { -yelp-brand-name }
+# This string explaining that the suggestion is a recommendation.
+urlbar-result-suggestion-recommended = Je’eporãpyre
+# The title of a weather suggestion in the urlbar. The temperature and unit
+# substring should be inside a <strong> tag. If the temperature and unit are not
+# adjacent in the localization, it's OK to include only the temperature in the
+# tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name of the city's region or country. Depending on
+#       the user's location in relation to the city, this may be the name or
+#       abbreviation of one of the city's administrative divisions like a
+#       province or state, or it may be the name of the city's country.
+urlbar-result-weather-title = <strong>{ $temperature }°{ $unit }</strong> { $city }, { $region }-pe
+# The title of a weather suggestion in the urlbar including a region and
+# country. The temperature and unit substring should be inside a <strong> tag.
+# If the temperature and unit are not adjacent in the localization, it's OK to
+# include only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+#   $region (String) - The name or abbreviation of one of the city's
+#       administrative divisions like a province or state.
+#   $country (String) - The name of the city's country.
+urlbar-result-weather-title-with-country = <strong>{ $temperature }°{ $unit }</strong> { $city }, { $region }, { $country }-pe
+# The title of a weather suggestion in the urlbar only including the city. The
+# temperature and unit substring should be inside a <strong> tag. If the
+# temperature and unit are not adjacent in the localization, it's OK to include
+# only the temperature in the tag.
+# Variables:
+#   $temperature (number) - The temperature value
+#   $unit (String) - The unit for the temperature, either "C" or "F"
+#   $city (String) - The name of the city the weather data is for
+urlbar-result-weather-title-city-only = <strong>{ $temperature }°{ $unit }</strong> { $city }-pe
+# Shows the name of the provider of weather data in a weather suggestion in the
+# urlbar.
+# Variables:
+#   $provider (String) - The name of the weather-data provider. It will be the
+#       name of a company, organization, or service.
+urlbar-result-weather-provider-sponsored = { $provider } · Ykekopyre
+# Used for asking AI assistant chat.
+urlbar-result-action-ai-chat = Porandu
+# This explanation is used when the last-visited date is formatted as one of the
+# following relative dates: "yesterday", "today"
+# Variables:
+#   $date (string) - A localized relative date string
+urlbar-result-explanation-last-visited-relative = Eikeramoveha ha’e { $date }
+# This explanation is used when the last-visited date is a small number of days
+# in the past.
+# Variables:
+#   $daysAgo (number) - The number of days ago
+urlbar-result-explanation-last-visited-days =
+    { $daysAgo ->
+        [one] Eikeramoveha ha’e { $daysAgo } ára
+       *[other] Eikeramoveha ha’e { $daysAgo } araita
+    }
+# This explanation is used when the last-visited date is a small number of weeks
+# in the past.
+# Variables:
+#   $weeksAgo (number) - The number of weeks ago
+urlbar-result-explanation-last-visited-weeks =
+    { $weeksAgo ->
+        [one] Eikeramoveha ha’e { $weeksAgo } arapokõindy
+       *[other] Eikeramoveha ha’e { $weeksAgo } arapokõindyeta
+    }
+# This explanation is used when the last-visited date is a small number of
+# months in the past.
+# Variables:
+#   $monthsAgo (number) - The number of months ago
+urlbar-result-explanation-last-visited-months =
+    { $monthsAgo ->
+        [one] Eikeramoveha ha’e { $monthsAgo } jasy
+       *[other] Eikeramoveha ha’e { $monthsAgo } jasyeta
+    }
+# This explanation is used when the last-visited date is further in the past.
+# The date will be formatted as an absolute date like: "11 May", "11 May 2026"
+# Variables:
+#   $date (string) - A localized absolute date string
+urlbar-result-explanation-last-visited-absolute = Eikeramoveha ha’e { $date }
+# This explanation is used when the result is bookmarked. The date will be
+# formatted as an absolute date like: "11 May", "11 May 2026"
+# Variables:
+#   $date (string) - A localized absolute date string
+urlbar-result-explanation-bookmarked = Techaukahápe ñongatupyre { $date }-pe
+# This explanation is used when the last-visited date is formatted as one of the
+# following relative dates: "yesterday", "today"
+# Variables:
+#   $date (string) - A localized relative date string
+urlbar-result-explanation-last-visited-relative-2 = Ehecha ramovéva { $date }
+# This explanation is used when the last-visited date is a small number of days,
+# weeks, or months in the past.
+# Variables:
+#   $date (string) - A localized relative date string like one of the following:
+#                    "6 days ago", "1 week ago", "4 weeks ago", "1 month ago",
+#                    "11 months ago"
+urlbar-result-explanation-last-visited-days-weeks-months-ago = Ehecha ramovéva { $date }
+# This explanation is used when the last-visited date is further in the past.
+# The date will be formatted as an absolute date like: "11 May", "11 May 2026"
+# Variables:
+#   $date (string) - A localized absolute date string
+urlbar-result-explanation-last-visited-absolute-2 = Ehecha ramovéva { $date }
+
+## These strings are used for Realtime suggestions in the urlbar.
+## Market refers to stocks, indexes, and funds.
+
+# This string is shown as title when Market suggestion are disabled.
+urlbar-result-market-opt-in-title = Eru mba’ekuaarã mba’erepy ñemuhaguasugua jehekahápe
+# This string is shown as description when Market suggestion are disabled.
+urlbar-result-market-opt-in-description = Ehechauka tekopyahu oĩva ha hetave irũgui emoherakuãvo mba’ekuaarã jehekakue { -vendor-short-name } ndive. <a data-l10n-name="learn-more-link">Maranduve</a>
+# This string is shown as button to activate online when realtime suggestion are disabled.
+urlbar-result-realtime-opt-in-allow = Ñemoñe’ẽ jehechauka
+# This string is shown in split button to dismiss activation the Realtime suggestion.
+urlbar-result-realtime-opt-in-not-now = Ani ko’ág̃a
+urlbar-result-realtime-opt-in-dismiss = Mboyke
+urlbar-result-realtime-opt-in-dismiss-all2 = Ani ehechauka ko’ã ñemoñe’ẽ
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market2 = Ani ehechauka ñemoñe’ẽ ñemuhagua
+urlbar-result-realtime-opt-in-dismiss-all =
+    .label = Ani ehechauka ko’ã ñemoñe’ẽ
+# This string is shown in the result menu.
+urlbar-result-menu-dont-show-market =
+    .label = Ani ehechauka ñemoñe’ẽ ñemuhagua
+# A message that replaces a result when the user dismisses Market suggestions.
+urlbar-result-dismissal-acknowledgment-market = Aguyje ne remiandúre. Nderehechamoʼãvéima je’epy ñemuhaguasugua.
+# This a11y label is read by screen readers when an item in the row is selected.
+urlbar-result-aria-group-market =
+    .aria-label = Ñemoñe’ẽ ñemuha rendápe g̃uarã
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-result-dismissal-acknowledgment-all = Aguyje ne remiandu rehe. Nderehechamoʼãvéima ko’ã temiandu.
+
+## These strings are used for suggestions of important dates in the urlbar.
+
+# The name of an event and the number of days until it starts separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown =
+    { $daysUntilStart ->
+        [one] { $name } · { $daysUntilStart } árape
+       *[other] { $name } · { $daysUntilStart } árape
+    }
+# The name of a multiple day long event and the number of days until it starts
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilStart (integer) - The number of days until the event starts.
+urlbar-result-dates-countdown-range =
+    { $daysUntilStart ->
+        [one] { $name } · Oñepyrũ { $daysUntilStart } árape
+       *[other] { $name } · Oñepyrũ { $daysUntilStart } árape
+    }
+# The name of a multiple day long event and the number of days until it ends
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+#   $daysUntilEnd (integer) - The number of days until the event ends.
+urlbar-result-dates-ongoing =
+    { $daysUntilEnd ->
+        [one] { $name } · Opáta { $daysUntilEnd } árape
+       *[other] { $name } · Opáta { $daysUntilEnd } árape
+    }
+# The name of an event and a note that it is happening today separated by a
+# middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-today = { $name } · Ko ára
+# The name of multiple day long event and a note that it is ends today
+# separated by a middot.
+# Variables:
+#   $name (string) - The name of the event.
+urlbar-result-dates-ends-today = { $name } · Opa ko árape
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Eheka { $engine } ndive
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Eheka { $localSearchMode }-pe
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Eheka { $engine }-pe
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button3 =
+    .title = { $engine }, eiporavo jehekaha
+urlbar-searchmode-button-no-engine2 =
+    .title = Ndereiporavói mbopya’eha, eiporu peteĩ mbopya’eha
+# Refers to the ability to search using keywords in the address bar
+urlbar-searchmode-no-keyword2 =
+    .title = Ñe’ẽñemi jehekaha oñemboguéma
+urlbar-searchmode-dropmarker2 =
+    .title = Eiporavo jehekaha
+urlbar-searchmode-bookmarks3 = Techaukahaita
+    .accesskey = B
+urlbar-searchmode-tabs3 = Tendaykeita
+    .accesskey = T
+urlbar-searchmode-history3 = Tembiasakue
+    .accesskey = H
+urlbar-searchmode-actions3 = Jeku’eita
+    .accesskey = A
+urlbar-searchmode-exit-button2 =
+    .title = Mboty
+urlbar-searchmode-default2 =
+    .title = Hekaha mongu’eha ypygua
+# Shown when adding new search engines from the search mode switcher.
+# Variables:
+#  $engineName (String): The name of the search engine.
+urlbar-searchmode-popup-add-engine = Embojuaju “{ $engineName }”
+    .title = Embojuaju jehekaha mongu’eha “{ $engineName }”
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
+urlbar-searchmode-popup-one-off-header = Ko’ág̃a eheka hendive:
+# Label shown on the top of Searchmode Switcher popup when the search engine won't automatically
+# reset after submitting.
+urlbar-searchmode-popup-header = Eheka Kóvandi:
+urlbar-searchmode-popup-search-settings = Hekaha moiporã
+    .accesskey = S
+urlbar-searchmode-popup-settings = Ñemboheko
+    .accesskey = S
+
+## Action text shown in urlbar results, usually appended after the search
+## string or the url, like "result value - action text".
+## In these actions "Search" is a verb, followed by where the search is performed.
+
+urlbar-result-action-search-bookmarks = Eheka techaukahápe
+urlbar-result-action-search-history = Eheka tembiasakuépe
+urlbar-result-action-search-tabs = Eheka tendayke
+urlbar-result-action-search-actions = Eheka tembiaporã
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Emoambue { $group }-pe
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Embojuruja { $group }
+
+## Used in the menu of a urlbar result.
+
+urlbar-view-context-menu-open-in-tab =
+    .label = Eike tendayke pyahúpe
+    .accesskey = w
+urlbar-view-context-menu-open-in-container-tab =
+    .label = Eike tendayke pyahu mbyatyhápe
+    .accesskey = i
+urlbar-view-context-menu-open-in-window =
+    .label = Eike Ovetã Pyahúpe
+    .accesskey = N
+urlbar-view-context-menu-open-in-private-window =
+    .label = Eike Ovetã Ñemigua Pyahúpe
+    .accesskey = P
+urlbar-view-context-menu-open-in-tab2 = Eike tendayke pyahúpe
+    .accesskey = w
+urlbar-view-context-menu-open-in-container-tab2 = Eike tendayke pyahu mbyatyhápe
+    .accesskey = i
+urlbar-view-context-menu-open-in-window2 = Eike Ovetã Pyahúpe
+    .accesskey = N
+urlbar-view-context-menu-open-in-private-window2 = Eike Ovetã Ñemigua Pyahúpe
+    .accesskey = P
+
+## Labels shown above groups of urlbar results
+
+# A label shown above the "Firefox Suggest" (bookmarks/history) group in the
+# urlbar results.
+urlbar-group-firefox-suggest =
+    .label = { -firefox-suggest-brand-name }
+# A label shown above the search suggestions group in the urlbar results. It
+# should use sentence case.
+# Variables
+#  $engine (String): the name of the search engine providing the suggestions
+urlbar-group-search-suggestions =
+    .label = { $engine } Ñemoñe’ẽ
+# A label shown above Quick Actions in the urlbar results.
+urlbar-group-quickactions =
+    .label = Jeku’e Pya’e
+# A label shown above the recent searches group in the urlbar results.
+# Variables
+#  $engine (String): the name of the search engine used to search.
+urlbar-group-recent-searches =
+    .label = Ojeheka ramóva
+# The header shown above trending results.
+# Variables:
+#  $engine (String): the name of the search engine providing the trending suggestions
+urlbar-group-trending =
+    .label = Ojehayhuvéva { $engine } pegua
+# The result menu labels shown next to trending results.
+urlbar-result-menu-trending-dont-show2 = Anive ehechauka jeheka ojehayhuvéva
+    .accesskey = D
+# The result menu labels shown next to trending results.
+urlbar-result-menu-trending-dont-show =
+    .label = Anive ehechauka jeheka ojehayhuvéva
+    .accesskey = D
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-trending-dismissal-acknowledgment = Aguyje ne remiandu rehe. Nderehechamoʼãvéima umi ojehekavéva.
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Moñe’ẽha jehechápe jeike
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Moñe’ẽha jehecha mboty
+
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = Embojuruja Picture-in-Picture ({ $shortcut })
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = Emboty Picture-in-Picture ({ $shortcut })
+picture-in-picture-panel-header = Picture-in-picture
+picture-in-picture-panel-headline = Ko ñanduti renda noikuave’ẽi Picture-in-Picture
+picture-in-picture-panel-body = Ikatuhína ta’ãngamýi ndojehechái mboguatahára oipotaháicha Picture-in-Picture hendy aja.
+picture-in-picture-enable-toggle =
+    .label = Emyandy katuete
+
+## Full Screen and Pointer Lock UI
+
+# Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
+# Variables
+#  $domain (String): the domain that is full screen, e.g. "mozilla.org"
+fullscreen-warning-domain = <span data-l10n-name="domain">{ $domain }</span> ha’e mba’erechaha henyhẽva ko’ág̃a
+fullscreen-warning-no-domain = Ko kuatia oĩ hína ko’ág̃a mba’erechaha tuichavévape
+fullscreen-exit-button = Esẽ mba’erechaha tuichavévagui (Esc)
+# "esc" is lowercase on mac keyboards, but uppercase elsewhere.
+fullscreen-exit-mac-button = Esẽ mba’erechaha tuichavévagui (esc)
+fullscreen-keyboardlock-exit-button = Esẽ mba’erechaha tuichávagui (Eikutu ha ejopy Esc)
+# "esc" is lowercase on mac keyboards, but uppercase elsewhere.
+fullscreen-keyboardlock-exit-mac-button = Esẽ mba’erechaha tuichávagui (Eikutu ha ejopy esc)
+# Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
+# Variables
+#  $domain (String): the domain that is using pointer-lock, e.g. "mozilla.org"
+pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> eñangarekópa nde hekaha rehe. Eikutu Esc eguerujey hag̃ua hekaha.
+pointerlock-warning-no-domain = Ko kuatia oñangareko nde hekaha rehe. Eikutu Esc eguerujey hag̃ua hekaha.
+
+## Bookmarks panels, menus and toolbar
+
+bookmarks-manage-bookmarks =
+    .label = Eñangareko techaukaháre
+bookmarks-recent-bookmarks-panel-subheader = Techaukaha ramogua
+bookmarks-toolbar-chevron =
+    .tooltiptext = Techaukaha jehechaukave
+bookmarks-sidebar-content =
+    .aria-label = Techaukaha
+bookmarks-menu-button =
+    .label = Techaukaha Rysýi
+bookmarks-other-bookmarks-menu =
+    .label = Ambue Techaukahakuéra
+bookmarks-mobile-bookmarks-menu =
+    .label = Pumbyry Rechaukaha
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
+bookmarks-tools-sidebar-visibility =
+    .label =
+        { $isVisible ->
+            [true] Eñomi Techaukaha Renda Yke
+           *[other] Techaukaha ra’ãngarupa yke recha
+        }
+bookmarks-tools-toolbar-visibility-menuitem =
+    .label =
+        { $isVisible ->
+            [true] Eñomi Techaukaha Rembipuru Renda
+           *[other] Techaukaha renda jehecha
+        }
+bookmarks-tools-toolbar-visibility-panel =
+    .label =
+        { $isVisible ->
+            [true] Emokany techaukaha renda
+           *[other] Ehechauka techaukaha renda
+        }
+
+##
+
+bookmarks-search =
+    .label = Techaukaha jeheka
+bookmarks-tools =
+    .label = Techaukaha Rembiporu
+bookmarks-subview-edit-bookmark =
+    .label = Embosako’i ko techaukaha…
+# The aria-label is a spoken label that should not include the word "toolbar" or
+# such, because screen readers already know that this container is a toolbar.
+# This avoids double-speaking.
+bookmarks-toolbar =
+    .aria-label = Techaukaha
+    .toolbarname = Techaukaha rembiporu renda
+    .accesskey = B
+bookmarks-toolbar-menu =
+    .label = Techaukaha rembiporu renda
+bookmarks-toolbar-placeholder =
+    .title = Techaukaha rembiporu renda remimoĩ
+bookmarks-toolbar-placeholder-button =
+    .label = Techaukaha rembiporu renda remimoĩ
+# "Bookmark" is a verb, as in "Add current tab to bookmarks".
+bookmarks-subview-bookmark-tab =
+    .label = Embojuaju tendayke ag̃agua techaukaháre…
+
+## Library Panel items
+
+library-bookmarks-menu =
+    .label = Techaukaha
+
+## Repair text encoding toolbar button
+
+repair-text-encoding-button =
+    .label = Emoĩporã moñe’ẽrã ayvu
+    .tooltiptext = Eikuaáke moñe’ẽrã ayvu oikóva pe kuatiarogue retepy guive
+
+##
+
+# Variables:
+#  $shortcut (String): keyboard shortcut to open settings (only on macOS)
+toolbar-settings-button =
+    .label = Ñemboheko
+    .tooltiptext =
+        { PLATFORM() ->
+            [macos] Ñemboheko ijurujáva ({ $shortcut })
+           *[other] Ñemboheko ijurujáva
+        }
+toolbar-overflow-customize-button =
+    .label = Tembiporu rendáre ñemomba’e…
+    .accesskey = T
+toolbar-button-email-link =
+    .label = Joajuha mondo
+    .tooltiptext = Peteĩ joajuha ko kuatiaroguépe mondo
+toolbar-button-logins =
+    .label = Ñe’ẽñemi
+    .tooltiptext = Ehecha ha eñangareko ne ñe’ẽñemi ñongatupyrére
+qrcode-panel-error =
+    .message = Ndoikói pe QR ñemoheñói. Eha’ã jey ag̃amieve.
+qrcode-copy-button =
+    .label = Monguatia
+qrcode-copy-success =
+    .message = QR ayvu embohasáma kuatiajokohápe.
+qrcode-copy-error =
+    .message = Ndoikói QR ayvu emonguatiávo.
+qrcode-save-button =
+    .label = Ñongatu
+qrcode-window-title = QR ayvu
+qrcode-dialog-title = QR ayvu
+qrcode-image =
+    .aria-label = QR ayvu
+qrcode-close-button =
+    .aria-label = Mboty
+# Variables:
+#  $shortcut (String): keyboard shortcut to save a copy of the page
+toolbar-button-save-page =
+    .label = Kuatiarogue ñongatu
+    .tooltiptext = Ko kuatiarogue ñongatu ({ $shortcut })
+# Variables:
+#  $shortcut (String): keyboard shortcut to open a local file
+toolbar-button-open-file =
+    .label = Marandurendápe jeike
+    .tooltiptext = Marandurendápe jeike ({ $shortcut })
+toolbar-button-synced-tabs =
+    .label = Tendayke oñembojuehepyre
+    .tooltiptext = Ambue mba’e’oka rendaykekuéra jehechauka
+toolbar-button-send-tab =
+    .label = Emondo tendayke
+    .tooltiptext = Emondo tendayke ag̃agua ambue mba’e’okápe
+# Variables
+# $shortcut (string) - Keyboard shortcut to open a new private browsing window
+toolbar-button-new-private-window =
+    .label = Ovetã ñemi pyahu
+    .tooltiptext = Ovetã pyahu kundaha ñemíme jeike ({ $shortcut })
+toolbar-button-share-tab =
+    .label = Moherakuã
+    .tooltiptext = Emoherakuã ko kuatiarogue
+toolbar-button-tab-groups =
+    .label = Tendaykeita aty
+    .tooltiptext = Ehechauka tendaykeita aty
+
+## Default filenames used when saving a QR code. The file extension (.png)
+## is added automatically.
+
+qrcode-save-filename-base = qrcode
+# Variables:
+#  $domain (String): The current page's domain used in the suggested filename.
+qrcode-save-filename-with-domain-base = qrayvu-{ $domain }
+
+## EME notification panel
+
+eme-notifications-drm-content-playing = Heta mba’epu térã ta’ãngamýi ko tenda pegua oiporu software DRM, upéva omomichĩ pe { -brand-short-name } ohejáva ejapo heseve.
+eme-notifications-drm-content-playing-manage = Eñangareko ñembohekóre
+eme-notifications-drm-content-playing-manage-accesskey = M
+eme-notifications-drm-content-playing-dismiss = Mosẽ
+eme-notifications-drm-content-playing-dismiss-accesskey = D
+
+## Password save/update panel
+
+panel-save-update-username-2 =
+    .label = Poruhára réra
+panel-save-update-password-2 =
+    .label = Ñe’ẽñemi
+
+##
+
+# "More" item in macOS share menu
+menu-share-more =
+    .label = Hetave…
+menu-share-windows =
+    .label = Jeporavorãve
+# Variables:
+#   $count (Number) - The number of links that will be copied.
+menu-share-copy-links =
+    .label =
+        { $count ->
+            [one] Emonguatia juajuha
+           *[other] Emonguatia { $count } juajuha
+        }
+    .accesskey = L
+ui-tour-info-panel-close =
+    .tooltiptext = Mboty
+
+## Variables:
+##  $uriHost (String): URI host for which the popup was allowed or blocked.
+
+popups-infobar-allow2 =
+    .label = Emoneĩ ovetã iñapysẽva ha embohapejey mbohapyháva { $uriHost }-pe g̃uarã
+    .accesskey = p
+
+##
+
+picture-in-picture-hide-toggle =
+    .label = Emokañy votõ Picture-in-Picture (PIP)
+    .accesskey = H
+
+## Since the default position for PiP controls does not change for RTL layout,
+## right-to-left languages should use "Left" and "Right" as in the English strings,
+
+picture-in-picture-move-toggle-right =
+    .label = Emongu’e pe votõ Picture-in-Picture akatúa gotyo
+    .accesskey = R
+picture-in-picture-move-toggle-left =
+    .label = Emongu’e pe votõ Picture-in-Picture asu gotyo
+    .accesskey = L
+
+##
+
+# This string is a spoken label that should not include
+# the word "toolbar" or such, because screen readers already know that
+# this container is a toolbar. This avoids double-speaking.
+navbar-accessible =
+    .aria-label = Ñeikundaha
+navbar-downloads =
+    .label = Ñemboguejy
+navbar-overflow-2 =
+    .tooltiptext = Heta tembiporu
+# Variables:
+#   $shortcut (String): keyboard shortcut to print the page
+navbar-print =
+    .label = Mbokuatia
+    .tooltiptext = Embokuatia ko kuatiarogue… ({ $shortcut })
+navbar-home =
+    .label = Ñepyrũ
+    .tooltiptext = Kuatiarogue ñepyrũ { -brand-short-name } mba’éva
+navbar-library =
+    .label = Mba’erysýi
+    .tooltiptext = Ehecha tembiasakue, ñongatupyre ha ambueve
+navbar-search =
+    .title = Heka
+# Name for the tabs toolbar as spoken by screen readers. The word
+# "toolbar" is appended automatically and should not be included in
+# in the string
+tabs-toolbar =
+    .aria-label = Kundahára rendayke
+tabs-toolbar-new-tab =
+    .label = Tendayke pyahu
+tabs-toolbar-list-all-tabs =
+    .label = Opaite tendayke jehechauka
+    .tooltiptext = Opaite tendayke jehechauka
+
+## Drop indicator text for pinned tabs when no tabs are pinned.
+
+pinned-tabs-drop-indicator = Epoi ápe tendayke emboja hag̃ua
+
+## Infobar shown at startup to suggest session-restore
+
+# <img data-l10n-name="icon"/> will be replaced by the application menu icon
+restore-session-startup-suggestion-message = <strong>¿Embojuruja tendayke mboyveguáva?</strong> Ehechajeykuaa ne rembiapokue tembiporu’i poravorã guive { -brand-short-name } <img data-l10n-name="icon"/>, Rembiasakuépe.
+restore-session-startup-suggestion-button = Ehechauka mba’éichapa
+
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Nde atyguasu ojokóma marandurendápe jeike ko mohendaha pegua.
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = { -brand-short-name } oguerahauka ijeheguite heta mba’e { -vendor-short-name }-pe ikatuhápe iñakãpu’ã tembihasakue.
+data-reporting-notification-button =
+    .label = Aiporavo mba’etépa amoherakuãta
+    .accesskey = C
+# Label for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-label = Kundaha ñemigua
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Ñeikundaha ñemi
+# Tooltip for the private browsing indicator button that opens the info panel.
+private-browsing-indicator-button =
+    .tooltiptext = Marandu kundaha ñemigua
+# Title shown in the private browsing info panel.
+private-browsing-info-panel-title = Eikehína peteĩ ovetã ñemíme
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Mba’éicha emboykéta mba’ekuaarã ñehundi (DLP) { $agentName } rupi. Eikutu ápe eikuaave hag̃ua.
+content-analysis-panel-title = Mba’ekuaarã ñemo’ã
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text-styled = Nde atyguasu oiporu <b>{ $agentName }</b> oñemo’ã hag̃ua mba’ekuaarã ñehundígui. <a data-l10n-name="info">Eikuaave</a>
+
+## Unified extensions (toolbar) button
+
+unified-extensions-button =
+    .label = Jepysokue
+    .tooltiptext = Jepysokuekuéra
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Jepysokue
+    .tooltiptext = Ñemoneĩ tekotevẽva
+
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = Jepysokue
+    .tooltiptext =
+        Jepysokue
+        Oĩ Jepysokue oñemoneĩ’ỹva
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Jepysokue
+    .tooltiptext =
+        Jepysokue
+        Heta jepysokue oñemboty
+
+## Private browsing reset button
+
+reset-pbm-panel-heading2 = ¿Embogue mba’ekuaarã ha eike tekoñemihápe?
+reset-pbm-panel-description2 = Kóva omboguéta tembiasakue, kookie ha ambue mba’ekuaarã tendágui omboty’ỹre ovetã ñimigua.
+reset-pbm-panel-always-ask-checkbox =
+    .label = Eporandu meme
+    .accesskey = A
+reset-pbm-panel-cancel-button =
+    .label = Heja
+    .accesskey = C
+reset-pbm-panel-confirm-button2 =
+    .label = Eike tekoñemihápe
+    .accesskey = E
+reset-pbm-panel-complete = Oguéma mba’ekuaarã rembiapo ñemi
+reset-pbm-toolbar-button2 =
+    .label = Embogue Jeike Ñemigua
+    .tooltiptext = Embogue Jeike Ñemigua
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } ndohejái ko kuatiarogue oñemyanyhẽ ha’eñorei.
+refresh-blocked-redirect-label = { -brand-short-name } ndohejái ko kuatiarogue oipykúi ha’eñorei ambue hendápe.
+refresh-blocked-allow =
+    .label = Ñemoneĩ
+    .accesskey = A
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-to-use-relay = Ore rovamo’ãha hekorosã ha hasy’ỹva ijeporu omo’ã nde reraite ha omboyke ñandutiveve eipota’ỹva oñomívo ne ñanduti veve kundaharape.
+# Variables:
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-provides = Opaite ñanduti veve emondóva nde rovamo’ãha ñanduti vevépe oñemondojeýta <strong>{ $useremail }</strong> (nderejokói mba’éramo).
+firefox-relay-offer-legal-notice = Eikutúvo “Eiporu ñanduti veve rovamo’ãha”, emoneĩ ko’ã <label data-l10n-name="tos-url">Mba’epytyvõrã ñemboguata</label> ha <label data-l10n-name="privacy-url">Ñemigua marandu’i</label>.
+firefox-relay-offer-legal-notice-1 = Eikévo térã emoheñóivo ñanduti veve rovamo’ãha”, emoneĩ ko’ã <label data-l10n-name="tos-url">Mba’epytyvõrã ñemboguata</label> ha <label data-l10n-name="privacy-url">Ñemigua marandu’i</label>.
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (Ndojehechajeýiva)
+popup-notification-xpinstall-prompt-learn-more = Eñemomaranduve mba’éichapa emohendáta moĩmbaha tekorosãkuápe
+popup-notification-xpinstall-prompt-block-url = Mba’emimi jehechauka
+# Note: Access key is set to p to match "private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox2 =
+    .label = Emoneĩ upe jepysokue toku’e tendayke ñemiguápe
+    .accesskey = p
+# This string is similar to `webext-perms-description-data-long-technicalAndInteraction`
+# but it is used in the install prompt, and it needs an access key.
+popup-notification-addon-technical-and-interaction-checkbox =
+    .label = Emoherakuã mba’ekuaarã aporekogua ha ñomongeta jepysokue mboguatahára ndive
+    .accesskey = S
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { $popupCount ->
+        [one] { -brand-short-name } ndohejái ko tenda oipe’a peteĩ ovetã apysẽ.
+       *[other] { -brand-short-name } ndohejái ko tenda oipe’a { $popupCount } ovetã apysẽ.
+    }
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+redirect-warning-with-popup-message =
+    { $popupCount ->
+        [0] { -brand-short-name } ndohejái ko tenda toñemoĩporãjey.
+        [1] { -brand-short-name } omboyke ko tenda ombojurujávo peteĩ ovetã iñapysẽva ha ombohapejeýta.
+        [one] { -brand-short-name } omboyke ko tenda ombojurujávo { $popupCount } ovetã iñapysẽva ha ombohapejeýta.
+       *[other] { -brand-short-name } omboyke ko tenda ombojurujávo { $popupCount } ovetã iñapysẽva ha ombohapejeýta.
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message = { -brand-short-name } omboyke ko tenda ombojurujávo hetave { $popupCount } ovetã iñapysẽva.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-with-redirect-message =
+    { $popupCount ->
+       *[other] { -brand-short-name } omboyke ko tenda ombojurujávo hetave { $popupCount } ovetã iñapysẽva ha ombohapejeýta.
+    }
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Jeporavorã
+           *[other] Jerohoryvéva
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] P
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = “{ $popupURI }” jehechauka
+# Variables:
+#   $redirectURI (String): the URI for the redirect
+popup-trigger-redirect-menuitem =
+    .label = Mba’eguasu “{ $redirectURI }”
+
+## File-picker crash notification ("FilePickerCrashed.sys.mjs")
+
+file-picker-failed-open = Noñembojurujakuaái marandurenda Windows pegua. Ndojeporavokuaái marandurenda térã ñongatuha.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-failed-save-somewhere = Noñembojurujakuaái marandurenda Windows pegua. Ndojeporavokuaái marandurenda térã ñongatuha. Marandurenda ohóta { $path }-pe.
+file-picker-failed-save-nowhere = Noñembojurujakuaái marandurenda Windows pegua. Ndojejuhúi marandurenda ypyguáva; marandurenda noñeñongatumo’ãi.
+file-picker-crashed-open = Marandurenda ñemongetaha Windows pegua ndoikói. Ndojeporavokuaái marandurenda térã ñongatuha.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-crashed-save-somewhere = Marandurenda ñemongetaha Windows pegua ndoikói. Marandurenda ohóta { $path }-pe.
+file-picker-crashed-save-nowhere = Marandurenda ñemongetaha Windows ndoikói. Ndojejuhúi marandurenda ypyguáva; marandurenda noñeñongatumo’ãi.
+file-picker-crashed-show-in-folder =
+    .label = Ehechauka ñongatuhápe
+    .accessKey = F
+
+## Onboarding Finish Setup checklist
+
+onboarding-checklist-button-label = Emohu’ã ñemboheko
+onboarding-aw-finish-setup-button =
+    .label = Emohu’ã ñemboheko
+    .tooltiptext = Emohu’ã ne ñemboheko { -brand-short-name }
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = Tapykueho mo’ãha iporãvéva hendýma
+trustpanel-etp-label-disabled = Tapykueho mo’ãha iporãvéva ojejoko
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = Jehapykueho mo’ãha oikóva: { $host }-pe g̃uarã
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = Jehapykueho mo’ãha oikóva: ogue { $host }-pe g̃uarã
+trustpanel-etp-description-enabled = Oĩrõ ndoikoporãiva ko tendápe g̃uarã, eñeha’ã eipe’a umi ñemo’ãha.
+trustpanel-etp-description-disabled = { -brand-product-name } orovia umi empresa ombyatyva’erã sa’ive mba’ekuaarã poruhára rehegua. Emyandývo tapykuehoha, rojoko heta mba’e nde rapykuehokuaáva.
+trustpanel-connection-label-secure = Eike tekorosãme
+trustpanel-connection-label-insecure = Eike tekorosã’ỹme
+trustpanel-header-enabled = { -brand-product-name } oma’ẽmeme
+trustpanel-description-enabled2 = Oñemo’ãma. Rohecháramo peteĩ mba’e, romombe’úta ndéve.
+trustpanel-header-enabled-insecure = Eñatendéke ko tendápe
+trustpanel-description-enabled-insecure = { -brand-product-name } ohecha ivaikuaaha.
+trustpanel-header-disabled = Emboguéma umi ñemo’ãha
+trustpanel-description-disabled = { -brand-product-name } ndoikoihína ko’ag̃aite. Emyandy jey opaite ñemo’ãha.
+trustpanel-clear-cookies-button = Emboguete kookie ha mba’ekuaarã tendágui
+trustpanel-privacy-link = Ñemigua ñemboheko
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = Embogue kookie ha tenda mba’ekuaarã { $host }-pe g̃uarã
+trustpanel-clear-cookies-description = Embogue umi kookie ha tenda mba’ekuaarã ombotykuaa ne ñanduti rogue ha omonandi nde karro’i joguapygua.
+trustpanel-clear-cookies-subview-button-clear = Mopotĩ
+trustpanel-clear-cookies-subview-button-cancel = Heja
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = Tapykuehoha jeikerã { $host }-pe g̃uarã
+trustpanel-siteinformation-morelink = Maranduve tenda rehegua
+trustpanel-blocker-see-all = Hechapa
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-blocker-header =
+    .title = Tapykuehoha mo’ãha { $host }-pe g̃uarã
+# LOCALIZATION NOTE (trustpanel-urlbar-notsecure-label):
+# Keep this string as short as possible, this is displayed in the URL bar
+# use a synonym for "safe" or "private" if "secure" is too long.
+urlbar-trust-icon-notsecure-label = Ndahekorosãi
+# Keep this string as short as possible, this is displayed in the URL bar
+# Variables
+#  $count (number): the number of trackers blocked.
+urlbar-trust-icon-trackers-blocked-longform-label =
+    { $count ->
+        [one] { $count } tapykuehoha jokopyre
+       *[other] { $count } tapykuehohaita jokopyre
+    }
+
+## Variables
+##  $count (String): the number of trackers blocked.
+
+trustpanel-blocker-description = { -brand-product-name } oguerovia umi mba’apohaguasu nde rapykueho’ivéta. Upévare rojokopa roipotávape.
+trustpanel-blocked-header = { -brand-product-name } ojoko ko’ã mba’e ndéve g̃uarã:
+trustpanel-tracking-header = { -brand-product-name } omoneĩ ko’ã mba’e tendakuéra oikoite hag̃ua:
+trustpanel-tracking-description = Tapykueho’ỹre, heta votõ, myanyhẽha ha jeikeha renda ikatu ndoikoporãi.
+trustpanel-insecure-section-header = Nde jeike nahekorosãihína
+trustpanel-insecure-description = Umi mba’ekuaarã emondóva ko tendápe ndaipapapýi. Ikatu ojehecha, oñemonda térã oñemoambue.
+trustpanel-list-label-tracking-cookies =
+    { $count ->
+        [one] { $count } Kookie rapykuehoha tenda pa’ũgua
+       *[other] { $count } Kookiekuéra rapykuehoha tenda pa’ũgua
+    }
+trustpanel-list-label-tracking-content = Tetepy rapykuehoha
+trustpanel-list-label-fingerprinter =
+    { $count ->
+        [one] { $count } Kuã hũ
+       *[other] { $count } Kuã hũ
+    }
+trustpanel-list-label-social-tracking =
+    { $count ->
+        [one] { $count } Ava ñandutieta rapykuehoha
+       *[other] { $count } Ava ñandutieta rapykuehoha
+    }
+trustpanel-list-label-cryptominer =
+    { $count ->
+        [one] { $count } Criptominero
+       *[other] { $count } Criptominero
+    }
+trustpanel-social-tracking-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ojoko { $count } rapykuehoha ava ñandutietagua
+       *[other] { -brand-product-name } ojoko { $count } rapykuehoha ava ñandutietagua
+    }
+trustpanel-social-tracking-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } omoneĩ { $count } rapykuehoha ava ñandutietagua
+       *[other] { -brand-product-name } omoneĩ { $count } rapykuehoha ava ñandutietagua
+    }
+trustpanel-tracking-cookies-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ojoko { $count } rapykuehoha kookie ava ñandutietagua
+       *[other] { -brand-product-name } ojoko { $count } rapykuehoha kookie ava ñandutietagua
+    }
+trustpanel-tracking-cookies-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } omoneĩ { $count } rapykuehoha kookie ava ñandutietagua
+       *[other] { -brand-product-name } omoneĩ { $count } rapykuehoha kookie ava ñandutietagua
+    }
+trustpanel-tracking-content-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ojoko { $count } rapykuehoha
+       *[other] { -brand-product-name } ojoko { $count } rapykuehohakuéra
+    }
+trustpanel-tracking-content-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } omoneĩ { $count } rapykuehoha
+       *[other] { -brand-product-name } omoneĩ { $count } rapykuehoha
+    }
+trustpanel-tracking-content-tab-list-header = Ko’ã tenda ha’ete nderapykuehoséva:
+trustpanel-fingerprinter-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } omoneĩ { $count } rapykuehoha
+       *[other] { -brand-product-name } omoneĩ { $count } rapykuehohakuéra
+    }
+trustpanel-fingerprinter-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } omoneĩ { $count } ñemokuãhu
+       *[other] { -brand-product-name } omoneĩ { $count } ñemokuãhuita
+    }
+trustpanel-fingerprinter-list-header = Ko’ã tenda ha’ete ojapyhyséva ne ñemokuãhu:
+trustpanel-cryptominer-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } ojoko { $count } criptominero
+       *[other] { -brand-product-name } ojoko { $count } criptominero
+    }
+trustpanel-cryptominer-not-blocking-tab-header =
+    { $count ->
+        [one] { -brand-product-name } omoneĩ { $count } criptominería
+       *[other] { -brand-product-name } omoneĩ { $count } criptominería
+    }
+trustpanel-cryptominer-tab-list-header = Ko’ã tenda ha’ete omonyhẽséva criptomoneda-gui:
+# "account on this site" refers to the (breached) site the user is currently visiting, not a Mozilla Monitor account.
+trustpanel-breachalerts-anonymous-breached-header = ¿Ereko peteĩ mba’ete ko tendápe?
+trustpanel-breachalerts-anonymous-breached-description = { -brand-product-name } ojuhu ko tenda orekoha mba’ekuaarã ñembogua 12 jasy ohasava’ekuépe. Eikuaáke nembyaípara’e.
+trustpanel-breachalerts-anonymous-breached-button-dismiss = Emboyke
+trustpanel-breachalerts-anonymous-breached-button-check-monitor = Emoha’ãnga reiete
+trustpanel-blocker-section-header2 =
+    { $count ->
+        [one] <span data-l10n-name="count">{ $count }</span> Tapykuehoha ojejoko ko tendápe
+       *[other] <span data-l10n-name="count">{ $count }</span> Tapykuehohaita ojejoko ko tendápe
+    }
+
+## Reduced Protection Infobar ("ReducedProtectionNotification.sys.mjs")
+
+# "temporarily lower your tracking protection" refers to temporarily decreasing the amount of tracking protection.
+reduced-protection-infobar-message = <strong>¿Tenda ojehacha ojekaha?</strong> Emyanyhẽ jey emomichĩ hag̃ua ñemo’ã tapykuehoha rovake.
+reduced-protection-infobar-reload-button = Myanyhẽjey
+    .accesskey = R
+reduced-protection-infobar-never-show-button = Ani ehechauka jey
+    .accesskey = D
