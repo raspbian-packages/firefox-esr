@@ -1,4 +1,4 @@
-firefox-esr (140.15.0esr-1+rpi1) forky-staging; urgency=medium
+firefox-esr (140.16.0esr-1+rpi1) forky-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -35,7 +35,21 @@ firefox-esr (140.15.0esr-1+rpi1) forky-staging; urgency=medium
   * Update rust target hack to accomodate changes in upstream target selection.
   * Workaround asm bug with bx lr (see: https://github.com/EmbarkStudios/crash-handling/issues/5)
 
- -- Raspbian forward porter <root@raspbian.org>  Wed, 09 Sep 2026 12:15:47 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Mon, 05 Oct 2026 06:26:11 +0000
+
+firefox-esr (140.16.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2026-92, also known as:
+    CVE-2026-92005, CVE-2026-92006, CVE-2026-92007, CVE-2026-92008,
+    CVE-2026-92009, CVE-2026-92010, CVE-2026-92011, CVE-2026-92012,
+    CVE-2026-92013, CVE-2026-92014, CVE-2026-92015, CVE-2026-92016,
+    CVE-2026-92017, CVE-2026-92018, CVE-2026-92019, CVE-2026-92020,
+    CVE-2026-92021, CVE-2026-92022, CVE-2026-92023, CVE-2026-92024,
+    CVE-2026-92025, CVE-2026-92026, CVE-2026-92027, CVE-2026-92028,
+    CVE-2026-92029, CVE-2026-92030, CVE-2026-92031, CVE-2026-92032.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 16 Sep 2026 07:54:01 +0900
 
 firefox-esr (140.15.0esr-1) unstable; urgency=medium
 
