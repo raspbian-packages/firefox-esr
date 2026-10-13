@@ -1,0 +1,442 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = Prenašanje posodobitve za { -brand-shorter-name(sklon: "tozilnik") }
+appmenuitem-banner-update-available =
+    .label = Na voljo je posodobitev – prenesi zdaj
+appmenuitem-banner-update-manual =
+    .label = Na voljo je posodobitev – prenesi zdaj
+appmenuitem-banner-update-unsupported =
+    .label = Posodobitev ni mogoča – nezdružljiv sistem
+appmenuitem-banner-update-restart =
+    .label = Na voljo je posodobitev – zaženi znova
+appmenu-nova-update-title = Ponovno zaženi za posodobitev { -brand-short-name(sklon: "rodilnik") }
+appmenu-nova-update-description = Zavihki se bodo znova odprli.
+appmenu-nova-fxa-sign-in = Prijava
+appmenu-nova-switch-device-promo =
+    .message = Se vam obeta nov računalnik? Vzemite { -brand-short-name(sklon: "tozilnik") } s seboj!
+appmenu-nova-switch-device-link = Kako preseliti svoje podatke
+appmenuitem-new-tab =
+    .label = Nov zavihek
+appmenuitem-new-window =
+    .label = Novo okno
+appmenuitem-new-private-window =
+    .label = Novo zasebno okno
+appmenuitem-history =
+    .label = Zgodovina
+appmenuitem-tab-groups =
+    .label = Skupine zavihkov
+appmenuitem-downloads =
+    .label = Prenosi
+appmenuitem-passwords =
+    .label = Gesla
+appmenuitem-extensions-and-themes =
+    .label = Razširitve in teme
+appmenuitem-extensions =
+    .label = Razširitve
+appmenuitem-print =
+    .label = Natisni …
+appmenuitem-find-in-page =
+    .label = Najdi na strani …
+appmenuitem-translate =
+    .label = Prevedi stran …
+appmenuitem-zoom =
+    .value = Povečava
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = Priporoči { -brand-product-name(sklon: "tozilnik") }
+appmenuitem-more-tools =
+    .label = Več orodij
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = Pomoč in prijava
+appmenuitem-help =
+    .label = Pomoč
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Zapri
+           *[other] Izhod
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Odpri meni programa
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Zapri meni programa
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Nastavitve
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Povečaj
+appmenuitem-zoom-reduce =
+    .label = Pomanjšaj
+appmenuitem-fullscreen =
+    .label = Celoten zaslon
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Prijava v sinhronizacijo …
+appmenu-remote-tabs-turn-on-sync =
+    .label = Vklopi sinhronizacijo …
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Prikaži več zavihkov
+    .tooltiptext = Prikaži več zavihkov iz te naprave
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Nedejavni zavihki
+    .tooltiptext = Prikaži nedejavne zavihke na tej napravi
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Ni odprtih zavihkov
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Vključite sinhronizacijo zavihkov za ogled seznama zavihkov drugih naprav.
+appmenu-remote-tabs-opensettings =
+    .label = Nastavitve
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Želite tukaj videti zavihke drugih naprav?
+appmenu-remote-tabs-connectdevice =
+    .label = Poveži drugo napravo
+appmenu-remote-tabs-welcome = Oglejte si seznam zavihkov drugih naprav.
+appmenu-remote-tabs-unverified = Svoj račun morate potrditi.
+appmenuitem-fxa-toolbar-sync-now2 = Sinhroniziraj zdaj
+appmenuitem-fxa-sign-in = Prijava v { -brand-product-name }
+appmenuitem-fxa-manage-account = Upravljanje računa
+fxa-menu-sync-status-on = Sinhronizacija je vklopljena
+fxa-menu-sync-status-off = Sinhronizacija je izklopljena
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = Sinhronizirajte podatke
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Vaši podatki se ne sinhronizirajo
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Vklopi
+fxa-menu-sync-status-turn-on-button-aria-label = Vključi
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Prijava v sinhronizacijo
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = Sinhroniziraj { $deviceName } zdaj
+fxa-menu-manage-sync-settings =
+    .label = Nastavitve sinhronizacije
+fxa-menu-add-device =
+    .label = Dodaj napravo
+fxa-menu-manage-devices =
+    .label = Upravljanje naprav
+fxa-menu-device-missing =
+    .label = Ne vidite svoje naprave?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Vse naprave
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Vse naprave
+fxa-menu-get-firefox-mobile =
+    .label = Prenesi { -brand-product-name(sklon: "tozilnik") } za Android ali iOS
+fxa-menu-secure-sync-subpanel =
+    .title = Varna sinhronizacija
+appmenu-account-header = Račun
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Sinhronizirano ob { $time }
+    .label = Sinhronizirano ob { $time }
+appmenu-fxa-sync-and-save-data2 = Sinhroniziraj in shrani podatke
+appmenu-fxa-signed-in-label = Prijava
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = Prijava v Sync
+appmenu-fxa-sign-in-promo-message = Imejte svoje podatke kjerkoli
+appmenu-fxa-sign-in-promo-button =
+    .label = Prijava
+appmenu-fxa-setup-sync =
+    .label = Vklopi sinhronizacijo …
+appmenu-fxa-setup-sync-new = Vklopi
+appmenuitem-save-page =
+    .label = Shrani stran kot …
+appmenuitem-fxa-sync-off-title = Sinhronizacija je izklopljena
+appmenuitem-fxa-sync-off-description = Zavarujte svoje zaznamke, gesla in druge podatke ter jih imejte povsod pri roki.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Profiler
+    .tooltiptext = Zajemite profil učinkovitosti
+profiler-popup-button-recording =
+    .label = Profiler
+    .tooltiptext = Profiler spremlja profil
+profiler-popup-button-capturing =
+    .label = Profiler
+    .tooltiptext = Profiler zajema profil
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = Razkrij več podatkov
+profiler-popup-description-title =
+    .value = Spremljajte, analizirajte, delite
+profiler-popup-description = Sodelujte pri izboljšavah učinkovitosti, tako da objavljate profile, ki jih delite s svojo ekipo.
+profiler-popup-learn-more-button =
+    .label = Več o tem
+profiler-popup-settings =
+    .value = Nastavitve
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Uredi nastavitve …
+profiler-popup-recording-screen = Spremljanje …
+profiler-popup-start-recording-button =
+    .label = Začni spremljati
+profiler-popup-discard-button =
+    .label = Zavrzi
+profiler-popup-capture-button =
+    .label = Zajemi
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = Odpri ploščo za spremljanje delovanja
+    .tooltiptext = Odpri ploščo za spremljanje delovanja
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Priporočena prednastavitev za razhroščevanje večine spletnih aplikacij, z nizko porabo sredstev.
+profiler-popup-presets-web-developer-label =
+    .label = Spletni razvoj
+profiler-popup-presets-firefox-description = Priporočena prednastavitev za spremljanje zmogljivosti { -brand-shorter-name(sklon: "rodilnik") }.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Prednastavitev za preiskovanje napak grafike v { -brand-shorter-name(sklon: "mestnik") }
+profiler-popup-presets-graphics-label =
+    .label = Grafika
+profiler-popup-presets-media-description2 = Prednastavitev za preiskovanje napak zvoka in videa v { -brand-shorter-name(sklon: "mestnik") }.
+profiler-popup-presets-media-label =
+    .label = Predstavnost
+profiler-popup-presets-ml-description = Prednastavitev za preiskovanje napak pri strojnem učenju v { -brand-shorter-name(sklon: "mestnik") }.
+profiler-popup-presets-ml-label =
+    .label = Strojno učenje
+profiler-popup-presets-networking-description = Prednastavitev za preiskovanje napak v delovanju omrežja v { -brand-shorter-name(sklon: "mestnik") }
+profiler-popup-presets-networking-label =
+    .label = Omrežno povezovanje
+profiler-popup-presets-networking-with-logs-description = Prednastavitev za raziskovanje omrežnih napak v { -brand-shorter-name(sklon: "mestnik") }, vključno z omrežnimi dnevniki. Ti dnevniki lahko vsebujejo občutljive podatke, kot so naslovi spletnih strani, ki jih obiskujete.
+profiler-popup-presets-networking-with-logs-label =
+    .label = Omrežje z dnevniki
+profiler-popup-presets-power-description = Prednastavitev za preiskovanje napak pri porabi energije v { -brand-shorter-name(sklon: "mestnik") } z nizko porabo sredstev.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Napajanje
+profiler-popup-presets-debug-description = Prednastavitev za razhroščevanje v { -brand-shorter-name(sklon: "mestnik") }. Visoka poraba sredstev – ne uporabljajte za delo pri visoki zmogljivosti, temveč za osredotočanje na razumevanje delovanja brskalnika.
+profiler-popup-presets-debug-label =
+    .label = Razhroščevanje
+profiler-popup-presets-web-compat-description = Priporočena prednastavitev za razhroščevanje težav s spletno združljivostjo na spletnih mestih in ne za sledenje učinkovitosti.
+profiler-popup-presets-web-compat-label =
+    .label = Spletna združljivost
+profiler-popup-presets-custom-label =
+    .label = Po meri
+
+##
+
+appmenu-manage-history =
+    .label = Upravljanje zgodovine
+appmenu-restore-session =
+    .label = Obnovi prejšnjo sejo
+appmenu-clear-history =
+    .label = Počisti nedavno zgodovino …
+appmenu-recent-history-subheader = Nedavna zgodovina
+appmenu-recently-closed-tabs =
+    .label = Nedavno zaprti zavihki
+appmenu-recently-closed-windows =
+    .label = Nedavno zaprta okna
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Iskanje po zgodovini
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = Sinhronizirajte svoje naprave
+appmenu-sync-promo-signin-cta = Prijava
+appmenu-sync-promo-turnonsync =
+    .heading = Sinhronizirajte zavihke in zgodovino
+appmenu-sync-promo-turnonsync-cta = Vklopi sinhronizacijo
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = Prevzemite zavihke iz svoje mobilne naprave
+appmenu-sync-promo-connectdevice-cta = Povežite napravo
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = Imejte svoje zaznamke vedno pri sebi
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = Vzemite zaznamke s seboj
+
+## Help panel
+
+appmenu-help-header =
+    .title = Pomoč za { -brand-shorter-name }
+appmenu-about =
+    .label = O { -brand-shorter-name }u
+    .accesskey = O
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = Priporoči { -brand-product-name }
+    .accesskey = P
+appmenu-get-help =
+    .label = Pomoč
+    .accesskey = P
+appmenu-help-more-troubleshooting-info =
+    .label = Več podatkov za odpravljanje težav
+    .accesskey = t
+appmenu-help-share-ideas =
+    .label = Sporoči ideje in povratne informacije …
+    .accesskey = D
+appmenu-help-switch-device =
+    .label = Prehod na novo napravo
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = Pomoč in prijava
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Način za odpravljanje težav …
+    .accesskey = r
+appmenu-help-exit-troubleshoot-mode =
+    .label = Izključi način za odpravljanje težav
+    .accesskey = n
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Prijavi zavajajočo stran …
+    .accesskey = P
+appmenu-help-not-deceptive =
+    .label = To ni zavajajoča stran …
+    .accesskey = z
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Prilagodi orodno vrstico …
+appmenu-abouttranslations =
+    .label = Prevedi …
+appmenu-edit-pdf =
+    .label = Uredi PDF …
+appmenu-developer-tools-subheader = Orodja brskalnika
+appmenu-developer-tools-extensions =
+    .label = Razširitve za razvijalce
+appmenuitem-report-broken-site =
+    .label = Prijavi nedelujočo stran
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Prijavite se v račun
+appmenuitem-monitor-title2 = Zaščitite se pred krajo identitete
+appmenuitem-monitor-description2 = Prejemajte opozorila o krajah podatkov
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = Obvestila o krajah podatkov { -monitor-brand-short-name }
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Prejemajte opozorila o krajah podatkov
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = Ohranite vašo e-pošto zasebno
+appmenuitem-relay-description2 = Pomaga zaščititi vaš nabiralnik pred neželeno pošto
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = Prikaži maske e-pošte
+appmenuitem-relay-description = Zakrijte svoj pravi e-poštni naslov in telefonsko številko
+appmenuitem-services-relay-description = Odpri pregledno ploščo e-poštnih mask
+appmenuitem-vpn-title2 = Skrij svojo lokacijo z { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description5 = Dodatno zaščitite svoje naprave
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = Prenesite { -mozilla-vpn-brand-name(sklon: "tozilnik") }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Zagotovite si zaščito za celotno napravo
+appmenu-services-header = Moje storitve
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Orodja za zasebnost
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Preskusite druga Mozillina orodja za zaščito:
+
+## Profiles panel
+
+appmenu-other-profiles = Drugi profili
+appmenu-manage-profiles =
+    .label = Upravljanje profilov
+appmenu-copy-profile =
+    .label = Kopiraj ta profil
+appmenu-create-profile2 =
+    .label = Ustvari nov profil
+appmenu-create-profile =
+    .label = Nov profil
+appmenu-edit-profile =
+    .aria-label = Urejanje profila
+appmenu-edit-this-profile =
+    .label = Uredi ta profil
+appmenu-profile-current-in-use = Profil, trenutno v uporabi
+fxa-menu-create-profile-subpanel =
+    .title = Ustvari nov profil
+fxa-menu-create-profile-heading = Izpopolnite svojo izkušnjo brskanja z novim profilom
+fxa-menu-create-profile-description = Vaše zaznamke, gesla in zgodovino lahko ločite med službenim in osebnim brskanjem.
+fxa-menu-create-profile-confirm =
+    .label = Ustvari nov profil
+fxa-menu-create-profile-learn-more =
+    .label = Kaj so profili?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = Priporoči { -brand-product-name }
+appmenuitem-share-firefox-description = Povabite nekoga, naj izbere brskalnik, ki daje prednost zasebnosti
+appmenu-profiles-2 =
+    .label = Profili
+appmenu-profiles-header = Profili
+appmenu-all-profiles =
+    .label = Vsi profili
+appmenu-secure-sync-header = Varna sinhronizacija
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Nedavni zavihki
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] Prikaži { $tabCount } sinhronizirani zavihek
+            [two] Prikaži { $tabCount } sinhronizirana zavihka
+            [few] Prikaži vse { $tabCount } sinhronizirane zavihke
+           *[other] Prikaži vseh { $tabCount } sinhroniziranih zavihkov
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Pošlji trenutno stran na to napravo

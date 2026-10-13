@@ -1,0 +1,250 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Generative AI (GenAI) Settings section
+
+genai-settings-chat-chatgpt-links = Z izbiro ChatGPT se strinjate s <a data-l10n-name="link1">pogoji uporabe</a> in <a data-l10n-name="link2">pravilnikom o zasebnosti</a> OpenAI.
+genai-settings-chat-claude-links = Z izbiro Anthropic Clauda se strinjate s <a data-l10n-name="link1">pogoji uporabe</a>, <a data-l10n-name="link2">pravilnikom o uporabi</a> in <a data-l10n-name="link3">pravilnikom o zasebnosti</a> Anthropica.
+genai-settings-chat-copilot-links = Z izbiro Copilota se strinjate s <a data-l10n-name="link1">pogoji uporabe Copilot AI Experiences</a> in <a data-l10n-name="link2">Microsoftovo izjavo o zasebnosti</a>.
+genai-settings-chat-gemini-links = Z izbiro Google Gemini se strinjate z <a data-l10n-name="link1">Googlovimi pogoji uporabe</a>, <a data-l10n-name="link2">pravilnikom o prepovedani uporabi generativne UI</a> in <a data-l10n-name="link3">obvestilo o zasebnosti Gemini Apps</a>.
+genai-settings-chat-huggingchat-links = Z izbiro HuggingChata se strinjate z <a data-l10n-name="link1">obvestilom o zasebnosti HuggingChata</a> in <a data-l10n-name="link2">pravilnikom o zasebnosti Hugging Faca</a>.
+genai-settings-chat-lechat-links-2 = Z izbiro Mistral Vibe se strinjate s <a data-l10n-name="link1">pogoji uporabe</a> in z <a data-l10n-name="link2">obvestilom o zasebnosti</a>.
+genai-settings-chat-lechat-links = Z izbiro Le Chat Mistral se strinjate s <a data-l10n-name="link1">pogoji uporabe</a> in z <a data-l10n-name="link2">obvestilom o zasebnosti</a>.
+genai-settings-chat-localhost-links = Pripeljite svoj zasebni klepetalnik, kot je <a data-l10n-name="link1">llamafile</a>, iz skupine za inovacije { -vendor-short-name }.
+
+## Chatbot prompts
+## Prompts are plain language ‘instructions’ sent to a chatbot.
+## These prompts have been made concise and direct in English because some chatbot providers
+## have character restrictions and being direct reduces the chance for misinterpretation.
+## When localizing, please be concise and direct, but not at the expense of losing meaning.
+
+# Prompt purpose: help users understand what a selection covers at a glance
+genai-prompts-summarize =
+    .label = Povzemi
+    .value = Prosim, povzemi izbiro v natančnem in jedrnatem jeziku. Za večjo preglednost povzetka uporabljaj naslove in sezname. Ohrani pomen in natančna dejstva.
+# Prompt purpose: make a selection easier to read
+genai-prompts-simplify =
+    .label = Poenostavi jezik
+    .value = Prosim, ponovno napiši izbiro s kratkimi stavki in preprostimi besedami. Ohrani pomen in natančna dejstva.
+# Prompt purpose: test understanding of selection in an interactive way
+genai-prompts-quiz =
+    .label = Vprašaj me
+    .value = Prosim, vprašaj me o tej izbiri. Zastavi mi različne tipe vprašanj, na primer z več možnimi izbirami, z odgovori da ali ne ter kratkimi odgovori. Počakaj na moj odgovor, preden preideš na naslednje vprašanje.
+# Prompt purpose: helps users understand words, phrases, concepts
+genai-prompts-explain =
+    .label = Razloži
+    .value = Prosim, s preprostimi besedami pojasni ključne koncepte te izbire. Uporabljaj tudi primere.
+# Prompt purpose: writing tool that helps users with spelling and grammar mistakes and produce a response that identifies errors and rewrites the inputted text correctly
+genai-prompts-proofread =
+    .label = Lektoriraj
+    .value = Prosim, preveri črkovne in slovnične napake v izbranem besedilu. Navedi morebitne napake in napiši popravljeno različico besedila. Ohrani pomen in pravilnost dejstev ter najprej izpiši seznam predlaganih popravkov, nato pa končno, popravljeno različico besedila.
+# This prompt is added to the beginning of selection prompts sent to a chatbot.
+# $tabTitle (string) - title of the webpage
+# $selection (string) - selected text
+genai-prompt-prefix-selection = Nahajam se na strani “{ $tabTitle }” z izbiro “{ $selection }”.
+
+## Chatbot menu shortcuts
+
+genai-menu-open-generic =
+    .label = Odpri UI-klepetalnik
+# $provider (string) - name of the provider
+genai-menu-open-provider =
+    .label = Odpri { $provider }
+genai-menu-remove-generic =
+    .label = Odstrani UI-klepetalnik
+# $provider (string) - name of the provider
+genai-menu-remove-provider =
+    .label = Odstrani { $provider }
+genai-menu-remove-sidebar =
+    .label = Odstrani iz stranske vrstice
+# $provider (string) - name of the AI chat provider
+genai-shortcut-button =
+    .aria-label = Vprašaj { $provider }
+genai-menu-new-badge = Novo
+genai-menu-summarize-page = Povzemi stran
+genai-input-ask-smart-window =
+    .placeholder = Vprašaj …
+genai-input-ask-generic =
+    .placeholder = Vprašaj UI-klepetalnik …
+# $provider (string) - name of the provider
+genai-input-ask-provider =
+    .placeholder = Vprašaj { $provider } …
+# $selectionLength (number) - selected text length
+# $maxLength (number) - max length of what can be selected
+genai-shortcuts-selected-warning-generic =
+    .heading = UI-klepetalnik ne bo uporabil celotnega izbora
+    .message =
+        { $selectionLength ->
+            [one] Izbrali ste { $selectionLength } znak. Število znakov, ki jih lahko pošljemo UI-klepetalniku, je največ { $maxLength }.
+            [two] Izbrali ste { $selectionLength } znaka. Število znakov, ki jih lahko pošljemo UI-klepetalniku, je največ { $maxLength }.
+            [few] Izbrali ste { $selectionLength } znake. Število znakov, ki jih lahko pošljemo UI-klepetalniku, je največ { $maxLength }.
+           *[other] Izbrali ste { $selectionLength } znakov. Število znakov, ki jih lahko pošljemo UI-klepetalniku, je največ { $maxLength }.
+        }
+# $provider (string) - name of the provider
+# $selectionLength (number) - selected text length
+# $maxLength (number) - max length of what can be selected
+genai-shortcuts-selected-warning =
+    .heading = { $provider } ne bo uporabil celotnega izbora
+    .message =
+        { $selectionLength ->
+            [one] Izbrali ste { $selectionLength } znak. Število znakov, ki jih lahko pošljemo { $provider }, je največ { $maxLength }.
+            [two] Izbrali ste { $selectionLength } znaka. Število znakov, ki jih lahko pošljemo { $provider }, je največ { $maxLength }.
+            [few] Izbrali ste { $selectionLength } znake. Število znakov, ki jih lahko pošljemo { $provider }, je največ { $maxLength }.
+           *[other] Izbrali ste { $selectionLength } znakov. Število znakov, ki jih lahko pošljemo { $provider }, je največ { $maxLength }.
+        }
+genai-shortcuts-hide =
+    .label = Skrij bližnjico klepetalnika
+genai-menu-choose-chatbot =
+    .label = Izberite UI-klepetalnik
+genai-menu-ask-generic-2 =
+    .label = Vprašaj UI-klepetalnik
+    .accesskey = k
+# $provider (string) - name of the provider
+genai-menu-ask-provider-2 =
+    .label = Vprašaj { $provider }
+    .accesskey = V
+genai-menu-no-provider-2 =
+    .label = Vprašaj UI-klepetalnik
+    .accesskey = k
+genai-menu-ask-smart-window =
+    .label = Vprašaj …
+    .accesskey = V
+
+## Chatbot header
+
+genai-chatbot-title = UI-klepetalnik
+genai-header-provider-menu =
+    .title = Izberite klepetalnik
+genai-header-settings-button =
+    .title = Nastavitve UI-klepetalnika
+genai-header-close-button =
+    .title = Zapri
+genai-provider-view-details =
+    .label = Podrobnosti klepetalnika
+genai-options-reload-generic =
+    .label = Ponovno naloži UI-klepetalnik
+# $provider (string) - name of the provider
+genai-options-reload-provider =
+    .label = Ponovno naloži { $provider }
+genai-options-show-shortcut =
+    .label = Prikaži bližnjico pri izbiranju besedila
+genai-options-hide-shortcut =
+    .label = Skrij bližnjico pri izbiranju besedila
+genai-options-about-chatbot =
+    .label = O UI-klepetalnikih v { -brand-short-name(sklon: "mestnik") }
+
+## Chatbot message
+
+genai-page-warning =
+    .message = Ker je stran obsežna, je to le delni povzetek.
+
+## Chatbot footer
+
+genai-page-button-summarize = Povzemi stran
+
+## Chatbot onboarding
+
+genai-onboarding-choose-header = Izberite UI-klepetalnik, ki ga želite uporabljati v stranski vrstici { -brand-short-name(sklon: "rodilnik") }
+# "Switch anytime" refers to allowing the user to switch to a different chatbot.
+genai-onboarding-choose-description = Preklopite kadarkoli. Za pomoč pri izbiri <a data-l10n-name="learn-more">preberite več o posameznem klepetalniku</a>.
+genai-onboarding-primary = Nadaljuj
+genai-onboarding-secondary = Zapri
+genai-onboarding-claude-tooltip =
+    .title = Anthropic Claude
+genai-onboarding-chatgpt-tooltip =
+    .title = ChatGPT
+genai-onboarding-copilot-tooltip =
+    .title = Copilot
+genai-onboarding-gemini-tooltip =
+    .title = Google Gemini
+genai-onboarding-huggingchat-tooltip =
+    .title = HuggingChat
+genai-onboarding-lechat-tooltip-2 =
+    .title = Mistral Vibe
+genai-onboarding-lechat-tooltip =
+    .title = Le Chat Mistral
+genai-chatbot-contextual-title = Uporabite UI-klepetalnik brez preklapljanja zavihkov
+genai-chatbot-contextual-subtitle = Vzporedno klepetajte in brskajte, ko v stransko vrstico { -brand-short-name(sklon: "rodilnik") } dodate UI-klepetalnik.
+genai-chatbot-contextual-button = Izberite klepetalnik
+genai-chatbot-summarize-title = Novo! Povzemite strani z enim klikom
+genai-chatbot-summarize-button = Povzemi stran
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-provider-subtitle = Desno kliknite na svoj UI-klepetalnik v stranski vrstici in izberite “Povzemi stran”.
+# “Summarize Page” should be consistent with the translation for the string genai-menu-summarize-page
+genai-chatbot-summarize-sidebar-generic-subtitle = Desno kliknite na gumb z iskrico v stranski vrstici izberite “Povzemi stran”. Prvič boste tudi izbrali UI-klepetalnik.
+# “Summarize page” should be consistent with the translation for the string genai-page-button-summarize
+genai-chatbot-summarize-footer-provider-subtitle = Odprite svoj UI klepetalnik v stranski vrstici in na dnu izberite “Povzemi stran”.
+genai-chatbot-summarize-footer-generic-subtitle = Dodajte UI-klepetalnik v stransko vrstico { -brand-short-name(sklon: "rodilnik") }, da hitro povzamete strani.
+
+## Model Optin Component
+
+genai-model-optin-continue =
+    .label = Nadaljuj
+genai-model-optin-optout =
+    .label = Prekliči
+genai-model-optin-cancel =
+    .label = Prekliči
+
+## Link previews
+
+# ‘min’ is short for “minute”
+# ‘mins’ is short for “minutes”
+# An estimate for how long it takes to read an article,
+# expressed as a range covering both slow and fast readers.
+# Variables:
+#   $rangePlural (String): The plural category of the range, using the same set as for numbers.
+#   $range (String): The range of minutes as a localised string. Examples: "3-7", "~1".
+link-preview-reading-time =
+    { $rangePlural ->
+        [one] Čas branja: { $range } minuta
+        [two] Čas branja: { $range } minuti
+        [few] Čas branja: { $range } minute
+       *[other] Čas branja: { $range } minut
+    }
+# Error message displayed when a link preview cannot be generated
+link-preview-error-message-v2 = { -brand-short-name } ne more prikazati predogleda te povezave
+# Text for the link to visit the original URL when in error state
+link-preview-visit-link = Obiščite povezavo
+# Error message when key points generation (summary highlights or main ideas of page content) fails for a page
+link-preview-generation-error-missing-data-v2 = { -brand-short-name } ne more ustvariti glavnih poudarkov za to spletno stran.
+# Error message when something went wrong during key point generation
+link-preview-generation-error-unexpected = Prišlo je do napake.
+# Text for the retry link when generation fails
+link-preview-generation-retry = Poskusi znova
+# Button that opens the Link Preview settings
+link-preview-settings-button =
+    .title = Nastavitve predogleda povezave
+link-preview-settings-enable =
+    .description = Oglejte si naslov strani, opis in drugo, ko uporabite bližnjico ali desno-kliknete na povezavo.
+    .label = Omogoči predoglede povezav
+link-preview-settings-key-points =
+    .label = Dovoli UI, da prebere uvod strani in izlušči glavne poudarke
+link-preview-settings-long-press =
+    .label = Bližnjica: kliknite in zadržite povezavo 1 sekundo (dolg pritisk)
+# Title that appears when user is shown the opt-in flow for link previews
+link-preview-optin-title = Želite izvedeti več s pomočjo umetne inteligence?
+# Message that appears when user is shown the opt-in flow for link previews
+link-preview-optin-message = { -brand-short-name } uporablja umetno inteligenco za branje začetka strani in ustvarjanje nekaj glavnih poudarkov. Da bi zaščitili vašo zasebnost, se vse to izvede na vaši napravi.
+# Onboarding card title for long press
+link-preview-onboarding-title-long-press = Novo: kliknite in zadržite povezavo za predogled
+# Onboarding card description for long press
+link-preview-onboarding-description-long-press = Oglejte si kratek opis strani, predviden čas branja in druge podatke, na podlagi katerih se lahko odločite, ali je povezava vredna odpiranja. Na voljo tudi ob desnem kliku.
+# Header for the key points section
+link-preview-key-points-header = Glavni poudarki
+# Disclaimer for AI-generated key points
+link-preview-key-points-disclaimer = Glavni poudarki so ustvarjeni z umetno inteligenco in lahko vsebujejo napake.
+# Progress message for the first-time setup
+# $progress (number) - The percentage value 1-100 indicating the progress of the setup.
+link-preview-setup = Začetna nastavitev • <strong>{ $progress }%</strong>
+# Message indicating faster performance after initial setup
+link-preview-setup-faster-next-time = Naslednjič bodo glavni poudarki prikazani še hitreje.
+# Onboarding card See a preview button
+link-preview-onboarding-button = Oglejte si predogled
+# Onboarding card Close button
+link-preview-onboarding-close = Zapri
+# Title for the first-time setup modal
+link-preview-first-time-setup-title = Prva nastavitev
+# Message for the first-time setup modal
+link-preview-first-time-setup-message = To lahko traja nekaj časa. Naslednjič boste glavne poudarke videli hitreje.
