@@ -1,0 +1,230 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+profile-window-heading = Izvēlieties { -brand-short-name } profilu
+profile-window-body = Darba un personīgā pārlūkošana, tajā skaitā paroles un grāmatzīmes, pilnīgi nošķirtas vai arī jāizveido profili ikvienam, kas izmanto šo ierīci.
+# This checkbox appears in the Choose profile window that appears when the browser is opened. "Show this" refers to this window, which is displayed when the checkbox is enabled.
+profile-window-checkbox-label-2 =
+    .label = Izvēlēties profilu, kad tiek atvērts { -brand-short-name }
+profile-window-create-profile = Izveidot profilu
+profile-card-edit-button =
+    .aria-label = Labot profilu
+    .title = Labot profilu
+profile-card-delete-button =
+    .aria-label = Dzēst profilu
+    .title = Dzēst profilu
+# Variables
+#   $profileName (string) - The name of the profile
+profile-card =
+    .aria-label = Atvērt { $profileName }
+    .title = Atvērt { $profileName }
+# Variables
+#   $number (number) - The number of the profile
+default-profile-name = Profils { $number }
+# The word 'original' is used in the sense that it is the initial or starting profile when you install Firefox.
+original-profile-name = Oriģinālais profils
+default-desktop-shortcut-name = { -brand-short-name }
+edit-profile-page-title = Labot profilu
+edit-profile-page-header = Labot savu profilu
+edit-profile-page-profile-name-label = Profila nosaukums
+edit-profile-page-theme-header-2 =
+    .label = Motīvs
+edit-profile-page-explore-themes = Izpētīt vairāk motīvu
+edit-profile-page-desktop-shortcut-toggle-2 =
+    .label = Izveidot darbvirsmas saīsni
+edit-profile-page-desktop-shortcut-header = Izveidot darbvirsmas saīsni
+edit-profile-page-desktop-shortcut-toggle =
+    .aria-label = Izveidot darbvirsmas saīsni
+edit-profile-page-avatar-header-2 =
+    .label = Avatars
+edit-profile-page-delete-button =
+    .label = Dzēst
+edit-profile-page-avatar-selector-opener-link = Labot
+avatar-selector-icon-tab = Ikona
+avatar-selector-custom-tab = Pielāgots
+avatar-selector-cancel-button =
+    .label = Atcelt
+avatar-selector-save-button =
+    .label = Saglabāt
+avatar-selector-upload-file = Augšupielādēt failu
+avatar-selector-drag-file = Vai arī velciet failu šeit
+avatar-selector-add-image = Pievienot attēlu
+avatar-selector-crop = Apgriezt
+avatar-selector-dialog =
+    .aria-label = Labot iemiesojumu
+edit-profile-page-no-name = Šis profils jānodēvē tā, lai to vēlāk būtu vieglāk atrast. To var pārdēvēt jebkurā laikā.
+edit-profile-page-duplicate-name = Profila nosaukums jau tiek izmantots. Jāmēģina cits nosaukums.
+edit-profile-page-profile-saved = Saglabāts
+new-profile-page-title = Jauns profils
+new-profile-page-header = Pielāgo savu jauno profilu
+new-profile-page-header-description = Katrs profils glabā savu neatkārtojamo pārlūkošanas vēsturi un iestatījumus atsevišķi no citiem profiliem. Turklāt { -brand-short-name } spēcīgā privātuma aizsardzība ir ieslēgta pēc noklusējuma.
+new-profile-page-learn-more = Uzzināt vairāk
+new-profile-page-input-placeholder =
+    .placeholder = Izvēlies nosaukumu, piemēram, “Darbs” vai “Personīgs”
+new-profile-page-done-button =
+    .label = Labošana pabeigta
+# Variables
+#   $profilename (String) - The name of the copied profile.
+copied-profile-page-header-2 = “{ $profilename }” kopija ir gatava pielāgošanai
+restored-profile-page-header = Pielāgo savu atjaunoto profilu
+profile-window-title-2 = { -brand-short-name } - Izvēlies profilu
+profile-window-logo =
+    .alt = { -brand-short-name } logotips
+
+## Delete profile dialogue that allows users to review what they will lose if they choose to delete their profile. Each item (open windows, etc.) is displayed in a table, followed by a column with the number of items.
+
+# Variables
+#   $profilename (String) - The name of the profile.
+delete-profile-header = Izdzēst profilu { $profilename }?
+delete-profile-description = { -brand-short-name } no šīs ierīces neatgriezeniski izdzēsīs šādus datus:
+# Open is an adjective, as in "browser windows currently open".
+delete-profile-windows = Atvērti logi
+# Open is an adjective, as in "browser tabs currently open".
+delete-profile-tabs = Atvērtas cilnes
+delete-profile-bookmarks = Grāmatzīmes
+delete-profile-history = Vēsture (apmeklētās lapas, sīkdatnes, vietņu dati)
+delete-profile-autofill = Automātiskās aizpildes dati (adreses, maksājumu veidi)
+delete-profile-logins = Paroles
+
+##
+
+# Button label
+delete-profile-cancel = Atcelt
+# Button label
+delete-profile-confirm = Dzēst
+
+## These strings are color themes available to select from the profile selection screen. Theme names should be localized.
+
+# The default system theme
+profiles-system-theme = Sistēmas
+profiles-system-theme-title =
+    .title = Lietot sistēmas motīvu
+profiles-gray-theme-title =
+    .title = Lietot pelēko motīvu
+profiles-yellow-theme-title =
+    .title = Lietot dzelteno motīvu
+profiles-orange-theme-title =
+    .title = Lietot oranžo motīvu
+profiles-red-theme-title =
+    .title = Lietot sarkano motīvu
+profiles-pink-theme-title =
+    .title = Lietot rozā motīvu
+profiles-purple-theme = Purpura
+profiles-purple-theme-title =
+    .title = Lietot purpura motīvu
+profiles-violet-theme = Violeta
+profiles-violet-theme-title =
+    .title = Lietot violeto motīvu
+profiles-blue-theme = Zils
+profiles-blue-theme-title =
+    .title = Lietot zilo motīvu
+profiles-green-theme = Zaļš
+profiles-green-theme-title =
+    .title = Lietot zaļo motīvu
+profiles-cyan-theme = Gaišzils
+profiles-cyan-theme-title =
+    .title = Lietot gaišzilo motīvu
+profiles-custom-theme-title =
+    .title = Pielietot pielāgotu izskatu
+
+## Data collection settings changed (multi-profile)
+
+# Primary button label to open the Data collection section in Settings
+multiprofile-data-collection-view-settings = Skatīt iestatījumus
+# Secondary button label to dismiss the infobar without action
+multiprofile-data-collection-dismiss = Paslēpt
+
+## Alternative text for default profile icons
+
+book-avatar-alt =
+    .alt = Grāmata
+briefcase-avatar-alt =
+    .alt = Portfelis
+picture-avatar-alt =
+    .alt = Attēls
+flower-avatar-alt =
+    .alt = Zieds
+folder-avatar-alt =
+    .alt = Mape
+hammer-avatar-alt =
+    .alt = Āmurs
+heart-avatar-alt =
+    .alt = Sirds
+heart-rate-avatar-alt =
+    .alt = Sirdsdarbības ātrums
+clock-avatar-alt =
+    .alt = Pulkstenis
+leaf-avatar-alt =
+    .alt = Lapa
+lightbulb-avatar-alt =
+    .alt = Spuldze
+makeup-avatar-alt =
+    .alt = Grims
+# Message refers to a text message, not a traditional letter/envelope message
+message-avatar-alt =
+    .alt = Vēstule
+musical-note-avatar-alt =
+    .alt = Muzikālā nots
+palette-avatar-alt =
+    .alt = Palete
+paw-print-avatar-alt =
+    .alt = Ķepas nospiedums
+plane-avatar-alt =
+    .alt = Lidmašīna
+# Present refers to a gift box, not the current time period
+present-avatar-alt =
+    .alt = Dāvana
+shopping-avatar-alt =
+    .alt = Iepirkšanās grozs
+soccer-ball-avatar-alt =
+    .alt = Futbola bumba
+sparkle-single-avatar-alt =
+    .alt = Dzirkstele
+star-avatar-alt =
+    .alt = Zvaigzne
+video-game-controller-avatar-alt =
+    .alt = Videospēļu kontrolieris
+# Globe refers to the generic globe/world icon that appears in browser tabs when a website doesn't have its own favicon.
+globe-avatar-alt =
+    .alt = Globuss
+# Diamond refers to the precious stone, not the geometric shape
+diamond-avatar-alt =
+    .alt = Dimants
+barbell-avatar-alt =
+    .alt = Stienis
+bike-avatar-alt =
+    .alt = Velosipēds
+
+## Tooltips for default avatar icons
+
+book-avatar = Grāmata
+briefcase-avatar = Portfelis
+clock-avatar = Pulkstenis
+custom-avatar = Pielāgots avatārs
+# Diamond refers to the precious stone, not the geometric shape
+diamond-avatar = Dimants
+flower-avatar = Zieds
+folder-avatar = Mape
+hammer-avatar = Āmurs
+heart-avatar = Sirds
+heart-rate-avatar = Sirdsdarbības ātrums
+leaf-avatar = Lapa
+lightbulb-avatar = Spuldze
+makeup-avatar = Grims
+# Message refers to a text message, not a traditional letter/envelope message
+message-avatar = Vēstule
+musical-note-avatar = Muzikālā nots
+palette-avatar = Palete
+paw-print-avatar = Ķepas nospiedums
+plane-avatar = Lidmašīna
+# Present refers to a gift box, not the current time period
+present-avatar = Dāvana
+shopping-avatar = Iepirkumu grozs
+sparkle-single-avatar = Dzirkstele
+star-avatar = Zvaigzne
+video-game-controller-avatar = Videospēļu kontrolieris
+custom-avatar-crop-back-button =
+    .aria-label = Atpakaļ
+barbell-avatar = Stienis
+bike-avatar = Velosipēds

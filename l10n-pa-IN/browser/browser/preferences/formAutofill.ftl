@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = ਸੰਭਾਲੇ ਸਿਰਨਾਵੇਂ
+autofill-manage-addresses-list-header = ਸਿਰਨਾਵੇਂ
+autofill-manage-payment-methods-title = ਸੰਭਾਲੇ ਹੋਏ ਭੁਗਤਾਨ ਦੇ ਢੰਗ
+autofill-manage-cards-list-header = ਕਾਰਡ
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = ਹਟਾਓ
+autofill-manage-add-button = …ਜੋੜੋ
+autofill-manage-edit-button = …ਸੋਧੋ
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = ਸਿਰਨਾਵਾਂ ਸੰਭਾਲਣਾ ਹੈ?
+address-capture-save-doorhanger-description = ਜਾਣਕਾਰੀ ਨੂੰ { -brand-short-name } ਸੰਭਾਲੋ, ਜਿਸ ਨਾਲ ਤੁਸੀਂ ਫਾਰਮਾਂ ਨੂੰ ਛੇਤੀ ਭਰ ਸਕਦੇ ਹੋ।
+address-capture-update-doorhanger-header = ਸਿਰਨਾਵਾਂ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?
+address-capture-edit-doorhanger-header = ਸਿਰਨਾਵੇਂ ਨੂੰ ਸੋਧੋ
+address-capture-save-button =
+    .label = ਸੰਭਾਲੋ
+    .accessKey = S
+address-capture-not-now-button =
+    .label = ਹਾਲੇ ਨਹੀਂ
+    .accessKey = N
+address-capture-never-save-addresses-button =
+    .label = ਸਿਰਨਾਵੇਂ ਕਦੇ ਨਾ ਸੰਭਾਲੋ
+    .accessKey = v
+address-capture-cancel-button =
+    .label = ਰੱਦ ਕਰੋ
+    .accessKey = C
+address-capture-update-button =
+    .label = ਅੱਪਡੇਟ ਕਰੋ
+    .accessKey = U
+address-capture-manage-address-button =
+    .label = ਸਿਰਨਾਵਾਂ ਸੈਟਿੰਗਾਂ
+address-capture-learn-more-button =
+    .label = ਹੋਰ ਜਾਣੋ
+address-capture-open-menu-button =
+    .aria-label = ਮੇਨੂ ਖੋਲ੍ਹੋ
+address-capture-edit-address-link = ਸਿਰਨਾਵੇਂ ਨੂੰ ਸੋਧੋ
+    .aria-label = ਸਿਰਨਾਵੇਂ ਨੂੰ ਸੋਧੋ
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = ਸਿਰਨਾਵਾਂ ਜੋੜੋ
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = ਸਿਰਨਾਵਾਂ ਨੂੰ ਸੋਧੋ
+autofill-address-name = ਨਾਂ
+autofill-address-organization = ਸੰਗਠਨ
+autofill-address-street-address = ਸੜਕ ਸਿਰਨਾਵਾਂ
+autofill-address-street = ਸੜਕ ਸਿਰਨਾਵਾਂ
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = ਗੁਆਂਢ
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = ਪਿੰਡ ਜਾਂ ਕਸਬਾ
+autofill-address-island = ਟਾਪੂ
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = ਟਾਊਨਲੈਂਡ
+autofill-address-city = ਸ਼ਹਿਰ
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = ਜ਼ਿਲ੍ਹਾ
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = ਪੋਸਟ ਟਾਊਨ
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = ਸ਼ਹਿਰ ਦਾ ਬਾਹਰੀ ਖੇਤਰ
+autofill-address-province = ਸੂਬਾ
+autofill-address-state = ਸੂਬਾ
+autofill-address-county = ਦੇਸ਼
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = ਪੈਰਿਸ਼
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = ਪ੍ਰੀਫੈਕਚਰ
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = ਖੇਤਰ
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = ਡੂ/ਸੀ
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = ਵਿਭਾਗ
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = ਅਮੀਰਾਤ
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = ਓਬਲਾਸਟ
+# Postal code field used in India (IN).
+autofill-address-pin = ਪਿੰਨ
+autofill-address-postal-code = ਡਾਕ ਕੋਡ
+# Postal code field.
+autofill-address-zip = ਜ਼ਿਪ ਕੋਡ
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = ਇਰਕੋਡ
+
+##
+
+autofill-address-country = ਦੇਸ਼ ਜਾਂ ਖਿੱਤਾ
+autofill-address-country-only = ਦੇਸ਼
+autofill-address-tel = ਫ਼ੋਨ
+autofill-address-email = ਈਮੇਲ
+autofill-cancel-button = ਰੱਦ ਕਰੋ
+autofill-save-button = ਸੰਭਾਲੋ
+autofill-country-warning-message-2 = ਆਪਣੇ-ਆਪ ਫਾਰਮ ਕਰਨਾ ਸਿਰਫ਼ ਕੁਝ ਹੀ ਦੇਸ਼ਾਂ ਵਿੱਚ ਮੌਜੂਦ ਹੈ
+autofill-country-warning-message = ਫ਼ਾਰਮ ਖੁਦ-ਭਰੋ ਇਸ ਵੇਲੇ ਕੁਝ ਦੇਸ਼ਾਂ 'ਚ ਹੀ ਉਪਲਬਧ ਹੈ।
+autofill-message-tooltip = ਆਪੇ-ਭਰਨ ਬਾਰੇ ਸੁਨੇਹਾ ਵੇਖੋ
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = ਕਾਰਡ ਜੋੜੋ
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = ਕਾਰਡ ਨੂੰ ਸੋਧੋ
+autofill-card-number-2 =
+    .label = ਕਾਰਡ ਦਾ ਨੰਬਰ
+autofill-card-number = ਕਾਰਡ ਨੰਬਰ
+autofill-card-invalid-number = ਢੁੱਕਵਾਂ ਕਾਰਡ ਨੰਬਰ ਦਿਓ
+autofill-card-name-on-card-2 =
+    .label = ਕਾਰਡ ਉੱਤੇ ਨਾਂ
+autofill-card-expires-month-2 =
+    .label = ਮਿਆਦ ਮਹੀਨਾ
+autofill-card-expires-year-2 =
+    .label = ਮਿਆਦ ਸਾਲ
+autofill-card-billing-address-2 =
+    .label = ਬਿੱਲ ਲਈ ਸਿਰਨਾਵਾਂ
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = ਕਾਰਡ 'ਤੇ ਨਾਂ
+autofill-card-expires-month = ਮਿਆਦ ਮਹੀਨਾ
+autofill-card-expires-year = ਮਿਆਦ ਸਾਲ
+autofill-card-billing-address = ਬਿੱਲ ਲਈ ਸਿਰਨਾਵਾਂ
+autofill-card-network = ਕਾਰਡ ਕਿਸਮ
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = ਕਰੈਡਿਟ ਕਾਰਡ, ਕਰੈਡਿਟ, ਕਾਰਡ, ਡੇਬਿਟ ਕਾਰਡ, ਡੇਬਿਟ, ਵਾਲਟ, ਚੈਕਆਉਟ, ਕ੍ਰੈਡਿਟ, ਕ੍ਰੈਡਿਟ ਕਾਰਡ
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = ਪਾਸਪੋਰਟ ਜੋੜੋ
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = ਪਾਸਪੋਰਟ ਨੂੰ ਸੋਧੋ
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = ਨਾਂ
+autofill-passport-country =
+    .label = ਦੇਸ਼
+autofill-passport-number =
+    .label = ਨੰਬਰ
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = ਜਾਰੀ ਕਰਨ ਦੀ ਤਾਰੀਖ
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = MM
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = DD
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = YYYY
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = ਪਾਸਪੋਰਟ ਨੂੰ ਸੰਭਾਲਣਾ ਹੈ?
+passport-capture-save-doorhanger-description = ਜਾਣਕਾਰੀ ਨੂੰ { -brand-short-name } ਸੰਭਾਲੋ, ਜਿਸ ਨਾਲ ਤੁਸੀਂ ਫਾਰਮਾਂ ਨੂੰ ਛੇਤੀ ਭਰ ਸਕਦੇ ਹੋ।
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = ਸੰਭਾਲੋ
+    .accessKey = S
+passport-capture-not-now-button =
+    .label = ਹੁਣੇ ਨਹੀਂ
+    .accessKey = w
+passport-capture-never-save-button =
+    .label = ਪਾਸਪੋਰਟ ਕਦੇ ਨਾ ਸੰਭਾਲੋ
+    .accessKey = N

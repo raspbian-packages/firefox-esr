@@ -1,0 +1,440 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = 正在下載 { -brand-shorter-name } 更新
+appmenuitem-banner-update-available =
+    .label = 已推出更新 — 立即下載
+appmenuitem-banner-update-manual =
+    .label = 已推出更新 — 立即下載
+appmenuitem-banner-update-unsupported =
+    .label = 無法更新 — 系統不相容
+appmenuitem-banner-update-restart =
+    .label = 已推出更新 — 立即重新啟動
+appmenu-nova-update-title = 重新啟動以更新 { -brand-short-name }
+appmenu-nova-update-description = 將重新開啟您的分頁。
+appmenu-nova-fxa-sign-in = 登入
+appmenu-nova-switch-device-promo =
+    .message = 快要換新裝置了嗎？把 { -brand-short-name } 一起帶走！
+appmenu-nova-switch-device-link = 如何轉移您的資料
+appmenuitem-new-tab =
+    .label = 開新分頁
+appmenuitem-new-window =
+    .label = 開新視窗
+appmenuitem-new-private-window =
+    .label = 開新隱私視窗
+appmenuitem-history =
+    .label = 歷史
+appmenuitem-tab-groups =
+    .label = 分頁群組
+appmenuitem-downloads =
+    .label = 下載項目
+appmenuitem-passwords =
+    .label = 密碼
+appmenuitem-extensions-and-themes =
+    .label = 擴充套件和佈景主題
+appmenuitem-extensions =
+    .label = 擴充套件
+appmenuitem-print =
+    .label = 列印…
+appmenuitem-find-in-page =
+    .label = 在頁面中搜尋…
+appmenuitem-translate =
+    .label = 翻譯此頁…
+appmenuitem-zoom =
+    .value = 縮放
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = 分享 { -brand-product-name }
+appmenuitem-more-tools =
+    .label = 更多工具
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = 說明與檢舉
+appmenuitem-help =
+    .label = 說明
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] 離開
+           *[other] 結束
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = 開啟應用程式選單
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = 關閉應用程式選單
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = 設定
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = 放大
+appmenuitem-zoom-reduce =
+    .label = 縮小
+appmenuitem-fullscreen =
+    .label = 全螢幕
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = 登入進行同步…
+appmenu-remote-tabs-turn-on-sync =
+    .label = 開啟同步…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = 顯示更多分頁
+    .tooltiptext = 顯示來自此裝置的更多分頁
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = 閒置分頁
+    .tooltiptext = 顯示此裝置上的閒置分頁
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = 無已開啟的分頁
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = 開啟分頁同步功能以檢視您其他裝置中的分頁清單。
+appmenu-remote-tabs-opensettings =
+    .label = 選項
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = 想在這裡看到您其他裝置上開啟的分頁嗎？
+appmenu-remote-tabs-connectdevice =
+    .label = 連結其他裝置
+appmenu-remote-tabs-welcome = 檢視您其他裝置中的分頁清單。
+appmenu-remote-tabs-unverified = 需要驗證您的帳號。
+appmenuitem-fxa-toolbar-sync-now2 = 立刻同步
+appmenuitem-fxa-sign-in = 登入 { -brand-product-name }
+appmenuitem-fxa-manage-account = 管理帳號
+fxa-menu-sync-status-on = 已開啟同步
+fxa-menu-sync-status-off = 已關閉同步
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = 同步您的資料
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = 未同步您的資料
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = 開啟
+fxa-menu-sync-status-turn-on-button-aria-label = 開啟
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = 登入 Sync
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = 立即同步 { $deviceName }
+fxa-menu-manage-sync-settings =
+    .label = 管理同步設定
+fxa-menu-add-device =
+    .label = 新增裝置
+fxa-menu-manage-devices =
+    .label = 管理您的裝置
+fxa-menu-device-missing =
+    .label = 沒看到您的裝置嗎？
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = 所有裝置
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = 所有裝置
+fxa-menu-get-firefox-mobile =
+    .label = 下載 { -brand-product-name } for Android 或 iOS
+fxa-menu-secure-sync-subpanel =
+    .title = 安全同步
+appmenu-account-header = 帳號
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = 上次同步於 { $time }
+    .label = 上次同步於 { $time }
+appmenu-fxa-sync-and-save-data2 = 同步並儲存資料
+appmenu-fxa-signed-in-label = 登入
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = 登入 Sync
+appmenu-fxa-sign-in-promo-message = 在所有地方能使用您的資料
+appmenu-fxa-sign-in-promo-button =
+    .label = 登入
+appmenu-fxa-setup-sync =
+    .label = 開啟同步…
+appmenu-fxa-setup-sync-new = 開啟
+appmenuitem-save-page =
+    .label = 另存新檔…
+appmenuitem-fxa-sync-off-title = Sync 已關閉
+appmenuitem-fxa-sync-off-description = 保護並從任何裝置存取您的書籤、密碼與其他資訊。
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = 效能檢測器
+    .tooltiptext = 紀錄效能檢測檔
+profiler-popup-button-recording =
+    .label = 效能檢測器
+    .tooltiptext = 檢測器正在紀錄效能檢測檔
+profiler-popup-button-capturing =
+    .label = 效能檢測器
+    .tooltiptext = 檢測器正在紀錄效能檢測檔
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = 揭露更多資訊
+profiler-popup-description-title =
+    .value = 紀錄、分析、分享
+profiler-popup-description = 與您的團隊分享效能測量資訊，一同解決效能問題。
+profiler-popup-learn-more-button =
+    .label = 了解更多
+profiler-popup-settings =
+    .value = 設定
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = 編輯設定值…
+profiler-popup-recording-screen = 記錄中…
+profiler-popup-start-recording-button =
+    .label = 開始記錄
+profiler-popup-discard-button =
+    .label = 捨棄
+profiler-popup-capture-button =
+    .label = 捕捉
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = 開啟效能分析面版
+    .tooltiptext = 開啟效能分析面版
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = 推薦於對大部分網頁應用程式除錯時使用，額外負荷較低。
+profiler-popup-presets-web-developer-label =
+    .label = 網頁開發者
+profiler-popup-presets-firefox-description = 對 { -brand-shorter-name } 進行效能檢測的建議預設值。
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = 於 { -brand-shorter-name } 診斷圖形 Bug 時的預設值。
+profiler-popup-presets-graphics-label =
+    .label = 圖形
+profiler-popup-presets-media-description2 = 於 { -brand-shorter-name } 診斷影音 Bug 時的預設值。
+profiler-popup-presets-media-label =
+    .label = 媒體
+profiler-popup-presets-ml-description = 於 { -brand-shorter-name } 診斷機器學習 Bug 時的預設值。
+profiler-popup-presets-ml-label =
+    .label = 機器學習
+profiler-popup-presets-networking-description = 於 { -brand-shorter-name } 診斷網路連線 Bug 時的預設值。
+profiler-popup-presets-networking-label =
+    .label = 網路連線
+profiler-popup-presets-networking-with-logs-description = 於 { -brand-shorter-name } 診斷網路連線 Bug 時的預設值，並包含網路紀錄。這些紀錄內容可能會包含您造訪的網址等敏感資料。
+profiler-popup-presets-networking-with-logs-label =
+    .label = 網路連線含紀錄
+profiler-popup-presets-power-description = 於 { -brand-shorter-name } 診斷耗電量時的預設值，額外負荷較低。
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = 電源
+profiler-popup-presets-debug-description = { -brand-shorter-name } 的預設除錯選項。額外負荷較高，請只在需要了解瀏覽器行為時使用，勿用於需要較高效能的情境。
+profiler-popup-presets-debug-label =
+    .label = 除錯
+profiler-popup-presets-web-compat-description = 對網站相容性進行除錯，而非效能監控的建議預設值。
+profiler-popup-presets-web-compat-label =
+    .label = Web Compat
+profiler-popup-presets-custom-label =
+    .label = 自訂
+
+##
+
+appmenu-manage-history =
+    .label = 管理歷史
+appmenu-restore-session =
+    .label = 回復先前的瀏覽狀態
+appmenu-clear-history =
+    .label = 清除最近的歷史記錄…
+appmenu-recent-history-subheader = 最近紀錄
+appmenu-recently-closed-tabs =
+    .label = 最近關閉的分頁
+appmenu-recently-closed-windows =
+    .label = 最近關閉的視窗
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = 搜尋紀錄
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = 在不同裝置間保持同步
+appmenu-sync-promo-signin-cta = 登入
+appmenu-sync-promo-turnonsync =
+    .heading = 同步您的分頁與瀏覽紀錄
+appmenu-sync-promo-turnonsync-cta = 開啟同步
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = 開啟您行動裝置上的分頁
+appmenu-sync-promo-connectdevice-cta = 連結裝置
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = 把書籤隨身帶著走
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = 書籤隨身帶著走
+
+## Help panel
+
+appmenu-help-header =
+    .title = { -brand-shorter-name } 說明
+appmenu-about =
+    .label = 關於 { -brand-shorter-name }
+    .accesskey = A
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = 分享 { -brand-product-name }
+    .accesskey = r
+appmenu-get-help =
+    .label = 取得幫助
+    .accesskey = H
+appmenu-help-more-troubleshooting-info =
+    .label = 更多疑難排解資訊
+    .accesskey = T
+appmenu-help-share-ideas =
+    .label = 分享想法與意見回饋…
+    .accesskey = S
+appmenu-help-switch-device =
+    .label = 切換至新裝置
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = 說明與檢舉
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = 疑難排解模式…
+    .accesskey = M
+appmenu-help-exit-troubleshoot-mode =
+    .label = 關閉疑難排解模式
+    .accesskey = M
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = 檢舉詐騙網站…
+    .accesskey = D
+appmenu-help-not-deceptive =
+    .label = 這不是詐騙網站…
+    .accesskey = d
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = 自訂工具列…
+appmenu-abouttranslations =
+    .label = 翻譯…
+appmenu-edit-pdf =
+    .label = 編輯 PDF…
+appmenu-developer-tools-subheader = 瀏覽器工具
+appmenu-developer-tools-extensions =
+    .label = 開發者專用的擴充套件
+appmenuitem-report-broken-site =
+    .label = 回報網站問題
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = 登入您的帳號
+appmenuitem-monitor-title2 = 比身分盜用更搶先一步
+appmenuitem-monitor-description2 = 訂閱資料外洩事件警報
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = { -monitor-brand-short-name } 資料外洩警報
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = 獲得資料外洩警報
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = 保護您電子郵件地址的隱私
+appmenuitem-relay-description2 = 幫助防止收到垃圾信
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = 檢視轉寄信箱
+appmenuitem-relay-description = 隱藏您的實際信箱與電話號碼
+appmenuitem-services-relay-description = 啟動轉寄信箱儀錶板
+appmenuitem-vpn-title2 = 使用 { -mozilla-vpn-brand-name } 隱藏您的實際位置
+appmenuitem-vpn-description5 = 在其他裝置也獲得更多一層保護
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = 下載 { -mozilla-vpn-brand-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = 獲得完整裝置保護
+appmenu-services-header = 我的服務
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = 隱私權保護工具
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = 請試用來自 Mozilla 的其他保護工具：
+
+## Profiles panel
+
+appmenu-other-profiles = 其他設定檔
+appmenu-manage-profiles =
+    .label = 管理設定檔
+appmenu-copy-profile =
+    .label = 複製這組設定檔
+appmenu-create-profile2 =
+    .label = 建立新設定檔
+appmenu-create-profile =
+    .label = 新增設定檔
+appmenu-edit-profile =
+    .aria-label = 編輯設定檔
+appmenu-edit-this-profile =
+    .label = 編輯此設定檔
+appmenu-profile-current-in-use = 目前使用的設定檔
+fxa-menu-create-profile-subpanel =
+    .title = 建立新設定檔
+fxa-menu-create-profile-heading = 使用新設定檔，升級您的上網體驗
+fxa-menu-create-profile-description = 將您工作與私人上網的書籤、密碼、瀏覽紀錄分開管理。
+fxa-menu-create-profile-confirm =
+    .label = 建立新設定檔
+fxa-menu-create-profile-learn-more =
+    .label = 設定檔是什麼？
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = 分享 { -brand-product-name }
+appmenuitem-share-firefox-description = 邀請其他人選用將隱私看得最重要的瀏覽器
+appmenu-profiles-2 =
+    .label = 設定檔
+appmenu-profiles-header = 設定檔
+appmenu-all-profiles =
+    .label = 所有設定檔
+appmenu-secure-sync-header = 安全同步
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = 近期的分頁
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] 檢視 { $tabCount } 個同步的分頁
+           *[other] 檢視全部 { $tabCount } 個同步的分頁
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = 將目前頁面傳送到此裝置

@@ -1,0 +1,111 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+about-networking-title = Acerca da rede
+about-networking-http = HTTP
+about-networking-http-clear-cache-button = Limpar cache de DNS
+about-networking-sockets = Sockets
+about-networking-dns = DNS
+about-networking-dns-clear-cache-button = Limpar a cache de DNS
+about-networking-dns-trr-url = Endereço DoH
+about-networking-dns-trr-mode = Modo DoH
+about-networking-dns-suffix = Sufixo de DNS
+about-networking-websockets = WebSockets
+about-networking-alt-svc = Alt-Svc
+about-networking-alt-svc-origin = Origem
+about-networking-alt-svc-alternate = Alternativa
+about-networking-alt-svc-alpn = ALPN
+about-networking-alt-svc-validated = Validado
+about-networking-alt-svc-ttl = TTL
+about-networking-alt-svc-origin-attributes-suffix = Chave de isolamento
+about-networking-ssl-tokens = Tokens TLS
+# $count (Number) - Number of cached TLS resumption tokens
+about-networking-ssl-tokens-summary-count =
+    { $count ->
+        [one] { $count } token
+       *[other] { $count } tokens
+    }
+# $count (Number) - Number of cached tokens that have already expired
+about-networking-ssl-tokens-summary-expired =
+    { $count ->
+        [one] ({ $count } expirado)
+       *[other] ({ $count } expirados)
+    }
+# $decompressedLength (Number) - Total uncompressed size in bytes across all tokens
+# $compressedLength (Number) - Total compressed size in bytes across all tokens
+# $saved (Number) - Percentage of space saved by compression
+about-networking-ssl-tokens-summary-compression = { $decompressedLength } → { $compressedLength } B ({ $saved }% guardado)
+# $used (Number) - Cache size currently in use, in kilobytes
+# $capacity (Number) - Total cache capacity, in kilobytes
+# $percent (Number) - Percentage of the cache capacity currently in use
+about-networking-ssl-tokens-summary-capacity = { $used } / { $capacity } KB ({ $percent }%)
+about-networking-ssl-tokens-partition-key = Chave da Partição
+about-networking-ssl-tokens-tokens-column = Tokens
+about-networking-ssl-tokens-expires = Expira
+about-networking-ssl-tokens-certificate = Certificado
+# $count (Number) - Number of tokens sharing this row's host and certificate
+about-networking-ssl-tokens-token-list =
+    { $count ->
+        [one] { $count } token
+       *[other] { $count } tokens
+    }
+about-networking-ssl-tokens-restored =
+    .alt = Restaurado do armazenamento
+    .title = Restaurado do armazenamento
+about-networking-ssl-tokens-new =
+    .alt = Novo desta sessão
+    .title = Novo desta sessão
+about-networking-ssl-tokens-expired =
+    .alt = Expirado
+    .title = Expirado
+# $tokenLength (Number) - Total size in bytes of the raw TLS resumption token(s)
+# $decompressedLength (Number) - Total size in bytes before compression
+# $compressedLength (Number) - Total size in bytes after compression
+about-networking-ssl-tokens-compression-details =
+    .title = Tokens: { $tokenLength } B. Codificado: { $decompressedLength } → { $compressedLength } B.
+about-networking-ssl-tokens-ev-status = Certificado EV
+about-networking-ssl-tokens-ct-status = Estado de Transparência do Certificado
+about-networking-ssl-tokens-overridable-error = Categoria de erro substituível
+about-networking-ssl-tokens-built-in-root = Root incorporado
+# $count (Number) - Number of certs in the succeeded cert chain
+about-networking-ssl-tokens-cert-chain = Cadeia de certificados ({ $count })
+# $count (Number) - Number of certs seen during the TLS handshake
+about-networking-ssl-tokens-handshake-certs = Certificados handshake ({ $count })
+about-networking-refresh = Atualizar
+about-networking-auto-refresh = Atualizar a cada 3 segundos
+about-networking-hostname = Servidor
+about-networking-port = Porta
+about-networking-http-version = Versão de HTTP
+about-networking-ssl = SSL
+about-networking-active = Ativo
+about-networking-idle = Inativo
+about-networking-host = Servidor
+about-networking-type = Tipo
+about-networking-sent = Enviado
+about-networking-received = Recebido
+about-networking-family = Família
+about-networking-trr = TRR
+about-networking-addresses = Endereços
+about-networking-expires = Expira (segundos)
+about-networking-originAttributesSuffix = Chave de isolamento
+about-networking-flags = Etiquetas adicionais
+about-networking-messages-sent = Mensagens enviadas
+about-networking-messages-received = Mensagens recebidas
+about-networking-bytes-sent = Bytes enviados
+about-networking-bytes-received = Bytes recebidos
+about-networking-logging = Registos
+about-networking-dns-lookup = Pesquisa de DNS
+about-networking-dns-lookup-button = Resolver
+about-networking-dns-domain = Domínio:
+about-networking-dns-lookup-table-column = IPs
+about-networking-dns-https-rrs-lookup-table-column = HTTPS RR
+about-networking-networkid = ID de rede
+about-networking-networkid-id = ID de rede
+# Note: do not translate about:logging, as it is a URL.
+about-networking-moved-about-logging = Esta página foi movida para <a data-l10n-name="about-logging-url">about:logging</a>.
+
+## Link is intended as "network link"
+
+about-networking-networkid-is-up = Ligação ativa
+about-networking-networkid-status-known = Estado da ligação é desconhecido

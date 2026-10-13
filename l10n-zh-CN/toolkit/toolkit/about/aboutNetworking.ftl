@@ -1,0 +1,65 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+about-networking-title = 关于网络连接
+about-networking-http = HTTP
+about-networking-http-clear-cache-button = 清除 HTTP 缓存
+about-networking-sockets = 套接字
+about-networking-dns = DNS
+about-networking-dns-clear-cache-button = 清除 DNS 缓存
+about-networking-dns-trr-url = DoH 网址
+about-networking-dns-trr-mode = DoH 模式
+about-networking-dns-suffix = DNS 后缀
+about-networking-websockets = WebSocket
+about-networking-alt-svc = Alt-Svc
+about-networking-alt-svc-origin = 来源
+about-networking-alt-svc-alternate = 替代方案
+about-networking-alt-svc-alpn = ALPN
+about-networking-alt-svc-validated = 已验证
+about-networking-alt-svc-ttl = TTL
+about-networking-alt-svc-origin-attributes-suffix = 隔离键
+about-networking-ssl-tokens = TLS 令牌
+about-networking-ssl-tokens-expired =
+    .alt = 已过期
+    .title = 已过期
+about-networking-ssl-tokens-ev-status = EV 证书
+about-networking-ssl-tokens-ct-status = 证书透明度状态
+about-networking-ssl-tokens-built-in-root = 内置根证书
+about-networking-refresh = 刷新
+about-networking-auto-refresh = 每 3 秒自动刷新
+about-networking-hostname = 主机名
+about-networking-port = 端口
+about-networking-http-version = HTTP 版本
+about-networking-ssl = SSL
+about-networking-active = 活动
+about-networking-idle = 空闲
+about-networking-host = 主机
+about-networking-type = 类型
+about-networking-sent = 已发送
+about-networking-received = 已接收
+about-networking-family = 协议族
+about-networking-trr = TRR
+about-networking-addresses = 地址
+about-networking-expires = 过期时间（秒）
+about-networking-originAttributesSuffix = 隔离键（值）
+about-networking-flags = 其他标志
+about-networking-messages-sent = 发出的消息数
+about-networking-messages-received = 收到的消息数
+about-networking-bytes-sent = 发送字节数
+about-networking-bytes-received = 接收字节数
+about-networking-logging = 日志
+about-networking-dns-lookup = DNS 查询
+about-networking-dns-lookup-button = 解析
+about-networking-dns-domain = 域名：
+about-networking-dns-lookup-table-column = IP
+about-networking-dns-https-rrs-lookup-table-column = HTTPS 资源记录（RR）
+about-networking-networkid = 网络 ID
+about-networking-networkid-id = 网络 ID
+# Note: do not translate about:logging, as it is a URL.
+about-networking-moved-about-logging = 此页面已移动至 <a data-l10n-name="about-logging-url">about:logging</a>。
+
+## Link is intended as "network link"
+
+about-networking-networkid-is-up = 网络已连接
+about-networking-networkid-status-known = 已知网络连接状态

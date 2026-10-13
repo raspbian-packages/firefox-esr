@@ -1,0 +1,440 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = ჩამოიტვირთება ახალი { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = გასაახლებელია — ჩამოტვირთვა
+appmenuitem-banner-update-manual =
+    .label = გასაახლებელია — ჩამოტვირთვა
+appmenuitem-banner-update-unsupported =
+    .label = ვერ განახლდება — შეუთავსებელია
+appmenuitem-banner-update-restart =
+    .label = გასაახლებელია — გადატვირთვა
+appmenu-nova-update-title = გასაახლებლად კვლავ გაუშვით { -brand-short-name }
+appmenu-nova-update-description = თქვენი ჩანართები ხელახლა გაიხსნება.
+appmenu-nova-fxa-sign-in = შესვლა
+appmenu-nova-switch-device-promo =
+    .message = მალე გადადიხართ ახალ მოწყობილობაზე? თან წაიყოლეთ { -brand-short-name }!
+appmenu-nova-switch-device-link = როგორ გადაიტანოთ თქვენი მონაცემები
+appmenuitem-new-tab =
+    .label = ახალი ჩანართი
+appmenuitem-new-window =
+    .label = ახალი ფანჯარა
+appmenuitem-new-private-window =
+    .label = ახალი პირადი ფანჯარა
+appmenuitem-history =
+    .label = ისტორია
+appmenuitem-tab-groups =
+    .label = ჩანართის ჯგუფები
+appmenuitem-downloads =
+    .label = ჩამოტვირთვები
+appmenuitem-passwords =
+    .label = პაროლები
+appmenuitem-extensions-and-themes =
+    .label = გაფართოებები და თემები
+appmenuitem-extensions =
+    .label = გაფართოებები
+appmenuitem-print =
+    .label = ამობეჭდვა…
+appmenuitem-find-in-page =
+    .label = პოვნა გვერდზე...
+appmenuitem-translate =
+    .label = გვერდის თარგმნა...
+appmenuitem-zoom =
+    .value = ზომის ცვლილება
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = გააზიარეთ { -brand-product-name }
+appmenuitem-more-tools =
+    .label = სხვა ხელსაწყოები
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = დახმარება და მოხსენება
+appmenuitem-help =
+    .label = დახმარება
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] დახურვა
+           *[other] გასვლა
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = პროგრამის მენიუს გახსნა
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = პროგრამის მენიუს დახურვა
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = პარამეტრები
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = მიახლოება
+appmenuitem-zoom-reduce =
+    .label = დაშორება
+appmenuitem-fullscreen =
+    .label = სრული ეკრანი
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = სინქრონიზაციაში შესვლა…
+appmenu-remote-tabs-turn-on-sync =
+    .label = დასინქრონების ჩართვა…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = მეტი ჩანართის ჩვენება
+    .tooltiptext = სხვა ჩანართების ჩვენებაც, ამ მოწყობილობიდან
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = უქმი ჩანართები
+    .tooltiptext = იხილეთ უქმი ჩანართები ამ მოწყობილობაზე
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = გახსნილი ჩანართები არაა
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = ჩართეთ ჩანართების სინქრონიზაცია თქვენი სხვა მოწყობილობებიდან ჩანართების სიის სანახავად.
+appmenu-remote-tabs-opensettings =
+    .label = პარამეტრები
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = გსურთ სხვა მოწყობილობების ჩანართების აქ ნახვა?
+appmenu-remote-tabs-connectdevice =
+    .label = სხვა მოწყობილობის დაკავშირება
+appmenu-remote-tabs-welcome = იხილეთ ჩანართების სია თქვენი სხვა მოწყობილობებიდან.
+appmenu-remote-tabs-unverified = თქვენი ანგარიში საჭიროებს დამოწმებას.
+appmenuitem-fxa-toolbar-sync-now2 = დასინქრონება ახლავე
+appmenuitem-fxa-sign-in = { -brand-product-name } – შესვლა
+appmenuitem-fxa-manage-account = ანგარიშის მართვა
+fxa-menu-sync-status-on = დასინქ. ჩართ.
+fxa-menu-sync-status-off = დასინქ. გამორთ.
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = დაასინქრონეთ მონაცემები
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = თქვენი მონაცემები არ დასინქრონდება
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = ჩართვა
+fxa-menu-sync-status-turn-on-button-aria-label = ჩართვა
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = სინქრონიზაციაში შესვლა
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = დასინქ. { $deviceName } ახლავე
+fxa-menu-manage-sync-settings =
+    .label = სინქრონიზაციის პარამეტრების მართვა
+fxa-menu-add-device =
+    .label = მოწყობილობის დამატება
+fxa-menu-manage-devices =
+    .label = თქვენი მოწყობილობების მართვა
+fxa-menu-device-missing =
+    .label = არ ჩანს თქვენი მოწყობილობა?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = ყველა მოწყობილობა
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = ყველა მოწყობილობა
+fxa-menu-get-firefox-mobile =
+    .label = გადმოწერეთ { -brand-product-name } Android-სა თუ iOS-ზე
+fxa-menu-secure-sync-subpanel =
+    .title = უსაფრთხო დასინქ.
+appmenu-account-header = ანგარიში
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = ბოლო დასინქრონება { $time }
+    .label = ბოლო დასინქრონება { $time }
+appmenu-fxa-sync-and-save-data2 = დასინქრონება და შენახვა
+appmenu-fxa-signed-in-label = შესვლა
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = დასინქ. შესვლა
+appmenu-fxa-sign-in-promo-message = ყველგან წაიყოლეთ თქვენი მონაცემები
+appmenu-fxa-sign-in-promo-button =
+    .label = შესვლა
+appmenu-fxa-setup-sync =
+    .label = დასინქრონების ჩართვა…
+appmenu-fxa-setup-sync-new = ჩართვა
+appmenuitem-save-page =
+    .label = გვერდის შენახვა როგორც…
+appmenuitem-fxa-sync-off-title = დასინქ. გამორთულია
+appmenuitem-fxa-sync-off-description = დაცვა და წვდომა თქვენს სანიშნებთან, პაროლებთან და ყველაფერთან ნებისმიერი ადგილიდან.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = აღმწერი
+    .tooltiptext = წარმადობის მახასიათებლების აღრიცხვა
+profiler-popup-button-recording =
+    .label = აღმწერი
+    .tooltiptext = იწერს მახასიათებლებს
+profiler-popup-button-capturing =
+    .label = აღმწერი
+    .tooltiptext = აღრიცხავს მახასიათებლებს
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = მეტი ინფორმაციის გამოვლენა
+profiler-popup-description-title =
+    .value = ჩაწერა, გამოკვლევა, გაზიარება
+profiler-popup-description = იმუშავეთ წარმადობის საკითხებზე მახასიათებლების გამოქვეყნებით, გუნდისთვის გასაზიარებლად.
+profiler-popup-learn-more-button =
+    .label = ვრცლად
+profiler-popup-settings =
+    .value = პარამეტრები
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = პარამეტრების ჩასწორება…
+profiler-popup-recording-screen = იწერება…
+profiler-popup-start-recording-button =
+    .label = ჩაწერის დაწყება
+profiler-popup-discard-button =
+    .label = გაუქმება
+profiler-popup-capture-button =
+    .label = აღება
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = გახსენით მახასიათებლების აღრიცხვის არე
+    .tooltiptext = გახსენით მახასიათებლების აღრიცხვის არე
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = მზა პარამეტრები პროგრამების ხარვეზების გამოსავლენად ნაკლები დატვირთვით.
+profiler-popup-presets-web-developer-label =
+    .label = ვებშემუშავება
+profiler-popup-presets-firefox-description = მზა პარამეტრები, რომლითაც აღიწერება { -brand-shorter-name }.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = მზა პარამეტრები გრაფიკული ხარვეზების გამოსავლენად – { -brand-shorter-name }.
+profiler-popup-presets-graphics-label =
+    .label = გრაფიკა
+profiler-popup-presets-media-description2 = მზა პარამეტრები ხმოვანი და ვიდეოფაილების ხარვეზების გამოსავლენად – { -brand-shorter-name }.
+profiler-popup-presets-media-label =
+    .label = ფაილები
+profiler-popup-presets-ml-description = მზა პარამეტრები მანქანური სწავლების ხარვეზების გამოსავლენად – { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = მანქანური სწავლება
+profiler-popup-presets-networking-description = მზა პარამეტრები ქსელის ხარვეზების გამოსავლენად – { -brand-shorter-name }.
+profiler-popup-presets-networking-label =
+    .label = ქსელი
+profiler-popup-presets-networking-with-logs-description = მზა ნაკრები, რომლითაც ქსელის ხარვეზებს გამოიკვლევს { -brand-shorter-name }, მათ შორის კავშირის აღრიცხვებს. მოცემული ჩანაწერები შეიძლება შეიცავდეს საფრთხილო მონაცემებს, როგორიცაა მონახულებული ბმულები.
+profiler-popup-presets-networking-with-logs-label =
+    .label = ქსელის აღრიცხვები
+profiler-popup-presets-power-description = მზა პარამეტრები კვების მიწოდების ხარვეზების გამოსავლენად – { -brand-shorter-name }, ჭარბი დატვირთვის შეზღუდვით.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = კვება
+profiler-popup-presets-debug-description = მზა პარამეტრები, რომ გაიმართოს { -brand-shorter-name }. მეტად დამტვირთავია, არ გამოიყენოთ მძიმე სამუშაოების დროს, გამოსადეგია ბრაუზერის ქცევაზე დასაკვირვებლად.
+profiler-popup-presets-debug-label =
+    .label = გამართვა
+profiler-popup-presets-web-compat-description = სასურველი მზა პარამეტრები ვებთავსებადობის ხარვეზების მოსაგვარებლად, ნაცვლად წარმადობის მიდევნებისა.
+profiler-popup-presets-web-compat-label =
+    .label = ვებთავსებადობა
+profiler-popup-presets-custom-label =
+    .label = მორგებული
+
+##
+
+appmenu-manage-history =
+    .label = ისტორიის მართვა
+appmenu-restore-session =
+    .label = წინა სეანსის აღდგენა
+appmenu-clear-history =
+    .label = უახლესი ისტორიის გასუფთავება…
+appmenu-recent-history-subheader = უახლესი ისტორია
+appmenu-recently-closed-tabs =
+    .label = ბოლოს დახურული ჩანართები
+appmenu-recently-closed-windows =
+    .label = ბოლოს დახურული ფანჯრები
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = ძიების ისტორია
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = დაასინქრონეთ ყველა მოწყობილობა
+appmenu-sync-promo-signin-cta = შესვლა
+appmenu-sync-promo-turnonsync =
+    .heading = დაასინქრონეთ თქვენი ჩანართები და ისტორია
+appmenu-sync-promo-turnonsync-cta = დასინქ. ჩართვა
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = წამოიღეთ მობილურიდან ჩანართები
+appmenu-sync-promo-connectdevice-cta = მოწყობილობის დაკავშირება
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = თან წაიყოლეთ თქვენი სანიშნები
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = გაიყოლეთ თქვენი სანიშნები
+
+## Help panel
+
+appmenu-help-header =
+    .title = { -brand-shorter-name } დახმარება
+appmenu-about =
+    .label = { -brand-shorter-name } შესახებ
+    .accesskey = შ
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = გააზიარეთ { -brand-product-name }
+    .accesskey = გ
+appmenu-get-help =
+    .label = დახმარება
+    .accesskey = დ
+appmenu-help-more-troubleshooting-info =
+    .label = მონაცემები ხარვეზის აღმოსაფხვრელად
+    .accesskey = ფ
+appmenu-help-share-ideas =
+    .label = გაგვიზიარეთ მოსაზრებები და გამოგვეხმაურეთ…
+    .accesskey = ზ
+appmenu-help-switch-device =
+    .label = ახალ მოწყობილობაზე გადასვლა
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = დახმარება და მოხსენება
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = ხარვეზის აღმოფხვრის რეჟიმი…
+    .accesskey = ხ
+appmenu-help-exit-troubleshoot-mode =
+    .label = ხარვეზის აღმოფხვრის რეჟიმის გამორთვა
+    .accesskey = ჟ
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = მოხსენება თაღლითურ საიტზე…
+    .accesskey = თ
+appmenu-help-not-deceptive =
+    .label = ეს თაღლითური საიტი არაა…
+    .accesskey = ე
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = ხელსაწყოთა ზოლის მორგება...
+appmenu-abouttranslations =
+    .label = თარგმნა…
+appmenu-edit-pdf =
+    .label = ჩაასწორეთ PDF…
+appmenu-developer-tools-subheader = ბრაუზერის ხელსაწყოები
+appmenu-developer-tools-extensions =
+    .label = გაფართოებები შემმუშავებელთათვის
+appmenuitem-report-broken-site =
+    .label = არეული საიტის მოხსენება
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = ანგარიშზე შესვლა
+appmenuitem-monitor-title2 = აღკვეთეთ ვინაობის მონაცემთა მითვისება
+appmenuitem-monitor-description2 = შეიტყვეთ მონაცემთა მიტაცების შესახებ
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = { -monitor-brand-short-name } – მიტაცების ცნობები
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = მიიღეთ ცნობები მონაცემთა მიტაცებისას
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = დატოვეთ თქვენი ელფოსტა პირადი
+appmenuitem-relay-description2 = გეხმარებათ აირიდოთ უსარგებლო წერილები
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = იხილეთ ელფოსტის ნიღბები
+appmenuitem-relay-description = შენიღბეთ თქვენი ელფოსტა და ნომერი
+appmenuitem-services-relay-description = შენიღბვის მაჩვენებლების გვერდის გაშვება
+appmenuitem-vpn-title2 = მდებარეობის დასამალად გამოიყენეთ { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description5 = დამატებითი დაცვა ყველა მოწყობილობაზე
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = ჩამოტვირთეთ { -mozilla-vpn-brand-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = ისარგებლეთ მთლიანი მოწყობილობის დაცვით
+appmenu-services-header = ჩემი მომსახურებები
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = პირადულობის ხელსაწყოები
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = მოსინჯეთ დაცვის სხვა ხელსაწყოებიც, Mozilla რომ ქმნის:
+
+## Profiles panel
+
+appmenu-other-profiles = სხვა პროფილები
+appmenu-manage-profiles =
+    .label = პროფილების მართვა
+appmenu-copy-profile =
+    .label = ამ პროფილის ასლი
+appmenu-create-profile2 =
+    .label = ახალი პროფილის შექმნა
+appmenu-create-profile =
+    .label = ახალი პროფილი
+appmenu-edit-profile =
+    .aria-label = პროფილის ჩასწორება
+appmenu-edit-this-profile =
+    .label = ამ პროფილის ჩასწორება
+appmenu-profile-current-in-use = მიმდინარე პროფილი გამოიყენება
+fxa-menu-create-profile-subpanel =
+    .title = ახალი პროფილის შექმნა
+fxa-menu-create-profile-heading = ახალ დონეზე აიყვანეთ გვერდების მონახულება ახალი პროფილით
+fxa-menu-create-profile-description = გამიჯნეთ თქვენი სანიშნები, პაროლები და ისტორია, სამუშაოდ თუ პირადი დათვალიერებისთვის.
+fxa-menu-create-profile-confirm =
+    .label = ახალი პროფილის შექმნა
+fxa-menu-create-profile-learn-more =
+    .label = რისთვისაა პროფილები?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = გააზიარეთ { -brand-product-name }
+appmenuitem-share-firefox-description = მოიწვიეთ ვინმე, აირჩიოს ბრაუზერი, რომლისთვისაც უწინარესია პირადულობა
+appmenu-profiles-2 =
+    .label = პროფილები
+appmenu-profiles-header = პროფილები
+appmenu-all-profiles =
+    .label = ყველა პროფილი
+appmenu-secure-sync-header = უსაფრთხო დასინქ.
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = ბოლო ჩანართები
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] იხილეთ { $tabCount } დასინქ. ჩანართი
+           *[other] იხილეთ ყველა, { $tabCount } დასინქ. ჩანართი
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = გაგზავნეთ მიმდინარე გვერდი ამ მოწყობილობაზე

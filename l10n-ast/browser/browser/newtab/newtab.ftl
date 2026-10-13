@@ -1,0 +1,281 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Llingüeta nueva
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = Llingüetes nueves
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } filera
+           *[other] { $num } fileres
+        }
+home-restore-defaults-srd =
+    .label = Reafitar
+    .accesskey = R
+home-mode-choice-custom-srd =
+    .label = URLs personalizaes...
+home-mode-choice-blank-srd =
+    .label = Páxina balera
+home-prefs-shortcuts-header-srd =
+    .label = Atayos
+home-prefs-shortcuts-select =
+    .aria-label = Atayos
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = Atayos patrocinaos
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Páxines visitaes
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Marcadores
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = La descarga más recién
+home-prefs-recent-activity-header-srd =
+    .label = Actividá recién
+home-prefs-recent-activity-select =
+    .aria-label = Actividá recién
+
+## Search box component.
+
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = Busca con { $engine } o introduz una direición
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Amiestu d'un motor de busca
+newtab-topsites-add-shortcut-header = Atayu nuevu
+newtab-topsites-edit-shortcut-header = Edición d'un atayu
+newtab-topsites-title-label = Títulu
+newtab-topsites-title-input =
+    .placeholder = Introduz un títulu
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Teclexa o apiega una URL
+newtab-topsites-url-validation = Ríquese una URL válida
+newtab-topsites-image-url-label = URL d'imaxe personalizada
+newtab-topsites-use-custom-image-link = Usar una imaxe personalizada
+newtab-topsites-use-image-link = Usar una imaxe personalizada…
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Encaboxar
+newtab-topsites-delete-history-button = Desaniciar del historial
+newtab-topsites-save-button = Guardar
+newtab-topsites-add-button = Amestar
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = ¿De xuru que quies desaniciar del to historial cada instancia d'esta páxina?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Esta aición nun pue desfacese.
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Abrir el menú
+    .title = Abrir el menú
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Editar
+newtab-menu-open-new-window = Abrir nuna ventana nueva
+newtab-menu-open-new-private-window = Abrir nuna ventana privada nueva
+newtab-menu-dismiss = Escartar
+newtab-menu-pin = Fixar
+newtab-menu-unpin = Lliberar
+newtab-menu-delete-history = Desaniciar del historial
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Quitar el marcador
+# Bookmark is a verb here.
+newtab-menu-bookmark = Amestar a Marcadores
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Copiar l'enllaz de descarga
+newtab-menu-go-to-download-page = Dir a la páxina de descarga
+newtab-menu-remove-download = Quitar del historial
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Amosar en Finder
+       *[other] Abrir la carpeta contenedora
+    }
+newtab-menu-open-file = Abrir el ficheru
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Visitóse
+newtab-label-bookmarked = En Marcadores
+newtab-label-recommended = Tendencia
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Avisu de privacidá
+
+## Section Headers.
+
+newtab-section-header-topsites = Sitios principales
+newtab-section-header-recent-activity = Actividá recién
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Comienza a restolar y equí vamos amosate dalgunos de los meyores artículos, vídeos y otres páxines que visitesti o amestesti apocayá a Marcadores.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-loading = Cargando...
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = ¡Meca! Paez qu'esta seición nun cargó del too.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Meca, asocedió daqué malo al cargar esti conteníu.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = Sitios que guardes o visites
+    .label = Atayos
+newtab-custom-shortcuts-nova =
+    .label = Atayos
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } filera
+           *[other] { $num } fileres
+        }
+newtab-custom-settings = Xestionar más axustes
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = Nueva York
+newtab-clock-city-us-los-angeles = Los Angeles
+newtab-clock-city-us-chicago = Chicago
+newtab-clock-city-us-san-francisco = San Francisco
+newtab-clock-city-us-san-diego = San Diego
+newtab-clock-city-us-dallas = Dallas
+newtab-clock-city-us-houston = Houston
+newtab-clock-city-us-philadelphia = Filadelfia
+newtab-clock-city-us-atlanta = Atlanta
+newtab-clock-city-us-washington-dc = Washington DC
+newtab-clock-city-us-boston = Boston
+newtab-clock-city-us-miami = Miami
+newtab-clock-city-us-seattle = Seattle
+newtab-clock-city-us-denver = Denver
+newtab-clock-city-us-honolulu = Honolulu
+newtab-clock-city-us-anchorage = Anchorage
+newtab-clock-city-de-berlin = Berlín
+newtab-clock-city-de-munich = Múnic
+newtab-clock-city-de-frankfurt = Frankfurt del Main
+newtab-clock-city-de-hamburg = Hamburgu
+newtab-clock-city-fr-paris = París
+newtab-clock-city-fr-lyon = Lyon
+newtab-clock-city-fr-marseille = Marsella
+newtab-clock-city-fr-toulouse = Toulouse
+newtab-clock-city-in-kolkata = Calcuta
+newtab-clock-city-in-mumbai = Mumbai
+newtab-clock-city-in-delhi = Delhi
+newtab-clock-city-in-bangalore = Bangalore
+newtab-clock-city-cn-shanghai = Shanghai
+newtab-clock-city-cn-beijing = Beixín
+newtab-clock-city-cn-shenzhen = Shenzhen
+newtab-clock-city-br-sao-paulo = São Paulo
+newtab-clock-city-br-rio-de-janeiro = Rio de Janeiro
+newtab-clock-city-br-brasilia = Brasilia
+newtab-clock-city-id-jakarta = Xakarta
+newtab-clock-city-id-surabaya = Surabaya
+newtab-clock-city-ca-toronto = Toronto
+newtab-clock-city-ca-montreal = Montreal
+newtab-clock-city-ca-vancouver = Vancouver
+newtab-clock-city-au-sydney = Sydney
+newtab-clock-city-au-perth = Perth
+newtab-clock-city-au-adelaide = Adelaida
+newtab-clock-city-pl-warsaw = Varsovia
+newtab-clock-city-pl-krakow = Cracovia
+newtab-clock-city-jp-tokyo = Tokiu
+newtab-clock-city-jp-osaka = Osaka
+newtab-clock-city-mx-mexico-city = Ciudá de Méxicu
+newtab-clock-city-mx-guadalajara = Guadalajara
+newtab-clock-city-it-rome = Roma
+newtab-clock-city-it-milan = Milán
+newtab-clock-city-ru-moscow = Moscú
+newtab-clock-city-ru-saint-petersburg = San Petersburgu
+newtab-clock-city-gb-london = Londres
+newtab-clock-city-gb-birmingham = Birmingham
+newtab-clock-city-es-madrid = Madrid
+newtab-clock-city-es-barcelona = Barcelona
+newtab-clock-city-nl-amsterdam = Ámsterdam
+newtab-clock-city-ch-zurich = Zúrich
+newtab-clock-city-at-vienna = Viena
+newtab-clock-city-cz-prague = Praga
+newtab-clock-city-ar-buenos-aires = Buenos Aires
+newtab-clock-city-gr-athens = Atenes
+newtab-clock-city-hu-budapest = Budapest
+newtab-clock-city-be-brussels = Bruxeles
+newtab-clock-city-ua-kyiv = Kiev
+newtab-clock-city-fi-helsinki = Ḥélsinki
+newtab-clock-city-co-bogota = Bogotá
+newtab-clock-city-ph-manila = Manila
+newtab-clock-city-tr-istanbul = Estambul
+newtab-clock-city-my-kuala-lumpur = Kuala Lumpur
+newtab-clock-city-eg-cairo = El Cairu
+newtab-clock-city-se-stockholm = Estocolmu
+newtab-clock-city-ro-bucharest = Bucarest
+newtab-clock-city-th-bangkok = Bangkok
+newtab-clock-city-ng-lagos = Lagos
+newtab-clock-city-tw-taipei = Taipéi
+newtab-clock-city-za-johannesburg = Johannesburgu
+newtab-clock-city-cl-santiago = Santiagu
+newtab-clock-city-pk-karachi = Karachi
+newtab-clock-city-bg-sofia = Sofía
+newtab-clock-city-sg-singapore = Singapur
+newtab-clock-city-hk-hong-kong = Ḥong Kong
+newtab-clock-city-sa-riyadh = Riyad
+newtab-clock-city-dk-copenhagen = Copenḥague
+newtab-clock-city-pe-lima = Lima
+newtab-clock-city-ke-nairobi = Nairobi
+newtab-clock-city-nz-auckland = Auckland
+newtab-clock-city-kr-seoul = Seúl
+newtab-clock-city-lt-vilnius = Vilnius
+newtab-clock-city-ie-dublin = Dublín
+newtab-clock-city-ae-dubai = Dubái
+newtab-clock-city-lv-riga = Riga
+newtab-clock-city-pt-lisbon = Lisboa
+newtab-clock-city-ir-tehran = Teḥrán
+newtab-clock-city-bd-dhaka = Dhaka
+newtab-clock-city-ec-guayaquil = Guayaquil
+newtab-clock-city-vn-ho-chi-minh-city = Ciudá de Ho Chi Minh
+newtab-clock-city-np-kathmandu = Katmandú
+newtab-clock-city-mm-yangon = Yangôn

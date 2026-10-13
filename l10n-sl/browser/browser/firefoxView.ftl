@@ -1,0 +1,255 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+toolbar-button-firefox-view-2 =
+    .label = { -firefoxview-brand-name }
+    .tooltiptext = Ogled nedavnega brskanja v drugih oknih in napravah
+menu-tools-firefox-view =
+    .label = { -firefoxview-brand-name }
+    .accesskey = F
+firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
+firefoxview-page-label =
+    .label = { -firefoxview-brand-name }
+# Used instead of the localized relative time when a timestamp is within a minute or so of now
+firefoxview-just-now-timestamp = Pravkar
+firefoxview-syncedtabs-signin-header-2 = Vaš { -brand-product-name } na vseh napravah
+firefoxview-syncedtabs-signin-description-2 = Če si želite ogledati zavihke, ki jih imate odprte na telefonu in drugih napravah, se prijavite ali ustvarite račun. Z računom lahko sinhronizirate tudi gesla, zgodovino in drugo.
+# The verb “Go” is implied but omitted from the headline: “[Go] from laptop to phone, seamlessly”
+firefoxview-syncedtabs-signin-header-3 = Preprosto preklapljajte med prenosnikom in telefonom
+firefoxview-syncedtabs-signin-description-3 = Vaše brskanje naj bo povezano na vseh napravah — zavihki, gesla in zgodovina bodo vedno usklajeni.
+firefoxview-syncedtabs-signin-primarybutton-2 = Prijava
+firefoxview-syncedtabs-adddevice-header-2 = Zajemite zavihke od koderkoli
+firefoxview-syncedtabs-adddevice-description-2 = Za ogled zavihkov se prijavite v { -brand-product-name } na telefonu ali drugem računalniku. Naučite se, kako <a data-l10n-name="url">povežete dodatne naprave</a>.
+firefoxview-syncedtabs-adddevice-primarybutton = Preizkusite { -brand-product-name } za mobilne naprave
+# "Your tabs called" - this is playful messaging indicating that a user can find their synced tabs on their phone.
+firefoxview-syncedtabs-adddevice-header-3 = Vaši zavihki so vas poklicali. Najdete jih na svojem telefonu.
+firefoxview-syncedtabs-adddevice-description-3 = Skenirajte kodo QR , prenesite { -brand-product-name(sklon: "tozilnik") } za mobilne naprave ter začnite sinhronizacijo odprtih zavihkov in drugih vsebin. Naučite se, kako <a data-l10n-name="url">povežete dodatne naprave</a>.
+firefoxview-tabpickup-synctabs-primarybutton = Sinhroniziraj odprte zavihke
+firefoxview-tabpickup-synctabs-primarybutton-2 = Vklopi sinhronizacijo zavihkov
+firefoxview-syncedtabs-synctabs-header = Spremeni nastavitve sinhronizacije
+firefoxview-syncedtabs-synctabs-description = Za ogled zavihkov z drugih naprav se morajo odprti zavihki sinhronizirati.
+firefoxview-syncedtabs-synctabs-header-2 = Sinhroniziranje zavihkov je izklopljeno
+firefoxview-syncedtabs-synctabs-description-2 = Ponovno vključite sinhronizacijo in pridobite vse zavihke iz drugih naprav.
+firefoxview-syncedtabs-loading-header = Sinhronizacija v teku
+firefoxview-syncedtabs-loading-description = Ko se bo končala, se bodo prikazali vsi zavihki, ki jih imate odprte na drugih napravah. Vrnite se čez nekaj trenutkov.
+firefoxview-syncedtabs-loading-header-2 = Pridobivanje zavihkov …
+firefoxview-syncedtabs-loading-description-2 = Sinhronizacija poteka. Zavihki bodo kmalu tu.
+firefoxview-tabpickup-fxa-admin-disabled-header = Vaša organizacija je onemogočila sinhronizacijo
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } ne more sinhronizirati zavihkov med napravami, ker je vaša organizacija onemogočila sinhronizacijo.
+firefoxview-tabpickup-fxa-admin-disabled-header-2 = Sinhroniziranje zavihkov je izklopljeno
+firefoxview-tabpickup-fxa-disabled-by-policy-description-2 = Vaša organizacija je prepovedala uporabo te možnosti.
+firefoxview-tabpickup-network-offline-header = Preverite svojo povezavo z internetom
+firefoxview-tabpickup-network-offline-description = Če uporabljate požarni zid ali posredniški strežnik, preverite, ali ima { -brand-short-name } dovoljenje za dostop do spleta.
+firefoxview-tabpickup-network-offline-primarybutton = Poskusi znova
+firefoxview-tabpickup-network-offline-header-2 = { -brand-short-name } se trenutno ne more povezati
+firefoxview-tabpickup-network-offline-description-2 = Morda nimate vzpostavljene povezave ali pa jo kaj ovira.
+firefoxview-tabpickup-sync-error-header = Imamo težave s sinhronizacijo
+firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } trenutno ne more vzpostaviti povezave s storitvijo sinhronizacije. Poskusite znova čez nekaj trenutkov.
+# “Sync hit a snag” means that the sync process is having a problem and can’t connect.
+firefoxview-tabpickup-sync-error-header-2 = Sync je naletel na napako
+firefoxview-tabpickup-generic-sync-error-description-2 = { -brand-short-name } se ni uspel povezati. Počakajte trenutek in poskusite znova
+firefoxview-tabpickup-sync-error-primarybutton = Poskusi znova
+firefoxview-tabpickup-sync-disconnected-header = Vklopite sinhronizacijo za nadaljevanje
+firefoxview-tabpickup-sync-disconnected-description = Za zajem zavihkov morate v { -brand-short-name(sklon: "mestnik") } omogočiti sinhronizacijo.
+firefoxview-tabpickup-sync-disconnected-primarybutton = Vklopi sinhronizacijo v nastavitvah
+firefoxview-tabpickup-password-locked-header = Za ogled zavihkov vnesite glavno geslo
+firefoxview-tabpickup-password-locked-description = Za zajem zavihkov morate vnesti glavno geslo { -brand-short-name(sklon: "rodilnik") }.
+firefoxview-tabpickup-password-locked-link = Več o tem
+firefoxview-tabpickup-password-locked-primarybutton = Vnesite glavno geslo
+firefoxview-syncedtab-password-locked-link = <a data-l10n-name="syncedtab-password-locked-link">Več o tem</a>
+firefoxview-tabpickup-password-locked-header-2 = Odklenite zavihke z glavnim geslom
+firefoxview-tabpickup-password-locked-description-2 = Zaradi vaše zasebnosti so sinhronizirani zavihki zaščiteni. Za ogled zavihkov z drugih naprav vnesite glavno geslo za { -brand-short-name(sklon: "tozilnik") }.
+firefoxview-tabpickup-signed-out-header = Prijavite se, da se ponovno povežete
+firefoxview-tabpickup-signed-out-description2 = Za ponovno vzpostavitev povezave in zajem zavihkov se prijavite v račun.
+firefoxview-tabpickup-signed-out-primarybutton = Prijava
+firefoxview-tabpickup-signed-out-header-2 = Prijavite se za prikaz svojih zavihkov
+firefoxview-tabpickup-signed-out-description-2 = Za ogled zavihkov z drugih naprav se znova povežite.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Zapri { $tabTitle }
+# Variables:
+#   $targetURI (string) - URL that will be opened in the new tab
+firefoxview-tabs-list-tab-button =
+    .title = Odpri { $targetURI } v novem zavihku
+firefoxview-collapse-button-show =
+    .title = Prikaži seznam
+firefoxview-collapse-button-hide =
+    .title = Skrij seznam
+firefoxview-overview-nav = Nedavno brskanje
+    .title = Nedavno brskanje
+firefoxview-overview-header = Nedavno brskanje
+    .title = Nedavno brskanje
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Zgodovina
+    .title = Zgodovina
+firefoxview-history-header = Zgodovina
+firefoxview-history-context-delete = Izbriši iz zgodovine
+    .accesskey = I
+firefoxview-history-context-forget-site = Pozabi na to spletno mesto …
+    .accesskey = z
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Odprti zavihki
+    .title = Odprti zavihki
+firefoxview-opentabs-header = Odprti zavihki
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nedavno zaprti zavihki
+    .title = Nedavno zaprti zavihki
+firefoxview-recently-closed-header = Nedavno zaprti zavihki
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Zavihki z drugih naprav
+    .title = Zavihki z drugih naprav
+firefoxview-synced-tabs-header = Zavihki z drugih naprav
+
+##
+
+# Used for a link in collapsible cards, in the ’Recent browsing’ page of Firefox View
+firefoxview-view-all-link = Prikaži vse
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Okno { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Okno { $winID } (trenutno)
+firefoxview-show-more = Prikaži več
+firefoxview-show-less = Prikaži manj
+firefoxview-show-all = Prikaži vse
+firefoxview-search-text-box-clear-button =
+    .title = Počisti
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Išči
+# Placeholder for the input field to search in history ("search" is a verb).
+firefoxview-search-text-box-history =
+    .placeholder = Iskanje po zgodovini
+# Placeholder for the input field to search in bookmarks ("search" is a verb).
+firefoxview-search-text-box-bookmarks =
+    .placeholder = Iskanje po zaznamkih
+# Placeholder for the input field to search in recently closed tabs ("search" is a verb).
+firefoxview-search-text-box-recentlyclosed =
+    .placeholder = Iskanje po nedavno zaprtih zavihkih
+# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
+firefoxview-search-text-box-tabs =
+    .placeholder = Išči po zavihkih
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-opentabs =
+    .placeholder = Iskanje po odprtih zavihkih
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+firefoxview-search-results-header = Rezultati iskanja za "{ $query }"
+# Variables:
+#   $count (Number) - The number of visits matching the search query.
+firefoxview-search-results-count =
+    { $count ->
+        [one] { $count } spletno mesto
+        [two] { $count } spletni mesti
+        [few] { $count } spletna mesta
+       *[other] { $count } spletnih mest
+    }
+# Message displayed when a search is performed and no matching results were found.
+# Variables:
+#   $query (String) - The search query.
+firefoxview-search-results-empty = Ni rezultatov za "{ $query }"
+firefoxview-sort-history-by-date-label = Razvrsti po datumu
+firefoxview-sort-history-by-site-label = Razvrsti po spletnem mestu
+firefoxview-sort-open-tabs-by-recency-label = Razvrsti po nedavni dejavnosti
+firefoxview-sort-open-tabs-by-order-label = Razvrsti po vrstnem redu zavihkov
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Danes – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Včeraj – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+firefoxview-history-site-localhost = (krajevne datoteke)
+
+##
+
+firefoxview-show-all-history = Prikaži vso zgodovino
+
+## Message displayed in Firefox View when the user has no history data
+
+firefoxview-history-empty-header = Vrnite se tja, kjer ste bili
+firefoxview-history-empty-description = Med brskanjem bodo strani, ki jih obiščete, navedene tukaj.
+firefoxview-history-empty-description-two = Varstvo vaše zasebnosti je v središču našega delovanja. Zato lahko v <a data-l10n-name="history-settings-url">nastavitvah zgodovine</a> odločate, katero dejavnost naj si { -brand-short-name } zapomni.
+# This appears when a user does not have browsing history yet.
+# This is indicating that a users browsers history will be found here when they start browsing.
+firefoxview-history-empty-header-2 = Tukaj se začne vaša zgodovina brskanja
+firefoxview-history-empty-description-2 = Ko boste obiskovali spletne strani, se bo vaša zgodovina prikazala tukaj. V <a data-l10n-name="history-settings-url">nastavitvah</a> lahko upravljate, kaj se shranjuje.
+
+##
+
+# Button text for choosing a browser within the ’Import history from another browser’ banner
+firefoxview-choose-browser-button = Izberite brskalnik
+    .title = Izberite brskalnik
+
+## Message displayed in Firefox View when the user has chosen to never remember History
+
+firefoxview-dont-remember-history-empty-header-2 = Vi imate nadzor nad tem, kaj si { -brand-short-name } zapomni
+firefoxview-dont-remember-history-empty-description-one = Trenutno je { -brand-short-name } nastavljen tako, da si ne zapomni vaše dejavnosti brskanja. To lahko spremenite v <a data-l10n-name="history-settings-url-two">nastavitvah zgodovine</a>.
+# “Off the record” is an English phrase journalists use when a conversation will not be recorded or reported on. It’s meant to convey that users’ history activity will not be recorded or shown.
+firefoxview-dont-remember-history-empty-header-3 = Zgodovina brskanja se ne bo shranila
+firefoxview-dont-remember-history-empty-description-2 = { -brand-short-name } trenutno ne shranjuje zgodovine. To lahko kadarkoli spremenite v <a data-l10n-name="history-settings-url-two">nastavitvah</a>.
+
+##
+
+# This label is read by screen readers when focusing the close button for the "Import history from another browser" banner in Firefox View
+firefoxview-import-history-close-button =
+    .aria-label = Zapri
+    .title = Zapri
+
+## Text displayed in a dismissable banner to import bookmarks/history from another browser
+
+firefoxview-import-history-header = Uvozi zgodovino iz drugega brskalnika
+firefoxview-import-history-description = Naj { -brand-short-name } postane vaš brskalnik za vsakodnevna opravila. Uvozite zgodovino brskanja, zaznamke in ostalo.
+
+## Message displayed in Firefox View when the user has no recently closed tabs data
+
+firefoxview-recentlyclosed-empty-header = Ste prehitro zaprli zavihek?
+firefoxview-recentlyclosed-empty-description = Tu najdete zavihke, ki ste jih pred kratkim zaprli, in jih lahko hitro znova odprete.
+firefoxview-recentlyclosed-empty-description-two = Starejše zavihke poiščite v <a data-l10n-name="history-url">zgodovini brskanja</a>.
+
+## This message is displayed below the name of another connected device when it doesn't have any open tabs.
+
+firefoxview-syncedtabs-device-notabs = Na tej napravi ni odprtih zavihkov
+firefoxview-syncedtabs-connect-another-device = Poveži drugo napravo
+firefoxview-pinned-tabs =
+    .title = Pripeti zavihki
+firefoxview-tabs =
+    .title = Zavihki
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Preklopi na { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Preklopi na (zaznamek) { $tabTitle }
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Med zaznamki) { $url }

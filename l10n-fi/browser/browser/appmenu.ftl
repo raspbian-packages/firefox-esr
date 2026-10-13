@@ -1,0 +1,440 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = Ladataan { -brand-shorter-name }-päivitystä
+appmenuitem-banner-update-available =
+    .label = Päivitys saatavilla – lataa nyt
+appmenuitem-banner-update-manual =
+    .label = Päivitys saatavilla – lataa nyt
+appmenuitem-banner-update-unsupported =
+    .label = Päivitys ei onnistu – järjestelmä ei yhteensopiva
+appmenuitem-banner-update-restart =
+    .label = Päivitys saatavilla – käynnistä uudelleen
+appmenu-nova-update-title = Päivitä käynnistämällä { -brand-short-name } uudestaan
+appmenu-nova-update-description = Välilehdet avautuvat uudelleen.
+appmenu-nova-fxa-sign-in = Kirjaudu sisään
+appmenu-nova-switch-device-promo =
+    .message = Hankitko pian uuden laitteen? Ota { -brand-short-name } mukaasi!
+appmenu-nova-switch-device-link = Näin siirrät tietosi
+appmenuitem-new-tab =
+    .label = Uusi välilehti
+appmenuitem-new-window =
+    .label = Uusi ikkuna
+appmenuitem-new-private-window =
+    .label = Uusi yksityinen ikkuna
+appmenuitem-history =
+    .label = Sivuhistoria
+appmenuitem-tab-groups =
+    .label = Välilehtiryhmät
+appmenuitem-downloads =
+    .label = Lataukset
+appmenuitem-passwords =
+    .label = Salasanat
+appmenuitem-extensions-and-themes =
+    .label = Laajennukset ja teemat
+appmenuitem-extensions =
+    .label = Laajennukset
+appmenuitem-print =
+    .label = Tulosta…
+appmenuitem-find-in-page =
+    .label = Etsi sivulta…
+appmenuitem-translate =
+    .label = Käännä sivu…
+appmenuitem-zoom =
+    .value = Sivun suurennus
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = Jaa { -brand-product-name }
+appmenuitem-more-tools =
+    .label = Lisää työkaluja
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = Ohje ja sivusto-ongelmat
+appmenuitem-help =
+    .label = Ohje
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Lopeta
+           *[other] Lopeta
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Avaa sovellusvalikko
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Sulje sovellusvalikko
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Asetukset
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Lähennä
+appmenuitem-zoom-reduce =
+    .label = Loitonna
+appmenuitem-fullscreen =
+    .label = Koko näytön tila
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Kirjaudu synkronoidaksesi…
+appmenu-remote-tabs-turn-on-sync =
+    .label = Ota synkronointi käyttöön…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Näytä lisää välilehtiä
+    .tooltiptext = Näytä lisää välilehtiä tältä laitteelta
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Passiiviset välilehdet
+    .tooltiptext = Katso tämän laitteen passiiviset välilehdet
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Ei avoimia välilehtiä
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Ota välilehtien synkronointi käyttöön, jotta voit katsella listaa muiden laitteidesi välilehdistä.
+appmenu-remote-tabs-opensettings =
+    .label = Asetukset
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Haluatko nähdä muiden laitteiden välilehdet tässä?
+appmenu-remote-tabs-connectdevice =
+    .label = Yhdistä toinen laite
+appmenu-remote-tabs-welcome = Näytä lista välilehdistä muilta laitteiltasi.
+appmenu-remote-tabs-unverified = Tilisi tarvitsee vahvistaa.
+appmenuitem-fxa-toolbar-sync-now2 = Synkronoi nyt
+appmenuitem-fxa-sign-in = Kirjaudu { -brand-product-name }iin
+appmenuitem-fxa-manage-account = Hallinnoi tiliä
+fxa-menu-sync-status-on = Synkronointi on käytössä
+fxa-menu-sync-status-off = Synkronointi on pois käytöstä
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = Synkronoi tietosi
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Tietosi eivät synkronoidu
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Ota käyttöön
+fxa-menu-sync-status-turn-on-button-aria-label = Ota käyttöön
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Kirjaudu synkronoidaksesi
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = Synkronoi { $deviceName } nyt
+fxa-menu-manage-sync-settings =
+    .label = Hallitse synkronoinnin asetuksia
+fxa-menu-add-device =
+    .label = Lisää laite
+fxa-menu-manage-devices =
+    .label = Hallitse laitteitasi
+fxa-menu-device-missing =
+    .label = Etkö näe laitettasi?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Kaikki laitteet
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Kaikki laitteet
+fxa-menu-get-firefox-mobile =
+    .label = Hanki { -brand-product-name } Androidille tai iOS:lle
+fxa-menu-secure-sync-subpanel =
+    .title = Suojattu synkronointi
+appmenu-account-header = Tili
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Viimeksi synkronoitu { $time }
+    .label = Viimeksi synkronoitu { $time }
+appmenu-fxa-sync-and-save-data2 = Synkronoi ja tallenna tiedot
+appmenu-fxa-signed-in-label = Kirjaudu
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = Kirjaudu synkronoidaksesi
+appmenu-fxa-sign-in-promo-message = Käytä tietojasi missä tahansa
+appmenu-fxa-sign-in-promo-button =
+    .label = Kirjaudu sisään
+appmenu-fxa-setup-sync =
+    .label = Ota synkronointi käyttöön…
+appmenu-fxa-setup-sync-new = Ota käyttöön
+appmenuitem-save-page =
+    .label = Tallenna sivu nimellä…
+appmenuitem-fxa-sync-off-title = Synkronointi on pois päältä
+appmenuitem-fxa-sync-off-description = Suojaa ja käytä kirjanmerkkejäsi, salasanojasi ja muuta missä tahansa.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Profiler
+    .tooltiptext = Record a performance profile
+profiler-popup-button-recording =
+    .label = Profiloija
+    .tooltiptext = Profiloija nauhoittaa profiilia
+profiler-popup-button-capturing =
+    .label = Profiloija
+    .tooltiptext = Profiloija kaappaa profiilia
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = Näytä lisätietoja
+profiler-popup-description-title =
+    .value = Tallenna, analysoi, jaa
+profiler-popup-description = Työskentele suorituskykyongelmien parissa yhdessä julkaisemalla profiileita ja jakamalla niitä tiimin kanssa.
+profiler-popup-learn-more-button =
+    .label = Lue lisää
+profiler-popup-settings =
+    .value = Asetukset
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Muokkaa asetuksia…
+profiler-popup-recording-screen = Tallennetaan…
+profiler-popup-start-recording-button =
+    .label = Aloita tallennus
+profiler-popup-discard-button =
+    .label = Hylkää
+profiler-popup-capture-button =
+    .label = Kaappaa
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = Avaa profilointipaneeli
+    .tooltiptext = Avaa profilointipaneeli
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Suositeltu esiasetus suurimpaan osaan verkkosovellusten vianjäljityksessä.
+profiler-popup-presets-web-developer-label =
+    .label = Web-kehittäjä
+profiler-popup-presets-firefox-description = Suositeltu esiasetus { -brand-shorter-name }in profilointiin.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Esiasetus grafiikkavirheiden tutkimiseen { -brand-shorter-name }issa.
+profiler-popup-presets-graphics-label =
+    .label = Grafiikka
+profiler-popup-presets-media-description2 = Esiasetus ääni- ja videovirheiden tutkimiseen { -brand-shorter-name }issa.
+profiler-popup-presets-media-label =
+    .label = Media
+profiler-popup-presets-ml-description = Esiasetus koneoppimisvirheiden tutkimiseen { -brand-shorter-name }issa.
+profiler-popup-presets-ml-label =
+    .label = Koneoppiminen
+profiler-popup-presets-networking-description = Esiasetus verkkovirheiden tutkimiseen { -brand-shorter-name }issa.
+profiler-popup-presets-networking-label =
+    .label = Verkko
+profiler-popup-presets-networking-with-logs-description = Esiasetus verkkovirheiden tutkimiseen { -brand-shorter-name }issa, mukaan lukien verkkolokit. Nämä lokit voivat sisältää arkaluonteisia tietoja, kuten vierailemasi URL-osoitteet.
+profiler-popup-presets-networking-with-logs-label =
+    .label = Verkkoliikennöinti lokien kera
+profiler-popup-presets-power-description = Esiasetus virrankäyttöongelmien tutkimiseen { -brand-shorter-name }issa, vain pienellä sivuvaikutuksella.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Virta
+profiler-popup-presets-debug-description = Esiasetus { -brand-shorter-name }in vianjäljitykseen. Korkea rasitus, älä käytä suorituskykyä vaativaan työhön, käytä selaustoiminnan ymmärtämiseen.
+profiler-popup-presets-debug-label =
+    .label = Vianjäljitys
+profiler-popup-presets-web-compat-description = Suositeltu esiasetus verkkosivustojen yhteensopivuusongelmien vianjäljitykseen suorituskyvyn seurannan sijaan.
+profiler-popup-presets-web-compat-label =
+    .label = Web Compat
+profiler-popup-presets-custom-label =
+    .label = Mukautettu
+
+##
+
+appmenu-manage-history =
+    .label = Hallitse historiaa
+appmenu-restore-session =
+    .label = Palauta edellinen istunto
+appmenu-clear-history =
+    .label = Poista viimeaikaisia historiatietoja…
+appmenu-recent-history-subheader = Viimeaikainen historia
+appmenu-recently-closed-tabs =
+    .label = Suljetut välilehdet
+appmenu-recently-closed-windows =
+    .label = Suljetut ikkunat
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Etsi historiasta
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = Pysy synkronoituna eri laitteiden välillä
+appmenu-sync-promo-signin-cta = Kirjaudu sisään
+appmenu-sync-promo-turnonsync =
+    .heading = Synkronoi välilehdet ja historia
+appmenu-sync-promo-turnonsync-cta = Ota synkronointi käyttöön
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = Nappaa välilehdet mobiililaitteeltasi
+appmenu-sync-promo-connectdevice-cta = Yhdistä laite
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = Ota kirjanmerkit mukaasi
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = Ota kirjanmerkit mukaan
+
+## Help panel
+
+appmenu-help-header =
+    .title = { -brand-shorter-name }-ohje
+appmenu-about =
+    .label = Tietoja: { -brand-shorter-name }
+    .accesskey = T
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = Jaa { -brand-product-name }
+    .accesskey = J
+appmenu-get-help =
+    .label = Etsi ohjeita
+    .accesskey = h
+appmenu-help-more-troubleshooting-info =
+    .label = Lisää vianmääritystietoja
+    .accesskey = v
+appmenu-help-share-ideas =
+    .label = Jaa ideoita ja palautetta…
+    .accesskey = d
+appmenu-help-switch-device =
+    .label = Uuteen laitteeseen vaihtaminen
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = Ohje ja sivusto-ongelmat
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Vianmääritystila…
+    .accesskey = m
+appmenu-help-exit-troubleshoot-mode =
+    .label = Poista vianmääritystila käytöstä
+    .accesskey = P
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Ilmoita petollinen sivusto…
+    .accesskey = p
+appmenu-help-not-deceptive =
+    .label = Tämä ei ole petollinen sivusto…
+    .accesskey = p
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Muokkaa työkalupalkkia…
+appmenu-abouttranslations =
+    .label = Käännä…
+appmenu-edit-pdf =
+    .label = Muokkaa PDF-tiedostoa…
+appmenu-developer-tools-subheader = Selaimen työkalut
+appmenu-developer-tools-extensions =
+    .label = Extensions for Developers
+appmenuitem-report-broken-site =
+    .label = Ilmoita rikkinäisestä sivustosta
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Kirjaudu tilillesi
+appmenuitem-monitor-title2 = Pysy identiteettivarkauksien edellä
+appmenuitem-monitor-description2 = Vastaanota hälytyksiä tietovuodoista
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = { -monitor-brand-short-name } -tietovuotohälytykset
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Vastaanota tietovuotovaroituksia
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = Pidä sähköpostisi yksityisenä
+appmenuitem-relay-description2 = Auttaa estämään roskapostia
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = Näytä sähköpostimaskit
+appmenuitem-relay-description = Peitä oikea sähköpostiosoitteesi ja puhelinnumerosi
+appmenuitem-services-relay-description = Käynnistä sähköpostimaskien hallintapaneeli
+appmenuitem-vpn-title2 = Piilota sijaintisi { -mozilla-vpn-brand-name }:llä
+appmenuitem-vpn-description5 = Hanki lisäsuojausta kaikille laitteille
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = Lataa { -mozilla-vpn-brand-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Hanki koko laitteen suojaus
+appmenu-services-header = Omat palvelut
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Yksityisyystyökalut
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Kokeile muita Mozillan suojaustyökaluja:
+
+## Profiles panel
+
+appmenu-other-profiles = Muut profiilit
+appmenu-manage-profiles =
+    .label = Hallitse profiileja
+appmenu-copy-profile =
+    .label = Kopioi tämä profiili
+appmenu-create-profile2 =
+    .label = Luo uusi profiili
+appmenu-create-profile =
+    .label = Uusi profiili
+appmenu-edit-profile =
+    .aria-label = Muokkaa profiilia
+appmenu-edit-this-profile =
+    .label = Muokkaa tätä profiilia
+appmenu-profile-current-in-use = Käytössä oleva profiili
+fxa-menu-create-profile-subpanel =
+    .title = Luo uusi profiili
+fxa-menu-create-profile-heading = Nosta selaamisen tasoa uudella profiililla
+fxa-menu-create-profile-description = Pidä kirjanmerkit, salasanat ja sivuhistoria erillään eriyttämällä työhön liittyvä ja henkilökohtainen selaaminen.
+fxa-menu-create-profile-confirm =
+    .label = Luo uusi profiili
+fxa-menu-create-profile-learn-more =
+    .label = Mitä profiilit ovat?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = Jaa { -brand-product-name }
+appmenuitem-share-firefox-description = Kutsu joku yksityisyyden etusijalle asettavan selaimen pariin
+appmenu-profiles-2 =
+    .label = Profiilit
+appmenu-profiles-header = Profiilit
+appmenu-all-profiles =
+    .label = Kaikki profiilit
+appmenu-secure-sync-header = Suojattu synkronointi
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Viimeisimmät välilehdet
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] Näytä synkronoitu { $tabCount } välilehti
+           *[other] Näytä kaikki { $tabCount } synkronoitua välilehteä
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Lähetä nykyinen sivu tähän laitteeseen

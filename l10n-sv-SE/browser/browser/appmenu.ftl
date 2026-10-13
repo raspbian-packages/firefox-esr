@@ -1,0 +1,440 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = Hämtar uppdatering av { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Uppdatering tillgänglig — hämta nu
+appmenuitem-banner-update-manual =
+    .label = Uppdatering tillgänglig — hämta nu
+appmenuitem-banner-update-unsupported =
+    .label = Uppdatering misslyckades — systemet är inte kompatibelt
+appmenuitem-banner-update-restart =
+    .label = Uppdatering tillgänglig — starta om nu
+appmenu-nova-update-title = Starta om för att uppdatera { -brand-short-name }
+appmenu-nova-update-description = Dina flikar öppnas igen.
+appmenu-nova-fxa-sign-in = Logga in
+appmenu-nova-switch-device-promo =
+    .message = Skaffar du en ny enhet snart? Ta { -brand-short-name } med dig!
+appmenu-nova-switch-device-link = Hur du migrerar din data
+appmenuitem-new-tab =
+    .label = Ny flik
+appmenuitem-new-window =
+    .label = Nytt fönster
+appmenuitem-new-private-window =
+    .label = Nytt privat fönster
+appmenuitem-history =
+    .label = Historik
+appmenuitem-tab-groups =
+    .label = Flikgrupper
+appmenuitem-downloads =
+    .label = Filhämtaren
+appmenuitem-passwords =
+    .label = Lösenord
+appmenuitem-extensions-and-themes =
+    .label = Tillägg och teman
+appmenuitem-extensions =
+    .label = Tillägg
+appmenuitem-print =
+    .label = Skriv ut…
+appmenuitem-find-in-page =
+    .label = Hitta på sidan…
+appmenuitem-translate =
+    .label = Översätt sida…
+appmenuitem-zoom =
+    .value = Zoom
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = Dela { -brand-product-name }
+appmenuitem-more-tools =
+    .label = Fler verktyg
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = Hjälp och rapportering
+appmenuitem-help =
+    .label = Hjälp
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Avsluta
+           *[other] Avsluta
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Öppna applikationsmeny
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Stäng applikationsmeny
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Inställningar
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Zooma in
+appmenuitem-zoom-reduce =
+    .label = Zooma ut
+appmenuitem-fullscreen =
+    .label = Helskärm
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Logga in för att synkronisera…
+appmenu-remote-tabs-turn-on-sync =
+    .label = Aktivera synkronisering…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Visa fler flikar
+    .tooltiptext = Visa flikar från denna enhet
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Inaktiva flikar
+    .tooltiptext = Se inaktiva flikar på den här enheten
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Inga öppna flikar
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Slå på fliksynkronisering för att visa en lista med flikar från dina andra enheter.
+appmenu-remote-tabs-opensettings =
+    .label = Inställningar
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Vill du se dina flikar från andra enheter här?
+appmenu-remote-tabs-connectdevice =
+    .label = Anslut en annan enhet
+appmenu-remote-tabs-welcome = Visa en lista med flikar från dina andra enheter.
+appmenu-remote-tabs-unverified = Ditt konto behöver verifieras.
+appmenuitem-fxa-toolbar-sync-now2 = Synkronisera nu
+appmenuitem-fxa-sign-in = Logga in på { -brand-product-name }
+appmenuitem-fxa-manage-account = Hantera konto
+fxa-menu-sync-status-on = Synkronisering är på
+fxa-menu-sync-status-off = Synkronisering är av
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = Synkronisera dina data
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Din data synkroniseras inte
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Aktivera
+fxa-menu-sync-status-turn-on-button-aria-label = Aktivera
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Logga in för att synkronisera
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = Synkronisera { $deviceName } nu
+fxa-menu-manage-sync-settings =
+    .label = Hantera synkroniseringsinställningar
+fxa-menu-add-device =
+    .label = Lägg till en enhet
+fxa-menu-manage-devices =
+    .label = Hantera dina enheter
+fxa-menu-device-missing =
+    .label = Ser du inte din enhet?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Alla enheter
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Alla enheter
+fxa-menu-get-firefox-mobile =
+    .label = Hämta { -brand-product-name } för Android eller iOS
+fxa-menu-secure-sync-subpanel =
+    .title = Säker synkronisering
+appmenu-account-header = Konto
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Senast synkroniserad { $time }
+    .label = Senast synkroniserad { $time }
+appmenu-fxa-sync-and-save-data2 = Synkronisera och spara data
+appmenu-fxa-signed-in-label = Logga in
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = Logga in för att synkronisera
+appmenu-fxa-sign-in-promo-message = Få din data överallt
+appmenu-fxa-sign-in-promo-button =
+    .label = Logga in
+appmenu-fxa-setup-sync =
+    .label = Aktivera synkronisering…
+appmenu-fxa-setup-sync-new = Aktivera
+appmenuitem-save-page =
+    .label = Spara sida som…
+appmenuitem-fxa-sync-off-title = Synkronisering är avstängd
+appmenuitem-fxa-sync-off-description = Skydda och komma åt dina bokmärken, lösenord och mer var som helst.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Profiler
+    .tooltiptext = Spela in en prestationsprofil
+profiler-popup-button-recording =
+    .label = Profilerare
+    .tooltiptext = Profileraren spelar in en profil
+profiler-popup-button-capturing =
+    .label = Profilerare
+    .tooltiptext = Profileraren fångar en profil
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = Avslöja mer information
+profiler-popup-description-title =
+    .value = Spela in, analysera, dela
+profiler-popup-description = Samarbeta om prestandafrågor genom att publicera profiler för att dela med ditt team.
+profiler-popup-learn-more-button =
+    .label = Läs mer
+profiler-popup-settings =
+    .value = Inställningar
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Redigera inställningar…
+profiler-popup-recording-screen = Spelar in…
+profiler-popup-start-recording-button =
+    .label = Starta inspelning
+profiler-popup-discard-button =
+    .label = Släng
+profiler-popup-capture-button =
+    .label = Fånga
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = Öppna profileringspanel
+    .tooltiptext = Öppna profileringspanel
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Rekommenderad förinställning för de flesta webbappfelsökningar, med lite pålägg.
+profiler-popup-presets-web-developer-label =
+    .label = Webbutvecklare
+profiler-popup-presets-firefox-description = Rekommenderad förinställning för profilering av { -brand-shorter-name }.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Förinställd för att undersöka grafikbuggar i { -brand-shorter-name }.
+profiler-popup-presets-graphics-label =
+    .label = Grafik
+profiler-popup-presets-media-description2 = Förinställd för att undersöka ljud- och videobuggar i { -brand-shorter-name }.
+profiler-popup-presets-media-label =
+    .label = Media
+profiler-popup-presets-ml-description = Förinställd för att undersöka maskininlärningsbuggar i { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Maskininlärning
+profiler-popup-presets-networking-description = Förinställd för att undersöka nätverksbuggar i { -brand-shorter-name }.
+profiler-popup-presets-networking-label =
+    .label = Nätverk
+profiler-popup-presets-networking-with-logs-description = Förinställning för att undersöka nätverksbuggar i { -brand-shorter-name }, inklusive nätverksloggar. Dessa loggar kan innehålla känslig information, till exempel de webbadresser du besöker.
+profiler-popup-presets-networking-with-logs-label =
+    .label = Nätverk med loggar
+profiler-popup-presets-power-description = Förinställd för att undersöka buggar för energianvändning i { -brand-shorter-name }, med låg omkostnad.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Energi
+profiler-popup-presets-debug-description = Förinställd för felsökning i { -brand-shorter-name }. Hög omkostnad, använd inte för prestandaarbete men för att fokusera på att förstå webbläsarens beteende.
+profiler-popup-presets-debug-label =
+    .label = Felsök
+profiler-popup-presets-web-compat-description = Rekommenderad förinställning för felsökning av webbkompatibilitetsproblem på webbplatser, snarare än att spåra prestanda.
+profiler-popup-presets-web-compat-label =
+    .label = Webbkompatibel
+profiler-popup-presets-custom-label =
+    .label = Anpassad
+
+##
+
+appmenu-manage-history =
+    .label = Hantera historik
+appmenu-restore-session =
+    .label = Återställ föregående session
+appmenu-clear-history =
+    .label = Rensa ut tidigare historik…
+appmenu-recent-history-subheader = Senaste historik
+appmenu-recently-closed-tabs =
+    .label = Nyligen stängda flikar
+appmenu-recently-closed-windows =
+    .label = Nyligen stängda fönster
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Sökhistorik
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = Håll dig synkroniserad mellan enheter
+appmenu-sync-promo-signin-cta = Logga in
+appmenu-sync-promo-turnonsync =
+    .heading = Synka dina flikar och historik
+appmenu-sync-promo-turnonsync-cta = Aktivera synkronisering
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = Hämta dina mobilflikar
+appmenu-sync-promo-connectdevice-cta = Anslut en enhet
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = Ta med dina bokmärken
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = Ta med dina bokmärken vart du än går
+
+## Help panel
+
+appmenu-help-header =
+    .title = { -brand-shorter-name } Hjälp
+appmenu-about =
+    .label = Om { -brand-shorter-name }
+    .accesskey = O
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = Dela { -brand-product-name }
+    .accesskey = D
+appmenu-get-help =
+    .label = Få hjälp
+    .accesskey = h
+appmenu-help-more-troubleshooting-info =
+    .label = Mer felsökningsinformation
+    .accesskey = f
+appmenu-help-share-ideas =
+    .label = Dela idéer och feedback...
+    .accesskey = D
+appmenu-help-switch-device =
+    .label = Byta till en ny enhet
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = Hjälp och rapportering
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Felsökningsläge…
+    .accesskey = F
+appmenu-help-exit-troubleshoot-mode =
+    .label = Stäng av felsökningsläge
+    .accesskey = g
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Rapportera vilseledande webbplats…
+    .accesskey = d
+appmenu-help-not-deceptive =
+    .label = Detta är inte en vilseledande webbplats…
+    .accesskey = v
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Anpassa verktygsfält…
+appmenu-abouttranslations =
+    .label = Översätt…
+appmenu-edit-pdf =
+    .label = Redigera PDF…
+appmenu-developer-tools-subheader = Webbläsarverktyg
+appmenu-developer-tools-extensions =
+    .label = Tillägg för utvecklare
+appmenuitem-report-broken-site =
+    .label = Rapportera trasig webbplats
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Logga in på ditt konto
+appmenuitem-monitor-title2 = Ligg steget före identitetsstöld
+appmenuitem-monitor-description2 = Få varningar om dataintrång
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = { -monitor-brand-short-name } varningar om dataintrång
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Få varningar om dataintrång
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = Håll din e-post privat
+appmenuitem-relay-description2 = Hjälper till att förhindra skräppost i din inkorg
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = Visa e-postalias
+appmenuitem-relay-description = Dölj din riktiga e-postadress och telefonnummer
+appmenuitem-services-relay-description = Starta översikten för e-postalias
+appmenuitem-vpn-title2 = Dölj din plats med { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description5 = Få extra skydd mellan enheter
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = Hämta { -mozilla-vpn-brand-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Få skydd för hela enheten
+appmenu-services-header = Mina tjänster
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Sekretessverktyg
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Testa andra skyddsverktyg från Mozilla:
+
+## Profiles panel
+
+appmenu-other-profiles = Andra profiler
+appmenu-manage-profiles =
+    .label = Hantera profiler
+appmenu-copy-profile =
+    .label = Kopiera den här profilen
+appmenu-create-profile2 =
+    .label = Skapa en ny profil
+appmenu-create-profile =
+    .label = Ny profil
+appmenu-edit-profile =
+    .aria-label = Redigera profil
+appmenu-edit-this-profile =
+    .label = Redigera den här profilen
+appmenu-profile-current-in-use = Aktuell profil som används
+fxa-menu-create-profile-subpanel =
+    .title = Skapa en ny profil
+fxa-menu-create-profile-heading = Gör din surfning bättre med en ny profil
+fxa-menu-create-profile-description = Håll isär dina bokmärken, lösenord och historik för arbete och personlig surfning.
+fxa-menu-create-profile-confirm =
+    .label = Skapa ny profil
+fxa-menu-create-profile-learn-more =
+    .label = Vad är profiler?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = Dela { -brand-product-name }
+appmenuitem-share-firefox-description = Bjud in någon att välja webbläsaren som sätter integriteten först
+appmenu-profiles-2 =
+    .label = Profiler
+appmenu-profiles-header = Profiler
+appmenu-all-profiles =
+    .label = Alla profiler
+appmenu-secure-sync-header = Säker synkronisering
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Senaste flikar
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] Visa { $tabCount } synkroniserad flik
+           *[other] Visa alla { $tabCount } synkroniserade flikar
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Skicka aktuell sida till den här enheten

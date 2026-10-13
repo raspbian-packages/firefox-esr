@@ -1,0 +1,19 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Usage string for :block command
+webconsole-commands-usage-block =
+    :block URL_STRING
+    
+    Inizia blocco delle richieste di rete
+    
+      Accetta un solo parametro URL_STRING, una stringa senza virgolette che verrà utilizzata per bloccare tutte le richieste il cui URL include questa stringa.
+      Utilizzare :unblock o la barra laterale in Monitor di rete per rimuovere il blocco.
+# Usage string for :unblock command
+webconsole-commands-usage-unblock =
+    :unblock URL_STRING
+    
+    Interrompi blocco delle richieste di rete
+    
+      Accetta un solo parametro, la stessa stringa passata in precedenza al comando :block.

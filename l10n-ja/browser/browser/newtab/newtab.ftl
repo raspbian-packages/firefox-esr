@@ -1,0 +1,1877 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = 新しいタブ
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = このページをカスタマイズ
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = カスタマイズ
+newtab-customize-panel-label =
+    .label = カスタマイズ
+newtab-settings-dialog-label =
+    .aria-label = 設定
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+newtab-card-dismiss-button =
+    .title = 閉じる
+    .aria-label = 閉じる
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-title =
+    .label = ホームページ
+home-homepage-new-windows =
+    .label = 新しいウィンドウ
+home-homepage-new-tabs =
+    .label = 新しいタブ
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-button =
+    .label = 特定のサイトを選択
+
+## Custom URLs subpage
+
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-card-header =
+    .label = ウェブサイトのアドレス
+home-custom-homepage-address =
+    .placeholder = アドレスを入力してください
+home-custom-homepage-address-button =
+    .label = アドレスを追加
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-results =
+    .label = ウェブサイトがまだ追加されていません。
+home-custom-homepage-delete-address-button =
+    .aria-label = アドレスを削除
+    .title = アドレスを削除します
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with-prompt =
+    .label = 置き換え:
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-current-pages-button =
+    .label = 現在開いているページ
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-bookmarks-button =
+    .label = ブックマーク...
+
+## Firefox Home content
+
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
+home-prefs-search-header2 =
+    .label = 検索
+home-prefs-stories-header2 =
+    .label = ストーリー
+    .description = { -brand-product-name } ファミリーに選ばれた優良コンテンツ
+home-prefs-widgets-header =
+    .label = ウィジェット
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = ToDo リスト
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = タイマー
+# Sports is a widget on New Tab showing sports scores and schedules.
+home-prefs-sports-widget-header =
+    .label = スポーツ
+# Clock is a widget on New Tab that displays time zones around the world.
+home-prefs-clocks-header =
+    .label = 時計
+# Privacy is a widget on New Tab that shows tracking protection activity.
+home-prefs-privacy-header =
+    .label = プライバシー
+# Crossword is a widget on New Tab that shows a daily crossword puzzle.
+home-prefs-crossword-widget-header =
+    .label = クロスワードパズル
+# Stocks is a widget on New Tab that shows stock ticker prices.
+home-prefs-stocks-header =
+    .label = 株価情報
+# Picture of the day is a widget on New Tab that shows a daily Wikimedia Commons image.
+home-prefs-picture-header =
+    .label = 今日の一枚
+# Recent searches is a widget on New Tab that shows the user's recent searches.
+home-prefs-recent-searches-header =
+    .label = 最近の検索
+home-prefs-mission-message2 =
+    .message = スポンサーは、より良いウェブを構築するという私たちの使命を支援しています。
+home-prefs-manage-topics-link2 =
+    .label = トピックを管理
+home-prefs-choose-wallpaper-link2 =
+    .label = 壁紙を選択
+home-prefs-firefox-logo-header =
+    .label = { -brand-short-name } ロゴ
+# Informational message bar that appears in the Firefox Home section when the options are disabled.
+# The user must select Firefox Home as their homepage for either new tabs or new windows to enable
+# the features in settings.
+home-prefs-firefox-home-disabled-notice =
+    .message = これらの機能を使用するには、新しいタブまたは新しいウィンドウを { -firefox-home-brand-name } に設定してください。
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label = { $num } 行
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = 拡張機能 ({ $extension })
+home-restore-defaults-srd =
+    .label = 既定に戻す
+    .accesskey = R
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (既定)
+home-mode-choice-custom-srd =
+    .label = カスタム URL...
+home-mode-choice-blank-srd =
+    .label = 空白ページ
+home-prefs-shortcuts-header-srd =
+    .label = ショートカット
+home-prefs-shortcuts-select =
+    .aria-label = ショートカット
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = 広告ショートカット
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = 広告記事
+home-prefs-highlights-option-visited-pages-srd =
+    .label = 訪れたページ
+home-prefs-highlights-options-bookmarks-srd =
+    .label = ブックマーク
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = 最近のダウンロード
+home-prefs-recent-activity-header-srd =
+    .label = 最近のアクティビティ
+home-prefs-recent-activity-select =
+    .aria-label = 最近のアクティビティ
+home-prefs-weather-header-srd =
+    .label = 天気予報
+home-prefs-support-firefox-header-srd =
+    .label = { -brand-product-name } を支援
+home-prefs-mission-message-learn-more-link-srd = 支援の詳細情報
+
+## Strings for the Privacy widget
+
+# Context menu item linking to more information about the Privacy widget.
+newtab-privacy-menu-learn-more = 詳細情報
+# Accessible name for the Privacy widget container. The widget shows no visible
+# title, so screen readers rely on this label to identify it.
+newtab-privacy-widget-label =
+    .aria-label = プライバシー
+
+## Privacy widget — count readout
+
+# Label shown under the large tracker-count number, appearing like:
+# Line 1: 86
+# Line 2: Trackers blocked today
+# Translations can be adjusted to "Today's blocked trackers" or something
+# similar if this fixed order causes issues.
+# Variables:
+#   $count (number) - Number of trackers blocked today
+newtab-privacy-trackers-blocked-today = 個のトラッカーを今日、
+# Second line of the readout, under the large number and "Trackers blocked
+# today". Counts the sites those trackers were blocked on. The English is
+# shortened from "Blocked across { $count } sites" — translate it that fuller way
+# if the short fragment doesn't work in your language.
+# Variables:
+#   $count (number) - Number of sites where trackers were blocked
+newtab-privacy-across-sites = { $count } サイトでブロックしました
+
+## Privacy widget — empty state
+
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty = { -brand-short-name } が閲覧中にブロックしたトラッカーをここで確かめられます。
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty-state = { -brand-short-name } が自動的にトラッカーをブロックし、ユーザーの行動のプライバシーを守ります。
+# "A running tally" is an informal way to say a total that keeps updating as it goes.
+# Here we are referring to the number of trackers blocked, which increases as the user browses.
+# An alternative can be "See a running total here"
+newtab-privacy-empty-state-tally = ここでブロックしたトラッカーの数を確認できます。
+
+## Privacy widget — Enhanced Tracking Protection off state
+
+# Shown when the user has turned off the Enhanced Tracking Protection setting.
+newtab-privacy-etp-off-faster-browsing = ブラウジングを高速化。トラッカーを最少化。
+newtab-privacy-etp-off-turn-on-tracking = 設定でトラッキング防止をオンにしてブロックを開始してください。
+
+## Privacy widget — informational messages
+##
+## Rotating "info" secondary messages. Each message has a body plus a matched
+## "-cta" button label sharing the same id stem (the CTA button isn't rendered
+## yet; the labels are authored so the pairing is ready).
+
+newtab-privacy-message-info-1 = { -brand-short-name } が閲覧中のトラッカーを自動的にブロックします。
+newtab-privacy-message-info-1-cta = 保護を表示
+newtab-privacy-message-info-2 = トラッカーをブロックすることにより、ユーザーをオンラインで追跡する企業を阻止します。
+newtab-privacy-message-info-2-cta = 保護を表示
+newtab-privacy-message-info-3 = 多くのサイトがトラッカーを利用しており、訪れたことのないサイトの企業がユーザーをオンラインで追跡している可能性があります。
+newtab-privacy-message-info-3-cta = 保護を表示
+newtab-privacy-message-info-4 = { -brand-short-name } を選ぶことは、初めから保護されていることを意味します。
+newtab-privacy-message-info-4-cta = 保護を表示
+newtab-privacy-message-info-5 = ブロックしたトラッカーの数が多いほど、企業による複数のサイトを横断したユーザーの追跡を減らしていることを意味します。
+newtab-privacy-message-info-5-cta = 保護を表示
+newtab-privacy-message-info-6 = { -brand-short-name } で個人データを守りましょう。他のブラウザーと違って、私たちは決して個人情報を売りません。
+newtab-privacy-message-info-6-cta = 詳細情報
+newtab-privacy-message-info-7 = { -brand-short-name } がブロックしたトラッカーを見てみましょう。
+newtab-privacy-message-info-7-cta = 保護を表示
+newtab-privacy-message-info-8 = { -brand-short-name } を使用することで、より良いウェブを構築するという { -vendor-short-name } の使命を支援しています。
+newtab-privacy-message-info-8-cta = 詳細情報
+newtab-privacy-message-info-9 = プライバシー保護が組み込まれた { -brand-short-name } を既定のブラウザーにしましょう。
+newtab-privacy-message-info-9-cta = 既定のブラウザーに設定
+newtab-privacy-message-info-10 = パスワードを { -brand-short-name } に保存して、強力でユニークなログイン情報を持ち歩きましょう。
+newtab-privacy-message-info-10-cta = パスワード設定を開く
+newtab-privacy-message-info-11 = { -brand-short-name } がどのようにユーザーのプライバシーを保護し続けているか見てみましょう。
+newtab-privacy-message-info-11-cta = 詳細情報
+newtab-privacy-message-info-12 = トラッカーをブロックすることで、制限のあるデータ通信プランでも帯域を節約できます。
+newtab-privacy-message-info-12-cta = 保護を表示
+newtab-privacy-message-info-13 = { -brand-short-name } はトラッカーをブロックし、データ通信量を節約してスムーズなストリーミングをお楽しみいただけます。
+newtab-privacy-message-info-13-cta = 保護を表示
+
+## Privacy widget — promotional messages
+##
+## Rotating "promo" secondary messages suggesting another Firefox feature. Each
+## has a body plus a matched "-cta" button label.
+
+newtab-privacy-message-promo-monitor-1 = データ漏洩にあなたの個人情報が含まれていないか調べます
+newtab-privacy-message-promo-monitor-1-cta = 詳細情報
+newtab-privacy-message-promo-monitor-2 = 最大 20 件のメールアドレスまで、無料のデータ漏洩監視があなたの個人情報を保護します。
+newtab-privacy-message-promo-monitor-2-cta = 詳細情報
+newtab-privacy-message-promo-signin-1 = { -vendor-short-name } アカウントを利用すると、ブックマークやパスワード、タブを暗号化して端末間で共有できます。
+newtab-privacy-message-promo-signin-1-cta = ログイン
+newtab-privacy-message-promo-vpn-1 = 公衆 Wi-Fi でお買い物？ 保護を追加するため組み込みの VPN をオンにしましょう。
+newtab-privacy-message-promo-vpn-1-cta = VPN を開く
+newtab-privacy-message-promo-vpn-2 = 空港の Wi-Fi をご利用ですか？ 組み込み VPN をオンにしてブラウジングを保護しましょう。
+newtab-privacy-message-promo-vpn-2-cta = VPN を開く
+newtab-privacy-message-promo-vpn-3 = 組み込み VPN をオンにすることでユーザーの位置情報をプライベートにできます。
+newtab-privacy-message-promo-vpn-3-cta = VPN を開く
+newtab-privacy-message-promo-private-window-1 = 共用のコンピューターをお使いの場合は、閲覧情報を保護するプライベートウィンドウをお試しください。
+newtab-privacy-message-promo-private-window-1-cta = プライベートウィンドウを開く
+newtab-privacy-message-promo-relay-1 = ログインにはメールマスクを使って、実際のメールアドレスは信頼できる人のために使用しましょう。
+newtab-privacy-message-promo-relay-1-cta = メールマスクを入手
+newtab-privacy-message-promo-relay-2 = 無料のメールマスクで受信トレイをスパムから保護しましょう。
+newtab-privacy-message-promo-relay-2-cta = メールマスクを入手
+newtab-privacy-message-promo-relay-3 = 実際のメールアドレスをプライベートにする無料のメールマスクが 50 個まで入手できます。
+newtab-privacy-message-promo-relay-3-cta = メールマスクを入手
+
+## Privacy widget — celebration messages
+##
+## Earned "celebration" moments (milestones, daily cap, streak, first
+## protection). Count-bearing ones interpolate { $count }.
+
+# Variables:
+#   $count (number) - Trackers blocked this week
+newtab-privacy-message-milestone-week = 今週は { $count } 個のトラッカーをブロックしました。{ -brand-short-name } が防止したトラッカーを見てみましょう
+newtab-privacy-message-milestone-week-cta = 保護を表示
+# Variables:
+#   $count (number) - Trackers blocked this month
+newtab-privacy-message-milestone-month = 今月は { $count } 個のトラッカーをブロックしました。これはプライバシー保護の小さな一歩ですが、安心のための大きな一歩でもあります。
+newtab-privacy-message-milestone-month-cta = 保護を表示
+# Variables:
+#   $count (number) - Trackers blocked this year
+newtab-privacy-message-milestone-year = 今年は { $count } 個のトラッカーをブロックしました。プライバシー保護のパワフルな年になりました。
+newtab-privacy-message-milestone-year-cta = 保護を表示
+# Variables:
+#   $count (number) - Trackers blocked all-time
+newtab-privacy-message-milestone-total = { $count } 個のトラッカーをブロックしました。あなたの望むかたちのプライバシーにおける大きな進捗です。
+newtab-privacy-message-milestone-total-cta = 保護を表示
+# Shown when today's blocked-tracker count reaches the display cap ("100+").
+newtab-privacy-message-daily-cap = (今日は 100 個以上のトラッカーをブロックしました。) トラッカーを減らすほどプライバシーが保護されています。
+newtab-privacy-message-daily-cap-cta = 保護を表示
+# Variables:
+#   $count (number) - Consecutive days the user has had trackers blocked
+newtab-privacy-message-streak = あなたは連続で { $count } 日間、保護されています。
+newtab-privacy-message-streak-cta = 保護を表示
+# Shown the first time the tracker count goes above zero.
+newtab-privacy-message-first-protection = いくら閲覧しても { -brand-short-name } が保護し続けます。
+newtab-privacy-message-first-protection-cta = 保護を表示
+
+## Strings for the Stocks widget
+
+# Context menu item linking to more information about the Stocks widget.
+newtab-stocks-menu-learn-more = 詳細情報
+# Shown in the Stocks widget when its data could not be loaded.
+newtab-stocks-error-not-available = 株価データが利用できません。
+# "Stocks widget options" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-stocks-widget-menu-button =
+    .title = 株価情報ウィジェットのオプション
+    .aria-label = 株価情報ウィジェットのオプション
+# Accessible name for the Stocks widget; hidden because the list dropdown is
+# shown in place of the title.
+newtab-stocks-widget-title = 株価情報
+# "Markets" is the default list of market ETFs. The value is shown in the menu,
+# and .label is shown on the button that opens it.
+newtab-stocks-list-markets = 株式市場
+    .label = 株式市場
+# "Watchlist" is the user's list of stocks to follow. The value is shown in the
+# menu, and .label is shown on the button that opens it.
+newtab-stocks-list-watchlist = 監視銘柄
+    .label = 監視銘柄
+# Context menu item that opens the stock search (by company name or ticker symbol).
+newtab-stocks-menu-search-stocks = 企業名または銘柄コードで検索
+
+## Screen-reader summary of a stock ticker.
+## Variables:
+##   $name (String) - the full fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+##   $change (String) - the day's percentage change, e.g. "+2.1%".
+##   $price (String) - the last price, e.g. "$559.44".
+
+# Stock increased (went up) during the day
+newtab-stocks-ticker-status-up = { $name }、{ $change } 上昇、{ $price }
+# Stock decreased (went down) during the day
+newtab-stocks-ticker-status-down = { $name }、{ $change } 下降、{ $price }
+# Stock didn't change during the day
+newtab-stocks-ticker-status-flat = { $name }、値動きなし、{ $change }、{ $price }
+
+## Stocks widget watchlist add and remove controls
+
+# Tooltip and screen-reader label for the button that adds a stock to the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+newtab-stocks-add-to-watchlist =
+    .title = { $name } を監視銘柄に追加します
+    .aria-label = { $name } を監視銘柄に追加
+# Tooltip and screen-reader label for the button that removes a stock from the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-remove-from-watchlist =
+    .title = { $name } を監視銘柄から削除します
+    .aria-label = { $name } を監視銘柄から削除
+# Visually hidden text on a Markets row whose stock is already in the watchlist, so
+# screen readers announce that it is saved. Removal happens on the Watchlist tab.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-in-watchlist = { $name } は監視銘柄に含まれています
+# Announced to screen readers after a stock is added to the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-added-to-watchlist = { $name } を監視銘柄に追加しました
+# Announced to screen readers after a stock is removed from the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-removed-from-watchlist = { $name } を監視銘柄から削除しました
+
+## Stocks widget ticker search
+
+# Placeholder and screen-reader label for the ticker search input.
+newtab-stocks-search-input =
+    .placeholder = 企業名または銘柄コードで検索します
+    .aria-label = 企業名または銘柄コードで検索
+# "Search results" is the accessible label for the list of tickers matching the
+# search. It means "results of the search", not "search within the results".
+newtab-stocks-search-results =
+    .aria-label = 検索結果
+# "Back" is an icon-only button in the search panel header that returns to the
+# widget — the attributes are consumed as tooltip/screen-reader label only. The
+# button never renders visible text.
+newtab-stocks-search-back-button =
+    .title = 戻る
+    .aria-label = 戻る
+# Shown when a ticker search returns no matching symbols.
+# Variables:
+#   $query (String) - the text the user searched for.
+newtab-stocks-search-no-results = “{ $query }” の検索結果はありません
+# Shown while a ticker search is running; also announced to screen readers.
+newtab-stocks-search-loading = 読み込み中...
+# Shown when a ticker search fails to reach the service.
+newtab-stocks-search-error = 現在検索できません。あとでもう一度試してください。
+# Shown below successful search results when the watchlist is already full.
+# Variables:
+#   $limit (Number) - the maximum number of stocks the watchlist can hold.
+newtab-stocks-watchlist-full = 追加できるのは { $limit } 銘柄までです。別の銘柄を追加するには、いずれか一つを削除してください。
+
+## Strings for the Picture of the Day widget
+
+# Title shown at the top of the widget, with the source name appended.
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-header = 今日の一枚 · Wikimedia Commons
+# Shorter title shown at the top of the widget, without the source name.
+newtab-picture-header-main = 今日の一枚
+# Attribution line shown under the title once a picture loads: an author
+# credit, a link to the picture's source page, and a link to its license.
+# "©" is the copyright symbol.
+# $author (string) - the name of the image's author.
+newtab-picture-attribution-author = © { $author }
+# Link to the picture's source page (its Wikimedia Commons file page).
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-attribution-source-link = Wikimedia Commons
+# Screen-reader label for the license link; the visible text is the license
+# name (for example "CC BY-SA 4.0") provided with the picture.
+# $license (string) - the name of the license.
+newtab-picture-attribution-license =
+    .aria-label = { $license } ライセンスを表示
+# Tooltip and screen-reader label for the icon-only button that opens the
+# widget's context menu. The button never renders visible text.
+newtab-picture-widget-menu-button =
+    .title = 今日の一枚のオプション
+    .aria-label = 今日の一枚のオプション
+# Button that sets the current picture as the New Tab background wallpaper. The
+# button collapses to an icon when not hovered/focused, so .title is its tooltip.
+newtab-picture-set-wallpaper =
+    .label = 壁紙に設定
+    .title = 壁紙に設定します
+    .aria-label = 今日の一枚を壁紙に設定する
+# Context menu item that opens the New Tab customization panel.
+newtab-picture-menu-manage-wallpaper = 壁紙を管理
+# Context menu item that hides today’s picture, replacing it with an existing
+# wallpaper.
+newtab-picture-menu-hide-photo = 今日の一枚を隠す
+# Context menu item that restores today’s picture after it has been hidden.
+newtab-picture-menu-show-photo = 今日の一枚を表示
+# Context menu item linking to more information about the widget.
+newtab-picture-menu-learn-more = 詳細情報
+# Icon button shown on the widget once the picture is hidden; restores it.
+newtab-picture-show-button =
+    .title = 今日の写真を表示します
+    .aria-label = 今日の写真を表示する
+# Shown when there is no new picture to display yet.
+newtab-picture-check-back = 明日の新しい写真をお楽しみに
+# Screen-reader text alternative for the picture; fallback used when the source
+# provides no localized description.
+newtab-picture-image-alt = Wikimedia Commons からの今日の写真
+
+## Strings for the Recent Searches widget
+
+# Widget heading; also the widget's accessible name.
+newtab-recent-searches-widget-title = 最近の検索
+# Screen reader label for the widget's icon-only menu button.
+newtab-recent-searches-widget-menu-button =
+    .aria-label = 最近の検索のオプション
+# Context menu item linking to more information about the widget.
+newtab-recent-searches-menu-learn-more = 詳細情報
+# Tab listing the searches the user has made recently.
+newtab-recent-searches-tab-recent = 最近の検索
+# Tab listing what is trending with the user's search engine.
+newtab-recent-searches-tab-trending = 検索トレンド
+# Informs the user which engine the trending results come from.
+# Variables:
+#   $engine (string) - Name of the default search engine, e.g. "Google".
+newtab-recent-searches-trending-attribution = { $engine } 経由
+# Relative time shown for a search made less than a minute ago.
+newtab-recent-searches-just-now = 直前
+# Screen reader label for the button that forgets one listed search.
+# Variables:
+#   $search (string) - The search the row shows, e.g. "puffin colonies".
+newtab-recent-searches-row-remove =
+    .aria-label = 最近の検索から “{ $search }” を削除
+
+## Recent searches widget — empty states
+
+# Shown in place of the list when the user has made no searches recently.
+newtab-recent-searches-empty-recent = ここに表示される最近の検索から選んでいつでも再検索できます。
+# Shown in place of the list when there are no trending search results.
+newtab-recent-searches-empty-trending = トレンド検索は現在利用できません。
+
+## Strings for the navigable panels that new tab content area can be
+## split into.
+
+newtab-spaces-tab-stories = ストーリー
+newtab-spaces-tab-widgets = ウィジェット
+newtab-spaces-tab-activity = アクティビティ
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .title = 検索します
+    .aria-label = 検索
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = { $engine } で検索、または URL を入力します
+newtab-search-box-handoff-text-no-engine = 検索語句、または URL を入力します
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .placeholder = { $engine } で検索、または URL を入力します
+    .title = { $engine } で検索、または URL を入力します
+    .aria-label = { $engine } で検索、または URL を入力
+newtab-search-box-handoff-input-no-engine =
+    .placeholder = 検索語句、または URL を入力します
+    .title = 検索語句、または URL を入力します
+    .aria-label = 検索語句、または URL を入力
+newtab-search-box-text = ウェブを検索
+newtab-search-box-input =
+    .placeholder = ウェブを検索します
+    .aria-label = ウェブを検索
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = 検索エンジンを追加
+newtab-topsites-add-shortcut-header = 新しいショートカット
+newtab-topsites-edit-shortcut-header = ショートカットを編集
+newtab-topsites-add-shortcut-label = ショートカットを追加
+newtab-topsites-add-shortcut-title =
+    .title = ショートカットを追加します
+    .aria-label = ショートカットを追加
+newtab-shortcuts-pinned-area = ピン留めした領域
+newtab-topsites-title-label = タイトル
+newtab-topsites-title-input =
+    .placeholder = タイトルを入力
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = URL を入力するか貼り付け
+newtab-topsites-url-validation = 正しい URL を入力してください
+newtab-topsites-image-url-label = カスタム画像 URL
+newtab-topsites-use-custom-image-link = カスタム画像を使用
+newtab-topsites-use-image-link = カスタム画像を使用...
+newtab-topsites-image-validation = 画像を読み込めませんでした。別の URL を試してください。
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-clear-input =
+    .aria-label = テキストを消去
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = キャンセル
+newtab-topsites-delete-history-button = 履歴から削除
+newtab-topsites-save-button = 保存
+newtab-topsites-preview-button = プレビュー
+newtab-topsites-add-button = 追加
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = 本当にこのページに関して保存されているあらゆる情報を履歴から削除しますか？
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = この操作は取り消せません。
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = 広告
+
+## Label used by screen readers for pinned top sites
+
+# Variables:
+#   $title (string) - The label or hostname of the site.
+topsite-label-pinned =
+    .aria-label = { $title } (ピン留め)
+    .title = { $title }
+
+## Top Sites - Web notifications hover card
+
+# Variables:
+#   $site (string) - The label or hostname of the site the notifications are from.
+newtab-topsites-hover-card-header = { $site } からの通知
+# Relative time shown for a notification posted less than a minute ago.
+newtab-topsites-hover-card-just-now = 直前
+newtab-topsites-hover-card-mark-all-read =
+    .title = すべて既読にします
+    .aria-label = すべて既読にする
+newtab-topsites-hover-card-settings =
+    .title = 通知設定
+    .aria-label = 通知設定
+newtab-topsites-hover-card-dismiss =
+    .title = 閉じる
+    .aria-label = 閉じる
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .title = メニューを開きます
+    .aria-label = メニューを開く
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .title = メニューを開きます
+    .aria-label = { $title } のコンテキストメニューを開く
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = 編集
+newtab-menu-add-topsite = 新しいショートカットを追加
+newtab-menu-open-new-window = 新しいウィンドウで開く
+newtab-menu-open-new-private-window = 新しいプライベートウィンドウで開く
+newtab-menu-dismiss = 閉じる
+newtab-menu-pin = ピン留め
+newtab-menu-unpin = ピン留めを外す
+newtab-menu-delete-history = 履歴から削除
+newtab-menu-show-privacy-info = 私たちのスポンサーとあなたのプライバシー
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = 報告
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = ブロック
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow-topic = フォローを解除
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = 詳細情報
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = 広告コンテンツを管理
+newtab-menu-our-sponsors-and-your-privacy = 私たちのスポンサーとユーザーのプライバシー
+newtab-menu-report-this-ad = この広告を報告
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = ブックマークを削除
+# Bookmark is a verb here.
+newtab-menu-bookmark = ブックマーク
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = ダウンロード元の URL をコピー
+newtab-menu-go-to-download-page = ダウンロード元のページを開く
+newtab-menu-remove-download = 履歴から削除
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Finder に表示
+       *[other] 保存フォルダーを開く
+    }
+newtab-menu-open-file = ファイルを開く
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = 訪問済み
+newtab-label-bookmarked = ブックマーク済み
+newtab-label-removed-bookmark = 削除済みブックマーク
+newtab-label-recommended = 話題の記事
+newtab-label-saved = { -pocket-brand-name } に保存しました
+newtab-label-download = ダウンロード済み
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = 提供: { $sponsorOrSource }
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = 提供: { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } 分
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = 広告
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = プライバシー通知
+
+## Section Headers.
+
+newtab-section-header-topsites = トップサイト
+newtab-section-header-recent-activity = 最近のアクティビティ
+newtab-section-header-stories = 示唆に富むストーリー
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = 本日のおすすめ
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = ブラウジング中にあなたが最近訪れたりブックマークしたりした、優れた記事、動画、その他ページの一部をここに表示します。
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = すべて既読です。また後でおすすめ記事をチェックしてください。待ちきれない場合は、人気のトピックを選択してウェブ上の他の優れた記事を見つけてください。
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = すべて既読です！
+newtab-discovery-empty-section-topstories-content = また後で戻っておすすめ記事をチェックしてください。
+newtab-discovery-empty-section-topstories-try-again-button = 再試行
+newtab-discovery-empty-section-topstories-loading = 読み込み中...
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = おおっと、このセクションはほぼ読み込みましたが、完全ではありません。
+
+## Strings for the story cards carousel
+
+# Identifies the current carousel slide to screen reader users.
+# Variables:
+#   $index - the position of this slide
+#   $total - how many slides there are
+newtab-carousel-slide =
+    .aria-label = { $index } / { $total }
+# Button that goes to the previous carousel slide.
+newtab-carousel-previous =
+    .aria-label = 前へ
+# Button that goes to the next carousel slide.
+newtab-carousel-next =
+    .aria-label = 次へ
+# Button that pauses autoplay on the carousel.
+newtab-carousel-pause =
+    .aria-label = 自動再生を一時停止
+# Button that resumes autoplay on the carousel.
+newtab-carousel-play =
+    .aria-label = 自動再生を再開
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = このコンテンツの読み込み中に問題が発生しました。
+newtab-error-fallback-refresh-link = ページを再度読み込んでもう一度試してください。
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .label = ショートカット
+    .description = 保存または訪問したサイト
+newtab-custom-shortcuts-nova =
+    .label = ショートカット
+newtab-custom-web-notifications-toggle =
+    .label = ウェブ通知
+    .description = ショートカット上にサイトからの通知を表示します
+newtab-custom-row-description =
+    .description = 行数
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label = { $num } 行
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be having a description under "Recommended stories" anymore
+newtab-custom-stories-toggle =
+    .label = おすすめのストーリー
+    .description = { -brand-product-name } ファミリーに選ばれた優良コンテンツです
+newtab-recommended-stories-toggle =
+    .label = おすすめのストーリー
+newtab-custom-stories-personalized-toggle =
+    .label = ストーリー
+newtab-custom-stories-personalized-checkbox =
+    .label = ユーザーのアクティビティに基づいて選ばれたストーリー
+newtab-custom-stories-personalized-checkbox-label = ユーザーのアクティビティに基づいて選ばれたストーリー
+newtab-custom-weather-toggle =
+    .label = 天気予報
+    .description = 一目でわかる今日の天気
+newtab-custom-widget-weather-toggle =
+    .label = 天気予報
+newtab-custom-widget-lists-toggle =
+    .label = ToDo リスト
+newtab-custom-widget-timer-toggle =
+    .label = タイマー
+newtab-custom-widget-clock-toggle =
+    .label = 時計
+newtab-custom-widget-sports-toggle2 =
+    .label = スポーツ
+newtab-custom-widget-privacy-toggle =
+    .label = プライバシー
+newtab-custom-widget-stocks-toggle =
+    .label = 株価情報
+newtab-custom-widget-picture-toggle =
+    .label = 今日の一枚
+newtab-custom-widget-recent-searches-toggle =
+    .label = 最近の検索
+newtab-custom-widget-section-title = ウィジェット
+newtab-custom-widget-section-toggle =
+    .label = ウィジェット
+newtab-widget-manage-title = ウィジェット
+newtab-widget-manage-widget-button =
+    .label = ウィジェットを管理
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .title = 閉じる
+    .aria-label = メニューを閉じる
+newtab-custom-settings = 他の設定を管理
+
+## Customization Menu
+
+# An arrow button that goes back from a sub-panel in the customize panel, such as a wallpaper category, to the main Customize panel.
+newtab-customize-panel-back-button =
+    .aria-label = カスタマイズへ戻る
+    .title = カスタマイズへ戻ります
+
+## New Tab Appearance (browser theme picker)
+
+# Title of the browser theme ("Appearance") section in the customize panel.
+newtab-custom-appearance-section-title = 外観
+# Button that opens the full browser theme selection view.
+newtab-appearance-more-themes-button =
+    .label = 他のテーマを表示
+# Title of the full theme selection sub-panel, also used as its back button label.
+newtab-appearance-manage-title = { -brand-product-name } テーマ
+# Header for the list of the user's already-installed themes in the full theme panel.
+newtab-appearance-your-themes-header = あなたのテーマ
+# Button that enables an already-installed theme.
+newtab-appearance-enable-theme-button =
+    .label = 有効化
+# Button that disables the active theme and reverts to the default.
+newtab-appearance-disable-theme-button =
+    .label = 無効化
+# Button that installs a theme.
+newtab-appearance-install-theme-button =
+    .label = テーマをインストール
+# Button/link on the full theme panel that opens the complete list of available themes.
+newtab-appearance-explore-more-themes-button = 他のテーマを探す
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = 壁紙
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = 既定値にリセット
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = 画像をアップロード
+newtab-wallpaper-add-an-image = 画像を追加
+newtab-wallpaper-custom-color = 色を選択
+newtab-wallpaper-toggle-title =
+    .label = 壁紙
+# Variables
+#   $file_size (number) - The number of the maximum image file size (in MB) that may be uploaded
+newtab-wallpaper-error-max-file-size = 画像がファイルサイズの上限を超えています。{ $file_size } MB より小さなファイルをアップロードしてください。
+newtab-wallpaper-error-upload-file-type = ファイルをアップロードできませんでした。画像ファイルで再度試してください。
+newtab-wallpaper-light-red-panda = レッサーパンダ
+newtab-wallpaper-light-mountain = 白い雪山
+newtab-wallpaper-light-sky = 紫色の雲と空
+newtab-wallpaper-light-color = 黄色、ピンク色、青色の模様
+newtab-wallpaper-light-landscape = 空色の雲海と山の景色
+newtab-wallpaper-light-beach = ヤシの木のある砂浜
+newtab-wallpaper-dark-aurora = 北極のオーロラ
+newtab-wallpaper-dark-color = 赤色と青色の模様
+newtab-wallpaper-dark-panda = 森に隠れるレッサーパンダ
+newtab-wallpaper-dark-sky = 夜空と街の景色
+newtab-wallpaper-dark-mountain = 山の景色
+newtab-wallpaper-dark-city = 紫色の街の景色
+newtab-wallpaper-dark-fox-anniversary = 森林の道路に座るキツネ
+newtab-wallpaper-light-fox-anniversary = 霧がかかった山を背景に草原にたたずむキツネ
+
+## "Your images" is the folder of wallpapers someone has saved. A saved wallpaper
+## can be a file they uploaded, a Picture of the Day they chose to keep, or a
+## Firefox wallpaper kept for them when it was retired.
+
+newtab-wallpaper-your-images = 保存された画像
+# Accessible name for the tile that opens the "Your images" folder in the
+# wallpaper picker. The tile shows one of the saved images and has no text of
+# its own, so this is all a screen reader has to go on.
+newtab-wallpaper-your-images-folder =
+    .aria-label = 保存された画像と壁紙
+# Read by screen readers for a saved image that has a name of its own: a kept
+# Picture of the Day, or a Firefox wallpaper kept when it was retired. An image
+# someone added themselves is numbered instead, see the string below.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-your-images-item = { $name }
+# Read by screen readers for an image someone added themselves. Firefox counts
+# these as they are saved rather than keeping the name of their file.
+# Variables:
+#   $number (number) - Which saved image this is, counting from one
+newtab-wallpaper-your-images-item-numbered = 画像 { $number }
+# Each saved image has its own remove button. The tooltip stays short because
+# a name can be long and some locales put it before the verb, which would push
+# "remove" out of view. The full name is on the label a screen reader reads.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-remove-image =
+    .title = 画像を削除します
+    .aria-label = { $name } を削除
+# The remove button for an image someone added themselves. .title is the
+# tooltip and .aria-label is what a screen reader reads.
+# Variables:
+#   $number (number) - Which saved image this is, counting from one
+newtab-wallpaper-remove-image-numbered =
+    .title = 画像 { $number } を削除します
+    .aria-label = 画像 { $number } を削除
+newtab-wallpaper-remove-image-title = 画像を削除しますか？
+# "This action" refers to removing a saved wallpaper image.
+newtab-wallpaper-remove-image-body = この操作は元に戻せません。
+newtab-wallpaper-remove-image-confirm = 削除
+newtab-wallpaper-remove-image-cancel = キャンセル
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = 無地
+newtab-wallpaper-colors = 無地
+newtab-wallpaper-blue = 空色
+newtab-wallpaper-light-blue = 白藍色
+newtab-wallpaper-light-purple = 紅藤
+newtab-wallpaper-light-green = 白緑
+newtab-wallpaper-green = 若緑
+newtab-wallpaper-beige = 肌色
+newtab-wallpaper-yellow = 女郎花
+newtab-wallpaper-orange = 柑子色
+newtab-wallpaper-pink = 牡丹色
+newtab-wallpaper-light-pink = 桜色
+newtab-wallpaper-red = 茜色
+newtab-wallpaper-dark-blue = 紺色
+newtab-wallpaper-dark-purple = 小紫
+newtab-wallpaper-dark-green = 深緑
+newtab-wallpaper-brown = 栗色
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = 抽象的
+newtab-wallpaper-abstract-green = 緑色の形状
+newtab-wallpaper-abstract-blue = 青色の形状
+newtab-wallpaper-abstract-purple = 紫色の形状
+newtab-wallpaper-abstract-orange = オレンジ色の形状
+newtab-wallpaper-gradient-orange = オレンジとピンクのグラデーション
+newtab-wallpaper-abstract-blue-purple = 青色と紫色の形状
+newtab-wallpaper-abstract-white-curves = 影のついた白色の曲線
+newtab-wallpaper-abstract-purple-green = 紫色と緑色の明るいグラデーション
+newtab-wallpaper-abstract-blue-purple-waves = 青色と紫色の波形の形状
+newtab-wallpaper-abstract-black-waves = 黒色の波形の形状
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = 写真
+newtab-wallpaper-beach-at-sunrise = 早朝の砂浜
+newtab-wallpaper-beach-at-sunset = 夕暮れの砂浜
+newtab-wallpaper-storm-sky = 嵐の空
+newtab-wallpaper-sky-with-pink-clouds = ピンク色に染まる雲
+newtab-wallpaper-red-panda-yawns-in-a-tree = あくびをするレッサーパンダ
+newtab-wallpaper-white-mountains = 白い雪山
+newtab-wallpaper-hot-air-balloons = 昼空に浮かぶさまざまな色の熱気球
+newtab-wallpaper-starry-canyon = 青い星夜
+newtab-wallpaper-suspension-bridge = 昼の灰色の吊橋
+newtab-wallpaper-sand-dunes = 白砂の砂丘
+newtab-wallpaper-palm-trees = 朝焼けに照らされたココヤシの木々のシルエット
+newtab-wallpaper-blue-flowers = 咲き誇る青い花のクローズアップ写真
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = 写真提供: <a data-l10n-name="name-link">{ $author_string }</a> (<a data-l10n-name="webpage-link">{ $webpage_string }</a>)
+newtab-wallpaper-feature-highlight-header = カラフルな壁紙を試しましょう
+newtab-wallpaper-feature-highlight-content = 壁紙で新しいタブをカラフルに彩りましょう。
+newtab-wallpaper-feature-highlight-button = 了解
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .title = 閉じる
+    .aria-label = ポップアップを閉じる
+feature-highlight-wallpaper =
+    .title = { -newtab-wallpaper-feature-highlight-header }
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-firefox-orange = オレンジ色の背景の右端からこちらを見つめるキツネ
+newtab-wallpaper-firefox-colorful-sky = 紫色の夜空を横切るオレンジ色の波打つしっぽ
+newtab-wallpaper-firefox-desert-dark = 暗い紫色の砂漠に座って夜空を見上げるキツネ
+newtab-wallpaper-firefox-desert-light = 明るい砂漠を走って横切るキツネ
+newtab-wallpaper-firefox-hills-dark = 暗い丘の向こうを走るキツネ
+newtab-wallpaper-firefox-hills-light = 明るい丘の向こうを走るキツネ
+newtab-wallpaper-firefox-tail-dark = 暗い背景にキツネのしっぽ
+newtab-wallpaper-firefox-tail-light = 明るい背景にキツネのしっぽ
+newtab-wallpaper-firefox-side-kit-dark = 暗い背景の左端にキツネ
+newtab-wallpaper-firefox-side-kit-light = 明るい背景の左端にキツネ
+newtab-wallpaper-firefox-sitting-hill-dark = 暗い紫色の丘に座るキツネ
+newtab-wallpaper-firefox-sitting-hill-light = 明るい丘に座るキツネ
+newtab-wallpaper-firefox-peak-dark = 暗い背景の左端から顔を出しているキツネ
+newtab-wallpaper-firefox-peak-light = 明るい背景の左端から顔を出しているキツネ
+newtab-wallpaper-firefox-sky-dark = 夜空の下の暗い紫色の丘
+newtab-wallpaper-firefox-sky-light = おだやかな空の下の明るい丘
+
+## Firefox
+
+newtab-wallpaper-category-title-firefox = { -brand-product-name }
+
+## Celestial
+
+# “Celestial” referring to astronomy; positioned in or relating to the sky,
+# or outer space as observed in astronomy.
+# Not to be confused with religious definition of the word.
+newtab-wallpaper-category-title-celestial = 宇宙
+newtab-wallpaper-celestial-lunar-eclipse = 月食
+newtab-wallpaper-celestial-earth-night = 地球低軌道からの夜景
+newtab-wallpaper-celestial-starry-sky = 星空
+newtab-wallpaper-celestial-eclipse-time-lapse = 月食のタイムラプス
+newtab-wallpaper-celestial-black-hole = ブラックホール銀河のイラスト
+newtab-wallpaper-celestial-river = 河川の衛星画像
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = 提供: { $provider }
+newtab-weather-menu-change-location = 予報地点を変更
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = 場所を検索します
+    .aria-label = 場所を検索
+newtab-weather-cancel-input =
+    .title = キャンセルします
+    .aria-label = キャンセル
+# "Current" refers to the user's physical/geographic location detected via geolocation.
+newtab-weather-change-location-search-use-current =
+    .label = 現在地を使用する
+newtab-weather-menu-weather-display = 天気表示
+newtab-weather-todays-forecast = 今日の天気予報
+newtab-weather-see-full-forecast = 天気予報の詳細を表示
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = シンプル
+newtab-weather-menu-change-weather-display-simple = シンプル表示に切り替える
+newtab-weather-menu-weather-display-option-detailed = 詳細
+newtab-weather-menu-change-weather-display-detailed = 詳細表示に切り替える
+newtab-weather-menu-temperature-units = 温度の単位
+newtab-weather-menu-temperature-option-fahrenheit = 華氏 (℉)
+newtab-weather-menu-temperature-option-celsius = 摂氏 (℃)
+newtab-weather-menu-change-temperature-units-fahrenheit = ファーレンハイト度に切り替える
+newtab-weather-menu-change-temperature-units-celsius = セルシウス度に切り替える
+newtab-weather-menu-learn-more = 詳細情報
+newtab-weather-menu-detect-my-location = 現在地を検出
+# This message is shown if user is working offline
+newtab-weather-error-not-available = 現在、天気データが利用できません。
+newtab-weather-opt-in-see-weather = 現在地の天気を表示しますか？
+newtab-weather-opt-in-not-now =
+    .label = 後で
+newtab-weather-opt-in-yes =
+    .label = はい
+newtab-weather-opt-in-headline = ローカルの天気予報を利用
+newtab-weather-opt-in-use-location =
+    .label = 位置情報を利用する
+newtab-weather-opt-in-choose-location = 場所を選択してください
+# We'll be showing static (fake) weather data if the user has not opted in to using their location
+newtab-weather-static-city = ニューヨーク
+# "Highest" here refers to the highest temperature of the day
+newtab-weather-high =
+    .aria-label = 最高気温
+# "Lowest" here refers to the lowest temperature of the day
+newtab-weather-low =
+    .aria-label = 最低気温
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast-description =
+    .title = { $provider } による天気予報を表示します
+    .aria-description = 提供: { $provider }
+
+## Topic Labels
+
+newtab-topic-label-business = 仕事
+newtab-topic-label-career = キャリア
+newtab-topic-label-education = 教育
+newtab-topic-label-arts = 娯楽
+newtab-topic-label-food = 食品
+newtab-topic-label-health = 健康
+newtab-topic-label-hobbies = ゲーム
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = 金融
+newtab-topic-label-society-parenting = 育児
+newtab-topic-label-government = 政治
+newtab-topic-label-education-science = 科学
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = ライフハック
+newtab-topic-label-sports = スポーツ
+newtab-topic-label-tech = 技術
+newtab-topic-label-travel = 旅行
+newtab-topic-label-home = 家庭
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = あなたのフィードに最適なトピックを選択
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = 複数のトピックを選んでください。専門のキュレーターがあなたの関心事に合わせてストーリーに優先順位を付けます。いつでも更新できます。
+newtab-topic-selection-save-button = 保存
+newtab-topic-selection-cancel-button = キャンセル
+newtab-topic-selection-button-maybe-later = 後で選ぶ
+newtab-topic-selection-privacy-link = ユーザーデータの保護と管理について
+newtab-topic-selection-button-update-interests = 関心事を更新
+newtab-topic-selection-button-pick-interests = 関心事を選ぶ
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = フォローする
+# Variables:
+#   $topic (string) - Topic that the user can follow
+newtab-section-follow-button-label =
+    .aria-label = { $topic } をフォロー
+newtab-section-following-button = フォロー中
+newtab-section-unfollow-button = フォロー解除
+# Variables:
+#   $topic (string) - Topic that the user is following and can unfollow
+newtab-section-unfollow-button-label =
+    .aria-label = フォロー中: { $topic } のフォローを解除
+# A modal may appear next to the Follow button, directing users to try out the feature
+newtab-section-follow-highlight-title = フィードを微調整
+newtab-section-follow-highlight-subtitle = 興味のあることをフォローして、お好みのコンテンツを多く表示します
+
+## Topic navigation
+## A row of buttons above the stories, each scrolling the page to that topic's section.
+
+newtab-topic-navigation-label =
+    .aria-label = トピック
+# Opens a menu listing the topics that did not fit in the row.
+newtab-topic-navigation-more-button = さらに表示
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = ブロックする
+newtab-section-blocked-button = ブロック中
+newtab-section-unblock-button = ブロック解除
+# Variables:
+#   $topic (string) - Name of topic that user is following
+newtab-section-follow-topic =
+    .aria-label = { $topic } をフォロー
+# Variables:
+#   $topic (string) - Name of topic that user is unfollowing
+newtab-section-unfollow-topic =
+    .aria-label = { $topic } のフォローを解除
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic =
+    .aria-label = { $topic } をブロック
+# Variables:
+#   $topic (string) - Name of topic that user is unblocking
+newtab-section-unblock-topic =
+    .aria-label = { $topic } のブロックを解除
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-topic-p1 = 本当にこのトピックをブロックしますか？
+newtab-section-confirm-block-topic-p2 = ブロックしたトピックはフィードに表示されません。
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = { $topic } をブロック
+newtab-section-block-cancel-button = キャンセル
+
+## Strings for custom wallpaper highlight
+
+newtab-section-mangage-topics-title = トピック
+newtab-section-manage-topics-button-v2 =
+    .label = トピックを管理
+newtab-section-mangage-topics-followed-topics = フォロー中
+newtab-section-mangage-topics-followed-topics-empty-state = フォローしているトピックはありません。
+newtab-section-mangage-topics-blocked-topics = ブロック中
+newtab-section-mangage-topics-blocked-topics-empty-state = ブロックしているトピックはありません。
+newtab-custom-wallpaper-title = カスタム壁紙が利用できます
+# 'Make firefox yours" means to customize or personalize
+newtab-custom-wallpaper-subtitle = 壁紙をアップロードするかお好みの色を選んで、あなただけの { -brand-product-name } にカスタマイズしましょう。
+newtab-custom-wallpaper-cta = 壁紙を試す
+
+## Strings for new user activation custom wallpaper highlight
+
+newtab-new-user-custom-wallpaper-title = 壁紙を選んであなただけの { -brand-product-name } に彩りましょう
+newtab-new-user-custom-wallpaper-subtitle = お好みの壁紙と配色ですべての新しいタブを自宅のようにカスタマイズできます。
+newtab-new-user-custom-wallpaper-cta = 今すぐ試す
+
+## Strings for Nova wallpaper feature highlight
+
+newtab-wallpaper-feature-highlight-title = 新しい壁紙が追加されました
+newtab-wallpaper-feature-highlight-subtitle = お気に入りの壁紙ですべての新しいタブをマイホームのようにしましょう。
+newtab-wallpaper-feature-highlight-cta = 壁紙を選ぶ
+
+## Strings for download mobile highlight
+
+newtab-download-mobile-highlight-title = モバイル版 { -brand-product-name } をダウンロード
+# "Scan the code" refers to scanning the QR code that appears above the body text that leads to Firefox for mobile download.
+newtab-download-mobile-highlight-body-variant-a = QR コードをスキャンして安全にダウンロード。
+newtab-download-mobile-highlight-body-variant-b = タブやパスワード、他のデータを同期しておけば、中断したところからピックアップできます。
+newtab-download-mobile-highlight-body-variant-c = 同じ { -brand-product-name } ブラウザーをポケットに入れて持ち出せることをご存じですか？
+newtab-download-mobile-highlight-image =
+    .aria-label = モバイル版 { -brand-product-name } をダウンロードするための QR コード
+
+## Strings for shortcuts highlight
+
+newtab-shortcuts-highlight-title = 指先一つでお気に入りに追加
+newtab-shortcuts-highlight-subtitle = ショートカットを追加してお気に入りのサイトに 1 クリックでアクセスできます。
+
+## Strings for reporting issues with ads and content
+
+newtab-report-content-why-reporting-this =
+    .label = この広告を報告した理由を教えてください。
+newtab-report-ads-reason-not-interested =
+    .label = 興味がない
+newtab-report-ads-reason-inappropriate =
+    .label = 不適切
+newtab-report-ads-reason-seen-it-too-many-times =
+    .label = 表示回数が多すぎる
+newtab-report-content-wrong-category =
+    .label = カテゴリーが誤っている
+newtab-report-content-outdated =
+    .label = 古くなっている
+newtab-report-content-inappropriate-offensive =
+    .label = 不適切または攻撃的
+newtab-report-content-spam-misleading =
+    .label = スパムまたはミスリード
+newtab-report-content-requires-payment-subscription =
+    .label = 支払いまたは購読が必要
+newtab-report-content-requires-payment-subscription-learn-more = 詳細情報
+newtab-report-cancel = キャンセル
+newtab-report-submit = 送信
+newtab-toast-thanks-for-reporting =
+    .message = ご報告ありがとうございます。
+newtab-toast-widgets-hidden =
+    .message = 鉛筆アイコンを選択して、いつでもウィジェットを追加できます。
+# Variables:
+#   $topic (string) - Topic that the user has followed
+newtab-section-toast-follow =
+    .message = { $topic } トピックをフォローしました。
+# Variables:
+#   $topic (string) - Topic that the user has unfollowed
+newtab-section-toast-unfollow =
+    .message = { $topic } トピックのフォローを解除しました。
+# Variables:
+#   $topic (string) - Topic that the user has blocked
+newtab-section-toast-block =
+    .message = { $topic } トピックについてのストーリーは今後表示されません。
+
+## Strings for task / to-do list productivity widget
+
+# "Add one" means adding a new task to the list (e.g., "Walk the dog")
+newtab-widget-lists-empty-cta = 可能性は限りなく。リストを作りましょう。
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = 新機能
+newtab-widget-lists-label-beta =
+    .label = Beta
+# When tasks have been previous marked as complete, they will appear in their own separate list beneath incomplete items
+# Variables:
+#   $number (number) - Amount of list items marked complete
+newtab-widget-lists-completed-list = 完了 ({ $number })
+newtab-widget-lists-celebration-headline = よくできました
+newtab-widget-lists-celebration-subhead = すべて完了
+newtab-widget-task-list-menu-copy = コピー
+newtab-widget-lists-menu-edit = リスト名を編集
+newtab-widget-lists-menu-edit2 =
+    .aria-label = リスト名を編集
+newtab-widget-lists-menu-create = 新しいリストを作成
+newtab-widget-lists-menu-delete = このリストを削除
+newtab-widget-lists-menu-copy = リストをクリップボードにコピー
+newtab-widget-lists-menu-learn-more = 詳細情報
+# "Change" is a verb here: the button switches which list is shown
+newtab-widget-lists-change-list =
+    .title = リストを変更します
+    .aria-label = リストを変更
+newtab-widget-lists-button-add-item = アイテムを追加
+newtab-widget-lists-input-add-an-item2 =
+    .placeholder = アイテムを追加します
+    .aria-label = アイテムを追加
+newtab-widget-lists-input-error = 追加するアイテムにテキストを含めてください
+newtab-widget-lists-input-menu-open-link = リンクを開く
+newtab-widget-lists-input-menu-move-up = 上へ移動
+newtab-widget-lists-input-menu-move-down = 下へ移動
+newtab-widget-lists-input-menu-delete = 削除
+newtab-widget-lists-input-menu-edit = 編集
+newtab-widget-lists-input-menu-edit2 =
+    .aria-label = アイテムを編集
+newtab-widget-lists-edit-clear =
+    .aria-label = キャンセル
+    .title = キャンセル
+# Lists is a noun, as in "options for the lists"
+newtab-widget-lists-menu-button =
+    .aria-label = リストのオプション
+# the + symbol emphasises the functionality of adding a new list
+newtab-widget-lists-dropdown-create =
+    .label = + 新しいリストを作成
+newtab-widget-lists-name-label-default =
+    .label = ToDo リスト
+newtab-widget-lists-name-label-checklist =
+    .label = チェックリスト
+newtab-widget-lists-name-placeholder-default =
+    .placeholder = ToDo リスト
+newtab-widget-lists-name-placeholder-checklist2 =
+    .placeholder = チェックリスト
+    .aria-label = リスト名を編集
+# The placeholder value of the name field for a newly created list
+newtab-widget-lists-name-placeholder-new2 =
+    .placeholder = 新しいリスト
+    .aria-label = リスト名を編集
+newtab-widget-section-title = ウィジェット
+newtab-widget-menu-hide = ウィジェットを隠す
+newtab-widget-menu-change-size = サイズを変更
+# Parent label for a submenu in the widget menu that reorders the widget
+# among its siblings. "Left" and "Right" appear as items inside this submenu.
+newtab-widget-menu-move = 移動
+# Submenu item under "Move"; moves the widget one position to the left.
+# RTL locales should translate this as "Right".
+newtab-widget-menu-move-left = 左側
+# Submenu item under "Move"; moves the widget one position to the right.
+# RTL locales should translate this as "Left".
+newtab-widget-menu-move-right = 右側
+newtab-widget-size-small = 小
+newtab-widget-size-medium = 中
+newtab-widget-size-large = 大
+# Tooltip for hide all widgets button
+newtab-widget-section-hide-all-button =
+    .title = ウィジェットを隠します
+    .aria-label = すべてのウィジェットを隠す
+newtab-widget-section-maximize =
+    .title = ウィジェットを展開します
+    .aria-label = すべてのウィジェットを最大サイズに展開する
+newtab-widget-section-minimize =
+    .title = ウィジェットを最小化します
+    .aria-label = すべてのウィジェットをコンパクトサイズに折りたたむ
+# Shown on the widgets section header button while the section is
+# auto-minimized to its title row, to open the section back up.
+newtab-widget-section-show-widgets =
+    .title = ウィジェットを表示します
+    .aria-label = ウィジェットセクションを表示
+newtab-widget-section-menu-button =
+    .title = ウィジェットメニューを開きます
+    .aria-label = ウィジェットメニューを開く
+newtab-widget-add-widgets-button =
+    .title = ウィジェットを追加します
+    .aria-label = ウィジェットを追加
+newtab-widget-section-menu-manage = ウィジェットを管理
+newtab-widget-section-menu-hide-all = ウィジェットを隠す
+newtab-widget-section-menu-learn-more = 詳細情報
+newtab-widget-section-feedback = ご感想をお寄せください
+# Button shown when additional widgets are hidden beyond the
+# first row, allowing users to show them.
+newtab-widget-section-show-more =
+    .label = ウィジェットの表示を増やす
+# Button shown when the widgets row is expanded to multiple rows,
+# allowing users to collapse it back to one row.
+newtab-widget-section-show-less =
+    .label = ウィジェットの表示を減らす
+newtab-widget-lists-name-default = チェックリスト
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+newtab-widget-timer-notification-title = タイマー
+newtab-widget-timer-notification-focus = 時間内に良い仕事をしましょう。休憩はいかが？
+newtab-widget-timer-notification-break = 休憩時間が終わりました。準備はよいですか？
+newtab-widget-timer-notification-warning = 通知がオフになっています
+newtab-widget-timer-mode-focus =
+    .label = 集中
+newtab-widget-timer-mode-break =
+    .label = 休憩
+newtab-widget-timer-label-play =
+    .label = 開始
+newtab-widget-timer-label-pause =
+    .label = 一時停止
+newtab-widget-timer-reset =
+    .title = リセット
+newtab-widget-timer-menu-notifications = 通知をオフにする
+newtab-widget-timer-menu-notifications-on = 通知をオンにする
+newtab-widget-timer-menu-learn-more = 詳細情報
+newtab-widget-timer-menu-button =
+    .aria-label = タイマーのオプション
+# The title displays above a set of top news headlines.
+newtab-daily-briefing-card-title = トップニュース
+newtab-daily-briefing-card-menu-dismiss = 閉じる
+# Variables:
+#   $minutes (number) - Time since the feed has been refreshed
+newtab-daily-briefing-card-timestamp = { $minutes } 分前に更新
+newtab-widget-message-title = リストへの集中と組み込みタイマー
+# to-dos stands for "things to do".
+newtab-widget-message-copy = クイック通知から毎日の ToDo リストまで、時間内によく集中して休憩を取れるように、あなたの作業を支援します。
+# One spot refers to a dedicated section on new tab to manage and use widgets
+newtab-widget-message-focus-forecasts-title = 集中、天気、その他のワンスポット
+newtab-widget-message-focus-forecasts-body = { -brand-product-name } ウィジェットを日常に活かしましょう。その日の天気や作業リスト、世界の時刻を確認できます。
+# "Make Firefox yours" refers to about:newtab. The call to action here ("Try it now")
+# is to customize the new tab page with a background image or color from
+# the built-in wallpaper collection or uploading your own image.
+newtab-promo-card-title-addons = { -brand-product-name } を自分だけのブラウザーにしましょう
+newtab-promo-card-body-addons = コレクションから壁紙を選ぶか、自分だけの壁紙を設定してください。
+newtab-promo-card-cta-addons = 今すぐ試す
+newtab-promo-card-title = { -brand-product-name } を支援
+newtab-promo-card-body = 私たちのスポンサーはより良いウェブを作り上げるという私たちの使命を支援します
+newtab-promo-card-cta = 詳細情報
+newtab-promo-card-dismiss-button =
+    .title = 閉じる
+    .aria-label = 閉じる
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-start-aria =
+    .aria-label =
+        { $minutes ->
+           *[other] { $minutes } 分タイマーを開始
+        }
+newtab-widget-timer-pause-aria =
+    .aria-label = タイマーを一時停止
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-spinbutton-name =
+    .aria-label = { $minutes } 分
+newtab-widget-timer-decrease-min =
+    .title = 1 分減らします
+newtab-widget-timer-increase-min =
+    .title = 1 分増やします
+newtab-widget-timer-mode-group =
+    .aria-label = タイマーモード
+# Small label shown beneath the live time while the focus timer is running or paused.
+newtab-widget-timer-running-focus = 集中
+# Small label shown beneath the live time while the break timer is running or paused.
+newtab-widget-timer-running-break = 休憩
+# Context-menu item to hide the Timer widget. Replaces the shared "Hide widget"
+# copy with a widget-specific string per the Nova design.
+newtab-widget-timer-menu-hide = タイマーを隠す
+# Heading shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-heading-focus = よくできました
+# Heading shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-heading-break = 休憩時間終了
+# Message shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-message-focus = 休憩しますか？
+# Message shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-message-break = 再開しますか？
+
+##
+
+newtab-sports-widget-menu-follow-teams = チームをフォロー
+newtab-sports-widget-menu-view-schedule = スケジュールを見る
+newtab-sports-widget-menu-view-upcoming = 最新情報を見る
+newtab-sports-widget-menu-view-results = 結果を見る
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-menu-key-dates = 重要な日
+newtab-sports-widget-menu-learn-more = 詳細情報
+# “Keep tabs on” is an informal expression meaning to stay updated on, stay informed on, or regularly follow something (in this case, World Cup matches and updates).
+newtab-sports-widget-keep-tabs = ワールドカップの最新情報をチェック
+newtab-sports-widget-get-updates = 試合の最新情報などをリアルタイムでお届けします。
+newtab-sports-widget-follow-teams =
+    .label = チームをフォロー
+newtab-sports-widget-view-matches =
+    .label = 対戦相手を見る
+# Variables:
+#   $number (number) - Maximum number of teams a user can choose to follow in the team selection state
+newtab-sports-widget-follow-teams-title =
+    { $number ->
+       *[other] { $number } チームまでフォローできます
+    }
+newtab-sports-widget-choose-wallpaper =
+    .label = 壁紙を選ぶ
+newtab-sports-widget-skip = スキップ
+newtab-sports-widget-search-country =
+    .placeholder = 参加国を検索
+    .aria-label = 参加国を検索
+newtab-sports-widget-cancel = キャンセル
+newtab-sports-widget-back-button =
+    .aria-label = 戻る
+newtab-sports-widget-done-button =
+    .label = 完了
+# Shown in the follow-teams list for a team that has been knocked out of the tournament.
+# Variables:
+#   $teamName (string) - the localized team name (e.g. "Canada").
+newtab-sports-widget-team-name-eliminated = { $teamName } (敗退)
+newtab-sports-widget-view-all =
+    .label = すべて表示
+newtab-sports-widget-show-less =
+    .label = 表示を減らす
+# Toggle that filters the list of teams the user follows
+newtab-sports-widget-followed-only-toggle =
+    .label = フォローしたチームのみ
+# Status shown when more matches are being fetched.
+newtab-sports-widget-loading-more = 試合をさらに読み込んでいます...
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch =
+    .label = 観戦
+    .title = ライブ観戦
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch-icon =
+    .aria-label = ライブ観戦
+    .title = ライブ観戦
+newtab-sports-widget-watch-dialog-close =
+    .aria-label = 閉じる
+    .title = 閉じる
+# Tag: user can watch without paying (sign-in may still be required).
+newtab-sports-widget-watch-stream-free = 無料
+# Tag: user can start watching via a trial; continued access may require payment after it ends.
+newtab-sports-widget-watch-stream-free-trial = 無料トライアル
+# Tag: provider offers both a no-cost or trial path and a paid path.
+newtab-sports-widget-watch-stream-free-paid = 無料および有料
+# Tag: user must pay to watch (subscription, TV provider, premium plan, or add-on).
+newtab-sports-widget-watch-stream-paid = 有料
+# Note: provider only streams some matches, not the full tournament.
+newtab-sports-widget-watch-stream-select-games-only = 選択した試合のみ
+# Heading for the list of streaming services available in the user’s country/region.
+newtab-sports-widget-watch-available-region = ユーザーの地域で観戦可能
+# Heading for the list of streaming services available outside the user’s country/region.
+newtab-sports-widget-watch-available-other-regions = 他の地域
+# Button that opens the provider’s stream page in a new tab.
+newtab-sports-widget-watch-play =
+    .aria-label = ストリームを開く
+    .title = 動画ストリームを開きます
+newtab-sports-widget-group-stage = グループステージ
+newtab-sports-widget-group-a = グループ A
+newtab-sports-widget-group-b = グループ B
+newtab-sports-widget-group-c = グループ C
+newtab-sports-widget-group-d = グループ D
+newtab-sports-widget-group-e = グループ E
+newtab-sports-widget-group-f = グループ F
+newtab-sports-widget-group-g = グループ G
+newtab-sports-widget-group-h = グループ H
+newtab-sports-widget-group-i = グループ I
+newtab-sports-widget-group-j = グループ J
+newtab-sports-widget-group-k = グループ K
+newtab-sports-widget-group-l = グループ L
+newtab-sports-widget-round-32 = ラウンド 32
+newtab-sports-widget-round-16 = ラウンド 16
+newtab-sports-widget-quarter-finals = 準々決勝
+# The "LIVE" string is meant to be uppercase in English, but other languages and locales may vary in how they handle this.
+newtab-sports-widget-live = ライブ
+newtab-custom-widget-live-refresh =
+    .title = スコアを更新します
+    .aria-label = スコアを更新
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-key-dates = 重要な日
+newtab-sports-widget-upcoming = 今後の試合
+# Used for a match currently ongoing
+newtab-sports-widget-now = 試合中
+newtab-sports-widget-results = 結果
+newtab-sports-widget-semi-finals = 準決勝
+newtab-sports-widget-bronze-finals = 3 位決定戦
+# Final is the final match for 1st place.
+newtab-sports-widget-final = 決勝
+# Variables:
+#   $start (Date) - Start date of a tournament stage
+#   $end (Date) - End date of a tournament stage
+newtab-sports-widget-key-date-range = { DATETIME($start, month: "short", day: "numeric") } – { DATETIME($end, month: "short", day: "numeric") }
+# Variables:
+#   $date (Date) - Date of a single tournament event
+newtab-sports-widget-key-date = { DATETIME($date, month: "short", day: "numeric") }
+newtab-sports-widget-delayed = 遅延
+newtab-sports-widget-postponed = 延期
+newtab-sports-widget-suspended = 一時中断
+newtab-sports-widget-cancelled = 中止
+newtab-sports-widget-information = 試合についての情報
+newtab-sports-widget-no-live-data = 現在、ライブの試合データが更新されていません
+newtab-sports-widget-view-results-link = 結果を見る
+newtab-sports-widget-third-place = 3 位
+# Runner-up is the team in 2nd place.
+newtab-sports-widget-runner-up = 準優勝
+newtab-sports-widget-champions = 優勝
+newtab-sports-widget-world-cup-champions = 2026 ワールドカップ優勝者
+# Compact champions label for the medium-size widget result card; the larger
+# card uses newtab-sports-widget-world-cup-champions.
+newtab-sports-widget-world-cup-champions-short = 2026 優勝者
+# Variables:
+#   $date (Date) - The match start time
+newtab-sports-widget-match-time = { DATETIME($date, hour: "2-digit", minute: "2-digit") }
+newtab-sports-widget-match-full-time = フルタイム
+newtab-sports-widget-match-halftime = ハーフタイム
+newtab-sports-widget-match-extra-time = 延長
+newtab-sports-widget-match-penalties = ペナルティー
+# Separator shown between two teams in a placeholder match row when no upcoming
+# match details are available yet.
+newtab-sports-widget-match-vs = 対
+# Note shown in the Upcoming tab when no match details are available yet.
+newtab-sports-widget-no-upcoming-matches = 今後の試合の詳細をお見逃しなく
+
+## Sports widget live-games pagination. Shown when 2+ matches are live at the same time
+
+# arrow button that goes to the previous page of live matches.
+newtab-sports-widget-pagination-previous =
+    .aria-label = 前へ
+    .title = 前のページへ
+# arrow button that goes to the next page of live matches.
+newtab-sports-widget-pagination-next =
+    .aria-label = 次へ
+    .title = 次のページへ
+# Dot indicator that jumps directly to a given live match.
+# $index (number) - 1-based position of this dot in the list.
+# $total (number) - Total number of live matches.
+newtab-sports-widget-pagination-dot =
+    .aria-label = ライブ試合 { $index } / { $total }
+    .title = ライブ試合 { $index } / { $total }
+
+## Accessible labels for match rows in the sports widget. These are read by
+## screen readers to announce the match details and status.
+## Variables shared by all messages in this group:
+##   $homeTeam (String) - The full name of the home team (e.g. "Mexico")
+##   $awayTeam (String) - The full name of the away team (e.g. "Russia")
+
+# A finished match row (regular full-time result).
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+newtab-sports-widget-match-aria-label-results =
+    .aria-label = { $homeTeam }, { $homeScore } 対 { $awayTeam }, { $awayScore }
+# A finished match row that went to a penalty shootout.
+# Parenthesized values are the shootout score.
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+#   $homePenalty (number) - The home team's penalty shootout score
+#   $awayPenalty (number) - The away team's penalty shootout score
+newtab-sports-widget-match-aria-label-results-penalties =
+    .aria-label = { $homeTeam }, { $homeScore } ({ $homePenalty }) 対 { $awayTeam }, { $awayScore } ({ $awayPenalty })
+# A match that is currently in progress.
+# Variables:
+#   $homeScore (number) - The home team's current score
+#   $awayScore (number) - The away team's current score
+newtab-sports-widget-match-aria-label-now =
+    .aria-label = ライブ: { $homeTeam }, { $homeScore } 対 { $awayTeam }, { $awayScore }
+# An upcoming scheduled match row. Announces kickoff time and date.
+# Variables:
+#   $date (Date) - The scheduled kickoff date/time
+newtab-sports-widget-match-aria-label-upcoming =
+    .aria-label = { $homeTeam } vs. { $awayTeam }, { DATETIME($date, hour: "numeric", minute: "numeric") }, { DATETIME($date, day: "numeric", month: "long") }
+# An upcoming match row whose status is "delayed".
+newtab-sports-widget-match-aria-label-upcoming-delayed =
+    .aria-label = { $homeTeam } vs. { $awayTeam }, 遅延
+# An upcoming match row whose status is "postponed".
+newtab-sports-widget-match-aria-label-upcoming-postponed =
+    .aria-label = { $homeTeam } vs. { $awayTeam }, 延期
+# An upcoming match row whose status is "suspended".
+newtab-sports-widget-match-aria-label-upcoming-suspended =
+    .aria-label = { $homeTeam } vs. { $awayTeam }, 中断
+# An upcoming match row whose status is "cancelled".
+newtab-sports-widget-match-aria-label-upcoming-cancelled =
+    .aria-label = { $homeTeam } vs. { $awayTeam }, 中止
+
+## Sports widget — team names (FIFA country codes)
+## Only includes names not adequately covered by standard country-code
+## internationalization tooling.
+
+newtab-sports-widget-team-name-label-bih =
+    .label = ボスニア・ヘルツェゴヴィナ
+newtab-sports-widget-team-name-label-civ =
+    .label = コートジボワール
+newtab-sports-widget-team-name-label-cod =
+    .label = コンゴ民主共和国
+newtab-sports-widget-team-name-label-eng =
+    .label = イングランド
+newtab-sports-widget-team-name-label-sco =
+    .label = スコットランド
+# Placeholder used in a match row's aria-label for an undecided team (shown visually as "--").
+newtab-sports-widget-team-tbd = 未定
+
+## Sports widget OMC messages
+## Shown as on-screen messages promoting the Sports widget and World Cup wallpapers.
+
+newtab-sports-widget-message-wallpapers-title = 新しい壁紙でワールドカップをキックオフ
+newtab-sports-widget-message-wallpapers-body = トーナメント試合の日に備えてブラウザーにエネルギー注入
+newtab-sports-widget-message-wallpapers-cta = 壁紙を選ぶ
+newtab-sports-widget-message-wallpapers-semifinals-title = 準決勝用の新しい壁紙を入手
+newtab-sports-widget-message-wallpapers-semifinals-body = ワールドカップの大事な試合のためにステージを設定しましょう。
+newtab-sports-widget-message-add-widgets-cta =
+    .label = ウィジェットを追加
+newtab-sports-widget-message-day-in-play-title = { -brand-product-name } ウィジェットで試合の日に備えましょう
+newtab-sports-widget-message-day-in-play-body = ワールドカップをフォロー、作業に集中、世界中の時刻を確認できます
+newtab-sports-widget-message-explore-widgets-cta =
+    .label = ウィジェットを探す
+
+## Survey prompts shown after the World Cup to gather feedback on the widgets experience.
+
+newtab-sports-widget-message-survey-title = ウィジェットの改善にご協力ください
+newtab-sports-widget-message-survey-body = ワールドカップウィジェットのまとめです。使用した感想を共有してください。
+newtab-sports-widget-message-survey-widget-title = ワールドカップウィジェットはどうでしたか？
+newtab-sports-widget-message-survey-widget-body = お寄せいただいたフィードバックは将来のウィジェットの改善に役立てられます。新しいウィジェットが追加されるかもしれません。
+newtab-sports-widget-message-survey-cta =
+    .label = アンケートに答える
+
+## Strings for activation window message variants. In certain experiment configurations,
+## the strings from these variants may be displayed in a message below the search input
+## for the first 48 hours of a new profile's lifetime. Some messages include buttons with
+## labels, but not all.
+
+newtab-activation-window-message-dismiss-button =
+    .title = 閉じる
+    .aria-label = 閉じる
+# "This space" refers to about:newtab. The call to action here ("make it your own")
+# is to customize newtab with a background image or colour, or by tweaking the
+# existing widgetry that appears on it.
+newtab-activation-window-message-customization-focus-header = あなただけのスペースにカスタマイズ
+newtab-activation-window-message-customization-focus-message = 新しい壁紙を選び、お気に入りのサイトのショートカットを追加し、興味のある最新のストーリーを追いかけましょう。
+newtab-activation-window-message-customization-focus-primary-button =
+    .label = カスタマイズを開始
+# "This space" refers to about:newtab. The sentiment of "plays by your rules" is
+# meant to evoke the idea that newtab is malleable and customizable. The call to
+# action is to customize newtab with a background image or colour, or by tweaking
+# the existing widgetry that appears on it.
+newtab-activation-window-message-values-focus-header = ここはあなただけのスペースです
+newtab-activation-window-message-values-focus-message = { -brand-product-name } でブラウジングすると、お好みの方法でオンラインの一日を始められます。あなただけの { -brand-product-name } にしましょう。
+
+## Strings for the Clock widget
+
+# Context menu item: toggle the clock card off.
+newtab-clock-widget-menu-hide = 時計を隠す
+newtab-clock-widget-menu-learn-more = 詳細情報
+newtab-clock-widget-menu-edit = 時計を編集
+newtab-clock-widget-menu-switch-to-12h = 12 時間形式に切り替え
+newtab-clock-widget-menu-switch-to-24h = 24 時間形式に切り替え
+newtab-clock-widget-label-your-clocks = あなたの時計
+newtab-clock-widget-search-location-input =
+    .label = 場所
+    .placeholder = 都市を検索します
+    .aria-label = 都市を検索します
+# "Nickname (optional)" refers to a custom, user-defined label for a saved location
+# (e.g., "Home", "Office", or "School") to make it easier to recognize.
+# Not to be translated as a legal name, username, or alias used for identity verification.
+newtab-clock-widget-input-nickname =
+    .label = ラベル (任意)
+    .placeholder = ラベルを追加
+    .aria-label = ラベル (任意)
+# "Add new clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-button-add =
+    .title = 新しい時計を追加します
+    .aria-label = 新しい時計を追加
+newtab-clock-widget-button-add-clock = 追加
+newtab-clock-widget-button-cancel = キャンセル
+newtab-clock-widget-button-back =
+    .title = 戻る
+    .aria-label = 戻る
+newtab-clock-widget-button-edit-clock =
+    .title = 時計を編集します
+    .aria-label = 時計を編集
+newtab-clock-widget-button-save = 保存
+newtab-clock-widget-button-remove-clock =
+    .title = 時計を削除します
+    .aria-label = 時計を削除
+# Accessible name for a clock row in the "Your clocks" management panel
+# when the row has no user-provided nickname. Read aloud by screen
+# readers when focus lands on the row.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+newtab-clock-widget-edit-item =
+    .aria-label = { $city }
+# Accessible name for a clock row when a user nickname has been set.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+#   $nickname (string) - The user-provided nickname for the row.
+newtab-clock-widget-edit-item-with-nickname =
+    .aria-label = { $city }、ラベル: { $nickname }
+newtab-clock-widget-add-clock-form =
+    .aria-label = 時計を追加
+newtab-clock-widget-edit-clock-form =
+    .aria-label = 時計を編集
+# "Search results" is the accessible label for the listbox dropdown that appears
+# below the location search field, listing matching cities as the user types.
+# It means "results of the search", not "search within the results".
+newtab-clock-widget-search-results =
+    .aria-label = 検索結果
+# Fallback row in the search results that lets the user add a city that is
+# not in the list. $city (String) is the text the user has typed.
+newtab-clock-widget-add-custom = カスタム時計に “{ $city }” を追加
+# Text field for the display name of a user-added custom clock.
+newtab-clock-widget-custom-city-input =
+    .label = 都市名
+    .placeholder = この時計にラベルを付けてください
+    .aria-label = 都市名
+# Searchable time-zone field shown when adding a custom clock. The user
+# types a city they know and picks it to set the clock's time zone.
+newtab-clock-widget-custom-timezone-input =
+    .label = タイムゾーン
+    .placeholder = 都市名、タイムゾーンまたは UTC の時差で検索します
+    .aria-label = タイムゾーン
+newtab-clock-widget-custom-zone-results =
+    .aria-label = タイムゾーンの検索結果
+# Shown in the time-zone picker when the search matches no time zones.
+newtab-clock-widget-custom-zone-no-results = 一致するタイムゾーンがありません
+# Returns from the custom clock form back to the city search.
+newtab-clock-widget-custom-back = 戻る
+# Shown in place of the search results when the user's query does not match any
+# supported city — e.g. typing a misspelled name or a place not in the IANA
+# time zone list.
+newtab-clock-widget-search-no-results = 検索に一致するものがありません
+# "Open menu for clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-menu-button =
+    .title = 時計のメニューを開きます
+    .aria-label = 時計のメニューを開く
+# $nickname (String) - The user-defined nickname for a saved clock location (e.g., "Home", "Office").
+newtab-clock-widget-label-nickname-with-value = ラベル: { $nickname }
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = ニューヨーク
+newtab-clock-city-us-los-angeles = ロサンゼルス
+newtab-clock-city-us-chicago = シカゴ
+newtab-clock-city-us-san-francisco = サンフランシスコ
+newtab-clock-city-us-san-diego = サン・ディエゴ
+newtab-clock-city-us-dallas = ダラス
+newtab-clock-city-us-houston = ヒューストン
+newtab-clock-city-us-philadelphia = フィラデルフィア
+newtab-clock-city-us-atlanta = アトランタ
+newtab-clock-city-us-washington-dc = ワシントン D.C.
+newtab-clock-city-us-boston = ボストン
+newtab-clock-city-us-miami = マイアミ
+newtab-clock-city-us-seattle = シアトル
+newtab-clock-city-us-denver = デンバー
+newtab-clock-city-us-honolulu = ホノルル
+newtab-clock-city-us-anchorage = アンカレッジ
+newtab-clock-city-de-berlin = ベルリン
+newtab-clock-city-de-munich = ミュンヘン
+newtab-clock-city-de-frankfurt = フランクフルト・アム・マイン
+newtab-clock-city-de-hamburg = ハンブルク
+newtab-clock-city-fr-paris = パリ
+newtab-clock-city-fr-lyon = リヨン
+newtab-clock-city-fr-marseille = マルセイユ
+newtab-clock-city-fr-toulouse = トゥールーズ
+newtab-clock-city-in-kolkata = コルカタ
+newtab-clock-city-in-mumbai = ムンバイ
+newtab-clock-city-in-delhi = デリー
+newtab-clock-city-in-bangalore = ベンガルール
+newtab-clock-city-cn-shanghai = 上海
+newtab-clock-city-cn-beijing = 北京
+newtab-clock-city-cn-shenzhen = 深圳
+newtab-clock-city-br-sao-paulo = サンパウロ
+newtab-clock-city-br-rio-de-janeiro = リオデジャネイロ
+newtab-clock-city-br-brasilia = ブラジリア
+newtab-clock-city-id-jakarta = ジャカルタ
+newtab-clock-city-id-surabaya = スラバヤ
+newtab-clock-city-id-makassar = マカッサル
+newtab-clock-city-ca-toronto = トロント
+newtab-clock-city-ca-montreal = モントリオール
+newtab-clock-city-ca-vancouver = バンクーバー
+newtab-clock-city-au-sydney = シドニー
+newtab-clock-city-au-perth = パース
+newtab-clock-city-au-adelaide = アデレード
+newtab-clock-city-pl-warsaw = ワルシャワ
+newtab-clock-city-pl-krakow = クラクフ
+newtab-clock-city-jp-tokyo = 東京
+newtab-clock-city-jp-osaka = 大阪
+newtab-clock-city-mx-mexico-city = メキシコシティ
+newtab-clock-city-mx-guadalajara = グアダラハラ
+newtab-clock-city-it-rome = ローマ
+newtab-clock-city-it-milan = ミラノ
+newtab-clock-city-ru-moscow = モスクワ
+newtab-clock-city-ru-saint-petersburg = サンクトペテルブルク
+newtab-clock-city-gb-london = ロンドン
+newtab-clock-city-gb-birmingham = バーミンガム
+newtab-clock-city-es-madrid = マドリード
+newtab-clock-city-es-barcelona = バルセロナ
+newtab-clock-city-nl-amsterdam = アムステルダム
+newtab-clock-city-ch-zurich = チューリッヒ
+newtab-clock-city-at-vienna = ウィーン
+newtab-clock-city-cz-prague = プラハ
+newtab-clock-city-ar-buenos-aires = ブエノスアイレス
+newtab-clock-city-gr-athens = アテネ
+newtab-clock-city-hu-budapest = ブダペスト
+newtab-clock-city-be-brussels = ブリュッセル
+newtab-clock-city-ua-kyiv = キーウ
+newtab-clock-city-fi-helsinki = ヘルシンキ
+newtab-clock-city-co-bogota = ボゴタ
+newtab-clock-city-ph-manila = マニラ
+newtab-clock-city-tr-istanbul = イスタンブール
+newtab-clock-city-my-kuala-lumpur = クアラルンプール
+newtab-clock-city-eg-cairo = カイロ
+newtab-clock-city-se-stockholm = ストックホルム
+newtab-clock-city-ro-bucharest = ブカレスト
+newtab-clock-city-th-bangkok = バンコク
+newtab-clock-city-ng-lagos = ラゴス
+newtab-clock-city-tw-taipei = 台北
+newtab-clock-city-za-johannesburg = ヨハネスブルグ
+newtab-clock-city-cl-santiago = サンティアゴ
+newtab-clock-city-pk-karachi = カラチ
+newtab-clock-city-bg-sofia = ソフィア
+newtab-clock-city-sg-singapore = シンガポール
+newtab-clock-city-hk-hong-kong = 香港
+newtab-clock-city-sa-riyadh = リヤド
+newtab-clock-city-dk-copenhagen = コペンハーゲン
+newtab-clock-city-pe-lima = リマ
+newtab-clock-city-ke-nairobi = ナイロビ
+newtab-clock-city-nz-auckland = オークランド
+newtab-clock-city-kr-seoul = ソウル
+newtab-clock-city-lt-vilnius = ヴィルニュス
+newtab-clock-city-ie-dublin = ダブリン
+newtab-clock-city-ae-dubai = ドバイ
+newtab-clock-city-lv-riga = リガ
+newtab-clock-city-pt-lisbon = リスボン
+newtab-clock-city-ir-tehran = テヘラン
+newtab-clock-city-bd-dhaka = ダッカ
+newtab-clock-city-ec-guayaquil = グアヤキル
+newtab-clock-city-vn-ho-chi-minh-city = ホーチミン
+newtab-clock-city-np-kathmandu = カトマンズ
+newtab-clock-city-mm-yangon = ヤンゴン

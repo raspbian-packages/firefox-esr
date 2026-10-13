@@ -1,0 +1,439 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = Iscarrighende s'atualizatzione de { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Atualizatzione a disponimentu — iscàrriga immoe
+appmenuitem-banner-update-manual =
+    .label = Atualizatzione a disponimentu — iscàrriga immoe
+appmenuitem-banner-update-unsupported =
+    .label = Impossìbile agiornare — sistema non cumpatìbile
+appmenuitem-banner-update-restart =
+    .label = Atualizatzione a disponimentu — torra a aviare immoe
+appmenu-nova-update-title = Torra a aviare pro atualizare { -brand-short-name }
+appmenu-nova-update-description = Is ischedas tuas s’ant a torrare a abèrrere.
+appmenu-nova-fxa-sign-in = Identìfica·ti
+appmenu-nova-switch-device-promo =
+    .message = As a leare unu dispositivu nou? Porta·ti { -brand-short-name }!
+appmenu-nova-switch-device-link = Comente migrare is datos tuos
+appmenuitem-new-tab =
+    .label = Ischeda noa
+appmenuitem-new-window =
+    .label = Ventana noa
+appmenuitem-new-private-window =
+    .label = Ventana privada noa
+appmenuitem-history =
+    .label = Cronologia
+appmenuitem-tab-groups =
+    .label = Grupos de ischedas
+appmenuitem-downloads =
+    .label = Iscarrigamentos
+appmenuitem-passwords =
+    .label = Craes
+appmenuitem-extensions-and-themes =
+    .label = Estensiones e temas
+appmenuitem-extensions =
+    .label = Estensiones
+appmenuitem-print =
+    .label = Imprenta...
+appmenuitem-find-in-page =
+    .label = Chirca in sa pàgina...
+appmenuitem-translate =
+    .label = Tradue sa pàgina…
+appmenuitem-zoom =
+    .value = Ingrandimentu
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = Cumpartzi { -brand-product-name }
+appmenuitem-more-tools =
+    .label = Àteros istrumentos
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = Agiudu e sinnalatziones
+appmenuitem-help =
+    .label = Agiudu
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Essi
+           *[other] Essi
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Aberi su menù de s'aplicatzione
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Serra su menù de s'aplicatzione
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Cunfiguratzione
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Ismànnia
+appmenuitem-zoom-reduce =
+    .label = Impitica
+appmenuitem-fullscreen =
+    .label = Mannària prena
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Identìfica·ti a Sync...
+appmenu-remote-tabs-turn-on-sync =
+    .label = Ativa sa sincronizatzione...
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Ammustra prus ischedas
+    .tooltiptext = Ammustra prus ischedas dae custu dispositivu
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Ischedas inativas
+    .tooltiptext = Mustra is ischedas inativas in custu dispositivu
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Nissuna ischeda aberta
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Ativa sa sincronizatzione de ischidas pro bìdere una lista de ischedas abertas in àteros dispositivos.
+appmenu-remote-tabs-opensettings =
+    .label = Cunfiguratzione
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Boles bìdere inoghe is ischedas de is àteros dispositivos tuos?
+appmenu-remote-tabs-connectdevice =
+    .label = Connete un'àteru dispositivu
+appmenu-remote-tabs-welcome = Ammustra una lista de ischedas abertas in àteros dispositivos tuos.
+appmenu-remote-tabs-unverified = Su contu tuo depet èssere verificadu.
+appmenuitem-fxa-toolbar-sync-now2 = Sincroniza immoe
+appmenuitem-fxa-sign-in = Identìfica·ti in { -brand-product-name }
+appmenuitem-fxa-manage-account = Gesti su contu
+fxa-menu-sync-status-on = Sa sincronizatzione est ativa
+fxa-menu-sync-status-off = Sa sincronizatzione est disativada
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = Sincroniza is datos tuos
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Is datos tuos non sunt sincronizados
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Ativa
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Identìfica·ti a Sync
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = Sincroniza { $deviceName } immoe
+fxa-menu-manage-sync-settings =
+    .label = Gesti is cunfiguratziones de sincronizatzione
+fxa-menu-add-device =
+    .label = Agiunghe unu dispositivu
+fxa-menu-manage-devices =
+    .label = Gesti is dispositivos tuos
+fxa-menu-device-missing =
+    .label = Non bides su dispositivu tuo?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Totu is dispositivos
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Totu is dispositivos
+fxa-menu-get-firefox-mobile =
+    .label = Otene { -brand-product-name } pro Android o iOS
+fxa-menu-secure-sync-subpanel =
+    .title = Sincronizatzione segura
+appmenu-account-header = Contu
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Ùrtima sincronizatzione { $time }
+    .label = Ùrtima sincronizatzione { $time }
+appmenu-fxa-sync-and-save-data2 = Sincroniza e sarva datos
+appmenu-fxa-signed-in-label = Identìfica·ti
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = Identìfica·ti a Sync
+appmenu-fxa-sign-in-promo-message = Porta·ti is datos in ònnia logu
+appmenu-fxa-sign-in-promo-button =
+    .label = Identìfica·ti
+appmenu-fxa-setup-sync =
+    .label = Ativa sa sincronizatzione...
+appmenu-fxa-setup-sync-new = Ativa
+appmenuitem-save-page =
+    .label = Sarva sa pàgina comente...
+appmenuitem-fxa-sync-off-title = Sincronizatzione disativada
+appmenuitem-fxa-sync-off-description = Ampara e atzede a is sinnalibros, craes e àteru dae onni logu.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Analizadore de rendimentu
+    .tooltiptext = Registra unu perfilu de rendimentu
+profiler-popup-button-recording =
+    .label = Analizadore de rendimentu
+    .tooltiptext = S'analizadore est registrende unu profilu
+profiler-popup-button-capturing =
+    .label = Analizadore de rendimentu
+    .tooltiptext = S'analizadore est caturende unu profilu
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = Ammustra prus informatzione
+profiler-popup-description-title =
+    .value = Registra, analiza, cumpartzi
+profiler-popup-description = Collàbora in sa curretzione de problemas de rendimentu publichende profilos pro ddos cumpartzire cun s'iscuadra tua.
+profiler-popup-learn-more-button =
+    .label = Àteras informatziones
+profiler-popup-settings =
+    .value = Cunfiguratzione
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Modìfica sa cunfiguratzione...
+profiler-popup-recording-screen = Registrende...
+profiler-popup-start-recording-button =
+    .label = Cumintza a registrare
+profiler-popup-discard-button =
+    .label = Iscarta
+profiler-popup-capture-button =
+    .label = Catura
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Majùsc+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Majùsc+2
+    }
+profiler-button-dropmarker =
+    .label = Aberi su pannellu de s’analizadore de rendimentu
+    .tooltiptext = Aberi su pannellu de s’analizadore de rendimentu
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Paràmetros cussigiados pro sa curretzione de faddinas de sa majoria de aplicatziones web, cun subra-càrriga (overhead) bàscia.
+profiler-popup-presets-web-developer-label =
+    .label = Isvilupu web
+profiler-popup-presets-firefox-description = Profilu cussigiadu pro descrìere { -brand-shorter-name }
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Profilu pro compidare faddinas de gràfica in { -brand-shorter-name }.
+profiler-popup-presets-graphics-label =
+    .label = Gràficas
+profiler-popup-presets-media-description2 = Profilu pro compidare faddinas de àudio e vìdeu in { -brand-shorter-name }.
+profiler-popup-presets-media-label =
+    .label = Multimediale
+profiler-popup-presets-ml-description = Profilu pro compidare faddinas de aprendimentu automàticu in { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Aprendimentu automàticu
+profiler-popup-presets-networking-description = Profilu pro compidare faddinas de rete in { -brand-shorter-name }.
+profiler-popup-presets-networking-label =
+    .label = Rete
+profiler-popup-presets-networking-with-logs-description = Profilu pro investigare faddinas de rete in { -brand-shorter-name }, includende registros de rete. Custos registros podent cuntènnere informatziones sensìbiles, comente is URL chi bìsitas.
+profiler-popup-presets-networking-with-logs-label =
+    .label = Rete cun registros
+profiler-popup-presets-power-description = Profilu pro compidare faddinas de impreu de energia in { -brand-shorter-name }, cun subra-càrriga (overhead) bàscia.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Energia
+profiler-popup-presets-debug-description = Precunfiguratzione pro currègere faddinas in { -brand-shorter-name }. Est subracarrigadu meda, no dd’imprees pro atividades chi rechedant unu rendimentu artu, ma pro cumprèndere su cumportamentu de su navigadore.
+profiler-popup-presets-debug-label =
+    .label = Curregi faddinas
+profiler-popup-presets-web-compat-description = Cunfiguratzione cussigiada pro sa curretzione de faddinas de cumpatibilidade in is sitos web, prus chi non pro monitorare su rendimentu.
+profiler-popup-presets-web-compat-label =
+    .label = Compatibilidade web
+profiler-popup-presets-custom-label =
+    .label = Personalizadu
+
+##
+
+appmenu-manage-history =
+    .label = Gesti sa cronologia
+appmenu-restore-session =
+    .label = Recùpera sa sessione pretzedente
+appmenu-clear-history =
+    .label = Lìmpia sa cronologia reghente...
+appmenu-recent-history-subheader = Cronologia reghente
+appmenu-recently-closed-tabs =
+    .label = Ischedas serradas de reghente
+appmenu-recently-closed-windows =
+    .label = Ventanas serradas de reghente
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Chirca in sa cronologia
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = Abarra sincronizadu intre dispositivos
+appmenu-sync-promo-signin-cta = Identìfica·ti
+appmenu-sync-promo-turnonsync =
+    .heading = Sincroniza is ischedas e sa cronologia
+appmenu-sync-promo-turnonsync-cta = Ativa sa sincronizatzione
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = Recùpera is ischedas dae is dispositivos mòbiles
+appmenu-sync-promo-connectdevice-cta = Connete unu dispositivu
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = Porta is sinnalibros cun tegus
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = Porta is sinnalibros cun tegus
+
+## Help panel
+
+appmenu-help-header =
+    .title = Agiudu de { -brand-shorter-name }
+appmenu-about =
+    .label = Informatziones de { -brand-shorter-name }
+    .accesskey = I
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = Cumpartzi { -brand-product-name }
+    .accesskey = C
+appmenu-get-help =
+    .label = Otene agiudu
+    .accesskey = O
+appmenu-help-more-troubleshooting-info =
+    .label = Informatzione de curretzione de faddinas
+    .accesskey = I
+appmenu-help-share-ideas =
+    .label = Cumpartzi ideas e cummentos…
+    .accesskey = C
+appmenu-help-switch-device =
+    .label = Passa a unu dispositivu nou
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = Agiudu e sinnalatziones
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Modalidade de curretzione de faddinas...
+    .accesskey = M
+appmenu-help-exit-troubleshoot-mode =
+    .label = Disativa sa modalidade de curretzione de faddinas
+    .accesskey = D
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Informa de unu situ ingannosu
+    .accesskey = I
+appmenu-help-not-deceptive =
+    .label = Custu no est unu situ ingannosu...
+    .accesskey = C
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Personaliza sa barra de ainas...
+appmenu-abouttranslations =
+    .label = Tradue…
+appmenu-edit-pdf =
+    .label = Modifica su PDF…
+appmenu-developer-tools-subheader = Istrumentos de su navigadore
+appmenu-developer-tools-extensions =
+    .label = Estensiones pro s'isvilupu
+appmenuitem-report-broken-site =
+    .label = Sinnala unu situ chi non funtzionat
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Intra in su contu tuo
+appmenuitem-monitor-title2 = Ampara·ti dae is furas de identidade
+appmenuitem-monitor-description2 = Retzi avisos in contu de violatziones de datos
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = Avisos de violatziones de datos de { -monitor-brand-short-name }
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Retzi avisos a subra de violatziones de datos
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = Mantene sa posta eletrònica privada
+appmenuitem-relay-description2 = Agiudat a evitare s’àliga in sa casella de posta
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = Ammustra is alias de posta eletrònica
+appmenuitem-relay-description = Cua s'indiritzu de posta eletrònica e su nùmeru de telèfonu tuos reales
+appmenuitem-services-relay-description = Avia su pannellu de is alias de posta eletrònica
+appmenuitem-vpn-title2 = Cua sa positzione tua cun { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description5 = Otene un’amparu megioradu intre is dispositivos tuos
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = Iscàrriga { -mozilla-vpn-brand-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Otene amparu pro su dispositivu intreu
+appmenu-services-header = Is servìtzios mios
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Ainas de riservadesa
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Proa àteras ainas de protetzione dae Mozilla:
+
+## Profiles panel
+
+appmenu-other-profiles = Àteros profilos
+appmenu-manage-profiles =
+    .label = Gesti is profilos
+appmenu-copy-profile =
+    .label = Còpia custu profilu
+appmenu-create-profile2 =
+    .label = Crea unu profilu nou
+appmenu-create-profile =
+    .label = Profilu nou
+appmenu-edit-profile =
+    .aria-label = Modifica su profilu
+appmenu-edit-this-profile =
+    .label = Modifica custu profilu
+appmenu-profile-current-in-use = Profilu impreadu immoe
+fxa-menu-create-profile-subpanel =
+    .title = Crea unu profilu nou
+fxa-menu-create-profile-heading = Potèntzia sa navigatzione cun unu profilu nou
+fxa-menu-create-profile-description = Separa sinnalibros, craes e cronologia de traballu e de navigatzione personale.
+fxa-menu-create-profile-confirm =
+    .label = Crea unu profilu nou
+fxa-menu-create-profile-learn-more =
+    .label = Ite sunt is profilos?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = Cumpartzi { -brand-product-name }
+appmenuitem-share-firefox-description = Invita a calicunu a seberare su navigadore chi ponet sa riservadesa a primu
+appmenu-profiles-2 =
+    .label = Profilos
+appmenu-profiles-header = Profilos
+appmenu-all-profiles =
+    .label = Totu is profilos
+appmenu-secure-sync-header = Sincronizatzione segura
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Ischedas reghentes
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] Ammustra { $tabCount } ischeda sincronizada
+           *[other] Ammustra { $tabCount } ischedas sincronizadas
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Imbia sa pàgina atuale a custu dispositivu
