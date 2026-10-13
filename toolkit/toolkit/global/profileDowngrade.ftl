@@ -1,0 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+profiledowngrade-window2 =
+    .style = min-width: 490px;
+    .title = Heu iniciat una versió antiga del { -brand-product-name }.
+profiledowngrade-window-create =
+    .label = Crea un perfil nou
+profiledowngrade-nosync = L'ús d'una versió antiga del { -brand-product-name } pot malmetre les adreces d'interés i l'historial de navegació que ja estiguen guardats en un perfil del { -brand-product-name } existent. Per protegir la vostra informació, creeu un perfil nou per a esta instal·lació del { -brand-short-name }.
+profiledowngrade-quit =
+    .label =
+        { PLATFORM() ->
+            [windows] Ix
+           *[other] Ix
+        }
