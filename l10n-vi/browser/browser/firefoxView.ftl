@@ -1,0 +1,249 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+toolbar-button-firefox-view-2 =
+    .label = { -firefoxview-brand-name }
+    .tooltiptext = Xem duyệt web gần đây trên windows và các thiết bị
+menu-tools-firefox-view =
+    .label = { -firefoxview-brand-name }
+    .accesskey = F
+firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
+firefoxview-page-label =
+    .label = { -firefoxview-brand-name }
+# Used instead of the localized relative time when a timestamp is within a minute or so of now
+firefoxview-just-now-timestamp = Vừa xong
+firefoxview-syncedtabs-signin-header-2 = { -brand-product-name } của riêng bạn trên tất cả các thiết bị
+firefoxview-syncedtabs-signin-description-2 = Để được xem các thẻ đang mở trên ứng dụng di động và các thiết bị khác của bạn, hãy đăng nhập hoặc đăng ký tài khoản. Với tài khoản, bạn cũng có thể đồng bộ hoá mật khẩu, lịch sử của bạn và hơn thế nữa.
+# The verb “Go” is implied but omitted from the headline: “[Go] from laptop to phone, seamlessly”
+firefoxview-syncedtabs-signin-header-3 = Kết nối liền mạch từ máy tính xách tay đến điện thoại
+firefoxview-syncedtabs-signin-description-3 = Giữ cho trải nghiệm duyệt web của bạn được đồng bộ trên mọi thiết bị — các thẻ, mật khẩu và lịch sử duyệt web, tất cả đều được đồng bộ hóa.
+firefoxview-syncedtabs-signin-primarybutton-2 = Đăng nhập
+firefoxview-syncedtabs-adddevice-header-2 = Lấy các thẻ từ bất cứ đâu
+firefoxview-syncedtabs-adddevice-description-2 = Đăng nhập vào { -brand-product-name } trên điện thoại hoặc máy tính để xem các thẻ ở đây. Tìm hiểu cách <a data-l10n-name="url">kết nối thiết bị khác</a>.
+firefoxview-syncedtabs-adddevice-primarybutton = Thử { -brand-product-name } cho di động
+# "Your tabs called" - this is playful messaging indicating that a user can find their synced tabs on their phone.
+firefoxview-syncedtabs-adddevice-header-3 = Các thẻ của bạn đã gọi. Chúng đang ở trên điện thoại của bạn.
+firefoxview-syncedtabs-adddevice-description-3 = Quét mã QR để tải { -brand-product-name } trên điện thoại và bắt đầu đồng bộ hóa các thẻ đang mở của bạn và nhiều hơn nữa. Tìm hiểu cách để <a data-l10n-name="url">kết nối các thiết bị khác</a>.
+firefoxview-tabpickup-synctabs-primarybutton = Đồng bộ hóa các thẻ đang mở
+firefoxview-tabpickup-synctabs-primarybutton-2 = Bật đồng bộ hóa thẻ
+firefoxview-syncedtabs-synctabs-header = Cập nhật cài đặt đồng bộ hóa của bạn
+firefoxview-syncedtabs-synctabs-description = Để xem các thẻ từ các thiết bị khác, bạn cần đồng bộ hóa các thẻ đang mở của mình.
+firefoxview-syncedtabs-synctabs-header-2 = Đồng bộ hoá thẻ đã tắt
+firefoxview-syncedtabs-synctabs-description-2 = Bật lại tính năng đồng bộ hóa để lấy tất cả các thẻ từ các thiết bị khác.
+firefoxview-syncedtabs-loading-header = Đang đồng bộ hóa
+firefoxview-syncedtabs-loading-description = Khi hoàn tất, bạn sẽ thấy mọi thẻ bạn đã mở trên các thiết bị khác. Hãy kiểm tra lại sau.
+firefoxview-syncedtabs-loading-header-2 = Đang lấy các thẻ của bạn…
+firefoxview-syncedtabs-loading-description-2 = Đang đồng bộ hóa. Các thẻ sẽ sớm hiển thị ở đây.
+firefoxview-tabpickup-fxa-admin-disabled-header = Tổ chức của bạn đã tắt đồng bộ hóa
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } không thể đồng bộ hóa các thẻ giữa các thiết bị vì tổ chức của bạn đã tắt tính năng đồng bộ hóa.
+firefoxview-tabpickup-fxa-admin-disabled-header-2 = Đồng bộ hoá thẻ đã tắt
+firefoxview-tabpickup-fxa-disabled-by-policy-description-2 = Tổ chức của bạn đã chặn tính năng này.
+firefoxview-tabpickup-network-offline-header = Kiểm tra kết nối Internet của bạn
+firefoxview-tabpickup-network-offline-description = Nếu bạn đang sử dụng tường lửa hoặc proxy, hãy kiểm tra xem { -brand-short-name } có quyền truy cập web hay không.
+firefoxview-tabpickup-network-offline-primarybutton = Thử lại
+firefoxview-tabpickup-network-offline-header-2 = { -brand-short-name } không thể kết nối bây giờ
+firefoxview-tabpickup-network-offline-description-2 = Có thể bạn đang ngoại tuyến, hoặc có thứ gì đó đang chặn kết nối.
+firefoxview-tabpickup-sync-error-header = Chúng tôi đang gặp sự cố khi đồng bộ hóa
+firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } hiện không thể đồng bộ hóa với dịch vụ. Hãy thử lại sau vài phút.
+# “Sync hit a snag” means that the sync process is having a problem and can’t connect.
+firefoxview-tabpickup-sync-error-header-2 = Đồng bộ hoá đang gặp sự cố
+firefoxview-tabpickup-generic-sync-error-description-2 = { -brand-short-name } không thể kết nối. Hãy đợi một chút rồi thử lại
+firefoxview-tabpickup-sync-error-primarybutton = Thử lại
+firefoxview-tabpickup-sync-disconnected-header = Bật đồng bộ hóa để tiếp tục
+firefoxview-tabpickup-sync-disconnected-description = Để lấy các thẻ của bạn, bạn cần cho phép đồng bộ hóa trong { -brand-short-name }.
+firefoxview-tabpickup-sync-disconnected-primarybutton = Bật đồng bộ hóa trong cài đặt
+firefoxview-tabpickup-password-locked-header = Nhập mật khẩu chính của bạn để xem các thẻ
+firefoxview-tabpickup-password-locked-description = Để lấy các thẻ của mình, bạn cần nhập mật khẩu chính cho { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Tìm hiểu thêm
+firefoxview-tabpickup-password-locked-primarybutton = Nhập mật khẩu chính
+firefoxview-syncedtab-password-locked-link = <a data-l10n-name="syncedtab-password-locked-link">Tìm hiểu thêm</a>
+firefoxview-tabpickup-password-locked-header-2 = Mở khóa thẻ bằng mật khẩu chính của bạn
+firefoxview-tabpickup-password-locked-description-2 = Để bảo vệ quyền riêng tư của bạn, các ther đã đồng bộ hóa được bảo vệ. Nhập mật khẩu chính { -brand-short-name } của bạn để xem các thẻ từ các thiết bị khác.
+firefoxview-tabpickup-signed-out-header = Đăng nhập để kết nối lại
+firefoxview-tabpickup-signed-out-description2 = Để kết nối lại và lấy các thẻ của bạn, hãy đăng nhập vào tài khoản của bạn.
+firefoxview-tabpickup-signed-out-primarybutton = Đăng nhập
+firefoxview-tabpickup-signed-out-header-2 = Đăng nhập để xem các thẻ của bạn
+firefoxview-tabpickup-signed-out-description-2 = Kết nối lại để xem các thẻ từ các thiết bị khác.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Bỏ qua { $tabTitle }
+# Variables:
+#   $targetURI (string) - URL that will be opened in the new tab
+firefoxview-tabs-list-tab-button =
+    .title = Mở { $targetURI } trong một thẻ mới
+firefoxview-collapse-button-show =
+    .title = Hiển thị danh sách
+firefoxview-collapse-button-hide =
+    .title = Ẩn danh sách
+firefoxview-overview-nav = Duyệt web gần đây
+    .title = Duyệt web gần đây
+firefoxview-overview-header = Duyệt web gần đây
+    .title = Duyệt web gần đây
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Lịch sử
+    .title = Lịch sử
+firefoxview-history-header = Lịch sử
+firefoxview-history-context-delete = Xóa khỏi lịch sử
+    .accesskey = D
+firefoxview-history-context-forget-site = Quên trang này…
+    .accesskey = F
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Các thẻ đang mở
+    .title = Các thẻ đang mở
+firefoxview-opentabs-header = Các thẻ đang mở
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Thẻ mới đóng gần đây
+    .title = Thẻ mới đóng gần đây
+firefoxview-recently-closed-header = Thẻ mới đóng gần đây
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Thẻ từ thiết bị khác
+    .title = Thẻ từ thiết bị khác
+firefoxview-synced-tabs-header = Thẻ từ thiết bị khác
+
+##
+
+# Used for a link in collapsible cards, in the ’Recent browsing’ page of Firefox View
+firefoxview-view-all-link = Xem tất cả
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Cửa sổ { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Cửa sổ { $winID } (Hiện tại)
+firefoxview-show-more = Hiện thêm
+firefoxview-show-less = Hiện ít hơn
+firefoxview-show-all = Hiển thị tất cả
+firefoxview-search-text-box-clear-button =
+    .title = Xóa
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Tìm kiếm
+# Placeholder for the input field to search in history ("search" is a verb).
+firefoxview-search-text-box-history =
+    .placeholder = Lịch sử tìm kiếm
+# Placeholder for the input field to search in bookmarks ("search" is a verb).
+firefoxview-search-text-box-bookmarks =
+    .placeholder = Tìm kiếm dấu trang
+# Placeholder for the input field to search in recently closed tabs ("search" is a verb).
+firefoxview-search-text-box-recentlyclosed =
+    .placeholder = Tìm kiếm thẻ đã đóng gần đây
+# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
+firefoxview-search-text-box-tabs =
+    .placeholder = Tìm kiếm thẻ
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-opentabs =
+    .placeholder = Tìm các thẻ đang mở
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+firefoxview-search-results-header = Kết quả tìm kiếm cho “{ $query }”
+# Variables:
+#   $count (Number) - The number of visits matching the search query.
+firefoxview-search-results-count = { $count } trang web
+# Message displayed when a search is performed and no matching results were found.
+# Variables:
+#   $query (String) - The search query.
+firefoxview-search-results-empty = Không có kết quả tìm kiếm cho “{ $query }”
+firefoxview-sort-history-by-date-label = Sắp xếp theo ngày
+firefoxview-sort-history-by-site-label = Sắp xếp theo trang web
+firefoxview-sort-open-tabs-by-recency-label = Sắp xếp theo hoạt động gần đây
+firefoxview-sort-open-tabs-by-order-label = Sắp xếp theo thứ tự thẻ
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Hôm nay - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Hôm qua - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+firefoxview-history-site-localhost = (tập tin cục bộ)
+
+##
+
+firefoxview-show-all-history = Xem tất cả lịch sử
+
+## Message displayed in Firefox View when the user has no history data
+
+firefoxview-history-empty-header = Quay trở lại nơi bạn đã đến
+firefoxview-history-empty-description = Khi bạn duyệt, các trang bạn truy cập sẽ được hiển thị ở đây.
+firefoxview-history-empty-description-two = Bảo vệ sự riêng tư của bạn là trọng tâm của những gì chúng tôi làm. Đó là lý do tại sao bạn có thể kiểm soát hoạt động mà { -brand-short-name } ghi nhớ, trong <a data-l10n-name="history-settings-url">cài đặt lịch sử</a> của bạn.
+# This appears when a user does not have browsing history yet.
+# This is indicating that a users browsers history will be found here when they start browsing.
+firefoxview-history-empty-header-2 = Hành trình duyệt web của bạn bắt đầu từ đây
+firefoxview-history-empty-description-2 = Khi bạn truy cập các trang, lịch sử duyệt web của bạn sẽ hiển thị ở đây. Bạn có thể kiểm soát những gì được lưu lại trong <a data-l10n-name="history-settings-url">cài đặt</a>.
+
+##
+
+# Button text for choosing a browser within the ’Import history from another browser’ banner
+firefoxview-choose-browser-button = Chọn trình duyệt
+    .title = Chọn trình duyệt
+
+## Message displayed in Firefox View when the user has chosen to never remember History
+
+firefoxview-dont-remember-history-empty-header-2 = Bạn được quyền kiểm soát những gì { -brand-short-name } nhớ.
+firefoxview-dont-remember-history-empty-description-one = Hiện tại, { -brand-short-name } không nhớ hoạt động duyệt web của bạn. Để chỉnh tuỳ chọn này, <a data-l10n-name="history-settings-url-two">cập nhật cài đặt lịch sử</a>.
+# “Off the record” is an English phrase journalists use when a conversation will not be recorded or reported on. It’s meant to convey that users’ history activity will not be recorded or shown.
+firefoxview-dont-remember-history-empty-header-3 = Hạn chế tối đa tiết lộ thông tin của bạn
+firefoxview-dont-remember-history-empty-description-2 = { -brand-short-name } không lưu lịch sử duyệt web của bạn. Bạn có thể thay đổi cài đặt này bất cứ lúc nào trong <a data-l10n-name="history-settings-url-two">cài đặt</a>.
+
+##
+
+# This label is read by screen readers when focusing the close button for the "Import history from another browser" banner in Firefox View
+firefoxview-import-history-close-button =
+    .aria-label = Đóng
+    .title = Đóng
+
+## Text displayed in a dismissable banner to import bookmarks/history from another browser
+
+firefoxview-import-history-header = Nhập lịch sử từ trình duyệt khác
+firefoxview-import-history-description = Đặt { -brand-short-name } làm trình duyệt mặc định của bạn. Nhập lịch sử duyệt web, dấu trang, và hơn thế nữa.
+
+## Message displayed in Firefox View when the user has no recently closed tabs data
+
+firefoxview-recentlyclosed-empty-header = Đóng một thẻ quá sớm?
+firefoxview-recentlyclosed-empty-description = Tại đây, bạn sẽ tìm thấy các thẻ bạn đã đóng gần đây, vì vậy bạn có thể mở lại bất kỳ thẻ nào một cách nhanh chóng.
+firefoxview-recentlyclosed-empty-description-two = Để tìm các thẻ từ thời gian cũ hơn, hãy xem <a data-l10n-name="history-url">lịch sử duyệt web</a> của bạn.
+
+## This message is displayed below the name of another connected device when it doesn't have any open tabs.
+
+firefoxview-syncedtabs-device-notabs = Không có thẻ đang mở trên thiết bị này
+firefoxview-syncedtabs-connect-another-device = Kết nối thiết bị khác
+firefoxview-pinned-tabs =
+    .title = Thẻ đã ghim
+firefoxview-tabs =
+    .title = Thẻ
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Chuyển sang { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Chuyển sang { $tabTitle } (Đã đánh dấu)
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Đã đánh dấu) { $url }

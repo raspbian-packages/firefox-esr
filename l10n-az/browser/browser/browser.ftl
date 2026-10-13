@@ -1,0 +1,703 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } Məxfi Səyahət
+# Note: only on macOS do we use a `-` separator between the brand name and the
+# "Private Browsing" suffix.
+browser-main-private-window-title =
+    { PLATFORM() ->
+        [macos] { -brand-full-name } — Məxfi Səyahət
+       *[other] { -brand-full-name } Məxfi Səyahət
+    }
+# This is only used on macOS; on other OSes we use the full private window
+# title (so including the brand name) as a suffix
+browser-main-private-suffix-for-content = Məxfi Səyahət
+urlbar-identity-button =
+    .aria-label = Sayt məlumatlarını gör
+
+## Tooltips for images appearing in the address bar
+
+urlbar-services-notification-anchor =
+    .tooltiptext = Quraşdırma mesaj panelini aç
+urlbar-web-notification-anchor =
+    .tooltiptext = Saytdan bildiriş alıb alamayacağınızı dəyişdirin
+urlbar-midi-notification-anchor =
+    .tooltiptext = MIDI panelini aç
+urlbar-eme-notification-anchor =
+    .tooltiptext = DRM proqramının istifadəsini idarə et
+urlbar-web-authn-anchor =
+    .tooltiptext = Web Təsdiqləmə panelini aç
+urlbar-canvas-notification-anchor =
+    .tooltiptext = Lövhə (canvas) çıxartma icazəsini idarə et
+urlbar-web-rtc-share-microphone-notification-anchor =
+    .tooltiptext = Mikrofonu saytla paylaşmağınızı idarə edin
+urlbar-default-notification-anchor =
+    .tooltiptext = Mesaj panelini aç
+urlbar-geolocation-notification-anchor =
+    .tooltiptext = Mövqe sorğusu panelini aç
+urlbar-xr-notification-anchor =
+    .tooltiptext = Virtual reallıq icazəsi panelini aç
+urlbar-storage-access-anchor =
+    .tooltiptext = Səyyah aktivliyi icazə panelini aç
+urlbar-web-rtc-share-screen-notification-anchor =
+    .tooltiptext = Pəncərə və ya ekranları saytla paylaşmağınızı idarə edin
+urlbar-indexed-db-notification-anchor =
+    .tooltiptext = Oflayn saxlama mesaj panelini aç
+urlbar-password-notification-anchor =
+    .tooltiptext = Parolu saxlama mesaj panelini aç
+urlbar-web-rtc-share-devices-notification-anchor =
+    .tooltiptext = Kamera və/və ya mikrofonu saytla paylaşmağınızı idarə edin
+urlbar-autoplay-notification-anchor =
+    .tooltiptext = Avto oxutma panelini aç
+urlbar-persistent-storage-notification-anchor =
+    .tooltiptext = Qalıcı Yaddaşda məlumat saxlama
+urlbar-addons-notification-anchor =
+    .tooltiptext = Əlavə quraşdırma mesaj panelini aç
+urlbar-search-tips-confirm = Tamam, başa düşdüm
+urlbar-search-tips-confirm-short = Aydındır
+urlbar-result-menu-button =
+    .title = Menyunu aç
+urlbar-result-menu-learn-more2 = Ətraflı öyrənin
+    .accesskey = Ə
+urlbar-result-menu-remove-from-history2 = Tarixçədən sil
+    .accesskey = x
+urlbar-result-menu-tip-get-help2 = Yardım əldə edin
+    .accesskey = y
+# Shown in the urlbar input field context menu to remove an adaptive autofill
+# URL from history.
+urlbar-input-remove-from-history =
+    .label = Tarixçədən sil
+    .accesskey = T
+urlbar-result-menu-learn-more =
+    .label = Ətraflı öyrənin
+    .accesskey = Ə
+urlbar-result-menu-remove-from-history =
+    .label = Tarixçədən sil
+    .accesskey = x
+urlbar-result-menu-tip-get-help =
+    .label = Yardım əldə edin
+    .accesskey = y
+urlbar-result-menu-show-less-frequently =
+    .label = Daha az sıxlıqda göstər
+# Used for Split Button.
+urlbar-splitbutton-dropmarker =
+    .title = Menyunu aç
+
+## Prompts users to use the Urlbar when they open a new tab or visit the
+## homepage of their default search engine.
+## Variables:
+##  $engineName (String): The name of the user's default search engine. e.g. "Google" or "DuckDuckGo".
+
+urlbar-search-tips-onboard = Daha az yazın, daha çox tapın: Birbaşa ünvan sətrinizdən { $engineName } ilə axtarış edin.
+
+## Local search mode indicator labels in the urlbar
+
+urlbar-search-mode-bookmarks = Əlfəcinlər
+urlbar-search-mode-tabs = Vərəqlər
+urlbar-search-mode-history = Tarixçə
+urlbar-search-mode-actions = Əməliyyatlar
+
+##
+
+urlbar-geolocation-blocked =
+    .tooltiptext = Bu sayt üçün məkan məlumatlarını əngəllədiniz.
+urlbar-web-notifications-blocked =
+    .tooltiptext = Bu sayt üçün bildirişləri əngəllədiniz.
+urlbar-camera-blocked =
+    .tooltiptext = Bu sayt üçün kameranızı əngəllədiniz.
+urlbar-microphone-blocked =
+    .tooltiptext = Bu sayt üçün mikrofonunuzu əngəllədiniz.
+urlbar-screen-blocked =
+    .tooltiptext = Bu saytı ekranınızı paylaşmaqdan əngəllədiniz.
+urlbar-persistent-storage-blocked =
+    .tooltiptext = Bu sayt üçün qalıcı yaddaşı əngəllədiniz.
+urlbar-autoplay-media-blocked =
+    .tooltiptext = Bu sayt üçün səsli medianın avto oxutmasını əngəlləmisiniz.
+urlbar-canvas-blocked =
+    .tooltiptext = Bu sayt üçün lövhə (canvas) məlumatı çıxartmanı əngəllədiniz.
+urlbar-midi-blocked =
+    .tooltiptext = Bu saytın MIDI işlətməsini əngəlləmisiniz.
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
+urlbar-star-edit-bookmark =
+    .tooltiptext = Bu əlfəcini redaktə et ({ $shortcut })
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
+urlbar-star-add-bookmark =
+    .tooltiptext = Bu səhifəni əlfəcinlə ({ $shortcut })
+urlbar-split-view-button =
+    .aria-label = Bölünmüş görünüş
+    .tooltiptext = Bölünmüş görünüş
+
+## Searchbar context menu
+
+clear-search-history =
+    .label = Axtarış Tarixçəsini Təmizlə
+    .accesskey = H
+
+## Page Action Context Menu
+
+page-action-manage-extension2 =
+    .label = Uzantıları idarə et…
+    .accesskey = u
+page-action-remove-extension2 =
+    .label = Uzantını sil
+    .accesskey = z
+
+## Auto-hide Context Menu
+
+full-screen-autohide =
+    .label = Alət sətirlərini gizlə
+    .accesskey = g
+full-screen-exit =
+    .label = Tam ekran rejimdən çıx
+    .accesskey = e
+
+## Search Engine selection buttons (one-offs)
+
+# This string prompts the user to use the list of search shortcuts in
+# the Urlbar and searchbar.
+search-one-offs-with-title = Bu dəfə bununla axtarın:
+search-one-offs-change-settings-compact-button =
+    .tooltiptext = Axtarış tənzimləmələrinizi dəyişdir
+search-one-offs-context-open-new-tab =
+    .label = Yeni vərəqdə axtar
+    .accesskey = v
+search-one-offs-context-set-as-default =
+    .label = Əsas axtarış mühərriki et
+    .accesskey = m
+search-one-offs-context-set-as-default-private =
+    .label = Məxfi pəncərələr üçün əsas axtarış mühərriki olarak qur
+    .accesskey = M
+# Shown when adding new engines from the address bar shortcut buttons or context
+# menu, or from the search bar shortcut buttons.
+# Variables:
+#  $engineName (String): The name of the engine.
+search-one-offs-add-engine =
+    .aria-label = “{ $engineName }” axtarış mühərrikini əlavə et
+    .label = “{ $engineName }” əlavə et
+    .tooltiptext = “{ $engineName }” axtarış mühərrikini əlavə et
+# When more than 5 engines are offered by a web page, they are grouped in a
+# submenu using this as its label.
+search-one-offs-add-engine-menu =
+    .label = Axtarış mühərriki əlavə et
+
+## Local search mode one-off buttons
+## Variables:
+##  $restrict (String): The restriction token corresponding to the search mode.
+##    Restriction tokens are special characters users can type in the urlbar to
+##    restrict their searches to certain sources (e.g., "*" to search only
+##    bookmarks).
+
+search-one-offs-bookmarks =
+    .tooltiptext = Əlfəcinlər ({ $restrict })
+search-one-offs-tabs =
+    .tooltiptext = Vərəqlər ({ $restrict })
+search-one-offs-history =
+    .tooltiptext = Tarixçə ({ $restrict })
+search-one-offs-actions =
+    .tooltiptext = Əməliyyatlar ({ $restrict })
+
+## QuickActions are shown in the urlbar as the user types a matching string
+## The -cmd- strings are comma separated list of keywords that will match
+## the action. English commas should be used, i.e. ,
+
+# Opens the about:addons page in the home / recommendations section
+quickactions-addons = Əlavələri gör
+# In English we provide multiple spellings for "add-ons". If that's not
+# applicable to your language, only use the correct spelling (don't repeat the
+# same word).
+quickactions-cmd-addons3 = uzantılar, mövzular, əlavələr
+# Opens the bookmarks library window
+quickactions-bookmarks2 = Əlfəcinləri idarə et
+quickactions-cmd-bookmarks = əlfəcinlər
+# Opens about:downloads page
+quickactions-downloads2 = Endirmələrə bax
+quickactions-cmd-downloads = endirilənlər
+# Opens about:addons page in the extensions section
+quickactions-extensions = Uzantıları idarə et
+quickactions-cmd-help = yardım, dəstək
+# Opens the devtools eyedropper to pick a color from the page
+quickactions-colorpicker = Rəng seçin
+quickactions-library = Kitabxananı aç
+# Opens the print dialog
+quickactions-print2 = Səhifəni çap et
+quickactions-cmd-print = çap et
+# Opens the print dialog at the save to PDF option
+quickactions-savepdf = Səhifəni PDF kimi saxla
+quickactions-cmd-savepdf2 = pdf, səhifəni saxla
+quickactions-cmd-private = məxfi səyahət
+quickactions-cmd-refresh = yenilə
+quickactions-cmd-restart = yenidən başlat
+# Opens the screenshot tool
+quickactions-screenshot3 = Ekran görüntüsü al
+# Opens about:preferences
+quickactions-settings2 = Tənzimləmələri idarə et
+# Opens about:addons page in the themes section
+quickactions-themes = Mövzuları idarə et
+
+## Bookmark Panel
+
+bookmarks-add-bookmark = Əlfəcin əlavə et
+bookmarks-edit-bookmark = Əlfəcini düzəlt
+bookmark-panel-cancel =
+    .label = Ləğv et
+    .accesskey = C
+# Variables:
+#  $count (number): number of bookmarks that will be removed
+bookmark-panel-remove =
+    .label =
+        { $count ->
+            [one] Əlfəcin Sil
+           *[other] { $count } Əlfəcin Sil
+        }
+    .accesskey = R
+bookmark-panel-show-editor-checkbox =
+    .label = Yadda saxlarkən redaktoru göstər
+    .accesskey = S
+bookmark-panel-save-button =
+    .label = Saxla
+# Width of the bookmark panel.
+# Should be large enough to fully display the Done and
+# Cancel/Remove Bookmark buttons.
+bookmark-panel =
+    .style = min-width: 23em
+
+## Identity Panel
+
+identity-connection-secure = Bağlantı təhlükəsizdir
+identity-connection-internal = Bu səhifə təhlükəsiz bir { -brand-short-name } səhifəsidir.
+identity-connection-file = Bu səhifə sizin kompüterinizdə saxlanıb.
+identity-extension-page = Bu səhifə uzantıdan yüklənib.
+identity-active-blocked = { -brand-short-name } bu səhifənin təhlükəsiz olmayan hissələrini əngəllədi.
+identity-custom-root = Bağlantı Mozilla tərəfindən tanınmamış sertifikat təchizatçısı tərəfindən təsdiqlənib.
+identity-passive-loaded = Bu səhifənin bəzi hissələri (şəkillər kimi) təhlükəsiz deyil.
+identity-active-loaded = Bu səhifədə qorumanı söndürmüsünüz.
+identity-weak-encryption = Bu səhifə zəif şifrləmə istifadə edir.
+identity-permissions-storage-access-header = Saytlararası çərəzlər
+identity-permissions-storage-access-learn-more = Ətraflı öyrənin
+identity-permissions-reload-hint = Dəyişikliklərin işləməsi üçün səhifəni yeniləyin.
+identity-clear-site-data =
+    .label = Çərəzlər və Sayt Məlumatlarını Təmizlə…
+identity-connection-not-secure-security-view = Bu sayta təhlükəsiz şəkildə bağlanmamısınız.
+identity-connection-verified = Bu sayta təhlükəsiz şəkildə bağlanmısınız.
+identity-ev-owner-label = Sertifikat təchizatçısı:
+identity-remove-cert-exception =
+    .label = İstisnanı sil
+    .accesskey = s
+identity-description-insecure = Bu səhifəyə olan bağlantınız məxfi deyil. Göndərdiyiniz məlumatlar başqaları tərəfindən görülə bilər (parol, mesaj, kredit kartları və s. kimi).
+identity-description-weak-cipher-intro = Bu səhifəyə olan bağlantınız zəif şifrləmə istifadə edir və məxfi deyil.
+identity-description-weak-cipher-risk = Başqaları sizin məlumatlarınızı görə və ya saytın davranışını səyişdirə bilər.
+identity-description-active-blocked2 = { -brand-short-name } bu səhifənin təhlükəsiz olmayan hissələrini əngəllədi.
+identity-description-passive-loaded = Bağlantınız məxfi deyil və sayt ilə paylaşdığınız məlumatlar başqaları tərəfindən görülə bilər.
+identity-description-passive-loaded-insecure2 = Saytda güvənilir olmayan məzmun var (şəkillər kimi).
+identity-description-passive-loaded-mixed2 = { -brand-short-name } bəzi məzmunları əngəlləsə də bu səhifədə hələ də təhlükəsiz olmayan məzmunlar (şəkillər kimi) var.
+identity-description-active-loaded = Bu saytda təhlükəsiz olmayan məzmunlar (kriptlər kimi) var və saytla bağlantınız məxfi deyil.
+identity-description-active-loaded-insecure = Bu saytla paylaşdığınız məlumatlar (məs. parollar, mesajlar, kredit kartları kimi) başqaları tərəfindən görülə bilər.
+identity-more-info-link-text =
+    .label = Daha çox məlumat
+
+## Window controls
+
+browser-window-minimize-button =
+    .tooltiptext = Kiçilt
+browser-window-maximize-button =
+    .tooltiptext = Böyüt
+browser-window-close-button =
+    .tooltiptext = Qapat
+
+## Bookmarks toolbar items
+
+browser-import-button2 =
+    .label = Əlfəcinləri idxal et…
+    .tooltiptext = Əlfəcinləri başqa brauzerdən { -brand-short-name } proqramına idxal edin.
+
+## WebRTC Pop-up notifications
+
+popup-all-windows-shared = Ekranınızda görünən bütün pəncərələr paylaşılacaq.
+
+## URL Bar
+
+# This string is used as an accessible name to the "X" button that cancels a custom search mode (i.e. exits the Amazon.com search mode).
+urlbar-search-mode-indicator-close =
+    .aria-label = Qapat
+# This placeholder is used when not in search mode and the user's default search
+# engine is unknown.
+urlbar-placeholder =
+    .placeholder = Ünvanı daxil et və ya axtar
+# This placeholder is used when searching bookmarks.
+urlbar-placeholder-search-mode-other-bookmarks =
+    .aria-label = Əlfəcinlərdə axtar
+    .placeholder = Axtarış elementlərini daxil edin
+# This placeholder is used when searching history.
+urlbar-placeholder-search-mode-other-history =
+    .aria-label = Axtarış tarixçəsi
+    .placeholder = Axtarış elementlərini daxil edin
+# This placeholder is used when searching open tabs.
+urlbar-placeholder-search-mode-other-tabs =
+    .aria-label = Vərəqlərdə axtar
+    .placeholder = Axtarış elementlərini daxil edin
+# Variables
+#  $name (String): the name of the user's default search engine
+urlbar-placeholder-with-name =
+    .placeholder = Ünvanı daxil et və ya { $name } ilə axtar
+urlbar-switch-to-tab =
+    .value = Keçiləcək vərəq:
+# Used to indicate that a selected autocomplete entry is provided by an extension.
+urlbar-extension =
+    .value = Uzantı:
+urlbar-go-button2 =
+    .title = Ünvan Sətrindəki ünvanı aç
+urlbar-page-action-button =
+    .tooltiptext = Səhifə əməliyyatları
+
+## "Last visited" and "bookmarked" explanation strings. For bookmarks and urlbar
+## results with last-visited dates like history and top sites, these strings
+## explain why the result is shown.
+
+# Used when the private browsing engine differs from the default engine.
+# The "with" format was chosen because the search engine name can end with
+# "Search", and we would like to avoid strings like "Search MSN Search".
+# Variables
+#  $engine (String): the name of a search engine
+urlbar-result-action-search-in-private-w-engine = Məxfi Pəncərədə { $engine } ilə axtar
+# Used when the private browsing engine is the same as the default engine.
+urlbar-result-action-search-in-private = Məxfi Pəncərədə axtar
+# The "with" format was chosen because the search engine name can end with
+# "Search", and we would like to avoid strings like "Search MSN Search".
+# Variables
+#  $engine (String): the name of a search engine
+urlbar-result-action-search-w-engine = { $engine } ilə axtar
+urlbar-result-action-switch-tab = Vərəqə keç
+urlbar-result-action-move-tab-to-split-view = Vərəqi Bölünmüş Görünüşə Daşı
+urlbar-result-action-visit = Ziyarət et
+# Used for asking AI assistant chat.
+urlbar-result-action-ai-chat = Soruş
+
+## Strings used for buttons in the urlbar
+
+urlbar-searchmode-actions3 = Əməliyyatlar
+    .accesskey = Ə
+# Label shown on the top of Searchmode Switcher popup. After this label, the
+# available search engines will be listed.
+urlbar-searchmode-popup-one-off-header = Bu dəfə bununla axtarın:
+urlbar-searchmode-popup-search-settings = Axtarış Tənzimləmələri
+    .accesskey = S
+urlbar-searchmode-popup-settings = Tənzimləmələr
+    .accesskey = S
+
+## Action text shown in urlbar results, usually appended after the search
+## string or the url, like "result value - action text".
+## In these actions "Search" is a verb, followed by where the search is performed.
+
+urlbar-result-action-search-bookmarks = Əlfəcinlərdə Axtar
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Oxuma Görüntüsünə daxil ol
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Oxuma Görüntüsünü qapat
+
+## Full Screen and Pointer Lock UI
+
+# Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
+# Variables
+#  $domain (String): the domain that is full screen, e.g. "mozilla.org"
+fullscreen-warning-domain = <span data-l10n-name="domain">{ $domain }</span> artıq tam erkandır
+fullscreen-warning-no-domain = Bu sənəd artıq tam ekrandır
+fullscreen-exit-button = Tam erkandan çıx (Esc)
+# "esc" is lowercase on mac keyboards, but uppercase elsewhere.
+fullscreen-exit-mac-button = Tam erkandan çıx (esc)
+# Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
+# Variables
+#  $domain (String): the domain that is using pointer-lock, e.g. "mozilla.org"
+pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> kursorunuzu idarə edir. İdarəni geri almaq üçün Esc düyməsinə basın.
+pointerlock-warning-no-domain = Bu sənəd kursorunuzu idarə edir. İdarəni geri almaq üçün Esc düyməsinə basın.
+
+## Bookmarks panels, menus and toolbar
+
+bookmarks-manage-bookmarks =
+    .label = Əlfəcinləri idarə et
+bookmarks-recent-bookmarks-panel-subheader = Son əlfəcinlər
+bookmarks-toolbar-chevron =
+    .tooltiptext = Daha çox əlfəcin göstər
+bookmarks-sidebar-content =
+    .aria-label = Əlfəcinlər
+bookmarks-menu-button =
+    .label = Əlfəcinlər menyusu
+bookmarks-other-bookmarks-menu =
+    .label = Digər əlfəcinlər
+bookmarks-mobile-bookmarks-menu =
+    .label = Mobil əlfəcinlər
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
+bookmarks-tools-sidebar-visibility =
+    .label =
+        { $isVisible ->
+            [true] Əlfəcin yan panelini gizlət
+           *[other] Əlfəcin yan panelini göstər
+        }
+bookmarks-tools-toolbar-visibility-menuitem =
+    .label =
+        { $isVisible ->
+            [true] Əlfəcin alət sətrini gizlət
+           *[other] Əlfəcin alət sətrini gör
+        }
+bookmarks-tools-toolbar-visibility-panel =
+    .label =
+        { $isVisible ->
+            [true] Əlfəcin alət sətrini gizlət
+           *[other] Əlfəcin alət sətrini göstər
+        }
+
+##
+
+bookmarks-search =
+    .label = Əlfəcinlərdə axtar
+bookmarks-tools =
+    .label = Əlfəcin alətləri
+bookmarks-subview-edit-bookmark =
+    .label = Bu əlfəcini düzəlt…
+bookmarks-toolbar-menu =
+    .label = Əlfəcin paneli
+bookmarks-toolbar-placeholder =
+    .title = Əlfəcin alət sətri obyektləri
+bookmarks-toolbar-placeholder-button =
+    .label = Əlfəcin alət sətri obyektləri
+
+## Library Panel items
+
+library-bookmarks-menu =
+    .label = Əlfəcinlər
+
+##
+
+# Variables:
+#  $shortcut (String): keyboard shortcut to open settings (only on macOS)
+toolbar-settings-button =
+    .label = Tənzimləmələr
+    .tooltiptext =
+        { PLATFORM() ->
+            [macos] Tənzimləmələri aç ({ $shortcut })
+           *[other] Tənzimləmələri aç
+        }
+toolbar-overflow-customize-button =
+    .label = Alət Sətrini Fərdiləşdir…
+    .accesskey = C
+toolbar-button-email-link =
+    .label = Keçidi e-poçtla göndər
+    .tooltiptext = Bu səhifənin keçidini e-poçtla göndər
+# Variables:
+#  $shortcut (String): keyboard shortcut to save a copy of the page
+toolbar-button-save-page =
+    .label = Səhifəni Yadda Saxla
+    .tooltiptext = Bu səhifəni yadda saxla ({ $shortcut })
+# Variables:
+#  $shortcut (String): keyboard shortcut to open a local file
+toolbar-button-open-file =
+    .label = Fayl Aç
+    .tooltiptext = Fayl aç ({ $shortcut })
+toolbar-button-synced-tabs =
+    .label = Sinxron Vərəqlər
+    .tooltiptext = Digər cihazlardan olan vərəqləri göstər
+# Variables
+# $shortcut (string) - Keyboard shortcut to open a new private browsing window
+toolbar-button-new-private-window =
+    .label = Yeni məxfi pəncərə
+    .tooltiptext = Yeni məxfi səyahət pəncərəsi açın ({ $shortcut })
+
+## EME notification panel
+
+eme-notifications-drm-content-playing = Bu saytda olan bəzi səs və ya video DRM proqramını işlədir, bu { -brand-short-name } tərəfindən sizə verilən servisləri limitləyir.
+eme-notifications-drm-content-playing-manage = Tənzimləmələri idarə et
+
+##
+
+ui-tour-info-panel-close =
+    .tooltiptext = Qapat
+
+##
+
+navbar-downloads =
+    .label = Endirilənlər
+navbar-overflow-2 =
+    .tooltiptext = Daha çox alət
+# Variables:
+#   $shortcut (String): keyboard shortcut to print the page
+navbar-print =
+    .label = Çap Et
+    .tooltiptext = Bu səhifəni çap et… ({ $shortcut })
+navbar-home =
+    .label = Ev
+    .tooltiptext = { -brand-short-name } Ana Səhifə
+navbar-library =
+    .label = Kitabxana
+    .tooltiptext = Tarixçəni, saxlanılmış əlfəcinləri və daha çox şeyi görün
+navbar-search =
+    .title = Axtar
+# Name for the tabs toolbar as spoken by screen readers. The word
+# "toolbar" is appended automatically and should not be included in
+# in the string
+tabs-toolbar =
+    .aria-label = Brauzer vərəqləri
+tabs-toolbar-new-tab =
+    .label = Yeni vərəq
+tabs-toolbar-list-all-tabs =
+    .label = Bütün vərəqləri siyahıla
+    .tooltiptext = Bütün vərəqləri siyahıla
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = { -brand-short-name } avtomatik bəzi məlumatları { -vendor-short-name } mərkəzinə göndərir ki, biz sizin səyyahda işləməyinizi daha da asanlaşdıra bilək.
+data-reporting-notification-button =
+    .label = Nəyi Paylaşdığımı Seç
+    .accesskey = S
+# Label for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-label = Məxfi səyahət
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Məxfi səyahət
+
+## Unified extensions (toolbar) button
+
+unified-extensions-button =
+    .label = Uzantılar
+    .tooltiptext = Uzantılar
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Uzantılar
+    .tooltiptext =
+        Uzantılar
+        İcazələr tələb olunur
+
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = Uzantılar
+    .tooltiptext =
+        Uzantılar
+        Bəzi uzantılara icazə verilmədi
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Uzantılar
+    .tooltiptext =
+        Uzantılar
+        Bəzi uzantılar söndürüldü
+
+## Private browsing reset button
+
+reset-pbm-panel-heading2 = Məlumatlar təmizlənilsin və yeni bir məxfi seans başladılsın?
+reset-pbm-panel-description2 = Bu prosedur Məxfi Pəncərənizi bağlamadan tarixçəniz, çərəzləriniz və digər sayt məlumatlarınızı siləcəkdir.
+reset-pbm-panel-always-ask-checkbox =
+    .label = Həmişə soruş
+    .accesskey = A
+reset-pbm-panel-confirm-button2 =
+    .label = Məxfi seansı təmizlə
+    .accesskey = T
+reset-pbm-panel-complete = Məxfi seans məlumatları silindi
+reset-pbm-toolbar-button2 =
+    .label = Məxfi Seansı Təmizlə
+    .tooltiptext = Məxfi Seansı Təmizlə
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } bu səhifənin avtomatik yenilənməsinin qarşısını aldı.
+refresh-blocked-redirect-label = { -brand-short-name } bu səhifənin başqa bir səhifəyə yönləndirilməsinin qarşısını aldı.
+refresh-blocked-allow =
+    .label = İcazə ver
+    .accesskey = A
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (Təsdiqlənməmiş)
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { $popupCount ->
+        [one] { -brand-short-name } bu saytdan peyda olan pəncərələrin qarşısı alınıb.
+       *[other] { -brand-short-name } bu saytdan { $popupCount } peyda olan pəncərələrin qarşısı alınıb.
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message = { -brand-short-name } saytının { $popupCount } peyda olan pəncərədən daha çox pəncərə açmasını əngəllədi.
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Seçimlər
+           *[other] Nizamlamalar
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] P
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = Göstər: “{ $popupURI }”
+
+## Onboarding Finish Setup checklist
+
+onboarding-aw-finish-setup-button =
+    .label = Quraşdırmanı tamamla
+    .tooltiptext = { -brand-short-name } quraşdırmasını tamamlayın
+
+## The urlbar trust icon & panel
+
+trustpanel-etp-label-enabled = Artırılmış İzlənmə Qoruması açıqdır
+trustpanel-etp-label-disabled = Artırılmış İzlənmə Qoruması bağlıdır
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-on =
+    .aria-label = Artırılmış İzlənmə Qoruması: { $host } üçün açıq
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-etp-toggle-off =
+    .aria-label = Artırılmış İzlənmə Qoruması: { $host } üçün bağlı
+trustpanel-etp-description-enabled = Bu saytda nəsə düzgün işləmirsə, qorumanı söndürməyə cəhd edin.
+trustpanel-header-enabled = { -brand-product-name } keşikdədir
+trustpanel-description-enabled2 = Siz qorunursunuz. Nəsə aşkar etsək, sizə bildirəcəyik.
+trustpanel-clear-cookies-button = Çərəzlər və sayt məlumatlarını təmizlə
+trustpanel-privacy-link = Məxfilik Tənzimləmələri
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-clear-cookies-header =
+    .title = { $host } üçün çərəzləri və sayt məlumatlarını təmizlə
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+trustpanel-site-information-header =
+    .title = { $host } üçün bağlantı qorumaları
+# Keep this string as short as possible, this is displayed in the URL bar
+# Variables
+#  $count (number): the number of trackers blocked.
+urlbar-trust-icon-trackers-blocked-longform-label =
+    { $count ->
+        [one] { $count } izləyici əngəlləndi
+       *[other] { $count } izləyici əngəlləndi
+    }
+
+## Reduced Protection Infobar ("ReducedProtectionNotification.sys.mjs")
+
+reduced-protection-infobar-reload-button = Yenilə
+    .accesskey = R

@@ -1,0 +1,253 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+toolbar-button-firefox-view-2 =
+    .label = { -firefoxview-brand-name }
+    .tooltiptext = Se nylig nettlesing på tvers av vinduer og enheter
+menu-tools-firefox-view =
+    .label = { -firefoxview-brand-name }
+    .accesskey = F
+firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
+firefoxview-page-label =
+    .label = { -firefoxview-brand-name }
+# Used instead of the localized relative time when a timestamp is within a minute or so of now
+firefoxview-just-now-timestamp = Akkurat nå
+firefoxview-syncedtabs-signin-header-2 = Din { -brand-product-name } på alle dine enheter
+firefoxview-syncedtabs-signin-description-2 = For å se faner du har åpne på telefonen og andre enheter, logg inn eller registrer deg for en konto. Med en konto kan du også synkronisere passord, historikk, med mer.
+# The verb “Go” is implied but omitted from the headline: “[Go] from laptop to phone, seamlessly”
+firefoxview-syncedtabs-signin-header-3 = Fra bærbar PC til telefon, sømløst
+firefoxview-syncedtabs-signin-description-3 = Hold surfingen synkronisert på tvers av enhetene dine — faner, passord og historikk, alt synkronisert.
+firefoxview-syncedtabs-signin-primarybutton-2 = Logg inn
+firefoxview-syncedtabs-adddevice-header-2 = Hent faner uansett hvor du er
+firefoxview-syncedtabs-adddevice-description-2 = Logg på { -brand-product-name } på telefonen eller en annen datamaskin for å se faner her. Finn ut hvordan du <a data-l10n-name="url">kobler til flere enheter</a>.
+firefoxview-syncedtabs-adddevice-primarybutton = Prøv { -brand-product-name } for mobil
+# "Your tabs called" - this is playful messaging indicating that a user can find their synced tabs on their phone.
+firefoxview-syncedtabs-adddevice-header-3 = Fanene dine venter på telefonen.
+firefoxview-syncedtabs-adddevice-description-3 = Skann QR-koden for å få { -brand-product-name } på mobilen og begynn å synkronisere åpne faner og mer. Les hvordan du <a data-l10n-name="url">kobler til flere enheter</a>.
+firefoxview-tabpickup-synctabs-primarybutton = Synkroniser åpne faner
+firefoxview-tabpickup-synctabs-primarybutton-2 = Slå på fanesynkronisering
+firefoxview-syncedtabs-synctabs-header = Oppdater dine synkroniseringsinnstillinger
+firefoxview-syncedtabs-synctabs-description = For å se faner fra andre enheter, må du synkronisere dine åpne faner.
+firefoxview-syncedtabs-synctabs-header-2 = Fanesynkronisering er av
+firefoxview-syncedtabs-synctabs-description-2 = Slå på synkronisering igjen for å hente alle fanene dine fra andre enheter.
+firefoxview-syncedtabs-loading-header = Synkronisering pågår
+firefoxview-syncedtabs-loading-description = Når det er gjort, vil du se alle faner du har åpne på andre enheter. Prøv å sjekke igjen senere.
+firefoxview-syncedtabs-loading-header-2 = Henter dine faner…
+firefoxview-syncedtabs-loading-description-2 = Synkronisering pågår. Fanene kommer snart.
+firefoxview-tabpickup-fxa-admin-disabled-header = Organisasjonen din har deaktivert synkronisering
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } kan ikke synkronisere faner mellom enheter fordi organisasjonen din har deaktivert synkronisering.
+firefoxview-tabpickup-fxa-admin-disabled-header-2 = Fanesynkronisering er av
+firefoxview-tabpickup-fxa-disabled-by-policy-description-2 = Organisasjonen din har blokkert denne funksjonen.
+firefoxview-tabpickup-network-offline-header = Sjekk internettilkoblingen din
+firefoxview-tabpickup-network-offline-description = Hvis du bruker en brannmur eller proxy, sjekk at { -brand-short-name } har tillatelse til å få tilgang til nettet.
+firefoxview-tabpickup-network-offline-primarybutton = Prøv igjen
+firefoxview-tabpickup-network-offline-header-2 = { -brand-short-name } kan ikke koble til akkurat nå
+firefoxview-tabpickup-network-offline-description-2 = Du er kanskje frakoblet, eller noe blokkerer tilkoblingen.
+firefoxview-tabpickup-sync-error-header = Vi har problemer med å synkronisere
+firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } kan ikke nå synkroniseringstjenesten akkurat nå. Prøv igjen litt senere.
+# “Sync hit a snag” means that the sync process is having a problem and can’t connect.
+firefoxview-tabpickup-sync-error-header-2 = Det oppstod et problem med synkroniseringen.
+firefoxview-tabpickup-generic-sync-error-description-2 = { -brand-short-name } kunne ikke koble til. Vent litt, og prøv deretter på nytt.
+firefoxview-tabpickup-sync-error-primarybutton = Prøv igjen
+firefoxview-tabpickup-sync-disconnected-header = Slå på synkronisering for å fortsette
+firefoxview-tabpickup-sync-disconnected-description = For å få tilgang til fanene dine må du aktivere synkronisering i { -brand-short-name }.
+firefoxview-tabpickup-sync-disconnected-primarybutton = Slå på synkronisering i innstillingene
+firefoxview-tabpickup-password-locked-header = Skriv inn hovedpassordet ditt for å vise faner
+firefoxview-tabpickup-password-locked-description = For å få tilgang til fanene dine må du skrive inn hovedpassordet for { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Les mer
+firefoxview-tabpickup-password-locked-primarybutton = Skriv inn hovedpassordet
+firefoxview-syncedtab-password-locked-link = <a data-l10n-name="syncedtab-password-locked-link">Les mer</a>
+firefoxview-tabpickup-password-locked-header-2 = Lås opp faner med hovedpassordet ditt
+firefoxview-tabpickup-password-locked-description-2 = For personvernets skyld er synkroniserte faner beskyttet. Skriv inn hovedpassordet for { -brand-short-name } for å se fanene fra dine andre enheter.
+firefoxview-tabpickup-signed-out-header = Logg inn for å koble til på nytt
+firefoxview-tabpickup-signed-out-description2 = For å koble til igjen og få tak i fanene dine, logg in på kontoen din.
+firefoxview-tabpickup-signed-out-primarybutton = Logg inn
+firefoxview-tabpickup-signed-out-header-2 = Logg inn for å se dine faner
+firefoxview-tabpickup-signed-out-description-2 = Koble til på nytt for å se faner fra andre enheter.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Avvis { $tabTitle }
+# Variables:
+#   $targetURI (string) - URL that will be opened in the new tab
+firefoxview-tabs-list-tab-button =
+    .title = Åpne { $targetURI } i en ny fane
+firefoxview-collapse-button-show =
+    .title = Vis liste
+firefoxview-collapse-button-hide =
+    .title = Skjul liste
+firefoxview-overview-nav = Nylig besøkt
+    .title = Nylig besøkt
+firefoxview-overview-header = Nylig besøkt
+    .title = Nylig besøkt
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historikk
+    .title = Historikk
+firefoxview-history-header = Historikk
+firefoxview-history-context-delete = Slett fra historikk
+    .accesskey = S
+firefoxview-history-context-forget-site = Glem dette nettstedet…
+    .accesskey = G
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Åpne faner
+    .title = Åpne faner
+firefoxview-opentabs-header = Åpne faner
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nylig lukkede faner
+    .title = Nylig lukkede faner
+firefoxview-recently-closed-header = Nylig lukkede faner
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Faner fra andre enheter
+    .title = Faner fra andre enheter
+firefoxview-synced-tabs-header = Faner fra andre enheter
+
+##
+
+# Used for a link in collapsible cards, in the ’Recent browsing’ page of Firefox View
+firefoxview-view-all-link = Vis alle
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Vindu { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Vindu { $winID } (gjeldende)
+firefoxview-show-more = Vis mer
+firefoxview-show-less = Vis mindre
+firefoxview-show-all = Vis alle
+firefoxview-search-text-box-clear-button =
+    .title = Tøm
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Søk
+# Placeholder for the input field to search in history ("search" is a verb).
+firefoxview-search-text-box-history =
+    .placeholder = Søke i historikk
+# Placeholder for the input field to search in bookmarks ("search" is a verb).
+firefoxview-search-text-box-bookmarks =
+    .placeholder = Søk i bokmerker
+# Placeholder for the input field to search in recently closed tabs ("search" is a verb).
+firefoxview-search-text-box-recentlyclosed =
+    .placeholder = Søk i nylig lukkede faner
+# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
+firefoxview-search-text-box-tabs =
+    .placeholder = Søk i faner
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-opentabs =
+    .placeholder = Søk i åpne faner
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+firefoxview-search-results-header = Søkeresultater for «{ $query }»
+# Variables:
+#   $count (Number) - The number of visits matching the search query.
+firefoxview-search-results-count =
+    { $count ->
+        [one] { $count } nettsted
+       *[other] { $count } nettsteder
+    }
+# Message displayed when a search is performed and no matching results were found.
+# Variables:
+#   $query (String) - The search query.
+firefoxview-search-results-empty = Ingen resultater for «{ $query }»
+firefoxview-sort-history-by-date-label = Sorter etter dato
+firefoxview-sort-history-by-site-label = Sorter etter nettsted
+firefoxview-sort-open-tabs-by-recency-label = Sorter etter nylig aktivitet
+firefoxview-sort-open-tabs-by-order-label = Sorter etter fanerekkefølge
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = I dag - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = I går - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+firefoxview-history-site-localhost = (lokale filer)
+
+##
+
+firefoxview-show-all-history = Vis all historikk
+
+## Message displayed in Firefox View when the user has no history data
+
+firefoxview-history-empty-header = Kom tilbake til der du har vært
+firefoxview-history-empty-description = Mens du surfer, vil sidene du besøker bli oppført her.
+firefoxview-history-empty-description-two = Beskyttelse av personvernet ditt er kjernen i det vi gjør. Det er derfor du kan kontrollere aktiviteten { -brand-short-name } husker, i <a data-l10n-name="history-settings-url">innstillingene for historikk</a>.
+# This appears when a user does not have browsing history yet.
+# This is indicating that a users browsers history will be found here when they start browsing.
+firefoxview-history-empty-header-2 = Her begynner surfesporene dine
+firefoxview-history-empty-description-2 = Etter hvert som du besøker sider, vises historikken din her. Du kan styre hva som skal huskes i <a data-l10n-name="history-settings-url">innstillinger</a>.
+
+##
+
+# Button text for choosing a browser within the ’Import history from another browser’ banner
+firefoxview-choose-browser-button = Velg nettleser
+    .title = Velg nettleser
+
+## Message displayed in Firefox View when the user has chosen to never remember History
+
+firefoxview-dont-remember-history-empty-header-2 = Du har kontroll over hva { -brand-short-name } husker
+firefoxview-dont-remember-history-empty-description-one = Akkurat nå husker ikke { -brand-short-name } nettlesingsaktiviteten din. For å endre det, <a data-l10n-name="history-settings-url-two">oppdater historikkinnstillingene dine</a>.
+# “Off the record” is an English phrase journalists use when a conversation will not be recorded or reported on. It’s meant to convey that users’ history activity will not be recorded or shown.
+firefoxview-dont-remember-history-empty-header-3 = Du etterlater ingen spor
+firefoxview-dont-remember-history-empty-description-2 = { -brand-short-name } lagrer ikke historikken din akkurat nå. Du kan endre dette når som helst i <a data-l10n-name="history-settings-url-two">innstillingene</a>.
+
+##
+
+# This label is read by screen readers when focusing the close button for the "Import history from another browser" banner in Firefox View
+firefoxview-import-history-close-button =
+    .aria-label = Lukk
+    .title = Lukk
+
+## Text displayed in a dismissable banner to import bookmarks/history from another browser
+
+firefoxview-import-history-header = Importer historikk fra en annen nettleser
+firefoxview-import-history-description = Gjør { -brand-short-name } til din nettleser. Importer nettleserhistorikk, bokmerker og mer.
+
+## Message displayed in Firefox View when the user has no recently closed tabs data
+
+firefoxview-recentlyclosed-empty-header = Lukket en fane for tidlig?
+firefoxview-recentlyclosed-empty-description = Her finner du fanene du nylig lukket, slik at du raskt kan åpne hvilken som helst av dem igjen.
+firefoxview-recentlyclosed-empty-description-two = For å finne faner fra for lenge siden, se <a data-l10n-name="history-url">nettleserhistorikken din</a>.
+
+## This message is displayed below the name of another connected device when it doesn't have any open tabs.
+
+firefoxview-syncedtabs-device-notabs = Ingen faner åpne på denne enheten
+firefoxview-syncedtabs-connect-another-device = Koble til en annen enhet
+firefoxview-pinned-tabs =
+    .title = Festede faner
+firefoxview-tabs =
+    .title = Faner
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Bytt til { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Bytt til (bokmerket) { $tabTitle }
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Bokmerket) { $url }

@@ -1,0 +1,440 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = { -brand-shorter-name } ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ
+appmenuitem-banner-update-available =
+    .label = ਅੱਪਡੇਟ ਮੌਜੂਦ ਹੈ — ਹੁਣੇ ਡਾਊਨਲੋਡ ਕਰੋ
+appmenuitem-banner-update-manual =
+    .label = ਅੱਪਡੇਟ ਮੌਜੂਦ ਹੈ — ਹੁਣੇ ਡਾਊਨਲੋਡ ਕਰੋ
+appmenuitem-banner-update-unsupported =
+    .label = ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਅਸਮਰੱਥ — ਸਿਸਟਮ ਮਾਫ਼ਕ ਨਹੀਂ ਹੈ
+appmenuitem-banner-update-restart =
+    .label = ਅੱਪਡੇਟ ਮੌਜੂਦ ਹੈ — ਹੁਣੇ ਮੁੜ-ਚਾਲੂ ਕਰੋ
+appmenu-nova-update-title = { -brand-short-name } ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਚਾਲੂ ਕਰੋ
+appmenu-nova-update-description = ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਮੁੜ-ਖੋਲ੍ਹੀਆਂ ਜਾਣਗੀਆਂ।
+appmenu-nova-fxa-sign-in = ਸਾਈਨ ਇਨ
+appmenu-nova-switch-device-promo =
+    .message = ਛੇਤੀ ਹੀ ਨਵਾਂ ਡਿਵਾਈਸ ਲੈ ਰਹੇ ਹੋ? { -brand-short-name } ਨੂੰ ਆਪਣੇ ਨਾਲ ਰੱਖੋ!
+appmenu-nova-switch-device-link = ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਕਿਵੇਂ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ
+appmenuitem-new-tab =
+    .label = ਨਵੀਂ ਟੈਬ
+appmenuitem-new-window =
+    .label = ਨਵੀਂ ਵਿੰਡੋ
+appmenuitem-new-private-window =
+    .label = ਨਵੀਂ ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ
+appmenuitem-history =
+    .label = ਅਤੀਤ
+appmenuitem-tab-groups =
+    .label = ਟੈਬ ਦੇ ਗਰੁੱਪ
+appmenuitem-downloads =
+    .label = ਡਾਊਨਲੋਡ
+appmenuitem-passwords =
+    .label = ਪਾਸਵਰਡ
+appmenuitem-extensions-and-themes =
+    .label = ਇਕਸਟੈਨਸ਼ਨਾਂ ਅਤੇ ਥੀਮ
+appmenuitem-extensions =
+    .label = ਇਕਸਟੈਨਸ਼ਨਾਂ
+appmenuitem-print =
+    .label = …ਪਰਿੰਟ ਕਰੋ
+appmenuitem-find-in-page =
+    .label = …ਸਫ਼ੇ ਵਿੱਚ ਲੱਭੋ
+appmenuitem-translate =
+    .label = …ਸਫ਼ੇ ਦਾ ਉਲੱਥਾ
+appmenuitem-zoom =
+    .value = ਜ਼ੂਮ
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = { -brand-product-name } ਸਾਂਝਾ ਕਰੋ
+appmenuitem-more-tools =
+    .label = ਹੋਰ ਟੂਲ
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = ਮਦਦ ਅਤੇ ਰਿਪੋਰਟ
+appmenuitem-help =
+    .label = ਮਦਦ
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] ਬਾਹਰ
+           *[other] ਬਾਹਰ
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = ਐਪਲੀਕੇਸ਼ਨ ਮੇਨੂ ਨੂੰ ਖੋਲ੍ਹੋ
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = ਐਪਲੀਕੇਸ਼ਨ ਮੇਨੂ ਨੂੰ ਬੰਦ ਕਰੋ
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = ਸੈਟਿੰਗਾਂ
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = ਜ਼ੂਮ ਇਨ
+appmenuitem-zoom-reduce =
+    .label = ਜ਼ੂਮ ਆਉਟ
+appmenuitem-fullscreen =
+    .label = ਪੂਰੀ ਸਕਰੀਨ ਉੱਤੇ
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = …ਸਿੰਕ ਵਾਸਤੇ ਸਾਈਨ ਇਨ ਕਰੋ
+appmenu-remote-tabs-turn-on-sync =
+    .label = …ਸਿੰਕ ਚਾਲੂ ਕਰੋ
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = ਹੋਰ ਟੈਬਾਂ ਨੂੰ ਵੇਖਾਓ
+    .tooltiptext = ਇਸ ਡਿਵਾਈਸ ਤੋਂ ਹੋਰ ਟੈਬਾਂ ਨੂੰ ਵੇਖੋ
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = ਨਾ-ਸਰਗਰਮ ਟੈਬਾਂ
+    .tooltiptext = ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਨਾ-ਸਰਗਰਮ ਟੈਬਾਂ ਨੂੰ ਵੇਖੋ
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = ਕੋਈ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਨਹੀਂ
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = ਆਪਣੇ ਹੋਰ ਡਿਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ ਦੀ ਸੂਚੀ ਵੇਖਣ ਲਈ ਟੈਬਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਨੂੰ ਚਾਲੂ ਕਰੋ।
+appmenu-remote-tabs-opensettings =
+    .label = ਸੈਟਿੰਗਾਂ
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = ਹੋਰ ਡਿਵਾਈਸਾਂ ਤੋਂ ਆਪਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਇੱਥੇ ਦੇਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?
+appmenu-remote-tabs-connectdevice =
+    .label = ਹੋਰ ਡਿਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕਰੋ
+appmenu-remote-tabs-welcome = ਆਪਣੇ ਹੋਰ ਡਿਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ ਦੀ ਸੂਚੀ ਵੇਖੋ।
+appmenu-remote-tabs-unverified = ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਤਸਦੀਕ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।
+appmenuitem-fxa-toolbar-sync-now2 = ਹੁਣੇ ਸਿੰਕ ਕਰੋ
+appmenuitem-fxa-sign-in = { -brand-product-name } ‘ਚ ਸਾਈਨ ਇਨ ਕਰੋ
+appmenuitem-fxa-manage-account = ਖਾਤੇ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
+fxa-menu-sync-status-on = ਸਿੰਕ ਚਾਲੂ ਹੈ
+fxa-menu-sync-status-off = ਸਿੰਕ ਬੰਦ ਹੈ
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਸਿੰਕ ਕਰੋ
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = ਤੁਹਾਡਾ ਡਾਟਾ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = ਚਾਲੂ ਕਰੋ
+fxa-menu-sync-status-turn-on-button-aria-label = ਚਾਲੂ ਕਰੋ
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = ਸਿੰਕ ਕਰਨ ਲਈ ਸਾਈਨ ਇਨ ਕਰੋ
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = { $deviceName } ਨੂੰ ਹੁਣ ਸਿੰਕ ਕਰੋ
+fxa-menu-manage-sync-settings =
+    .label = ਸਿੰਕ ਸੈਟਿੰਗਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
+fxa-menu-add-device =
+    .label = ਇੱਕ ਡਿਵਾਈਸ ਜੋੜੋ
+fxa-menu-manage-devices =
+    .label = ਆਪਣੇ ਡਿਵਾਈਸਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
+fxa-menu-device-missing =
+    .label = ਤੁਹਾਡਾ ਡਿਵਾਈਸ ਦਿਖਾਈ ਨਹੀਂ ਦਿੰਦਾ ਹੈ?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = ਸਾਰੇ ਡਿਵਾਈਸ
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = ਸਾਰੇ ਡਿਵਾਈਸ
+fxa-menu-get-firefox-mobile =
+    .label = ਐਂਡਰਾਈਡ or iOS ਲਈ { -brand-product-name } ਲਵੋ
+fxa-menu-secure-sync-subpanel =
+    .title = ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਿੰਕ
+appmenu-account-header = ਖਾਤਾ
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = ਪਿਛਲਾ ਸਿੰਕ ਕੀਤਾ { $time }
+    .label = ਪਿਛਲਾ ਸਿੰਕ ਕੀਤਾ { $time }
+appmenu-fxa-sync-and-save-data2 = ਡਾਟਾ ਸਿੰਕ ਕਰੋ ਤੇ ਸੰਭਾਲੋ
+appmenu-fxa-signed-in-label = ਸਾਈਨ ਇਨ
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = ਸਿੰਕ ਕਰਨ ਲਈ ਸਾਈਨ ਇਨ ਕਰੋ
+appmenu-fxa-sign-in-promo-message = ਆਪਣਾ ਡਾਟਾ ਹਰ ਥਾਂ ਲਵੋ
+appmenu-fxa-sign-in-promo-button =
+    .label = ਸਾਈਨ ਇਨ
+appmenu-fxa-setup-sync =
+    .label = ਸਿੰਕ ਕਰਨਾ ਚਾਲੂ ਕਰੋ…
+appmenu-fxa-setup-sync-new = ਚਾਲੂ ਕਰੋ
+appmenuitem-save-page =
+    .label = …ਸਫ਼ੇ ਨੂੰ ਇੰਝ ਸੰਭਾਲੋ
+appmenuitem-fxa-sync-off-title = ਸਿੰਕ ਬੰਦ ਹੈ
+appmenuitem-fxa-sync-off-description = ਆਪਣੇ ਬੁੱਕਮਾਰਕਾਂ, ਪਾਸਵਰਡਾਂ ਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਬਣਾਓ ਅਤੇ ਕਿਤੋਂ ਵੀ ਵਰਤੋਂ।
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = ਪਰੋਫਾਈਲਰ
+    .tooltiptext = ਕਾਰਗੁਜ਼ਾਰੀ ਪਰੋਫਾਈਲ ਨੂੰ ਰਿਕਾਰਡ ਕਰੋ
+profiler-popup-button-recording =
+    .label = ਪਰੋਫਾਈਲਰ
+    .tooltiptext = ਪਰੋਫਾਈਲਰ ਇੱਕ ਰਿਕਾਰਡ ਕਰਨ ਵਾਲਾ ਪਰੋਫਾਈਲ ਹੈ
+profiler-popup-button-capturing =
+    .label = ਪਰੋਫਾਈਲਰ
+    .tooltiptext = ਪਰੋਫਾਈਲਰ ਪਰੋਫਾਈਲ ਇਕੱਤਰ ਕਰਦਾ ਹੈ
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = ਹੋਰ ਜਾਣਕਾਰੀ ਲਵੋ
+profiler-popup-description-title =
+    .value = ਰਿਕਾਰਡ ਕਰੋ, ਪੜਤਾਲ ਕਰੋ, ਸਾਂਝਾ ਕਰੋ
+profiler-popup-description = ਆਪਣੀ ਟੀਮ ਨਾਲ ਪਰੋਫਾਇਲ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਕੇ ਕਾਰਗੁਜ਼ਾਰੀ ਮਸਲਿਆਂ ਉੱਤੇ ਸਾਂਝਾ ਪਾਓ।
+profiler-popup-learn-more-button =
+    .label = ਹੋਰ ਜਾਣੋ
+profiler-popup-settings =
+    .value = ਸੈਟਿੰਗਾਂ
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = …ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੋਧੋ
+profiler-popup-recording-screen = ਰਿਕਾਰਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…
+profiler-popup-start-recording-button =
+    .label = ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਕਰੋ
+profiler-popup-discard-button =
+    .label = ਖ਼ਾਰਜ ਕਰੋ
+profiler-popup-capture-button =
+    .label = ਕੈਪਚਰ
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = ਪਰੋਫ਼ਾਇਲਰ ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
+    .tooltiptext = ਪਰੋਫ਼ਾਇਲਰ ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = ਬਹੁਤੀਆਂ ਵੈੱਬ ਐਪ ਨੂੰ ਡੀਬੱਗ ਕਰਨ ਲਈ ਘੱਟ ਉਲਝਣਾਂ ਲਈ ਸਿਫਾਰਸ਼ੀ ਪਹਿਲਾਂ ਨਿਯਤ ਸਮੂਹ।
+profiler-popup-presets-web-developer-label =
+    .label = ਵੈੱਬ ਡਿਵੈਲਪਰ
+profiler-popup-presets-firefox-description = { -brand-shorter-name } ਪਰੋਫਾਈਲਿੰਗ ਲਈ ਸਿਫਾਰਸ਼ੀ ਪਹਿਲਾਂ ਨਿਯਤ ਸਮੂਹ।
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = { -brand-shorter-name } ਵਿੱਚ ਗਰਾਫਿਸ ਬੱਗ ਦੀ ਜਾਂਚ ਕਰਨਲਈ ਪਹਿਲਾਂ ਨਿਯਤ ਸਮੂਹ।
+profiler-popup-presets-graphics-label =
+    .label = ਗਰਾਫਿਕਸ
+profiler-popup-presets-media-description2 = { -brand-shorter-name } ਵਿੱਚ ਆਡੀਓ ਤੇ ਵੀਡੀਓ ਬੱਗਾਂ ਦੀ ਜਾਂਚ ਲਈ ਪਹਿਲਾਂ ਨਿਯਤ ਸਮੂਹ।
+profiler-popup-presets-media-label =
+    .label = ਮੀਡਿਆ
+profiler-popup-presets-ml-description = { -brand-shorter-name } ਵਿੱਚ ਮਸ਼ੀਨੀ ਸਿਖਲਾਈ ਬੱਗ ਦੀ ਜਾਂਚ ਲਈ ਪ੍ਰੀਸੈੱਟ ਹੈ।
+profiler-popup-presets-ml-label =
+    .label = ਮਸ਼ੀਨ ਸਿਖਲਾਈ
+profiler-popup-presets-networking-description = { -brand-shorter-name } ਵਿੱਚ ਨੈੱਟਵਰਕਿੰਗ ਬੱਗਾਂ ਦੀ ਜਾਂਚ ਲਈ ਪਹਿਲਾਂ ਨਿਯਤ ਸਮੂਹ।
+profiler-popup-presets-networking-label =
+    .label = ਨੈੱਟਵਰਕਿੰਗ
+profiler-popup-presets-networking-with-logs-description = { -brand-shorter-name } ਵਿੱਚ ਨੈੱਟਵਰਕ ਸੰਬੰਧੀ ਬੱਗ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਨਿਰਧਾਰਿਤ ਸੈੱਟਿੰਗ ਹੈ, ਜਿਸ ਵਿੱਚ ਨੈੱਟਵਰਕ ਨਾਲ ਸੰਬੰਧਿਤ ਲਾਗ ਵੀ ਹਨ। ਇਹ ਲਾਗ ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੇ ਵਲੋਂ ਖੋਲ੍ਹੇ ਗਏ URL ਸ਼ਾਮਲ ਹਨ, ਵੀ ਹੋ ਸਕਦੀ ਹੈ।
+profiler-popup-presets-networking-with-logs-label =
+    .label = ਲਾਗ ਦੇ ਨਾਲ ਨੈੱਟਵਰਕਿੰਗ
+profiler-popup-presets-power-description = ਘੱਟ ਖਪਤ ਨਾਲ { -brand-shorter-name } ਵਿੱਚ ਊਰਜਾ ਵਰਤਣ ਵਾਲੇ ਬੱਗਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਪ੍ਰੀ-ਸੈਟ ਹੈ।
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = ਊਰਜਾ
+profiler-popup-presets-debug-description = { -brand-shorter-name } ਵਿੱਚ ਡੀਬੱਗ ਕਰਨ ਲਈ ਮੌਜੂਦ। ਵੱਧ ਮੇਹਨਤ, ਕਾਰਗੁਜ਼ਾਰੀ ਵਾਲੇ ਕੰਮ ਲਈ ਨਾ ਵਰਤੋਂ, ਪਰ ਫੋਕਸ ਕਰਨ ਜਾਂ ਬਰਾਊਜ਼ਰ ਦੇ ਰਵੱਈਏ ਨੂੰ ਸਮਝਣ ਲਈ ਵਰਤੋਂ।
+profiler-popup-presets-debug-label =
+    .label = ਡੀਬੱਗ
+profiler-popup-presets-web-compat-description = ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਸੂਹ ਲੈਣ ਦੀ ਬਜਾਏ ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਵੈੱਬ ਅਨੁਕੂਲਤਾ ਮਸਲਿਆਂ ਨੂੰ ਡੀਬੱਗ ਕਰਨ ਲਈ ਸਿਫ਼ਾਰਸ਼ੀ ਪ੍ਰੀਸੈੱਟ ਹੈ।
+profiler-popup-presets-web-compat-label =
+    .label = ਵੈੱਬ ਕੰਪੈਟ
+profiler-popup-presets-custom-label =
+    .label = ਕਸਟਮ
+
+##
+
+appmenu-manage-history =
+    .label = ਅਤੀਤ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
+appmenu-restore-session =
+    .label = ਪਿਛਲੇ ਸੈਸ਼ਨ ਬਹਾਲ ਕਰੋ
+appmenu-clear-history =
+    .label = …ਤਾਜ਼ੇ ਅਤੀਤ ਨੂੰ ਸਾਫ਼ ਕਰੋ
+appmenu-recent-history-subheader = ਤਾਜ਼ਾ ਅਤੀਤ
+appmenu-recently-closed-tabs =
+    .label = ਤਾਜ਼ਾ ਖੋਲ੍ਹੀਆਂ ਟੈਬਾਂ
+appmenu-recently-closed-windows =
+    .label = ਤਾਜ਼ਾ ਬੰਦ ਕੀਤੀਆਂ ਵਿੰਡੋ
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = ਅਤੀਤ ਵਿੱਚ ਖੋਜੋ
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = ਡਿਵਾਈਸਾਂ ਵਿਚਾਲੇ ਸਿੰਕ ਕਰੋ
+appmenu-sync-promo-signin-cta = ਸਾਈਨ ਇਨ
+appmenu-sync-promo-turnonsync =
+    .heading = ਆਪਣੀਆਂ ਟੈਬਾਂ ਅਤੇ ਅਤੀਤ ਨੂੰ ਸਿੰਕ ਕਰੋ
+appmenu-sync-promo-turnonsync-cta = ਸਿੰਕ ਚਾਲੂ ਕਰੋ
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = ਆਪਣੀਆਂ ਮੋਬਾਈਲ ਟੈਬਾਂ ਲਵੋ
+appmenu-sync-promo-connectdevice-cta = ਡਿਵਾਈਸ ਨੂੰ ਕਨੈਕਟ ਕਰੋ
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਆਪਣੇ ਨਾਲ ਲਿਆਓ
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = ਆਪਣੇ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਨਾਲ ਲੈ ਜਾਓ
+
+## Help panel
+
+appmenu-help-header =
+    .title = { -brand-shorter-name } ਮਦਦ
+appmenu-about =
+    .label = { -brand-shorter-name } ਬਾਰੇ
+    .accesskey = A
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = { -brand-product-name } ਨੂੰ ਸਾਂਝਾ ਕਰੋ
+    .accesskey = r
+appmenu-get-help =
+    .label = ਮਦਦ ਲਵੋ
+    .accesskey = H
+appmenu-help-more-troubleshooting-info =
+    .label = ਹੋਰ ਸਮੱਸਿਆ ਹੱਲ ਜਾਣਕਾਰੀ
+    .accesskey = T
+appmenu-help-share-ideas =
+    .label = …ਵਿਚਾਰ ਤੇ ਸੁਝਾਅ ਸਾਂਝੇ ਕਰੋ
+    .accesskey = S
+appmenu-help-switch-device =
+    .label = ਨਵੇਂ ਡਿਵਾਈਸ ਲਈ ਬਦਲਣਾ
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = ਮਦਦ ਅਤੇ ਰਿਪੋਰਟ
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = ਸਮੱਸਿਆ ਨਿਪਟਾਰਾ ਢੰਗ…
+    .accesskey = M
+appmenu-help-exit-troubleshoot-mode =
+    .label = ਸਮੱਸਿਆ ਨਿਪਟਾਰਾ ਢੰਗ ਬੰਦ ਹੈ
+    .accesskey = M
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = …ਭਰਮਪੂਰਕ ਸਾਈਟ ਨੂੰ ਰਿਪੋਰਟ
+    .accesskey = D
+appmenu-help-not-deceptive =
+    .label = ਇਹ ਭਰਮਪੂਰਨ ਸਾਈਟ ਨਹੀਂ ਹੈ…
+    .accesskey = d
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = …ਟੂਲਬਾਰ ਨੂੰ ਕਸਟਮਾਈਜ਼ ਕਰੋ
+appmenu-abouttranslations =
+    .label = …ਅਨੁੁਵਾਦ ਕਰੋ
+appmenu-edit-pdf =
+    .label = …PDF ਨੂੰ ਸੋਧੋ
+appmenu-developer-tools-subheader = ਬਰਾਊਜ਼ਰ ਟੂਲ
+appmenu-developer-tools-extensions =
+    .label = ਡਿਵੈਲਪਰਾਂ ਲਈ ਇਕਸਟੈਨਸ਼ਨਾਂ
+appmenuitem-report-broken-site =
+    .label = ਖ਼ਰਾਬ ਸਾਈਟ ਬਾਰੇ ਰਿਪੋਰਟ ਕਰੋ
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ ਇਨ ਕਰੋ
+appmenuitem-monitor-title2 = ਪਛਾਣ ਚੋਰੀ ਹੋਣ ਤੋਂ ਸਾਵਧਾਨ ਰਹੋ
+appmenuitem-monitor-description2 = ਡਾਟਾ ਉਲੰਘਣਾ ਬਾਰੇ ਚੇਤਾਵਨੀਆਂ ਲਵੋ
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = { -monitor-brand-short-name } ਡਾਟਾ ਉਲੰਘਣ ਚੇਤਾਵਨੀਆਂ
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = ਡਾਟਾ ਉਲੰਘਣਾਵਾਂ ਬਾਰੇ ਚੇਤਾਵਨੀਆਂ ਲਵੋ
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = ਆਪਣੀ ਈਮੇਲ ਨੂੰ ਪ੍ਰਾਈਵੇਟ ਰੱਖੋ
+appmenuitem-relay-description2 = ਤੁਹਾਡੇ ਇਨਬਾਕਸ ਨੂੰ ਸਪੈਮ ਤੋਂ ਬਚਾਉਣ ਲਈ ਮਦਦ ਕਰਦਾ ਹੈ
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = ਈਮੇਲ ਮਾਸਕਾਂ ਨੂੰ ਵੇਖੋ
+appmenuitem-relay-description = ਆਪਣੇ ਅਸਲ ਈਮੇਲ ਅਤੇ ਫ਼ੋਨ ਨੂੰ ਲੁਕਾਓ
+appmenuitem-services-relay-description = ਈਮੇਲ ਮਾਸਕ ਡੈਸ਼ਬੋਰਡ ਨੂੰ ਚਲਾਓ
+appmenuitem-vpn-title2 = { -mozilla-vpn-brand-name } ਨਾਲ ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾਓ
+appmenuitem-vpn-description5 = ਡਿਵਾਈਸਾਂ ਵਿਚਾਲੇ ਵਧੀਕ ਸੁਰੱਖਿਆ ਲਵੋ
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = { -mozilla-vpn-brand-name } ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = ਪੂਰੇ-ਡਿਵਾਈਸ ਲਈ ਸੁਰੱਖਿਆ ਲਵੋ
+appmenu-services-header = ਮੇਰੀਆਂ ਸੇਵਾਵਾਂ
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = ਪਰਦੇਦਾਰੀ ਟੂਲ
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Mozilla ਦੇ ਹੋਰ ਸੁਰੱਖਿਆ ਟੂਲਾਂ ਨੂੰ ਅਜ਼ਮਾਓ:
+
+## Profiles panel
+
+appmenu-other-profiles = ਹੋਰ ਪਰੋਫਾਇਲ
+appmenu-manage-profiles =
+    .label = ਪਰੋਫਾਇਲਾਂ ਦਾ ਬੰਦੋਬਸਤ ਕਰੋ
+appmenu-copy-profile =
+    .label = ਇਸ ਪਰੋਫ਼ਾਈਲ ਨੂੰ ਕਾਪੀ ਕਰੋ
+appmenu-create-profile2 =
+    .label = ਨਵਾਂ ਪਰੋਫਾਈਲ ਬਣਾਓ
+appmenu-create-profile =
+    .label = ਨਵਾਂ ਪਰੋਫਾਇਲ
+appmenu-edit-profile =
+    .aria-label = ਪਰੋਫਾਇਲ ਨੂੰ ਸੋਧੋ
+appmenu-edit-this-profile =
+    .label = ਇਹ ਪਰੋਫ਼ਾਈਲ ਨੂੰ ਸੋਧੋ
+appmenu-profile-current-in-use = ਵਰਤੋਂ ਵਿੱਚ ਮੌਜੂਦਾ ਪਰੋਫ਼ਾਈਲ
+fxa-menu-create-profile-subpanel =
+    .title = ਨਵਾਂ ਪਰੋਫਾਈਲ ਬਣਾਓ
+fxa-menu-create-profile-heading = ਨਵੇਂ ਪਰੋਫ਼ਾਈਲ ਨਾਲ ਆਪਣੇ ਬਰਾਊਜ਼ਰ ਦਾ ਪੱਧਰ ਵਧਾਓ
+fxa-menu-create-profile-description = ਕੰਮ ਅਤੇ ਨਿੱਜੀ ਬਰਾਊਜ਼ਿੰਗ ਵਾਸਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਅਤੀਤ ਨੂੰ ਵੱਖੋ-ਵੱਖਰਾ ਰੱਖੋ।
+fxa-menu-create-profile-confirm =
+    .label = ਨਵਾਂ ਪਰੋਫਾਈਲ ਬਣਾਓ
+fxa-menu-create-profile-learn-more =
+    .label = ਪਰੋਫ਼ਾਈਲ ਕੀ ਹੁੰਦੇ ਹਨ?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = { -brand-product-name } ਨੂੰ ਸਾਂਝਾ ਕਰੋ
+appmenuitem-share-firefox-description = ਹੋਰਾਂ ਨੂੰ ਉਹ ਬਰਾਊਜ਼ਰ ਚੁਣਨ ਲਈ ਸੱਦਾ ਦਿਓ, ਜੋ ਪਰਦੇਦਾਰੀ ਨੂੰ ਸਭ ਤੋਂ ਅੱਗੇ ਰੱਖਦਾ ਹੈ।
+appmenu-profiles-2 =
+    .label = ਪਰੋਫਾਇਲ
+appmenu-profiles-header = ਪਰੋਫ਼ਾਈਲ
+appmenu-all-profiles =
+    .label = ਸਭ ਪਰੋਫ਼ਾਈਲ
+appmenu-secure-sync-header = ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਿੰਕ
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = ਸੱਜਰੀਆਂ ਟੈਬਾਂ
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] { $tabCount } ਸਿੰਕ ਕੀਤੀ ਟੈਬ ਨੂੰ ਵੇਖੋ
+           *[other] ਸਭ { $tabCount }  ਸਿੰਕ ਕੀਤੀਆਂ ਟੈਬਾਂ ਨੂੰ ਵੇਖੋ
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = ਮੌਜੂਦਾ ਸਫ਼ੇ ਨੂੰ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਭੇਜੋ

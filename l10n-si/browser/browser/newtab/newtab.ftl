@@ -1,0 +1,409 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = නව පටිත්ත
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = නව පටිති
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] පේළි { $num }
+           *[other] පේළි { $num }
+        }
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = ({ $extension }) දිගුව
+home-restore-defaults-srd =
+    .label = පෙරනිමියට ප්‍රත්‍යර්පණය
+    .accesskey = R
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (පෙරනිමි)
+home-mode-choice-custom-srd =
+    .label = අභිරුචි ඒ.ස.නි...
+home-mode-choice-blank-srd =
+    .label = හිස් පිටුව
+home-prefs-shortcuts-header-srd =
+    .label = කෙටිමං
+home-prefs-shortcuts-select =
+    .aria-label = කෙටිමං
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = අනුග්‍රහය ලද කෙටිමං
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = අනුග්‍රහය ලද කතා
+home-prefs-highlights-option-visited-pages-srd =
+    .label = දුටු පිටු
+home-prefs-highlights-options-bookmarks-srd =
+    .label = පොත්යොමු
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = වඩාත්ම මෑත බාගැනීම්
+home-prefs-recent-activity-header-srd =
+    .label = මෑත ක්‍රියාකාරකම
+home-prefs-recent-activity-select =
+    .aria-label = මෑත ක්‍රියාකාරකම
+home-prefs-weather-header-srd =
+    .label = කාලගුණය
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = සොයන්න
+    .title = සොයන්න
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = { $engine } සමඟ සොයන්න හෝ ලිපිනය ලියන්න
+newtab-search-box-handoff-text-no-engine = සොයන්න හෝ ලිපිනය ලියන්න
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = { $engine } සමඟ සොයන්න හෝ ලිපිනය ලියන්න
+    .placeholder = { $engine } සමඟ සොයන්න හෝ ලිපිනය ලියන්න
+    .title = { $engine } සමඟ සොයන්න හෝ ලිපිනය ලියන්න
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = සොයන්න හෝ ලිපිනය ලියන්න
+    .placeholder = සොයන්න හෝ ලිපිනය ලියන්න
+    .title = සොයන්න හෝ ලිපිනය ලියන්න
+newtab-search-box-text = සොයන්න
+newtab-search-box-input =
+    .aria-label = සොයන්න
+    .placeholder = සොයන්න
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = සෙවුම් යන්ත්‍රයක් යොදන්න
+newtab-topsites-add-shortcut-header = නව කෙටිමඟ
+newtab-topsites-edit-shortcut-header = කෙටිමඟ සංස්කරණය
+newtab-topsites-add-shortcut-label = කෙටිමඟක් යොදන්න
+newtab-topsites-add-shortcut-title =
+    .aria-label = කෙටිමඟක් යොදන්න
+    .title = කෙටිමඟක් යොදන්න
+newtab-topsites-title-label = සිරැසිය
+newtab-topsites-title-input =
+    .placeholder = සිරැසියක් යොදන්න
+newtab-topsites-url-label = ඒ.ස.නි.
+newtab-topsites-url-input =
+    .placeholder = ඒ.ස.නි. ලියන්න හෝ අලවන්න
+newtab-topsites-url-validation = වලංගු ඒ.ස.නි. අවශ්‍ය වේ
+newtab-topsites-image-url-label = අභිරුචි රූපයේ ඒ.ස.නි.
+newtab-topsites-use-custom-image-link = අභිරුචි රූපයක් යොදා ගන්න
+newtab-topsites-use-image-link = අභිරුචි රූපයක් යොදා ගන්න...
+newtab-topsites-image-validation = රූපය පූරණයට අසමත් විය. අන් ඒ.ස.නි. බලන්න.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = අවලංගු කරන්න
+newtab-topsites-delete-history-button = ඉතිහාසයෙන් මකන්න
+newtab-topsites-save-button = සුරකින්න
+newtab-topsites-preview-button = පෙරදසුන
+newtab-topsites-add-button = එකතු
+
+## Top Sites - Delete history confirmation dialog.
+
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = මෙම ක්‍රියාමාර්ගය අප්‍රතිවර්ත්‍යයි.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = අනුග්‍රහය ලද
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = වට්ටෝරුව අරින්න
+    .title = වට්ටෝරුව අරින්න
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = { $title } සඳහා සන්දර්භය අරින්න
+    .title = වට්ටෝරුව අරින්න
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = සංස්කරණය
+newtab-menu-open-new-window = නව කවුළුවක අරින්න
+newtab-menu-open-new-private-window = නව පෞද්. කවුළුවක අරින්න
+newtab-menu-dismiss = ඉවතලන්න
+newtab-menu-pin = අමුණන්න
+newtab-menu-unpin = ගළවන්න
+newtab-menu-delete-history = ඉතිහාසයෙන් මකන්න
+newtab-menu-show-privacy-info = අපගේ අනුග්‍රහකයින් හා ඔබගේ පෞද්ගලිකත්‍වය
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = තව දැනගන්න
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = පොත්යොමුව ඉවත් කරන්න
+# Bookmark is a verb here.
+newtab-menu-bookmark = පොත්යොමුව
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = බාගැනීමේ සබැඳියේ පිටපතක්
+newtab-menu-go-to-download-page = බාගැනීමේ පිටුවට යන්න
+newtab-menu-remove-download = ඉතිහාසයෙන් ඉවත් කරන්න
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-open-file = ගොනුව අරින්න
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = ගොඩවැදුණු
+newtab-label-bookmarked = පොත්යොමුවකි
+newtab-label-removed-bookmark = පොත්යොමුව ඉවත් කළා
+newtab-label-recommended = නැඟී එන
+newtab-label-saved = { -pocket-brand-name } හි සුරැකිණි
+newtab-label-download = බාගත විය
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · අනුග්‍රහය ලද
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = { $sponsor } මගින් අනුග්‍රහය ලද
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · විනාඩි { $timeToRead }
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = රහස්‍යතා දැන්වීම
+
+## Section Headers.
+
+newtab-section-header-topsites = ප්‍රචලිත අඩවි
+newtab-section-header-recent-activity = මෑත ක්‍රියාකාරකම
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = පිරික්සීම අරඹන්න, ඔබ මෑත දී ගොඩවැදුණු හෝ පොත්යොමු යෙදූ වැදගත් ලිපි, දෘශ්‍යක සහ වෙනත් පිටු කිහිපයක් මෙහි පෙන්වනු ඇත.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-content = තවත් කතා සඳහා පසුව බලන්න.
+newtab-discovery-empty-section-topstories-try-again-button = නැවත
+newtab-discovery-empty-section-topstories-loading = පූරණය වෙමින්…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = අපොයි! මෙම කොටස මුළුමනින්ම පාහේ පූරණය වී ඇත, නමුත් හරියටම නොවේ.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = අහෝ, මෙම අන්තර්ගතය පූර්ණයෙදී යම් වරදක් සිදුවිය.
+newtab-error-fallback-refresh-link = පිටුව නැවුම් කර බලන්න.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = ඔබ සුරකින හෝ ගොඩවදින අඩවි
+    .label = කෙටිමං
+newtab-custom-shortcuts-nova =
+    .label = කෙටිමං
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] පේළි { $num }
+           *[other] පේළි { $num }
+        }
+newtab-custom-settings = වෙනත් සැකසුම් කළමනාකරණය
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = බිතුපත්
+newtab-wallpaper-toggle-title =
+    .label = බිතුපත්
+
+## Solid Colors
+
+newtab-wallpaper-blue = නිල්
+newtab-wallpaper-light-blue = ලා නිල්
+newtab-wallpaper-light-purple = ලා දම්
+newtab-wallpaper-light-green = ලා කොළ
+newtab-wallpaper-green = කොළ
+newtab-wallpaper-yellow = කහ
+newtab-wallpaper-orange = තැඹිලි
+newtab-wallpaper-pink = රෝස
+newtab-wallpaper-light-pink = ලා රෝස
+newtab-wallpaper-red = රතු
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-feature-highlight-button = තේරුණා
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = උත්පතනය වසන්න
+    .title = ඉවතලන්න
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ අනුග්‍රහය
+newtab-weather-menu-change-location = ස්ථානය වෙනස් කරන්න
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = ස්ථානයක් සොයන්න
+    .placeholder = ස්ථානයක් සොයන්න
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = සරල
+newtab-weather-menu-change-weather-display-simple = සරල දැක්මට මාරු වන්න
+newtab-weather-menu-temperature-option-fahrenheit = ෆැරන්හයිට්
+newtab-weather-menu-temperature-option-celsius = සෙල්සියස්
+newtab-weather-menu-change-temperature-units-fahrenheit = ෆැරන්හයිට් වෙත මාරු වන්න
+newtab-weather-menu-change-temperature-units-celsius = සෙල්සියස් වෙත මාරු වන්න
+newtab-weather-menu-learn-more = තව දැනගන්න
+# This message is shown if user is working offline
+newtab-weather-error-not-available = කාලගුණ දත්ත දැනට නොතිබේ.
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-blocked-button = අවහිරයි
+
+## Strings for custom wallpaper highlight
+
+newtab-section-mangage-topics-blocked-topics = අවහිරයි
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = නිව්යෝර්ක්
+newtab-clock-city-us-los-angeles = ලොස් ඇන්ජලීස්
+newtab-clock-city-us-chicago = චිකාගෝව
+newtab-clock-city-us-san-francisco = සැන් ෆ්‍රැන්සිස්කෝ
+newtab-clock-city-us-san-diego = සැන් දියාගෝ
+newtab-clock-city-us-dallas = ඩලස්
+newtab-clock-city-us-houston = හූස්ටන්
+newtab-clock-city-us-philadelphia = ෆිලඩෙල්ෆියාව
+newtab-clock-city-us-atlanta = ඇට්ලන්ටාව
+newtab-clock-city-us-washington-dc = වොෂින්ටන්
+newtab-clock-city-us-boston = බොස්ටනය
+newtab-clock-city-us-miami = මියාමි
+newtab-clock-city-us-seattle = සියැටල්
+newtab-clock-city-us-denver = ඩෙන්වර්
+newtab-clock-city-us-honolulu = හොනලුලු
+newtab-clock-city-us-anchorage = ඇන්කරේජ්
+newtab-clock-city-de-berlin = බර්ලිනය
+newtab-clock-city-de-munich = මියුනික්
+newtab-clock-city-de-frankfurt = ෆ්‍රෑන්ක්ෆර්ට්
+newtab-clock-city-de-hamburg = හැම්බර්ග්
+newtab-clock-city-fr-paris = පැරිස්
+newtab-clock-city-fr-lyon = ලියොන්
+newtab-clock-city-fr-marseille = මාර්සේල්ස්
+newtab-clock-city-fr-toulouse = ටෝවුලූස්
+newtab-clock-city-in-kolkata = කල්කටාව
+newtab-clock-city-in-mumbai = මුම්බායි
+newtab-clock-city-in-delhi = දිල්ලිය
+newtab-clock-city-in-bangalore = බැංගලෝර්
+newtab-clock-city-cn-shanghai = ෂැංහයි
+newtab-clock-city-cn-beijing = බෙයිජිං
+newtab-clock-city-cn-shenzhen = ෂෙන්සෙන්
+newtab-clock-city-br-sao-paulo = සාවෝ - පෝලෝ
+newtab-clock-city-br-rio-de-janeiro = රියෝ ද ජැනෙයිරෝ
+newtab-clock-city-br-brasilia = බ්‍රසිලියා
+newtab-clock-city-id-jakarta = ජකාර්තා
+newtab-clock-city-id-surabaya = සුරබයා
+newtab-clock-city-id-makassar = මකස්සර්
+newtab-clock-city-ca-toronto = ටොරොන්ටෝව
+newtab-clock-city-ca-montreal = මොන්ට්‍රියල්
+newtab-clock-city-ca-vancouver = වැන්කුවර්
+newtab-clock-city-au-sydney = සිඩ්නි
+newtab-clock-city-au-perth = පර්ත්
+newtab-clock-city-au-adelaide = ඇඩිලේඩ්
+newtab-clock-city-pl-warsaw = වර්සව්
+newtab-clock-city-pl-krakow = ක්‍රකෝ
+newtab-clock-city-jp-tokyo = ටෝකියෝ
+newtab-clock-city-jp-osaka = ඕසකා
+newtab-clock-city-mx-mexico-city = මෙක්සිකෝ නගරය
+newtab-clock-city-mx-guadalajara = ගදලජාරා
+newtab-clock-city-it-rome = රෝමය
+newtab-clock-city-it-milan = මිලානය
+newtab-clock-city-ru-moscow = මොස්කව්
+newtab-clock-city-ru-saint-petersburg = සාන්ත පීටර්ස්බර්ග්
+newtab-clock-city-gb-london = ලන්ඩන්
+newtab-clock-city-gb-birmingham = බර්මින්ග්හැම්
+newtab-clock-city-es-madrid = මැඩ්‍රිඩ්
+newtab-clock-city-es-barcelona = බාසිලෝනාව
+newtab-clock-city-nl-amsterdam = ඈම්ස්ටර්ඩෑම්
+newtab-clock-city-ch-zurich = සූරිච්
+newtab-clock-city-at-vienna = වියානා
+newtab-clock-city-cz-prague = ප්‍රාග්
+newtab-clock-city-ar-buenos-aires = බුවනොස් අයිරීස්
+newtab-clock-city-gr-athens = ඇතන්ස්
+newtab-clock-city-hu-budapest = බුඩාපෙස්ට්
+newtab-clock-city-be-brussels = බෲසෙල්ස්
+newtab-clock-city-ua-kyiv = කිව්
+newtab-clock-city-fi-helsinki = හෙල්සින්කි
+newtab-clock-city-co-bogota = බොගෝටා
+newtab-clock-city-ph-manila = මැනිලා
+newtab-clock-city-tr-istanbul = ඉස්තාන්බුල්
+newtab-clock-city-my-kuala-lumpur = ක්වාලාලම්පූර්
+newtab-clock-city-eg-cairo = කයිරෝව
+newtab-clock-city-se-stockholm = ස්ටොක්හෝම්
+newtab-clock-city-ro-bucharest = බුකාරෙස්ට්
+newtab-clock-city-th-bangkok = බැංකොක්
+newtab-clock-city-ng-lagos = ලාගොස්
+newtab-clock-city-tw-taipei = තායිපේ
+newtab-clock-city-za-johannesburg = ජොහැන්නස්බර්ග්
+newtab-clock-city-cl-santiago = සන්තියාගෝ
+newtab-clock-city-pk-karachi = කරච්චිය
+newtab-clock-city-bg-sofia = සොෆියා
+newtab-clock-city-sg-singapore = සිංගප්පූරුව
+newtab-clock-city-hk-hong-kong = හොංකොං
+newtab-clock-city-sa-riyadh = රියාද්
+newtab-clock-city-dk-copenhagen = කෝපන්හේගන්
+newtab-clock-city-pe-lima = ලිමා
+newtab-clock-city-ke-nairobi = නයිරෝබි
+newtab-clock-city-nz-auckland = ඕක්ලන්තය
+newtab-clock-city-kr-seoul = සෝල්
+newtab-clock-city-lt-vilnius = විල්නියස්
+newtab-clock-city-ie-dublin = ඩබ්ලින්
+newtab-clock-city-ae-dubai = ඩුබායි
+newtab-clock-city-lv-riga = රිගා
+newtab-clock-city-pt-lisbon = ලිස්බනය
+newtab-clock-city-ir-tehran = ටෙහ්රාන්
+newtab-clock-city-bd-dhaka = ඩකා
+newtab-clock-city-ec-guayaquil = ගුආයාක්විල්
+newtab-clock-city-vn-ho-chi-minh-city = හෝචි මිං නගරය
+newtab-clock-city-np-kathmandu = කත්මන්ඩු
+newtab-clock-city-mm-yangon = යැන්ගොන්

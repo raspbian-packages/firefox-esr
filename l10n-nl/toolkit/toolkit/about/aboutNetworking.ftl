@@ -1,0 +1,111 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+about-networking-title = Over Netwerken
+about-networking-http = HTTP
+about-networking-http-clear-cache-button = HTTP-buffer wissen
+about-networking-sockets = Sockets
+about-networking-dns = DNS
+about-networking-dns-clear-cache-button = DNS-buffer wissen
+about-networking-dns-trr-url = DoH-URL
+about-networking-dns-trr-mode = DoH-modus
+about-networking-dns-suffix = DNS-achtervoegsel
+about-networking-websockets = WebSockets
+about-networking-alt-svc = Alt-Svc
+about-networking-alt-svc-origin = Oorsprong
+about-networking-alt-svc-alternate = Alternatief
+about-networking-alt-svc-alpn = ALPN
+about-networking-alt-svc-validated = Gevalideerd
+about-networking-alt-svc-ttl = TTL
+about-networking-alt-svc-origin-attributes-suffix = Isolatiesleutel
+about-networking-ssl-tokens = TLS-tokens
+# $count (Number) - Number of cached TLS resumption tokens
+about-networking-ssl-tokens-summary-count =
+    { $count ->
+        [one] { $count } token
+       *[other] { $count } tokens
+    }
+# $count (Number) - Number of cached tokens that have already expired
+about-networking-ssl-tokens-summary-expired =
+    { $count ->
+        [one] ({ $count } verlopen)
+       *[other] ({ $count } verlopen)
+    }
+# $decompressedLength (Number) - Total uncompressed size in bytes across all tokens
+# $compressedLength (Number) - Total compressed size in bytes across all tokens
+# $saved (Number) - Percentage of space saved by compression
+about-networking-ssl-tokens-summary-compression = { $decompressedLength } → { $compressedLength } B ({ $saved }% bespaard)
+# $used (Number) - Cache size currently in use, in kilobytes
+# $capacity (Number) - Total cache capacity, in kilobytes
+# $percent (Number) - Percentage of the cache capacity currently in use
+about-networking-ssl-tokens-summary-capacity = { $used } / { $capacity } KB ({ $percent }%)
+about-networking-ssl-tokens-partition-key = Partitiesleutel
+about-networking-ssl-tokens-tokens-column = Tokens
+about-networking-ssl-tokens-expires = Verloopt op
+about-networking-ssl-tokens-certificate = Certificaat
+# $count (Number) - Number of tokens sharing this row's host and certificate
+about-networking-ssl-tokens-token-list =
+    { $count ->
+        [one] { $count } token
+       *[other] { $count } tokens
+    }
+about-networking-ssl-tokens-restored =
+    .alt = Hersteld vanuit opslag
+    .title = Hersteld vanuit opslag
+about-networking-ssl-tokens-new =
+    .alt = Nieuw deze sessie
+    .title = Nieuw deze sessie
+about-networking-ssl-tokens-expired =
+    .alt = Verlopen
+    .title = Verlopen
+# $tokenLength (Number) - Total size in bytes of the raw TLS resumption token(s)
+# $decompressedLength (Number) - Total size in bytes before compression
+# $compressedLength (Number) - Total size in bytes after compression
+about-networking-ssl-tokens-compression-details =
+    .title = Tokens: { $tokenLength } B. Versleuteld: { $decompressedLength } → { $compressedLength } B.
+about-networking-ssl-tokens-ev-status = EV-certificaat
+about-networking-ssl-tokens-ct-status = Status van certificaattransparantie
+about-networking-ssl-tokens-overridable-error = Overschrijfbare foutcategorie
+about-networking-ssl-tokens-built-in-root = Ingebouwde root
+# $count (Number) - Number of certs in the succeeded cert chain
+about-networking-ssl-tokens-cert-chain = Certificaatketen ({ $count })
+# $count (Number) - Number of certs seen during the TLS handshake
+about-networking-ssl-tokens-handshake-certs = Handshake-certificaten ({ $count })
+about-networking-refresh = Vernieuwen
+about-networking-auto-refresh = Om de 3 seconden automatisch vernieuwen
+about-networking-hostname = Hostnaam
+about-networking-port = Poort
+about-networking-http-version = HTTP-versie
+about-networking-ssl = SSL
+about-networking-active = Actief
+about-networking-idle = Niet actief
+about-networking-host = Host
+about-networking-type = Type
+about-networking-sent = Verzonden
+about-networking-received = Ontvangen
+about-networking-family = Familie
+about-networking-trr = TRR
+about-networking-addresses = Adressen
+about-networking-expires = Verloopt (seconden)
+about-networking-originAttributesSuffix = Isolatiesleutel
+about-networking-flags = Extra labels
+about-networking-messages-sent = Berichten verzonden
+about-networking-messages-received = Berichten ontvangen
+about-networking-bytes-sent = Bytes verzonden
+about-networking-bytes-received = Bytes ontvangen
+about-networking-logging = Logboekregistratie
+about-networking-dns-lookup = DNS-zoekactie
+about-networking-dns-lookup-button = Omzetten
+about-networking-dns-domain = Domein:
+about-networking-dns-lookup-table-column = IP-adressen
+about-networking-dns-https-rrs-lookup-table-column = HTTPS-RR’s
+about-networking-networkid = Netwerk-ID
+about-networking-networkid-id = Netwerk-ID
+# Note: do not translate about:logging, as it is a URL.
+about-networking-moved-about-logging = Deze pagina is verplaatst naar <a data-l10n-name="about-logging-url">about:logging</a>.
+
+## Link is intended as "network link"
+
+about-networking-networkid-is-up = Koppeling is beschikbaar
+about-networking-networkid-status-known = Koppelingsstatus is bekend

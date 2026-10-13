@@ -1,0 +1,440 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = { -brand-shorter-name } güncellemesi indiriliyor
+appmenuitem-banner-update-available =
+    .label = Güncelleme var: Şimdi indir
+appmenuitem-banner-update-manual =
+    .label = Güncelleme var: Şimdi indir
+appmenuitem-banner-update-unsupported =
+    .label = Güncelleme yapılamadı: Sistem uyumsuz
+appmenuitem-banner-update-restart =
+    .label = Güncelleme var: Yeniden başlat
+appmenu-nova-update-title = { -brand-short-name } tarayıcısını güncellemek için yeniden başlat
+appmenu-nova-update-description = Sekmeleriniz yeniden açılacaktır.
+appmenu-nova-fxa-sign-in = Giriş yap
+appmenu-nova-switch-device-promo =
+    .message = Yakında yeni bilgisayar mı alacaksınız? { -brand-short-name } tarayıcısını yanınızda götürün!
+appmenu-nova-switch-device-link = Verilerinizi taşımayı öğrenin
+appmenuitem-new-tab =
+    .label = Yeni sekme
+appmenuitem-new-window =
+    .label = Yeni pencere
+appmenuitem-new-private-window =
+    .label = Yeni gizli pencere
+appmenuitem-history =
+    .label = Geçmiş
+appmenuitem-tab-groups =
+    .label = Sekme grupları
+appmenuitem-downloads =
+    .label = İndirilenler
+appmenuitem-passwords =
+    .label = Parolalar
+appmenuitem-extensions-and-themes =
+    .label = Uzantılar ve temalar
+appmenuitem-extensions =
+    .label = Uzantılar
+appmenuitem-print =
+    .label = Yazdır…
+appmenuitem-find-in-page =
+    .label = Sayfada bul…
+appmenuitem-translate =
+    .label = Sayfayı çevir…
+appmenuitem-zoom =
+    .value = Yakınlaştırma
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = { -brand-product-name } tarayıcısını paylaş
+appmenuitem-more-tools =
+    .label = Daha fazla araç
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = Yardım ve raporlama
+appmenuitem-help =
+    .label = Yardım
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Çık
+           *[other] Çık
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Uygulama menüsünü aç
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Uygulama menüsünü kapat
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Ayarlar
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Yakınlaştır
+appmenuitem-zoom-reduce =
+    .label = Uzaklaştır
+appmenuitem-fullscreen =
+    .label = Tam ekran
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Eşitlemek için giriş yap…
+appmenu-remote-tabs-turn-on-sync =
+    .label = Eşitlemeyi başlat…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Daha fazla sekme göster
+    .tooltiptext = Bu cihazdan daha fazla sekme göster
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Pasif sekmeler
+    .tooltiptext = Bu cihazdaki pasif sekmelere bak
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Açık sekme yok
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Diğer cihazlardaki sekmeleri görmek için sekme eşitlemeyi açın.
+appmenu-remote-tabs-opensettings =
+    .label = Ayarlar
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Diğer cihazlarınızdaki sekmeleri burada görmek ister misiniz?
+appmenu-remote-tabs-connectdevice =
+    .label = Başka bir cihaz bağla
+appmenu-remote-tabs-welcome = Diğer cihazlarınızdaki sekmelerin listesini görün.
+appmenu-remote-tabs-unverified = Hesabınızın doğrulanması gerekiyor.
+appmenuitem-fxa-toolbar-sync-now2 = Şimdi eşitle
+appmenuitem-fxa-sign-in = { -brand-product-name }’a giriş yap
+appmenuitem-fxa-manage-account = Hesabı yönet
+fxa-menu-sync-status-on = Eşitleme açık
+fxa-menu-sync-status-off = Eşitleme kapalı
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = Verilerinizi eşitleyin
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Verileriniz eşitlenmiyor
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Aç
+fxa-menu-sync-status-turn-on-button-aria-label = Aç
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Sync’e giriş yapın
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = { $deviceName } cihazını eşitle
+fxa-menu-manage-sync-settings =
+    .label = Eşitleme ayarlarını yönet
+fxa-menu-add-device =
+    .label = Cihaz ekle
+fxa-menu-manage-devices =
+    .label = Cihazlarımı yönet
+fxa-menu-device-missing =
+    .label = Cihazınızı göremiyor musunuz?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Tüm cihazlar
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Tüm cihazlar
+fxa-menu-get-firefox-mobile =
+    .label = Android veya iOS için { -brand-product-name }’u indirin
+fxa-menu-secure-sync-subpanel =
+    .title = Güvenli eşitleme
+appmenu-account-header = Hesap
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Son eşitleme: { $time }
+    .label = Son eşitleme: { $time }
+appmenu-fxa-sync-and-save-data2 = Verileri eşitle ve kaydet
+appmenu-fxa-signed-in-label = Giriş yap
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = Eşitlemek için giriş yapın
+appmenu-fxa-sign-in-promo-message = Verilerinizi her yere taşıyın
+appmenu-fxa-sign-in-promo-button =
+    .label = Giriş yap
+appmenu-fxa-setup-sync =
+    .label = Eşitlemeyi aç…
+appmenu-fxa-setup-sync-new = Aç
+appmenuitem-save-page =
+    .label = Sayfayı farklı kaydet…
+appmenuitem-fxa-sync-off-title = Eşitleme kapalı
+appmenuitem-fxa-sync-off-description = Yer imlerinizi, parolalarınızı ve diğer verilerinizi koruyun ve onlara her yerden erişin.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Profiler
+    .tooltiptext = Bir performans profili kaydet
+profiler-popup-button-recording =
+    .label = Profiler
+    .tooltiptext = Profilleyici bir profili kaydediyor
+profiler-popup-button-capturing =
+    .label = Profiler
+    .tooltiptext = Profilleyici bir profili yakalıyor
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = Daha fazla bilgi göster
+profiler-popup-description-title =
+    .value = Kaydet, analiz et, paylaş
+profiler-popup-description = Ekibinizle paylaşabileceğiniz profiller yayımlayarak performans sorunları üzerinde birlikte çalışın.
+profiler-popup-learn-more-button =
+    .label = Daha fazla bilgi alın
+profiler-popup-settings =
+    .value = Ayarlar
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Ayarları düzenle…
+profiler-popup-recording-screen = Kaydediliyor…
+profiler-popup-start-recording-button =
+    .label = Kaydı başlatın
+profiler-popup-discard-button =
+    .label = Sil
+profiler-popup-capture-button =
+    .label = Yakala
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = Profilleyici panelini aç
+    .tooltiptext = Profilleyici panelini aç
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Çoğu web uygulamasında hata ayıklama için önerilen ayarlar, düşük ek yük.
+profiler-popup-presets-web-developer-label =
+    .label = Web geliştirici
+profiler-popup-presets-firefox-description = { -brand-shorter-name } tarayıcısını profilleme için önerilen ayar.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = { -brand-shorter-name } tarayıcısında grafik hatalarını araştırma ayarı.
+profiler-popup-presets-graphics-label =
+    .label = Grafik
+profiler-popup-presets-media-description2 = { -brand-shorter-name } tarayıcısında ses ve video hatalarını araştırma ayarı.
+profiler-popup-presets-media-label =
+    .label = Ortam
+profiler-popup-presets-ml-description = { -brand-shorter-name } tarayıcısında makine öğrenimi hatalarını araştırma ayarı.
+profiler-popup-presets-ml-label =
+    .label = Makine öğrenimi
+profiler-popup-presets-networking-description = { -brand-shorter-name } tarayıcısında ağ hatalarını araştırma ayarı.
+profiler-popup-presets-networking-label =
+    .label = Ağ
+profiler-popup-presets-networking-with-logs-description = { -brand-shorter-name } tarayıcısında ağ loglarını da dahil ederek ağ hatalarını araştırma ayarı. Bu loglar hassas bilgiler içerebilir (örn. ziyaret ettiğiniz adresler).
+profiler-popup-presets-networking-with-logs-label =
+    .label = Ağ (loglarla birlikte)
+profiler-popup-presets-power-description = { -brand-shorter-name } tarayıcısında güç tüketimi hatalarını araştırma ayarı, düşük ek yük.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Güç
+profiler-popup-presets-debug-description = { -brand-shorter-name } tarayıcısında hata ayıklama ayarı. Yüksek ek yük nedeniyle performans çalışması için uygun değildir, tarayıcı davranışını anlamaya odaklanmak için kullanın.
+profiler-popup-presets-debug-label =
+    .label = Hata ayıklama
+profiler-popup-presets-web-compat-description = Performansı izlemek için değil de web sitelerindeki web uyumluluğu sorunlarıyla ilgili hata ayıklamak için önerilen ayarlar.
+profiler-popup-presets-web-compat-label =
+    .label = Web uyumluluğu
+profiler-popup-presets-custom-label =
+    .label = Özel
+
+##
+
+appmenu-manage-history =
+    .label = Geçmişi yönet
+appmenu-restore-session =
+    .label = Önceki oturumu geri yükle
+appmenu-clear-history =
+    .label = Yakın geçmişi temizle…
+appmenu-recent-history-subheader = Yakın geçmiş
+appmenu-recently-closed-tabs =
+    .label = Son kapatılan sekmeler
+appmenu-recently-closed-windows =
+    .label = Son kapatılan pencereler
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Geçmişte ara
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = Verilerinize tüm cihazlarınızdan erişin
+appmenu-sync-promo-signin-cta = Giriş yap
+appmenu-sync-promo-turnonsync =
+    .heading = Sekmelerinizi ve geçmişinizi eşitleyin
+appmenu-sync-promo-turnonsync-cta = Eşitlemeyi başlat
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = Mobil sekmelerinize ulaşın
+appmenu-sync-promo-connectdevice-cta = Cihaz bağla
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = Yer imlerinizi yanınızda taşıyın
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = Yer imlerinizi yanınızda taşıyın
+
+## Help panel
+
+appmenu-help-header =
+    .title = { -brand-shorter-name } yardımı
+appmenu-about =
+    .label = { -brand-shorter-name } hakkında
+    .accesskey = h
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = { -brand-product-name } tarayıcısını paylaş
+    .accesskey = t
+appmenu-get-help =
+    .label = Yardım al
+    .accesskey = Y
+appmenu-help-more-troubleshooting-info =
+    .label = Sorun giderme bilgileri
+    .accesskey = S
+appmenu-help-share-ideas =
+    .label = Fikir ve görüş paylaş…
+    .accesskey = F
+appmenu-help-switch-device =
+    .label = Yeni bir cihaza geçiş
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = Yardım ve raporlama
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Sorun giderme modu…
+    .accesskey = M
+appmenu-help-exit-troubleshoot-mode =
+    .label = Sorun giderme modunu kapat
+    .accesskey = m
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Aldatıcı siteyi ihbar et…
+    .accesskey = A
+appmenu-help-not-deceptive =
+    .label = Bu site aldatıcı değil…
+    .accesskey = d
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Araç çubuğunu özelleştir…
+appmenu-abouttranslations =
+    .label = Çeviri yap…
+appmenu-edit-pdf =
+    .label = PDF düzenle…
+appmenu-developer-tools-subheader = Tarayıcı araçları
+appmenu-developer-tools-extensions =
+    .label = Geliştiricilere özel uzantılar
+appmenuitem-report-broken-site =
+    .label = Bozuk siteyi rapor et
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Hesabınıza giriş yapın
+appmenuitem-monitor-title2 = Kimlik hırsızlığını önleyin
+appmenuitem-monitor-description2 = Verileriniz çalınırsa haberiniz olsun
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = { -monitor-brand-short-name } veri ihlali uyarıları
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Veri ihlali uyarıları alın
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = E-postanızı gizli tutun
+appmenuitem-relay-description2 = Gelen kutunuzu spam’den koruyun
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = E-posta maskelerini göster
+appmenuitem-relay-description = Gerçek e-posta adresinizi ve telefon numaranızı maskeleyin
+appmenuitem-services-relay-description = E-posta maskeleri panosunu aç
+appmenuitem-vpn-title2 = { -mozilla-vpn-brand-name } ile konumunuzu gizleyin
+appmenuitem-vpn-description5 = Tüm cihazlarınızda ekstra korumaya kavuşun
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = { -mozilla-vpn-brand-name }’i indirin
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Bütün cihazlarınızı koruyun
+appmenu-services-header = Servislerim
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Gizlilik araçları
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Mozilla’nın diğer koruma araçlarını deneyin:
+
+## Profiles panel
+
+appmenu-other-profiles = Diğer profiller
+appmenu-manage-profiles =
+    .label = Profilleri yönet
+appmenu-copy-profile =
+    .label = Bu profili kopyala
+appmenu-create-profile2 =
+    .label = Yeni profil oluştur
+appmenu-create-profile =
+    .label = Yeni profil
+appmenu-edit-profile =
+    .aria-label = Profili düzenle
+appmenu-edit-this-profile =
+    .label = Bu profili düzenle
+appmenu-profile-current-in-use = Kullanılan profil
+fxa-menu-create-profile-subpanel =
+    .title = Yeni profil oluştur
+fxa-menu-create-profile-heading = Yeni bir profille gezinti deneyiminizi geliştirin
+fxa-menu-create-profile-description = İş amaçlı yer imlerinizi, parolalarınızı ve geçmişinizi kişisel olanlardan ayrı tutabilirsiniz.
+fxa-menu-create-profile-confirm =
+    .label = Yeni profil oluştur
+fxa-menu-create-profile-learn-more =
+    .label = Profil nedir?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = { -brand-product-name } tarayıcısını paylaş
+appmenuitem-share-firefox-description = Gizliliği ön planda tutan tarayıcıyı arkadaşlarınıza önerin
+appmenu-profiles-2 =
+    .label = Profiller
+appmenu-profiles-header = Profiller
+appmenu-all-profiles =
+    .label = Tüm profiller
+appmenu-secure-sync-header = Güvenli eşitleme
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Son sekmeler
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] Eşitlenmiş { $tabCount } sekmeyi göster
+           *[other] Eşitlenmiş { $tabCount } sekmeyi göster
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Açık sayfayı bu cihaza gönder
