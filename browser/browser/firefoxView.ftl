@@ -1,0 +1,253 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+toolbar-button-firefox-view-2 =
+    .label = { -firefoxview-brand-name }
+    .tooltiptext = Visa senaste surfning mellan fönster och enheter
+menu-tools-firefox-view =
+    .label = { -firefoxview-brand-name }
+    .accesskey = F
+firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
+firefoxview-page-label =
+    .label = { -firefoxview-brand-name }
+# Used instead of the localized relative time when a timestamp is within a minute or so of now
+firefoxview-just-now-timestamp = Nu
+firefoxview-syncedtabs-signin-header-2 = Ditt { -brand-product-name } på alla dina enheter
+firefoxview-syncedtabs-signin-description-2 = För att se flikar du har öppna på din telefon och andra enheter, logga in eller registrera dig för ett konto. Med ett konto kan du också synkronisera dina lösenord, historik och mer.
+# The verb “Go” is implied but omitted from the headline: “[Go] from laptop to phone, seamlessly”
+firefoxview-syncedtabs-signin-header-3 = Från bärbar dator till telefon, smidigt
+firefoxview-syncedtabs-signin-description-3 = Håll din surfning ansluten mellan enheter — flikar, lösenord och historik, allt synkroniserat.
+firefoxview-syncedtabs-signin-primarybutton-2 = Logga in
+firefoxview-syncedtabs-adddevice-header-2 = Hämta flikar från överallt
+firefoxview-syncedtabs-adddevice-description-2 = Logga in på { -brand-product-name } på din telefon eller en annan dator för att se flikar här. Lär dig hur du <a data-l10n-name="url">ansluter ytterligare enheter</a>.
+firefoxview-syncedtabs-adddevice-primarybutton = Prova { -brand-product-name } för mobil
+# "Your tabs called" - this is playful messaging indicating that a user can find their synced tabs on their phone.
+firefoxview-syncedtabs-adddevice-header-3 = Dina flikar ringde. De finns på din telefon.
+firefoxview-syncedtabs-adddevice-description-3 = Skanna QR-koden för att hämta { -brand-product-name } för mobilen och börja synkronisera dina öppna flikar och mer. Lär dig hur du <a data-l10n-name="url">ansluter ytterligare enheter</a>.
+firefoxview-tabpickup-synctabs-primarybutton = Synkronisera öppna flikar
+firefoxview-tabpickup-synctabs-primarybutton-2 = Slå på synkronisering av flikar
+firefoxview-syncedtabs-synctabs-header = Uppdatera dina synkroniseringsinställningar
+firefoxview-syncedtabs-synctabs-description = För att se flikar från andra enheter måste du synkronisera dina öppna flikar.
+firefoxview-syncedtabs-synctabs-header-2 = Flikarsynkronisering är avstängd
+firefoxview-syncedtabs-synctabs-description-2 = Aktivera synkronisering igen för att hämta alla dina flikar från andra enheter.
+firefoxview-syncedtabs-loading-header = Synkronisering pågår
+firefoxview-syncedtabs-loading-description = När det är klart ser du alla flikar som du har öppna på andra enheter. Kom snart tillbaka.
+firefoxview-syncedtabs-loading-header-2 = Hämtar dina flikar…
+firefoxview-syncedtabs-loading-description-2 = Synkronisering pågår. Flikar kommer snart.
+firefoxview-tabpickup-fxa-admin-disabled-header = Din organisation har inaktiverat synkronisering
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } kan inte synkronisera flikar mellan enheter eftersom din organisation har inaktiverat synkronisering.
+firefoxview-tabpickup-fxa-admin-disabled-header-2 = Fliksynkronisering är avstängd
+firefoxview-tabpickup-fxa-disabled-by-policy-description-2 = Din organisation blockerade den här funktionen.
+firefoxview-tabpickup-network-offline-header = Kontrollera din internetanslutning
+firefoxview-tabpickup-network-offline-description = Om du använder en brandvägg eller proxy, kontrollera att { -brand-short-name } har behörighet att komma åt webben.
+firefoxview-tabpickup-network-offline-primarybutton = Försök igen
+firefoxview-tabpickup-network-offline-header-2 = { -brand-short-name } kan inte ansluta just nu
+firefoxview-tabpickup-network-offline-description-2 = Du kan vara nedkopplad eller så kan något blockera anslutningen.
+firefoxview-tabpickup-sync-error-header = Vi har problem med att synkronisera
+firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } kan inte nå synkroniseringstjänsten just nu. Försök igen lite senare.
+# “Sync hit a snag” means that the sync process is having a problem and can’t connect.
+firefoxview-tabpickup-sync-error-header-2 = Synkronisering stötte på problem
+firefoxview-tabpickup-generic-sync-error-description-2 = { -brand-short-name } kunde inte ansluta. Vänta ett ögonblick och försök sedan igen.
+firefoxview-tabpickup-sync-error-primarybutton = Försök igen
+firefoxview-tabpickup-sync-disconnected-header = Aktivera synkronisering för att fortsätta
+firefoxview-tabpickup-sync-disconnected-description = För att komma åt dina flikar måste du aktivera synkronisering i { -brand-short-name }.
+firefoxview-tabpickup-sync-disconnected-primarybutton = Aktivera synkronisering i inställningarna
+firefoxview-tabpickup-password-locked-header = Ange ditt primära lösenord för att visa flikar
+firefoxview-tabpickup-password-locked-description = För att komma åt dina flikar måste du ange det primära lösenordet för { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Läs mer
+firefoxview-tabpickup-password-locked-primarybutton = Ange primärt lösenord
+firefoxview-syncedtab-password-locked-link = <a data-l10n-name="syncedtab-password-locked-link">Läs mer</a>
+firefoxview-tabpickup-password-locked-header-2 = Lås upp flikar med ditt primära lösenord
+firefoxview-tabpickup-password-locked-description-2 = För din integritet är synkroniserade flikar skyddade. Ange ditt primära lösenord för { -brand-short-name } för att se flikar från dina andra enheter.
+firefoxview-tabpickup-signed-out-header = Logga in för att återansluta
+firefoxview-tabpickup-signed-out-description2 = För att återansluta och hämta dina flikar, logga in på ditt konto.
+firefoxview-tabpickup-signed-out-primarybutton = Logga in
+firefoxview-tabpickup-signed-out-header-2 = Logga in för att se dina flikar
+firefoxview-tabpickup-signed-out-description-2 = Återanslut för att visa flikar från andra enheter.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Ignorera { $tabTitle }
+# Variables:
+#   $targetURI (string) - URL that will be opened in the new tab
+firefoxview-tabs-list-tab-button =
+    .title = Öppna { $targetURI } i en ny flik
+firefoxview-collapse-button-show =
+    .title = Visa lista
+firefoxview-collapse-button-hide =
+    .title = Dölj lista
+firefoxview-overview-nav = Senaste surfning
+    .title = Senaste surfning
+firefoxview-overview-header = Senaste surfning
+    .title = Senaste surfning
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historik
+    .title = Historik
+firefoxview-history-header = Historik
+firefoxview-history-context-delete = Ta bort från historik
+    .accesskey = T
+firefoxview-history-context-forget-site = Glöm den här sidan…
+    .accesskey = G
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Öppna flikar
+    .title = Öppna flikar
+firefoxview-opentabs-header = Öppna flikar
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nyligen stängda flikar
+    .title = Nyligen stängda flikar
+firefoxview-recently-closed-header = Nyligen stängda flikar
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Flikar från andra enheter
+    .title = Flikar från andra enheter
+firefoxview-synced-tabs-header = Flikar från andra enheter
+
+##
+
+# Used for a link in collapsible cards, in the ’Recent browsing’ page of Firefox View
+firefoxview-view-all-link = Visa alla
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Fönster { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Fönster { $winID } (aktuellt)
+firefoxview-show-more = Visa mer
+firefoxview-show-less = Visa mindre
+firefoxview-show-all = Visa alla
+firefoxview-search-text-box-clear-button =
+    .title = Rensa
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Sök
+# Placeholder for the input field to search in history ("search" is a verb).
+firefoxview-search-text-box-history =
+    .placeholder = Sök i historik
+# Placeholder for the input field to search in bookmarks ("search" is a verb).
+firefoxview-search-text-box-bookmarks =
+    .placeholder = Sök i bokmärken
+# Placeholder for the input field to search in recently closed tabs ("search" is a verb).
+firefoxview-search-text-box-recentlyclosed =
+    .placeholder = Sök i nyligen stängda flikar
+# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
+firefoxview-search-text-box-tabs =
+    .placeholder = Sök flikar
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-opentabs =
+    .placeholder = Sök i öppna flikar
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+firefoxview-search-results-header = Sökresultat för "{ $query }"
+# Variables:
+#   $count (Number) - The number of visits matching the search query.
+firefoxview-search-results-count =
+    { $count ->
+        [one] { $count } webbplats
+       *[other] { $count } webbplatser
+    }
+# Message displayed when a search is performed and no matching results were found.
+# Variables:
+#   $query (String) - The search query.
+firefoxview-search-results-empty = Inga resultat för "{ $query }"
+firefoxview-sort-history-by-date-label = Sortera efter datum
+firefoxview-sort-history-by-site-label = Sortera efter webbplats
+firefoxview-sort-open-tabs-by-recency-label = Sortera efter senaste aktivitet
+firefoxview-sort-open-tabs-by-order-label = Sortera efter flikordning
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Idag - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Igår - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+firefoxview-history-site-localhost = (lokala filer)
+
+##
+
+firefoxview-show-all-history = Visa all historik
+
+## Message displayed in Firefox View when the user has no history data
+
+firefoxview-history-empty-header = Gå tillbaka dit du redan har varit
+firefoxview-history-empty-description = När du surfar kommer de sidor du besöker att listas här.
+firefoxview-history-empty-description-two = Att skydda din integritet är kärnan i vad vi gör. Det är därför du kan styra aktiviteten som { -brand-short-name } kommer ihåg i dina <a data-l10n-name="history-settings-url">historikinställningar</a>.
+# This appears when a user does not have browsing history yet.
+# This is indicating that a users browsers history will be found here when they start browsing.
+firefoxview-history-empty-header-2 = Ditt surfspår börjar här
+firefoxview-history-empty-description-2 = När du besöker sidor visas din historik här. Kontrollera vad som sparas i <a data-l10n-name="history-settings-url">inställningarna</a>.
+
+##
+
+# Button text for choosing a browser within the ’Import history from another browser’ banner
+firefoxview-choose-browser-button = Välj webbläsare
+    .title = Välj webbläsare
+
+## Message displayed in Firefox View when the user has chosen to never remember History
+
+firefoxview-dont-remember-history-empty-header-2 = Du har kontroll över vad { -brand-short-name } kommer ihåg
+firefoxview-dont-remember-history-empty-description-one = Just nu kommer inte { -brand-short-name } ihåg din surfaktivitet. För att ändra det, <a data-l10n-name="history-settings-url-two">uppdatera dina historikinställningar</a>.
+# “Off the record” is an English phrase journalists use when a conversation will not be recorded or reported on. It’s meant to convey that users’ history activity will not be recorded or shown.
+firefoxview-dont-remember-history-empty-header-3 = Du är privat
+firefoxview-dont-remember-history-empty-description-2 = { -brand-short-name } sparar inte din historik just nu. Du kan ändra det när som helst i <a data-l10n-name="history-settings-url-two">inställningarna</a>.
+
+##
+
+# This label is read by screen readers when focusing the close button for the "Import history from another browser" banner in Firefox View
+firefoxview-import-history-close-button =
+    .aria-label = Stäng
+    .title = Stäng
+
+## Text displayed in a dismissable banner to import bookmarks/history from another browser
+
+firefoxview-import-history-header = Importera historik från en annan webbläsare
+firefoxview-import-history-description = Gör { -brand-short-name } till din webbläsare. Importera webbhistorik, bokmärken och mer.
+
+## Message displayed in Firefox View when the user has no recently closed tabs data
+
+firefoxview-recentlyclosed-empty-header = Stängt en flik för tidigt?
+firefoxview-recentlyclosed-empty-description = Här hittar du flikarna du nyligen stängt, så att du snabbt kan öppna någon av dem igen.
+firefoxview-recentlyclosed-empty-description-two = Visa din <a data-l10n-name="history-url">webbhistorik</a> för att hitta flikar från tidigare.
+
+## This message is displayed below the name of another connected device when it doesn't have any open tabs.
+
+firefoxview-syncedtabs-device-notabs = Inga flikar öppna på den här enheten
+firefoxview-syncedtabs-connect-another-device = Anslut en annan enhet
+firefoxview-pinned-tabs =
+    .title = Fästa flikar
+firefoxview-tabs =
+    .title = Flikar
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Växla till { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Växla till (bokmärkt) { $tabTitle }
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Bokmärkt) { $url }
