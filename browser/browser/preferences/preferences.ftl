@@ -1,0 +1,894 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+global-privacy-control-description =
+    .label = Vebsaytlara de ki, məlumatlarımı satmasın və ya paylaşmasın
+    .accesskey = d
+non-technical-privacy-heading =
+    .label = Əlavə qorunma tədbirləri
+preferences-privacy-relay-available =
+    .description = Gerçək e-poçt ünvanınızı gizlədərək poçt qutunuzu spamdan qoruyur.
+    .label = { -relay-brand-name } e-poçt maskalarını təklif et
+# This is used to determine the width of the search field in about:preferences,
+# in order to make the entire placeholder string visible
+#
+# Please keep the placeholder string short to avoid truncation.
+#
+# Notice: The value of the `.style` attribute is a CSS string, and the `width`
+# is the name of the CSS property. It is intended only to adjust the element's width.
+# Do not translate.
+search-input-box2 =
+    .placeholder = Tənzimləmələrdə tap
+    .style = width: 15.4em
+pane-general-title = Ümumi
+pane-home-title = Ev
+pane-home-startup-title2 = Ana səhifə və başlanğıc
+    .title = Ana səhifə və başlanğıc
+pane-search-title2 = Axtarış
+    .title = Axtarış
+pane-privacy-title3 = Məxfilik və təhlükəsizlik
+    .title = Məxfilik və təhlükəsizlik
+pane-privacy-section =
+    .heading = Məxfilik və təhlükəsizlik
+pane-ai-controls-title2 = Sİ idarəetmələri
+    .title = Sİ idarəetmələri
+pane-about-firefox-title = { -brand-short-name } haqqında
+    .title = { pane-about-firefox-title }
+pane-appearance-title = Görünüş
+    .title = { pane-appearance-title }
+pane-downloads-title2 = Endirmələr
+    .title = Endirmələr
+pane-downloads3 =
+    .heading = Endirmələr
+pane-accessibility-title = Əlçatanlıq
+    .title = { pane-accessibility-title }
+pane-languages-title2 = Dillər
+    .title = Dillər
+preferences-languages-header3 =
+    .heading = Dillər
+settings-pane-labs-title2 = { -firefoxlabs-brand-name }
+    .title = { -firefoxlabs-brand-name }
+settings-pane-labs-header =
+    .heading = { -firefoxlabs-brand-name }
+pane-experimental-description4 = Eksperimental özəlliklərimizi sınayın! Onlar hələ hazırlanma mərhələsindədir və inkişaf etdirilir, buna görə də { -brand-short-name } səyyahının işləmə qaydasına təsir göstərə bilər. Biz bu özəlliklərdən istifadəniz haqqında məlumatları yalnız <a data-l10n-name="data-collection">texniki və qarşılıqlı əlaqə məlumatları</a> seçimi aktiv olduqda əldə edirik.
+help-button-label2 = { -brand-short-name } Dəstək
+    .title = { -brand-short-name } Dəstək
+addons-button-label2 = Uzantılar və Mövzular
+    .title = Uzantılar və Mövzular
+focus-search =
+    .key = f
+close-button =
+    .aria-label = Bağla
+
+## Browser Restart Dialog
+
+feature-enable-requires-restart = Yeni özəlliyi aktivləşdirmək üçün { -brand-short-name } yenidən başladılmalıdır.
+feature-disable-requires-restart = Yeni özəlliyi söndürmək üçün { -brand-short-name } yenidən başladılmalıdır.
+should-restart-title = { -brand-short-name } yenidən başladılsın
+should-restart-ok = { -brand-short-name } indi yenidən başlat
+cancel-no-restart-button = Ləğv et
+restart-later = Sonra yenidən başlat
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Uzantını aktivləşdirmək üçün <img data-l10n-name="menu-icon"/> menyusundan <img data-l10n-name="addons-icon"/> Əlavələrə gedin.
+
+## Preferences UI Search Results
+
+search-results-header = Axtarış Nəticələri
+search-results-help-link = Kömək lazımdır? <a data-l10n-name="url">{ -brand-short-name } Dəstək</a> ziyarət edin
+
+## General Section
+
+always-check-default =
+    .label = { -brand-short-name } səyyahının əsas səyyahınız olub olmadığını hər dəfə yoxla
+    .accesskey = y
+disable-extension =
+    .label = Uzantını söndür
+preferences-profiles-subpane-description =
+    .description = Hər bir profilin tarixçə, parollar və daha çoxu daxil olmaqla ayrıca səyahət məlumatları və tənzimləmələri vardır.
+preferences-profiles-section-header =
+    .description = Hər bir profilin tarixçə, parollar və daha çoxu daxil olmaqla ayrıca səyahət məlumatları və tənzimləmələri vardır.
+    .label = Profillər
+tabs-browsing-section =
+    .heading = Vərəqlər və səyahət
+pane-tabs-browsing-title2 = Vərəqlər və səyahət
+    .title = Vərəqlər və səyahət
+tabs-group-header2 =
+    .label = Vərəqlər
+ctrl-tab-recently-used-order =
+    .label = Ctrl+Tab son istifadə etmə sırasına görə vərəqlər arasında dönsün
+    .accesskey = T
+open-new-link-as-tabs =
+    .label = Keçidləri yeni pəncərə yerinə vərəqlərdə aç
+    .accesskey = p
+warn-on-open-many-tabs =
+    .label = Çoxlu vərəq açmağın { -brand-short-name } səyyahını yavaşlada biləcəyindən xəbərdar olun
+    .accesskey = d
+show-tabs-in-taskbar =
+    .label = Vərəqlərə ön baxışı Windows tapşırıq panelində göstər
+    .accesskey = e
+browser-containers-learn-more = Ətraflı öyrən
+containers-disable-alert-title = Bütün konteyner vərəqlər qapatılsın?
+startup-group =
+    .label = Başlanğıc
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
+containers-disable-alert-desc =
+    { $tabCount ->
+        [one] Əgər Konteyner Vərəqlərini indi söndürsəniz { $tabCount } konteyner vərəqi qapadılacaq. Konteyner Vərəqləri söndürmək istədiyinizə əminsiniz?
+       *[other] Əgər Konteyner Vərəqlərini indi söndürsəniz { $tabCount } konteyner vərəqi qapadılacaq. Konteyner Vərəqləri söndürmək istədiyinizə əminsiniz?
+    }
+containers-disable-alert-ok-button =
+    { $tabCount ->
+        [one] { $tabCount } konteyner vərəqini qapat
+       *[other] { $tabCount } konteyner vərəqini qapat
+    }
+
+##
+
+containers-disable-alert-cancel-button = Açıq tut
+containers-remove-alert-title = Bu konteyner silinsin?
+# Variables:
+#   $count (number) - Number of tabs that will be closed.
+containers-remove-alert-msg =
+    { $count ->
+        [one] Əgər bu Konteyneri indi silsəz, { $count } konteyner vərəqi qapadılacaq. Bu Konteyneri silmək istədiyinizə əminsiniz?
+       *[other] Əgər bu Konteyneri indi silsəz, { $count } konteyner vərəqi qapadılacaq. Bu Konteyneri silmək istədiyinizə əminsiniz?
+    }
+containers-remove-ok-button = Bu konteyneri sil
+containers-remove-cancel-button = Bu konteyneri silmə
+browser-layout-header2 =
+    .label = Səyyah düzəni
+browser-layout-horizontal-tabs2 =
+    .description = Vərəqlər yuxarıda
+    .label = Üfüqi vərəqlər
+    .title = Vərəqlər yuxarıda
+browser-layout-vertical-tabs2 =
+    .description = Yan paneldə, kənarda vərəqlər
+    .label = Şaquli vərəqlər
+    .title = Yan paneldə, kənarda vərəqlər
+browser-layout-show-sidebar2 =
+    .description = Əsas görünüşdən çıxmadan əlfəcinlərə, telefonunuzdakı vərəqlərə, süni intellekt söhbət botlarına və digər funksiyalara sürətli çıxış əldə edin.
+    .label = Yan paneli göstər
+
+## General Section - Language & Appearance
+
+language-and-appearance-header = Dil və Görünüş
+appearance-group2 =
+    .description = Bəzi vebsaytlar sizin seçimlərinizə uyğunlaşmaq üçün rənglərini dəyişir. Öz rəng sxeminizi seçin.
+    .label = Vebsayt görünüşü
+preferences-web-appearance-choice-light2 =
+    .label = Açıq
+    .title = Vebsayt fonu və məzmunu üçün açıq görünüşü istifadə edin.
+preferences-web-appearance-choice-dark2 =
+    .label = Tünd
+    .title = Vebsayt fonu və məzmunu üçün tünd görünüşü istifadə edin.
+language-header = Dil
+choose-language-description = Səhifələrin göstəriləcəyi dili seçin
+website-language-heading =
+    .description = Bəzi səhifələr birdən çox dildə göstərilə bilər. Göstəriləcək dil sıralamasını seçin.
+    .label = Vebsaytın dili
+website-preferred-language =
+    .label = Üstünlük verilən dillər
+choose-button =
+    .label = Seçin…
+    .accesskey = S
+choose-browser-language-description = Menyu, mesaj və bildirişlərin { -brand-short-name } səyyahında göstərildiyi dilləri seçin.
+manage-browser-languages-button =
+    .label = Alternativləri seç
+    .accesskey = l
+confirm-browser-language-change-description = Dəyişiklikləri tətbiq etmək üçün { -brand-short-name } səyyahını yenidən başladın
+confirm-browser-language-change-button = Tətbiq et və Yenidən başlat
+browser-language-heading =
+    .description = { -brand-short-name } səyyahında menyuların, mesajların və bildirişlərin göstərilməsi üçün istifadə ediləcək dili seçin.
+    .label = Səyyahın dili
+browser-language-preferred-label =
+    .label = Üstünlük verilən dil
+browser-language-fallback-label =
+    .description = Üstünlük verilən dilin lokallaşdırılması tam olmadıqda istifadə olunur.
+    .label = Ehtiyat dil
+browser-language-install-error =
+    .message = { -brand-short-name } hazırda dillərinizi yeniləyə bilmir. İnternetə qoşulu olduğunuza əmin olun və təkrar yoxlayın.
+translate-exceptions =
+    .label = İstisnalar…
+    .accesskey = t
+check-user-spelling =
+    .label = Hərf səhvləriniz siz yazdıqca yoxlanılsın
+    .accesskey = y
+
+## General Section - Files and Applications
+
+files-and-applications-title = Fayllar və Tətbiqlər
+download-save-files-header =
+    .label = Faylların saxlandığı yer
+download-save-where-3 =
+    .aria-label = Faylların saxlandığı yer
+download-always-ask-where2 =
+    .label = Endirmədən öncə faylların harada saxlanacağını soruş
+    .accesskey = A
+download-private-browsing-delete2 =
+    .label = Məxfi pəncərədəki endirmələri qapanışda sil
+    .accesskey = D
+applications-header = Tədbiqetmələr
+applications-description = { -brand-short-name } səyyahının internetdən endirdiyiniz faylları və ya internetdə gəzərkən işlətdiyiniz tətbiqetmələri necə idarə edəcəyini seçin.
+applications-setting2 =
+    .description = { -brand-short-name } səyyahının endirilmiş faylları və məzmunu necə idarə edəcəyini seçin.
+    .label = Fayllar və tətbiqetmələr
+applications-filter =
+    .placeholder = Fayl növləri və tətbiqetmələri axtar
+applications-type-column =
+    .label = Məzmun formatı
+    .accesskey = t
+applications-type-heading = Məzmun formatı
+applications-action-column =
+    .label = Əməliyyat
+    .accesskey = Ə
+applications-action-heading = Əməliyyat
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = { $extension } faylı
+applications-action-save =
+    .label = Fərqli saxla
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = { $app-name } istifadə olunsun
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = { $app-name } istifadə olunsun (standart)
+applications-use-other =
+    .label = Başqasından istifadə et…
+applications-select-helper = Köməkçi proqramı seçin
+applications-manage-app =
+    .label = Proqram detalları…
+applications-always-ask =
+    .label = Həmişə soruş
+# Variables:
+#   $type-description (string) - Description of the type (e.g "Portable Document Format")
+#   $type (string) - The MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+
+## Firefox updates
+
+drm-group =
+    .label = Rəqəmsal Hüquqların İdarəsi (DRM) Məzmunu
+play-drm-content =
+    .label = DRM-idarəli məzmunu oxut (güvənilir deyil)
+    .accesskey = o
+play-drm-content-learn-more = Ətraflı öyrən
+# Variables:
+# $version (string) - Firefox version
+update-application-version = Buraxılış { $version } <a data-l10n-name="learn-more">Yeniliklər</a>
+update-history-2 =
+    .label = Yeniləmə tarixçəsini göstər
+    .accesskey = e
+
+## Firefox updates
+
+update-application-heading =
+    .description = Yeniləmələr { -brand-short-name } səyyahının sürətini, stabilliyini və təhlükəsizliyini artırır.
+    .label = { -brand-short-name } yeniləmələri
+
+## Firefox support
+
+support-get-help =
+    .label = Köməl alın
+
+## General Section - Performance
+
+performance-settings-learn-more = Ətraflı öyrən
+performance-allow-hw-accel =
+    .label = Mümkün olduğu vaxt təchizat sürətlənməsindən istifadə et
+    .accesskey = d
+performance-limit-content-process-option = Məzmun proses limiti
+    .accesskey = L
+performance-limit-content-process-enabled-desc = Əlavə məzmun prosesləri çox vərəq işlətdikdə məhsuldarlığı artıra bilərlər, amma daha çox yaddaş işlədəcəklər.
+performance-limit-content-process-blocked-desc = Məzmun proseslərinin sayısının dəyişdirilməsi ancaq çox-prosesli { -brand-short-name } ilə mümkündür. <a data-l10n-name="learn-more">Çox-prosesliliyin aktiv olmasını necə yoxlayacağınızı görün</a>
+# Variables:
+#   $num (number) - Default value of the `dom.ipc.processCount` pref.
+performance-default-content-process-count =
+    .label = { $num } (standart)
+performance-group =
+    .label = Məhsuldarlıq
+
+## Accessibility page
+
+browsing-use-autoscroll =
+    .label = Avtomatik sürüşdürmədən istifadə et
+    .accesskey = A
+browsing-use-smooth-scrolling =
+    .label = Axıcı sürüşdürmədən istifadə et
+    .accesskey = c
+browsing-use-onscreen-keyboard =
+    .label = Lazım olduqda toxunmalı klaviaturanı göstər
+    .accesskey = k
+browsing-use-cursor-navigation =
+    .label = Səhifələrdə hərəkət edərkən yazi kursorundan istifadə et
+    .accesskey = S
+browsing-search-on-start-typing =
+    .label = Yazmağa başladığınız zaman söz axtarılsın
+    .accesskey = x
+recommendations-group =
+    .label = Tövsiyələr
+browsing-cfr-recommendations =
+    .label = Gəzərkən uzantıları məsləhət gör
+    .accesskey = R
+browsing-group =
+    .label = Səyahət
+preferences-accessibility-header =
+    .heading = Əlçatanlıq
+
+## Home Section
+
+home-new-windows-tabs-header = Yeni Pəncərələr və Vərəqlər
+home-new-windows-tabs-description2 = Ev səhifənizi, yeni pəncərə və vərəqləri açdığınızda nə gördüyünüzü seçin.
+home-section =
+    .heading = Ana səhifə və başlanğıc
+
+## Home Section - Default Browser
+
+is-not-default-browser-2 =
+    .message = Psst, { -brand-short-name } sizin əsas səyyahınız deyil.
+set-as-my-default-browser-2 =
+    .label = Əsas səyyahım et
+    .accesskey = m
+
+## Custom Homepage subpage
+
+home-homepage-mode-label = Ev səhifəsi və yeni pəncərələr
+home-newtabs-mode-label = Yeni vərəqlər
+home-restore-defaults =
+    .label = İlkin Seçənəkləri Bərpa et
+    .accesskey = R
+home-mode-choice-custom =
+    .label = Fərdi Ünvanlar…
+home-mode-choice-blank =
+    .label = Boş Səhifə
+home-homepage-custom-url =
+    .placeholder = Ünvan Yapışdır
+# This string has a special case for '1' and [other] (default). If necessary for
+# your language, you can add {$tabCount} to your translations and use the
+# standard CLDR forms, or only use the form for [other] if both strings should
+# be identical.
+use-current-pages =
+    .label =
+        { $tabCount ->
+            [1] Hazırkı səhifədən istifadə et
+           *[other] Hazırkı səhifələri istifadə et
+        }
+    .accesskey = H
+choose-bookmark =
+    .label = Əlfəcin istifadə et…
+    .accesskey = Ə
+home-homepage-title =
+    .label = Ana Səhifə
+home-homepage-new-windows =
+    .label = Yeni pəncərə
+home-homepage-new-tabs =
+    .label = Yeni vərəqlər
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-button =
+    .label = Müəyyən bir sayt seç
+home-custom-homepage-address =
+    .placeholder = Ünvanı daxil et
+home-custom-homepage-address-button =
+    .label = Ünvan əlavə et
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-bookmarks-button =
+    .label = Əlfəcinlər…
+
+## Home Section - Firefox Home Content Customization
+
+home-prefs-search-header =
+    .label = Web Axtarış
+
+##
+
+home-prefs-recommended-by-learn-more = Bu necə işləyir
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Sponsorlaşdırılmış Hekayələr
+home-prefs-highlights-option-visited-pages =
+    .label = Baxılmış Səhifələr
+home-prefs-highlights-options-bookmarks =
+    .label = Əlfəcinlər
+home-prefs-highlights-option-most-recent-download =
+    .label = Son Endirmələr
+home-prefs-recent-activity-header =
+    .label = Son fəaliyyət
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } sətir
+           *[other] { $num } sətir
+        }
+
+## Search Section
+
+search-show-suggestions-url-bar-option =
+    .label = Ünvan sətri nəticələrində axtarış təkliflərini göstər
+    .accesskey = l
+search-suggestions-cant-show-2 =
+    .message = { -brand-short-name } səyyahını tarixçəni xatırlamayacaq şəkildə nizamladığınız üçün ünvan sətri nəticələrində axtarış təklifləri göstərilməyəcək.
+search-one-click-desc = Ünvan və axtarış sətrinə söz daxil etdiyinizdə gələn axtarış mühərriklərini seçin.
+search-one-click-header-3 =
+    .description = Ünvan sətrində hansı axtarış mühərrikləri və qısayollarının görünəcəyini seçin.
+    .label = Əlavə axtarış mühərrikləri
+search-choose-engine-column =
+    .label = Axtarış Mühərriyi
+search-choose-keyword-column =
+    .label = Açar söz
+search-restore-default =
+    .label = İlkin axtarış nizamlarını bərpa et
+    .accesskey = b
+search-remove-engine =
+    .label = Sil
+    .accesskey = S
+search-add-engine-2 =
+    .label = Axtarış mühərriyi əlavə et
+    .accesskey = A
+search-find-more-link = Daha çox axtarış mühərriyi tap
+# This warning is displayed when the chosen keyword is already in use
+# ('Duplicate' is an adjective)
+search-keyword-warning-title = Təkrarlanan Açar Söz
+# Variables:
+#   $name (string) - Name of a search engine.
+search-keyword-warning-engine = Hazırda “{ $name }” tərəfindən istifadə olunan bir açar söz seçdiniz. Lütfən başqa birini seçin.
+search-keyword-warning-bookmark = Hazırda bir əlfəcin tərəfindən istifadə olunan açar söz seçdiniz. Lütfən başqa birini seçin.
+search-engine-group =
+    .label = Əsas axtarış mühərriyi
+search-default-engine =
+    .aria-label = Əsas axtarış mühərriyi
+
+## Account and sync
+
+account-placeholder2 =
+    .description = Daxil olun və məlumatlarınızı məxfi, şifrlənmiş və { -brand-short-name } istifadə etdiyiniz hər yerdə bir anda əlçatan halda saxlayın.
+    .label = Siz daxil olmamısınız.
+account-sync-section =
+    .heading = Hesab və sinxronizasiya
+pane-account-sync-title2 = Hesab və sinxronizasiya
+    .title = Hesab və sinxronizasiya
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
+sync-signedout-caption = Web-inizi özünüzlə gəzdirin
+# This message contains two links and two icon images.
+#   `<img data-l10n-name="android-icon"/>` - Android logo icon
+#   `<a data-l10n-name="android-link">` - Link to Android Download
+#   `<img data-l10n-name="ios-icon">` - iOS logo icon
+#   `<a data-l10n-name="ios-link">` - Link to iOS Download
+#
+# They can be moved within the sentence as needed to adapt
+# to your language, but should not be changed or translated.
+sync-mobile-promo = Mobil cihazınızda sinronlaşdırmaq istəyirsinizsə <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> və ya <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a> üçün Firefox endirin.
+
+## Firefox account - Signed in
+
+sync-profile-picture-with-alt =
+    .alt = Profil şəklini dəyiş
+    .tooltiptext = Profil şəklini dəyiş
+sync-sign-out =
+    .label = Hesabdan çıx…
+    .accesskey = g
+sync-sign-out2 =
+    .label = Hesabdan çıx
+    .accesskey = g
+sync-manage-account = Hesabı idarə et
+    .accesskey = b
+sync-manage-account2 =
+    .label = Hesabı idarə et
+    .accesskey = b
+
+## Variables
+## $email (string) - Email used for Firefox account
+## $name (string) - Name used for Firefox account
+
+sync-signedin-unverified = { $email } təsdiqlənməyib.
+sync-signedin-login-failure = Yenidən qoşulmaq üçün daxil olun { $email }
+sync-signedin-login-failure2 =
+    .description = Yenidən bağlanmaq və məlumatlarınızı sinxronizə etməyə başlamaq üçün təkrar daxil olun.
+    .label = Siz { $email } hesabından çıxış etdiniz
+
+##
+
+sync-remove-account =
+    .label = Hesabı sil
+    .accesskey = H
+sync-sign-in =
+    .label = Daxil ol
+    .accesskey = x
+
+## The list of things currently syncing.
+
+sync-currently-syncing-addons = Əlavələr
+
+## The "Choose what to sync" dialog.
+
+sync-engine-bookmarks =
+    .label = Əlfəcinlər
+    .accesskey = c
+sync-engine-history =
+    .label = Keçmiș
+    .accesskey = i
+sync-engine-tabs =
+    .label = Açıq Vərəqlər
+    .tooltiptext = Sinxronlaşdırılmış cihazlarda açıq olanların siyahısı
+    .accesskey = V
+sync-engine-addresses =
+    .label = Ünvanlar
+    .tooltiptext = Saxladığınız poçt ünvanları (ancaq masaüstü)
+    .accesskey = v
+sync-engine-addons =
+    .label = Əlavələr
+    .tooltiptext = Firefox masaüstü üçün uzantı və mövzular
+    .accesskey = Ə
+sync-engine-settings =
+    .label = Tənzimləmələr
+    .tooltiptext = Dəyişdirdiyiniz Ümumi, Məxfilik və Təhlükəsizlik tənzimləmələri
+    .accesskey = s
+
+## The device name controls.
+
+sync-device-name-header = Cihaz Adı
+sync-device-name-header-2 =
+    .label = Cihaz Adı
+# Variables:
+#   $placeholder (string) - The placeholder text of the input
+sync-device-name-input =
+    .aria-label = Cihaz Adı
+    .placeholder = { $placeholder }
+sync-device-name-change-2 =
+    .label = Cihaz adını dəyişdir
+    .accesskey = h
+sync-device-name-change =
+    .label = Cihaz adını dəyişdir…
+    .accesskey = h
+sync-device-name-cancel =
+    .label = Ləğv et
+    .accesskey = L
+sync-device-name-save =
+    .label = Saxla
+    .accesskey = S
+sync-connect-another-device = Digər cihazı qoş
+sync-connect-another-device-2 =
+    .label = Digər cihazı qoş
+
+## Privacy Section
+
+privacy-header = Səyahər Məxfiliyi
+
+## Privacy Panel Settings
+
+forms-exceptions =
+    .label = İstisnalar…
+    .accesskey = n
+forms-primary-pw-use =
+    .label = Baş paroldan istifadə et
+    .accesskey = U
+forms-primary-pw-use-2 =
+    .description = Saxlanılmış parollarınızı qorumaq üçün əlavə təhlükəsizlik səviyyəsi təmin edir.
+    .label = Baş paroldan istifadə et
+    .accesskey = U
+forms-primary-pw-set =
+    .label = Baş parolu təyin et
+forms-primary-pw-on-2 = Baş parol <strong>AKTİVDİR</strong>
+forms-primary-pw-on =
+    .label = Baş parol AKTİVDİR
+forms-primary-pw-change-2 =
+    .label = Baş parolu dəyiş
+# This string uses the former name of the Primary Password feature
+# ("Master Password" in English) so that the preferences can be found
+# when searching for the old name. The accesskey is unused.
+forms-master-pw-change =
+    .label = Ana parolu dəyişdir…
+    .accesskey = d
+forms-primary-pw-change =
+    .label = Baş parolu dəyiş…
+    .accesskey = P
+forms-primary-pw-fips-title = Hazırda FIPS rejimindəsiniz. FIPS rejimi üçün boş buraxılmamış Baş Parol lazımdır.
+forms-master-pw-fips-desc = Parolu dəyişdirmək mümkün olmadı.
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Primary Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+primary-password-os-auth-dialog-message-macosx = Baş Parol yarat
+
+## Privacy section - Autofill
+
+pane-passwords-autofill-title2 = Parollar və avto doldurma
+    .title = Parollar və avto doldurma
+preferences-passwords-autofill-header =
+    .heading = Parollar və avtomatik forma doldurma
+
+## Privacy Section - History
+
+history-remember-option-never2 =
+    .description = Hər pəncərə məxfi pəncərə kimi davranacaq. Bu seçim edildikdə uzantılara icazə verilməlidir.
+    .label = Tarixçəni heç vaxt xatırlama
+history-remember-option-custom2 =
+    .label = Tarixçəni özəlləşdir
+history-remember-description4 =
+    .aria-label = { history-group.label }
+    .description = { -brand-short-name } səyahət, endirmə, forma və axtarış tarixçənizi yadda saxlayacaq.
+history-dontremember-description4 =
+    .aria-label = { history-group.label }
+    .description = { -brand-short-name } gizli baxışdakı nizamlamalardan istifadə edəcək və siz Web-də gəzərkən keçmişlə bağlı heçnə xatırlamayacaq.
+history-private-browsing-permanent =
+    .label = Həmişə gizli baxış rejimindən istifadə et
+    .accesskey = g
+history-remember-browser-option =
+    .label = Səyahət və endirmə tarixini yadda saxla
+    .accesskey = t
+history-remember-search-option =
+    .label = Axtarış və form keçmişini xatırla
+    .accesskey = f
+history-clear-on-close-option =
+    .label = { -brand-short-name } bağlananda tarixçəni sil
+    .accesskey = s
+history-clear-on-close-settings =
+    .label = Nizamlar…
+    .accesskey = a
+history-shutdown-exceptions =
+    .label = İstisnaları idarə et
+    .accesskey = i
+history-clear-button =
+    .label = Tarixçəni Təmizlə…
+    .accesskey = T
+history-section-header =
+    .description = { -brand-short-name } səyyahının qapadıldıqda nələri xatırlamasını istədiyinizi seçin.
+    .label = Tarixçə
+history-group =
+    .label = Tarixçə
+history-mode-radio-group =
+    .aria-label = Tarixçə
+history-remember-option-all2 =
+    .label = Tarixçəni xatırla
+
+## Privacy Section - Site Data
+
+sitedata-total-size-calculating = Sayt məlumatları və keş ölçüsü hesablanır…
+# Variables:
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size3 = Saytlar hazırda <strong>{ $value } { $unit }</strong> disk sahəsi istifadə edir.
+sitedata-learn-more = Ətraflı öyrən
+sitedata-delete-on-close2 =
+    .label = { -brand-short-name } səyyahını hər dəfə qapatdıqda çərəz və sayt məlumatlarını təmizlə
+    .accesskey = c
+sitedata-clear2 =
+    .label = Səyahət məlumatlarını təmizlə
+    .accesskey = l
+sitedata-settings2 =
+    .label = Səyahət məlumatlarını idarə et
+    .accesskey = M
+sitedata-cookies-exceptions =
+    .label = İstisnaları idarə et…
+    .accesskey = İ
+sitedata-cookies-exceptions2 =
+    .description = Hansı saytların çərəz və sayt məlumatlarını işlədib-işlətməyəcəyini dəqiqləşdirə bilərsiz.
+    .label = İstisnaları idarə et
+    .accesskey = i
+sitedata-heading =
+    .description = Çərəzlərinizi, tarixçənizi, keşi, vebsayt məlumatları və daha çoxunu idarə edin.
+    .label = Səyahət məlumatları
+sitedata-settings3 =
+    .label = Seçilmiş saytların məlumatlarını təmizlə
+    .accesskey = s
+sitedata-cookies-exceptions3 =
+    .description = Seçilmiş saytların çərəz və sayt məlumatları ilə necə rəftar edəcəyini seçin.
+    .label = İstisnaları idarə et
+    .accesskey = i
+cookies-site-data-group =
+    .label = Çərəzlər və Sayt Məlumatları
+
+## Search Section
+
+addressbar-locbar-history-option =
+    .label = Səyahət tarixçəsi
+    .accesskey = H
+addressbar-locbar-bookmarks-option =
+    .label = Əlfəcinlər
+    .accesskey = l
+addressbar-locbar-openpage-option =
+    .label = Açıq vərəqlər
+    .accesskey = A
+
+## Privacy Section - Content Blocking
+
+content-blocking-enhanced-tracking-protection = Artırılmış İzlənmə Qoruması
+content-blocking-learn-more = Ətraflı Öyrən
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Standart
+    .accesskey = d
+enhanced-tracking-protection-setting-strict =
+    .label = Sərt
+    .accesskey = r
+enhanced-tracking-protection-setting-custom =
+    .label = Fərdi
+    .accesskey = F
+
+##
+
+content-blocking-reload-tabs-button =
+    .label = Bütün Vərəqləri Yenilə
+    .accesskey = R
+content-blocking-tracking-protection-option-all-windows =
+    .label = Bütün pəncərələrdə
+    .accesskey = B
+content-blocking-option-private =
+    .label = Ancaq Məxfi Pəncərələrdə
+    .accesskey = p
+content-blocking-cookies-label =
+    .label = Çərəzlər
+    .accesskey = z
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Kriptomaynerlər
+    .accesskey = K
+
+## Privacy Section - Tracking
+
+tracking-manage-exceptions =
+    .label = İstisnaları idarə et…
+    .accesskey = s
+
+## Privacy Section - Permissions
+
+permissions-notification-pause =
+    .label = { -brand-short-name } yenidən başladılana qədər bildirişləri dayandır
+    .accesskey = n
+permissions-location2 =
+    .label = Mövqe
+permissions-camera2 =
+    .label = Kamera
+permissions-microphone2 =
+    .label = Mikrofon
+permissions-notification2 =
+    .label = Bildirişlər
+permissions-header3 =
+    .description = Saytların nələrə giriş əldə edə biləcəyini, nələri idarə edə və ya işə sala biləcəyini tənzimləyin.
+    .label = İcazələr
+permissions-data-section =
+    .heading = İcazələr və məlumatlar
+pane-permissions-data-title2 = İcazələr və məlumatlar
+    .title = İcazələr və məlumatlar
+
+## Privacy Section - Data Collection
+
+# Promotional message displayed in the Settings panes to inform users of the new redesign
+settings-redesign-promo =
+    .heading = Eyni tənzimləmələr, yeni görünüşdə!
+    .message = Bu səhifəni gözdən keçirməyi və lazım olanları tapmağı daha asan etmək üçün yenidən təşkil etdik. Şəxsi ayarlarınız dəyişməyib və hər şey əvvəlki kimi buradadır. Məsləhət: sizə lazım olan bölməyə birbaşa keçmək üçün axtarışdan istifadə edin.
+data-collection-studies-link =
+    .label = { -brand-short-name } tədqiqatlarını gör
+
+## Privacy Section - Security
+##
+## It is important that wording follows the guidelines outlined on this page:
+## https://developers.google.com/safe-browsing/developers_guide_v2#AcceptableUsage
+
+security-header = Təhlükəsizlik
+security-enable-safe-browsing =
+    .label = Təhlükəli və aldadıcı məzmunu blokla
+    .accesskey = b
+security-enable-safe-browsing-link = Ətraflı öyrən
+security-block-downloads =
+    .label = Təhlükəli endirmələri blokla
+    .accesskey = d
+security-block-uncommon-software =
+    .label = İstənməyən və ümumi olmayan proqramlar haqqında xəbərdar olun
+    .accesskey = o
+
+## Privacy Section - Certificates
+
+certs-devices-enable-fips = FIPS aktivləşdir
+
+## DoH Section
+
+preferences-doh-header = HTTPS üzərindən DNS
+dns-over-https-group2 =
+    .description = HTTPS üzərindən Domen Adları Sistemi (DoH) sayt sorğularını (ünvanların axtarışını) şifrələyir ki, internet provayderinizin və ya digər şəxslərin hansı saytlara daxil olmaq üzrə olduğunuzu görməsi daha çətin olsun.
+    .label = HTTPS üzərindən DNS
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = İşçi masası
+downloads-folder-name = Endirmələr
+
+## Appearance page
+
+preferences-appearance-header =
+    .heading = Görünüş
+related-settings-group =
+    .label = Əlaqəli tənzimləmələr
+related-settings-tabs-browsing-link =
+    .label = Səyyah düzənini özəlləşdirin
+
+## AI controls page
+
+preferences-ai-controls-description = { -brand-short-name } səyyahında sizin həmişə seçim imkanınız var. Bura süni intellektlə təkmilləşmiş özəlliklərdən istifadə edib-etməmək də daxildir. Tezliklə daha çox idarəetmə gələcək.
+preferences-ai-controls-block-ai-label = Süni İntellekt təkmilləşdirmələrini əngəlləyin
+preferences-ai-controls-block-ai-description = Əngəlləmək o deməkdir ki, siz { -brand-short-name } səyyahında yeni və ya hazırkı Sİ təkmilləşdirmələrini, yaxud onlar barəsində üstə çıxan pəncərələri görməyəcəksiniz. Təkmilləşdirmələrə nələrin daxil edildiyi və axtarış təklifləri, tövsiyələr kimi ənənəvi maşın öyrənməsi funksiyalarına necə nəzarət etmə barədə <a data-l10n-name="link">ətraflı məlumat əldə edin</a>.
+preferences-ai-controls-on-device-group =
+    .description = Bunlar özəllikdən istifadə etdiyiniz zaman cihazınıza yüklənən kiçik süni intellekt modellərindən istifadə edir. Bu yanaşma məxfiliyinizi qorumağa kömək edir.
+    .label = Daxili Süni İntellekt
+preferences-ai-controls-sidebar-chatbot-group =
+    .description = Səyahət edərkən bir söhbət botunu görünən vəziyyətdə saxlayın. Anthropic Claude, ChatGPT, Copilot, Google Gemini və Le Chat Mistral arasında seçim edin.
+    .label = Yan paneldə Sİ söhbət botu təminatçıları
+preferences-ai-controls-sidebar-chatbot-control =
+    .label = Yan paneldə söhbət botu
+preferences-ai-controls-state-description-blocked = <strong> Əngəllənib:</strong> Özəlliyi görə və işlədə bilməyəcəksiniz. Daxili Sİ üçün artıq yüklənmiş modellər silinəcəkdir.
+preferences-ai-controls-block-confirmation-sidebar-chatbot = Yan paneldə söhbət botu təminatçıları
+preferences-ai-controls-header3 =
+    .heading = Süni intellekt idarəetmələri
+
+## Privacy and security status card
+
+security-privacy-status-ok-header = { -brand-short-name } keşikdədir
+security-privacy-status-ok-label = Artırılmış İzlənmə Qoruması açıqdır
+# This label tells the user how many trackers we have blocked for them.
+# Variables:
+#   $trackerCount (Number) - Number of trackers we have blocked in the last month
+security-privacy-status-trackers-label =
+    { $trackerCount ->
+        [one] Son bir ayda { $trackerCount } izləyici əngəlləndi
+       *[other] Son bir ayda { $trackerCount } izləyici əngəlləndi
+    }
+security-privacy-status-up-to-date-label = { -brand-short-name } səyyahının ən son və təhlükəsiz versiyasını əldə etmisiniz
+
+## Enhanced Tracking Protection (ETP) status section
+
+preferences-etp-status-header =
+    .description = Saytlar sizi onlayn izləmək və narahatedici reklamlar göstərmək üçün izləyicilərdən istifadə edir. { -brand-short-name } internetdə gəzərkən sizi qoruyur, izləyiciləri avtomatik əngəlləyir və rəqəmsal izlərinizə nəzarəti sizə verir.
+    .label = Artırılmış İzlənmə Qoruması
+preferences-etp-level-radio-group =
+    .aria-label = Artırılmış İzlənmə Qoruması
+preferences-etp-header =
+    .heading = Artırılmış İzlənmə Qoruması
+preferences-etp-manage-exceptions-button =
+    .description = Artırılmış İzlənmə Qorumasının söndürüldüyü vebsaytları idarə edin.
+    .label = İstisnaları idarə et
