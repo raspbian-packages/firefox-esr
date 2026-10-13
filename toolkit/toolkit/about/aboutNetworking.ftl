@@ -1,0 +1,111 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+about-networking-title = Желі туралы
+about-networking-http = HTTP
+about-networking-http-clear-cache-button = HTTP кэшін тазарту
+about-networking-sockets = Сокеттер
+about-networking-dns = DNS
+about-networking-dns-clear-cache-button = DNS кэшін тазарту
+about-networking-dns-trr-url = DoH URL
+about-networking-dns-trr-mode = DoH режимі
+about-networking-dns-suffix = DNS жұрнағы
+about-networking-websockets = WebSockets
+about-networking-alt-svc = Alt-Svc
+about-networking-alt-svc-origin = Шыққан жері
+about-networking-alt-svc-alternate = Балама
+about-networking-alt-svc-alpn = ALPN
+about-networking-alt-svc-validated = Расталған
+about-networking-alt-svc-ttl = TTL
+about-networking-alt-svc-origin-attributes-suffix = Оқшаулау кілті
+about-networking-ssl-tokens = TLS токендері
+# $count (Number) - Number of cached TLS resumption tokens
+about-networking-ssl-tokens-summary-count =
+    { $count ->
+        [one] { $count } токен
+       *[other] { $count } токен
+    }
+# $count (Number) - Number of cached tokens that have already expired
+about-networking-ssl-tokens-summary-expired =
+    { $count ->
+        [one] ({ $count } мерзімі өткен)
+       *[other] ({ $count } мерзімі өткен)
+    }
+# $decompressedLength (Number) - Total uncompressed size in bytes across all tokens
+# $compressedLength (Number) - Total compressed size in bytes across all tokens
+# $saved (Number) - Percentage of space saved by compression
+about-networking-ssl-tokens-summary-compression = { $decompressedLength } → { $compressedLength } Б ({ $saved }% үнемделді)
+# $used (Number) - Cache size currently in use, in kilobytes
+# $capacity (Number) - Total cache capacity, in kilobytes
+# $percent (Number) - Percentage of the cache capacity currently in use
+about-networking-ssl-tokens-summary-capacity = { $used } / { $capacity } КБ ({ $percent }%)
+about-networking-ssl-tokens-partition-key = Бөлім кілті
+about-networking-ssl-tokens-tokens-column = Токендер
+about-networking-ssl-tokens-expires = Мерзімі аяқталады
+about-networking-ssl-tokens-certificate = Сертификат
+# $count (Number) - Number of tokens sharing this row's host and certificate
+about-networking-ssl-tokens-token-list =
+    { $count ->
+        [one] { $count } токен
+       *[other] { $count } токен
+    }
+about-networking-ssl-tokens-restored =
+    .alt = Сақтау құрылғыдан қалпына келтірілді
+    .title = Сақтау құрылғыдан қалпына келтірілді
+about-networking-ssl-tokens-new =
+    .alt = Бұл сессияда жаңа
+    .title = Бұл сессияда жаңа
+about-networking-ssl-tokens-expired =
+    .alt = Мерзімі аяқталған
+    .title = Мерзімі аяқталған
+# $tokenLength (Number) - Total size in bytes of the raw TLS resumption token(s)
+# $decompressedLength (Number) - Total size in bytes before compression
+# $compressedLength (Number) - Total size in bytes after compression
+about-networking-ssl-tokens-compression-details =
+    .title = Токендер: { $tokenLength } Б. Кодталған: { $decompressedLength } → { $compressedLength } Б.
+about-networking-ssl-tokens-ev-status = EV сертификаты
+about-networking-ssl-tokens-ct-status = Сертификаттың ашықтығы мәртебесі
+about-networking-ssl-tokens-overridable-error = Қайта анықталатын қате санаты
+about-networking-ssl-tokens-built-in-root = Кірістірілген түбірлік
+# $count (Number) - Number of certs in the succeeded cert chain
+about-networking-ssl-tokens-cert-chain = Сертификат тізбегі ({ $count })
+# $count (Number) - Number of certs seen during the TLS handshake
+about-networking-ssl-tokens-handshake-certs = Қол алысу сертификаттары ({ $count })
+about-networking-refresh = Жаңарту
+about-networking-auto-refresh = Әр 3 секунд сайын жаңарту
+about-networking-hostname = Хост аты
+about-networking-port = Порт
+about-networking-http-version = HTTP нұсқасы
+about-networking-ssl = SSL
+about-networking-active = Белсенді
+about-networking-idle = Іссіз
+about-networking-host = Хост
+about-networking-type = Түрі
+about-networking-sent = Жіберілген
+about-networking-received = Алынған
+about-networking-family = Отбасы
+about-networking-trr = TRR
+about-networking-addresses = Адрестер
+about-networking-expires = Мерзімі бітеді (секунд)
+about-networking-originAttributesSuffix = Оқшаулау кілті
+about-networking-flags = Қосымша жалаушалар
+about-networking-messages-sent = Жіберілген хабарламалар
+about-networking-messages-received = Алынған хабарламалар
+about-networking-bytes-sent = Жіберілген байттар
+about-networking-bytes-received = Алынған байттар
+about-networking-logging = Журналдау
+about-networking-dns-lookup = DNS іздеуі
+about-networking-dns-lookup-button = Шешу
+about-networking-dns-domain = Домен:
+about-networking-dns-lookup-table-column = IP адрестері
+about-networking-dns-https-rrs-lookup-table-column = HTTPS RRs
+about-networking-networkid = Желі идентификаторы
+about-networking-networkid-id = Желі идентификаторы
+# Note: do not translate about:logging, as it is a URL.
+about-networking-moved-about-logging = Бұл бет <a data-l10n-name="about-logging-url">about:logging</a> ішіне жылжытылды.
+
+## Link is intended as "network link"
+
+about-networking-networkid-is-up = Байланыс орнатылды
+about-networking-networkid-status-known = Байланыс қалып-күйі белгісіз
