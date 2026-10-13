@@ -1,0 +1,111 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+about-networking-title = Σχετικά με τη δικτύωση
+about-networking-http = HTTP
+about-networking-http-clear-cache-button = Απαλοιφή προσωρινής μνήμης HTTP
+about-networking-sockets = Υποδοχές
+about-networking-dns = DNS
+about-networking-dns-clear-cache-button = Απαλοιφή κρυφής μνήμης DNS
+about-networking-dns-trr-url = DoH URL
+about-networking-dns-trr-mode = Λειτουργία DoH
+about-networking-dns-suffix = Κατάληξη DNS
+about-networking-websockets = WebSockets
+about-networking-alt-svc = Alt-Svc
+about-networking-alt-svc-origin = Προέλευση
+about-networking-alt-svc-alternate = Εναλλακτικό
+about-networking-alt-svc-alpn = ALPN
+about-networking-alt-svc-validated = Επικύρωση
+about-networking-alt-svc-ttl = TTL
+about-networking-alt-svc-origin-attributes-suffix = Κλειδί απομόνωσης
+about-networking-ssl-tokens = Διακριτικά TLS
+# $count (Number) - Number of cached TLS resumption tokens
+about-networking-ssl-tokens-summary-count =
+    { $count ->
+        [one] { $count } διακριτικό
+       *[other] { $count } διακριτικά
+    }
+# $count (Number) - Number of cached tokens that have already expired
+about-networking-ssl-tokens-summary-expired =
+    { $count ->
+        [one] ({ $count } ληγμένο)
+       *[other] ({ $count } ληγμένα)
+    }
+# $decompressedLength (Number) - Total uncompressed size in bytes across all tokens
+# $compressedLength (Number) - Total compressed size in bytes across all tokens
+# $saved (Number) - Percentage of space saved by compression
+about-networking-ssl-tokens-summary-compression = { $decompressedLength } → { $compressedLength } B ({ $saved }% εξοικονόμηση)
+# $used (Number) - Cache size currently in use, in kilobytes
+# $capacity (Number) - Total cache capacity, in kilobytes
+# $percent (Number) - Percentage of the cache capacity currently in use
+about-networking-ssl-tokens-summary-capacity = { $used } / { $capacity } KB ({ $percent }%)
+about-networking-ssl-tokens-partition-key = Κλειδί διαμερίσματος
+about-networking-ssl-tokens-tokens-column = Διακριτικά
+about-networking-ssl-tokens-expires = Λήξη
+about-networking-ssl-tokens-certificate = Πιστοποιητικό
+# $count (Number) - Number of tokens sharing this row's host and certificate
+about-networking-ssl-tokens-token-list =
+    { $count ->
+        [one] { $count } διακριτικό
+       *[other] { $count } διακριτικά
+    }
+about-networking-ssl-tokens-restored =
+    .alt = Έγινε ανάκτηση από τον αποθηκευτικό χώρο
+    .title = Έγινε ανάκτηση από τον αποθηκευτικό χώρο
+about-networking-ssl-tokens-new =
+    .alt = Νέο σε αυτήν τη συνεδρία
+    .title = Νέο σε αυτήν τη συνεδρία
+about-networking-ssl-tokens-expired =
+    .alt = Έληξε
+    .title = Έληξε
+# $tokenLength (Number) - Total size in bytes of the raw TLS resumption token(s)
+# $decompressedLength (Number) - Total size in bytes before compression
+# $compressedLength (Number) - Total size in bytes after compression
+about-networking-ssl-tokens-compression-details =
+    .title = Διακριτικά: { $tokenLength } B. Κωδικοποιημένα: { $decompressedLength } → { $compressedLength } B.
+about-networking-ssl-tokens-ev-status = Πιστοποιητικό EV
+about-networking-ssl-tokens-ct-status = Κατάσταση διαφάνειας πιστοποιητικού
+about-networking-ssl-tokens-overridable-error = Παραβλέψιμη κατηγορία σφάλματος
+about-networking-ssl-tokens-built-in-root = Ενσωματωμένη ρίζα
+# $count (Number) - Number of certs in the succeeded cert chain
+about-networking-ssl-tokens-cert-chain = Αλυσίδα πιστοποιητικών ({ $count })
+# $count (Number) - Number of certs seen during the TLS handshake
+about-networking-ssl-tokens-handshake-certs = Πιστοποιητικά χειραψίας ({ $count })
+about-networking-refresh = Ανανέωση
+about-networking-auto-refresh = Αυτόματη ανανέωση κάθε 3 δευτερόλεπτα
+about-networking-hostname = Όνομα κεντρικού υπολογιστή
+about-networking-port = Θύρα
+about-networking-http-version = Έκδοση HTTP
+about-networking-ssl = SSL
+about-networking-active = Ενεργό
+about-networking-idle = Αδρανές
+about-networking-host = Διακομιστής
+about-networking-type = Τύπος
+about-networking-sent = Απεσταλμένα
+about-networking-received = Ληφθέντα
+about-networking-family = Οικογένεια
+about-networking-trr = TRR
+about-networking-addresses = Διευθύνσεις
+about-networking-expires = Λήξη (δευτερόλεπτα)
+about-networking-originAttributesSuffix = Κλειδί απομόνωσης
+about-networking-flags = Επιπλέον επισημάνσεις
+about-networking-messages-sent = Απεσταλμένα μηνύματα
+about-networking-messages-received = Ληφθέντα μηνύματα
+about-networking-bytes-sent = Απεσταλμένα byte
+about-networking-bytes-received = Ληφθέντα byte
+about-networking-logging = Καταγραφή
+about-networking-dns-lookup = Αναζήτηση DNS
+about-networking-dns-lookup-button = Επίλυση
+about-networking-dns-domain = Τομέας:
+about-networking-dns-lookup-table-column = IP
+about-networking-dns-https-rrs-lookup-table-column = HTTPS RR
+about-networking-networkid = ID δικτύου
+about-networking-networkid-id = ID δικτύου
+# Note: do not translate about:logging, as it is a URL.
+about-networking-moved-about-logging = Αυτή η σελίδα έχει μετακινηθεί στο <a data-l10n-name="about-logging-url">about:logging</a>.
+
+## Link is intended as "network link"
+
+about-networking-networkid-is-up = Η σύνδεση είναι ενεργή
+about-networking-networkid-status-known = Η κατάσταση σύνδεσης είναι γνωστή
