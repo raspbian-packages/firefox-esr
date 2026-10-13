@@ -1,0 +1,252 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Chrome
+
+appmenuitem-new-ai-window =
+    .label = «{ -smart-window-brand-name }»-и нав
+    .value = «{ -smart-window-brand-name }»-и нав
+appmenuitem-new-classic-window =
+    .label = Равзанаи классикии нав
+menu-file-new-ai-window =
+    .label = «{ -smart-window-brand-name }»-и нав
+menu-file-new-classic-window =
+    .label = Равзанаи классикии нав
+menu-history-chats =
+    .label = Суҳбатҳо
+menu-history-chats-recent =
+    .label = Суҳбатҳои охирин
+smartwindow-fullpage-heading = { -smart-window-brand-name }
+smartwindow-document-title = Варақаи нав
+
+## Smart Window Toggle Button
+
+ai-window-toggleview-switch-classic =
+    .label = Равзанаи классикӣ
+    .value = Равзанаи классикӣ
+ai-window-toggleview-switch-ai =
+    .label = { -smart-window-brand-name }
+    .value = { -smart-window-brand-name }
+ai-window-toggleview-switch-private =
+    .label = Равзанаи хусусӣ
+ai-window-toggleview-open-private =
+    .label = Кушодани равзанаи хусусии нав
+ai-window-toggleview-status-label-active = { -smart-window-brand-name }
+ai-window-toggleview-status-label-inactive = Равзанаи классикӣ
+
+## Input CTA
+
+aiwindow-input-cta-submit-label-chat = Пурсидан
+aiwindow-input-cta-submit-label-navigate = Гузариш
+aiwindow-input-cta-submit-label-search = Ҷустуҷӯ
+aiwindow-input-cta-submit-label-stop = Истодан
+aiwindow-input-cta-menu-label-chat = Пурсидан
+aiwindow-input-cta-menu-label-navigate = Ба сомона гузаред
+# $searchEngineName (string) - The name of the default search engine
+aiwindow-input-cta-menu-label-search = Ҷустуҷӯ ба воситаи «{ $searchEngineName }»
+aiwindow-input-cta-menu-label-search-with = Ҷустуҷӯ тавассути…
+aiwindow-input-cta-search-submenu-header = Ҷустуҷӯ
+
+## Smartbar
+
+smartbar-placeholder-hint-4 = Ҷустуҷӯ дар Интернет…
+
+## Mentions
+
+smartbar-mentions-list-recent-tabs-label = Варақаҳои охирин
+
+## Context mentions menu toggle button
+
+smartbar-context-menu-button =
+    .aria-label = Илова кардани варақа ё сомона
+    .tooltiptext = Илова кардани варақа ё сомона
+
+## Website Chip
+
+aiwindow-website-chip-placeholder = Нишонагузорӣ кардани варақа ё сомона
+aiwindow-website-chip-history-deleted = Таърих нест карда шуд
+aiwindow-website-chip-remove-button =
+    .aria-label = Тоза кардан
+
+## Firstrun onboarding
+
+aiwindow-firstrun-title = Хуш омадед ба «{ -smart-window-brand-name }»
+aiwindow-firstrun-model-title = Барои шумо чӣ муҳим аст?
+aiwindow-firstrun-model-fast-label = Тез
+# Recommended represents the chat brand and model we recommend for users. Only affects European users.
+aiwindow-firstrun-model-recommended = Тавсияшуда
+aiwindow-firstrun-model-personal-label = Шахсӣ
+# $shortName (string) - The short name of the model version
+aiwindow-firstrun-model-personal-label-v2 = Шахсӣ: { $shortName }
+aiwindow-firstrun-button = Ба пеш
+aiwindow-firstrun-back-button = Ба қафо
+aiwindow-firstrun-next-button = Навбатӣ
+
+## These are labels describing model types in the smartbar model select.
+
+aiwindow-input-model-select-button-label-fast = Тез
+aiwindow-input-model-select-button-label-allpurpose = Фасеҳ
+aiwindow-input-model-select-button-label-personal = Шахсӣ
+aiwindow-input-model-select-button-label-custom = Фармоишӣ
+aiwindow-input-model-select-button-description-custom = Аз «LLM»-и худ истифода баред
+# Variables:
+# $ownerName (string) - The name of the model owner/provider
+# $model (string) - The model name
+aiwindow-input-model-select-menu-item-description = { $ownerName } { $model }
+aiwindow-input-model-select-menu-item-description-custom = Аз «LLM»-и худ истифода баред
+aiwindow-input-model-select-default-badge =
+    .label = Пешфарз
+    .title = Модели пешфарзии интихобшуда
+aiwindow-input-model-select-settings-link = Танзимоти намуна
+
+## Firstrun memories onboarding
+
+aiwindow-firstrun-memories-conversation-title = Идома додани суҳбат
+aiwindow-firstrun-memories-checkbox-chats = Суҳбатҳо дар «{ -smart-window-brand-name }»
+aiwindow-firstrun-memories-update-settings = Танзимотро дар вақти дилхоҳ навсозӣ кунед.
+aiwindow-firstrun-memories-no-create = Фаҳмидам. «{ -smart-window-brand-name }» ёддоштҳоро эҷод намекунад. Танзимотро дар вақти дилхоҳ навсозӣ кунед.
+
+## Ask Toolbar Button
+
+smartwindow-ask-button =
+    .label = Пурсидан
+
+## New Chat Button
+
+aiwindow-new-chat =
+    .aria-label = Суҳбати нав
+    .tooltiptext = Суҳбати нав
+
+## Close Sidebar Button
+
+aiwindow-close-sidebar =
+    .aria-label = Пӯшидан
+    .tooltiptext = Пӯшидан
+
+## Chat History Menu
+## The menu opened from the "..." button next to the new chat button. Its main
+## view links to the chat history subview and Smart Window settings; the chat
+## history subview lists recent chats and a shortcut to all chats.
+
+aiwindow-history-menu =
+    .aria-label = Имконоти бештар
+    .tooltiptext = Имконоти бештар
+aiwindow-history-menu-chat-history = Таърихи суҳбатҳо
+aiwindow-history-menu-back =
+    .aria-label = Ба қафо
+    .tooltiptext = Ба қафо
+aiwindow-history-menu-view-all-chats = Дидани ҳамаи суҳбатҳо
+aiwindow-history-menu-settings = Танзимоти «{ -smart-window-brand-name }»
+
+## Fullpage top actions
+## Labeled buttons shown at the top of the fullpage Smart Window.
+
+aiwindow-fullpage-new-chat =
+    .label = Суҳбати нав
+aiwindow-fullpage-chat-history =
+    .label = Таърихи суҳбатҳо
+# "More" is the label for a button that opens a menu of additional Smart Window
+# options (currently Smart Window settings) — i.e. "more actions/options", not
+# more content or more chat history.
+aiwindow-fullpage-more =
+    .label = Бештар
+    .title = Бештар
+
+## Fullpage Footer Actions
+
+smartwindow-footer-chats =
+    .aria-label = Суҳбатҳо
+    .label = Суҳбатҳо
+    .tooltiptext = Суҳбатҳо
+smartwindow-footer-history =
+    .aria-label = Таърих
+    .label = Таърих
+    .tooltiptext = Таърих
+
+## Disclaimer
+## Text displayed to user to warn user about potential mistakes.
+
+smartwindow-disclaimer = Зеҳни сунъи (AI) метавонад хато кунад.
+
+## FirefoxView Chats
+## Chats in this context refers to chats saved from the Smart Window Assistant
+
+firefoxview-chats-nav = Суҳбатҳо
+    .title = Суҳбатҳо
+firefoxview-chats-header = Суҳбатҳо
+firefoxview-chat-context-delete = Нест кардан аз суҳбатҳо
+    .accesskey = Н
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-chats =
+    .placeholder = Ҷустуҷӯ дар суҳбатҳо
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-chat-date-today = Имрӯз - { DATETIME($date, dateStyle: "full") }
+firefoxview-chat-date-yesterday = Дирӯз - { DATETIME($date, dateStyle: "full") }
+firefoxview-chat-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-chat-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+## Message displayed in Firefox View when the user has no chat data
+
+firefoxview-chats-empty-header = Бозгашт ба суҳбатҳои худ
+firefoxview-chats-empty-description = Ҳангоми истифодаи «{ -smart-window-brand-name }», суҳбатҳои шумо дар ин ҷой нигоҳ дошта мешаванд.
+
+## Count displayed in fxview chat search results
+
+firefoxview-search-chat-results-count =
+    { $count ->
+        [one] { $count } суҳбат
+       *[other] { $count } суҳбат
+    }
+
+## Clear browsing data dialog
+
+item-history-downloads-and-chat =
+    .label = Таърихи тамошобинӣ, боргирӣ ва суҳбатҳо
+    .accesskey = Т
+item-history-downloads-and-chat-description = Таърихи саҳифаҳои сомонаҳо, боргириҳо ва суҳбатҳоро тоза мекунад
+
+## Natural Language Interactions
+
+smart-window-confirm-select-all =
+    .aria-label = Ҳамаро интихоб кардан
+    .label = Ҳамаро интихоб кардан
+smart-window-confirm-deselect-all =
+    .aria-label = Бекор кардани интихоб
+    .label = Бекор кардани интихоб
+smart-window-close-confirm =
+    .aria-label = Дархостро бекор кунед ва пӯшед
+    .tooltiptext = Дархостро бекор кунед ва пӯшед
+smart-window-confirm-close-tab = Пӯшидан
+# Variables
+#   $count (number) - Number of tabs to close
+smart-window-confirm-close-tabs =
+    { $count ->
+        [one] Пӯшидани { $count } варақа
+       *[other] Пӯшидани { $count } варақа
+    }
+
+## Natural Language action callouts
+
+# Shown after the Smart Window closes the user’s current tab in response to a
+# natural language prompt action, anchored to the toolbar menu button.
+smartwindow-close-tab-callout-title = Варақа пӯшида шуд
+
+## Smart Window new tab promo
+
+smart-window-default-promo-primary-button = Ҳамчун пешфарз танзим кардан
+smart-window-default-promo-additional-button = Ҳоло не
+
+## Feedback modal
+
+aiwindow-feedback-modal-title = Изҳори назари худро мубодила кунед
+aiwindow-feedback-choose-any = Ҳар кадоме, ки мувофиқ бошад, интихоб намоед
+aiwindow-feedback-submit = Пешниҳод кардан
+aiwindow-feedback-cancel = Бекор кардан
+aiwindow-feedback-reason-other = Дигар
+aiwindow-feedback-preview-report = Дидани тафсилоти суҳбат
+aiwindow-feedback-preview-report-with-page = Дидани тафсилоти суҳбат ва саҳифа

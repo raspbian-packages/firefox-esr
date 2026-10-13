@@ -1,0 +1,1888 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Нови језичак
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = Прилагоди ову страницу
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = Прилагоди
+newtab-customize-panel-label =
+    .label = Прилагоди
+newtab-settings-dialog-label =
+    .aria-label = Подешавања
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+newtab-card-dismiss-button =
+    .aria-label = Одбаци
+    .title = Одбаци
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-title =
+    .label = Почетна страница
+home-homepage-new-windows =
+    .label = Нови прозори
+home-homepage-new-tabs =
+    .label = Нови језичци:
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-button =
+    .label = Изаберите одређени сајт
+
+## Custom URLs subpage
+
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-card-header =
+    .label = Адреса(е) веб сајта
+home-custom-homepage-address =
+    .placeholder = Унесите адресу
+home-custom-homepage-address-button =
+    .label = Додај адресу
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-results =
+    .label = Још увек нема додатих веб сајтова.
+home-custom-homepage-delete-address-button =
+    .aria-label = Обриши адресу
+    .title = Обриши адресу
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with-prompt =
+    .label = Замени са
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-current-pages-button =
+    .label = Тренутно отворене странице
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-bookmarks-button =
+    .label = Обележивачи…
+
+## Firefox Home content
+
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
+home-prefs-search-header2 =
+    .label = Претрага
+home-prefs-stories-header2 =
+    .description = Изузетан садржај који припрема { -brand-product-name } породица
+    .label = Приче
+home-prefs-widgets-header =
+    .label = Елементи
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = Спискови
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = Одбројавач
+# Sports is a widget on New Tab showing sports scores and schedules.
+home-prefs-sports-widget-header =
+    .label = Спорт
+# Clock is a widget on New Tab that displays time zones around the world.
+home-prefs-clocks-header =
+    .label = Часовник
+# Privacy is a widget on New Tab that shows tracking protection activity.
+home-prefs-privacy-header =
+    .label = Приватност
+# Crossword is a widget on New Tab that shows a daily crossword puzzle.
+home-prefs-crossword-widget-header =
+    .label = Укрштеница
+# Stocks is a widget on New Tab that shows stock ticker prices.
+home-prefs-stocks-header =
+    .label = Деонице
+# Picture of the day is a widget on New Tab that shows a daily Wikimedia Commons image.
+home-prefs-picture-header =
+    .label = Слика дана
+# Recent searches is a widget on New Tab that shows the user's recent searches.
+home-prefs-recent-searches-header =
+    .label = Недавне претраге
+home-prefs-mission-message2 =
+    .message = Наши спонзори подржавају нашу мисију изградње бољег веба.
+home-prefs-manage-topics-link2 =
+    .label = Управљај темама
+home-prefs-choose-wallpaper-link2 =
+    .label = Изаберите позадину
+home-prefs-firefox-logo-header =
+    .label = Логотип { -brand-short-name }-а
+# Informational message bar that appears in the Firefox Home section when the options are disabled.
+# The user must select Firefox Home as their homepage for either new tabs or new windows to enable
+# the features in settings.
+home-prefs-firefox-home-disabled-notice =
+    .message = Да бисте употребили ове могућности, подесите нове језичке картице или нове прозоре на { -firefox-home-brand-name }.
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } ред
+            [few] { $num } реда
+           *[other] { $num } редова
+        }
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = Додатак ({ $extension })
+home-restore-defaults-srd =
+    .label = Врати на подразумевано
+    .accesskey = В
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (Подразумевано)
+home-mode-choice-custom-srd =
+    .label = прилагођена адреса…
+home-mode-choice-blank-srd =
+    .label = празна страница
+home-prefs-shortcuts-header-srd =
+    .label = Пречице
+home-prefs-shortcuts-select =
+    .aria-label = Пречице
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = Спонзорисане пречице
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Спонзорисане приче
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Посећене странице
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Обележивачи
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Најновије преузимање
+home-prefs-recent-activity-header-srd =
+    .label = Недавна активност
+home-prefs-recent-activity-select =
+    .aria-label = Недавна активност
+home-prefs-weather-header-srd =
+    .label = Време
+home-prefs-support-firefox-header-srd =
+    .label = Подржите { -brand-product-name }
+home-prefs-mission-message-learn-more-link-srd = Сазнајте како
+
+## Strings for the Privacy widget
+
+# Context menu item linking to more information about the Privacy widget.
+newtab-privacy-menu-learn-more = Сазнајте више
+# Accessible name for the Privacy widget container. The widget shows no visible
+# title, so screen readers rely on this label to identify it.
+newtab-privacy-widget-label =
+    .aria-label = Приватност
+
+## Privacy widget — count readout
+
+# Label shown under the large tracker-count number, appearing like:
+# Line 1: 86
+# Line 2: Trackers blocked today
+# Translations can be adjusted to "Today's blocked trackers" or something
+# similar if this fixed order causes issues.
+# Variables:
+#   $count (number) - Number of trackers blocked today
+newtab-privacy-trackers-blocked-today =
+    { $count ->
+        [one] Блокиран пратилац данас
+        [few] Блокирана пратилаца данас
+       *[other] Блокираних пратиоца данас
+    }
+# Second line of the readout, under the large number and "Trackers blocked
+# today". Counts the sites those trackers were blocked on. The English is
+# shortened from "Blocked across { $count } sites" — translate it that fuller way
+# if the short fragment doesn't work in your language.
+# Variables:
+#   $count (number) - Number of sites where trackers were blocked
+newtab-privacy-across-sites =
+    { $count ->
+        [one] На { $count } страници
+        [few] На { $count } странице
+       *[other] На { $count } страница
+    }
+
+## Privacy widget — empty state
+
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty = { -brand-short-name } блокира пратиоце док прегледате веб-странице. Овде ћете их видети.
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty-state = { -brand-short-name } самостално блокира пратиоце, чиме већи део ваше активности остаје приватан.
+# "A running tally" is an informal way to say a total that keeps updating as it goes.
+# Here we are referring to the number of trackers blocked, which increases as the user browses.
+# An alternative can be "See a running total here"
+newtab-privacy-empty-state-tally = Овде можете видети тренутни број.
+
+## Privacy widget — Enhanced Tracking Protection off state
+
+# Shown when the user has turned off the Enhanced Tracking Protection setting.
+newtab-privacy-etp-off-faster-browsing = Брже прегледање. Мање пратиоца.
+newtab-privacy-etp-off-turn-on-tracking = Укључите заштите од праћења у подешавањима да бисте почели са блокирањем.
+
+## Privacy widget — informational messages
+##
+## Rotating "info" secondary messages. Each message has a body plus a matched
+## "-cta" button label sharing the same id stem (the CTA button isn't rendered
+## yet; the labels are authored so the pairing is ready).
+
+newtab-privacy-message-info-1 = { -brand-short-name } самостално блокира пратиоце док прегледате веб-странице.
+newtab-privacy-message-info-1-cta = Прикажи заштите
+newtab-privacy-message-info-2 = Блокирање пратилаца отежава ваше праћење од стране компанија, на мрежи.
+newtab-privacy-message-info-2-cta = Прикажи заштите
+newtab-privacy-message-info-3 = Много страница има пратиоце, па вас компаније које никада нисте посетили могу пратити на мрежи.
+newtab-privacy-message-info-3-cta = Прикажи заштите
+newtab-privacy-message-info-4 = Бирање { -brand-short-name }-а значи подразумевано бирање заштите.
+newtab-privacy-message-info-4-cta = Прикажите заштите
+newtab-privacy-message-info-5 = Блокирани пратиоци значе да мање компанија може да вас прати на различитим страницама.
+newtab-privacy-message-info-5-cta = Прикажите заштите
+newtab-privacy-message-info-6 = Чувајте своје податке уз { -brand-short-name }. Никада их нећемо продати, али други прегледачи би могли.
+newtab-privacy-message-info-6-cta = Сазнајте више
+newtab-privacy-message-info-7 = Видите које пратиоце је { -brand-short-name } блокирао.
+newtab-privacy-message-info-7-cta = Прикажите заштите
+newtab-privacy-message-info-8 = Прегледање веба уз { -brand-short-name } подржава мисију { -vendor-short-name }-е да изгради бољи веб.
+newtab-privacy-message-info-8-cta = Сазнајте више
+newtab-privacy-message-info-9 = Учините { -brand-short-name } својим подразумеваним прегледачем за уграђену приватност.
+newtab-privacy-message-info-9-cta = Поставите као подразумевани
+newtab-privacy-message-info-10 = Сачувајте лозинке у { -brand-short-name }-у да бисте свуда користили јаке, јединствене податке за пријаву.
+newtab-privacy-message-info-10-cta = Идите на лозинке
+newtab-privacy-message-info-11 = Сазнајте како { -brand-short-name } помаже да ваше прегледање веба буде приватније.
+newtab-privacy-message-info-11-cta = Сазнајте више
+newtab-privacy-message-info-12 = Блокирање пратиоца може помоћи у уштеди протока код ограничених интернет планова.
+newtab-privacy-message-info-12-cta = Прикажите заштите
+newtab-privacy-message-info-13 = { -brand-short-name } блокира пратиоце, ослобађајући проток за глатко стримовање.
+newtab-privacy-message-info-13-cta = Прикажите заштите
+
+## Privacy widget — promotional messages
+##
+## Rotating "promo" secondary messages suggesting another Firefox feature. Each
+## has a body plus a matched "-cta" button label.
+
+newtab-privacy-message-promo-monitor-1 = Сазнајте да ли се ваши лични подаци појављују у цурењима података.
+newtab-privacy-message-promo-monitor-1-cta = Сазнајте више
+newtab-privacy-message-promo-monitor-2 = Заштитите своје податке бесплатним надгледањем цурења података, за до 20 е-пошта.
+newtab-privacy-message-promo-monitor-2-cta = Сазнајте више
+newtab-privacy-message-promo-signin-1 = Задржите обележиваче, лозинке и језичке шифрованим на свим уређајима помоћу свог { -vendor-short-name } налога.
+newtab-privacy-message-promo-signin-1-cta = Пријавите се
+newtab-privacy-message-promo-vpn-1 = Купујете на јавној бежичној мрежи? Укључите уграђени ВПН за додатну заштиту.
+newtab-privacy-message-promo-vpn-1-cta = Отвори ВПН
+newtab-privacy-message-promo-vpn-2 = Користите бежичну мрежу на аеродрому? Заштитите своје прегледање укључивањем уграђеног ВПН-а.
+newtab-privacy-message-promo-vpn-2-cta = Отвори ВПН
+newtab-privacy-message-promo-vpn-3 = Укључите уграђени ВПН како би ваша локација била приватнија.
+newtab-privacy-message-promo-vpn-3-cta = Отвори ВПН
+newtab-privacy-message-promo-private-window-1 = Пробајте приватни прозор како бисте приватније прегледали веб-странице када користите дељени рачунар.
+newtab-privacy-message-promo-private-window-1-cta = Отвори приватни прозор
+newtab-privacy-message-promo-relay-1 = Сачувајте своју стварну е-пошту за људе којима верујете, користите маску е-поште за пријавивање.
+newtab-privacy-message-promo-relay-1-cta = Набавите маске
+newtab-privacy-message-promo-relay-2 = Заштитите своје пријемно сандуче од непожељних порука бесплатним маскирањем е-поште.
+newtab-privacy-message-promo-relay-2-cta = Набавите маске
+newtab-privacy-message-promo-relay-3 = Набавите 50 бесплатних маски е-поште како би ваша стварна е-пошта остала приватна.
+newtab-privacy-message-promo-relay-3-cta = Набавите маске
+
+## Privacy widget — celebration messages
+##
+## Earned "celebration" moments (milestones, daily cap, streak, first
+## protection). Count-bearing ones interpolate { $count }.
+
+# Variables:
+#   $count (number) - Trackers blocked this week
+newtab-privacy-message-milestone-week =
+    { $count ->
+        [one] { $count } пратилац је блокиран ове недеље. Видите шта { -brand-short-name } спречава да вам смета
+        [few] { $count } пратилаца је блокирано ове недеље. Видите шта { -brand-short-name } спречава да вам смета
+       *[other] { $count } пратилаца је блокирано ове недеље. Видите шта { -brand-short-name } спречава да вам смета
+    }
+newtab-privacy-message-milestone-week-cta = Прикажи заштите
+# Variables:
+#   $count (number) - Trackers blocked this month
+newtab-privacy-message-milestone-month =
+    { $count ->
+        [one] { $count } пратилац је блокиран овог месеца. Један мали корак за приватност. Један велики корак за мир.
+        [few] { $count } пратилаца је блокирано овог месеца. Један мали корак за приватност. Један велики корак за мир.
+       *[other] { $count } пратилаца је блокирано овог месеца. Један мали корак за приватност. Један велики корак за мир.
+    }
+newtab-privacy-message-milestone-month-cta = Прикажи заштите
+# Variables:
+#   $count (number) - Trackers blocked this year
+newtab-privacy-message-milestone-year =
+    { $count ->
+        [one] { $count } пратилац је блокиран ове године. То је била моћна година заштите ваше приватности.
+        [few] { $count } пратилаца је блокирано ове године. То је била моћна година заштите ваше приватности.
+       *[other] { $count } пратилаца је блокирано ове године. То је била моћна година заштите ваше приватности.
+    }
+newtab-privacy-message-milestone-year-cta = Прикажи заштите
+# Variables:
+#   $count (number) - Trackers blocked all-time
+newtab-privacy-message-milestone-total =
+    { $count ->
+        [one] { $count } пратилац је блокиран. То је велики напредак ка приватности по вашим условима.
+        [few] { $count } пратилаца је блокирано. То је велики напредак ка приватности по вашим условима.
+       *[other] { $count } пратилаца је блокирано. То је велики напредак ка приватности по вашим условима.
+    }
+newtab-privacy-message-milestone-total-cta = Прикажи заштите
+# Shown when today's blocked-tracker count reaches the display cap ("100+").
+newtab-privacy-message-daily-cap = (100+ пратиоца је блокирано данас.) Мање пратилаца значи више приватности.
+newtab-privacy-message-daily-cap-cta = Прикажи заштите
+# Variables:
+#   $count (number) - Consecutive days the user has had trackers blocked
+newtab-privacy-message-streak =
+    { $count ->
+        [one] Заштићени сте { $count } дан заредом.
+        [few] Заштићени сте { $count } дана заредом.
+       *[other] Заштићени сте { $count } дана заредом.
+    }
+newtab-privacy-message-streak-cta = Прикажи заштите
+# Shown the first time the tracker count goes above zero.
+newtab-privacy-message-first-protection = Наставите са прегледањем, { -brand-short-name } ће наставити да блокира.
+newtab-privacy-message-first-protection-cta = Прикажи заштите
+
+## Strings for the Stocks widget
+
+# Context menu item linking to more information about the Stocks widget.
+newtab-stocks-menu-learn-more = Сазнајте више
+# Shown in the Stocks widget when its data could not be loaded.
+newtab-stocks-error-not-available = Подаци о деоницама нису доступни.
+# "Stocks widget options" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-stocks-widget-menu-button =
+    .aria-label = Могућности елемента за деонице
+    .title = Могућности елемента за деонице
+# Accessible name for the Stocks widget; hidden because the list dropdown is
+# shown in place of the title.
+newtab-stocks-widget-title = Деонице
+# "Markets" is the default list of market ETFs. The value is shown in the menu,
+# and .label is shown on the button that opens it.
+newtab-stocks-list-markets = Тржишта
+    .label = Тржишта
+# "Watchlist" is the user's list of stocks to follow. The value is shown in the
+# menu, and .label is shown on the button that opens it.
+newtab-stocks-list-watchlist = Списак за праћење
+    .label = Списак за праћење
+# Context menu item that opens the stock search (by company name or ticker symbol).
+newtab-stocks-menu-search-stocks = Претражи по називу или симболу
+
+## Screen-reader summary of a stock ticker.
+## Variables:
+##   $name (String) - the full fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+##   $change (String) - the day's percentage change, e.g. "+2.1%".
+##   $price (String) - the last price, e.g. "$559.44".
+
+# Stock increased (went up) during the day
+newtab-stocks-ticker-status-up = { $name }, горе { $change }, { $price }
+# Stock decreased (went down) during the day
+newtab-stocks-ticker-status-down = { $name }, доле { $change }, { $price }
+# Stock didn't change during the day
+newtab-stocks-ticker-status-flat = { $name }, без промене, { $change }, { $price }
+
+## Stocks widget watchlist add and remove controls
+
+# Tooltip and screen-reader label for the button that adds a stock to the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+newtab-stocks-add-to-watchlist =
+    .aria-label = Додај { $name } на списак за праћење
+    .title = Додај { $name } на списак за праћење
+# Tooltip and screen-reader label for the button that removes a stock from the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-remove-from-watchlist =
+    .aria-label = Уклони { $name } са списка за праћење
+    .title = Уклони { $name } са списка за праћење
+# Visually hidden text on a Markets row whose stock is already in the watchlist, so
+# screen readers announce that it is saved. Removal happens on the Watchlist tab.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-in-watchlist = { $name } је на вашем списку за праћење
+# Announced to screen readers after a stock is added to the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-added-to-watchlist = Додато { $name } на списак за праћење
+# Announced to screen readers after a stock is removed from the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-removed-from-watchlist = Уклоњено { $name } са списка за праћење
+
+## Stocks widget ticker search
+
+# Placeholder and screen-reader label for the ticker search input.
+newtab-stocks-search-input =
+    .aria-label = Претрага по називу или симболу
+    .placeholder = Претрага по називу или симболу
+# "Search results" is the accessible label for the list of tickers matching the
+# search. It means "results of the search", not "search within the results".
+newtab-stocks-search-results =
+    .aria-label = Резултати претраге
+# "Back" is an icon-only button in the search panel header that returns to the
+# widget — the attributes are consumed as tooltip/screen-reader label only. The
+# button never renders visible text.
+newtab-stocks-search-back-button =
+    .aria-label = Назад
+    .title = Назад
+# Shown when a ticker search returns no matching symbols.
+# Variables:
+#   $query (String) - the text the user searched for.
+newtab-stocks-search-no-results = Нема резултата за „{ $query }“
+# Shown while a ticker search is running; also announced to screen readers.
+newtab-stocks-search-loading = Учитавам…
+# Shown when a ticker search fails to reach the service.
+newtab-stocks-search-error = Не могу да претражим у овом тренутку. Покушајте поново касније.
+# Shown below successful search results when the watchlist is already full.
+# Variables:
+#   $limit (Number) - the maximum number of stocks the watchlist can hold.
+newtab-stocks-watchlist-full =
+    { $limit ->
+        [one] Можете да додате највише { $limit } деоницу. Уклоните једну да бисте додали другу.
+        [few] Можете да додате највише { $limit } деонице. Уклоните једну да бисте додали другу.
+       *[other] Можете да додате највише { $limit } деоница. Уклоните једну да бисте додали другу.
+    }
+
+## Strings for the Picture of the Day widget
+
+# Title shown at the top of the widget, with the source name appended.
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-header = Слика дана · Wikimedia Commons
+# Shorter title shown at the top of the widget, without the source name.
+newtab-picture-header-main = Слика дана
+# Attribution line shown under the title once a picture loads: an author
+# credit, a link to the picture's source page, and a link to its license.
+# "©" is the copyright symbol.
+# $author (string) - the name of the image's author.
+newtab-picture-attribution-author = © { $author }
+# Link to the picture's source page (its Wikimedia Commons file page).
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-attribution-source-link = Wikimedia Commons
+# Screen-reader label for the license link; the visible text is the license
+# name (for example "CC BY-SA 4.0") provided with the picture.
+# $license (string) - the name of the license.
+newtab-picture-attribution-license =
+    .aria-label = Прикажи дозволу { $license }
+# Tooltip and screen-reader label for the icon-only button that opens the
+# widget's context menu. The button never renders visible text.
+newtab-picture-widget-menu-button =
+    .aria-label = Могућности за слику дана
+    .title = Могућности за слику дана
+# Button that sets the current picture as the New Tab background wallpaper. The
+# button collapses to an icon when not hovered/focused, so .title is its tooltip.
+newtab-picture-set-wallpaper =
+    .aria-label = Постави данашњу слику за вашу позадину
+    .label = Постави позадину
+    .title = Постави позадину
+# Context menu item that opens the New Tab customization panel.
+newtab-picture-menu-manage-wallpaper = Управљај позадином
+# Context menu item that hides today’s picture, replacing it with an existing
+# wallpaper.
+newtab-picture-menu-hide-photo = Сакриј данашњу слику
+# Context menu item that restores today’s picture after it has been hidden.
+newtab-picture-menu-show-photo = Прикажи данашњу слику
+# Context menu item linking to more information about the widget.
+newtab-picture-menu-learn-more = Сазнајте више
+# Icon button shown on the widget once the picture is hidden; restores it.
+newtab-picture-show-button =
+    .aria-label = Прикажи данашњу слику
+    .title = Прикажи данашњу слику
+# Shown when there is no new picture to display yet.
+newtab-picture-check-back = Поново проверите сутра за нову слику
+# Screen-reader text alternative for the picture; fallback used when the source
+# provides no localized description.
+newtab-picture-image-alt = Слика дана са Wikimedia Commons
+
+## Strings for the Recent Searches widget
+
+# Widget heading; also the widget's accessible name.
+newtab-recent-searches-widget-title = Недавне претраге
+# Screen reader label for the widget's icon-only menu button.
+newtab-recent-searches-widget-menu-button =
+    .aria-label = Могућности за недавне претраге
+# Context menu item linking to more information about the widget.
+newtab-recent-searches-menu-learn-more = Сазнај више
+
+## Strings for the navigable panels that new tab content area can be
+## split into.
+
+newtab-spaces-tab-stories = Приче
+newtab-spaces-tab-widgets = Елементи
+newtab-spaces-tab-activity = Активност
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Претражи
+    .title = Претражи
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = Претражите у претраживачу { $engine } или унесите адресу
+newtab-search-box-handoff-text-no-engine = Претражите или унесите адресу
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = Претражите у претраживачу { $engine } или унесите адресу
+    .placeholder = Претражите у претраживачу { $engine } или унесите адресу
+    .title = Претражите у претраживачу { $engine } или унесите адресу
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = Претражите или унесите адресу
+    .placeholder = Претражите или унесите адресу
+    .title = Претражите или унесите адресу
+newtab-search-box-text = Претражи интернет
+newtab-search-box-input =
+    .aria-label = Претражите интернет
+    .placeholder = Претражите интернет
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Додај претраживач
+newtab-topsites-add-shortcut-header = Нова пречица
+newtab-topsites-edit-shortcut-header = Измени пречицу
+newtab-topsites-add-shortcut-label = Додај пречицу
+newtab-topsites-add-shortcut-title =
+    .aria-label = Додај пречицу
+    .title = Додај пречицу
+newtab-shortcuts-pinned-area = Закачена област
+newtab-topsites-title-label = Наслов
+newtab-topsites-title-input =
+    .placeholder = Унесите наслов
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Унесите или налепите URL
+newtab-topsites-url-validation = Исправан URL се захтева
+newtab-topsites-image-url-label = URL прилагођене слике
+newtab-topsites-use-custom-image-link = Користи прилагођену слику
+newtab-topsites-use-image-link = Користи прилагођену слику…
+newtab-topsites-image-validation = Нисам успео да учитам слику. Пробајте са другим URL-ом.
+newtab-topsites-clear-input =
+    .aria-label = Очисти текст
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Откажи
+newtab-topsites-delete-history-button = Избриши из историје
+newtab-topsites-save-button = Сачувај
+newtab-topsites-preview-button = Прегледај
+newtab-topsites-add-button = Додај
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Желите ли заиста да избришете све записе о овој страници из историје?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Ова радња се не може опозвати.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = Спонзорисано
+
+## Label used by screen readers for pinned top sites
+
+# Variables:
+#   $title (string) - The label or hostname of the site.
+topsite-label-pinned =
+    .aria-label = { $title } (закачено)
+    .title = { $title }
+
+## Top Sites - Web notifications hover card
+
+# Variables:
+#   $site (string) - The label or hostname of the site the notifications are from.
+newtab-topsites-hover-card-header = Обавештења са { $site }
+# Relative time shown for a notification posted less than a minute ago.
+newtab-topsites-hover-card-just-now = Управо сада
+newtab-topsites-hover-card-mark-all-read =
+    .aria-label = Означи све као прочитано
+    .title = Означи све као прочитано
+newtab-topsites-hover-card-settings =
+    .aria-label = Поставке обавештења
+    .title = Поставке обавештења
+newtab-topsites-hover-card-dismiss =
+    .aria-label = Одбаци
+    .title = Одбаци
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Отвори мени
+    .title = Отвори мени
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Отвори контекстуални мени за { $title }
+    .title = Отвори мени
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Уреди
+newtab-menu-add-topsite = Додај нову пречицу
+newtab-menu-open-new-window = Отвори у новом прозору
+newtab-menu-open-new-private-window = Отвори у новом приватном прозору
+newtab-menu-dismiss = Одбаци
+newtab-menu-pin = Закачи
+newtab-menu-unpin = Откачи
+newtab-menu-delete-history = Избриши из историје
+newtab-menu-show-privacy-info = Наши спонзори и ваша приватност
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = Пријави
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Блокирај
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow-topic = Прекини праћење
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = Сазнајте више
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = Управљај спонзорисаним садржајем
+newtab-menu-our-sponsors-and-your-privacy = Наши спонзори и ваша приватност
+newtab-menu-report-this-ad = Пријави овај оглас
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Уклони обележивач
+# Bookmark is a verb here.
+newtab-menu-bookmark = Забележи
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Копирај адресу преузимања
+newtab-menu-go-to-download-page = Иди на страницу преузимања
+newtab-menu-remove-download = Уклони из историје
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file = Прикажи у фасцикли
+newtab-menu-open-file = Отвори датотеку
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Посећено
+newtab-label-bookmarked = Забележено
+newtab-label-removed-bookmark = Обележивач је уклоњен
+newtab-label-recommended = У тренду
+newtab-label-saved = Сачувано у { -pocket-brand-name(case: "loc") }
+newtab-label-download = Преузето
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · Спонзорисано
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = Спонзорише { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } мин
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = Спонзорисано
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Обавештење о приватности
+
+## Section Headers.
+
+newtab-section-header-topsites = Популарне странице
+newtab-section-header-recent-activity = Недавна активност
+newtab-section-header-stories = Приче које подстичу на размишљање
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Данашњи предлози за вас
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Почните да претражујете интернет а ми ћемо вам овде приказати одличне чланке, видео-снимке и друге странице које сте недавно посетили или обележили.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Све сте већ прочитали. Вратите се касније за нове приче. Не можете дочекати? Изаберите популарну тему да пронађете још занимљивих прича са мреже.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = У току сте!
+newtab-discovery-empty-section-topstories-content = За више прича, вратите се нешто касније.
+newtab-discovery-empty-section-topstories-try-again-button = Покушај поново
+newtab-discovery-empty-section-topstories-loading = Учитавам…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Упс! Нисмо могли учитати овај одељак до краја.
+
+## Strings for the story cards carousel
+
+# Identifies the current carousel slide to screen reader users.
+# Variables:
+#   $index - the position of this slide
+#   $total - how many slides there are
+newtab-carousel-slide =
+    .aria-label = { $index } од { $total }
+# Button that goes to the previous carousel slide.
+newtab-carousel-previous =
+    .aria-label = Претходна
+# Button that goes to the next carousel slide.
+newtab-carousel-next =
+    .aria-label = Следећа
+# Button that pauses autoplay on the carousel.
+newtab-carousel-pause =
+    .aria-label = Паузирај самостално пуштање
+# Button that resumes autoplay on the carousel.
+newtab-carousel-play =
+    .aria-label = Настави самостално пуштање
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Дошло је до грешке при учитавању овог садржаја.
+newtab-error-fallback-refresh-link = Освежите страницу да бисте покушали поново.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = Сачуване или посећене странице
+    .label = Пречице
+newtab-custom-shortcuts-nova =
+    .label = Пречице
+newtab-custom-web-notifications-toggle =
+    .description = Приказујте обавештења са ваших страница на њиховим пречицама
+    .label = Веб обавештења
+newtab-custom-row-description =
+    .description = Број редова
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } ред
+            [few] { $num } реда
+           *[other] { $num } редова
+        }
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be having a description under "Recommended stories" anymore
+newtab-custom-stories-toggle =
+    .description = Изузетан садржај који је бирала { -brand-product-name } породица
+    .label = Препоручене приче
+newtab-recommended-stories-toggle =
+    .label = Препоручене приче
+newtab-custom-stories-personalized-toggle =
+    .label = Приче
+newtab-custom-stories-personalized-checkbox =
+    .label = Персонализоване приче засноване на вашој активности
+newtab-custom-stories-personalized-checkbox-label = Персонализоване приче засноване на вашој активности
+newtab-custom-weather-toggle =
+    .description = Временска прогноза за данас
+    .label = Време
+newtab-custom-widget-weather-toggle =
+    .label = Време
+newtab-custom-widget-lists-toggle =
+    .label = Спискови
+newtab-custom-widget-timer-toggle =
+    .label = Одбројавач
+newtab-custom-widget-clock-toggle =
+    .label = Часовник
+newtab-custom-widget-sports-toggle2 =
+    .label = Спорт
+newtab-custom-widget-privacy-toggle =
+    .label = Приватност
+newtab-custom-widget-stocks-toggle =
+    .label = Деонице
+newtab-custom-widget-picture-toggle =
+    .label = Слика дана
+newtab-custom-widget-recent-searches-toggle =
+    .label = Недавне претраге
+newtab-custom-widget-section-title = Елементи
+newtab-custom-widget-section-toggle =
+    .label = Елементи
+newtab-widget-manage-title = Елементи
+newtab-widget-manage-widget-button =
+    .label = Управљај елементима
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .aria-label = Затвори мени
+    .title = Затвори
+newtab-custom-settings = Додатна подешавања
+
+## Customization Menu
+
+# An arrow button that goes back from a sub-panel in the customize panel, such as a wallpaper category, to the main Customize panel.
+newtab-customize-panel-back-button =
+    .aria-label = Назад на Прилагођавање
+    .title = Назад на Прилагођавање
+
+## New Tab Appearance (browser theme picker)
+
+# Title of the browser theme ("Appearance") section in the customize panel.
+newtab-custom-appearance-section-title = Изглед
+# Button that opens the full browser theme selection view.
+newtab-appearance-more-themes-button =
+    .label = Погледај више тема
+# Title of the full theme selection sub-panel, also used as its back button label.
+newtab-appearance-manage-title = Теме за { -brand-product-name }
+# Header for the list of the user's already-installed themes in the full theme panel.
+newtab-appearance-your-themes-header = Ваше теме
+# Button that enables an already-installed theme.
+newtab-appearance-enable-theme-button =
+    .label = Омогући
+# Button that disables the active theme and reverts to the default.
+newtab-appearance-disable-theme-button =
+    .label = Онемогући
+# Button that installs a theme.
+newtab-appearance-install-theme-button =
+    .label = Инсталирај тему
+# Button/link on the full theme panel that opens the complete list of available themes.
+newtab-appearance-explore-more-themes-button = Истражите више тема
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = Позадине
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = Врати на подразумевано
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = Отпреми слику
+newtab-wallpaper-add-an-image = Додај слику
+newtab-wallpaper-custom-color = Изабери боју
+newtab-wallpaper-toggle-title =
+    .label = Позадине
+# Variables
+#   $file_size (number) - The number of the maximum image file size (in MB) that may be uploaded
+newtab-wallpaper-error-max-file-size = Слика је премашила ограничење величине датотеке од { $file_size } MB. Покушајте да отпремите мању датотеку.
+newtab-wallpaper-error-upload-file-type = Не можемо да отпремимо вашу датотеку. Покушајте поново са сликом.
+newtab-wallpaper-light-red-panda = Црвена панда
+newtab-wallpaper-light-mountain = Бела гора
+newtab-wallpaper-light-sky = Небо са љубичастим и розим облацима
+newtab-wallpaper-light-color = Плави, рози и жути облици
+newtab-wallpaper-light-landscape = Планински пејзаж у плавој измаглици
+newtab-wallpaper-light-beach = Плажа са палмом
+newtab-wallpaper-dark-aurora = Поларна светлост
+newtab-wallpaper-dark-color = Црвени и плави облици
+newtab-wallpaper-dark-panda = Црвена панда сакривена у шуми
+newtab-wallpaper-dark-sky = Градски призор са ноћним небом
+newtab-wallpaper-dark-mountain = Планински пејзаж
+newtab-wallpaper-dark-city = Љубичасти градски призор
+newtab-wallpaper-dark-fox-anniversary = Лисица на тротоару покрај шуме
+newtab-wallpaper-light-fox-anniversary = Лисица на ливади са планинским пејзажом у измаглици
+
+## "Your images" is the folder of wallpapers someone has saved. A saved wallpaper
+## can be a file they uploaded, a Picture of the Day they chose to keep, or a
+## Firefox wallpaper kept for them when it was retired.
+
+newtab-wallpaper-your-images = Ваше слике
+# Accessible name for the tile that opens the "Your images" folder in the
+# wallpaper picker. The tile shows one of the saved images and has no text of
+# its own, so this is all a screen reader has to go on.
+newtab-wallpaper-your-images-folder =
+    .aria-label = Ваше слике, позадине које сте сачували
+# Read by screen readers for a saved image that has a name of its own: a kept
+# Picture of the Day, or a Firefox wallpaper kept when it was retired. An image
+# someone added themselves is numbered instead, see the string below.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-your-images-item = { $name }
+# Each saved image has its own remove button. The tooltip stays short because
+# a name can be long and some locales put it before the verb, which would push
+# "remove" out of view. The full name is on the label a screen reader reads.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-remove-image =
+    .aria-label = Уклони { $name }
+    .title = Уклони слику
+# The remove button for an image someone added themselves. .title is the
+# tooltip and .aria-label is what a screen reader reads.
+# Variables:
+#   $number (number) - Which saved image this is, counting from one
+newtab-wallpaper-remove-image-numbered =
+    .aria-label = Уклони слику { $number }
+    .title = Уклони слику { $number }
+newtab-wallpaper-remove-image-title = Уклонити слику?
+# "This action" refers to removing a saved wallpaper image.
+newtab-wallpaper-remove-image-body = Ова радња се не може опозвати.
+newtab-wallpaper-remove-image-confirm = Уклони
+newtab-wallpaper-remove-image-cancel = Откажи
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = Једнобојне
+newtab-wallpaper-colors = Боје
+newtab-wallpaper-blue = Плава
+newtab-wallpaper-light-blue = Светло плава
+newtab-wallpaper-light-purple = Светло љубичаста
+newtab-wallpaper-light-green = Светло зелена
+newtab-wallpaper-green = Зелена
+newtab-wallpaper-beige = Беж
+newtab-wallpaper-yellow = Жута
+newtab-wallpaper-orange = Наранџаста
+newtab-wallpaper-pink = Розе
+newtab-wallpaper-light-pink = Светло розе
+newtab-wallpaper-red = Црвена
+newtab-wallpaper-dark-blue = Тамно плава
+newtab-wallpaper-dark-purple = Тамно љубичаста
+newtab-wallpaper-dark-green = Тамно зелена
+newtab-wallpaper-brown = Смеђа
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = Апстрактне
+newtab-wallpaper-abstract-green = Зелени облици
+newtab-wallpaper-abstract-blue = Плави облици
+newtab-wallpaper-abstract-purple = Љубичасти облици
+newtab-wallpaper-abstract-orange = Наранџасти облици
+newtab-wallpaper-gradient-orange = Градијент наранџасте и розе
+newtab-wallpaper-abstract-blue-purple = Плави и љубичасти облици
+newtab-wallpaper-abstract-white-curves = Бело са засенченим кривама
+newtab-wallpaper-abstract-purple-green = Љубичасто-зелени прелив светла
+newtab-wallpaper-abstract-blue-purple-waves = Плави и љубичасти таласасти облици
+newtab-wallpaper-abstract-black-waves = Црни таласасти облици
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = Фотографије
+newtab-wallpaper-beach-at-sunrise = Плажа у изласку сунца
+newtab-wallpaper-beach-at-sunset = Плажа у заласку сунца
+newtab-wallpaper-storm-sky = Олујно небо
+newtab-wallpaper-sky-with-pink-clouds = Небо са розе облацима
+newtab-wallpaper-red-panda-yawns-in-a-tree = Црвена панда зева на дрвету
+newtab-wallpaper-white-mountains = Беле планине
+newtab-wallpaper-hot-air-balloons = Разнобојни балони током дана
+newtab-wallpaper-starry-canyon = Плава звездана ноћ
+newtab-wallpaper-suspension-bridge = Сиви висећи мост током дана
+newtab-wallpaper-sand-dunes = Беле пешчане дине
+newtab-wallpaper-palm-trees = Силуета палми током златног сата
+newtab-wallpaper-blue-flowers = Крупни план плавог цвећа у цвату
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Аутор фотографије <a data-l10n-name="name-link">{ $author_string }</a> на <a data-l10n-name="webpage-link">{ $webpage_string }</a>
+newtab-wallpaper-feature-highlight-header = Пробајте нове боје
+newtab-wallpaper-feature-highlight-content = Дајте вашем новом језичку свеж изглед помоћу позадина.
+newtab-wallpaper-feature-highlight-button = Важи
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = Затвори искачући прозор
+    .title = Одбаци
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## Firefox
+
+newtab-wallpaper-category-title-firefox = { -brand-product-name }
+
+## Celestial
+
+# “Celestial” referring to astronomy; positioned in or relating to the sky,
+# or outer space as observed in astronomy.
+# Not to be confused with religious definition of the word.
+newtab-wallpaper-category-title-celestial = Небеска тела
+newtab-wallpaper-celestial-lunar-eclipse = Помрачење Месеца
+newtab-wallpaper-celestial-earth-night = Ноћна фотографија из ниске Земљине орбите
+newtab-wallpaper-celestial-starry-sky = Звездано небо
+newtab-wallpaper-celestial-eclipse-time-lapse = Убрзани снимак помрачења Месеца
+newtab-wallpaper-celestial-black-hole = Илустрација галаксије са црном рупом
+newtab-wallpaper-celestial-river = Сателитски снимак реке
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } - Спонзорисано
+newtab-weather-menu-change-location = Промени место
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = Потражи место
+    .placeholder = Потражи место
+newtab-weather-cancel-input =
+    .aria-label = Откажи
+    .title = Откажи
+# "Current" refers to the user's physical/geographic location detected via geolocation.
+newtab-weather-change-location-search-use-current =
+    .label = Употреби тренутну локацију
+newtab-weather-menu-weather-display = Приказ времена
+newtab-weather-todays-forecast = Данашња прогноза
+newtab-weather-see-full-forecast = Погледајте целу прогнозу
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = Једноставно
+newtab-weather-menu-change-weather-display-simple = Пређи на једноставни приказ
+newtab-weather-menu-weather-display-option-detailed = Детаљно
+newtab-weather-menu-change-weather-display-detailed = Пређи на детаљан приказ
+newtab-weather-menu-temperature-units = Јединице за температуру
+newtab-weather-menu-temperature-option-fahrenheit = Фаренхајт
+newtab-weather-menu-temperature-option-celsius = Целзијус
+newtab-weather-menu-change-temperature-units-fahrenheit = Пребаци на Фаренхајт
+newtab-weather-menu-change-temperature-units-celsius = Пребаци на Целзијус
+newtab-weather-menu-learn-more = Сазнајте више
+newtab-weather-menu-detect-my-location = Одреди моју локацију
+# This message is shown if user is working offline
+newtab-weather-error-not-available = Временска прогноза тренутно није доступна.
+newtab-weather-opt-in-see-weather = Желите ли да видите временску прогнозу за вашу локацију?
+newtab-weather-opt-in-not-now =
+    .label = Не сада
+newtab-weather-opt-in-yes =
+    .label = Да
+newtab-weather-opt-in-headline = Добијте локалну временску прогнозу
+newtab-weather-opt-in-use-location =
+    .label = Користи локацију
+newtab-weather-opt-in-choose-location = Изаберите место
+# We'll be showing static (fake) weather data if the user has not opted in to using their location
+newtab-weather-static-city = Њујорк
+# "Highest" here refers to the highest temperature of the day
+newtab-weather-high =
+    .aria-label = Висока
+# "Lowest" here refers to the lowest temperature of the day
+newtab-weather-low =
+    .aria-label = Ниска
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast-description =
+    .aria-description = { $provider } - Спонзорисано
+    .title = Погледајте прогнозу у { $provider }-у
+
+## Topic Labels
+
+newtab-topic-label-business = Посао
+newtab-topic-label-career = Каријера
+newtab-topic-label-education = Образовање
+newtab-topic-label-arts = Забава
+newtab-topic-label-food = Храна
+newtab-topic-label-health = Здравље
+newtab-topic-label-hobbies = Игре
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Новац
+newtab-topic-label-society-parenting = Родитељство
+newtab-topic-label-government = Политика
+newtab-topic-label-education-science = Наука
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Животни савети
+newtab-topic-label-sports = Спорт
+newtab-topic-label-tech = Технологија
+newtab-topic-label-travel = Путовањa
+newtab-topic-label-home = Кућа и башта
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Одабери теме за боље предлоге
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Одаберите две или више тема. Наши стручни сарадници дају првенство причама које су по вашем укусу. Ажурирајте било када.
+newtab-topic-selection-save-button = Сачувај
+newtab-topic-selection-cancel-button = Откажи
+newtab-topic-selection-button-maybe-later = Можда касније
+newtab-topic-selection-privacy-link = Сазнајте како штитимо и управљамо подацима
+newtab-topic-selection-button-update-interests = Ажурирајте ваша интересовања
+newtab-topic-selection-button-pick-interests = Одаберите ваша интересовања
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Прати
+# Variables:
+#   $topic (string) - Topic that the user can follow
+newtab-section-follow-button-label =
+    .aria-label = Прати { $topic }
+newtab-section-following-button = Пратите
+newtab-section-unfollow-button = Прекини праћење
+# Variables:
+#   $topic (string) - Topic that the user is following and can unfollow
+newtab-section-unfollow-button-label =
+    .aria-label = Пратите: прекини праћење { $topic }
+# A modal may appear next to the Follow button, directing users to try out the feature
+newtab-section-follow-highlight-title = Фино подесите свој довод
+newtab-section-follow-highlight-subtitle = Пратите своја интересовања да бисте видели више онога што волите.
+
+## Topic navigation
+## A row of buttons above the stories, each scrolling the page to that topic's section.
+
+newtab-topic-navigation-label =
+    .aria-label = Теме
+# Opens a menu listing the topics that did not fit in the row.
+newtab-topic-navigation-more-button = Више
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Блокирај
+newtab-section-blocked-button = Блокирано
+newtab-section-unblock-button = Одблокирај
+# Variables:
+#   $topic (string) - Name of topic that user is following
+newtab-section-follow-topic =
+    .aria-label = Прати { $topic }
+# Variables:
+#   $topic (string) - Name of topic that user is unfollowing
+newtab-section-unfollow-topic =
+    .aria-label = Прекини праћење { $topic }
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic =
+    .aria-label = Блокирај { $topic }
+# Variables:
+#   $topic (string) - Name of topic that user is unblocking
+newtab-section-unblock-topic =
+    .aria-label = Одблокирај { $topic }
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-topic-p1 = Јесте ли сигурни да желите да блокирате ову тему?
+newtab-section-confirm-block-topic-p2 = Блокиране теме се више неће појављивати у вашем доводу.
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = Блокирај { $topic }
+newtab-section-block-cancel-button = Откажи
+
+## Strings for custom wallpaper highlight
+
+newtab-section-mangage-topics-title = Теме
+newtab-section-manage-topics-button-v2 =
+    .label = Управљај темама
+newtab-section-mangage-topics-followed-topics = Праћено
+newtab-section-mangage-topics-followed-topics-empty-state = Још увек не пратите ниједну тему.
+newtab-section-mangage-topics-blocked-topics = Блокирано
+newtab-section-mangage-topics-blocked-topics-empty-state = Још увек нисте блокирали ниједну тему.
+newtab-custom-wallpaper-title = Пристигле су прилагођене позадине
+# 'Make firefox yours" means to customize or personalize
+newtab-custom-wallpaper-subtitle = Отпремите сопствену позадину или изаберите прилагођену боју да бисте учинили { -brand-product-name } својим.
+newtab-custom-wallpaper-cta = Испробајте
+
+## Strings for new user activation custom wallpaper highlight
+
+newtab-new-user-custom-wallpaper-title = Изаберите позадину да бисте { -brand-product-name } учинили својим
+newtab-new-user-custom-wallpaper-subtitle = Учините да се сваки нови језичак осећа као код куће уз прилагођене позадине и боје.
+newtab-new-user-custom-wallpaper-cta = Испробајте одмах
+
+## Strings for Nova wallpaper feature highlight
+
+newtab-wallpaper-feature-highlight-title = Свеже нове позадине су управо стигле
+newtab-wallpaper-feature-highlight-subtitle = Изаберите своју омиљену и учините да се сваки нови језичак осећа као код куће.
+newtab-wallpaper-feature-highlight-cta = Изаберите позадину
+
+## Strings for download mobile highlight
+
+newtab-download-mobile-highlight-title = Преузмите { -brand-product-name } за мобилне уређаје
+# "Scan the code" refers to scanning the QR code that appears above the body text that leads to Firefox for mobile download.
+newtab-download-mobile-highlight-body-variant-a = Скенирајте код за безбедно прегледање у покрету.
+newtab-download-mobile-highlight-body-variant-b = Наставите тамо где сте стали када усагласите своје језичке, лозинке и још много тога.
+newtab-download-mobile-highlight-body-variant-c = Да ли сте знали да можете понети { -brand-product-name } са собом? Исти прегледач. У вашем џепу.
+newtab-download-mobile-highlight-image =
+    .aria-label = КР код за преузимање { -brand-product-name } прегледача за мобилне уређаје
+
+## Strings for shortcuts highlight
+
+newtab-shortcuts-highlight-title = Ваше омиљене ставке на дохват руке
+newtab-shortcuts-highlight-subtitle = Додајте пречицу да би ваше омиљене веб странице биле на само један клик.
+
+## Strings for reporting issues with ads and content
+
+newtab-report-content-why-reporting-this =
+    .label = Зашто ово пријављујете?
+newtab-report-ads-reason-not-interested =
+    .label = Нисам заинтересован
+newtab-report-ads-reason-inappropriate =
+    .label = Неприкладно је
+newtab-report-ads-reason-seen-it-too-many-times =
+    .label = Видео сам ово превише пута
+newtab-report-content-wrong-category =
+    .label = Погрешна категорија
+newtab-report-content-outdated =
+    .label = Застарело
+newtab-report-content-inappropriate-offensive =
+    .label = Неприкладно или увредљиво
+newtab-report-content-spam-misleading =
+    .label = Непожељно или обмањујуће
+newtab-report-content-requires-payment-subscription =
+    .label = Захтева плаћање или претплату
+newtab-report-content-requires-payment-subscription-learn-more = Сазнајте више
+newtab-report-cancel = Откажи
+newtab-report-submit = Пошаљи
+newtab-toast-thanks-for-reporting =
+    .message = Хвала вам што сте ово пријавили.
+newtab-toast-widgets-hidden =
+    .message = Изаберите иконицу оловке да бисте поново додали елементе било када.
+# Variables:
+#   $topic (string) - Topic that the user has followed
+newtab-section-toast-follow =
+    .message = Сада пратите { $topic }.
+# Variables:
+#   $topic (string) - Topic that the user has unfollowed
+newtab-section-toast-unfollow =
+    .message = Више не пратите { $topic }.
+# Variables:
+#   $topic (string) - Topic that the user has blocked
+newtab-section-toast-block =
+    .message = Више нећете видети приче о теми { $topic }.
+
+## Strings for task / to-do list productivity widget
+
+# "Add one" means adding a new task to the list (e.g., "Walk the dog")
+newtab-widget-lists-empty-cta = Могућности су бескрајне. Додајте једну.
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = Ново
+newtab-widget-lists-label-beta =
+    .label = Бета
+# When tasks have been previous marked as complete, they will appear in their own separate list beneath incomplete items
+# Variables:
+#   $number (number) - Amount of list items marked complete
+newtab-widget-lists-completed-list =
+    { $number ->
+        [one] Завршен ({ $number })
+        [few] Завршено ({ $number })
+       *[other] Завршених ({ $number })
+    }
+newtab-widget-lists-celebration-headline = Добар посао
+newtab-widget-lists-celebration-subhead = Све је завршено
+newtab-widget-task-list-menu-copy = Умножи
+newtab-widget-lists-menu-edit = Уреди назив списка
+newtab-widget-lists-menu-edit2 =
+    .aria-label = Уреди назив списка
+newtab-widget-lists-menu-create = Направи нови списак
+newtab-widget-lists-menu-delete = Обриши овај списак
+newtab-widget-lists-menu-copy = Умножи списак у оставу
+newtab-widget-lists-menu-learn-more = Сазнајте више
+# "Change" is a verb here: the button switches which list is shown
+newtab-widget-lists-change-list =
+    .aria-label = Промени списак
+    .title = Промени списак
+newtab-widget-lists-button-add-item = Додај ставку
+newtab-widget-lists-input-add-an-item2 =
+    .aria-label = Додај ставку
+    .placeholder = Додај ставку
+newtab-widget-lists-input-error = Укључите текст да бисте додали ставку.
+newtab-widget-lists-input-menu-open-link = Отвори везу
+newtab-widget-lists-input-menu-move-up = Премести горе
+newtab-widget-lists-input-menu-move-down = Премести доле
+newtab-widget-lists-input-menu-delete = Обриши
+newtab-widget-lists-input-menu-edit = Уреди
+newtab-widget-lists-input-menu-edit2 =
+    .aria-label = Уреди ставку
+newtab-widget-lists-edit-clear =
+    .aria-label = Откажи
+    .title = Откажи
+# Lists is a noun, as in "options for the lists"
+newtab-widget-lists-menu-button =
+    .aria-label = Могућности за спискове
+# the + symbol emphasises the functionality of adding a new list
+newtab-widget-lists-dropdown-create =
+    .label = + Направи нови списак
+newtab-widget-lists-name-label-default =
+    .label = Списак задатака
+newtab-widget-lists-name-label-checklist =
+    .label = Списак задатака
+newtab-widget-lists-name-placeholder-default =
+    .placeholder = Списак задатака
+newtab-widget-lists-name-placeholder-checklist2 =
+    .aria-label = Уреди назив списка
+    .placeholder = Списак задатака
+# The placeholder value of the name field for a newly created list
+newtab-widget-lists-name-placeholder-new2 =
+    .aria-label = Уреди назив списка
+    .placeholder = Нови списак
+newtab-widget-section-title = Елементи
+newtab-widget-menu-hide = Сакриј елемент
+newtab-widget-menu-change-size = Промени величину
+# Parent label for a submenu in the widget menu that reorders the widget
+# among its siblings. "Left" and "Right" appear as items inside this submenu.
+newtab-widget-menu-move = Помери
+# Submenu item under "Move"; moves the widget one position to the left.
+# RTL locales should translate this as "Right".
+newtab-widget-menu-move-left = Лево
+# Submenu item under "Move"; moves the widget one position to the right.
+# RTL locales should translate this as "Left".
+newtab-widget-menu-move-right = Десно
+newtab-widget-size-small = Мала
+newtab-widget-size-medium = Средња
+newtab-widget-size-large = Велика
+# Tooltip for hide all widgets button
+newtab-widget-section-hide-all-button =
+    .aria-label = Сакриј све елементе
+    .title = Сакриј елементе
+newtab-widget-section-maximize =
+    .aria-label = Прошири све елементе на пуну величину
+    .title = Прошири елементе
+newtab-widget-section-minimize =
+    .aria-label = Скупи све елементе на компактну величину
+    .title = Умањи елементе
+# Shown on the widgets section header button while the section is
+# auto-minimized to its title row, to open the section back up.
+newtab-widget-section-show-widgets =
+    .aria-label = Прикажи одељак са елементима
+    .title = Прикажи елементе
+newtab-widget-section-menu-button =
+    .aria-label = Отвори мени елемената
+    .title = Мени елемената
+newtab-widget-add-widgets-button =
+    .aria-label = Додај елемент
+    .title = Додај елемент
+newtab-widget-section-menu-manage = Управљај елементима
+newtab-widget-section-menu-hide-all = Сакриј елементе
+newtab-widget-section-menu-learn-more = Сазнајте више
+newtab-widget-section-feedback = Реците нам шта мислите
+# Button shown when additional widgets are hidden beyond the
+# first row, allowing users to show them.
+newtab-widget-section-show-more =
+    .label = Прикажи више елемената
+# Button shown when the widgets row is expanded to multiple rows,
+# allowing users to collapse it back to one row.
+newtab-widget-section-show-less =
+    .label = Прикажи мање елемената
+newtab-widget-lists-name-default = Списак задатака
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+newtab-widget-timer-notification-title = Одбројавач
+newtab-widget-timer-notification-focus = Време за фокус је истекло. Добар посао. Желите ли одмор?
+newtab-widget-timer-notification-break = Ваш одмор је готов. Спремни за фокус?
+newtab-widget-timer-notification-warning = Обавештења су искључена
+newtab-widget-timer-mode-focus =
+    .label = Фокус
+newtab-widget-timer-mode-break =
+    .label = Одмор
+newtab-widget-timer-label-play =
+    .label = Пусти
+newtab-widget-timer-label-pause =
+    .label = Паузирај
+newtab-widget-timer-reset =
+    .title = Поново постави
+newtab-widget-timer-menu-notifications = Искључи обавештења
+newtab-widget-timer-menu-notifications-on = Укључи обавештења
+newtab-widget-timer-menu-learn-more = Сазнајте више
+newtab-widget-timer-menu-button =
+    .aria-label = Могућности одбројавача
+# The title displays above a set of top news headlines.
+newtab-daily-briefing-card-title = Најважније вести
+newtab-daily-briefing-card-menu-dismiss = Одбаци
+# Variables:
+#   $minutes (number) - Time since the feed has been refreshed
+newtab-daily-briefing-card-timestamp =
+    { $minutes ->
+        [one] Ажурирано пре { $minutes } минут
+        [few] Ажурирано пре { $minutes } минута
+       *[other] Ажурирано пре { $minutes } минута
+    }
+newtab-widget-message-title = Останите фокусирани уз спискове и уграђени тајмер
+# to-dos stands for "things to do".
+newtab-widget-message-copy = Од брзих подсетника до дневних задатака, сесија фокуса до пауза за протезање - останите на задатку и на време.
+# One spot refers to a dedicated section on new tab to manage and use widgets
+newtab-widget-message-focus-forecasts-title = Једно место за фокус, прогнозе и још много тога
+newtab-widget-message-focus-forecasts-body = Нека ваш дан тече глатко уз { -brand-product-name } елементе. Проверите прогнозу, останите фокусирани на задатке или пратите време широм света.
+# "Make Firefox yours" refers to about:newtab. The call to action here ("Try it now")
+# is to customize the new tab page with a background image or color from
+# the built-in wallpaper collection or uploading your own image.
+newtab-promo-card-title-addons = Прилагодите { -brand-product-name } себи
+newtab-promo-card-body-addons = Изаберите позадину из наше збирке или направите своју.
+newtab-promo-card-cta-addons = Испробај одмах
+newtab-promo-card-title = Подржите { -brand-product-name }
+newtab-promo-card-body = Наши спонзори подржавају нашу мисију изградње бољег веба
+newtab-promo-card-cta = Сазнајте више
+newtab-promo-card-dismiss-button =
+    .aria-label = Одбаци
+    .title = Одбаци
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-start-aria =
+    .aria-label =
+        { $minutes ->
+           *[other] Покрени одбројавач од { $minutes } минута
+        }
+newtab-widget-timer-pause-aria =
+    .aria-label = Паузирај одбројавач
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-spinbutton-name =
+    .aria-label =
+        { $minutes ->
+            [one] { $minutes } минут
+            [few] { $minutes } минута
+           *[other] { $minutes } минута
+        }
+newtab-widget-timer-decrease-min =
+    .title = Смањи за 1 минут
+newtab-widget-timer-increase-min =
+    .title = Повећај за 1 минут
+newtab-widget-timer-mode-group =
+    .aria-label = Режим одбројавача
+# Small label shown beneath the live time while the focus timer is running or paused.
+newtab-widget-timer-running-focus = Фокус
+# Small label shown beneath the live time while the break timer is running or paused.
+newtab-widget-timer-running-break = Одмор
+# Context-menu item to hide the Timer widget. Replaces the shared "Hide widget"
+# copy with a widget-specific string per the Nova design.
+newtab-widget-timer-menu-hide = Сакриј одбројавач
+# Heading shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-heading-focus = Сјајан посао
+# Heading shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-heading-break = Ваш одмор је завршен
+# Message shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-message-focus = Треба ли вам одмор?
+# Message shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-message-break = Спремни за фокус?
+
+##
+
+newtab-sports-widget-menu-follow-teams = Прати екипе
+newtab-sports-widget-menu-view-schedule = Прикажи распоред
+newtab-sports-widget-menu-view-upcoming = Прикажи предстојеће
+newtab-sports-widget-menu-view-results = Прикажи резултате
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-menu-key-dates = Кључни датуми
+newtab-sports-widget-menu-learn-more = Сазнајте више
+# “Keep tabs on” is an informal expression meaning to stay updated on, stay informed on, or regularly follow something (in this case, World Cup matches and updates).
+newtab-sports-widget-keep-tabs = Пратите Светско првенство
+newtab-sports-widget-get-updates = Пратите вести утакмица уживо и још много тога.
+newtab-sports-widget-follow-teams =
+    .label = Прати екипе
+newtab-sports-widget-view-matches =
+    .label = Прикажи подударања
+# Variables:
+#   $number (number) - Maximum number of teams a user can choose to follow in the team selection state
+newtab-sports-widget-follow-teams-title =
+    { $number ->
+        [one] Пратите до { $number } тима
+        [few] Пратите до { $number } тима
+       *[other] Пратите до { $number } тимова
+    }
+newtab-sports-widget-choose-wallpaper =
+    .label = Изаберите позадину
+newtab-sports-widget-skip = Прескочи
+newtab-sports-widget-search-country =
+    .aria-label = Претражи државу
+    .placeholder = Претражи државу
+newtab-sports-widget-cancel = Откажи
+newtab-sports-widget-back-button =
+    .aria-label = Назад
+newtab-sports-widget-done-button =
+    .label = Готово
+# Shown in the follow-teams list for a team that has been knocked out of the tournament.
+# Variables:
+#   $teamName (string) - the localized team name (e.g. "Canada").
+newtab-sports-widget-team-name-eliminated = { $teamName } (испала)
+newtab-sports-widget-view-all =
+    .label = Прикажи све
+newtab-sports-widget-show-less =
+    .label = Прикажи мање
+# Toggle that filters the list of teams the user follows
+newtab-sports-widget-followed-only-toggle =
+    .label = Само праћени тимови
+# Status shown when more matches are being fetched.
+newtab-sports-widget-loading-more = Учитавам више мечева…
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch =
+    .label = Гледај
+    .title = Гледајте уживо
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch-icon =
+    .aria-label = Гледајте уживо
+    .title = Гледајте уживо
+newtab-sports-widget-watch-dialog-close =
+    .aria-label = Затвори
+    .title = Затвори
+# Tag: user can watch without paying (sign-in may still be required).
+newtab-sports-widget-watch-stream-free = Бесплатно
+# Tag: user can start watching via a trial; continued access may require payment after it ends.
+newtab-sports-widget-watch-stream-free-trial = Бесплатна проба
+# Tag: provider offers both a no-cost or trial path and a paid path.
+newtab-sports-widget-watch-stream-free-paid = Бесплатно и плаћено
+# Tag: user must pay to watch (subscription, TV provider, premium plan, or add-on).
+newtab-sports-widget-watch-stream-paid = Плаћено
+# Note: provider only streams some matches, not the full tournament.
+newtab-sports-widget-watch-stream-select-games-only = Само одређене утакмице
+# Heading for the list of streaming services available in the user’s country/region.
+newtab-sports-widget-watch-available-region = Доступно у вашој области
+# Heading for the list of streaming services available outside the user’s country/region.
+newtab-sports-widget-watch-available-other-regions = Остале области
+# Button that opens the provider’s stream page in a new tab.
+newtab-sports-widget-watch-play =
+    .aria-label = Отвори ток
+    .title = Отвори ток
+newtab-sports-widget-group-stage = Групна фаза
+newtab-sports-widget-group-a = Група А
+newtab-sports-widget-group-b = Група Б
+newtab-sports-widget-group-c = Група Ц
+newtab-sports-widget-group-d = Група Д
+newtab-sports-widget-group-e = Група Е
+newtab-sports-widget-group-f = Група Ф
+newtab-sports-widget-group-g = Група Г
+newtab-sports-widget-group-h = Група Х
+newtab-sports-widget-group-i = Група И
+newtab-sports-widget-group-j = Група Ј
+newtab-sports-widget-group-k = Група К
+newtab-sports-widget-group-l = Група Л
+newtab-sports-widget-round-32 = Шеснаестина финала
+newtab-sports-widget-round-16 = Осмина финала
+newtab-sports-widget-quarter-finals = Четвртфинале
+# The "LIVE" string is meant to be uppercase in English, but other languages and locales may vary in how they handle this.
+newtab-sports-widget-live = УЖИВО
+newtab-custom-widget-live-refresh =
+    .aria-label = Освежи резултате
+    .title = Освежи резултате
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-key-dates = Кључни датуми
+newtab-sports-widget-upcoming = Предстојећи
+# Used for a match currently ongoing
+newtab-sports-widget-now = Сада
+newtab-sports-widget-results = Резултати
+newtab-sports-widget-semi-finals = Полуфинале
+newtab-sports-widget-bronze-finals = Меч за треће место
+# Final is the final match for 1st place.
+newtab-sports-widget-final = Финале
+# Variables:
+#   $start (Date) - Start date of a tournament stage
+#   $end (Date) - End date of a tournament stage
+newtab-sports-widget-key-date-range = { DATETIME($start, day: "numeric", month: "short") } - { DATETIME($end, day: "numeric", month: "short") }
+# Variables:
+#   $date (Date) - Date of a single tournament event
+newtab-sports-widget-key-date = { DATETIME($date, day: "numeric", month: "short") }
+newtab-sports-widget-delayed = Одложено
+newtab-sports-widget-postponed = Померено
+newtab-sports-widget-suspended = Обустављено
+newtab-sports-widget-cancelled = Отказано
+newtab-sports-widget-information = Подаци о утакмици
+newtab-sports-widget-no-live-data = Подаци о утакмици у живо се тренутно не ажурирају
+newtab-sports-widget-view-results-link = Прикажи резултате
+newtab-sports-widget-third-place = Треће место
+# Runner-up is the team in 2nd place.
+newtab-sports-widget-runner-up = Други
+newtab-sports-widget-champions = Шампиони
+newtab-sports-widget-world-cup-champions = Шампиони Светског првенства 2026.
+# Compact champions label for the medium-size widget result card; the larger
+# card uses newtab-sports-widget-world-cup-champions.
+newtab-sports-widget-world-cup-champions-short = Шампиони 2026
+# Variables:
+#   $date (Date) - The match start time
+newtab-sports-widget-match-time = { DATETIME($date, hour: "2-digit", minute: "2-digit") }
+newtab-sports-widget-match-full-time = Крај
+newtab-sports-widget-match-halftime = Полувреме
+newtab-sports-widget-match-extra-time = Продужетак
+newtab-sports-widget-match-penalties = Пенали
+# Separator shown between two teams in a placeholder match row when no upcoming
+# match details are available yet.
+newtab-sports-widget-match-vs = против
+# Note shown in the Upcoming tab when no match details are available yet.
+newtab-sports-widget-no-upcoming-matches = Пратите нас за појединости о предстојећим утакмицама
+
+## Sports widget live-games pagination. Shown when 2+ matches are live at the same time
+
+# arrow button that goes to the previous page of live matches.
+newtab-sports-widget-pagination-previous =
+    .aria-label = Претходна
+    .title = Претходна
+# arrow button that goes to the next page of live matches.
+newtab-sports-widget-pagination-next =
+    .aria-label = Следећа
+    .title = Следећа
+# Dot indicator that jumps directly to a given live match.
+# $index (number) - 1-based position of this dot in the list.
+# $total (number) - Total number of live matches.
+newtab-sports-widget-pagination-dot =
+    .aria-label = Утакмица уживо { $index } од { $total }
+    .title = Утакмица уживо { $index } од { $total }
+
+## Accessible labels for match rows in the sports widget. These are read by
+## screen readers to announce the match details and status.
+## Variables shared by all messages in this group:
+##   $homeTeam (String) - The full name of the home team (e.g. "Mexico")
+##   $awayTeam (String) - The full name of the away team (e.g. "Russia")
+
+# A finished match row (regular full-time result).
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+newtab-sports-widget-match-aria-label-results =
+    .aria-label = { $homeTeam }, { $homeScore } против земље { $awayTeam }, { $awayScore }
+# A finished match row that went to a penalty shootout.
+# Parenthesized values are the shootout score.
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+#   $homePenalty (number) - The home team's penalty shootout score
+#   $awayPenalty (number) - The away team's penalty shootout score
+newtab-sports-widget-match-aria-label-results-penalties =
+    .aria-label = { $homeTeam }, { $homeScore } ({ $homePenalty }) против земље { $awayTeam }, { $awayScore } ({ $awayPenalty })
+# A match that is currently in progress.
+# Variables:
+#   $homeScore (number) - The home team's current score
+#   $awayScore (number) - The away team's current score
+newtab-sports-widget-match-aria-label-now =
+    .aria-label = УЖИВО: { $homeTeam }, { $homeScore } против земље { $awayTeam }, { $awayScore }
+# An upcoming scheduled match row. Announces kickoff time and date.
+# Variables:
+#   $date (Date) - The scheduled kickoff date/time
+newtab-sports-widget-match-aria-label-upcoming =
+    .aria-label = { $homeTeam } против земље { $awayTeam }, { DATETIME($date, hour: "numeric", minute: "numeric") }, { DATETIME($date, day: "numeric", month: "long") }
+# An upcoming match row whose status is "delayed".
+newtab-sports-widget-match-aria-label-upcoming-delayed =
+    .aria-label = { $homeTeam } против земље { $awayTeam }, одложено
+# An upcoming match row whose status is "postponed".
+newtab-sports-widget-match-aria-label-upcoming-postponed =
+    .aria-label = { $homeTeam } против земље { $awayTeam }, одложено
+# An upcoming match row whose status is "suspended".
+newtab-sports-widget-match-aria-label-upcoming-suspended =
+    .aria-label = { $homeTeam } против земље { $awayTeam }, обустављено
+# An upcoming match row whose status is "cancelled".
+newtab-sports-widget-match-aria-label-upcoming-cancelled =
+    .aria-label = { $homeTeam } против земље { $awayTeam }, отказано
+
+## Sports widget — team names (FIFA country codes)
+## Only includes names not adequately covered by standard country-code
+## internationalization tooling.
+
+newtab-sports-widget-team-name-label-bih =
+    .label = Босна и Херцеговина
+newtab-sports-widget-team-name-label-civ =
+    .label = Обала Слоноваче
+newtab-sports-widget-team-name-label-cod =
+    .label = ДР Конго
+newtab-sports-widget-team-name-label-eng =
+    .label = Енглеска
+newtab-sports-widget-team-name-label-sco =
+    .label = Шкотска
+# Placeholder used in a match row's aria-label for an undecided team (shown visually as "--").
+newtab-sports-widget-team-tbd = Биће познато касније
+
+## Sports widget OMC messages
+## Shown as on-screen messages promoting the Sports widget and World Cup wallpapers.
+
+newtab-sports-widget-message-wallpapers-title = Започните Светско првенство новим позадинама
+newtab-sports-widget-message-wallpapers-body = Донесите енергију дана утакмице у свој прегледач за овај турнир.
+newtab-sports-widget-message-wallpapers-cta = Изаберите позадину
+newtab-sports-widget-message-wallpapers-semifinals-title = Преузмите нову позадину за полуфинале
+newtab-sports-widget-message-wallpapers-semifinals-body = Припремите се за највеће утакмице Светског првенства.
+newtab-sports-widget-message-add-widgets-cta =
+    .label = Додај елементе
+newtab-sports-widget-message-day-in-play-title = Останите у игри током дана уз елементе за { -brand-product-name }
+newtab-sports-widget-message-day-in-play-body = Пратите Светско првенство, останите фокусирани на своје задатке, пратите време широм света и још много тога.
+newtab-sports-widget-message-explore-widgets-cta =
+    .label = Истражите елементе
+
+## Survey prompts shown after the World Cup to gather feedback on the widgets experience.
+
+newtab-sports-widget-message-survey-title = Помозите нам да учинимо елементе бољим
+newtab-sports-widget-message-survey-body = Светско првенство је завршено. Поделите ваше утиске о овом искуству.
+newtab-sports-widget-message-survey-widget-title = Како вам се свидео елемент Светског првенства?
+newtab-sports-widget-message-survey-widget-body = Поделите ваше утиске да нам поможете да побољшамо будуће елементе. Затим, испробајте нови у вашем распореду.
+newtab-sports-widget-message-survey-cta =
+    .label = Попуни анкету
+
+## Strings for activation window message variants. In certain experiment configurations,
+## the strings from these variants may be displayed in a message below the search input
+## for the first 48 hours of a new profile's lifetime. Some messages include buttons with
+## labels, but not all.
+
+newtab-activation-window-message-dismiss-button =
+    .aria-label = Одбаци
+    .title = Одбаци
+# "This space" refers to about:newtab. The call to action here ("make it your own")
+# is to customize newtab with a background image or colour, or by tweaking the
+# existing widgetry that appears on it.
+newtab-activation-window-message-customization-focus-header = Учините овај простор својим
+newtab-activation-window-message-customization-focus-message = Изаберите нову позадину, додајте пречице до својих омиљених страница и будите у току са причама које вас занимају.
+newtab-activation-window-message-customization-focus-primary-button =
+    .label = Започните прилагођавање
+# "This space" refers to about:newtab. The sentiment of "plays by your rules" is
+# meant to evoke the idea that newtab is malleable and customizable. The call to
+# action is to customize newtab with a background image or colour, or by tweaking
+# the existing widgetry that appears on it.
+newtab-activation-window-message-values-focus-header = Овај простор се прилагођава вама
+newtab-activation-window-message-values-focus-message = { -brand-product-name } вам омогућава да прегледате веб на начин који желите, уз личнији почетак вашег дана на мрежи. Прилагодите { -brand-product-name } себи.
+
+## Strings for the Clock widget
+
+# Context menu item: toggle the clock card off.
+newtab-clock-widget-menu-hide = Сакриј часовник
+newtab-clock-widget-menu-learn-more = Сазнајте више
+newtab-clock-widget-menu-edit = Уреди часовнике
+newtab-clock-widget-menu-switch-to-12h = Пребаци на 12-часовни формат
+newtab-clock-widget-menu-switch-to-24h = Пребаци на 24-часовни формат
+newtab-clock-widget-label-your-clocks = Ваши часовници
+newtab-clock-widget-search-location-input =
+    .aria-label = Потражите град
+    .label = Локација
+    .placeholder = Потражите град
+# "Nickname (optional)" refers to a custom, user-defined label for a saved location
+# (e.g., "Home", "Office", or "School") to make it easier to recognize.
+# Not to be translated as a legal name, username, or alias used for identity verification.
+newtab-clock-widget-input-nickname =
+    .aria-label = Надимак (необавезно)
+    .label = Надимак (необавезно)
+    .placeholder = Додајте надимак
+# "Add new clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-button-add =
+    .aria-label = Додај нови часовник
+    .title = Додај нови часовник
+newtab-clock-widget-button-add-clock = Додај
+newtab-clock-widget-button-cancel = Откажи
+newtab-clock-widget-button-back =
+    .aria-label = Назад
+    .title = Назад
+newtab-clock-widget-button-edit-clock =
+    .aria-label = Уреди часовник
+    .title = Уреди часовник
+newtab-clock-widget-button-save = Сачувај
+newtab-clock-widget-button-remove-clock =
+    .aria-label = Уклони часовник
+    .title = Уклони часовник
+# Accessible name for a clock row in the "Your clocks" management panel
+# when the row has no user-provided nickname. Read aloud by screen
+# readers when focus lands on the row.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+newtab-clock-widget-edit-item =
+    .aria-label = { $city }
+# Accessible name for a clock row when a user nickname has been set.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+#   $nickname (string) - The user-provided nickname for the row.
+newtab-clock-widget-edit-item-with-nickname =
+    .aria-label = { $city }, надимак: { $nickname }
+newtab-clock-widget-add-clock-form =
+    .aria-label = Додај часовник
+newtab-clock-widget-edit-clock-form =
+    .aria-label = Уреди часовник
+# "Search results" is the accessible label for the listbox dropdown that appears
+# below the location search field, listing matching cities as the user types.
+# It means "results of the search", not "search within the results".
+newtab-clock-widget-search-results =
+    .aria-label = Резултати претраге
+# Fallback row in the search results that lets the user add a city that is
+# not in the list. $city (String) is the text the user has typed.
+newtab-clock-widget-add-custom = Додај „{ $city }“ као прилагођени часовник
+# Text field for the display name of a user-added custom clock.
+newtab-clock-widget-custom-city-input =
+    .aria-label = Име града
+    .label = Име града
+    .placeholder = Назови овај часовник
+# Searchable time-zone field shown when adding a custom clock. The user
+# types a city they know and picks it to set the clock's time zone.
+newtab-clock-widget-custom-timezone-input =
+    .aria-label = Временска зона
+    .label = Временска зона
+    .placeholder = Претражи по граду, временској зони или УТЦ померају
+newtab-clock-widget-custom-zone-results =
+    .aria-label = Резултати временских зона
+# Shown in the time-zone picker when the search matches no time zones.
+newtab-clock-widget-custom-zone-no-results = Нема одговарајућих временских зона
+# Returns from the custom clock form back to the city search.
+newtab-clock-widget-custom-back = Назад
+# Shown in place of the search results when the user's query does not match any
+# supported city — e.g. typing a misspelled name or a place not in the IANA
+# time zone list.
+newtab-clock-widget-search-no-results = Нема подударања
+# "Open menu for clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-menu-button =
+    .aria-label = Отвори мени за часовник
+    .title = Отвори мени за часовник
+# $nickname (String) - The user-defined nickname for a saved clock location (e.g., "Home", "Office").
+newtab-clock-widget-label-nickname-with-value = Надимак: { $nickname }
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = Њујорк
+newtab-clock-city-us-los-angeles = Лос Анђелес
+newtab-clock-city-us-chicago = Чикаго
+newtab-clock-city-us-san-francisco = Сан Франциско
+newtab-clock-city-us-san-diego = Сан Дијего
+newtab-clock-city-us-dallas = Далас
+newtab-clock-city-us-houston = Хјустон
+newtab-clock-city-us-philadelphia = Филаделфија
+newtab-clock-city-us-atlanta = Атланта
+newtab-clock-city-us-washington-dc = Вашингтон
+newtab-clock-city-us-boston = Бостон
+newtab-clock-city-us-miami = Мајами
+newtab-clock-city-us-seattle = Сијетл
+newtab-clock-city-us-denver = Денвер
+newtab-clock-city-us-honolulu = Хонолулу
+newtab-clock-city-us-anchorage = Енкориџ
+newtab-clock-city-de-berlin = Берлин
+newtab-clock-city-de-munich = Минхен
+newtab-clock-city-de-frankfurt = Франкфурт на Мајни
+newtab-clock-city-de-hamburg = Хамбург
+newtab-clock-city-fr-paris = Париз
+newtab-clock-city-fr-lyon = Лион
+newtab-clock-city-fr-marseille = Марсељ
+newtab-clock-city-fr-toulouse = Тулуза
+newtab-clock-city-in-kolkata = Колката
+newtab-clock-city-in-mumbai = Мумбај
+newtab-clock-city-in-delhi = Делхи
+newtab-clock-city-in-bangalore = Бангалор
+newtab-clock-city-cn-shanghai = Шангај
+newtab-clock-city-cn-beijing = Пекинг
+newtab-clock-city-cn-shenzhen = Шенџен
+newtab-clock-city-br-sao-paulo = Сао Пауло
+newtab-clock-city-br-rio-de-janeiro = Рио де Жанеиро
+newtab-clock-city-br-brasilia = Бразилија
+newtab-clock-city-id-jakarta = Џакарта
+newtab-clock-city-id-surabaya = Сурабаја
+newtab-clock-city-id-makassar = Макасар
+newtab-clock-city-ca-toronto = Торонто
+newtab-clock-city-ca-montreal = Монтреал
+newtab-clock-city-ca-vancouver = Ванкувер
+newtab-clock-city-au-sydney = Сиднеј
+newtab-clock-city-au-perth = Перт
+newtab-clock-city-au-adelaide = Аделејд
+newtab-clock-city-pl-warsaw = Варшава
+newtab-clock-city-pl-krakow = Краков
+newtab-clock-city-jp-tokyo = Токио
+newtab-clock-city-jp-osaka = Осака
+newtab-clock-city-mx-mexico-city = Мексико Сити
+newtab-clock-city-mx-guadalajara = Гвадалахара
+newtab-clock-city-it-rome = Рим
+newtab-clock-city-it-milan = Милано
+newtab-clock-city-ru-moscow = Москва
+newtab-clock-city-ru-saint-petersburg = Санкт Петербург
+newtab-clock-city-gb-london = Лондон
+newtab-clock-city-gb-birmingham = Бирмингем
+newtab-clock-city-es-madrid = Мадрид
+newtab-clock-city-es-barcelona = Барселона
+newtab-clock-city-nl-amsterdam = Амстердам
+newtab-clock-city-ch-zurich = Цирих
+newtab-clock-city-at-vienna = Беч
+newtab-clock-city-cz-prague = Праг
+newtab-clock-city-ar-buenos-aires = Буенос Ајрес
+newtab-clock-city-gr-athens = Атина
+newtab-clock-city-hu-budapest = Будимпешта
+newtab-clock-city-be-brussels = Брисел
+newtab-clock-city-ua-kyiv = Кијев
+newtab-clock-city-fi-helsinki = Хелсинки
+newtab-clock-city-co-bogota = Богота
+newtab-clock-city-ph-manila = Манила
+newtab-clock-city-tr-istanbul = Истанбул
+newtab-clock-city-my-kuala-lumpur = Куала Лумпур
+newtab-clock-city-eg-cairo = Каиро
+newtab-clock-city-se-stockholm = Стокхолм
+newtab-clock-city-ro-bucharest = Букурешт
+newtab-clock-city-th-bangkok = Бангкок
+newtab-clock-city-ng-lagos = Лагос
+newtab-clock-city-tw-taipei = Тајпеј
+newtab-clock-city-za-johannesburg = Јоханезбург
+newtab-clock-city-cl-santiago = Сантијаго
+newtab-clock-city-pk-karachi = Карачи
+newtab-clock-city-bg-sofia = Софија
+newtab-clock-city-sg-singapore = Сингапур
+newtab-clock-city-hk-hong-kong = Хонгконг
+newtab-clock-city-sa-riyadh = Ријад
+newtab-clock-city-dk-copenhagen = Копенхаген
+newtab-clock-city-pe-lima = Лима
+newtab-clock-city-ke-nairobi = Најроби
+newtab-clock-city-nz-auckland = Окланд
+newtab-clock-city-kr-seoul = Сеул
+newtab-clock-city-lt-vilnius = Вилњус
+newtab-clock-city-ie-dublin = Даблин
+newtab-clock-city-ae-dubai = Дубаи
+newtab-clock-city-lv-riga = Рига
+newtab-clock-city-pt-lisbon = Лисабон
+newtab-clock-city-ir-tehran = Техеран
+newtab-clock-city-bd-dhaka = Дака
+newtab-clock-city-ec-guayaquil = Гвајакил
+newtab-clock-city-vn-ho-chi-minh-city = Хо Ши Мин
+newtab-clock-city-np-kathmandu = Катманду
+newtab-clock-city-mm-yangon = Рангун

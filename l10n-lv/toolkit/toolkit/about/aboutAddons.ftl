@@ -1,0 +1,238 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+addons-page-title = Papildinājumu pārvaldnieks
+
+##
+
+list-empty-installed =
+    .value = Nav uzstādīts neviens šāda veida papildinājums.
+list-empty-available-updates =
+    .value = Atjauninājumi nav atrasti
+list-empty-recent-updates =
+    .value = Pēdējā laikā neviens papildinājums nav atjaunināts
+list-empty-find-updates =
+    .label = Meklēt atjauninājumus
+list-empty-button =
+    .label = Uzzināt vairāk par papildinājumiem
+help-button = Papildinājumu atbalsts
+sidebar-help-button-title =
+    .title = Papildinājumu atbalsts
+show-unsigned-extensions-button =
+    .label = Dažus papildinājumus nevar pārbaudīt
+show-all-extensions-button =
+    .label = Rādīt visus papildinājumus
+detail-version =
+    .label = Versija
+detail-last-updated =
+    .label = Pēdējo reizi atjaunināts
+detail-contributions-description = Šī papildinājuma autors lūdz jūs atbalstīt izstrādi ar nelielu ziedojumu.
+detail-update-type =
+    .value = Automātiska atjaunināšana
+detail-update-default =
+    .label = Noklusējums
+    .tooltiptext = Automātiski uzstādīt atjauninājumus tikai tad, ja tā ir noklusējuma vērtība
+detail-update-automatic =
+    .label = Ieslēgta
+    .tooltiptext = Automātiski uzstādīt atjauninājumus
+detail-update-manual =
+    .label = Izslēgta
+    .tooltiptext = Neuzstādīt atjauninājumus automātiski
+detail-private-browsing-on =
+    .label = Atļaut
+    .tooltiptext = Iespējot privātajā pārlūkošanā
+detail-private-browsing-off =
+    .label = Neatļaut
+    .tooltiptext = Atspējot privātajā pārlūkošanā
+detail-home =
+    .label = Sākumlapa
+detail-home-value =
+    .value = { detail-home.label }
+detail-repository =
+    .label = Papildinājuma profils
+detail-repository-value =
+    .value = { detail-repository.label }
+detail-check-for-updates =
+    .label = Meklēt atjauninājumus
+    .tooltiptext = Meklēt atjauninājumus šim papildinājumam
+    .accesskey = M
+detail-show-preferences =
+    .label =
+        { PLATFORM() ->
+            [windows] Iestatījumi
+           *[other] Iestatījumi
+        }
+    .tooltiptext =
+        { PLATFORM() ->
+            [windows] Izmainīt šī papildinājuma iestatījumus
+           *[other] Izmainīt šī papildinājuma iestatījumus
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] I
+           *[other] I
+        }
+detail-rating =
+    .value = Vērtējums
+addon-restart-now =
+    .label = Pārstartēt
+disabled-unsigned-heading =
+    .value = Daži papildinājumi ir deaktivēti
+disabled-unsigned-description = Šos papildinājumus nevar pārbaudīt izmantošanai ar { -brand-short-name }. Jūs varat <label data-l10n-name="find-addons">atrast aizvietotājus</label> vai palūgt to izstrādātājam apstiprināt tos.
+disabled-unsigned-learn-more = Uzzināt vairāk par to, ko darām, lai Tu tiešsaistē būtu drošībā.
+disabled-unsigned-devinfo = Izstrādātāji, kas vēlas apstiprināt savus papildinājumus var turpināt izlasot mūsu <label data-l10n-name="learn-more">pamācību</label>.
+plugin-deprecation-description = Kaut kas pietrūkst? Dažus spraudņus { -brand-short-name } vairs neatbalsta. <label data-l10n-name="learn-more">Uzzināt vairāk.</label>
+legacy-warning-show-legacy = Rādīt vēsturiskos papildinājumus
+legacy-extensions =
+    .value = Vēsturiskie papildinājumi
+legacy-extensions-description = Šie paplašinājumi neatbilst pašreizējiem { -brand-short-name } standartiem, tāpēc tie tika deaktivizēti. <label data-l10n-name="legacy-learn-more">Uzzināt vairāk par papildinājumu izmaiņām</label>
+aboutaddons-sidebar =
+    .heading = Papildinājumi
+addon-category-extension = Papildinājumi
+addon-category-extension-title =
+    .title = Papildinājumi
+addon-category-theme = Tēmas
+addon-category-theme-title =
+    .title = Tēmas
+addon-category-plugin = Spraudņi
+addon-category-plugin-title =
+    .title = Spraudņi
+addon-category-dictionary = Vārdnīcas
+addon-category-dictionary-title =
+    .title = Vārdnīcas
+addon-category-locale = Valodas
+addon-category-locale-title =
+    .title = Valodas
+addon-category-available-updates = Pieejamie atjauninājumi
+addon-category-available-updates-title =
+    .title = Pieejamie atjauninājumi
+addon-category-recent-updates = Nesenie atjauninājumi
+addon-category-recent-updates-title =
+    .title = Nesenie atjauninājumi
+
+## These are global warnings
+
+extensions-warning-check-compatibility2 =
+    .message = Papildinājumu savietojamības pārbaude ir deaktivēta. Iespējams jums ir nesavietojami papildinājumu.
+extensions-warning-check-compatibility-button = Aktivēt
+    .title = Aktivēt papildinājumu savietojamības pārbaudi
+extensions-warning-update-security2 =
+    .message = Papildinājumu drošības pārbaude ir deaktivēta. Iespējams jums ir nedroši papildinājumu.
+extensions-warning-update-security-button = Aktivēt
+    .title = Aktivēt papildinājumu drošības pārbaudi
+
+## Strings connected to add-on updates
+
+addon-updates-check-for-updates = Meklēt atjauninājumus
+    .accesskey = M
+addon-updates-view-updates = Aplūkot nesenos atjauninājumus
+    .accesskey = n
+addon-updates-update-addons-automatically = Atjaunināt papildinājumus automātiski
+    .accesskey = A
+
+## Specific add-ons can have custom update checking behaviors ("Manually",
+## "Automatically", "Use default global behavior"). These menu items reset the
+## update checking behavior for all add-ons to the default global behavior
+## (which itself is either "Automatically" or "Manually", controlled by the
+## extensions-updates-update-addons-automatically.label menu item).
+
+addon-updates-reset-updates-to-automatic = Atjaunināt visus papildinājumus automātiski
+    .accesskey = l
+addon-updates-reset-updates-to-manual = Atjaunināt visus papildinājumus manuāli
+    .accesskey = m
+
+## Status messages displayed when updating add-ons
+
+addon-updates-updating = Atjaunina papildinājumus
+addon-updates-installed = Jūsu papildinājumi ir atjaunināti.
+addon-updates-none-found = Atjauninājumi nav atrasti
+addon-updates-manual-updates-found = Aplūkot pieejamos atjauninājumus
+
+## Add-on install/debug strings for page options menu
+
+addon-install-from-file = Uzstādīt no datnes…
+    .accesskey = U
+# Like `addon-install-from-file` but used when the `extensions.webextensions.prefer-update-over-install-for-existing-addon`
+# pref is set.
+addon-install-or-update-from-file = Uzstādīt vai atjaunināt papildinājumu no datnes…
+    .accesskey = U
+addon-install-from-file-dialog-title = Atlasīt uzstādāmo papildinājumu
+addon-install-from-file-filter-name = Papildinājumi
+addon-open-about-debugging = Atkļūdot papildinājumus
+    .accesskey = d
+
+## Extension shortcut management
+
+header-back-button =
+    .title = Doties atpakaļ
+
+## Recommended add-ons page
+
+discopane-notice-learn-more = Uzzināt vairāk
+colorway-removal-notice-learn-more = Uzzināt vairāk
+install-extension-button = Pievienot { -brand-product-name }
+
+## Add-on actions
+
+addon-detail-homepage-label = Sākumlapa
+
+## Pending uninstall message bar
+
+addon-detail-updates-label = Atļaut automātiskus atjauninājumus
+addon-detail-private-browsing-allow = Atļaut
+addon-detail-private-browsing-disallow = Neatļaut
+
+##
+
+release-notes-error = Atvainojamies, bet laidiena piezīmju ielādēšanas laikā bija kļūda!
+addon-permissions-learnmore = Uzzināt vairāk par atļaujām
+
+## Page headings
+
+addon-page-options-button =
+    .title = Visu papildinājumu rīki
+
+## Detail notifications
+## Variables:
+##   $name (string) - Name of the add-on.
+
+# Variables:
+#   $version (string) - Application version.
+details-notification-incompatible2 =
+    .message = { $name } nav savietojams ar { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled2 =
+    .message = { $name } nevar pārbaudīt izmantošanai ar { -brand-short-name } un ir deaktivēts.
+details-notification-unsigned2 =
+    .message = { $name } nevar pārbaudīt izmantošanai ar { -brand-short-name }. Esiet piesardzīgi.
+details-notification-gmp-pending2 =
+    .message = { $name } pēc brīža tiks uzstādīts.
+
+## Gecko Media Plugins (GMPs)
+
+plugins-gmp-license-info = Licences informācija
+plugins-gmp-privacy-info = Privātuma informācija
+plugins-openh264-name = OpenH264 video kodeks, ko piedāvā Cisco Systems, Inc.
+plugins-openh264-description = Šo spraudni automātiski uzstāda Mozilla, lai ievērotu WebRTC tehniskās prasības un ļautu iespējot WebRTC zvanus ar ierīcēm, kurās ir nepieciešams H.264 video saspiedatspiedējs. Var apmeklēt http://www.openh264.org/, lai apskatītu pirmkodu un uzzinātu vairāk par īstenojumu.
+plugins-widevine-name = Google Inc piedāvātais Widevine Content Decryption Module
+
+## Mapping Engine IDs from AI models to how that feature represented by the engine Id is described in the used by section in local model management
+
+mlmodel-speech-recognition = { -brand-short-name } izmanto to ierīcē esošai runas atpazīšanai
+
+## Promo footer shown in the about:addons recommendations view when
+## Project Nova styles are enabled.
+## The heading refers to the user choosing a Firefox theme or extension to
+## install. In the message, "tools" refers to Firefox extensions and
+## "styles" refers to Firefox themes.
+
+find-more-addons-promo =
+    .heading = Pielāgo { -brand-product-name } savām vēlmēm
+    .message = Pievieno rīkus un noformējumu atbilstoši savām vajadzībām un gaumei!
+
+## Themes Mode segmented control shown at the top of the about:addons themes list view
+## when Project Nova is enabled.
+
+# Accessible name for the group of light/dark/device buttons.
+themes-mode =
+    .aria-label = Izskats
