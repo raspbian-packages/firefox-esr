@@ -1,0 +1,419 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = نواں ٹیب
+newtab-settings-dialog-label =
+    .aria-label = ترتیباں
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = نویاں ٹیباں
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } قطار
+           *[other] { $num } قطاراں
+        }
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = ایکسٹنشن ({ $extension })
+home-restore-defaults-srd =
+    .label = ڈیفالٹس بحال کرو
+    .accesskey = R
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (طے شدہ)
+home-mode-choice-custom-srd =
+    .label = مرضی دے URLs …
+home-mode-choice-blank-srd =
+    .label = خالی ورقہ
+home-prefs-shortcuts-header-srd =
+    .label = شارٹ کٹ
+home-prefs-shortcuts-select =
+    .aria-label = شارٹ کٹ
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = سپانسر تھئے شارٹ کٹ
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = سپانسر تھیاں کہانیاں
+home-prefs-highlights-option-visited-pages-srd =
+    .label = دورہ کیتے ڳئے ورقے
+home-prefs-highlights-options-bookmarks-srd =
+    .label = نشانیاں
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = بالکل حالیہ ڈاؤن لوڈ
+home-prefs-recent-activity-header-srd =
+    .label = حالیہ سرگرمی
+home-prefs-recent-activity-select =
+    .aria-label = حالیہ سرگرمی
+home-prefs-weather-header-srd =
+    .label = موسم
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = ڳولو
+    .title = ڳولو
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = ‏{ $engine } نال ڳولو یا پتہ درج کرو
+newtab-search-box-handoff-text-no-engine = ڳولو یا پتہ درج کرو
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = { $engine } نال ڳولو یا پتہ درج کرو
+    .placeholder = { $engine } نال ڳولو یا پتہ درج کرو
+    .title = { $engine } نال ڳولو یا پتہ درج کرو
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = ڳولو یا پتہ درج کرو
+    .placeholder = ڳولو یا پتہ درج کرو
+    .title = ڳولو یا پتہ درج کرو
+newtab-search-box-text = ویب ڳولو
+newtab-search-box-input =
+    .aria-label = ویب تے ڳولو
+    .placeholder = ویب تے ڳولو
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = ڳولݨ انجݨ دا اضافہ کرو
+newtab-topsites-add-shortcut-header = نواں شارٹ کٹ
+newtab-topsites-edit-shortcut-header = شارٹ کٹ وِچ ترمیم کرو
+newtab-topsites-add-shortcut-label = شارٹ کٹ شامل کرو
+newtab-topsites-add-shortcut-title =
+    .aria-label = شارٹ کٹ شامل کرو
+    .title = شارٹ کٹ شامل کرو
+newtab-topsites-title-label = عنوان
+newtab-topsites-title-input =
+    .placeholder = ہک عنوان درج کرو
+newtab-topsites-url-label = یوآرایل
+newtab-topsites-url-input =
+    .placeholder = ٹائپ کرو یا ہک URL چسباں کرو
+newtab-topsites-url-validation = جائز URL درکار ہے
+newtab-topsites-image-url-label = مخصوص تصویر دا URL
+newtab-topsites-use-custom-image-link = ہک مخصوص تصویر استعمال کرو
+newtab-topsites-use-image-link = ہک مخصوص تصویر استعمال کرو …
+newtab-topsites-image-validation = تصویر لوڈ تھیوݨ وِچ ناکام رہی۔ براہ مہربانی ہک مختلف URL کوں آزماؤ۔
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = منسوخ کرو
+newtab-topsites-delete-history-button = ہسٹری کنوں مٹاؤ
+newtab-topsites-save-button = ہتھیکڑا کرو
+newtab-topsites-preview-button = پیش منظر
+newtab-topsites-add-button = شامل کرو
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = کیا تہاکوں یقین ہے جو تساں ایں صفحہ دا ہر نمونہ اپݨی ہسٹری کنوں میسݨ چاہندے او؟
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = اے عمل کلعدم نہیں تھی سڳدا۔
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = سپانسر تھئے
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = مینیو کھولو
+    .title = مینیو کھولو
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = { $title } کیتے کنٹیسکٹ مینیو کھولو
+    .title = مینیو کھولو
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = تبدیلی کرو
+newtab-menu-open-new-window = نویں ونڈو وچ کھولو
+newtab-menu-open-new-private-window = نویں نجی ونڈو وِچ کھولو
+newtab-menu-dismiss = فارغ کرو
+newtab-menu-pin = پن
+newtab-menu-unpin = ان پن
+newtab-menu-delete-history = ہسٹری کنوں مٹاؤ
+newtab-menu-show-privacy-info = ساݙے سپانسر تے تہاݙی رازداری
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = ٻیا سِکھو
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = نشانی ہٹاؤ
+# Bookmark is a verb here.
+newtab-menu-bookmark = بک مارک
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = ڈاؤن لوڈ ربط نقل کرو
+newtab-menu-go-to-download-page = ڈاؤن لوڈ صفحہ تے ونڄو
+newtab-menu-remove-download = تاریخ کنوں ہٹاؤ
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] فولڈر وِچ ݙکھاؤ
+       *[other] حامل فولڈر کھولو
+    }
+newtab-menu-open-file = فائل کھولو
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = دورہ شدہ
+newtab-label-bookmarked = نشان شدہ
+newtab-label-removed-bookmark = نشانی ہٹا ݙتی ڳئی اے
+newtab-label-recommended = رجحان سازی
+newtab-label-saved = { -pocket-brand-name } وِچ محفوظ شدہ
+newtab-label-download = ڈاؤن لوڈ شدہ
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } - تعاون شدہ
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = { $sponsor } توں تعاون شدہ
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } min
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = رازداری نوٹس
+
+## Section Headers.
+
+newtab-section-header-topsites = بہترین سائٹس
+newtab-section-header-recent-activity = حالیہ سرگرمی
+newtab-section-header-stories = فکر انگیز کہاݨیاں
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = تہاݙے کیتے اڄ دیاں چوݨاں
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = برائوزنگ شروع کرو، تے اساں تہاکوں کجھ بہترین عبارتاں، وڈیوز تے حالیہ دورہ شددہ ٻئے صفحات یا بک مارک ݙکھیسوں۔
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = تساں وٹھی ڳئے ہو۔ ٻیاں کہاݨیاں کیتے بعد اِچ دوبارہ چیک کرو۔ انتظار نہیں سڳدے؟ ویب دے چودھاروں ودھیک عمدہ کہانیاں لبھݨ کیتے ہک مقبول موضوع منتخب کرو۔
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = تساں وٹھیج پئے او!
+newtab-discovery-empty-section-topstories-content = ودھیک کہانیاں کیتے بعد اِچ دوبارہ پڑتال کریجو ۔
+newtab-discovery-empty-section-topstories-try-again-button = ولدا کوشش کرو
+newtab-discovery-empty-section-topstories-loading = لوڈ تھیندا پئے۔۔۔
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = اوہو! اساں ایں حصے کوں لڳ بھڳ لوڈ کر ݙتا ہے، پر سالم کینا۔
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = اوہو، ایں مواد کوں لوڈ کرݨ وِچ کجھ خراب تھی ڳئے۔
+newtab-error-fallback-refresh-link = ولدا کوشش کرݨ کیتے ورقے کوں ریفریش کرو۔
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = سائٹاں جہڑیاں تساں محفوظ کریندے یا ݙیہدے ہو
+    .label = شارٹ کٹ
+newtab-custom-shortcuts-nova =
+    .label = شارٹ کٹ
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } قطار
+           *[other] { $num } قطاراں
+        }
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be having a description under "Recommended stories" anymore
+newtab-custom-stories-toggle =
+    .description = { -brand-product-name }ٹَٻَّر دے ذریعے تیار کردہ غیر معمولی مواد
+    .label = تجویز کردہ کہاݨیاں
+newtab-recommended-stories-toggle =
+    .label = تجویز کردہ کہاݨیاں
+newtab-custom-weather-toggle =
+    .description = اڄ دی پیش گوئی تے ہک نظر
+    .label = موسم
+newtab-custom-settings = ودھیک ترتیباں دا بندوبست کرو
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = وال پیپرز
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = ڈیفالٹ تے مقرر کرو
+newtab-wallpaper-toggle-title =
+    .label = وال پیپرز
+newtab-wallpaper-light-red-panda = رتا پانڈا
+newtab-wallpaper-light-mountain = چٹی پہاڑی
+newtab-wallpaper-light-sky = ڄُمُّوں اَتے غُلابی بَدلاں دے نال اَسمان
+newtab-wallpaper-light-color = نیلے، غُلابی اَتے پیلے رنگ دیاں شکلاں
+newtab-wallpaper-light-landscape = نیلے دُھندلے پہاڑی منظر
+newtab-wallpaper-light-beach = کھڄّی دے وݨ نال مَݨ
+newtab-wallpaper-dark-aurora = ارورہ بوریلس
+newtab-wallpaper-dark-color = رَتّے اَتے نیلے شکلاں
+newtab-wallpaper-dark-panda = جَھر وِچ لُکّیا ہوئیا رَتّا پانڈا
+newtab-wallpaper-dark-sky = رات دے اَسمان دے نال شہر دا منظر
+newtab-wallpaper-dark-mountain = پہاڑ دا منظر
+newtab-wallpaper-dark-city = ڄَمُّوں رنگ دے شہر د امنظر
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = ٹھوس رنگ
+newtab-wallpaper-blue = نیلا
+newtab-wallpaper-light-blue = پھکا نیلا
+newtab-wallpaper-light-purple = پھکا بادامى
+newtab-wallpaper-light-green = پھکا ساوا
+newtab-wallpaper-green = ساوا
+newtab-wallpaper-beige = مٹیالا
+newtab-wallpaper-yellow = پیلا
+newtab-wallpaper-orange = نارنجی
+newtab-wallpaper-pink = گلابی
+newtab-wallpaper-light-pink = پھکا گلابی
+newtab-wallpaper-red = لال
+newtab-wallpaper-dark-blue = شوخ نیلا
+newtab-wallpaper-dark-purple = شوخ جامنی
+newtab-wallpaper-dark-green = شوخ ساوا
+newtab-wallpaper-brown = بھورا
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = خلاصہ
+newtab-wallpaper-abstract-green = ساویاں شکلاں
+newtab-wallpaper-abstract-blue = نیلیاں شکلاں
+newtab-wallpaper-abstract-purple = جامنی شکلاں
+newtab-wallpaper-abstract-orange = مالٹا شکلاں
+newtab-wallpaper-gradient-orange = میلان نارنجی تے غلابی
+newtab-wallpaper-abstract-blue-purple = نیلے تے جامنی رنگ دیاں شکلاں
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = فوٹو
+newtab-wallpaper-beach-at-sunrise = ݙین٘ہ ابھرݨ ویلے ساحل
+newtab-wallpaper-beach-at-sunset = ݙین٘ہ لہݨ ویلے ساحل
+newtab-wallpaper-storm-sky = طوفانی آسمان
+newtab-wallpaper-sky-with-pink-clouds = اسمان غلابی بدلاں نال
+newtab-wallpaper-red-panda-yawns-in-a-tree = لال پانڈا ہک درخت تے اُٻاسی گھندے
+newtab-wallpaper-white-mountains = چٹی پہاڑیاں
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = <a data-l10n-name="webpage-link">{ $webpage_string }</a> تے <a data-l10n-name="name-link">{ $author_string }</a> ولوں فوٹو
+newtab-wallpaper-feature-highlight-header = رنگ دا تُرکا ازماؤ
+newtab-wallpaper-feature-highlight-content = وال پیپراں نال آپݨی نویں ٹیب کوں تازہ شکل ݙیوو۔
+newtab-wallpaper-feature-highlight-button = سمجھ گھدے
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = پوپ اپ بند کرو
+    .title = فارغ کرو
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙سپانسر تھیا
+newtab-weather-menu-change-location = مقام وٹاؤ
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = مقام ڳولو
+    .placeholder = مقام ڳولو
+newtab-weather-menu-weather-display = موسم دا ڈسپلے
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = سادہ
+newtab-weather-menu-change-weather-display-simple = سادہ منظر تے سوئچ کرو
+newtab-weather-menu-weather-display-option-detailed = تفصیلی
+newtab-weather-menu-change-weather-display-detailed = تفصیلی منظر تے سوئچ کرو
+newtab-weather-menu-temperature-units = درجہ حرارت دے یونٹ
+newtab-weather-menu-temperature-option-fahrenheit = فارن ہائیٹ
+newtab-weather-menu-temperature-option-celsius = سیلسیس
+newtab-weather-menu-change-temperature-units-fahrenheit = فارن ہائٹ  تے سوئچ کرو
+newtab-weather-menu-change-temperature-units-celsius = سینٹی گریڈ  تے سوئچ کرو
+newtab-weather-menu-learn-more = ٻیا سِکھو
+# This message is shown if user is working offline
+newtab-weather-error-not-available = عیں ایں ویلے موسم ڈیٹا دستیاب کائنی۔
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast-description =
+    .aria-description = { $provider } ∙سپانسر تھیا
+    .title = { $provider } وچ پیش گوئی ݙیکھو
+
+## Topic Labels
+
+newtab-topic-label-business = کاروبار
+newtab-topic-label-career = روزگار تے کم
+newtab-topic-label-education = تعلیم
+newtab-topic-label-arts = تفریح
+newtab-topic-label-food = کھاݨا
+newtab-topic-label-health = صحت
+newtab-topic-label-hobbies = کھیݙݨ
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = رقم
+newtab-topic-label-society-parenting = پرورش کرݨ
+newtab-topic-label-government = سیاست
+newtab-topic-label-education-science = سائنس
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = لائف ہیکس
+newtab-topic-label-sports = کھیݙاں
+newtab-topic-label-tech = ٹیکنالوجی
+newtab-topic-label-travel = پندھ
+newtab-topic-label-home = گھر تے باغ
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = آپݨی فیڈ کوں چنگا بݨاوݨ کیتے موضوعات چݨو
+newtab-topic-selection-save-button = محفوظ
+newtab-topic-selection-cancel-button = منسوخ
+newtab-topic-selection-button-maybe-later = شاید بعد وچ
+newtab-topic-selection-privacy-link = سکھو جو اساں ڈیٹا دی حفاظت تے منیج کین٘ویں کریندے ہیں۔
+newtab-topic-selection-button-update-interests = آپݨیاں دلچسپیاں اپ ڈیٹ کرو
+newtab-topic-selection-button-pick-interests = آپݨیاں دلچسپیاں چݨو
+
+## Strings for the Clock widget
+
+newtab-clock-city-fr-paris = پیرس
+newtab-clock-city-in-delhi = دلی
+newtab-clock-city-mx-mexico-city = میکسیکو شہر
+newtab-clock-city-gb-london = لندن
+newtab-clock-city-gr-athens = ایتھنز
+newtab-clock-city-my-kuala-lumpur = کوالالمپور
+newtab-clock-city-pk-karachi = کراچی
+newtab-clock-city-bd-dhaka = ڈھاکہ
+newtab-clock-city-vn-ho-chi-minh-city = Ho Chi Minh
