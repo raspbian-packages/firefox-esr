@@ -19,6 +19,13 @@
         'defines': [
           'FREEBL_NO_DEPEND',
         ],
+	'conditions': [
+          [ 'cc_is_clang==1', {
+            'asflags_mozilla': [
+              '-no-integrated-as',
+            ],
+          }],
+        ],
       }],
     ],
   },
