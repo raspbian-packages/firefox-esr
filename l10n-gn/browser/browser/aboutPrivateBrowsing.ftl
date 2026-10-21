@@ -1,0 +1,82 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+privatebrowsingpage-open-private-window-label = Eike Window ovetã Ñemíme
+    .accesskey = P
+about-private-browsing-search-placeholder = Eheka ñandutípe
+about-private-browsing-search-btn =
+    .title = Eheka ñandutípe
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff =
+    .title = Eheka { $engine } ndive térã emoinge kundaharape
+about-private-browsing-handoff-no-engine =
+    .title = Eheka térã ehai kundaharape
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff-text = Eheka { $engine } ndive térã emoinge kundaharape
+about-private-browsing-handoff-text-no-engine = Eheka térã ehai kundaharape
+about-private-browsing-not-private = Ko’ag̃aite nereiméi peteĩ ovetã ñemíme.
+about-private-browsing-hide-activity = Eñomi tembiapo ha tendaite, oimeraẽva tenda eikundahahápe
+about-private-browsing-get-privacy = Erekóke ñemigua ñemo’ã eikundaha vove
+about-private-browsing-hide-activity-1 = Eñomi ñeikundaha rapykuere ha tendaite { -mozilla-vpn-brand-name } ndive. Eikutúvo emoheñóita jeike katu, oĩhápe Wi-Fi opavave oiporukuaáva.
+about-private-browsing-prominent-cta = Eiko tekoñemíme { -mozilla-vpn-brand-name } ndive
+about-private-browsing-focus-promo-cta = Emboguejy { -focus-brand-name }
+about-private-browsing-focus-promo-header = { -focus-brand-name }: Ñeikundaha ñemi pya’eháicha
+about-private-browsing-focus-promo-text = Ore pumbyry rembiporu’i rojapóva oñeikundaha ñemi hag̃ua ombogue ijehegui tembiasakue ha kookie.
+about-private-browsing-focus-promo-header-c = Tekoñemi tenondeve gotyo pumbyrýpe
+about-private-browsing-focus-promo-text-c = { -focus-brand-name } ombogue ne rembiasakue omboykévo maranduñemurã térã tapykuehoha.
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = { $engineName } ha’e jehekaha mongu’eha ijypykuéva ovetã ñemíme
+about-private-browsing-search-banner-description =
+    { PLATFORM() ->
+        [windows] Eiporavo hag̃ua jeheka mongu’eha ambuéva, tereho <a data-l10n-name="link-options">Jeporavorã</a>
+       *[other] Eiporavo hag̃ua jeheka mongu’eha ambuéva, tereho <a data-l10n-name="link-options">Jerohoryvéva</a>
+    }
+about-private-browsing-search-banner-close-button =
+    .aria-label = Mboty
+about-private-browsing-promo-close-button =
+    .title = Mboty
+
+## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+about-private-browsing-pin-promo-header = Eikundaha ñemi sãsóme peteĩ jekutúpe
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Emboja tembiaporã rendáre
+       *[other] Pin tembiaporã renda rehe
+    }
+about-private-browsing-pin-promo-title = Kookie nongatupyre ha tembiasakue’ỹre, mohendaha guive. Eikundaha ejehecha’ỹrõguáicha.
+
+## Strings used in a promotion message for Firefox Relay
+
+about-private-browsing-relay-promo-header = Eipytyvõ spam ani oike ne ñe’ẽmondo guahẽhápe ñanduti veve rovamo’ãhándi
+about-private-browsing-relay-promo-title = Eñomi ne kundaharape ñanduti veve rovamo’ãhandi eñemboheraguapy, ejogua térã emoherakuãvo ñandutípe.
+about-private-browsing-relay-promo-link-text = Eiporu ñanduti veve rovamo’ãha
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `{ -brand-short-name } will show fewer cookie requests`
+about-private-browsing-cookie-banners-promo-heading = { -brand-short-name } ojapyhy umi banner kookie rehegua nde rérape
+about-private-browsing-cookie-banners-promo-body = Ko’ág̃a romboyke pya’e heta kookie ñe’ẽmondo sa’ive hag̃uáicha ojehapykueho ha eikundahakuaa hag̃ua opañuãi’ỹre.
+
+## Strings for the info section of about:privatebrowsing
+
+about-private-browsing-felt-privacy-v1-info-header = Ani eheja ko mba’e’oka rapykuere
+about-private-browsing-felt-privacy-v1-info-body = { -brand-short-name } ombogue kookie, tembiasakue ha mba’ekuaarã tendápe embotypávo ne rovetã ñemiguáva.
+about-private-browsing-felt-privacy-v1-info-link = Mávapa ohechakuaa che rembiapo
+
+## Strings for the Nova redesign of about:privatebrowsing
+
+about-private-browsing-nova-info-body = Oñembotývo ovetãita ñemi oguéta kookieita, tembiasakue ha tenda mba’ekuaarãita.
+about-private-browsing-nova-info-link = ¿Mávapa ohechakuaa che rembiapo?
+# "You're off the record" is an English idiom meant to communicate that you
+# are not being recorded. If there is not a comparable phrase in the locale,
+# fall back to "Your browsing will be deleted"
+about-private-browsing-nova-info-header = Reime bambalína kupépe
+about-private-browsing-nova-info-subheader2 = Rombotýta opa jeheka ha ojeikehague embotypa vove ovetãita ñemi. Umi ñemo’ã juajupyre { -brand-short-name } rehegua oĩ avei ápe, umíva apytépe tapykuehohára jejoko.

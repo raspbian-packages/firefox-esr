@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = 已保存的地址
+autofill-manage-addresses-list-header = 地址
+autofill-manage-payment-methods-title = 保存的付款方式
+autofill-manage-cards-list-header = 卡片
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = 移除
+autofill-manage-add-button = 添加…
+autofill-manage-edit-button = 编辑…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = 要保存地址吗？
+address-capture-save-doorhanger-description = 将信息保存到 { -brand-short-name }，方便快速填写表单。
+address-capture-update-doorhanger-header = 要更新地址吗？
+address-capture-edit-doorhanger-header = 编辑地址
+address-capture-save-button =
+    .label = 保存
+    .accessKey = S
+address-capture-not-now-button =
+    .label = 暂时不要
+    .accessKey = N
+address-capture-never-save-addresses-button =
+    .label = 永不保存地址
+    .accessKey = v
+address-capture-cancel-button =
+    .label = 取消
+    .accessKey = C
+address-capture-update-button =
+    .label = 更新
+    .accessKey = U
+address-capture-manage-address-button =
+    .label = 地址设置
+address-capture-learn-more-button =
+    .label = 详细了解
+address-capture-open-menu-button =
+    .aria-label = 打开菜单
+address-capture-edit-address-link = 编辑地址
+    .aria-label = 编辑地址
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = 添加地址
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = 编辑地址
+autofill-address-name = 姓名
+autofill-address-organization = 组织
+autofill-address-street-address = 街道地址
+autofill-address-street = 街道地址
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = 街区
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = 村或乡镇
+autofill-address-island = 岛
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = 镇
+autofill-address-city = 市
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = 区
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = 邮镇
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = 市郊
+autofill-address-province = 省
+autofill-address-state = 州
+autofill-address-county = 县
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = 教区
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = 都道府县
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = 区域
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = 道/市
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = 省
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = 酋长国
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = 州
+# Postal code field used in India (IN).
+autofill-address-pin = 邮政编码
+autofill-address-postal-code = 邮政编码
+# Postal code field.
+autofill-address-zip = ZIP 编码
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = 邮政编码（Eircode）
+
+##
+
+autofill-address-country = 国家/地区
+autofill-address-country-only = 国家/地区
+autofill-address-tel = 电话号码
+autofill-address-email = 邮箱地址
+autofill-cancel-button = 取消
+autofill-save-button = 保存
+autofill-country-warning-message-2 = 表单自动填写目前仅部分国家/地区可用。
+autofill-country-warning-message = 表单自动填写目前仅部分国家/地区可用。
+autofill-message-tooltip = 查看关于自动填写的信息
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = 添加卡片
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = 编辑卡片
+autofill-card-number-2 =
+    .label = 卡号
+autofill-card-number = 卡号
+autofill-card-invalid-number = 请输入有效的卡号
+autofill-card-name-on-card-2 =
+    .label = 卡面姓名
+autofill-card-expires-month-2 =
+    .label = 到期月
+autofill-card-expires-year-2 =
+    .label = 到期年
+autofill-card-billing-address-2 =
+    .label = 账单地址
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = 安全码（CVV）
+autofill-card-name-on-card = 卡面姓名
+autofill-card-expires-month = 到期月
+autofill-card-expires-year = 到期年
+autofill-card-billing-address = 账单地址
+autofill-card-network = 卡片类型
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = 信用卡, 贷记卡, 信用, 贷记, 卡, 银行卡, 借记卡, 借记, 钱包, 结账, 结算
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = 添加护照信息
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = 编辑护照信息
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = 姓名
+autofill-passport-country =
+    .label = 签发国
+autofill-passport-number =
+    .label = 护照号码
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = 签发日期
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = 有效期至
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = MM
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = DD
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = YYYY
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = 要保存护照信息吗？
+passport-capture-save-doorhanger-description = 将信息保存到 { -brand-short-name }，方便快速填写表单。
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = 保存
+    .accessKey = S
+passport-capture-not-now-button =
+    .label = 暂时不要
+    .accessKey = w
+passport-capture-never-save-button =
+    .label = 永不保存护照信息
+    .accessKey = N
