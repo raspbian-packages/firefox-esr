@@ -1,0 +1,436 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = Đang tải xuống bản cập nhật { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Đã có bản cập nhật — tải xuống ngay
+appmenuitem-banner-update-manual =
+    .label = Đã có bản cập nhật — tải xuống ngay
+appmenuitem-banner-update-unsupported =
+    .label = Không thể cập nhật — hệ thống không tương thích
+appmenuitem-banner-update-restart =
+    .label = Đã có bản cập nhật — khởi động lại ngay
+appmenu-nova-update-title = Khởi động lại để cập nhật { -brand-short-name }
+appmenu-nova-update-description = Các thẻ của bạn sẽ được mở lại.
+appmenu-nova-fxa-sign-in = Đăng nhập
+appmenu-nova-switch-device-promo =
+    .message = Sắp mua thiết bị mới? Hãy mang theo { -brand-short-name } bên bạn!
+appmenu-nova-switch-device-link = Cách di chuyển dữ liệu của bạn
+appmenuitem-new-tab =
+    .label = Thẻ mới
+appmenuitem-new-window =
+    .label = Cửa sổ mới
+appmenuitem-new-private-window =
+    .label = Cửa sổ riêng tư mới
+appmenuitem-history =
+    .label = Lịch sử
+appmenuitem-tab-groups =
+    .label = Nhóm thẻ
+appmenuitem-downloads =
+    .label = Tải xuống
+appmenuitem-passwords =
+    .label = Mật khẩu
+appmenuitem-extensions-and-themes =
+    .label = Tiện ích mở rộng và chủ đề
+appmenuitem-extensions =
+    .label = Tiện ích mở rộng
+appmenuitem-print =
+    .label = In…
+appmenuitem-find-in-page =
+    .label = Tìm trong trang…
+appmenuitem-translate =
+    .label = Dịch trang…
+appmenuitem-zoom =
+    .value = Thu phóng
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = Chia sẻ { -brand-product-name }
+appmenuitem-more-tools =
+    .label = Công cụ khác
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = Trợ giúp và báo cáo
+appmenuitem-help =
+    .label = Trợ giúp
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Thoát
+           *[other] Thoát
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Mở menu ứng dụng
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Đóng menu ứng dụng
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Cài đặt
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Phóng to
+appmenuitem-zoom-reduce =
+    .label = Thu nhỏ
+appmenuitem-fullscreen =
+    .label = Toàn màn hình
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Đăng nhập để đồng bộ hóa…
+appmenu-remote-tabs-turn-on-sync =
+    .label = Bật đồng bộ hóa…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Hiển thị thêm các thẻ
+    .tooltiptext = Hiển thị các thẻ từ thiết bị này
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Thẻ không hoạt động
+    .tooltiptext = Xem các thẻ không hoạt động trên thiết bị này
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Không có thẻ đang mở
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Bật đồng bộ thẻ để xem danh sách thẻ từ các thiết bị khác của bạn.
+appmenu-remote-tabs-opensettings =
+    .label = Cài đặt
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Muốn xem thẻ từ các thiết bị khác của bạn ở đây?
+appmenu-remote-tabs-connectdevice =
+    .label = Kết nối thiết bị khác
+appmenu-remote-tabs-welcome = Xem danh sách các thẻ từ các thiết bị khác của bạn.
+appmenu-remote-tabs-unverified = Tài khoản của bạn cần phải xác thực.
+appmenuitem-fxa-toolbar-sync-now2 = Đồng bộ ngay
+appmenuitem-fxa-sign-in = Đăng nhập vào { -brand-product-name }
+appmenuitem-fxa-manage-account = Quản lý tài khoản
+fxa-menu-sync-status-on = Đồng bộ hóa đang bật
+fxa-menu-sync-status-off = Đồng bộ hoá đã bị tắt
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = Đồng bộ hoá dữ liệu của bạn
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Dữ liệu của bạn không được đồng bộ
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Bật
+fxa-menu-sync-status-turn-on-button-aria-label = Bật
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Đăng nhập để đồng bộ hóa
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = Đồng bộ hoá { $deviceName } ngay
+fxa-menu-manage-sync-settings =
+    .label = Quản lý cài đặt đồng bộ hoá
+fxa-menu-add-device =
+    .label = Thêm thiết bị
+fxa-menu-manage-devices =
+    .label = Quản lý thiết bị của bạn
+fxa-menu-device-missing =
+    .label = Không thấy thiết bị của bạn?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Tất cả thiết bị
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Tất cả thiết bị
+fxa-menu-get-firefox-mobile =
+    .label = Tải { -brand-product-name } dành cho Android và iOS
+fxa-menu-secure-sync-subpanel =
+    .title = Đồng bộ hóa an toàn
+appmenu-account-header = Tài khoản
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Đồng bộ hóa lần cuối { $time }
+    .label = Đồng bộ hóa lần cuối { $time }
+appmenu-fxa-sync-and-save-data2 = Đồng bộ hóa và lưu dữ liệu
+appmenu-fxa-signed-in-label = Đăng nhập
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = Đăng nhập để đồng bộ hóa
+appmenu-fxa-sign-in-promo-message = Mang dữ liệu của bạn đi khắp mọi nơi
+appmenu-fxa-sign-in-promo-button =
+    .label = Đăng nhập
+appmenu-fxa-setup-sync =
+    .label = Bật đồng bộ hóa…
+appmenu-fxa-setup-sync-new = Bật
+appmenuitem-save-page =
+    .label = Lưu trang dưới dạng…
+appmenuitem-fxa-sync-off-title = Đã tắt đồng bộ hoá
+appmenuitem-fxa-sync-off-description = Bảo mật và truy cập đánh dấu trang, mật khẩu, và nhiều hơn thế từ bất cứ nơi đâu
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Profiler
+    .tooltiptext = Ghi lại hồ sơ hiệu suất
+profiler-popup-button-recording =
+    .label = Profiler
+    .tooltiptext = Profiler đang ghi lại một hồ sơ
+profiler-popup-button-capturing =
+    .label = Profiler
+    .tooltiptext = Profiler đang ghi một hồ sơ
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = Hiển thị thêm thông tin
+profiler-popup-description-title =
+    .value = Ghi lại, phân tích, chia sẻ
+profiler-popup-description = Cộng tác về các vấn đề hiệu suất bằng cách xuất bản hồ sơ để chia sẻ với nhóm của bạn.
+profiler-popup-learn-more-button =
+    .label = Tìm hiểu thêm
+profiler-popup-settings =
+    .value = Cài đặt
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Chỉnh sửa cài đặt…
+profiler-popup-recording-screen = Đang ghi…
+profiler-popup-start-recording-button =
+    .label = Bắt đầu ghi
+profiler-popup-discard-button =
+    .label = Loại bỏ
+profiler-popup-capture-button =
+    .label = Ghi
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = Mở bảng profiler
+    .tooltiptext = Mở bảng profiler
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Cài đặt trước được đề xuất cho hầu hết gỡ lỗi ứng dụng web, với chi phí thấp.
+profiler-popup-presets-web-developer-label =
+    .label = Nhà phát triển Web
+profiler-popup-presets-firefox-description = Giá trị đặt trước được đề xuất để kiểm tra hiệu suất { -brand-shorter-name }.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Giá trị đặt trước để điều tra lỗi đồ họa trong { -brand-shorter-name }.
+profiler-popup-presets-graphics-label =
+    .label = Đồ họa
+profiler-popup-presets-media-description2 = Giá trị đặt trước để điều tra lỗi âm thanh và video trong { -brand-shorter-name }.
+profiler-popup-presets-media-label =
+    .label = Media
+profiler-popup-presets-ml-description = Cài đặt trước để điều tra lỗi học máy (machine learning) trong { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Học máy (Machine Learning)
+profiler-popup-presets-networking-description = Giá trị đặt trước để điều tra lỗi mạng trong { -brand-shorter-name }.
+profiler-popup-presets-networking-label =
+    .label = Kết nối mạng
+profiler-popup-presets-networking-with-logs-description = Thiết lập sẵn để điều tra các lỗi mạng trong { -brand-shorter-name }, bao gồm cả nhật ký mạng. Các nhật ký này có thể chứa thông tin nhạy cảm như URL bạn truy cập.
+profiler-popup-presets-networking-with-logs-label =
+    .label = Kết nối mạng với nhật ký
+profiler-popup-presets-power-description = Giá trị đặt trước để điều tra lỗi sử dụng điện trong { -brand-shorter-name }, với chi phí thấp.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Nguồn điện
+profiler-popup-presets-debug-description = Giá trị đặt trước để gỡ lỗi trong { -brand-shorter-name }. Tải thêm cao, không sử dụng cho công việc về hiệu suất mà sử dụng để tập trung vào việc tìm hiểu hành vi của trình duyệt.
+profiler-popup-presets-debug-label =
+    .label = Gỡ lỗi
+profiler-popup-presets-web-compat-description = Giá trị đặt trước được đề xuất để gỡ lỗi các sự cố tương thích web, thay vì theo dõi hiệu suất.
+profiler-popup-presets-web-compat-label =
+    .label = Web Compat
+profiler-popup-presets-custom-label =
+    .label = Tùy chỉnh
+
+##
+
+appmenu-manage-history =
+    .label = Quản lý lịch sử
+appmenu-restore-session =
+    .label = Khôi phục phiên làm việc trước
+appmenu-clear-history =
+    .label = Xóa lịch sử gần đây…
+appmenu-recent-history-subheader = Lịch sử gần đây
+appmenu-recently-closed-tabs =
+    .label = Thẻ mới đóng gần đây
+appmenu-recently-closed-windows =
+    .label = Các cửa sổ mới đóng
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Lịch sử tìm kiếm
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = Luôn đồng bộ trên mọi thiết bị
+appmenu-sync-promo-signin-cta = Đăng nhập
+appmenu-sync-promo-turnonsync =
+    .heading = Đồng bộ hóa các thẻ và lịch sử của bạn
+appmenu-sync-promo-turnonsync-cta = Bật đồng bộ hóa
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = Lấy các thẻ trên điện thoại của bạn
+appmenu-sync-promo-connectdevice-cta = Kết nối thiết bị
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = Mang dấu trang bên bạn
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = Đưa dấu trang của bạn đi mọi nơi
+
+## Help panel
+
+appmenu-help-header =
+    .title = Trợ giúp { -brand-shorter-name }
+appmenu-about =
+    .label = Về { -brand-shorter-name }
+    .accesskey = A
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = Chia sẻ { -brand-product-name }
+    .accesskey = r
+appmenu-get-help =
+    .label = Nhận trợ giúp
+    .accesskey = H
+appmenu-help-more-troubleshooting-info =
+    .label = Thông tin xử lý sự cố khác
+    .accesskey = T
+appmenu-help-share-ideas =
+    .label = Chia sẻ ý tưởng và phản hồi…
+    .accesskey = S
+appmenu-help-switch-device =
+    .label = Chuyển sang thiết bị mới
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = Trợ giúp và báo cáo
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Chế độ xử lý sự cố…
+    .accesskey = M
+appmenu-help-exit-troubleshoot-mode =
+    .label = Tắt chế độ xử lý sự cố
+    .accesskey = M
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Báo cáo trang lừa đảo…
+    .accesskey = c
+appmenu-help-not-deceptive =
+    .label = Đây không phải là một trang lừa đảo…
+    .accesskey = d
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Tùy biến thanh công cụ…
+appmenu-abouttranslations =
+    .label = Dịch…
+appmenu-edit-pdf =
+    .label = Chỉnh sửa PDF…
+appmenu-developer-tools-subheader = Công cụ của trình duyệt
+appmenu-developer-tools-extensions =
+    .label = Tiện ích mở rộng dành cho nhà phát triển
+appmenuitem-report-broken-site =
+    .label = Báo cáo trang web bị hỏng
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Đăng nhập vào tài khoản của bạn
+appmenuitem-monitor-title2 = Luôn đi trước nguy cơ đánh cắp danh tính
+appmenuitem-monitor-description2 = Nhận thông báo về các vụ rò rỉ dữ liệu
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = Cảnh báo rò rỉ dữ liệu { -monitor-brand-short-name }
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Nhận cảnh báo rò rỉ dữ liệu
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = Giữ email của bạn riêng tư
+appmenuitem-relay-description2 = Giúp ngăn chặn thư rác trong hộp thư đến của bạn
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = Xem email ẩn danh
+appmenuitem-relay-description = Che giấu email và điện thoại thật của bạn
+appmenuitem-services-relay-description = Khởi chạy bảng điều khiển email ẩn danh
+appmenuitem-vpn-title2 = Ẩn vị trí của bạn với { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description5 = Tăng cường khả năng bảo vệ trên tất cả thiết bị
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = Tải xuống { -mozilla-vpn-brand-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Bảo vệ toàn diện cho thiết bị
+appmenu-services-header = Dịch vụ của tôi
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Các công cụ bảo mật
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Hãy thử các công cụ bảo vệ khác từ Mozilla:
+
+## Profiles panel
+
+appmenu-other-profiles = Các hồ sơ người dùng khác
+appmenu-manage-profiles =
+    .label = Quản lý hồ sơ người dùng
+appmenu-copy-profile =
+    .label = Sao chép hồ sơ này
+appmenu-create-profile2 =
+    .label = Tạo hồ sơ mới
+appmenu-create-profile =
+    .label = Hồ sơ người dùng mới
+appmenu-edit-profile =
+    .aria-label = Chỉnh sửa hồ sơ người dùng
+appmenu-edit-this-profile =
+    .label = Chỉnh sửa hồ sơ này
+appmenu-profile-current-in-use = Hồ sơ hiện đang được sử dụng
+fxa-menu-create-profile-subpanel =
+    .title = Tạo một hồ sơ mới
+fxa-menu-create-profile-heading = Nâng cấp trình duyệt của bạn với hồ sơ mới
+fxa-menu-create-profile-description = Tách riêng dấu trang, mật khẩu và lịch sử duyệt web giữa công việc và cá nhân.
+fxa-menu-create-profile-confirm =
+    .label = Tạo hồ sơ mới
+fxa-menu-create-profile-learn-more =
+    .label = Hồ sơ là gì?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = Chia sẻ { -brand-product-name }
+appmenuitem-share-firefox-description = Hãy mời ai đó sử dụng trình duyệt ưu tiên quyền riêng tư
+appmenu-profiles-2 =
+    .label = Hồ sơ người dùng
+appmenu-profiles-header = Hồ sơ
+appmenu-all-profiles =
+    .label = Tất cả hồ sơ
+appmenu-secure-sync-header = Đồng bộ hóa an toàn
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Các thẻ gần đây
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label = Xem tất cả { $tabCount } thẻ đã đồng bộ
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Gửi trang hiện tại đến thiết bị này
