@@ -1,0 +1,253 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Error page titles
+
+neterror-page-title = Sayfa yükleme sorunu
+certerror-page-title = Uyarı: Güvenlik riskiyle karşılaşabilirsiniz
+certerror-sts-page-title = Bağlanılmadı: Olası Güvenlik Sorunu
+neterror-blocked-by-policy-page-title = Engellenmiş sayfa
+neterror-captive-portal-page-title = Ağa giriş yap
+neterror-dns-not-found-title = Sunucu bulunamadı
+neterror-malformed-uri-page-title = Geçersiz URL
+general-body-title = Dikkatli olun. Doğru görünmeyen bir şeyler var.
+problem-with-this-site-title = Bu siteyle ilgili bir sorun var
+
+## Error page actions
+
+neterror-advanced-button = Gelişmiş…
+neterror-copy-to-clipboard-button = Metni panoya kopyala
+neterror-learn-more-link = Daha fazla bilgi al…
+neterror-open-portal-login-page-button = Ağa giriş sayfasını aç
+neterror-override-exception-button = Riski kabul ederek devam et
+neterror-pref-reset-button = Varsayılan ayarları geri yükle
+neterror-return-to-previous-page-button = Geri dön
+neterror-return-to-previous-page-recommended-button = Geri dön (Önerilir)
+neterror-try-again-button-2 = Yeniden dene
+    .accesskey = Y
+neterror-add-exception-button = Bu site için her zaman devam et
+neterror-settings-button = DNS ayarlarını değiştir
+neterror-view-certificate-link = Sertifikayı göster
+
+## Search call-to-action shown on the online dnsNotFound error page when
+## browser.netError.searchCTA.enabled is true. Offers a one-click web search
+## derived from the address that failed to resolve.
+
+neterror-search-cta-title = Bu siteye ulaşılamıyor
+# $hostname (String) - The host of the address that failed to load, including
+# any subdomains, for example "docs.example.com". The host is emphasized.
+neterror-search-cta-intro2 = <strong>{ $hostname }</strong> sunucusuna bağlanılamadı.
+# $domain (String) - The host of the address that failed to load, including any
+# subdomains, for example "docs.example.com".
+neterror-search-cta-intro = { $domain } sunucusuna bağlanılamadı.
+# Heading above the list of recovery hints on the search CTA error page.
+neterror-search-cta-things-to-try = Şu adımları deneyin:
+neterror-search-cta-hint-check-address = Sitenin adresini kontrol edin
+# Shown when no Search button is offered, so no specific query can be named.
+neterror-search-cta-hint-search = Siteyi bulmak için web’de arama yapın
+# Shown when the Search button is offered, naming the exact query it will run.
+# $query (String) - The search query derived from the address that failed to
+# load, beginning with the site's name, for example "example best hiking
+# boots". The query and the quotation marks around it are emphasized.
+neterror-search-cta-hint-search-query = <strong>“{ $query }”</strong> terimini web’de arayın
+# .tooltiptext doubles as the button's accessible description, so it explains
+# that results open in a new tab.
+neterror-search-cta-search-button =
+    .label = Ara
+    .tooltiptext = Arama sonuçlarını yeni sekmede açar
+    .accesskey = A
+neterror-search-cta-reload-button =
+    .label = Tazele
+    .accesskey = T
+# Shown in place of the Search button while the search option is being prepared.
+neterror-search-cta-loading = Yükleniyor
+# Shown in place of the Search button when the user clicks it but connectivity
+# has dropped since the page loaded, so the search cannot be performed.
+neterror-search-cta-offline = Çevrimdışı görünüyorsunuz. Bağlandıktan sonra yeniden deneyin.
+# $error (String) - The error code, for example "dnsNotFound".
+neterror-search-cta-error-code = Hata kodu: { $error }
+# The search CTA's own "Learn more" link text (no trailing ellipsis).
+neterror-search-cta-learn-more = Daha fazla bilgi al
+
+##
+
+neterror-pref-reset = Ağ güvenliği ayarlarınız buna yol açıyor olabilir. Varsayılan ayarları geri yüklemek ister misiniz?
+
+## Shown on about:neterror and about:certerror when the SSLKEYLOGFILE
+## environment variable is set, which causes { -brand-short-name } to log TLS
+## session keys that can be used to decrypt encrypted network traffic.
+
+neterror-sslkeylogging-warning =
+    .heading = Bağlantınız gizli olmayabilir
+    .message = Bir uygulama veya hizmet bu siteden gelen şifrelenmiş trafiğinizi görebilir.
+
+## Specific error messages
+
+neterror-generic-error = { -brand-short-name } bilinmeyen bir nedenden dolayı bu sayfayı açamıyor.
+neterror-load-error-try-again = Site geçici olarak kapalı veya çok meşgul olabilir. Biraz bekleyip yeniden deneyin.
+neterror-load-error-connection = Hiçbir sayfayı açamıyorsanız bilgisayarınızın ağ bağlantısını kontrol edin.
+neterror-load-error-firewall = Bilgisayarınız veya ağınız güvenlik duvarı veya vekil sunucu ile korunuyorsa { -brand-short-name } uygulamasının web’e erişim izni olduğundan emin olun.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Bir yerel ağ sayfasını yüklemeye çalışıyorsanız lütfen macOS Gizlilik ve Güvenlik ayarlarından { -brand-short-name } uygulamasına Yerel Ağ izinlerinin verildiğini kontrol edin.
+neterror-http-error-page = Sitenin adresini doğru yazdığınızı kontrol edin.
+neterror-http-empty-response = Sitenin adresini doğru yazdığınızı kontrol edin ve birkaç dakika sonra yeniden deneyin.
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-http-empty-response-description = { $hostname } boş bir sayfa gönderdi.
+neterror-captive-portal = İnternete erişebilmek için önce bu ağa giriş yapmalısınız.
+# Variables:
+# $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
+neterror-dns-not-found-with-suggestion = <a data-l10n-name="website">{ $hostAndPath }</a> adresine mi gitmek istediniz?
+neterror-dns-not-found-hint-header = <strong>Doğru adresi girdiyseniz şunları yapabilirsiniz:</strong>
+neterror-dns-not-found-hint-try-again = Daha sonra yeniden deneyin
+neterror-dns-not-found-hint-check-network = Ağ bağlantınızı kontrol edin
+neterror-dns-not-found-hint-firewall = { -brand-short-name } tarayıcısının web’e erişim izni olup olmadığını kontrol edin (Bağlı olsanız da bir güvenlik duvarının arkasında olabilirsiniz)
+neterror-dns-not-found-hint-check-network-2 = Ağ bağlantınızı kontrol edin.
+neterror-dns-not-found-hint-firewall-2 = { -brand-short-name } tarayıcısının web’e erişim izni olup olmadığını kontrol edin (Bağlı olsanız da bir güvenlik duvarının arkasında olabilirsiniz).
+neterror-dns-not-found-offline-hint-header = <strong>Ne yapabilirsiniz?</strong>
+neterror-dns-not-found-offline-hint-different-device = Başka bir cihazdan bağlanmayı deneyin.
+neterror-dns-not-found-offline-hint-modem = Modeminizi veya yönlendiricinizi kontrol edin.
+neterror-dns-not-found-offline-hint-reconnect = Wi-Fi bağlantısını kesip yeniden bağlanın.
+
+## TRR-only specific messages
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+neterror-dns-not-found-trr-only-reason2 = { -brand-short-name } bu sitenin adresiyle ilgili isteğinizi güvenli DNS sağlayıcımız aracılığıyla koruyamıyor. Nedeni:
+neterror-dns-not-found-trr-third-party-warning2 = Varsayılan DNS çözümleyicinizle devam edebilirsiniz ama bu durumda üçüncü taraflar hangi siteleri ziyaret ettiğinizi görebilir.
+neterror-dns-not-found-trr-only-could-not-connect = { -brand-short-name } { $trrDomain } adresine bağlanamadı.
+neterror-dns-not-found-trr-only-timeout = { $trrDomain } ile bağlantı kurulması beklenenden uzun sürdü.
+neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } bu web sitesini bulamadı.
+neterror-dns-not-found-trr-server-problem = { $trrDomain } ile ilgili bir sorun oluştu.
+neterror-dns-not-found-bad-trr-url = Geçersiz URL.
+neterror-dns-not-found-system-sleep = Sistem uyku modunda.
+neterror-dns-not-found-trr-unknown-problem = Beklenmeyen sorun.
+
+##
+
+neterror-file-not-found-filename = Dosya adındaki büyük-küçük harfleri ve yazım hatalarını kontrol edin.
+neterror-file-not-found-moved = Dosyanın taşınmadığını, adının değişmediğini veya silinmediğini kontrol edin.
+# Variables:
+#   $path (String) - Path of the local file that could not be found.
+neterror-file-not-found-intro = { -brand-short-name } <strong>{ $path }</strong> konumundaki dosyayı bulamıyor. Bu dosya yok veya yolu yanlış.
+neterror-file-not-found-what-can-you-do = Adresi elle yazdıysanız dosya adındaki veya yolundaki büyük-küçük harfleri kontrol edin. Kayıtlı bir yer imine veya bağlantıya tıkladıysanız dosya kaydedildikten sonra taşınmış, silinmiş veya adı değiştirilmiş olabilir. Dosya yöneticinizde veya son aramalarınızda bulmayı deneyin.
+neterror-access-denied = Silinmiş, taşınmış veya dosya izinleri nedeniyle erişilemiyor olabilir.
+neterror-unknown-protocol = Bu adresi açmak için başka bir yazılım yüklemeniz gerekebilir.
+neterror-redirect-loop = Bu sorun bazen çerezlerin devre dışı bırakılmasından veya reddedilmesinden kaynaklanabilir.
+neterror-unknown-socket-type-client-config = Bu durum istemcinizdeki bir yapılandırma hatasından kaynaklanıyor olabilir.
+neterror-not-cached-intro = Talep edilen belge { -brand-short-name } önbelleğinde mevcut değil.
+neterror-not-cached-sensitive = Bir güvenlik önlemi olarak, { -brand-short-name } hassas belgeleri otomatik olarak yeniden talep etmez.
+neterror-not-cached-try-again = Belgeyi siteden tekrar talep etmek için Yeniden dene’ye tıklayın.
+neterror-net-offline = Çevrimiçi kipe geçip sayfayı tazelemek için “Yeniden dene”ye tıklayın.
+neterror-proxy-resolve-failure-settings = Vekil sunucu ayarlarınızın doğru olup olmadığına bakın.
+neterror-proxy-resolve-failure-connection = Bilgisayarınızın düzgün işleyen bir ağ bağlantısı olup olmadığına bakın.
+neterror-proxy-resolve-failure-firewall = Bilgisayarınız veya ağınız güvenlik duvarı veya vekil sunucu ile korunuyorsa { -brand-short-name } uygulamasının web’e erişim izni olduğundan emin olun.
+neterror-proxy-connect-failure-settings = Vekil sunucu ayarlarınızın doğru olup olmadığına bakın.
+neterror-proxy-connect-failure-contact-admin = Vekil sunucunun çalıştığından emin olmak için ağ yöneticinizden bilgi alabilirsiniz.
+neterror-content-encoding-error = Sitenin sahibiyle iletişime geçerek bu sorunu bildirmeyi deneyebilirsiniz.
+neterror-unsafe-content-type = Sitenin sahibiyle iletişime geçerek bu sorunu bildirmeyi deneyebilirsiniz.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-basic-http-auth = Bağlantı güvenli olmadığı için { -brand-short-name } { $hostname } sitesine güvenmiyor. URL’yi HTTPS olarak değiştirmeyi deneyin.
+neterror-nss-failure-not-verified = Görüntülemeye çalıştığınız sayfa, alınan verilerin yetkinliği doğrulanamadığı için gösterilemiyor.
+neterror-nss-failure-contact-website = Sitenin sahibiyle iletişime geçerek bu sorunu bildirmeyi deneyebilirsiniz.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+certerror-intro = { -brand-short-name } olası bir güvenlik tehdidiyle karşılaştığı için <b>{ $hostname }</b> adresine girmedi. Bu siteyi ziyaret ederseniz saldırganlar parola, e-posta ve kredi kartı gibi bilgilerinizi çalmaya çalışabilir.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+certerror-sts-intro = { -brand-short-name } olası bir güvenlik tehdidi algıladı ve <b>{ $hostname }</b> sitesi güvenli bir bağlantı gerektirdiği için bu siteye bağlanmadı.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+certerror-expired-cert-intro = { -brand-short-name } olası bir güvenlik tehdidi algıladı ve <b>{ $hostname }</b> sitesine bağlanmadı. Site yanlış yapılandırılmış veya bilgisayarınızın saati yanlış ayarlanmış olabilir.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+# $mitm (String) - The name of the software intercepting communications between you and the website (or “man in the middle”)
+certerror-mitm = <b>{ $hostname }</b> büyük olasılıkla güvenilir bir site olmasına rağmen güvenli bir bağlantı kurulamadı. Bu sorun, bilgisayarınızda veya ağınızda bulunan <b>{ $mitm }</b> adlı yazılımdan kaynaklanmaktadır.
+neterror-corrupted-content-intro = Veri aktarımında bir hata tespit edildiği için bakmak istediğiniz sayfa gösterilemiyor.
+neterror-corrupted-content-contact-website = Sitenin sahibiyle iletişime geçerek bu sorunu bildirmeyi deneyebilirsiniz.
+# Do not translate "SSL_ERROR_UNSUPPORTED_VERSION".
+neterror-sslv3-used = İleri düzey bilgi: SSL_ERROR_UNSUPPORTED_VERSION
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+neterror-inadequate-security-intro = <b>{ $hostname }</b> eskimiş ve saldırılara açık bir güvenlik teknolojisi kullanıyor. Saldırganlar, güvende olduğunu sandığınız bilgilerinizi kolayca ele geçirebilirler. Bu siteye girebilmeniz için önce site yöneticisinin sunucuyu düzeltmesi gerekir.
+# Do not translate "NS_ERROR_NET_INADEQUATE_SECURITY".
+neterror-inadequate-security-code = Hata kodu: NS_ERROR_NET_INADEQUATE_SECURITY
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+# $now (Date) - The current datetime, to be formatted as a date
+neterror-clock-skew-error = Bilgisayarınız saatin { DATETIME($now, dateStyle: "medium") } olduğunu sanıyor, bu yüzden de { -brand-short-name } güvenli bağlantı kuramıyor. <b>{ $hostname }</b> adresini ziyaret etmek için sistem ayarlarınıza girerek bilgisayarınızın tarihini, saatini ve saat dilimini güncelleyin. Ardından <b>{ $hostname }</b> sayfasını tazeleyin.
+neterror-network-protocol-error-intro = Ağ protokolünde bir hata bulunduğu için, görüntülemeye çalıştığınız sayfa gösterilemiyor.
+neterror-network-protocol-error-contact-website = Sitenin sahibiyle iletişime geçerek bu sorunu bildirmeyi deneyebilirsiniz.
+certerror-expired-cert-second-para = Büyük olasılıkla web sitesinin sertifikasının süresi dolmuş ve bu yüzden { -brand-short-name } güvenli bağlantı kuramıyor. Bu siteye girerseniz saldırganlar parola, e-posta ve kredi kartı gibi bilgilerinizi çalmaya çalışabilir.
+certerror-expired-cert-sts-second-para = Büyük olasılıkla web sitesinin sertifikasının süresi dolmuş ve bu yüzden { -brand-short-name } güvenli bağlantı kuramıyor.
+certerror-what-can-you-do-about-it-title = Ne yapabilirsiniz?
+certerror-unknown-issuer-what-can-you-do-about-it-website = Sorun büyük olasılıkla web sitesinden kaynaklanıyor, yani sizin yapabileceğiniz bir şey yok.
+certerror-unknown-issuer-what-can-you-do-about-it-contact-admin = Kurumsal bir ağdaysanız veya antivirüs yazılımı kullanıyorsanız destek ekibinizden yardım almayı deneyebilirsiniz. Ayrıca web sitesinin sahibini bu sorun hakkında bilgilendirebilirsiniz.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+# $now (Date) - The current datetime, to be formatted as a date
+certerror-expired-cert-what-can-you-do-about-it-clock = Bilgisayarınızın saati { DATETIME($now, dateStyle: "medium") } olarak ayarlanmış. Sistem ayarlarınızdaki tarih, saat ve saat diliminin doğru olarak ayarlandığını kontrol edin. Ardından <b>{ $hostname }</b> sayfasını tazeleyin.
+certerror-expired-cert-what-can-you-do-about-it-contact-website = Saatiniz zaten doğruysa muhtemelen web sitesi yanlış yapılandırılmıştır. Bu sorunu çözmek için bir şey yapamazsınız ama sorunu web sitesinin yöneticisine bildirmeyi deneyebilirsiniz.
+certerror-bad-cert-domain-what-can-you-do-about-it = Sorun büyük olasılıkla web sitesinden kaynaklanıyor, yani sizin yapabileceğiniz bir şey yok. Web sitesinin sahibini bu sorun hakkında bilgilendirebilirsiniz.
+certerror-mitm-what-can-you-do-about-it-antivirus = Antivirüs yazılımınızda şifrelenmiş bağlantıları tarayan bir özellik (Genellikle “web tarama” veya “https tarama” denir.) varsa o özelliği kapatabilirsiniz. Bu işe yaramazsa antivirüs yazılımınızı kaldırıp yeniden yüklemeyi deneyebilirsiniz.
+certerror-mitm-what-can-you-do-about-it-corporate = Kurumsal bir ağda bulunuyorsanız teknik departmanınıza başvurabilirsiniz.
+# Variables:
+# $mitm (String) - The name of the software intercepting communications between you and the website (or “man in the middle”)
+certerror-mitm-what-can-you-do-about-it-attack = <b>{ $mitm }</b> size tanıdık gelmiyorsa bu bir saldırı olabilir. Bu durumda siteye girmemelisiniz.
+# Variables:
+# $mitm (String) - The name of the software intercepting communications between you and the website (or “man in the middle”)
+certerror-mitm-what-can-you-do-about-it-attack-sts = <b>{ $mitm }</b> size tanıdık gelmiyorsa bu bir saldırı olabilir. Siteye erişmek için yapabileceğiniz bir şey bulunmuyor.
+# Variables:
+# $hostname (String) - Hostname of the website to which the user was trying to connect.
+certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b>, HTTP Sıkı Aktarım Güvenliği (HSTS) denilen bir güvenlik ilkesi uyguluyor. Bu nedenle { -brand-short-name } bu siteye yalnızca güvenli bir şekilde bağlanabilir. İstisna ekleyerek bu siteyi ziyaret edemezsiniz.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Sorun büyük ihtimalle sitenin kendisinden kaynaklandığı için sizin yapabileceğiniz bir şey yok.
+certerror-blocked-by-corp-headers-description = Bazen web siteleri, hem sitenin hem de insanların başka sitelerle istenmeyen etkileşimlere girmesini önleyen korumalar kurar.
+certerror-coop-learn-more = Cross Origin Opener İlkeleri (COOP) hakkında daha fazla bilgi alın
+certerror-coep-learn-more = Cross Origin Embedder İlkeleri (COEP) hakkında daha fazla bilgi alın
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Hata kodu: { $responsestatus } { $responsestatustext }
+
+## Felt Privacy V1 Strings
+
+fp-neterror-offline-body-title = İnternet bağlantınızla ilgili bir sorun var
+
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-neterror-connection-intro = { -brand-short-name }, { $hostname } sunucusuyla güvenli bir bağlantı kuramıyor.
+fp-neterror-offline-intro = { -brand-short-name } <strong>{ $hostname }</strong> sunucusuna bağlanamadı
+fp-neterror-offline-intro-2 = { -brand-short-name } <strong>{ $hostname }</strong> sunucusuna bağlanamadı.
+fp-neterror-net-timeout-intro = <strong>{ $hostname }</strong> sunucusunun yanıt vermesi çok uzun sürüyor.
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+#   $responsestatus (Number) - HTTP response status code (e.g., 404).
+#   $responsestatustext (String) - HTTP response status text (e.g., "Not Found", always in English).
+fp-neterror-http-error-intro = <strong>{ $hostname }</strong> sunucusu bir hata mesajı gönderdi: { $responsestatus } { $responsestatustext }
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+fp-neterror-invalid-header-value-intro = <strong>{ $hostname }</strong> web güvenlik standartlarının izin vermediği boş karakterler içeren bir üst bilgi gönderdi.
+fp-neterror-content-encoding-intro = Bakmaya çalıştığınız sayfada geçersiz veya desteklenmeyen bir sıkıştırma biçimi kullanıldığı için sayfa gösterilemiyor.
+fp-neterror-coop-coep-intro = Bu sayfanın güvenlik yapılandırması bir önceki sayfayla eşleşmediği için { -brand-short-name } bu sayfayı yüklemedi.
+fp-neterror-blocked-by-policy-intro = Kurumunuz bu sayfaya veya web sitesine erişimi engellemiş.
+fp-neterror-http-auth-disabled-intro = Birisi bu siteyi taklit ederek kullanıcı adınız, parolanız veya e-postanız gibi bilgileri çalmaya çalışabilir.
+fp-neterror-http-auth-disabled-secure-connection = Bu site güvenli bir bağlantı gerektiriyor ve siteyi ziyaret etmek için istisna ekleyemezsiniz.
+fp-neterror-why-did-this-happen = Neden böyle bir şey oldu?
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+fp-neterror-cypher-overlap-why-dangerous-body = Bu site, bilinen güvenlik sorunları olan eski bir yazılım kullanıyor.
+fp-neterror-http-auth-disabled-why-dangerous-body = { -brand-short-name }, bağlantı güvenli olmadığı için { $hostname } sitesine güvenmiyor.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-neterror-cypher-overlap-what-can-you-do-body = { -brand-short-name } tarayıcısının son sürümünü kullandığınızdan emin olun. Menüden Yardım > { -brand-short-name } hakkında’ya gidin. En yeni { -brand-short-name } sürümünü kullanıyorsanız sorun büyük olasılıkla siteden kaynaklanıyordur.
+fp-neterror-offline-what-can-you-do-body = Farklı bir cihazdan bağlanmayı deneyin. Modeminizi veya yönlendiricinizi kontrol edin. Wi-Fi bağlantınızı kesip yeniden bağlanın.
+fp-neterror-http-auth-disabled-what-can-you-do-body = Adresi HTTPS olarak değiştirmeyi deneyin. Ama muhtemelen sitenin kendisinde bir sorun var.
+# This string appears after the following string: "Why did this happen?" (fp-neterror-why-did-this-happen)
+fp-neterror-coop-coep-why-did-this-happen-body = Bazen web siteleri, kendilerinin başka sitelerle istenmeyen etkileşimlere girmesini önleyen korumalar kurar.
+fp-learn-more-about-https-connections = HTTPS bağlantıları hakkında bilgi alın
+fp-neterror-vpn-error-title = VPN’e bağlanılamadı
+fp-neterror-vpn-error-description = Birkaç dakika sonra yeniden deneyin.
+fp-neterror-denied-port-access = Bu adres, normalde web gezintisinden başka amaçlar için kullanılan bir ağ portunu kullanıyor. { -brand-short-name } güvenliğiniz için bu isteği iptal etti.
