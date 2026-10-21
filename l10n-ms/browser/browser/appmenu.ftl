@@ -1,0 +1,374 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = Memuat turun kemas kini { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Kemas kini tersedia — muat turun sekarang
+appmenuitem-banner-update-manual =
+    .label = Kemas kini tersedia — muat turun sekarang
+appmenuitem-banner-update-unsupported =
+    .label = Tidak dapat mengemas kini — sistem tidak serasi
+appmenuitem-banner-update-restart =
+    .label = Kemas kini tersedia — mula semula sekarang
+appmenu-nova-update-title = Mula semula untuk mengemas kini { -brand-short-name }
+appmenu-nova-update-description = Tab anda akan dibuka semula.
+appmenu-nova-fxa-sign-in = Daftar masuk
+appmenu-nova-switch-device-promo =
+    .message = Akan dapat peranti baharu tidak lama lagi? Bawa { -brand-short-name } bersama anda!
+appmenu-nova-switch-device-link = Cara memindahkan data anda
+appmenuitem-new-tab =
+    .label = Tab Baru
+appmenuitem-new-window =
+    .label = Tetingkap Baru
+appmenuitem-new-private-window =
+    .label = Tetingkap Peribadi Baru
+appmenuitem-history =
+    .label = Sejarah
+appmenuitem-tab-groups =
+    .label = Kumpulan tab
+appmenuitem-downloads =
+    .label = Muat turun
+appmenuitem-passwords =
+    .label = Kata Laluan
+appmenuitem-extensions-and-themes =
+    .label = Sambungan dan Tema
+appmenuitem-extensions =
+    .label = Sambungan
+appmenuitem-print =
+    .label = Cetak…
+appmenuitem-find-in-page =
+    .label = Cari Dalam Halaman…
+appmenuitem-translate =
+    .label = Terjemahkan Halaman...
+appmenuitem-zoom =
+    .value = Zum
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = Kongsi { -brand-product-name }
+appmenuitem-more-tools =
+    .label = Alatan Lain
+appmenuitem-help =
+    .label = Bantuan
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Keluar
+           *[other] Keluar
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Buka Menu Aplikasi
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Tutup Menu Aplikasi
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Tetapan
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Zum Masuk
+appmenuitem-zoom-reduce =
+    .label = Zum Keluar
+appmenuitem-fullscreen =
+    .label = Skrin Penuh
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Daftar masuk untuk sync...
+appmenu-remote-tabs-turn-on-sync =
+    .label = Hidupkan sync…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Tunjuk lebih banyak tab
+    .tooltiptext = Tunjuk lebih banyak tab daripada peranti ini
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Tab tidak aktif
+    .tooltiptext = Lihat tab tidak aktif pada peranti ini
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Tiada tab terbuka
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Mengaktifkan sync tab untuk papar senarai tab dari peranti anda yang lain.
+appmenu-remote-tabs-opensettings =
+    .label = Tetapan
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Mahu melihat tab anda daripada peranti lain di sini?
+appmenu-remote-tabs-connectdevice =
+    .label = Sambung Peranti Lain
+appmenu-remote-tabs-welcome = Lihat senarai tab daripada peranti anda yang lain.
+appmenu-remote-tabs-unverified = Akaun anda perlu disahkan.
+appmenuitem-fxa-toolbar-sync-now2 = Sync sekarang
+appmenuitem-fxa-sign-in = Daftar masuk ke { -brand-product-name }
+appmenuitem-fxa-manage-account = Urus Akaun
+fxa-menu-sync-status-on = Sync dihidupkan
+fxa-menu-sync-status-off = Sync dimatikan
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Data anda tidak sync
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Hidupkan
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Daftar masuk untuk sync
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = Sync { $deviceName } sekarang
+fxa-menu-manage-sync-settings =
+    .label = Urus tetapan sync
+fxa-menu-add-device =
+    .label = Tambah peranti
+fxa-menu-manage-devices =
+    .label = Urus peranti anda
+fxa-menu-device-missing =
+    .label = Tidak Nampak Peranti Anda?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Semua Peranti
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Semua Peranti
+fxa-menu-get-firefox-mobile =
+    .label = Dapatkan { -brand-product-name } untuk Android atau iOS
+fxa-menu-secure-sync-subpanel =
+    .title = Sync selamat
+appmenu-account-header = Akaun
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Terakhir sync { $time }
+    .label = Terakhir sync { $time }
+appmenu-fxa-sync-and-save-data2 = Sync dan simpan data
+appmenu-fxa-signed-in-label = Daftar Masuk
+appmenu-fxa-setup-sync =
+    .label = Hidupkan sync...
+appmenu-fxa-setup-sync-new = Hidupkan
+appmenuitem-save-page =
+    .label = Simpan Halaman Sebagai…
+appmenuitem-fxa-sync-off-title = Sync dimatikan
+appmenuitem-fxa-sync-off-description = Lindungi dan akses penanda halaman, kata laluan, dan banyak lagi di mana-mana.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Profiler
+    .tooltiptext = Rakam profil prestasi
+profiler-popup-button-recording =
+    .label = Profiler
+    .tooltiptext = Profiler sedang merakam profil
+profiler-popup-button-capturing =
+    .label = Profiler
+    .tooltiptext = Profiler sedang menangkap profil
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = Dedahkan maklumat lanjut
+profiler-popup-description-title =
+    .value = Rakam, analisis, kongsi
+profiler-popup-description = Bekerjasama mengenai isu prestasi dengan menerbitkan profil untuk dikongsi dengan pasukan anda.
+profiler-popup-learn-more-button =
+    .label = Ketahui lebih lanjut
+profiler-popup-settings =
+    .value = Tetapan
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Edit Tetapan...
+profiler-popup-recording-screen = Merakam...
+profiler-popup-start-recording-button =
+    .label = Mula Merakam
+profiler-popup-discard-button =
+    .label = Buang
+profiler-popup-capture-button =
+    .label = Tangkap
+profiler-button-dropmarker =
+    .label = Buka panel profiler
+    .tooltiptext = Buka panel profiler
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Pratetap yang disyorkan untuk kebanyakan debugging aplikasi web, dengan overhead rendah.
+profiler-popup-presets-web-developer-label =
+    .label = Pembangun Web
+profiler-popup-presets-firefox-description = Pratetap yang disyorkan untuk memprofil { -brand-shorter-name }.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Pratetap untuk menyiasat pepijat grafik dalam { -brand-shorter-name }.
+profiler-popup-presets-graphics-label =
+    .label = Grafik
+profiler-popup-presets-media-description2 = Pratetap untuk menyiasat pepijat audio dan video dalam { -brand-shorter-name }.
+profiler-popup-presets-media-label =
+    .label = Media
+profiler-popup-presets-ml-description = Pratetap untuk menyiasat pepijat machine learning dalam { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Machine Learning
+profiler-popup-presets-networking-description = Pratetap untuk menyiasat pepijat rangkaian dalam { -brand-shorter-name }.
+profiler-popup-presets-networking-label =
+    .label = Rangkaian
+profiler-popup-presets-networking-with-logs-description = Pratetap untuk menyiasat pepijat rangkaian dalam { -brand-shorter-name }, termasuk log rangkaian. Log ini mungkin mengandungi maklumat sensitif seperti URL yang anda lawati.
+profiler-popup-presets-networking-with-logs-label =
+    .label = Rangkaian dengan Log
+profiler-popup-presets-power-description = Pratetap untuk menyiasat pepijat penggunaan kuasa dalam { -brand-shorter-name }, dengan overhead rendah.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Kuasa
+profiler-popup-presets-debug-description = Pratetap untuk debugging dalam { -brand-shorter-name }. Overhead tinggi, jangan guna untuk kerja prestasi tetapi guna untuk fokus memahami tingkah laku pelayar.
+profiler-popup-presets-debug-label =
+    .label = Nyahpepijat
+profiler-popup-presets-web-compat-description = Pratetap yang disyorkan untuk debugging isu keserasian web pada laman web, bukan untuk menjejak prestasi.
+profiler-popup-presets-web-compat-label =
+    .label = Keserasian Web
+profiler-popup-presets-custom-label =
+    .label = Tersuai
+
+##
+
+appmenu-manage-history =
+    .label = Urus Sejarah
+appmenu-restore-session =
+    .label = Pulih Sesi Dahulu
+appmenu-clear-history =
+    .label = Buang Sejarah Terkini…
+appmenu-recent-history-subheader = Sejarah Terkini
+appmenu-recently-closed-tabs =
+    .label = Tab Terkini Ditutup
+appmenu-recently-closed-windows =
+    .label = Tetingkap Terkini Ditutup
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Cari sejarah
+
+## Help panel
+
+appmenu-help-header =
+    .title = Bantuan { -brand-shorter-name }
+appmenu-about =
+    .label = Perihal { -brand-shorter-name }
+    .accesskey = P
+appmenu-get-help =
+    .label = Dapatkan Bantuan
+    .accesskey = B
+appmenu-help-more-troubleshooting-info =
+    .label = Maklumat penyelesaian masalah lanjut
+    .accesskey = p
+appmenu-help-share-ideas =
+    .label = Kongsi idea dan maklum balas...
+    .accesskey = K
+appmenu-help-switch-device =
+    .label = Bertukar ke peranti baharu
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Mod Penyelesaian Masalah…
+    .accesskey = M
+appmenu-help-exit-troubleshoot-mode =
+    .label = Matikan Mod Penyelesaian Masalah
+    .accesskey = M
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Laporkan laman yang mengelirukan…
+    .accesskey = m
+appmenu-help-not-deceptive =
+    .label = Ini bukan laman mengelirukan…
+    .accesskey = m
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Sesuaikan Bar Alatan...
+appmenu-abouttranslations =
+    .label = Terjemahkan…
+appmenu-edit-pdf =
+    .label = Sunting PDF...
+appmenu-developer-tools-subheader = Alatan Pelayar
+appmenu-developer-tools-extensions =
+    .label = Sambungan untuk pembangun
+appmenuitem-report-broken-site =
+    .label = Laporkan Laman Rosak
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Daftar masuk ke akaun anda
+appmenuitem-monitor-title2 = Kekal Mendahului Kecurian Identiti
+appmenuitem-monitor-description2 = Dapatkan makluman tentang kebocoran data
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Dapatkan makluman kebocoran data
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = Kekalkan Privasi E-mel Anda
+appmenuitem-relay-description2 = Membantu mencegah spam dalam peti masuk anda
+appmenuitem-relay-description = Mask e-mel dan telefon sebenar anda
+appmenuitem-services-relay-description = Lancarkan papan pemuka email mask
+appmenuitem-vpn-title2 = Sembunyikan Lokasi Anda dengan { -mozilla-vpn-brand-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Dapatkan perlindungan seluruh peranti
+appmenu-services-header = Perkhidmatan saya
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Alatan privasi
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Cuba alat perlindungan lain daripada Mozilla:
+
+## Profiles panel
+
+appmenu-other-profiles = Profil lain
+appmenu-manage-profiles =
+    .label = Urus Profil
+appmenu-copy-profile =
+    .label = Salin Profil Ini
+appmenu-create-profile2 =
+    .label = Cipta Profil Baharu
+appmenu-create-profile =
+    .label = Profil baharu
+appmenu-edit-profile =
+    .aria-label = Sunting profil
+appmenu-edit-this-profile =
+    .label = Sunting Profil Ini
+appmenu-profile-current-in-use = Profil semasa sedang digunakan
+fxa-menu-create-profile-subpanel =
+    .title = Cipta profil baharu
+fxa-menu-create-profile-heading = Tingkatkan pelayaran anda dengan profil baharu
+fxa-menu-create-profile-description = Pastikan penanda halaman, kata laluan dan sejarah anda berasingan untuk pelayaran kerja dan peribadi.
+fxa-menu-create-profile-confirm =
+    .label = Cipta Profil Baharu
+fxa-menu-create-profile-learn-more =
+    .label = Apakah Profil?
+appmenu-profiles-2 =
+    .label = Profil
+appmenu-profiles-header = Profil
+appmenu-all-profiles =
+    .label = Semua Profil
+appmenu-secure-sync-header = Sync selamat
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Tab terkini
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label = Lihat Semua { $tabCount } Tab Sync
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Hantar Halaman Semasa ke Peranti Ini

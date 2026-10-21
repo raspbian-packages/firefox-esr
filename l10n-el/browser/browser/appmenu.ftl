@@ -1,0 +1,440 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = Λήψη ενημέρωσης του { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Διαθέσιμη ενημέρωση — λήψη τώρα
+appmenuitem-banner-update-manual =
+    .label = Διαθέσιμη ενημέρωση — λήψη τώρα
+appmenuitem-banner-update-unsupported =
+    .label = Αδυναμία ενημέρωσης — μη συμβατό σύστημα
+appmenuitem-banner-update-restart =
+    .label = Διαθέσιμη ενημέρωση — επανεκκίνηση τώρα
+appmenu-nova-update-title = Επανεκκίνηση για ενημέρωση του { -brand-short-name }
+appmenu-nova-update-description = Οι καρτέλες σας θα ανοίξουν ξανά.
+appmenu-nova-fxa-sign-in = Σύνδεση
+appmenu-nova-switch-device-promo =
+    .message = Θα αποκτήσετε σύντομα νέα συσκευή; Πάρτε το { -brand-short-name } μαζί σας!
+appmenu-nova-switch-device-link = Τρόπος μεταφοράς δεδομένων
+appmenuitem-new-tab =
+    .label = Νέα καρτέλα
+appmenuitem-new-window =
+    .label = Νέο παράθυρο
+appmenuitem-new-private-window =
+    .label = Νέο ιδιωτικό παράθυρο
+appmenuitem-history =
+    .label = Ιστορικό
+appmenuitem-tab-groups =
+    .label = Ομάδες καρτελών
+appmenuitem-downloads =
+    .label = Λήψεις
+appmenuitem-passwords =
+    .label = Κωδικοί πρόσβασης
+appmenuitem-extensions-and-themes =
+    .label = Επεκτάσεις και θέματα
+appmenuitem-extensions =
+    .label = Επεκτάσεις
+appmenuitem-print =
+    .label = Εκτύπωση…
+appmenuitem-find-in-page =
+    .label = Εύρεση στη σελίδα…
+appmenuitem-translate =
+    .label = Μετάφραση σελίδας…
+appmenuitem-zoom =
+    .value = Ζουμ
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = Σύσταση του { -brand-product-name }
+appmenuitem-more-tools =
+    .label = Περισσότερα εργαλεία
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = Βοήθεια και αναφορά
+appmenuitem-help =
+    .label = Βοήθεια
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Τερματισμός
+           *[other] Έξοδος
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Άνοιγμα μενού εφαρμογής
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Κλείσιμο μενού εφαρμογής
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Ρυθμίσεις
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Μεγέθυνση
+appmenuitem-zoom-reduce =
+    .label = Σμίκρυνση
+appmenuitem-fullscreen =
+    .label = Πλήρης οθόνη
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Σύνδεση για συγχρονισμό…
+appmenu-remote-tabs-turn-on-sync =
+    .label = Ενεργοποίηση Sync…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Εμφάνιση περισσότερων καρτελών
+    .tooltiptext = Εμφάνιση περισσότερων καρτελών αυτής της συσκευής
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Ανενεργές καρτέλες
+    .tooltiptext = Δείτε τις ανενεργές καρτέλες αυτής της συσκευής
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Καμία ανοικτή καρτέλα
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Ενεργοποιήστε τον συγχρονισμό καρτελών για να δείτε μια λίστα από καρτέλες από τις άλλες σας συσκευές.
+appmenu-remote-tabs-opensettings =
+    .label = Ρυθμίσεις
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Θέλετε να δείτε εδώ τις καρτέλες σας από άλλες συσκευές;
+appmenu-remote-tabs-connectdevice =
+    .label = Σύνδεση άλλης συσκευής
+appmenu-remote-tabs-welcome = Δείτε μια λίστα με καρτέλες από τις άλλες σας συσκευές.
+appmenu-remote-tabs-unverified = Ο λογαριασμός σας πρέπει να επαληθευτεί.
+appmenuitem-fxa-toolbar-sync-now2 = Συγχρονισμός τώρα
+appmenuitem-fxa-sign-in = Σύνδεση στο { -brand-product-name }
+appmenuitem-fxa-manage-account = Διαχείριση λογαριασμού
+fxa-menu-sync-status-on = Ο συγχρονισμός είναι ενεργός
+fxa-menu-sync-status-off = Ο συγχρονισμός είναι ανενεργός
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = Συγχρονισμός δεδομένων
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Τα δεδομένα σας δεν συγχρονίζονται
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Ενεργοποίηση
+fxa-menu-sync-status-turn-on-button-aria-label = Ενεργοποίηση
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Σύνδεση για συγχρονισμό
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = Συγχρονισμός του { $deviceName } τώρα
+fxa-menu-manage-sync-settings =
+    .label = Διαχείριση ρυθμίσεων συγχρονισμού
+fxa-menu-add-device =
+    .label = Προσθήκη συσκευής
+fxa-menu-manage-devices =
+    .label = Διαχείριση συσκευών
+fxa-menu-device-missing =
+    .label = Δεν βλέπετε τη συσκευή σας;
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Όλες οι συσκευές
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Όλες οι συσκευές
+fxa-menu-get-firefox-mobile =
+    .label = Απόκτηση του { -brand-product-name } για Android ή iOS
+fxa-menu-secure-sync-subpanel =
+    .title = Ασφαλής συγχρονισμός
+appmenu-account-header = Λογαριασμός
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Τελευταίος συγχρονισμός: { $time }
+    .label = Τελευταίος συγχρονισμός: { $time }
+appmenu-fxa-sync-and-save-data2 = Συγχρονισμός και αποθήκευση δεδομένων
+appmenu-fxa-signed-in-label = Σύνδεση
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = Σύνδεση στο Sync
+appmenu-fxa-sign-in-promo-message = Λάβετε τα δεδομένα σας παντού
+appmenu-fxa-sign-in-promo-button =
+    .label = Σύνδεση
+appmenu-fxa-setup-sync =
+    .label = Ενεργοποίηση συγχρονισμού…
+appmenu-fxa-setup-sync-new = Ενεργοποίηση
+appmenuitem-save-page =
+    .label = Αποθήκευση σελίδας ως…
+appmenuitem-fxa-sync-off-title = Ο συγχρονισμός είναι ανενεργός
+appmenuitem-fxa-sync-off-description = Προστατέψτε και χρησιμοποιήστε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα, οπουδήποτε.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Εργαλείο προφίλ
+    .tooltiptext = Καταγραφή προφίλ επιδόσεων
+profiler-popup-button-recording =
+    .label = Εργαλείο προφίλ
+    .tooltiptext = Το εργαλείο προφίλ καταγράφει ένα προφίλ
+profiler-popup-button-capturing =
+    .label = Εργαλείο προφίλ
+    .tooltiptext = Το εργαλείο προφίλ καταγράφει ένα προφίλ
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = Αποκάλυψη περισσότερων πληροφοριών
+profiler-popup-description-title =
+    .value = Εγγραφή, ανάλυση, κοινοποίηση
+profiler-popup-description = Αντιμετωπίστε ζητήματα επιδόσεων κάνοντας κοινή χρήση των προφίλ με την ομάδα σας.
+profiler-popup-learn-more-button =
+    .label = Μάθετε περισσότερα
+profiler-popup-settings =
+    .value = Ρυθμίσεις
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Επεξεργασία ρυθμίσεων…
+profiler-popup-recording-screen = Εγγραφή…
+profiler-popup-start-recording-button =
+    .label = Έναρξη καταγραφής
+profiler-popup-discard-button =
+    .label = Απόρριψη
+profiler-popup-capture-button =
+    .label = Καταγραφή
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = Άνοιγμα του εργαλείου προφίλ
+    .tooltiptext = Άνοιγμα του εργαλείου προφίλ
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Προτεινόμενη προεπιλογή για τον έλεγχο σφαλμάτων των περισσότερων εφαρμογών ιστού με χαμηλό κόστος.
+profiler-popup-presets-web-developer-label =
+    .label = Ανάπτυξη web
+profiler-popup-presets-firefox-description = Προτεινόμενη προεπιλογή για την καταγραφή προφίλ στο { -brand-shorter-name }.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Προεπιλογή για τη διερεύνηση σφαλμάτων γραφικών στο { -brand-shorter-name }.
+profiler-popup-presets-graphics-label =
+    .label = Γραφικά
+profiler-popup-presets-media-description2 = Προεπιλογή για τη διερεύνηση σφαλμάτων ήχου και βίντεο στο { -brand-shorter-name }.
+profiler-popup-presets-media-label =
+    .label = Πολυμέσα
+profiler-popup-presets-ml-description = Προεπιλογή για τη διερεύνηση σφαλμάτων μηχανικής μάθησης στο { -brand-shorter-name }.
+profiler-popup-presets-ml-label =
+    .label = Μηχανική μάθηση
+profiler-popup-presets-networking-description = Προεπιλογή για τη διερεύνηση σφαλμάτων δικτύωσης στο { -brand-shorter-name }.
+profiler-popup-presets-networking-label =
+    .label = Δικτύωση
+profiler-popup-presets-networking-with-logs-description = Προκαθορισμένη ρύθμιση για τη διερεύνηση σφαλμάτων δικτύου στο { -brand-shorter-name }, συμπεριλαμβανομένων των αρχείων καταγραφής δικτύωσης. Αυτά τα αρχεία ενδέχεται να περιέχουν ευαίσθητες πληροφορίες, όπως τα URL που επισκέπτεστε.
+profiler-popup-presets-networking-with-logs-label =
+    .label = Δικτύωση με αρχεία καταγραφής
+profiler-popup-presets-power-description = Προκαθορισμένη ρύθμιση για τη διερεύνηση σφαλμάτων χρήσης ενέργειας στο { -brand-shorter-name }, με μικρή επιβάρυνση.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Ενέργεια
+profiler-popup-presets-debug-description = Προκαθορισμένη ρύθμιση για έλεγχο σφαλμάτων στο { -brand-shorter-name }. Υψηλός φόρτος, μην τη χρησιμοποιείτε για εργασίες υψηλών επιδόσεων, αλλά για την εστίαση στην κατανόηση της συμπεριφοράς του προγράμματος περιήγησης.
+profiler-popup-presets-debug-label =
+    .label = Έλεγχος σφαλμάτων
+profiler-popup-presets-web-compat-description = Προτεινόμενη προεπιλογή για τον έλεγχο σφαλμάτων συμβατότητας ιστοτόπων, αντί για την καταγραφή επιδόσεων.
+profiler-popup-presets-web-compat-label =
+    .label = Συμβατότητα ιστού
+profiler-popup-presets-custom-label =
+    .label = Προσαρμογή
+
+##
+
+appmenu-manage-history =
+    .label = Διαχείριση ιστορικού
+appmenu-restore-session =
+    .label = Επαναφορά προηγούμενης συνεδρίας
+appmenu-clear-history =
+    .label = Απαλοιφή πρόσφατου ιστορικού…
+appmenu-recent-history-subheader = Πρόσφατο ιστορικό
+appmenu-recently-closed-tabs =
+    .label = Πρόσφατα κλεισμένες καρτέλες
+appmenu-recently-closed-windows =
+    .label = Πρόσφατα κλεισμένα παράθυρα
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Αναζήτηση ιστορικού
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = Διατηρήστε συγχρονισμένες τις συσκευές σας
+appmenu-sync-promo-signin-cta = Σύνδεση
+appmenu-sync-promo-turnonsync =
+    .heading = Συγχρονίστε τις καρτέλες και το ιστορικό σας
+appmenu-sync-promo-turnonsync-cta = Ενεργοποίηση συγχρονισμού
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = Λάβετε τις καρτέλες του τηλεφ΄ώνου σας
+appmenu-sync-promo-connectdevice-cta = Συνδέστε μια συσκευή
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = Πάρτε τους σελιδοδείκτες σας μαζί σας
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = Πάρτε τους σελιδοδείκτες σας μαζί σας
+
+## Help panel
+
+appmenu-help-header =
+    .title = Βοήθεια { -brand-shorter-name }
+appmenu-about =
+    .label = Σχετικά με το { -brand-shorter-name }
+    .accesskey = Σ
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = Σύσταση του { -brand-product-name }
+    .accesskey = τ
+appmenu-get-help =
+    .label = Λήψη βοήθειας
+    .accesskey = β
+appmenu-help-more-troubleshooting-info =
+    .label = Πληροφορίες επίλυσης προβλημάτων
+    .accesskey = Π
+appmenu-help-share-ideas =
+    .label = Κοινοποίηση ιδεών και σχολίων…
+    .accesskey = Κ
+appmenu-help-switch-device =
+    .label = Μετάβαση σε νέα συσκευή
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = Βοήθεια και αναφορά
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Λειτουργία επίλυσης προβλημάτων…
+    .accesskey = Λ
+appmenu-help-exit-troubleshoot-mode =
+    .label = Απενεργοποίηση λειτουργίας επίλυσης προβλημάτων
+    .accesskey = Α
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Αναφορά παραπλανητικού ιστοτόπου…
+    .accesskey = λ
+appmenu-help-not-deceptive =
+    .label = Αυτός δεν είναι παραπλανητικός ιστότοπος…
+    .accesskey = δ
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Προσαρμογή γραμμής εργαλείων…
+appmenu-abouttranslations =
+    .label = Μετάφραση…
+appmenu-edit-pdf =
+    .label = Επεξεργασία PDF…
+appmenu-developer-tools-subheader = Εργαλεία προγράμματος περιήγησης
+appmenu-developer-tools-extensions =
+    .label = Επεκτάσεις για προγραμματιστές
+appmenuitem-report-broken-site =
+    .label = Αναφορά προβληματικού ιστοτόπου
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Συνδεθείτε στον λογαριασμό σας
+appmenuitem-monitor-title2 = Προφυλαχτείτε από την υποκλοπή ταυτότητας
+appmenuitem-monitor-description2 = Λάβετε ειδοποιήσεις για παραβιάσεις δεδομένων
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = Ειδοποιήσεις παραβίασης δεδομένων του { -monitor-brand-short-name }
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Λάβετε ειδοποιήσεις παραβίασης δεδομένων
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = Διατηρήστε το email σας ιδιωτικό
+appmenuitem-relay-description2 = Συμβάλλει στην αποτροπή ανεπιθύμητων μηνυμάτων στα εισερχόμενά σας
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = Προβολή μασκών email
+appmenuitem-relay-description = Αποκρύψτε το πραγματικό email και το τηλέφωνό σας
+appmenuitem-services-relay-description = Εκκίνηση πίνακα μασκών email
+appmenuitem-vpn-title2 = Αποκρύψτε την τοποθεσία σας με το { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description5 = Αποκτήστε επιπλέον προστασία σε όλες τις συσκευές
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = Λήψη του { -mozilla-vpn-brand-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Λάβετε προστασία για ολόκληρη τη συσκευή
+appmenu-services-header = Οι υπηρεσίες μου
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Εργαλεία απορρήτου
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Δοκιμάστε άλλα εργαλεία προστασίας από τη Mozilla:
+
+## Profiles panel
+
+appmenu-other-profiles = Άλλα προφίλ
+appmenu-manage-profiles =
+    .label = Διαχείριση προφίλ
+appmenu-copy-profile =
+    .label = Αντιγραφή προφίλ
+appmenu-create-profile2 =
+    .label = Δημιουργία νέου προφίλ
+appmenu-create-profile =
+    .label = Νέο προφίλ
+appmenu-edit-profile =
+    .aria-label = Επεξεργασία προφίλ
+appmenu-edit-this-profile =
+    .label = Επεξεργασία προφίλ
+appmenu-profile-current-in-use = Τρέχον προφίλ σε χρήση
+fxa-menu-create-profile-subpanel =
+    .title = Δημιουργία νέου προφίλ
+fxa-menu-create-profile-heading = Αναβαθμίστε την περιήγησή σας με ένα νέο προφίλ
+fxa-menu-create-profile-description = Διαχωρίστε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και το ιστορικό σας για επαγγελματική και προσωπική περιήγηση.
+fxa-menu-create-profile-confirm =
+    .label = Δημιουργία νέου προφίλ
+fxa-menu-create-profile-learn-more =
+    .label = Τι είναι τα προφίλ;
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = Σύσταση του { -brand-product-name }
+appmenuitem-share-firefox-description = Προσκαλέστε κάποιον να επιλέξει το πρόγραμμα περιήγησης που δίνει προτεραιότητα στην ιδιωτικότητα
+appmenu-profiles-2 =
+    .label = Προφίλ
+appmenu-profiles-header = Προφίλ
+appmenu-all-profiles =
+    .label = Όλα τα προφίλ
+appmenu-secure-sync-header = Ασφαλής συγχρονισμός
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Πρόσφατες καρτέλες
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] Προβολή { $tabCount } συγχρονισμένης καρτέλας
+           *[other] Προβολή και των { $tabCount } συγχρονισμένων καρτελών
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Αποστολή τρέχουσας σελίδας σε αυτήν τη συσκευή

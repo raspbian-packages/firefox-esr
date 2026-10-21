@@ -1,0 +1,316 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = نیا ٹیب
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = نئے ٹیبس
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } قطار
+           *[other] { $num } قطاریں
+        }
+home-restore-defaults-srd =
+    .label = طےشدہ بحال کریں
+    .accesskey = R
+home-mode-choice-custom-srd =
+    .label = مخصوص …URLs
+home-mode-choice-blank-srd =
+    .label = خالی صفحہ
+home-prefs-shortcuts-header-srd =
+    .label = تیز راہ
+home-prefs-shortcuts-select =
+    .aria-label = تیز راہ
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = سرپرست شدہ کہاناں
+home-prefs-highlights-option-visited-pages-srd =
+    .label = دورہ کردہ صفحہات
+home-prefs-highlights-options-bookmarks-srd =
+    .label = بک مارک
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = حالیہ ڈاؤن لوڈ شدہ
+home-prefs-recent-activity-header-srd =
+    .label = حالیہ سرگرمی
+home-prefs-recent-activity-select =
+    .aria-label = حالیہ سرگرمی
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = تلاش
+    .title = تلاش
+newtab-search-box-handoff-text-no-engine = پتہ تلاش یا داخل کریں
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = تلاش کریں یا پتہ داخل کریں
+    .placeholder = تلاش کریں یا پتہ داخل کریں
+    .title = تلاش کریں یا پتہ داخل کریں
+newtab-search-box-text = ويب پر تلاش کريں
+newtab-search-box-input =
+    .aria-label = ويب پر تلاش کريں
+    .placeholder = ويب پر تلاش کريں
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = تلاش انجن کا اضافہ کریں
+newtab-topsites-add-shortcut-header = نیا شارٹ کٹ
+newtab-topsites-edit-shortcut-header = شارٹ کٹ میں ترمیم کریں
+newtab-topsites-title-label = عنوان
+newtab-topsites-title-input =
+    .placeholder = ایک عنوان داخل کریں
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = ٹائپ کریں یا ایک URL چسباں کریں
+newtab-topsites-url-validation = جائز URL درکار ہے
+newtab-topsites-image-url-label = مخصوص نقش کا URL
+newtab-topsites-use-custom-image-link = ایک مخصوص تصویر استعمال کریں
+newtab-topsites-use-image-link = ایک مخصوص تصویر استعمال کریں…
+newtab-topsites-image-validation = نقش لوڈ ہونے میں ناکام رہا۔ براہ مہربانی ایک مختلف URL کو آزمائیں۔
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = منسوخ کریں
+newtab-topsites-delete-history-button = سابقات سے حذف کریں
+newtab-topsites-save-button = محفوظ کریں
+newtab-topsites-preview-button = پیش منظر
+newtab-topsites-add-button = اظافہ کریں
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = کیا آپ کو یقین ہے کہ آپ اس صفحہ کا ہر نمونہ اپنے سابقات سے حذف کرنا چاہتے ہیں؟
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = یہ عمل کلعدم نہیں ہو سکتا۔
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = سپانسر شدہ
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = مینیو کھولیں
+    .title = مینیو کھولیں
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = { $title } کے لئے کونٹیکسٹ مینو کھولیں
+    .title = مینیو کھولیں
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = تدوین
+newtab-menu-open-new-window = نئے دریچے میں کھولیں
+newtab-menu-open-new-private-window = نئی نجی دریچے میں کھولیں
+newtab-menu-dismiss = برخاست کریں
+newtab-menu-pin = پن
+newtab-menu-unpin = ان پن
+newtab-menu-delete-history = سابقات سے حذف کریں
+newtab-menu-show-privacy-info = ہمارے کفیل اور آپ کی رازداری
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = نشانى ہٹائيں
+# Bookmark is a verb here.
+newtab-menu-bookmark = بک مارک
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = ڈاؤن لوڈ ربط نقل کریں
+newtab-menu-go-to-download-page = ڈاؤن لوڈ صفحہ پر جائیں
+newtab-menu-remove-download = سابقات سے ہٹائیں
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] تلاش کار میں دکھائیں
+       *[other] حامل پوشہ کھولیں
+    }
+newtab-menu-open-file = فائلکھولیں
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = دورہ شدہ
+newtab-label-bookmarked = نشان شدہ
+newtab-label-removed-bookmark = نشانی ہٹا دی گئی
+newtab-label-recommended = رجحان سازی
+newtab-label-saved = { -pocket-brand-name } میں محفوظ شدہ
+newtab-label-download = ڈاؤن لوڈ شدہ
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } - تعاون شدہ
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = رازداری کا نوٹس
+
+## Section Headers.
+
+newtab-section-header-topsites = بہترین سائٹیں
+newtab-section-header-recent-activity = حالیہ سرگرمی
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = برائوزنگگ شروع کریں،اور ہم آپ کو کچھ بہترین عبارات، وڈیوز اور حالیہ دورہ شددہ دیگر صفحات یا بک مارک دکھائیں گے۔
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = آپ پکڑے گئے!
+newtab-discovery-empty-section-topstories-content = مزید کہانیوں کے لئے بعد میں دوبارہ پڑتال کریں۔
+newtab-discovery-empty-section-topstories-try-again-button = دوبارہ کوشش کریں
+newtab-discovery-empty-section-topstories-loading = لوڈ ہو رہا ہے…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = افوہ! ہم نے اس حصے کو تقریبا بھرا ہوا ہے ، لیکن کافی نہیں۔
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = افوہ ، اس مواد کو لوڈ کرنے میں کچھ غلط ہو گیا۔
+newtab-error-fallback-refresh-link = دوبارہ کوشش کرنے کے لئے پیج کو ریفریش کریں۔
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = وہ سائٹس جو آپ محفوظ کرتے ہیں یا ملاحظہ کرتے ہیں۔
+    .label = تیز راہ
+newtab-custom-shortcuts-nova =
+    .label = تیز راہ
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } قطار
+           *[other] { $num } قطاریں
+        }
+newtab-custom-settings = مزید سیٹنگز کو نظم کریں
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = نیویارک
+newtab-clock-city-us-los-angeles = لاس اینجلس
+newtab-clock-city-us-chicago = شکاگو
+newtab-clock-city-us-san-francisco = سان فرانسسکو
+newtab-clock-city-us-san-diego = سان ڈیگو
+newtab-clock-city-us-dallas = ڈیلاس
+newtab-clock-city-us-houston = ہوسٹن
+newtab-clock-city-us-philadelphia = فلاڈلفیا
+newtab-clock-city-us-atlanta = اٹلانٹا
+newtab-clock-city-us-washington-dc = واشنگٹن ڈی سی
+newtab-clock-city-us-boston = بوسٹن
+newtab-clock-city-us-miami = میامی
+newtab-clock-city-us-seattle = سیاٹل
+newtab-clock-city-us-denver = ڈینور
+newtab-clock-city-us-honolulu = ہونولولو
+newtab-clock-city-us-anchorage = اینکرایج
+newtab-clock-city-de-berlin = برلن
+newtab-clock-city-de-munich = میونخ
+newtab-clock-city-de-frankfurt = فرینکفرٹ
+newtab-clock-city-de-hamburg = ہامبرگ
+newtab-clock-city-fr-paris = پیرس
+newtab-clock-city-fr-lyon = لیون
+newtab-clock-city-fr-marseille = مارسیلز
+newtab-clock-city-fr-toulouse = تولوز
+newtab-clock-city-in-kolkata = کولکاتا
+newtab-clock-city-in-mumbai = ممبئی
+newtab-clock-city-in-delhi = دہلی
+newtab-clock-city-in-bangalore = بنگلور
+newtab-clock-city-cn-shanghai = شنگھائی
+newtab-clock-city-cn-beijing = بیجنگ
+newtab-clock-city-cn-shenzhen = شینزین
+newtab-clock-city-br-sao-paulo = ساؤ پالو
+newtab-clock-city-br-rio-de-janeiro = ریو دے جینیرو
+newtab-clock-city-br-brasilia = برازیلیا
+newtab-clock-city-id-jakarta = جکارتا
+newtab-clock-city-id-surabaya = سورابایا
+newtab-clock-city-id-makassar = مکاسر
+newtab-clock-city-ca-toronto = ٹورانٹو
+newtab-clock-city-ca-montreal = مانٹریال
+newtab-clock-city-ca-vancouver = وینکوور
+newtab-clock-city-au-sydney = سڈنی
+newtab-clock-city-au-perth = پرتھ
+newtab-clock-city-au-adelaide = ایڈیلیڈ
+newtab-clock-city-pl-warsaw = وارسا
+newtab-clock-city-pl-krakow = کراکوف
+newtab-clock-city-jp-tokyo = توکیو
+newtab-clock-city-jp-osaka = اوساکا
+newtab-clock-city-mx-mexico-city = میکسیکو شہر
+newtab-clock-city-mx-guadalajara = گواڈلہارا
+newtab-clock-city-it-rome = روم
+newtab-clock-city-it-milan = میلان
+newtab-clock-city-ru-moscow = ماسکو
+newtab-clock-city-ru-saint-petersburg = سینٹ پیٹرز برگ
+newtab-clock-city-gb-london = لندن
+newtab-clock-city-gb-birmingham = برمنگھم
+newtab-clock-city-es-madrid = میدرد
+newtab-clock-city-es-barcelona = برشلونہ
+newtab-clock-city-nl-amsterdam = ایمسٹرڈیم
+newtab-clock-city-ch-zurich = زیورخ
+newtab-clock-city-at-vienna = ویانا
+newtab-clock-city-cz-prague = پراگ
+newtab-clock-city-ar-buenos-aires = بیونس آئرس
+newtab-clock-city-gr-athens = ایتھنز
+newtab-clock-city-hu-budapest = بوداپست
+newtab-clock-city-be-brussels = برسلز
+newtab-clock-city-ua-kyiv = کیف
+newtab-clock-city-fi-helsinki = ہلسنکی
+newtab-clock-city-co-bogota = بوگوتا
+newtab-clock-city-ph-manila = منیلا
+newtab-clock-city-tr-istanbul = استنبول
+newtab-clock-city-my-kuala-lumpur = کوالا لمپور
+newtab-clock-city-eg-cairo = قاہرہ
+newtab-clock-city-se-stockholm = اسٹاک ہوم
+newtab-clock-city-ro-bucharest = بخارسٹ
+newtab-clock-city-th-bangkok = بینکاک
+newtab-clock-city-ng-lagos = لاگوس
+newtab-clock-city-tw-taipei = تائی پے
+newtab-clock-city-za-johannesburg = جوہانسبرگ
+newtab-clock-city-cl-santiago = سینٹیاگو
+newtab-clock-city-pk-karachi = کراچی
+newtab-clock-city-bg-sofia = صوفیہ
+newtab-clock-city-sg-singapore = سنگاپور
+newtab-clock-city-hk-hong-kong = ہانگ کانگ
+newtab-clock-city-sa-riyadh = ریاض
+newtab-clock-city-dk-copenhagen = کوپن ہیگن
+newtab-clock-city-pe-lima = لیما
+newtab-clock-city-ke-nairobi = نیروبی
+newtab-clock-city-nz-auckland = آکلینڈ
+newtab-clock-city-kr-seoul = سؤل
+newtab-clock-city-lt-vilnius = ولنیس
+newtab-clock-city-ie-dublin = ڈبلن
+newtab-clock-city-ae-dubai = دبئی
+newtab-clock-city-lv-riga = ریگا
+newtab-clock-city-pt-lisbon = لزبن
+newtab-clock-city-ir-tehran = تہران
+newtab-clock-city-bd-dhaka = ڈھاکہ
+newtab-clock-city-ec-guayaquil = گویاکیل
+newtab-clock-city-vn-ho-chi-minh-city = ہو چی منہ سٹی
+newtab-clock-city-np-kathmandu = کھٹمنڈو
+newtab-clock-city-mm-yangon = یانگون
