@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Shranjeni naslovi
+autofill-manage-addresses-list-header = Naslovi
+autofill-manage-payment-methods-title = Shranjena plačilna sredstva
+autofill-manage-cards-list-header = Kartice
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Odstrani
+autofill-manage-add-button = Dodaj …
+autofill-manage-edit-button = Uredi …
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Shranim naslov?
+address-capture-save-doorhanger-description = Shranite podatke v { -brand-short-name } za hitrejše izpolnjevanje obrazcev.
+address-capture-update-doorhanger-header = Posodobim naslov?
+address-capture-edit-doorhanger-header = Uredi naslov
+address-capture-save-button =
+    .label = Shrani
+    .accessKey = S
+address-capture-not-now-button =
+    .label = Ne zdaj
+    .accessKey = N
+address-capture-never-save-addresses-button =
+    .label = Nikoli ne shranjuj naslovov
+    .accessKey = k
+address-capture-cancel-button =
+    .label = Prekliči
+    .accessKey = k
+address-capture-update-button =
+    .label = Posodobi
+    .accessKey = P
+address-capture-manage-address-button =
+    .label = Nastavitve naslovov
+address-capture-learn-more-button =
+    .label = Več o tem
+address-capture-open-menu-button =
+    .aria-label = Odpri meni
+address-capture-edit-address-link = Uredi naslov
+    .aria-label = Uredi naslov
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Dodaj naslov
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Uredi naslov
+autofill-address-name = Ime
+autofill-address-organization = Organizacija
+autofill-address-street-address = Ulica
+autofill-address-street = Ulica
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Soseska
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Vas ali okraj
+autofill-address-island = Otok
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Townland
+autofill-address-city = Mesto
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Okrožje
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Kraj pošte
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Predmestje
+autofill-address-province = Provinca
+autofill-address-state = Zvezna država
+autofill-address-county = Okrožje
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Župnija
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Prefektura
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Območje
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Oddelek
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Emirat
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Oblast
+# Postal code field used in India (IN).
+autofill-address-pin = Pin
+autofill-address-postal-code = Poštna številka
+# Postal code field.
+autofill-address-zip = Poštna številka
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eircode
+
+##
+
+autofill-address-country = Država ali območje
+autofill-address-country-only = Država
+autofill-address-tel = Telefon
+autofill-address-email = E-pošta
+autofill-cancel-button = Prekliči
+autofill-save-button = Shrani
+autofill-country-warning-message-2 = Samodejno izpolnjevanje obrazcev je trenutno na voljo samo v nekaterih državah
+autofill-country-warning-message = Samodejno izpolnjevanje obrazcev je trenutno na voljo samo v nekaterih državah.
+autofill-message-tooltip = Prikaži sporočilo o samodejnem izpolnjevanju
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Dodaj kartico
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Uredi kartico
+autofill-card-number-2 =
+    .label = Številka kartice
+autofill-card-number = Številka kartice
+autofill-card-invalid-number = Vnesite veljavno številko kartice
+autofill-card-name-on-card-2 =
+    .label = Ime na kartici
+autofill-card-expires-month-2 =
+    .label = Mesec poteka
+autofill-card-expires-year-2 =
+    .label = Leto poteka
+autofill-card-billing-address-2 =
+    .label = Naslov za izstavitev računa
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = Ime na kartici
+autofill-card-expires-month = Mesec poteka
+autofill-card-expires-year = Leto poteka
+autofill-card-billing-address = Naslov za izstavitev računa
+autofill-card-network = Vrsta kartice
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = kreditne kartice, kreditne, kartice, debetne kartice, bančne kartice, banka, denarnica, blagajna
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Dodaj potni list
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = Uredi potni list
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = Ime
+autofill-passport-country =
+    .label = Država
+autofill-passport-number =
+    .label = Številka
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = Datum izdaje
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = Velja do
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = MM
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = DD
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = LLLL
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = Shranim potni list?
+passport-capture-save-doorhanger-description = Shranite podatke v { -brand-short-name(sklon: "tozilnik") } za hitrejše izpolnjevanje obrazcev.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = Shrani
+    .accessKey = S
+passport-capture-not-now-button =
+    .label = Ne zdaj
+    .accessKey = z
+passport-capture-never-save-button =
+    .label = Nikoli ne shranjuj potnih listov
+    .accessKey = N

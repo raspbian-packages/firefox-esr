@@ -1,0 +1,604 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Iccer amaynut
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = Sagen asebter-a
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = Sagen
+newtab-customize-panel-label =
+    .label = Sagen
+newtab-settings-dialog-label =
+    .aria-label = Iɣewwaṛen
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = Iccer amaynut
+
+## Firefox Home content
+
+home-prefs-firefox-logo-header =
+    .label = Alugu n { -brand-short-name }
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } izirig
+           *[other] { $num } izirigen
+        }
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = Asiɣzef ({ $extension })
+home-restore-defaults-srd =
+    .label = Err-d iɣewwaṛen imezwar
+    .accesskey = R
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (Amezwer)
+home-mode-choice-custom-srd =
+    .label = URLs iganen...
+home-mode-choice-blank-srd =
+    .label = Asebter ilem
+home-prefs-shortcuts-header-srd =
+    .label = Inegzumen
+home-prefs-shortcuts-select =
+    .aria-label = Inegzumen
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = Inegzumen yettwarefden
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Tiqṣidin yettwarefden
+home-prefs-highlights-option-visited-pages-srd =
+    .label = isebtar yettwarzan
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Ticraḍ n isebtar
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Isadaren imaynuten
+home-prefs-recent-activity-header-srd =
+    .label = Armud n melmi kan
+home-prefs-recent-activity-select =
+    .aria-label = Armud n melmi kan
+home-prefs-weather-header-srd =
+    .label = Tagnawt
+home-prefs-support-firefox-header-srd =
+    .label = Allel { -brand-product-name }
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Nadi
+    .title = Nadi
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = Nadi s { $engine } neɣ sekcem tansa
+newtab-search-box-handoff-text-no-engine = Nadi neɣ sekcem tansa
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = Nadi s { $engine } neɣ sekcem tansa
+    .placeholder = Nadi s { $engine } neɣ sekcem tansa
+    .title = Nadi s { $engine } neɣ sekcem tansa
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = Nadi neɣ sekcem tansa
+    .placeholder = Nadi neɣ sekcem tansa
+    .title = Nadi neɣ sekcem tansa
+newtab-search-box-text = Nadi di web
+newtab-search-box-input =
+    .aria-label = Nadi di web
+    .placeholder = Nadi di web
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Rnu amsedday n unadi
+newtab-topsites-add-shortcut-header = Anegzum amaynut
+newtab-topsites-edit-shortcut-header = Ẓreg anegzum
+newtab-topsites-add-shortcut-label = Rnu anegzum
+newtab-topsites-add-shortcut-title =
+    .aria-label = Rnu anegzum
+    .title = Rnu anegzum
+newtab-topsites-title-label = Azwel
+newtab-topsites-title-input =
+    .placeholder = Sekcem azwel
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Aru neɣ sekcem tansa URL
+newtab-topsites-url-validation = Tansa URL tameɣtut tettwasra
+newtab-topsites-image-url-label = Tugna tudmawant URL
+newtab-topsites-use-custom-image-link = Seqdec tugna tudmawant
+newtab-topsites-use-image-link = Seqdec tugna tudmawant…
+newtab-topsites-image-validation = Tugna ur d-uli ara. Ɛreḍ tansa-nniḍen URL.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Sefsex
+newtab-topsites-delete-history-button = Kkes seg umazray
+newtab-topsites-save-button = Sekles
+newtab-topsites-preview-button = Taskant
+newtab-topsites-add-button = Rnu
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Tebɣiḍ ad tekksed yal tummant n usebter-agi seg umazray-ik?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Tigawt-agi ur tettuɣal ara ar deffir.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = S lmendad
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Ldi umuɣ
+    .title = Ldi umuɣ
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Ldi umuɣ asatal i { $title }
+    .title = Ldi umuɣ
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Ẓreg
+newtab-menu-open-new-window = Ldi deg usfaylu amaynut
+newtab-menu-open-new-private-window = Ldi deg usfaylu uslig amaynut
+newtab-menu-dismiss = Kkes
+newtab-menu-pin = Senteḍ
+newtab-menu-unpin = Serreḥ
+newtab-menu-delete-history = Kkes seg umazray
+newtab-menu-show-privacy-info = Wid yettbeddan fell-aɣ akked tudert-ik tabaḍnit
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = Aneqqis
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Sewḥel
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = Issin ugar
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = Sefrek agbur yesεan bab
+newtab-menu-our-sponsors-and-your-privacy = Wid yettbeddan fell-aɣ akked tudert-ik tabaḍnit
+newtab-menu-report-this-ad = Ccetki ɣef udellel-a
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Kkes tacreṭ-agi
+# Bookmark is a verb here.
+newtab-menu-bookmark = Creḍ asebter-agi
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Nɣel tansa n useɣwen n usali
+newtab-menu-go-to-download-page = Ddu ɣer usebter n usader
+newtab-menu-remove-download = Kkes seg umazray
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Sken deg Finder
+       *[other] Ldi akaram deg yella ufaylu
+    }
+newtab-menu-open-file = Ldi afaylu
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Yettwarza
+newtab-label-bookmarked = Yettwacreḍ
+newtab-label-removed-bookmark = Tacreṭ n usebter tettwakkes
+newtab-label-recommended = Tiddin
+newtab-label-saved = Yettwakles ɣer { -pocket-brand-name }
+newtab-label-download = Yuli-d
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · Yettwarfed
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = Ddaw leɛnaya n { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } tsd
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = S lmendad
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Tasertit n tbaḍnit
+
+## Section Headers.
+
+newtab-section-header-topsites = Ismal ifazen
+newtab-section-header-recent-activity = Armud n melmi kan
+newtab-section-header-stories = Tiqsiḍin i ijebbden lwelha
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Tafrant-nneɣ n wass
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Bdu tuniginn sakin nekkni ad k-n-sken imagraden, tividyutin, akked isebtar nniḍen i γef terziḍ yakan neγ i tceṛḍeḍ dagi.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Ulac wiyaḍ. Uɣal-d ticki s wugar n imagraden. Ur tebɣiḍ ara ad terǧuḍ? Fren asentel seg wid yettwasnen  akken ad twaliḍ imagraden yelhan di Web.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = Ulac d acu yellan.
+newtab-discovery-empty-section-topstories-content = Uɣal-d ticki akken ad tafeḍ ugar n teqsiḍin.
+newtab-discovery-empty-section-topstories-try-again-button = Ɛreḍ tikkelt-nniḍen
+newtab-discovery-empty-section-topstories-loading = Asali…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Ihuh! Waqil tigezmi ur d-tuli ara akken iwata.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Ihuh, yella wayen yeḍran deg usali n ugbur-a.
+newtab-error-fallback-refresh-link = Sali-d aseter akken ad talseḍ aɛraḍ.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = Ismal i teskelseḍ neɣ wuɣur terziḍ
+    .label = Inegzumen
+newtab-custom-shortcuts-nova =
+    .label = Inegzumen
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } yizirig
+           *[other] { $num } yizirigen
+        }
+newtab-custom-stories-personalized-toggle =
+    .label = Tiqsiḍin
+newtab-custom-widget-weather-toggle =
+    .label = Tagnawt
+newtab-custom-widget-lists-toggle =
+    .label = Tibdarin
+newtab-custom-widget-timer-toggle =
+    .label = Amakud
+newtab-custom-widget-section-title = Iwiǧiten
+newtab-custom-widget-section-toggle =
+    .label = Iwiǧiten
+newtab-widget-manage-title = Iwiǧiten
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .aria-label = Mdel umuɣ
+    .title = Mdel
+newtab-custom-settings = Sefrek ugar n yiɣewwaṛen
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = Tugniwin n ugilal
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = Wennez ɣer umezwer
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = Sali n tugna
+newtab-wallpaper-custom-color = Fren ini
+newtab-wallpaper-toggle-title =
+    .label = Tugniwin n ugilal
+newtab-wallpaper-light-red-panda = Apunda azewwaɣ
+newtab-wallpaper-light-mountain = Adrar amellal
+newtab-wallpaper-dark-mountain = Tugna n yidurar
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = Initen imsariyen
+newtab-wallpaper-blue = Amidadi
+newtab-wallpaper-light-blue = Amidadi ifaw
+newtab-wallpaper-light-purple = Avyuli ifaw
+newtab-wallpaper-light-green = Azegzaw ifaw
+newtab-wallpaper-green = Azegzaw
+newtab-wallpaper-beige = Beige
+newtab-wallpaper-yellow = Awraɣ
+newtab-wallpaper-orange = Ačinawi
+newtab-wallpaper-pink = Axuxi
+newtab-wallpaper-light-pink = Axuxi ifaw
+newtab-wallpaper-red = Azggaɣ
+newtab-wallpaper-dark-blue = Amidadi iḥemqen
+newtab-wallpaper-dark-purple = Axuxi Iḥemqen
+newtab-wallpaper-dark-green = Azegzaw iḥemqen
+newtab-wallpaper-brown = Aqehwi
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = Amadwan
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = Tiwlafin
+newtab-wallpaper-white-mountains = Idurar imellalen
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Tawlaft s <a data-l10n-name="name-link">{ $author_string }</a> ɣef <a data-l10n-name="webpage-link">{ $webpage_string }</a>
+newtab-wallpaper-feature-highlight-header = Ɛreḍ aṛuccu n yini
+newtab-wallpaper-feature-highlight-button = Awi-t
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = Mdel asfaylu udhim
+    .title = Zgel
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ S lmendad
+newtab-weather-menu-change-location = Ẓreg adig
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = Adig n unadi
+    .placeholder = Adig n unadi
+newtab-weather-menu-weather-display = Askan n tegnawt
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = Aḥerfi
+newtab-weather-menu-change-weather-display-simple = Uɣal ɣer uskan afessas
+newtab-weather-menu-weather-display-option-detailed = S telqayt
+newtab-weather-menu-change-weather-display-detailed = Uɣal ɣer uskan alqayan
+newtab-weather-menu-temperature-option-fahrenheit = Fahrenheit
+newtab-weather-menu-temperature-option-celsius = Celsius
+newtab-weather-menu-change-temperature-units-fahrenheit = Beddel ɣer Fahrenheit
+newtab-weather-menu-change-temperature-units-celsius = Beddel ɣer Celsius
+newtab-weather-menu-learn-more = Issin ugar
+newtab-weather-opt-in-not-now =
+    .label = Mačči tura
+newtab-weather-opt-in-yes =
+    .label = Ih
+
+## Topic Labels
+
+newtab-topic-label-business = Amahil
+newtab-topic-label-career = Axeddim
+newtab-topic-label-education = Aselmed
+newtab-topic-label-arts = Asedhu
+newtab-topic-label-food = Tuččit
+newtab-topic-label-health = Tazmert
+newtab-topic-label-hobbies = Uraren
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Tadrimt
+newtab-topic-label-society-parenting = Timarawt
+newtab-topic-label-government = Tasertit
+newtab-topic-label-education-science = Tussna
+newtab-topic-label-sports = Addal
+newtab-topic-label-tech = Tatiknulujit
+newtab-topic-label-travel = Tirza
+newtab-topic-label-home = Axxam & Tibḥirt
+
+## Topic Selection Modal
+
+newtab-topic-selection-save-button = Sekles
+newtab-topic-selection-cancel-button = Sefsex
+newtab-topic-selection-button-maybe-later = Ahat ticki
+newtab-topic-selection-privacy-link = Ẓer amek i nemmestan akked wamek i nessefrak isefka
+newtab-topic-selection-button-update-interests = Leqqem ismenyaf-ik
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Ḍfer
+newtab-section-following-button = Aḍfar
+newtab-section-unfollow-button = Ur ṭṭafar ara
+
+## Topic navigation
+## A row of buttons above the stories, each scrolling the page to that topic's section.
+
+newtab-topic-navigation-label =
+    .aria-label = Isental
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Sewḥel
+newtab-section-blocked-button = Iwḥel
+newtab-section-unblock-button = Serreḥ
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-topic-p1 = D tidet tebɣiḍ ad tesweḥleḍ asental-a?
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = Sewḥel { $topic }
+
+## Strings for custom wallpaper highlight
+
+newtab-section-mangage-topics-title = Isental
+newtab-section-manage-topics-button-v2 =
+    .label = Sefrek isental
+newtab-section-mangage-topics-followed-topics = Yettwaḍfar
+newtab-section-mangage-topics-followed-topics-empty-state = Ur teḍfireḍ ula d yiwen usentel akka ar tura.
+newtab-section-mangage-topics-blocked-topics = Iwḥel
+newtab-section-mangage-topics-blocked-topics-empty-state = Ur tesweḥleḍ ula d yiwen usentel akka ar tura.
+newtab-custom-wallpaper-cta = Ɛreḍ-it
+
+## Strings for new user activation custom wallpaper highlight
+
+newtab-new-user-custom-wallpaper-cta = Ɛreḍ-it tura
+
+## Strings for download mobile highlight
+
+newtab-download-mobile-highlight-title = Sader { -brand-product-name } i uziraz
+newtab-download-mobile-highlight-image =
+    .aria-label = Tangalt QR i usader n { -brand-product-name } i uziraz
+
+## Strings for reporting issues with ads and content
+
+newtab-report-content-why-reporting-this =
+    .label = Ayɣer i d-tuzneḍ aneqqis ɣef waya?
+newtab-report-ads-reason-not-interested =
+    .label = Ur d-cliɛeɣ ara
+newtab-report-content-wrong-category =
+    .label = Yir taggayt
+newtab-report-content-outdated =
+    .label = Aqbuṛ
+newtab-report-cancel = Sefsex
+newtab-report-submit = Azen
+newtab-toast-thanks-for-reporting =
+    .message = Tanemmirt imi d-temliḍ aya:
+
+## Strings for task / to-do list productivity widget
+
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = Amaynut
+newtab-widget-lists-label-beta =
+    .label = Beta
+# When tasks have been previous marked as complete, they will appear in their own separate list beneath incomplete items
+# Variables:
+#   $number (number) - Amount of list items marked complete
+newtab-widget-lists-completed-list = Yemmed ({ $number })
+newtab-widget-task-list-menu-copy = Nɣel
+newtab-widget-lists-menu-edit = Ẓreg isem tabdart
+newtab-widget-lists-menu-edit2 =
+    .aria-label = Ẓreg isem tabdart
+newtab-widget-lists-menu-create = Rnu tabdart tamaynut
+newtab-widget-lists-menu-delete = Kkes tabdart-a
+newtab-widget-lists-menu-copy = Nɣel tabdart ɣer tecfawt
+newtab-widget-lists-menu-learn-more = Issin ugar
+newtab-widget-lists-button-add-item = Rnu aferdis
+newtab-widget-lists-input-add-an-item2 =
+    .aria-label = Rnu aferdis
+    .placeholder = Rnu aferdis
+newtab-widget-lists-input-menu-open-link = Ldi aseɣwen
+newtab-widget-lists-input-menu-move-up = Ali
+newtab-widget-lists-input-menu-move-down = Ader
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+newtab-widget-timer-mode-focus =
+    .label = Focus
+newtab-widget-timer-mode-break =
+    .label = Angaz
+newtab-widget-timer-label-play =
+    .label = Urar
+newtab-widget-timer-label-pause =
+    .label = Asteɛfu
+newtab-widget-timer-reset =
+    .title = Wennez
+newtab-widget-timer-menu-notifications = Sens ilɣa
+newtab-widget-timer-menu-notifications-on = Rmed ilɣa
+newtab-widget-timer-menu-learn-more = Issin ugar
+newtab-promo-card-title = Allel { -brand-product-name }
+newtab-promo-card-cta = Issin ugar
+newtab-promo-card-dismiss-button =
+    .aria-label = Zgel
+    .title = Zgel
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = New York
+newtab-clock-city-us-los-angeles = Los Angeles
+newtab-clock-city-us-san-francisco = San Francisco
+newtab-clock-city-us-dallas = Dallas
+newtab-clock-city-us-houston = Houston
+newtab-clock-city-us-philadelphia = Philadelphia
+newtab-clock-city-us-atlanta = Atlanta
+newtab-clock-city-us-washington-dc = Washington
+newtab-clock-city-us-boston = Boston
+newtab-clock-city-us-seattle = Seattle
+newtab-clock-city-us-denver = Denver
+newtab-clock-city-us-honolulu = Honolulu
+newtab-clock-city-de-berlin = Berlin
+newtab-clock-city-de-munich = Myunix
+newtab-clock-city-de-frankfurt = Frankfurt
+newtab-clock-city-de-hamburg = Hamburg
+newtab-clock-city-fr-paris = Paris
+newtab-clock-city-fr-lyon = Lyon
+newtab-clock-city-fr-marseille = Murṣileyya
+newtab-clock-city-fr-toulouse = Toulouse
+newtab-clock-city-in-mumbai = Mumbay
+newtab-clock-city-cn-beijing = Pekin
+newtab-clock-city-br-sao-paulo = Saw Pawlu
+newtab-clock-city-br-rio-de-janeiro = Rio de Janeiro
+newtab-clock-city-br-brasilia = Brasilia
+newtab-clock-city-id-jakarta = Jakarta
+newtab-clock-city-ca-toronto = Toronto
+newtab-clock-city-ca-montreal = Montreal
+newtab-clock-city-au-sydney = Sydney
+newtab-clock-city-au-perth = Perth
+newtab-clock-city-au-adelaide = Adelaide
+newtab-clock-city-pl-warsaw = Waṛsu
+newtab-clock-city-jp-tokyo = Tokyo
+newtab-clock-city-jp-osaka = Osaka
+newtab-clock-city-mx-mexico-city = Meksiku
+newtab-clock-city-mx-guadalajara = Guadalajara
+newtab-clock-city-it-rome = Roma
+newtab-clock-city-it-milan = Milano
+newtab-clock-city-ru-moscow = Mosku
+newtab-clock-city-ru-saint-petersburg = Saint-Petersburg
+newtab-clock-city-gb-london = London
+newtab-clock-city-gb-birmingham = Birmingham
+newtab-clock-city-es-madrid = Madrid
+newtab-clock-city-es-barcelona = Barseluna
+newtab-clock-city-nl-amsterdam = Amesterdam
+newtab-clock-city-ch-zurich = Zurix
+newtab-clock-city-at-vienna = Vin
+newtab-clock-city-cz-prague = Prag
+newtab-clock-city-ar-buenos-aires = Buenos Aires
+newtab-clock-city-gr-athens = Atena
+newtab-clock-city-hu-budapest = Budapest
+newtab-clock-city-be-brussels = Bruxelles
+newtab-clock-city-ua-kyiv = Kyiv
+newtab-clock-city-fi-helsinki = Helsinki
+newtab-clock-city-co-bogota = Bogota
+newtab-clock-city-tr-istanbul = Istambul
+newtab-clock-city-my-kuala-lumpur = Kuala Lumpur
+newtab-clock-city-eg-cairo = Taqahirt
+newtab-clock-city-se-stockholm = Stukulm
+newtab-clock-city-ro-bucharest = Bukarest
+newtab-clock-city-th-bangkok = Bangkok
+newtab-clock-city-cl-santiago = Santiago
+newtab-clock-city-pk-karachi = Karači
+newtab-clock-city-bg-sofia = Sofia
+newtab-clock-city-sg-singapore = Singapur
+newtab-clock-city-hk-hong-kong = Hong Kong
+newtab-clock-city-sa-riyadh = Riyaḍ
+newtab-clock-city-dk-copenhagen = Kopenhagen
+newtab-clock-city-pe-lima = Lima
+newtab-clock-city-ke-nairobi = Nairobi
+newtab-clock-city-nz-auckland = Auckland
+newtab-clock-city-kr-seoul = Seyul
+newtab-clock-city-ie-dublin = Dublin
+newtab-clock-city-ae-dubai = Dubay
+newtab-clock-city-pt-lisbon = Lisbun
+newtab-clock-city-ir-tehran = Ṭehran
+newtab-clock-city-bd-dhaka = Dakka
+newtab-clock-city-vn-ho-chi-minh-city = Ho Chi Minh

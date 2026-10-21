@@ -1,0 +1,82 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+privatebrowsingpage-open-private-window-label = Buka Jendela Pribadi
+    .accesskey = P
+about-private-browsing-search-placeholder = Cari di Web
+about-private-browsing-search-btn =
+    .title = Cari di web
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff =
+    .title = Cari lewat { $engine } atau masukkan alamat
+about-private-browsing-handoff-no-engine =
+    .title = Cari atau masukkan alamat
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff-text = Cari lewat { $engine } atau masukkan alamat
+about-private-browsing-handoff-text-no-engine = Cari atau masukkan alamat
+about-private-browsing-not-private = Anda tidak sedang dalam jendela pribadi.
+about-private-browsing-hide-activity = Sembunyikan aktivitas dan lokasi Anda, di mana pun Anda menjelajah
+about-private-browsing-get-privacy = Dapatkan perlindungan privasi di mana pun saat Anda menjelajah
+about-private-browsing-hide-activity-1 = Sembunyikan aktivitas dan lokasi penjelajahan dengan { -mozilla-vpn-brand-name }. Satu klik menciptakan koneksi aman, bahkan di Wi-Fi publik.
+about-private-browsing-prominent-cta = Jaga privasi dengan { -mozilla-vpn-brand-name }
+about-private-browsing-focus-promo-cta = Unduh { -focus-brand-name }
+about-private-browsing-focus-promo-header = { -focus-brand-name }: Penjelajahan pribadi di mana saja
+about-private-browsing-focus-promo-text = Aplkasi seluler penjelajahan pribadi khusus dari kami untuk menghapus riwayat dan kuki Anda setiap saat.
+about-private-browsing-focus-promo-header-c = Privasi tingkat lanjut di ponsel
+about-private-browsing-focus-promo-text-c = { -focus-brand-name } menghapus riwayat Anda setiap saat sekaligus memblokir iklan dan pelacak.
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = { $engineName } adalah mesin pencari baku Anda di dalam Jendela Pribadi.
+about-private-browsing-search-banner-description =
+    { PLATFORM() ->
+        [windows] Untuk memilih mesin pencari yang berbeda, buka <a data-l10n-name="link-options">Pengaturan</a>
+       *[other] Untuk memilih mesin pencari yang berbeda, buka <a data-l10n-name="link-options">Pengaturan</a>
+    }
+about-private-browsing-search-banner-close-button =
+    .aria-label = Tutup
+about-private-browsing-promo-close-button =
+    .title = Tutup
+
+## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+about-private-browsing-pin-promo-header = Kebebasan penjelajahan pribadi dengan sekali klik
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Sematkan di Dock
+       *[other] Sematkan ke bilah tugas
+    }
+about-private-browsing-pin-promo-title = Tidak ada kuki tersimpan atau riwayat, langsung dari desktop Anda. Menjelajah seperti tidak ada yang mengawasi.
+
+## Strings used in a promotion message for Firefox Relay
+
+about-private-browsing-relay-promo-header = Bantu cegah spam kotak masuk dengan topeng surel
+about-private-browsing-relay-promo-title = Sembunyikan alamat asli Anda dengan topeng surel saat Anda mendaftar, berbelanja, atau membagikannya secara daring.
+about-private-browsing-relay-promo-link-text = Coba topeng surel
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `{ -brand-short-name } will show fewer cookie requests`
+about-private-browsing-cookie-banners-promo-heading = { -brand-short-name } mengurus spanduk kuki untuk Anda
+about-private-browsing-cookie-banners-promo-body = Kini kami menolak banyak spanduk kuki secara otomatis agar Anda bisa lebih sedikit dilacak dan kembali ke penjelajahan bebas gangguan.
+
+## Strings for the info section of about:privatebrowsing
+
+about-private-browsing-felt-privacy-v1-info-header = Jangan tinggalkan jejak di perangkat ini
+about-private-browsing-felt-privacy-v1-info-body = { -brand-short-name } menghapus kuki, riwayat, dan data situs ketika Anda menutup semua jendela pribadi.
+about-private-browsing-felt-privacy-v1-info-link = Siapa yang mungkin bisa melihat aktivitas saya?
+
+## Strings for the Nova redesign of about:privatebrowsing
+
+about-private-browsing-nova-info-body = Menutup semua jendela pribadi Anda akan menghapus kuki, riwayat, dan data situs Anda.
+about-private-browsing-nova-info-link = Siapa yang mungkin masih dapat melihat aktivitas saya?
+# "You're off the record" is an English idiom meant to communicate that you
+# are not being recorded. If there is not a comparable phrase in the locale,
+# fall back to "Your browsing will be deleted"
+about-private-browsing-nova-info-header = Anda tidak direkam
+about-private-browsing-nova-info-subheader2 = Kami akan menghapus setiap pencarian dan proses masuk saat Anda menutup semua Jendela Pribadi Anda. Perlindungan bawaan { -brand-short-name } juga ada di sini, seperti memblokir pelacak.

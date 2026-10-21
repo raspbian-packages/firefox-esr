@@ -1,0 +1,43 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Subframe crash notification
+
+crashed-subframe-message = <strong>Parte de custa pàgina est faddida.</strong> Pro sinnalare custu problema a { -brand-product-name }, pro chi ddu risolvat a lestru, imbia un'informe.
+# The string for crashed-subframe-title.title should match crashed-subframe-message,
+# but without any markup.
+crashed-subframe-title =
+    .title = Parte de custa pàgina est faddida. Pro sinnalare custu problema a { -brand-product-name }, pro chi ddu risolvat a lestru, imbia un'informe.
+crashed-subframe-learnmore-link =
+    .value = Àteras informatziones
+crashed-subframe-submit =
+    .label = Imbia informe
+    .accesskey = I
+
+## Pending crash reports
+
+pending-crash-reports-view-all =
+    .label = Visualiza
+pending-crash-reports-send =
+    .label = Imbia
+pending-crash-reports-always-send =
+    .label = Imbia·ddos semper
+# Variables:
+#   $reportCount (Number): the number of pending crash reports
+requested-crash-reports-message-new =
+    { $reportCount ->
+        [one] Tenes un’informe chi pertocat faddinas chi semus averiguende. Imbiende·ddu nos as a agiudare a megiorare { -brand-product-name }. Serra custu avisu pro inniorare custu informe.
+       *[other] Tenes { $reportCount } informes chi pertocant faddinas chi semus averiguende. Imbiende·ddos nos as a agiudare a megiorare { -brand-product-name }. Serra custu avisu pro inniorare custos informes.
+    }
+requested-crash-reports-dont-show-again =
+    .label = No dd’ammustres prus
+    .accesskey = N
+# Variables:
+#   $reportCount (Number): the number of pending crash reports
+pending-crash-reports-message-new =
+    { $reportCount ->
+        [one] Tenes un’informe de faddinas reghente de imbiare
+       *[other] Tenes { $reportCount } informes de faddinas reghentes de imbiare
+    }

@@ -1,0 +1,255 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+toolbar-button-firefox-view-2 =
+    .label = { -firefoxview-brand-name }
+    .tooltiptext = Zobrazenie nedávneho prehliadania v oknách a zariadeniach
+menu-tools-firefox-view =
+    .label = { -firefoxview-brand-name }
+    .accesskey = F
+firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
+firefoxview-page-label =
+    .label = { -firefoxview-brand-name }
+# Used instead of the localized relative time when a timestamp is within a minute or so of now
+firefoxview-just-now-timestamp = práve teraz
+firefoxview-syncedtabs-signin-header-2 = Váš { -brand-product-name } na všetkých vašich zariadeniach
+firefoxview-syncedtabs-signin-description-2 = Ak chcete zobraziť karty, ktoré máte otvorené v telefóne a iných zariadeniach, prihláste sa alebo si vytvorte účet. Pomocou účtu môžete tiež synchronizovať svoje heslá, históriu a ďalšie.
+# The verb “Go” is implied but omitted from the headline: “[Go] from laptop to phone, seamlessly”
+firefoxview-syncedtabs-signin-header-3 = Z notebooku do telefónu, bezproblémovo
+firefoxview-syncedtabs-signin-description-3 = Udržujte si prehliadanie prepojené naprieč zariadeniami – karty, heslá a história, všetko synchronizované.
+firefoxview-syncedtabs-signin-primarybutton-2 = Prihlásiť sa
+firefoxview-syncedtabs-adddevice-header-2 = Vezmite si karty odkiaľkoľvek
+firefoxview-syncedtabs-adddevice-description-2 = Prihláste sa do { -brand-product-name(case: "gen") } na svojom telefóne alebo inom počítači, aby ste tu mohli vidieť karty. Pozrite sa, ako <a data-l10n-name="url">pripojiť ďalšie zariadenia</a>.
+firefoxview-syncedtabs-adddevice-primarybutton = Vyskúšajte { -brand-product-name } pre mobilné zariadenia
+# "Your tabs called" - this is playful messaging indicating that a user can find their synced tabs on their phone.
+firefoxview-syncedtabs-adddevice-header-3 = Volajú tvoje karty. Sú v tvojom telefóne.
+firefoxview-syncedtabs-adddevice-description-3 = Naskenujte QR kód, získajte { -brand-product-name(case: "acc") } pre mobilné zariadenia a môžete synchronizovať otvorené karty a ďalšie položky. Pozrite sa, ako môžete <a data-l10n-name="url">pripojiť ďalšie zariadenia</a>.
+firefoxview-tabpickup-synctabs-primarybutton = Zapnúť synchronizáciu kariet
+firefoxview-tabpickup-synctabs-primarybutton-2 = Zapnúť synchronizáciu kariet
+firefoxview-syncedtabs-synctabs-header = Aktualizujte nastavenia synchronizácie
+firefoxview-syncedtabs-synctabs-description = Ak chcete zobraziť karty z iných zariadení, musíte svoje otvorené karty synchronizovať.
+firefoxview-syncedtabs-synctabs-header-2 = Synchronizácia kariet je vypnutá
+firefoxview-syncedtabs-synctabs-description-2 = Ak chcete získať všetky karty z iných zariadení, znova zapnite synchronizáciu.
+firefoxview-syncedtabs-loading-header = Prebieha synchronizácia
+firefoxview-syncedtabs-loading-description = Po dokončení uvidíte všetky karty, ktoré máte otvorené na iných zariadeniach. Už o chvíľu.
+firefoxview-syncedtabs-loading-header-2 = Načítavajú sa vaše karty…
+firefoxview-syncedtabs-loading-description-2 = Prebieha synchronizácia. Karty tu budú čoskoro.
+firefoxview-tabpickup-fxa-admin-disabled-header = Vaša organizácia zakázala synchronizáciu
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } nemôže synchronizovať karty medzi zariadeniami, pretože vaša organizácia zakázala synchronizáciu.
+firefoxview-tabpickup-fxa-admin-disabled-header-2 = Synchronizácia kariet je vypnutá
+firefoxview-tabpickup-fxa-disabled-by-policy-description-2 = Vaša organizácia túto funkciu zablokovala.
+firefoxview-tabpickup-network-offline-header = Skontrolujte svoje internetové pripojenie
+firefoxview-tabpickup-network-offline-description = Ak používate bránu firewall alebo proxy, skontrolujte, či má { -brand-short-name } oprávnenie na prístup na web.
+firefoxview-tabpickup-network-offline-primarybutton = Skúsiť znova
+firefoxview-tabpickup-network-offline-header-2 = { -brand-short-name } sa momentálne nemôže pripojiť
+firefoxview-tabpickup-network-offline-description-2 = Možno ste offline alebo niečo blokuje pripojenie.
+firefoxview-tabpickup-sync-error-header = Pri synchronizácii sa vyskytli problémy
+firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } momentálne nemôže kontaktovať službu. Skúste to znova o chvíľu.
+# “Sync hit a snag” means that the sync process is having a problem and can’t connect.
+firefoxview-tabpickup-sync-error-header-2 = Synchronizácia narazila na problém
+firefoxview-tabpickup-generic-sync-error-description-2 = { -brand-short-name(case: "dat") } sa nepodarilo pripojiť. Počkajte chvíľu a skúste to znova.
+firefoxview-tabpickup-sync-error-primarybutton = Skúsiť znova
+firefoxview-tabpickup-sync-disconnected-header = Ak chcete pokračovať, zapnite synchronizáciu
+firefoxview-tabpickup-sync-disconnected-description = Ak chcete získať svoje karty, musíte povoliť synchronizáciu v nastaveniach { -brand-short-name(case: "gen") }.
+firefoxview-tabpickup-sync-disconnected-primarybutton = Zapnite synchronizáciu v nastaveniach
+firefoxview-tabpickup-password-locked-header = Ak chcete zobraziť karty, zadajte svoje hlavné heslo
+firefoxview-tabpickup-password-locked-description = Ak chcete získať svoje karty, budete musieť zadať vaše hlavné heslo pre { -brand-short-name(case: "acc") }.
+firefoxview-tabpickup-password-locked-link = Ďalšie informácie
+firefoxview-tabpickup-password-locked-primarybutton = Zadajte hlavné heslo
+firefoxview-syncedtab-password-locked-link = <a data-l10n-name="syncedtab-password-locked-link">Ďalšie informácie</a>
+firefoxview-tabpickup-password-locked-header-2 = Odomknite karty pomocou svojho hlavného hesla
+firefoxview-tabpickup-password-locked-description-2 = Z dôvodu ochrany vášho súkromia sú synchronizované karty chránené. Zadajte svoje hlavné heslo do { -brand-short-name(case: "gen") } a zobrazte si karty z ostatných zariadení.
+firefoxview-tabpickup-signed-out-header = Pre opätovné pripojenie sa prihláste
+firefoxview-tabpickup-signed-out-description2 = Ak sa chcete znova pripojiť a získať svoje karty, prihláste sa do svojho účtu.
+firefoxview-tabpickup-signed-out-primarybutton = Prihlásiť sa
+firefoxview-tabpickup-signed-out-header-2 = Prihláste sa a zobrazte si karty
+firefoxview-tabpickup-signed-out-description-2 = Ak chcete zobraziť karty z iných zariadení, znova sa pripojte.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Odstrániť { $tabTitle } zo zoznamu
+# Variables:
+#   $targetURI (string) - URL that will be opened in the new tab
+firefoxview-tabs-list-tab-button =
+    .title = Otvoriť { $targetURI } na novej karte
+firefoxview-collapse-button-show =
+    .title = Zobraziť zoznam
+firefoxview-collapse-button-hide =
+    .title = Skryť zoznam
+firefoxview-overview-nav = Nedávne prehliadanie
+    .title = Nedávne prehliadanie
+firefoxview-overview-header = Nedávne prehliadanie
+    .title = Nedávne prehliadanie
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = História
+    .title = História
+firefoxview-history-header = História
+firefoxview-history-context-delete = Odstrániť z histórie
+    .accesskey = d
+firefoxview-history-context-forget-site = Zabudnúť na túto stránku…
+    .accesskey = Z
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Otvorené karty
+    .title = Otvorené karty
+firefoxview-opentabs-header = Otvorené karty
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nedávno zatvorené karty
+    .title = Nedávno zatvorené karty
+firefoxview-recently-closed-header = Nedávno zatvorené karty
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Karty z ďalších zariadení
+    .title = Karty z ďalších zariadení
+firefoxview-synced-tabs-header = Karty z ďalších zariadení
+
+##
+
+# Used for a link in collapsible cards, in the ’Recent browsing’ page of Firefox View
+firefoxview-view-all-link = Zobraziť všetky
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Okno { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Okno { $winID } (aktuálne)
+firefoxview-show-more = Zobraziť viac
+firefoxview-show-less = Zobraziť menej
+firefoxview-show-all = Zobraziť všetky
+firefoxview-search-text-box-clear-button =
+    .title = Vymazať
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Hľadať
+# Placeholder for the input field to search in history ("search" is a verb).
+firefoxview-search-text-box-history =
+    .placeholder = Hľadať v histórii
+# Placeholder for the input field to search in bookmarks ("search" is a verb).
+firefoxview-search-text-box-bookmarks =
+    .placeholder = Hľadať v záložkách
+# Placeholder for the input field to search in recently closed tabs ("search" is a verb).
+firefoxview-search-text-box-recentlyclosed =
+    .placeholder = Hľadať v nedávno zatvorených kartách
+# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
+firefoxview-search-text-box-tabs =
+    .placeholder = Hľadať v kartách
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-opentabs =
+    .placeholder = Hľadať v otvorených kartách
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+firefoxview-search-results-header = Výsledky vyhľadávania pre “{ $query }”
+# Variables:
+#   $count (Number) - The number of visits matching the search query.
+firefoxview-search-results-count =
+    { $count ->
+        [one] { $count } stránka
+        [few] { $count } stránky
+        [many] { $count } stránok
+       *[other] { $count } stránok
+    }
+# Message displayed when a search is performed and no matching results were found.
+# Variables:
+#   $query (String) - The search query.
+firefoxview-search-results-empty = Žiadne výsledky pre “{ $query }”
+firefoxview-sort-history-by-date-label = Usporiadať podľa dátumu
+firefoxview-sort-history-by-site-label = Usporiadať podľa lokality
+firefoxview-sort-open-tabs-by-recency-label = Usporiadať podľa nedávnej aktivity
+firefoxview-sort-open-tabs-by-order-label = Usporiadať podľa poradia kariet
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Dnes – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Včera – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+# When history is sorted by site, this heading is used in place of a domain, in
+# order to group sites that do not come from an outside host.
+# For example, this would be the heading for all file:/// URLs in history.
+firefoxview-history-site-localhost = (lokálne súbory)
+
+##
+
+firefoxview-show-all-history = Zobraziť celú históriu
+
+## Message displayed in Firefox View when the user has no history data
+
+firefoxview-history-empty-header = Vráťte sa tam, kde ste boli
+firefoxview-history-empty-description = Počas prehliadania sa tu zobrazia stránky, ktoré navštívite.
+firefoxview-history-empty-description-two = Ochrana vášho súkromia je základom toho, čo robíme. Preto môžete v <a data-l10n-name="history-settings-url">nastaveniach histórie</a> určiť, ktorú aktivitu si { -brand-short-name } pamätá.
+# This appears when a user does not have browsing history yet.
+# This is indicating that a users browsers history will be found here when they start browsing.
+firefoxview-history-empty-header-2 = Vaša prehliadacia trasa začína tu
+firefoxview-history-empty-description-2 = Keď navštívite stránky, vaša história sa zobrazí tu. V <a data-l10n-name="history-settings-url">nastaveniach</a> si môžete určiť, čo sa bude ukladať.
+
+##
+
+# Button text for choosing a browser within the ’Import history from another browser’ banner
+firefoxview-choose-browser-button = Zvoľte prehliadač
+    .title = Zvoľte prehliadač
+
+## Message displayed in Firefox View when the user has chosen to never remember History
+
+firefoxview-dont-remember-history-empty-header-2 = Máte kontrolu nad tým, čo si { -brand-short-name } zapamätá
+firefoxview-dont-remember-history-empty-description-one = { -brand-short-name } si práve teraz nepamätá vašu aktivitu prehliadania. Ak to chcete zmeniť, <a data-l10n-name="history-settings-url-two">aktualizujte nastavenia histórie</a>.
+# “Off the record” is an English phrase journalists use when a conversation will not be recorded or reported on. It’s meant to convey that users’ history activity will not be recorded or shown.
+firefoxview-dont-remember-history-empty-header-3 = História vášho prehliadania nebude zaznamenaná
+firefoxview-dont-remember-history-empty-description-2 = { -brand-short-name } momentálne neukladá vašu históriu. Zmeniť to môžete kedykoľvek v <a data-l10n-name="history-settings-url-two">nastaveniach</a>.
+
+##
+
+# This label is read by screen readers when focusing the close button for the "Import history from another browser" banner in Firefox View
+firefoxview-import-history-close-button =
+    .aria-label = Zavrieť
+    .title = Zavrieť
+
+## Text displayed in a dismissable banner to import bookmarks/history from another browser
+
+firefoxview-import-history-header = Import histórie z iného prehliadača
+firefoxview-import-history-description = Urobte si z { -brand-short-name(case: "gen") } svoj prehliadač. Importujte si históriu prehliadania, záložky a ďalšie položky.
+
+## Message displayed in Firefox View when the user has no recently closed tabs data
+
+firefoxview-recentlyclosed-empty-header = Zavreli ste kartu príliš skoro?
+firefoxview-recentlyclosed-empty-description = Tu nájdete karty, ktoré ste nedávno zatvorili, takže ktorúkoľvek z nich môžete rýchlo znova otvoriť.
+firefoxview-recentlyclosed-empty-description-two = Ak chcete nájsť karty z minulosti, nájdete ich v <a data-l10n-name="history-url">histórii prehliadania</a>.
+
+## This message is displayed below the name of another connected device when it doesn't have any open tabs.
+
+firefoxview-syncedtabs-device-notabs = Na tomto zariadení nie sú otvorené žiadne karty
+firefoxview-syncedtabs-connect-another-device = Pripojiť ďalšie zariadenie
+firefoxview-pinned-tabs =
+    .title = Pripnuté karty
+firefoxview-tabs =
+    .title = Karty
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Prepnúť na kartu { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Prepnúť na záložku { $tabTitle }
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Uložená ako záložka) { $url }
