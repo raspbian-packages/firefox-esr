@@ -1,0 +1,441 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## App Menu
+
+appmenuitem-banner-update-downloading =
+    .label = Pobieranie aktualizacji { -brand-shorter-name(case: "gen") }
+appmenuitem-banner-update-available =
+    .label = Aktualizacja jest dostępna — pobierz teraz
+appmenuitem-banner-update-manual =
+    .label = Aktualizacja jest dostępna — pobierz teraz
+appmenuitem-banner-update-unsupported =
+    .label = Nie można uaktualnić — system jest niezgodny
+appmenuitem-banner-update-restart =
+    .label = Aktualizacja jest dostępna — uruchom ponownie
+appmenu-nova-update-title = Uruchom ponownie, aby uaktualnić { -brand-short-name(case: "acc") }
+appmenu-nova-update-description = Twoje karty zostaną przywrócone.
+appmenu-nova-fxa-sign-in = Zaloguj się
+appmenu-nova-switch-device-promo =
+    .message = Wkrótce zmieniasz urządzenie? Zabierz { -brand-short-name(case: "acc") } ze sobą!
+appmenu-nova-switch-device-link = Jak przenieść swoje dane
+appmenuitem-new-tab =
+    .label = Nowa karta
+appmenuitem-new-window =
+    .label = Nowe okno
+appmenuitem-new-private-window =
+    .label = Nowe okno prywatne
+appmenuitem-history =
+    .label = Historia
+appmenuitem-tab-groups =
+    .label = Grupy kart
+appmenuitem-downloads =
+    .label = Pobrane
+appmenuitem-passwords =
+    .label = Hasła
+appmenuitem-extensions-and-themes =
+    .label = Rozszerzenia i motywy
+appmenuitem-extensions =
+    .label = Rozszerzenia
+appmenuitem-print =
+    .label = Drukuj…
+appmenuitem-find-in-page =
+    .label = Znajdź na stronie…
+appmenuitem-translate =
+    .label = Przetłumacz stronę…
+appmenuitem-zoom =
+    .value = Powiększenie
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenuitem-referrals =
+    .label = Podziel się { -brand-product-name(case: "ins") }
+appmenuitem-more-tools =
+    .label = Więcej narzędzi
+# Menu combining the previous "Help" menu and report broken site
+appmenuitem-help-and-report =
+    .label = Pomoc i zgłaszanie
+appmenuitem-help =
+    .label = Pomoc
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Zakończ
+           *[other] Zakończ
+        }
+appmenu-menu-button-closed2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Otwórz menu aplikacji
+appmenu-menu-button-opened2 =
+    .label = { -brand-short-name }
+    .tooltiptext = Zamknij menu aplikacji
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Ustawienia
+
+## Zoom and Fullscreen Controls
+
+appmenuitem-zoom-enlarge =
+    .label = Powiększ
+appmenuitem-zoom-reduce =
+    .label = Pomniejsz
+appmenuitem-fullscreen =
+    .label = Tryb pełnoekranowy
+
+## Firefox Account toolbar button and Sync panel in App menu.
+
+appmenu-remote-tabs-sign-into-sync =
+    .label = Zaloguj się do synchronizacji…
+appmenu-remote-tabs-turn-on-sync =
+    .label = Włącz synchronizację…
+# This is shown after the tabs list if we can display more tabs by clicking on the button
+appmenu-remote-tabs-showmore =
+    .label = Wyświetl więcej kart
+    .tooltiptext = Wyświetl więcej kart z tego urządzenia
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Nieaktywne karty
+    .tooltiptext = Wyświetl nieaktywne karty na tym urządzeniu
+# This is shown beneath the name of a device when that device has no open tabs
+appmenu-remote-tabs-notabs = Brak otwartych kart
+# This is shown when Sync is configured but syncing tabs is disabled.
+appmenu-remote-tabs-tabsnotsyncing = Włącz synchronizację kart, aby wyświetlić ich listę z innych urządzeń.
+appmenu-remote-tabs-opensettings =
+    .label = Ustawienia
+# This is shown when Sync is configured but this appears to be the only device attached to
+# the account. We also show links to download Firefox for android/ios.
+appmenu-remote-tabs-noclients = Czy wyświetlić tutaj listę kart otwartych na innych urządzeniach?
+appmenu-remote-tabs-connectdevice =
+    .label = Połącz inne urządzenie
+appmenu-remote-tabs-welcome = Wyświetl listę kart z innych urządzeń.
+appmenu-remote-tabs-unverified = Konto musi zostać zweryfikowane.
+appmenuitem-fxa-toolbar-sync-now2 = Synchronizuj teraz
+appmenuitem-fxa-sign-in = Zaloguj się w { -brand-product-name(case: "loc") }
+appmenuitem-fxa-manage-account = Zarządzaj kontem
+fxa-menu-sync-status-on = Synchronizacja jest włączona
+fxa-menu-sync-status-off = Synchronizacja jest wyłączona
+# Shown in place of "Sync is Off" on the sync status button when the user has
+# never signed in. Sync is a verb, short for synchronize.
+fxa-menu-sync-your-data = Synchronizuj swoje dane
+# Shown as a secondary label under "Sync is Off" when the user is signed in but
+# sync is turned off.
+fxa-menu-sync-off-data-description = Twoje dane nie są synchronizowane
+# Button shown next to "Sync is Off" when the user is signed in but sync is
+# turned off. Turns syncing on by opening sync preferences.
+fxa-menu-sync-status-turn-on-button =
+    .label = Włącz
+fxa-menu-sync-status-turn-on-button-aria-label = Włącz
+# Shown as a secondary label under "Sync is Off" when the user needs to sign in
+# (again) for sync to work.
+fxa-menu-sync-off-signin-description = Zaloguj się do synchronizacji
+# Sync is a verb, short for synchronize.
+# Variables:
+#   $deviceName (String): The name of the local device.
+fxa-menu-sync-device-now = Synchronizuj „{ $deviceName }”
+fxa-menu-manage-sync-settings =
+    .label = Ustawienia synchronizacji
+fxa-menu-add-device =
+    .label = Dodaj urządzenie
+fxa-menu-manage-devices =
+    .label = Zarządzaj swoimi urządzeniami
+fxa-menu-device-missing =
+    .label = Nie ma tutaj Twojego urządzenia?
+# Mozilla account menu item when selected opens a panel with all devices synced to the user's account
+fxa-menu-all-devices =
+    .label = Wszystkie urządzenia
+# Mozilla account panel title which shows all devices synced to a user's account
+fxa-menu-all-devices-panel =
+    .title = Wszystkie urządzenia
+fxa-menu-get-firefox-mobile =
+    .label = Pobierz { -brand-product-name(case: "acc") } na Androida lub iOS
+fxa-menu-secure-sync-subpanel =
+    .title = Bezpieczna synchronizacja
+appmenu-account-header = Konto
+# Variables
+# $time (string) - Localized relative time since last sync (e.g. 1 second ago,
+# 3 hours ago, etc.)
+appmenu-fxa-last-sync = Ostatnia synchronizacja: { $time }
+    .label = Ostatnia synchronizacja: { $time }
+appmenu-fxa-sync-and-save-data2 = Synchronizuj i zachowuj dane
+appmenu-fxa-signed-in-label = Zaloguj się
+# Sign-in promo shown in the app menu when signed out and no menu message or
+# update banner is present, prompting the user to sign in and sync.
+appmenu-fxa-sign-in-promo-heading = Zaloguj się do synchronizacji
+appmenu-fxa-sign-in-promo-message = Korzystaj ze swoich danych na każdym urządzeniu
+appmenu-fxa-sign-in-promo-button =
+    .label = Zaloguj się
+appmenu-fxa-setup-sync =
+    .label = Włącz synchronizację…
+appmenu-fxa-setup-sync-new = Włącz
+appmenuitem-save-page =
+    .label = Zapisz stronę jako…
+appmenuitem-fxa-sync-off-title = Synchronizacja jest wyłączona
+appmenuitem-fxa-sync-off-description = Chroń swoje zakładki, hasła i inne dane oraz miej do nich dostęp z dowolnego miejsca.
+
+## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
+## performance profiles. To enable it go to profiler.firefox.com and click
+## "Enable Profiler Menu Button".
+
+profiler-popup-button-idle =
+    .label = Profiler
+    .tooltiptext = Nagraj profil wydajności
+profiler-popup-button-recording =
+    .label = Profiler
+    .tooltiptext = Profiler nagrywa profil
+profiler-popup-button-capturing =
+    .label = Profiler
+    .tooltiptext = Profiler przechwytuje profil
+profiler-popup-header-text = { -profiler-brand-name }
+profiler-popup-reveal-description-button =
+    .aria-label = Odkryj więcej informacji
+profiler-popup-description-title =
+    .value = Nagrywaj, analizuj, udostępniaj
+profiler-popup-description = Współpracuj nad problemami z wydajnością, publikując profile do udostępnienia zespołowi.
+profiler-popup-learn-more-button =
+    .label = Więcej informacji
+profiler-popup-settings =
+    .value = Ustawienia
+# This link takes the user to about:profiling, and is only visible with the Custom preset.
+profiler-popup-edit-settings-button =
+    .label = Zmień ustawienia…
+profiler-popup-recording-screen = Nagrywanie…
+profiler-popup-start-recording-button =
+    .label = Rozpocznij nagrywanie
+profiler-popup-discard-button =
+    .label = Odrzuć
+profiler-popup-capture-button =
+    .label = Przechwyć
+profiler-popup-start-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧1
+       *[other] Ctrl+Shift+1
+    }
+profiler-popup-capture-shortcut =
+    { PLATFORM() ->
+        [macos] ⌃⇧2
+       *[other] Ctrl+Shift+2
+    }
+profiler-button-dropmarker =
+    .label = Otwórz panel profilera
+    .tooltiptext = Otwórz panel profilera
+
+## Profiler presets
+## They are shown in the popup's select box.
+
+profiler-popup-presets-web-developer-description = Zalecane ustawienie do debugowania większości aplikacji internetowych o niskim wpływie na wydajność.
+profiler-popup-presets-web-developer-label =
+    .label = Dla twórców witryn
+profiler-popup-presets-firefox-description = Zalecane ustawienie do profilowania { -brand-shorter-name(case: "gen") }.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Ustawienie do badania błędów graficznych w { -brand-shorter-name(case: "loc") }.
+profiler-popup-presets-graphics-label =
+    .label = Grafika
+profiler-popup-presets-media-description2 = Ustawienie do badania błędów dźwięku i obrazu w { -brand-shorter-name(case: "loc") }.
+profiler-popup-presets-media-label =
+    .label = Multimedia
+profiler-popup-presets-ml-description = Ustawienie do badania błędów uczenia maszynowego w { -brand-shorter-name(case: "loc") }.
+profiler-popup-presets-ml-label =
+    .label = Uczenie maszynowe
+profiler-popup-presets-networking-description = Ustawienie do badania błędów sieciowych w { -brand-shorter-name(case: "loc") }.
+profiler-popup-presets-networking-label =
+    .label = Sieć
+profiler-popup-presets-networking-with-logs-description = Ustawienie do badania błędów sieciowych w { -brand-shorter-name(case: "loc") }, wraz z dziennikami sieciowymi. Dzienniki te mogą zawierać prywatne informacje, takie jak adresy odwiedzanych stron.
+profiler-popup-presets-networking-with-logs-label =
+    .label = Sieć z dziennikami
+profiler-popup-presets-power-description = Ustawienie do badania błędów użycia energii w { -brand-shorter-name(case: "loc") } o niskim wpływie na wydajność.
+# "Power" is used in the sense of energy (electricity used by the computer).
+profiler-popup-presets-power-label =
+    .label = Energia
+profiler-popup-presets-debug-description = Ustawienie do debugowania w { -brand-shorter-name(case: "loc") }. Wysoki wpływ na wydajność. Nie należy używać do pracy nad wydajnością, tylko do zrozumienia zachowania przeglądarki.
+profiler-popup-presets-debug-label =
+    .label = Debugowanie
+profiler-popup-presets-web-compat-description = Zalecane ustawienie do debugowania problemów ze zgodnością stron internetowych, a nie do śledzenia wydajności.
+profiler-popup-presets-web-compat-label =
+    .label = Zgodność w Internecie
+profiler-popup-presets-custom-label =
+    .label = Inne
+
+##
+
+appmenu-manage-history =
+    .label = Zarządzaj historią
+appmenu-restore-session =
+    .label = Przywróć poprzednią sesję
+appmenu-clear-history =
+    .label = Wyczyść historię przeglądania…
+appmenu-recent-history-subheader = Ostatnio odwiedzone
+appmenu-recently-closed-tabs =
+    .label = Ostatnio zamknięte karty
+appmenu-recently-closed-windows =
+    .label = Ostatnio zamknięte okna
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Szukaj w historii
+
+## Sync promo shown at the bottom of the History and Bookmarks panels. Its
+## variant depends on the user's account and Sync state. The sign-in heading and
+## all three call-to-action labels are shared by both panels; the remaining
+## headings are specific to the panel they appear in.
+
+appmenu-sync-promo-signin =
+    .heading = Synchronizuj między urządzeniami
+appmenu-sync-promo-signin-cta = Zaloguj się
+appmenu-sync-promo-turnonsync =
+    .heading = Synchronizuj karty i historię
+appmenu-sync-promo-turnonsync-cta = Włącz synchronizację
+# This refers to getting tabs from your mobile device via sync
+appmenu-sync-promo-connectdevice =
+    .heading = Korzystaj z kart na telefonie
+appmenu-sync-promo-connectdevice-cta = Połącz urządzenie
+appmenu-bookmarks-sync-promo-turnonsync =
+    .heading = Zabierz zakładki ze sobą
+# This refers to having your bookmarks available on your mobile device via sync
+appmenu-bookmarks-sync-promo-connectdevice =
+    .heading = Weź zakładki na wynos
+
+## Help panel
+
+appmenu-help-header =
+    .title = Pomoc { -brand-shorter-name(case: "gen") }
+appmenu-about =
+    .label = O programie { -brand-shorter-name }
+    .accesskey = O
+# This menu item opens the referral page, where the user can invite others to
+# use the browser. "Share" here means recommending or referring the browser
+appmenu-referrals2 =
+    .label = Podziel się { -brand-product-name(case: "ins") }
+    .accesskey = d
+appmenu-get-help =
+    .label = Pomoc
+    .accesskey = P
+appmenu-help-more-troubleshooting-info =
+    .label = Więcej informacji do rozwiązywania problemów
+    .accesskey = n
+appmenu-help-share-ideas =
+    .label = Podziel się pomysłami i opiniami…
+    .accesskey = m
+appmenu-help-switch-device =
+    .label = Przechodzenie na nowe urządzenie
+# Menu header for combination of "Help" menu and report broken site
+appmenu-help-and-report-header =
+    .title = Pomoc i zgłaszanie
+
+## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-enter-troubleshoot-mode2 =
+    .label = Tryb rozwiązywania problemów…
+    .accesskey = T
+appmenu-help-exit-troubleshoot-mode =
+    .label = Wyłącz tryb rozwiązywania problemów
+    .accesskey = t
+
+## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
+## are mutually exclusive, so it's possible to use the same accesskey for both.
+
+appmenu-help-report-deceptive-site =
+    .label = Zgłoś oszustwo internetowe…
+    .accesskey = Z
+appmenu-help-not-deceptive =
+    .label = To nie jest oszustwo…
+    .accesskey = n
+
+## More Tools
+
+appmenu-customizetoolbar =
+    .label = Dostosuj pasek narzędzi…
+appmenu-abouttranslations =
+    .label = Przetłumacz…
+appmenu-edit-pdf =
+    .label = Edytuj plik PDF…
+appmenu-developer-tools-subheader = Narzędzia przeglądarki
+appmenu-developer-tools-extensions =
+    .label = Rozszerzenia dla twórców witryn
+appmenuitem-report-broken-site =
+    .label = Zgłoś niepoprawnie działającą stronę
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Zaloguj się na konto
+appmenuitem-monitor-title2 = Chroń się przed kradzieżą tożsamości
+appmenuitem-monitor-description2 = Otrzymuj powiadomienia o wyciekach danych
+# Shown in place of appmenuitem-monitor-title2 when the user has signed up for Monitor.
+appmenuitem-monitor-title-signed-in = Powiadomienia o wyciekach danych { -monitor-brand-short-name }
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Otrzymuj powiadomienia o wyciekach danych
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-title2 = Zachowaj prywatność adresu e-mail
+appmenuitem-relay-description2 = Pomaga zapobiegać spamowi w skrzynce odbiorczej
+# Shown in place of appmenuitem-relay-title2 when the user has signed up for Relay.
+appmenuitem-relay-title-signed-in = Wyświetl maski dla adresu e-mail
+appmenuitem-relay-description = Zamaskuj swój prawdziwy adres e-mail i telefon
+appmenuitem-services-relay-description = Otwórz panel masek dla adresów e-mail
+appmenuitem-vpn-title2 = Ukryj swoje położenie za pomocą { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description5 = Korzystaj z dodatkowej ochrony na wszystkich urządzeniach
+# Shown in place of appmenuitem-vpn-title2 when the user has signed up for VPN.
+appmenuitem-vpn-title-signed-in1 = Pobierz { -mozilla-vpn-brand-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description-2 = Chroń całe urządzenie
+appmenu-services-header = Moje usługi
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header3 = Narzędzia ochrony prywatności
+# "Mozilla" is intentionally hardcoded to prevent forks from replacing it
+# with their own vendor name, since these tools are created and maintained by
+# Mozilla.
+appmenu-other-protection-header2 = Wypróbuj inne narzędzia ochrony od Mozilli:
+
+## Profiles panel
+
+appmenu-other-profiles = Inne profile
+appmenu-manage-profiles =
+    .label = Zarządzaj profilami
+appmenu-copy-profile =
+    .label = Kopiuj ten profil
+appmenu-create-profile2 =
+    .label = Utwórz nowy profil
+appmenu-create-profile =
+    .label = Nowy profil
+appmenu-edit-profile =
+    .aria-label = Edytuj profil
+appmenu-edit-this-profile =
+    .label = Edytuj ten profil
+appmenu-profile-current-in-use = Obecnie używany profil
+fxa-menu-create-profile-subpanel =
+    .title = Utwórz nowy profil
+fxa-menu-create-profile-heading = Podnieś poziom przeglądarki za pomocą nowego profilu
+fxa-menu-create-profile-description = Rozdziel zakładki, hasła i historię przeglądania na te związane z pracą i te prywatne.
+fxa-menu-create-profile-confirm =
+    .label = Utwórz nowy profil
+fxa-menu-create-profile-learn-more =
+    .label = Czym są profile?
+# Button in the account menu that links to the Referrals page
+appmenuitem-share-firefox-title2 = Podziel się { -brand-product-name(case: "ins") }
+appmenuitem-share-firefox-description = Zachęć kogoś do wybrania przeglądarki, która stawia prywatność na pierwszym miejscu
+appmenu-profiles-2 =
+    .label = Profile
+appmenu-profiles-header = Profile
+appmenu-all-profiles =
+    .label = Wszystkie profile
+appmenu-secure-sync-header = Bezpieczna synchronizacja
+# Panel shown when clicking a synced device in the Mozilla account menu.
+# The .title attribute sets the panel header text.
+fxa-menu-device-recent-tabs-panel =
+    .title = Ostatnio otwarte karty
+# Button at the bottom of the per-device recent tabs subpanel.
+# Variables:
+#   $tabCount (Number): Total number of synced tabs on the device.
+fxa-menu-device-view-all-synced-tabs =
+    .label =
+        { $tabCount ->
+            [one] Wyświetl { $tabCount } kartę z innego urządzenia
+            [few] Wyświetl wszystkie { $tabCount } karty z innych urządzeń
+           *[many] Wyświetl wszystkie { $tabCount } kart z innych urządzeń
+        }
+# Button in the recent tabs sub-panel that sends the current page to the synced device.
+fxa-menu-device-send-current-page =
+    .label = Wyślij bieżącą stronę do tego urządzenia
