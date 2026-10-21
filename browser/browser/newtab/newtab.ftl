@@ -1,0 +1,709 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Tab Baru
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = Ubahsuai laman ini
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = Sesuaikan
+newtab-customize-panel-label =
+    .label = Sesuaikan
+newtab-settings-dialog-label =
+    .aria-label = Pengaturan
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = Tab baru
+
+## Firefox Home content
+
+home-prefs-firefox-logo-header =
+    .label = Logo { -brand-short-name }
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label = { $num } baris
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = Ekstensi ({ $extension })
+home-restore-defaults-srd =
+    .label = Pulihkan Bawaan
+    .accesskey = B
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (Baku)
+home-mode-choice-custom-srd =
+    .label = URL Ubahsuai…
+home-mode-choice-blank-srd =
+    .label = Laman Kosong
+home-prefs-shortcuts-header-srd =
+    .label = Pintasan
+home-prefs-shortcuts-select =
+    .aria-label = Pintasan
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = Pintasan bersponsor
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Konten Sponsor
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Laman yang Dikunjungi
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Markah
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Unduhan Terbaru
+home-prefs-recent-activity-header-srd =
+    .label = Aktivitas terbaru
+home-prefs-recent-activity-select =
+    .aria-label = Aktivitas terbaru
+home-prefs-weather-header-srd =
+    .label = Cuaca
+home-prefs-support-firefox-header-srd =
+    .label = Dukung { -brand-product-name }
+home-prefs-mission-message-learn-more-link-srd = Cari tahu bagaimana
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Cari
+    .title = Cari
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = Cari lewat { $engine } atau masukkan alamat
+newtab-search-box-handoff-text-no-engine = Cari atau masukkan alamat
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = Cari lewat { $engine } atau masukkan alamat
+    .placeholder = Cari lewat { $engine } atau masukkan alamat
+    .title = Cari lewat { $engine } atau masukkan alamat
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = Cari atau masukkan alamat
+    .placeholder = Cari atau masukkan alamat
+    .title = Cari atau masukkan alamat
+newtab-search-box-text = Cari di Web
+newtab-search-box-input =
+    .aria-label = Cari di web
+    .placeholder = Cari di web
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Tambahkan Mesin Pencari
+newtab-topsites-add-shortcut-header = Pintasan Baru
+newtab-topsites-edit-shortcut-header = Edit Pintasan
+newtab-topsites-add-shortcut-label = Tambahkan Pintasan
+newtab-topsites-add-shortcut-title =
+    .aria-label = Tambahkan Pintasan
+    .title = Tambahkan Pintasan
+newtab-topsites-title-label = Judul
+newtab-topsites-title-input =
+    .placeholder = Masukkan judul
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Ketik atau tempel URL
+newtab-topsites-url-validation = URL valid diperlukan
+newtab-topsites-image-url-label = URL Gambar Khusus
+newtab-topsites-use-custom-image-link = Gunakan gambar khusus
+newtab-topsites-use-image-link = Gunakan gambar khusus…
+newtab-topsites-image-validation = Gambar gagal dimuat. Coba URL lain.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Batalkan
+newtab-topsites-delete-history-button = Hapus dari Riwayat
+newtab-topsites-save-button = Simpan
+newtab-topsites-preview-button = Pratinjau
+newtab-topsites-add-button = Tambah
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Yakin ingin menghapus setiap bagian dari laman ini dari riwayat Anda?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Tindakan ini tidak bisa diurungkan.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = Bersponsor
+
+## Label used by screen readers for pinned top sites
+
+# Variables:
+#   $title (string) - The label or hostname of the site.
+topsite-label-pinned =
+    .aria-label = { $title } (disematkan)
+    .title = { $title }
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Buka menu
+    .title = Buka menu
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Buka menu konteks untuk { $title }
+    .title = Buka menu
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Edit
+newtab-menu-open-new-window = Buka di Jendela Baru
+newtab-menu-open-new-private-window = Buka di Jendela Penjelajahan Pribadi Baru
+newtab-menu-dismiss = Tutup
+newtab-menu-pin = Semat
+newtab-menu-unpin = Lepas
+newtab-menu-delete-history = Hapus dari Riwayat
+newtab-menu-show-privacy-info = Sponsor kami & privasi Anda
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = Laporkan
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Blokir
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = Pelajari lebih lanjut
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = Kelola konten bersponsor
+newtab-menu-our-sponsors-and-your-privacy = Sponsor kami dan privasi Anda
+newtab-menu-report-this-ad = Laporkan iklan ini
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Hapus Markah
+# Bookmark is a verb here.
+newtab-menu-bookmark = Markah
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Salin Tautan Unduhan
+newtab-menu-go-to-download-page = Buka Laman Unduhan
+newtab-menu-remove-download = Hapus dari Riwayat
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Tampilkan di Finder
+       *[other] Buka Foldernya
+    }
+newtab-menu-open-file = Buka Berkas
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Dikunjungi
+newtab-label-bookmarked = Dimarkahi
+newtab-label-removed-bookmark = Markah dihapus
+newtab-label-recommended = Trending
+newtab-label-saved = Disimpan di { -pocket-brand-name }
+newtab-label-download = Terunduh
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · Pesan Sponsor
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = Disponsori oleh { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } ・ { $timeToRead } mnt
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = Disponsori
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Kebijakan Privasi
+
+## Section Headers.
+
+newtab-section-header-topsites = Situs Teratas
+newtab-section-header-recent-activity = Aktivitas terbaru
+newtab-section-header-stories = Cerita yang menggugah pikiran
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Pilihan hari ini untuk Anda
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Mulai menjelajah, dan kami akan menampilkan beberapa artikel bagus, video, dan halaman lain yang baru saja Anda kunjungi atau termarkah di sini.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Semuanya sudah dibuka. Silakan kembali nanti untuk cerita lainnya. Tidak sabar? Pilih topik populer untuk menemukan lebih banyak cerita hebat dari seluruh web.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = Semua sudah selesai terbaca!
+newtab-discovery-empty-section-topstories-content = Periksa kembali nanti untuk lebih banyak kisah.
+newtab-discovery-empty-section-topstories-try-again-button = Coba Lagi
+newtab-discovery-empty-section-topstories-loading = Memuat…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Ups! Kami belum selesai memuat bagian ini, tetapi ternyata belum.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Ups, ada masalah saat memuat konten ini.
+newtab-error-fallback-refresh-link = Segarkan laman untuk mencoba lagi.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = Situs yang Anda simpan atau kunjungi
+    .label = Pintasan
+newtab-custom-shortcuts-nova =
+    .label = Pintasan
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+           *[other] { $num } baris
+        }
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be having a description under "Recommended stories" anymore
+newtab-custom-stories-toggle =
+    .description = Konten luar biasa yang dikurasi oleh keluarga { -brand-product-name }
+    .label = Cerita yang direkomendasikan
+newtab-recommended-stories-toggle =
+    .label = Cerita yang direkomendasikan
+newtab-custom-stories-personalized-toggle =
+    .label = Cerita
+newtab-custom-stories-personalized-checkbox =
+    .label = Cerita yang dipersonalisasi berdasarkan aktivitas Anda
+newtab-custom-stories-personalized-checkbox-label = Cerita yang dipersonalisasi berdasarkan aktivitas Anda
+newtab-custom-weather-toggle =
+    .description = Sekilas prakiraan cuaca hari ini
+    .label = Cuaca
+newtab-custom-widget-weather-toggle =
+    .label = Cuaca
+newtab-custom-widget-lists-toggle =
+    .label = Daftar
+newtab-custom-widget-section-title = Widget
+newtab-custom-widget-section-toggle =
+    .label = Widget
+newtab-widget-manage-title = Widget
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .aria-label = Tutup menu
+    .title = Tutup
+newtab-custom-settings = Kelola pengaturan lainnya
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = Gambar latar
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = Setel ulang ke bawaan
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = Unggah gambar
+newtab-wallpaper-custom-color = Pilih warna
+newtab-wallpaper-toggle-title =
+    .label = Gambar latar
+# Variables
+#   $file_size (number) - The number of the maximum image file size (in MB) that may be uploaded
+newtab-wallpaper-error-max-file-size = Gambar melebihi batas ukuran berkas sebesar { $file_size }MB. Coba unggah berkas yang lebih kecil.
+newtab-wallpaper-error-upload-file-type = Kami tidak dapat mengunggah berkas Anda. Silakan coba lagi dengan berkas gambar.
+newtab-wallpaper-light-red-panda = Panda merah
+newtab-wallpaper-light-mountain = Pegunungan putih
+newtab-wallpaper-light-sky = Langit dengan awan ungu dan merah muda
+newtab-wallpaper-light-color = Bentuk biru, merah muda, dan kuning
+newtab-wallpaper-light-landscape = Lanskap pegunungan kabut biru
+newtab-wallpaper-light-beach = Pantai dengan pohon palem
+newtab-wallpaper-dark-aurora = Aurora Borealis
+newtab-wallpaper-dark-color = Bentuk merah dan biru
+newtab-wallpaper-dark-panda = Panda merah tersembunyi di hutan
+newtab-wallpaper-dark-sky = Lanskap kota dengan langit malam
+newtab-wallpaper-dark-mountain = Lanskap pegunungan
+newtab-wallpaper-dark-city = Lanskap kota ungu
+newtab-wallpaper-dark-fox-anniversary = Seekor rubah di trotoar dekat hutan
+newtab-wallpaper-light-fox-anniversary = Seekor rubah di padang berumput dengan lanskap pegunungan yang berkabut
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = Warna-warni rata
+newtab-wallpaper-blue = Biru
+newtab-wallpaper-light-blue = Biru muda
+newtab-wallpaper-light-purple = Ungu muda
+newtab-wallpaper-light-green = Hijau muda
+newtab-wallpaper-green = Hijau
+newtab-wallpaper-beige = Beige
+newtab-wallpaper-yellow = Kuning
+newtab-wallpaper-orange = Jingga
+newtab-wallpaper-pink = Merah Muda
+newtab-wallpaper-light-pink = Merah muda terang
+newtab-wallpaper-red = Merah
+newtab-wallpaper-dark-blue = Biru tua
+newtab-wallpaper-dark-purple = Ungu tua
+newtab-wallpaper-dark-green = Hijau tua
+newtab-wallpaper-brown = Coklat
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = Abstrak
+newtab-wallpaper-abstract-green = Bentuk hijau
+newtab-wallpaper-abstract-blue = Bentuk biru
+newtab-wallpaper-abstract-purple = Bentuk ungu
+newtab-wallpaper-abstract-orange = Bentuk jingga
+newtab-wallpaper-gradient-orange = Gradien jingga dan merah muda
+newtab-wallpaper-abstract-blue-purple = Bentuk biru dan ungu
+newtab-wallpaper-abstract-white-curves = Putih dengan kurva berbayang
+newtab-wallpaper-abstract-purple-green = Gradien ungu dan hijau terang
+newtab-wallpaper-abstract-blue-purple-waves = Bentuk bergelombang biru dan ungu
+newtab-wallpaper-abstract-black-waves = Bentuk hitam bergelombang
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = Foto
+newtab-wallpaper-beach-at-sunrise = Pantai saat matahari terbit
+newtab-wallpaper-beach-at-sunset = Pantai saat matahari terbenam
+newtab-wallpaper-storm-sky = Langit badai
+newtab-wallpaper-sky-with-pink-clouds = Langit dengan awan merah muda
+newtab-wallpaper-red-panda-yawns-in-a-tree = Panda merah menguap di pohon
+newtab-wallpaper-white-mountains = Pegunungan putih
+newtab-wallpaper-hot-air-balloons = Aneka warna balon udara panas di siang hari
+newtab-wallpaper-starry-canyon = Malam biru berbintang
+newtab-wallpaper-suspension-bridge = Fotografi jembatan full-suspension abu-abu di siang hari
+newtab-wallpaper-sand-dunes = Bukit pasir putih
+newtab-wallpaper-palm-trees = Siluet pohon kelapa saat golden hour
+newtab-wallpaper-blue-flowers = Foto jarak dekat bunga berkelopak biru yang sedang mekar
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Foto oleh <a data-l10n-name="name-link">{ $author_string }</a> di <a data-l10n-name="webpage-link">{ $webpage_string }</a>
+newtab-wallpaper-feature-highlight-header = Coba percikan warna
+newtab-wallpaper-feature-highlight-content = Berikan Tab Baru Anda tampilan segar dengan gambar latar.
+newtab-wallpaper-feature-highlight-button = Paham
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = Tutup popup
+    .title = Tutup
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## Celestial
+
+# “Celestial” referring to astronomy; positioned in or relating to the sky,
+# or outer space as observed in astronomy.
+# Not to be confused with religious definition of the word.
+newtab-wallpaper-category-title-celestial = Celestial
+newtab-wallpaper-celestial-lunar-eclipse = Gerhana bulan
+newtab-wallpaper-celestial-earth-night = Foto malam dari orbit rendah Bumi
+newtab-wallpaper-celestial-starry-sky = Langit berbintang
+newtab-wallpaper-celestial-eclipse-time-lapse = Selang waktu gerhana bulan
+newtab-wallpaper-celestial-black-hole = Ilustrasi galaksi lubang hitam
+newtab-wallpaper-celestial-river = Citra satelit sungai
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ Bersponsor
+newtab-weather-menu-change-location = Ubah lokasi
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = Cari lokasi
+    .placeholder = Cari lokasi
+newtab-weather-menu-weather-display = Tampilan cuaca
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = Sederhana
+newtab-weather-menu-change-weather-display-simple = Beralih ke tampilan sederhana
+newtab-weather-menu-weather-display-option-detailed = Detail
+newtab-weather-menu-change-weather-display-detailed = Beralih ke tampilan detail
+newtab-weather-menu-temperature-units = Satuan suhu
+newtab-weather-menu-temperature-option-fahrenheit = Fahrenheit
+newtab-weather-menu-temperature-option-celsius = Celcius
+newtab-weather-menu-change-temperature-units-fahrenheit = Beralih ke Fahrenheit
+newtab-weather-menu-change-temperature-units-celsius = Beralih ke Celcius
+newtab-weather-menu-learn-more = Pelajari lebih lanjut
+# This message is shown if user is working offline
+newtab-weather-error-not-available = Data cuaca tidak tersedia saat ini.
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast-description =
+    .aria-description = { $provider } ∙ Bersponsor
+    .title = Lihat prakiraan di { $provider }
+
+## Topic Labels
+
+newtab-topic-label-business = Bisnis
+newtab-topic-label-career = Karir
+newtab-topic-label-education = Pendidikan
+newtab-topic-label-arts = Hiburan
+newtab-topic-label-food = Makanan
+newtab-topic-label-health = Kesehatan
+newtab-topic-label-hobbies = Permainan
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Keuangan
+newtab-topic-label-society-parenting = Pengasuhan
+newtab-topic-label-government = Politik
+newtab-topic-label-education-science = Sains
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Peningkatan Diri
+newtab-topic-label-sports = Olahraga
+newtab-topic-label-tech = Teknologi
+newtab-topic-label-travel = Perjalanan
+newtab-topic-label-home = Rumah & Taman
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Pilih topik untuk menyempurnakan asupan Anda
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Pilih dua atau lebih topik. Kurator ahli kami memprioritaskan cerita yang disesuaikan dengan minat Anda. Perbarui kapan saja.
+newtab-topic-selection-save-button = Simpan
+newtab-topic-selection-cancel-button = Batal
+newtab-topic-selection-button-maybe-later = Mungkin nanti
+newtab-topic-selection-privacy-link = Pelajari bagaimana kami melindungi dan mengelola data
+newtab-topic-selection-button-update-interests = Perbarui minat Anda
+newtab-topic-selection-button-pick-interests = Pilih minat Anda
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Ikuti
+newtab-section-following-button = Mengikuti
+newtab-section-unfollow-button = Berhenti mengikuti
+newtab-section-follow-highlight-subtitle = Ikuti minat Anda untuk melihat lebih banyak hal yang Anda sukai.
+
+## Topic navigation
+## A row of buttons above the stories, each scrolling the page to that topic's section.
+
+newtab-topic-navigation-label =
+    .aria-label = Topik
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Blokir
+newtab-section-blocked-button = Diblokir
+newtab-section-unblock-button = Buka blokir
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-topic-p1 = Yakin ingin memblokir topik ini?
+newtab-section-confirm-block-topic-p2 = Topik yang diblokir tidak akan muncul lagi di asupan Anda.
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = Blokir { $topic }
+
+## Strings for custom wallpaper highlight
+
+newtab-section-mangage-topics-title = Topik
+newtab-section-manage-topics-button-v2 =
+    .label = Kelola topik
+newtab-section-mangage-topics-followed-topics = Diikuti
+newtab-section-mangage-topics-followed-topics-empty-state = Anda belum mengikuti topik apa pun.
+newtab-section-mangage-topics-blocked-topics = Diblokir
+newtab-section-mangage-topics-blocked-topics-empty-state = Anda belum memblokir topik apa pun.
+newtab-custom-wallpaper-title = Wallpaper kustom ada di sini
+# 'Make firefox yours" means to customize or personalize
+newtab-custom-wallpaper-subtitle = Unggah wallpaper sendiri atau pilih warna kustom untuk menjadikan { -brand-product-name } lebih personal.
+newtab-custom-wallpaper-cta = Coba sekarang
+
+## Strings for new user activation custom wallpaper highlight
+
+newtab-new-user-custom-wallpaper-cta = Coba sekarang
+
+## Strings for download mobile highlight
+
+newtab-download-mobile-highlight-title = Unduh { -brand-product-name } untuk seluler
+# "Scan the code" refers to scanning the QR code that appears above the body text that leads to Firefox for mobile download.
+newtab-download-mobile-highlight-body-variant-a = Pindai kode untuk menjelajah dengan aman saat bepergian.
+
+## Strings for shortcuts highlight
+
+newtab-shortcuts-highlight-title = Favorit Anda di ujung jari Anda
+newtab-shortcuts-highlight-subtitle = Tambahkan pintasan untuk menjaga situs favorit Anda dengan sekali klik.
+
+## Strings for reporting issues with ads and content
+
+newtab-report-content-why-reporting-this =
+    .label = Mengapa Anda melaporkan ini?
+newtab-report-ads-reason-not-interested =
+    .label = Saya tidak tertarik
+newtab-report-ads-reason-inappropriate =
+    .label = Tidak pantas
+newtab-report-content-wrong-category =
+    .label = Kategori salah
+newtab-report-content-outdated =
+    .label = Kedaluwarsa
+newtab-report-cancel = Batal
+newtab-report-submit = Kirim
+newtab-toast-thanks-for-reporting =
+    .message = Terima kasih telah melaporkan ini.
+
+## Strings for task / to-do list productivity widget
+
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = Baru
+newtab-widget-lists-label-beta =
+    .label = Beta
+newtab-widget-task-list-menu-copy = Salin
+newtab-widget-lists-menu-edit = Sunting nama daftar
+newtab-widget-lists-menu-edit2 =
+    .aria-label = Sunting nama daftar
+newtab-widget-lists-menu-create = Buat daftar baru
+newtab-widget-lists-menu-delete = Hapus daftar ini
+newtab-widget-lists-menu-copy = Salin daftar ke papan klip
+newtab-widget-lists-menu-learn-more = Pelajari lebih lanjut
+newtab-widget-lists-input-menu-open-link = Buka tautan
+newtab-widget-lists-input-menu-move-up = Pindah ke atas
+newtab-widget-lists-input-menu-move-down = Pindah ke bawah
+newtab-widget-lists-input-menu-delete = Hapus
+newtab-widget-lists-input-menu-edit = Sunting
+newtab-widget-lists-name-label-default =
+    .label = Daftar tugas
+newtab-widget-lists-name-placeholder-default =
+    .placeholder = Daftar tugas
+# The placeholder value of the name field for a newly created list
+newtab-widget-lists-name-placeholder-new2 =
+    .aria-label = Sunting nama daftar
+    .placeholder = Daftar baru
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+newtab-widget-timer-label-play =
+    .label = Putar
+newtab-widget-timer-label-pause =
+    .label = Jeda
+newtab-widget-timer-menu-notifications = Matikan notifikasi
+newtab-widget-timer-menu-notifications-on = Hidupkan notifikasi
+newtab-widget-timer-menu-learn-more = Pelajari lebih lanjut
+newtab-promo-card-title = Dukung { -brand-product-name }
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = New York
+newtab-clock-city-us-los-angeles = Los Angeles
+newtab-clock-city-us-chicago = Chicago
+newtab-clock-city-us-san-francisco = San Francisco
+newtab-clock-city-us-san-diego = San Diego
+newtab-clock-city-us-dallas = Dallas
+newtab-clock-city-us-houston = Houston
+newtab-clock-city-us-philadelphia = Philadelphia
+newtab-clock-city-us-atlanta = Atlanta
+newtab-clock-city-us-washington-dc = Washington, D.C.
+newtab-clock-city-us-boston = Boston
+newtab-clock-city-us-miami = Miami
+newtab-clock-city-us-seattle = Seattle
+newtab-clock-city-us-denver = Denver
+newtab-clock-city-us-honolulu = Honolulu
+newtab-clock-city-us-anchorage = Anchorage
+newtab-clock-city-de-berlin = Berlin
+newtab-clock-city-de-munich = Munich
+newtab-clock-city-de-frankfurt = Frankfurt am Main
+newtab-clock-city-de-hamburg = Hamburg
+newtab-clock-city-fr-paris = Paris
+newtab-clock-city-fr-lyon = Lyon
+newtab-clock-city-fr-marseille = Marseille
+newtab-clock-city-fr-toulouse = Toulouse
+newtab-clock-city-in-kolkata = Kolkata
+newtab-clock-city-in-mumbai = Mumbai
+newtab-clock-city-in-delhi = Delhi
+newtab-clock-city-in-bangalore = Bengaluru
+newtab-clock-city-cn-shanghai = Shanghai
+newtab-clock-city-cn-beijing = Beijing
+newtab-clock-city-cn-shenzhen = Shenzhen
+newtab-clock-city-br-sao-paulo = São Paulo
+newtab-clock-city-br-rio-de-janeiro = Rio de Janeiro
+newtab-clock-city-br-brasilia = Brasilia
+newtab-clock-city-id-jakarta = Jakarta
+newtab-clock-city-id-surabaya = Surabaya
+newtab-clock-city-id-makassar = Makassar
+newtab-clock-city-ca-toronto = Toronto
+newtab-clock-city-ca-montreal = Montreal
+newtab-clock-city-ca-vancouver = Vancouver
+newtab-clock-city-au-sydney = Sydney
+newtab-clock-city-au-perth = Perth
+newtab-clock-city-au-adelaide = Adelaide
+newtab-clock-city-pl-warsaw = Warsawa
+newtab-clock-city-pl-krakow = Kraków
+newtab-clock-city-jp-tokyo = Tokyo
+newtab-clock-city-jp-osaka = Osaka
+newtab-clock-city-mx-mexico-city = Kota Meksiko
+newtab-clock-city-mx-guadalajara = Guadalajara
+newtab-clock-city-it-rome = Roma
+newtab-clock-city-it-milan = Milan
+newtab-clock-city-ru-moscow = Moskow
+newtab-clock-city-ru-saint-petersburg = Sankt-Peterburg
+newtab-clock-city-gb-london = London
+newtab-clock-city-gb-birmingham = Birmingham
+newtab-clock-city-es-madrid = Madrid
+newtab-clock-city-es-barcelona = Barcelona
+newtab-clock-city-nl-amsterdam = Amsterdam
+newtab-clock-city-ch-zurich = Zürich
+newtab-clock-city-at-vienna = Wina
+newtab-clock-city-cz-prague = Praha
+newtab-clock-city-ar-buenos-aires = Buenos Aires
+newtab-clock-city-gr-athens = Athena
+newtab-clock-city-hu-budapest = Budapest
+newtab-clock-city-be-brussels = Brussel
+newtab-clock-city-ua-kyiv = Kyiv
+newtab-clock-city-fi-helsinki = Helsinki
+newtab-clock-city-co-bogota = Bogotá
+newtab-clock-city-ph-manila = Manila
+newtab-clock-city-tr-istanbul = Istanbul
+newtab-clock-city-my-kuala-lumpur = Kuala Lumpur
+newtab-clock-city-eg-cairo = Kairo
+newtab-clock-city-se-stockholm = Stockholm
+newtab-clock-city-ro-bucharest = Bukares
+newtab-clock-city-th-bangkok = Bangkok
+newtab-clock-city-ng-lagos = Lagos
+newtab-clock-city-tw-taipei = Taipei
+newtab-clock-city-za-johannesburg = Johannesburg
+newtab-clock-city-cl-santiago = Santiago
+newtab-clock-city-pk-karachi = Karachi
+newtab-clock-city-bg-sofia = Sofia
+newtab-clock-city-sg-singapore = Singapura
+newtab-clock-city-hk-hong-kong = Hong Kong
+newtab-clock-city-sa-riyadh = Riyadh
+newtab-clock-city-dk-copenhagen = Kopenhagen
+newtab-clock-city-pe-lima = Lima
+newtab-clock-city-ke-nairobi = Nairobi
+newtab-clock-city-nz-auckland = Auckland
+newtab-clock-city-kr-seoul = Seoul
+newtab-clock-city-lt-vilnius = Vilnius
+newtab-clock-city-ie-dublin = Dublin
+newtab-clock-city-ae-dubai = Dubai
+newtab-clock-city-lv-riga = Riga
+newtab-clock-city-pt-lisbon = Lisboa
+newtab-clock-city-ir-tehran = Teheran
+newtab-clock-city-bd-dhaka = Dhaka
+newtab-clock-city-ec-guayaquil = Guayaquil
+newtab-clock-city-vn-ho-chi-minh-city = Ho Chi Minh
+newtab-clock-city-np-kathmandu = Kathmandu
+newtab-clock-city-mm-yangon = Yangon
