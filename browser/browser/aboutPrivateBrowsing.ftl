@@ -1,0 +1,82 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+privatebrowsingpage-open-private-window-label = Ireki leiho pribatua
+    .accesskey = h
+about-private-browsing-search-placeholder = Bilatu webean
+about-private-browsing-search-btn =
+    .title = Bilatu webean
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff =
+    .title = Bilatu { $engine } erabiliz edo idatzi helbidea
+about-private-browsing-handoff-no-engine =
+    .title = Bilatu edo idatzi helbidea
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff-text = Bilatu { $engine } erabiliz edo idatzi helbidea
+about-private-browsing-handoff-text-no-engine = Bilatu edo idatzi helbidea
+about-private-browsing-not-private = Une honetan ez zaude leiho pribatu batean.
+about-private-browsing-hide-activity = Ezkutatu zure jarduera eta kokapena, nabigatzen duzun toki orotan
+about-private-browsing-get-privacy = Eskuratu pribatutasun-babesak nabigatzen duzun toki orotan
+about-private-browsing-hide-activity-1 = Ezkutatu nabigazio-jarduera eta kokapena { -mozilla-vpn-brand-name } erabiliz. Klik bakarrak konexio segurua sortzen du, baita Wi-Fi publikoetan ere.
+about-private-browsing-prominent-cta = Mantendu pribatu { -mozilla-vpn-brand-name } erabiliz
+about-private-browsing-focus-promo-cta = Deskargatu { -focus-brand-name }
+about-private-browsing-focus-promo-header = { -focus-brand-name }: nabigazio pribatua edonon
+about-private-browsing-focus-promo-text = Gure berariazko nabigatze pribatuko aplikazio mugikorrak zure historia eta cookieak garbitzen ditu aldi oro.
+about-private-browsing-focus-promo-header-c = Hurrengo mailako pribatutasuna mugikorrean
+about-private-browsing-focus-promo-text-c = { -focus-brand-name }(e)k zure historia eta cookieak garbitzen ditu aldi oro, halaber publizitatea eta jarraipen-elementuak ere blokeatzen ditu.
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = { $engineName } da leiho pribatuetarako zure bilaketa-motor lehenetsia
+about-private-browsing-search-banner-description =
+    { PLATFORM() ->
+        [windows] Beste bilaketa-motor bat hautatzeko, zoaz <a data-l10n-name="link-options">aukeretara</a>
+       *[other] Beste bilaketa-motor bat hautatzeko, zoaz <a data-l10n-name="link-options">hobespenetara</a>
+    }
+about-private-browsing-search-banner-close-button =
+    .aria-label = Itxi
+about-private-browsing-promo-close-button =
+    .title = Itxi
+
+## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+about-private-browsing-pin-promo-header = Nabigatze pribatuaren askatasuna klik bakarrean
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Mantendu Dock-ean
+       *[other] Ainguratu ataza-barran
+    }
+about-private-browsing-pin-promo-title = Gordetako cookie edo historiarik ez. Nabigatu inor begira ez balego bezala.
+
+## Strings used in a promotion message for Firefox Relay
+
+about-private-browsing-relay-promo-header = Lagundu sarrera-ontziko spama eragozten posta-maskarekin
+about-private-browsing-relay-promo-title = Ezkutatu zure benetako helbidea posta-maskara bat erabiliz erregistratzean, erosketak egitean edo online partekatzean.
+about-private-browsing-relay-promo-link-text = Probatu posta-maskarak
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `{ -brand-short-name } will show fewer cookie requests`
+about-private-browsing-cookie-banners-promo-heading = { -brand-short-name } cookie iragarki-bandez arduratzen da
+about-private-browsing-cookie-banners-promo-body = Orain hainbat cookie iragarki-banda automatikoki baztertzen ditugu jarraipen gutxiago izan eta distraziorik gabeko nabigaziora itzul zaitezen.
+
+## Strings for the info section of about:privatebrowsing
+
+about-private-browsing-felt-privacy-v1-info-header = Ez utzi arrastorik gailu honetan
+about-private-browsing-felt-privacy-v1-info-body = { -brand-short-name }(e)k zure cookieak, historia eta guneetako datuak ezabatzen ditu leiho pribatu guztiak ixten dituzunean.
+about-private-browsing-felt-privacy-v1-info-link = Nork ikus lezake nire jarduera?
+
+## Strings for the Nova redesign of about:privatebrowsing
+
+about-private-browsing-nova-info-body = Leiho pribatu guztiak ixteak zure cookieak, historia eta guneetako datuak ezabatzen ditu.
+about-private-browsing-nova-info-link = Nork ikus lezake nire jarduera halere?
+# "You're off the record" is an English idiom meant to communicate that you
+# are not being recorded. If there is not a comparable phrase in the locale,
+# fall back to "Your browsing will be deleted"
+about-private-browsing-nova-info-header = Zure nabigazio-historia ezabatu egingo da
+about-private-browsing-nova-info-subheader2 = Leiho pribatu guztiak ixtean, egindako bilaketak eta saio-hasierak ezabatuko ditugu. { -brand-short-name }(r)en integratutako babesak aktibo daude hemen ere, adibidez jarraipen-elementuen blokeoa.
