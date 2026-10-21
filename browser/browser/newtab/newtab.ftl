@@ -1,0 +1,1914 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = ახალი ჩანართი
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = ამ გვერდის მორგება
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = მორგება
+newtab-customize-panel-label =
+    .label = მორგება
+newtab-settings-dialog-label =
+    .aria-label = პარამეტრები
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+newtab-card-dismiss-button =
+    .aria-label = აცილება
+    .title = აცილება
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-title =
+    .label = საწყისი გვერდი
+home-homepage-new-windows =
+    .label = ახალი ფანჯრები
+home-homepage-new-tabs =
+    .label = ახალი ჩანართები
+# This option leads to the "Custom Homepage" subpage
+home-homepage-custom-homepage-button =
+    .label = აირჩიეთ ცალკეული საიტი
+
+## Custom URLs subpage
+
+# Subheader on the Custom Homepage subpage. Followed by a form to enter URLs and a list of URLs already saved, if any.
+home-custom-homepage-card-header =
+    .label = საიტის მისამართ(ებ)ი
+home-custom-homepage-address =
+    .placeholder = შეიყვანეთ მისამართი
+home-custom-homepage-address-button =
+    .label = მისამართის დამატება
+# Shown when no custom websites/URLs to use as a homepage have been added yet
+home-custom-homepage-no-results =
+    .label = საიტები ჯერ არ დამატებულა.
+home-custom-homepage-delete-address-button =
+    .aria-label = მისამართის წაშლა
+    .title = მისამართის წაშლა
+# Further options to use when setting the home page. Two action buttons are placed in line with this prompt
+# to replace the current home page with a currently open page or bookmark.
+home-custom-homepage-replace-with-prompt =
+    .label = ჩაანაცვლებს
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-current-pages-button =
+    .label = ახლად გახსნილი გვერდები
+# Button that appears in-line after text "Replace with" (home-custom-homepage-replace-with-prompt)
+home-custom-homepage-bookmarks-button =
+    .label = სანიშნები…
+
+## Firefox Home content
+
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
+home-prefs-search-header2 =
+    .label = ძიება
+home-prefs-stories-header2 =
+    .description = გამორჩეული მასალები, რომელთაც გთავაზობთ { -brand-product-name }-ოჯახი
+    .label = ამბები
+home-prefs-widgets-header =
+    .label = ჩანამატები
+# Lists is a widget on New Tab, similar to a to-do widget
+home-prefs-lists-header =
+    .label = სიები
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = წამმზომი
+# Sports is a widget on New Tab showing sports scores and schedules.
+home-prefs-sports-widget-header =
+    .label = სპორტი
+# Clock is a widget on New Tab that displays time zones around the world.
+home-prefs-clocks-header =
+    .label = საათი
+# Privacy is a widget on New Tab that shows tracking protection activity.
+home-prefs-privacy-header =
+    .label = პირადულობა
+# Crossword is a widget on New Tab that shows a daily crossword puzzle.
+home-prefs-crossword-widget-header =
+    .label = კროსვორდი
+# Stocks is a widget on New Tab that shows stock ticker prices.
+home-prefs-stocks-header =
+    .label = აქციები
+# Picture of the day is a widget on New Tab that shows a daily Wikimedia Commons image.
+home-prefs-picture-header =
+    .label = დღის სურათი
+# Recent searches is a widget on New Tab that shows the user's recent searches.
+home-prefs-recent-searches-header =
+    .label = ბოლოს მოძიებული
+home-prefs-mission-message2 =
+    .message = ჩვენი დამკვეთები მხარს უჭერენ ჩვენს მიზანს უკეთესი ვებსივრცის ჩამოსაყალიბებლად.
+home-prefs-manage-topics-link2 =
+    .label = თემების მართვა
+home-prefs-choose-wallpaper-link2 =
+    .label = ფონის არჩევა
+home-prefs-firefox-logo-header =
+    .label = { -brand-short-name } – ლოგო
+# Informational message bar that appears in the Firefox Home section when the options are disabled.
+# The user must select Firefox Home as their homepage for either new tabs or new windows to enable
+# the features in settings.
+home-prefs-firefox-home-disabled-notice =
+    .message = ამ შესაძლებლობებით სარგებლობისთვის მომართეთ { -firefox-home-brand-name } ახალი ჩანართებითა და ფანჯრებით.
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } რიგად
+           *[other] { $num } რიგად
+        }
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = გაფართოება ({ $extension })
+home-restore-defaults-srd =
+    .label = ნაგულისხმევის აღდგენა
+    .accesskey = ნ
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (ნაგულისხმევი)
+home-mode-choice-custom-srd =
+    .label = მითითებული URL-მისამართები...
+home-mode-choice-blank-srd =
+    .label = ცარიელი გვერდი
+home-prefs-shortcuts-header-srd =
+    .label = მალსახმობები
+home-prefs-shortcuts-select =
+    .aria-label = მალსახმობები
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = მალსახმობები დამკვეთებისგან
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = ამბები დამკვეთებისგან
+home-prefs-highlights-option-visited-pages-srd =
+    .label = მონახულებული გვერდები
+home-prefs-highlights-options-bookmarks-srd =
+    .label = სანიშნები
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = ბოლო ჩამოტვირთვები
+home-prefs-recent-activity-header-srd =
+    .label = ბოლო მოქმედებები
+home-prefs-recent-activity-select =
+    .aria-label = ბოლო მოქმედებები
+home-prefs-weather-header-srd =
+    .label = ამინდი
+home-prefs-support-firefox-header-srd =
+    .label = თანადგომა – { -brand-product-name }
+home-prefs-mission-message-learn-more-link-srd = იხილეთ, როგორ
+
+## Strings for the Privacy widget
+
+# Context menu item linking to more information about the Privacy widget.
+newtab-privacy-menu-learn-more = ვრცლად
+# Accessible name for the Privacy widget container. The widget shows no visible
+# title, so screen readers rely on this label to identify it.
+newtab-privacy-widget-label =
+    .aria-label = პირადულობა
+
+## Privacy widget — count readout
+
+# Label shown under the large tracker-count number, appearing like:
+# Line 1: 86
+# Line 2: Trackers blocked today
+# Translations can be adjusted to "Today's blocked trackers" or something
+# similar if this fixed order causes issues.
+# Variables:
+#   $count (number) - Number of trackers blocked today
+newtab-privacy-trackers-blocked-today =
+    { $count ->
+        [one] მეთვალყურე შეიზღუდა დღეს
+       *[other] მეთვალყურე შეიზღუდა დღეს
+    }
+# Second line of the readout, under the large number and "Trackers blocked
+# today". Counts the sites those trackers were blocked on. The English is
+# shortened from "Blocked across { $count } sites" — translate it that fuller way
+# if the short fragment doesn't work in your language.
+# Variables:
+#   $count (number) - Number of sites where trackers were blocked
+newtab-privacy-across-sites =
+    { $count ->
+        [one] { $count } საიტზე
+       *[other] { $count } საიტზე
+    }
+
+## Privacy widget — empty state
+
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty = { -brand-short-name } ზღუდავს მეთვალყურეებს გვერდების თვალიერებისას. მათ ჩამონათვალს იხილავთ აქ.
+# Shown when no trackers have been blocked yet today.
+newtab-privacy-empty-state = { -brand-short-name } თავისთავად ზღუდავს მეთვალყურეებს, შედეგად თქვენი საქმიანობა უმეტესწილად რჩება პირადი.
+# "A running tally" is an informal way to say a total that keeps updating as it goes.
+# Here we are referring to the number of trackers blocked, which increases as the user browses.
+# An alternative can be "See a running total here"
+newtab-privacy-empty-state-tally = შეჯამებულად ნაჩვენებია აქ.
+
+## Privacy widget — Enhanced Tracking Protection off state
+
+# Shown when the user has turned off the Enhanced Tracking Protection setting.
+newtab-privacy-etp-off-faster-browsing = გვერდების სწრაფი გახსნა. მეთვალყურეების შემცირება.
+newtab-privacy-etp-off-turn-on-tracking = ჩართეთ თვალთვალისგან დაცვა შესაზღუდად.
+
+## Privacy widget — informational messages
+##
+## Rotating "info" secondary messages. Each message has a body plus a matched
+## "-cta" button label sharing the same id stem (the CTA button isn't rendered
+## yet; the labels are authored so the pairing is ready).
+
+newtab-privacy-message-info-1 = { -brand-short-name } თავისთავად ზღუდავს მეთვალყურეებს გვერდების თვალიერებისას.
+newtab-privacy-message-info-1-cta = დაცვის შესახებ
+newtab-privacy-message-info-2 = მეთვალყურეთა შეზღუდვა აღუკვეთს კომპანიებს ინტერნეტში თქვენს დევნას.
+newtab-privacy-message-info-2-cta = დაცვის შესახებ
+newtab-privacy-message-info-3 = ბევრ საიტზეა განთავსებული მეთვალყურეები, ასე რომ იმ კომპანიებსაც შეუძლია თვალი გადევნონ, რომლებიც არც კი მოგინახულებიათ.
+newtab-privacy-message-info-3-cta = დაცვის შესახებ
+newtab-privacy-message-info-4 = აირჩიოთ { -brand-short-name } იგივეა, რომ აირჩიოთ თავისთავადი დაცვა.
+newtab-privacy-message-info-4-cta = დაცვის შესახებ
+newtab-privacy-message-info-5 = შეზღუდული მეთვალყურეები ნიშნავს ნაკლებ თვალის მდევნელ კომპანიას.
+newtab-privacy-message-info-5-cta = დაცვის შესახებ
+newtab-privacy-message-info-6 = საკუთარი მონაცემების შესანარჩუნებლად დაიხმარეთ { -brand-short-name }. ჩვენ არაფერს არასდროს გაგიყიდით სხვა ბრაუზერებისგან განსხვავებით.
+newtab-privacy-message-info-6-cta = ვრცლად
+newtab-privacy-message-info-7 = ნახეთ, რომელ მეთვალყურეებს ზღუდავს { -brand-short-name }.
+newtab-privacy-message-info-7-cta = დაცვის შესახებ
+newtab-privacy-message-info-8 = { -brand-short-name } და მისი გამოყენება მხარს უჭერს { -vendor-short-name }-ს მიზანს, ვაშენოთ უკეთესი ვებსამყარო.
+newtab-privacy-message-info-8-cta = ვრცლად
+newtab-privacy-message-info-9 = აქციეთ { -brand-short-name } თქვენს რჩეულ ბრაუზერად თანმომყოლი პირადულობით.
+newtab-privacy-message-info-9-cta = ნაგულისხმევად მითითება
+newtab-privacy-message-info-10 = პაროლების შესანახად დაიხმარეთ { -brand-short-name }, მძლავრი, გამორჩეულად დაცული ანგარიშებით სარგებლობისთვის ყველგან.
+newtab-privacy-message-info-10-cta = გადასვლა პაროლებზე
+newtab-privacy-message-info-11 = გამოარკვიეთ, თუ როგორ გეხმარებათ { -brand-short-name } გვერდების კიდევ უფრო პირადულად მონახულებაში.
+newtab-privacy-message-info-11-cta = ვრცლად
+newtab-privacy-message-info-12 = მეთვალყურეების შეზღუდვა გამტარუნარიანობასაც ზოგავს გასახარჯ მონაცემთა გეგმებით სარგებლობისას.
+newtab-privacy-message-info-12-cta = დაცვის შესახებ
+newtab-privacy-message-info-13 = { -brand-short-name } ზღუდავს მეთვალყურეებს და ათავისუფლებს გამტარუნარიანობას მონაცემთა შეუფერხებელი მიმოცვლისთვის.
+newtab-privacy-message-info-13-cta = დაცვის შესახებ
+
+## Privacy widget — promotional messages
+##
+## Rotating "promo" secondary messages suggesting another Firefox feature. Each
+## has a body plus a matched "-cta" button label.
+
+newtab-privacy-message-promo-monitor-1 = გაარკვიეთ, თქვენ შესახებ ცნობები ხომ არ გამჟღავნებულა მონაცემთა მიტაცებისას.
+newtab-privacy-message-promo-monitor-1-cta = ვრცლად
+newtab-privacy-message-promo-monitor-2 = დაიცავით თქვენი ინფორმაცია მონაცემთა მიტაცების შემთხვევებზე უფასო თვალის მიდევნებით, ელფოსტის 20-მდე მისამართისთვის.
+newtab-privacy-message-promo-monitor-2-cta = ვრცლად
+newtab-privacy-message-promo-signin-1 = დაშიფრულად შეინახეთ სანიშნები, პაროლები და ჩანართები ყველა მოწყობილობაზე თქვენი { -vendor-short-name }-ანგარიშით.
+newtab-privacy-message-promo-signin-1-cta = შესვლა
+newtab-privacy-message-promo-vpn-1 = საყიდლებისთვის გსურთ გამოიყენოთ საჯარო WiFi? ჩართეთ ჩაშენებული VPN დამატებითი დაცვისთვის.
+newtab-privacy-message-promo-vpn-1-cta = გახსენით VPN
+newtab-privacy-message-promo-vpn-2 = აეროპორტის WiFi უნდა გამოიყენოთ? გვერდების დაცულად მონახულებისთვის ჩართეთ ჩაშენებული VPN.
+newtab-privacy-message-promo-vpn-2-cta = გახსენით VPN
+newtab-privacy-message-promo-vpn-3 = ჩართეთ ჩაშენებული VPN თქვენი მდებარეობის პირადულობისთვის.
+newtab-privacy-message-promo-vpn-3-cta = გახსენით VPN
+newtab-privacy-message-promo-private-window-1 = მოსინჯეთ პირადი ფანჯარა პირადულად თვალიერებისთვის სხვებთან საზიარო კომპიუტერით სარგებლობისას.
+newtab-privacy-message-promo-private-window-1-cta = პირადი ფანჯრის გახსნა
+newtab-privacy-message-promo-relay-1 = გადაინახეთ თქვენი ნამდვილი ელფოსტა იმ ხალხისთვის, ვისაც ენდობით; გამოიყენეთ ელფოსტის ნიღაბი ანგარიშებისთვის.
+newtab-privacy-message-promo-relay-1-cta = ნიღბების მიღება
+newtab-privacy-message-promo-relay-2 = დაიცავით თქვენი საფოსტო ყუთი ჯართისგან ელფოსტის უფასო შენიღბვით.
+newtab-privacy-message-promo-relay-2-cta = ნიღბების მიღება
+newtab-privacy-message-promo-relay-3 = მიიღეთ ელფოსტის 50 უფასო ნიღაბი თქვენი ნამდვილი ფოსტის პირადულობისთვის.
+newtab-privacy-message-promo-relay-3-cta = ნიღბების მიღება
+
+## Privacy widget — celebration messages
+##
+## Earned "celebration" moments (milestones, daily cap, streak, first
+## protection). Count-bearing ones interpolate { $count }.
+
+# Variables:
+#   $count (number) - Trackers blocked this week
+newtab-privacy-message-milestone-week =
+    { $count ->
+        [one] { $count } მეთვალყურე შეიზღუდა ამ კვირაში. ნახეთ, რისგან გიცავთ { -brand-short-name }
+       *[other] { $count } მეთვალყურე შეიზღუდა ამ კვირაში. ნახეთ, რისგან გიცავთ { -brand-short-name }
+    }
+newtab-privacy-message-milestone-week-cta = დაცვის შესახებ
+# Variables:
+#   $count (number) - Trackers blocked this month
+newtab-privacy-message-milestone-month =
+    { $count ->
+        [one] { $count } მეთვალყურე შეიზღუდა ამ თვეში. პატარა ნაბიჯი პირადულობისთვის სულიერი სიმშვიდისთვის.
+       *[other] { $count } მეთვალყურე შეიზღუდა ამ თვეში. პატარა ნაბიჯი პირადულობისთვის სულიერი სიმშვიდისთვის.
+    }
+newtab-privacy-message-milestone-month-cta = დაცვის შესახებ
+# Variables:
+#   $count (number) - Trackers blocked this year
+newtab-privacy-message-milestone-year =
+    { $count ->
+        [one] { $count } მეთვალყურე შეიზღუდა წელს. მნიშვნელოვანი წელიწადი თქვენი პირადულობის დაცვისთვის.
+       *[other] { $count } მეთვალყურე შეიზღუდა წელს. მნიშვნელოვანი წელიწადი თქვენი პირადულობის დაცვისთვის.
+    }
+newtab-privacy-message-milestone-year-cta = დაცვის შესახებ
+# Variables:
+#   $count (number) - Trackers blocked all-time
+newtab-privacy-message-milestone-total =
+    { $count ->
+        [one] { $count } მეთვალყურე შეიზღუდა. არსებითი წინსვლაა თქვენი პირადულობის უზრუნველყოფისკენ.
+       *[other] { $count } მეთვალყურე შეიზღუდა. არსებითი წინსვლაა თქვენი პირადულობის უზრუნველყოფისკენ.
+    }
+newtab-privacy-message-milestone-total-cta = დაცვის შესახებ
+# Shown when today's blocked-tracker count reaches the display cap ("100+").
+newtab-privacy-message-daily-cap = (100+ მეთვალყურე შეიზღუდა დღეს). ნაკლები მეთვალყურე მეტი პირადულობაა.
+newtab-privacy-message-daily-cap-cta = დაცვის შესახებ
+# Variables:
+#   $count (number) - Consecutive days the user has had trackers blocked
+newtab-privacy-message-streak =
+    { $count ->
+        [one] უკვე დაცული ხართ ზედიზედ { $count } დღე.
+       *[other] უკვე დაცული ხართ ზედიზედ { $count } დღე.
+    }
+newtab-privacy-message-streak-cta = დაცვის შესახებ
+# Shown the first time the tracker count goes above zero.
+newtab-privacy-message-first-protection = განაგრძეთ მონახულება, { -brand-short-name } განაგრძობს შეზღუდვას.
+newtab-privacy-message-first-protection-cta = დაცვის შესახებ
+
+## Strings for the Stocks widget
+
+# Context menu item linking to more information about the Stocks widget.
+newtab-stocks-menu-learn-more = ვრცლად
+# Shown in the Stocks widget when its data could not be loaded.
+newtab-stocks-error-not-available = აქციების მონაცემები მიუწვდომელია.
+# "Stocks widget options" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-stocks-widget-menu-button =
+    .aria-label = აქციების ჩანამატის პარამეტრები
+    .title = აქციების ჩანამატის გამართვა
+# Accessible name for the Stocks widget; hidden because the list dropdown is
+# shown in place of the title.
+newtab-stocks-widget-title = აქციები
+# "Markets" is the default list of market ETFs. The value is shown in the menu,
+# and .label is shown on the button that opens it.
+newtab-stocks-list-markets = ბაზრები
+    .label = ბაზრები
+# "Watchlist" is the user's list of stocks to follow. The value is shown in the
+# menu, and .label is shown on the button that opens it.
+newtab-stocks-list-watchlist = სამეთვალყურეო
+    .label = სამეთვალყურეო
+# Context menu item that opens the stock search (by company name or ticker symbol).
+newtab-stocks-menu-search-stocks = ძიება სახელით ან ასონიშნით
+
+## Screen-reader summary of a stock ticker.
+## Variables:
+##   $name (String) - the full fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+##   $change (String) - the day's percentage change, e.g. "+2.1%".
+##   $price (String) - the last price, e.g. "$559.44".
+
+# Stock increased (went up) during the day
+newtab-stocks-ticker-status-up = { $name }, ზრდა, { $change }, { $price }
+# Stock decreased (went down) during the day
+newtab-stocks-ticker-status-down = { $name }, ვარდნა, { $change }, { $price }
+# Stock didn't change during the day
+newtab-stocks-ticker-status-flat = { $name }, უცვლელი, { $change }, { $price }
+
+## Stocks widget watchlist add and remove controls
+
+# Tooltip and screen-reader label for the button that adds a stock to the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name, e.g. "SPDR S&P 500 ETF Trust".
+newtab-stocks-add-to-watchlist =
+    .aria-label = დაემატოს { $name } სიაში
+    .title = დაემატოს { $name } სიაში
+# Tooltip and screen-reader label for the button that removes a stock from the watchlist.
+# The button shows only an icon and never renders visible text.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-remove-from-watchlist =
+    .aria-label = მოცილდეს { $name } სიიდან
+    .title = მოცილდეს { $name } სიიდან
+# Visually hidden text on a Markets row whose stock is already in the watchlist, so
+# screen readers announce that it is saved. Removal happens on the Watchlist tab.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-in-watchlist = { $name } თქვენს სიაშია
+# Announced to screen readers after a stock is added to the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-added-to-watchlist = დდამატებულია { $name } სიაში
+# Announced to screen readers after a stock is removed from the watchlist.
+# Variables:
+#   $name (String) - the fund/ETF name.
+newtab-stocks-removed-from-watchlist = მოცილებულია { $name } სიიდან
+
+## Stocks widget ticker search
+
+# Placeholder and screen-reader label for the ticker search input.
+newtab-stocks-search-input =
+    .aria-label = ძიება სახელით ან ასონიშნით
+    .placeholder = ძიება სახელით ან ასონიშნით
+# "Search results" is the accessible label for the list of tickers matching the
+# search. It means "results of the search", not "search within the results".
+newtab-stocks-search-results =
+    .aria-label = ძიების შედეგები
+# "Back" is an icon-only button in the search panel header that returns to the
+# widget — the attributes are consumed as tooltip/screen-reader label only. The
+# button never renders visible text.
+newtab-stocks-search-back-button =
+    .aria-label = უკან
+    .title = უკან
+# Shown when a ticker search returns no matching symbols.
+# Variables:
+#   $query (String) - the text the user searched for.
+newtab-stocks-search-no-results = შედეგები არაა „{ $query }“
+# Shown while a ticker search is running; also announced to screen readers.
+newtab-stocks-search-loading = იტვირთება…
+# Shown when a ticker search fails to reach the service.
+newtab-stocks-search-error = ძიება ამჟამად ვერ ხერხდება. სცადეთ მოგვიანებით.
+# Shown below successful search results when the watchlist is already full.
+# Variables:
+#   $limit (Number) - the maximum number of stocks the watchlist can hold.
+newtab-stocks-watchlist-full =
+    { $limit ->
+        [one] უკვე შეგიძლიათ დაამატოთ { $limit }-მდე აქცია. ერთი მოაცილეთ მეორის დასამატებლად.
+       *[other] უკვე შეგიძლიათ დაამატოთ { $limit }-მდე აქცია. ერთი მოაცილეთ მეორის დასამატებლად.
+    }
+
+## Strings for the Picture of the Day widget
+
+# Title shown at the top of the widget, with the source name appended.
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-header = დღის სურათი · Wikimedia Commons
+# Shorter title shown at the top of the widget, without the source name.
+newtab-picture-header-main = დღის სურათი
+# Attribution line shown under the title once a picture loads: an author
+# credit, a link to the picture's source page, and a link to its license.
+# "©" is the copyright symbol.
+# $author (string) - the name of the image's author.
+newtab-picture-attribution-author = © { $author }
+# Link to the picture's source page (its Wikimedia Commons file page).
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-attribution-source-link = Wikimedia Commons
+# Screen-reader label for the license link; the visible text is the license
+# name (for example "CC BY-SA 4.0") provided with the picture.
+# $license (string) - the name of the license.
+newtab-picture-attribution-license =
+    .aria-label = იხილეთ ლიცენზია { $license }
+# Tooltip and screen-reader label for the icon-only button that opens the
+# widget's context menu. The button never renders visible text.
+newtab-picture-widget-menu-button =
+    .aria-label = დღის სურათის პარამეტრები
+    .title = დღის სურათის გამართვა
+# Button that sets the current picture as the New Tab background wallpaper. The
+# button collapses to an icon when not hovered/focused, so .title is its tooltip.
+newtab-picture-set-wallpaper =
+    .aria-label = დააყენეთ ფონად დღის სურათი
+    .label = ფონის დაყენება
+    .title = ფონის დაყენება
+# Context menu item that opens the New Tab customization panel.
+newtab-picture-menu-manage-wallpaper = ფონის მართვა
+# Context menu item that hides today’s picture, replacing it with an existing
+# wallpaper.
+newtab-picture-menu-hide-photo = დღის სურათის დამალვა
+# Context menu item that restores today’s picture after it has been hidden.
+newtab-picture-menu-show-photo = დღის სურათის ჩვენება
+# Context menu item linking to more information about the widget.
+newtab-picture-menu-learn-more = ვრცლად
+# Icon button shown on the widget once the picture is hidden; restores it.
+newtab-picture-show-button =
+    .aria-label = დღის სურათის ჩვენება
+    .title = დღის სურათის ჩვენება
+# Shown when there is no new picture to display yet.
+newtab-picture-check-back = ხვალაც შეამოწმეთ ახალი სურათი
+# Screen-reader text alternative for the picture; fallback used when the source
+# provides no localized description.
+newtab-picture-image-alt = Wikimedia Commons – დღის სურათი
+
+## Strings for the Recent Searches widget
+
+# Widget heading; also the widget's accessible name.
+newtab-recent-searches-widget-title = ბოლოს მოძიებული
+# Screen reader label for the widget's icon-only menu button.
+newtab-recent-searches-widget-menu-button =
+    .aria-label = ბოლოს მოძიებულის პარამეტრები
+# Context menu item linking to more information about the widget.
+newtab-recent-searches-menu-learn-more = ვრცლად
+# Tab listing the searches the user has made recently.
+newtab-recent-searches-tab-recent = ბოლოს მოძიებული
+# Tab listing what is trending with the user's search engine.
+newtab-recent-searches-tab-trending = ხშირად ნანახი
+# Informs the user which engine the trending results come from.
+# Variables:
+#   $engine (string) - Name of the default search engine, e.g. "Google".
+newtab-recent-searches-trending-attribution = უზრუნვ. { $engine }
+# Relative time shown for a search made less than a minute ago.
+newtab-recent-searches-just-now = ახლახან
+# Screen reader label for the button that forgets one listed search.
+# Variables:
+#   $search (string) - The search the row shows, e.g. "puffin colonies".
+newtab-recent-searches-row-remove =
+    .aria-label = მოცილდეს „{ $search }“ ბოლოს მოძიებულებიდან
+
+## Recent searches widget — empty states
+
+# Shown in place of the list when the user has made no searches recently.
+newtab-recent-searches-empty-recent = ბოლოს მოძიებულები გამოჩნდება აქ, ასე რომ, ნებისმიერ დროს შეგეძლებათ შეარჩიოთ დასაბრუნებლად.
+# Shown in place of the list when there are no trending search results.
+newtab-recent-searches-empty-trending = ხშირად მოძიებულები ამჟამად არაა ხელმისაწვდომი.
+
+## Strings for the navigable panels that new tab content area can be
+## split into.
+
+newtab-spaces-tab-stories = ამბები
+newtab-spaces-tab-widgets = ჩანამატები
+newtab-spaces-tab-activity = მოქმედებები
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = ძიება
+    .title = ძიება
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = საძიებოდ გამოიყენეთ { $engine } ან შეიყვანეთ მისამართი
+newtab-search-box-handoff-text-no-engine = მოძებნეთ ან შეიყვანეთ მისამართი
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = საძიებოდ გამოიყენეთ { $engine } ან შეიყვანეთ მისამართი
+    .placeholder = საძიებოდ გამოიყენეთ { $engine } ან შეიყვანეთ მისამართი
+    .title = საძიებოდ გამოიყენეთ { $engine } ან შეიყვანეთ მისამართი
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = მოძებნეთ ან შეიყვანეთ მისამართი
+    .placeholder = მოძებნეთ ან შეიყვანეთ მისამართი
+    .title = მოძებნეთ ან შეიყვანეთ მისამართი
+newtab-search-box-text = ძიება ინტერნეტში
+newtab-search-box-input =
+    .aria-label = ინტერნეტში ძიება
+    .placeholder = ინტერნეტში ძიება
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = საძიებო სისტემის დამატება
+newtab-topsites-add-shortcut-header = ახალი მალსახმობი
+newtab-topsites-edit-shortcut-header = მალსახმობის ჩასწორება
+newtab-topsites-add-shortcut-label = მალსახმობის დამატება
+newtab-topsites-add-shortcut-title =
+    .aria-label = მალსახმობის დამატება
+    .title = მალსახმობის დამატება
+newtab-shortcuts-pinned-area = მიმაგრებული არე
+newtab-topsites-title-label = დასახელება
+newtab-topsites-title-input =
+    .placeholder = სათაურის შეყვანა
+newtab-topsites-url-label = URL-ბმული
+newtab-topsites-url-input =
+    .placeholder = აკრიფეთ ან ჩასვით URL-ბმული
+newtab-topsites-url-validation = საჭიროა მართებული URL
+newtab-topsites-image-url-label = სასურველი სურათის URL-ბმული
+newtab-topsites-use-custom-image-link = სასურველი სურათის გამოყენება
+newtab-topsites-use-image-link = სასურველი სურათის გამოყენება…
+newtab-topsites-image-validation = სურათი ვერ ჩაიტვირთა. სცადეთ სხვა URL-ბმული.
+newtab-topsites-clear-input =
+    .aria-label = ტექსტის გასუფთავება
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = გაუქმება
+newtab-topsites-delete-history-button = ისტორიიდან ამოშლა
+newtab-topsites-save-button = შენახვა
+newtab-topsites-preview-button = შეთვალიერება
+newtab-topsites-add-button = დამატება
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = ნამდვილად გსურთ, ამ გვერდის ყველა ჩანაწერის ისტორიიდან ამოშლა?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = ეს ქმედება შეუქცევადია.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = დამკვეთებისგან
+
+## Label used by screen readers for pinned top sites
+
+# Variables:
+#   $title (string) - The label or hostname of the site.
+topsite-label-pinned =
+    .aria-label = { $title } (მიმაგრებული)
+    .title = { $title }
+
+## Top Sites - Web notifications hover card
+
+# Variables:
+#   $site (string) - The label or hostname of the site the notifications are from.
+newtab-topsites-hover-card-header = გატყობინებთ { $site }
+# Relative time shown for a notification posted less than a minute ago.
+newtab-topsites-hover-card-just-now = ახლახან
+newtab-topsites-hover-card-mark-all-read =
+    .aria-label = ყველას წაკითხულად მონიშვნა
+    .title = ყველას წაკითხულად მონიშვნა
+newtab-topsites-hover-card-settings =
+    .aria-label = შეტყობინების პარამეტრები
+    .title = შეტყობინების პარამეტრები
+newtab-topsites-hover-card-dismiss =
+    .aria-label = აცილება
+    .title = აცილება
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = მენიუს გახსნა
+    .title = მენიუს გახსნა
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = კონტექსტური მენიუს გახსნა { $title }
+    .title = მენიუს გახსნა
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = ჩასწორება
+newtab-menu-add-topsite = ახალი მალსახმობის დამატება
+newtab-menu-open-new-window = ახალ ფანჯარაში გახსნა
+newtab-menu-open-new-private-window = ახალ პირად ფანჯარაში გახსნა
+newtab-menu-dismiss = დამალვა
+newtab-menu-pin = მიმაგრება
+newtab-menu-unpin = მოხსნა
+newtab-menu-delete-history = ისტორიიდან ამოშლა
+newtab-menu-show-privacy-info = ჩვენი დამკვეთები და თქვენი პირადულობა
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = მოხსენება
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = აკრძალვა
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow-topic = გამოწერის შეწყვეტა
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = ვრცლად
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = შეკვეთილი მასალების მართვა
+newtab-menu-our-sponsors-and-your-privacy = ჩვენი დამკვეთები და თქვენი პირადულობა
+newtab-menu-report-this-ad = ამ რეკლამის გასაჩივრება
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = სანიშნებიდან ამოშლა
+# Bookmark is a verb here.
+newtab-menu-bookmark = ჩანიშვნა
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = ჩამოტვირთვის ბმულის ასლი
+newtab-menu-go-to-download-page = გადასვლა ჩამოტვირთვის გვერდზე
+newtab-menu-remove-download = მოცილება ისტორიიდან
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] ჩვენება Finder-ში
+       *[other] შემცველი საქაღალდის გახსნა
+    }
+newtab-menu-open-file = ფაილის გახსნა
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = მონახულებული
+newtab-label-bookmarked = ჩანიშნული
+newtab-label-removed-bookmark = სანიშნი მოცილებულია
+newtab-label-recommended = ფართოდ გავრცელებული
+newtab-label-saved = შენახულია { -pocket-brand-name }-ში
+newtab-label-download = ჩამოტვირთული
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · დამკვეთი
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = დამკვეთია { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } წთ
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = დამკვეთისგან
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = პირადი მონაცემების დაცვის განაცხადი
+
+## Section Headers.
+
+newtab-section-header-topsites = რჩეული საიტები
+newtab-section-header-recent-activity = ბოლო მოქმედებები
+newtab-section-header-stories = ფიქრების აღმძვრელი ამბები
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = დღეს შერჩეული თქვენთვის
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = დაიწყეთ გვერდების დათვალიერება და აქ გამოჩნდება თქვენთვის სასურველი სტატიები, ვიდეოები და ბოლოს მონახულებული ან ჩანიშნული საიტები.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = უკვე ყველაფერს გაეცანით. მოგვიანებით შემოიარეთ მეტი რჩეული სტატიის სანახავად. ვერ ითმენთ? აირჩიეთ რომელიმე ფართოდ გავრცელებული საკითხი ახალი საინტერესო სტატიების მოსაძიებლად.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = ყველაფერი წაკითხულია!
+newtab-discovery-empty-section-topstories-content = ახალი ამბების სანახავად, შეამოწმეთ მოგვიანებით.
+newtab-discovery-empty-section-topstories-try-again-button = ხელახლა ცდა
+newtab-discovery-empty-section-topstories-loading = იტვირთება...
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = ჰმ! თითქმის ჩაიტვირთა, მაგრამ სრულად არა.
+
+## Strings for the story cards carousel
+
+# Identifies the current carousel slide to screen reader users.
+# Variables:
+#   $index - the position of this slide
+#   $total - how many slides there are
+newtab-carousel-slide =
+    .aria-label = { $index }, სულ { $total }
+# Button that goes to the previous carousel slide.
+newtab-carousel-previous =
+    .aria-label = წინა
+# Button that goes to the next carousel slide.
+newtab-carousel-next =
+    .aria-label = შემდეგი
+# Button that pauses autoplay on the carousel.
+newtab-carousel-pause =
+    .aria-label = თვითგაშვების შეჩერება
+# Button that resumes autoplay on the carousel.
+newtab-carousel-play =
+    .aria-label = თვითგაშვების გაგრძელება
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = სამწუხაროდ, შიგთავსის ჩატვირთვისას რაღაც ხარვეზი წარმოიქმნა.
+newtab-error-fallback-refresh-link = განაახლეთ გვერდი და სცადეთ ხელახლა.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = საიტები, რომლებსაც ინახავთ ან სტუმრობთ
+    .label = მალსახმობები
+newtab-custom-shortcuts-nova =
+    .label = მალსახმობები
+newtab-custom-web-notifications-toggle =
+    .description = საიტების შეტყობინებების ჩვენება მალსახმობებზე
+    .label = ვებშეტყობინებები
+newtab-custom-row-description =
+    .description = რიგის რაოდენობა
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } რიგი
+           *[other] { $num } რიგი
+        }
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be having a description under "Recommended stories" anymore
+newtab-custom-stories-toggle =
+    .description = გამორჩეული მასალები, რომელთაც შეგირჩევთ { -brand-product-name }
+    .label = შემოთავაზებული ამბები
+newtab-recommended-stories-toggle =
+    .label = შემოთავაზებული ამბები
+newtab-custom-stories-personalized-toggle =
+    .label = ამბები
+newtab-custom-stories-personalized-checkbox =
+    .label = თქვენს საქმიანობაზე მორგებული ამბები
+newtab-custom-stories-personalized-checkbox-label = თქვენს საქმიანობაზე მორგებული ამბები
+newtab-custom-weather-toggle =
+    .description = დღევანდელი ამინდისთვის თვალის შევლება
+    .label = ამინდი
+newtab-custom-widget-weather-toggle =
+    .label = ამინდი
+newtab-custom-widget-lists-toggle =
+    .label = სიები
+newtab-custom-widget-timer-toggle =
+    .label = წამმზომი
+newtab-custom-widget-clock-toggle =
+    .label = საათი
+newtab-custom-widget-sports-toggle2 =
+    .label = სპორტი
+newtab-custom-widget-privacy-toggle =
+    .label = პირადულობა
+newtab-custom-widget-stocks-toggle =
+    .label = აქციები
+newtab-custom-widget-picture-toggle =
+    .label = დღის სურათი
+newtab-custom-widget-recent-searches-toggle =
+    .label = ბოლოს მოძიებული
+newtab-custom-widget-section-title = ჩანამატები
+newtab-custom-widget-section-toggle =
+    .label = ჩანამატები
+newtab-widget-manage-title = ჩანამატები
+newtab-widget-manage-widget-button =
+    .label = ჩანამატების მართვა
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .aria-label = მენიუს დახურვა
+    .title = დახურვა
+newtab-custom-settings = დამატებითი პარამეტრების მართვა
+
+## Customization Menu
+
+# An arrow button that goes back from a sub-panel in the customize panel, such as a wallpaper category, to the main Customize panel.
+newtab-customize-panel-back-button =
+    .aria-label = დაბრუნება მორგებაზე
+    .title = დაბრუნება მორგებაზე
+
+## New Tab Appearance (browser theme picker)
+
+# Title of the browser theme ("Appearance") section in the customize panel.
+newtab-custom-appearance-section-title = იერსახე
+# Button that opens the full browser theme selection view.
+newtab-appearance-more-themes-button =
+    .label = სხვა გაფორმებები
+# Title of the full theme selection sub-panel, also used as its back button label.
+newtab-appearance-manage-title = { -brand-product-name } – გაფორმებები
+# Header for the list of the user's already-installed themes in the full theme panel.
+newtab-appearance-your-themes-header = თქვენი გაფორმებები
+# Button that enables an already-installed theme.
+newtab-appearance-enable-theme-button =
+    .label = ჩართვა
+# Button that disables the active theme and reverts to the default.
+newtab-appearance-disable-theme-button =
+    .label = ამორთვა
+# Button that installs a theme.
+newtab-appearance-install-theme-button =
+    .label = გაფორმების ჩადგმა
+# Button/link on the full theme panel that opens the complete list of available themes.
+newtab-appearance-explore-more-themes-button = სხვა გაფორმებების მოძიება
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = ფონები
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = ნაგულისხმევზე ჩამოყრა
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = სურათის ატვირთვა
+newtab-wallpaper-add-an-image = სურათის დამატება
+newtab-wallpaper-custom-color = ფერის არჩევა
+newtab-wallpaper-toggle-title =
+    .label = ფონები
+# Variables
+#   $file_size (number) - The number of the maximum image file size (in MB) that may be uploaded
+newtab-wallpaper-error-max-file-size = სურათის ფაილის ზომა აღემატება ზღვარს { $file_size }ᲛᲑ. გთხოვთ, სცადოთ უფრო მცირე ფაილის ატვირთვა.
+newtab-wallpaper-error-upload-file-type = ვერ მოხერხდა თქვენი ფაილის ატვირთვა. გთხოვთ, კვლავ სცადოთ სურათის ფაილით.
+newtab-wallpaper-light-red-panda = წითელი პანდა
+newtab-wallpaper-light-mountain = თეთრი მთა
+newtab-wallpaper-light-sky = ცა მოიისფრო და მოვარდისფრო ღრუბლებით
+newtab-wallpaper-light-color = ლურჯი, ვარდისფერი და ყვითელი ფორმები
+newtab-wallpaper-light-landscape = ცისფერი ნისლი მთის ხედით
+newtab-wallpaper-light-beach = სანაპირო პალმის ხით
+newtab-wallpaper-dark-aurora = ჩრდილოეთის ციალი
+newtab-wallpaper-dark-color = წითელი და ლურჯი ფორმები
+newtab-wallpaper-dark-panda = წითელი პანდა იმალება ტყეში
+newtab-wallpaper-dark-sky = ქალაქის ხედი ღამის ცით
+newtab-wallpaper-dark-mountain = მთის ხედი
+newtab-wallpaper-dark-city = ქალაქის მოიისფრო ხედი
+newtab-wallpaper-dark-fox-anniversary = მელა ქვაფენილზე ტყის მახლობლად
+newtab-wallpaper-light-fox-anniversary = მელა მდელოზე დაბურული მთის ხედით
+
+## "Your images" is the folder of wallpapers someone has saved. A saved wallpaper
+## can be a file they uploaded, a Picture of the Day they chose to keep, or a
+## Firefox wallpaper kept for them when it was retired.
+
+newtab-wallpaper-your-images = თქვენი სურათები
+# Accessible name for the tile that opens the "Your images" folder in the
+# wallpaper picker. The tile shows one of the saved images and has no text of
+# its own, so this is all a screen reader has to go on.
+newtab-wallpaper-your-images-folder =
+    .aria-label = თქვენი შენახული სურათები, ფონები
+# Read by screen readers for a saved image that has a name of its own: a kept
+# Picture of the Day, or a Firefox wallpaper kept when it was retired. An image
+# someone added themselves is numbered instead, see the string below.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-your-images-item = { $name }
+# Read by screen readers for an image someone added themselves. Firefox counts
+# these as they are saved rather than keeping the name of their file.
+# Variables:
+#   $number (number) - Which saved image this is, counting from one
+newtab-wallpaper-your-images-item-numbered = სურათი { $number }
+# Each saved image has its own remove button. The tooltip stays short because
+# a name can be long and some locales put it before the verb, which would push
+# "remove" out of view. The full name is on the label a screen reader reads.
+# Variables:
+#   $name (string) - The picture's own title, or the Firefox wallpaper's name
+newtab-wallpaper-remove-image =
+    .aria-label = მოცილდეს { $name }
+    .title = სურათის მოცილება
+# The remove button for an image someone added themselves. .title is the
+# tooltip and .aria-label is what a screen reader reads.
+# Variables:
+#   $number (number) - Which saved image this is, counting from one
+newtab-wallpaper-remove-image-numbered =
+    .aria-label = მოცილდეს სურათი { $number }
+    .title = მოცილდეს სურათი { $number }
+newtab-wallpaper-remove-image-title = მოცილდეს სურათი?
+# "This action" refers to removing a saved wallpaper image.
+newtab-wallpaper-remove-image-body = ეს ქმედება შეუქცევადია.
+newtab-wallpaper-remove-image-confirm = მოცილება
+newtab-wallpaper-remove-image-cancel = გაუქმება
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = ერთგვაროვანი ფერები
+newtab-wallpaper-colors = ფერები
+newtab-wallpaper-blue = ლურჯი
+newtab-wallpaper-light-blue = ცისფერი
+newtab-wallpaper-light-purple = ღია იისფერი
+newtab-wallpaper-light-green = ღია მწვანე
+newtab-wallpaper-green = მწვანე
+newtab-wallpaper-beige = ჩალისფერი
+newtab-wallpaper-yellow = ყვითელი
+newtab-wallpaper-orange = ნარინჯისფერი
+newtab-wallpaper-pink = ვარდისფერი
+newtab-wallpaper-light-pink = ღია ვარდისფერი
+newtab-wallpaper-red = წითელი
+newtab-wallpaper-dark-blue = მუქი ლურჯი
+newtab-wallpaper-dark-purple = მუქი იისფერი
+newtab-wallpaper-dark-green = მუქი მწვანე
+newtab-wallpaper-brown = ყავისფერი
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = წარმოსახვითი
+newtab-wallpaper-abstract-green = მწვანე ფორმები
+newtab-wallpaper-abstract-blue = ლურჯი ფორმები
+newtab-wallpaper-abstract-purple = იისფერი ფორმები
+newtab-wallpaper-abstract-orange = ნარინჯისფერი ფორმები
+newtab-wallpaper-gradient-orange = ნარინჯისფერი ვარდისფერში გადასული
+newtab-wallpaper-abstract-blue-purple = ლურჯი და იისფერი ფორმები
+newtab-wallpaper-abstract-white-curves = თეთრი ფერის ჩამუქებული მრუდებით
+newtab-wallpaper-abstract-purple-green = იისფრიდან თანდათანობით მწვანე ნათებაში გადასული
+newtab-wallpaper-abstract-blue-purple-waves = ლურჯი და იისფერი ტალღოვანი ფორმები
+newtab-wallpaper-abstract-black-waves = შავი ტალღოვანი ფორმები
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = ფოტოსურათები
+newtab-wallpaper-beach-at-sunrise = სანაპირო მზის ამოსვლისას
+newtab-wallpaper-beach-at-sunset = სანაპირო მზის ჩასვლისას
+newtab-wallpaper-storm-sky = ქარიშხლის ცა
+newtab-wallpaper-sky-with-pink-clouds = ცა მოვარდისფრო ღრუბლებით
+newtab-wallpaper-red-panda-yawns-in-a-tree = წითელი პანდა ამთქნარებს ხეზე
+newtab-wallpaper-white-mountains = თოვლიანი მთები
+newtab-wallpaper-hot-air-balloons = ფერადი საჰაერო ბუშტები დღისით
+newtab-wallpaper-starry-canyon = ლურჯვარსკვლავთა ღამე
+newtab-wallpaper-suspension-bridge = ნაცრისფერი კიდული ხიდის დღისით გადაღებული სურათი
+newtab-wallpaper-sand-dunes = თეთრი ქვიშიანი ბორცვები
+newtab-wallpaper-palm-trees = ქოქოსის პალმის ხეების მოხაზულობა შეღამებისას
+newtab-wallpaper-blue-flowers = ახლო ხედით გადაღებული ლურჯგვირვინა ყვავილები გაფურჩქნისას
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = სურათის გადამღებია <a data-l10n-name="name-link">{ $author_string }</a> საიტიდან <a data-l10n-name="webpage-link">{ $webpage_string }</a>
+newtab-wallpaper-feature-highlight-header = შეაფერადეთ
+newtab-wallpaper-feature-highlight-content = მიანიჭეთ განსხვავებული იერსახე თქვენს ახალ ჩანართს ფონის შეცვლით.
+newtab-wallpaper-feature-highlight-button = გასაგებია
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .aria-label = ამომხტომის დახურვა
+    .title = აცილება
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+newtab-wallpaper-firefox-orange = მელა მარჯვენა კიდეზე ნარინჯისფერი ფონით
+newtab-wallpaper-firefox-colorful-sky = ნარინჯისფერი ტალღები ღამის იისფერ ცაზე
+newtab-wallpaper-firefox-desert-dark = მჯდარი მელა ჩაბნელებულ მეწამულ უდაბნოში
+newtab-wallpaper-firefox-desert-light = მორბენალი მელა ნათელ უდაბნოში
+newtab-wallpaper-firefox-hills-dark = მორბენალი მელა ბნელ ბორცვებზე
+newtab-wallpaper-firefox-hills-light = მორბენალი მელა ნათელ ბორცვებზე
+newtab-wallpaper-firefox-tail-dark = მელას კუდი მუქ ფონზე
+newtab-wallpaper-firefox-tail-light = მელას კუდი ნათელ ფონზე
+newtab-wallpaper-firefox-side-kit-dark = მელა მარცხენა მხარეს მუქ ფონზე
+newtab-wallpaper-firefox-side-kit-light = მელა მარცხენა მხარეს ნათელ ფონზე
+newtab-wallpaper-firefox-sitting-hill-dark = მჯდარი მელა ნათელ მეწამულ უდაბნოში
+newtab-wallpaper-firefox-sitting-hill-light = მჯდარი მელა ნათელ ბორცვებზე
+newtab-wallpaper-firefox-peak-dark = მელას სახე მარცხენა კიდეზე, მუქი ფონით
+newtab-wallpaper-firefox-peak-light = მელას სახე მარცხენა კიდეზე, ნათელი ფონით
+newtab-wallpaper-firefox-sky-dark = მუქი მეწამული ბორცვები ღამის ცის ქვეშ
+newtab-wallpaper-firefox-sky-light = ნათელი ბორცვები ღია ცის ქვეშ
+
+## Firefox
+
+newtab-wallpaper-category-title-firefox = { -brand-product-name }
+
+## Celestial
+
+# “Celestial” referring to astronomy; positioned in or relating to the sky,
+# or outer space as observed in astronomy.
+# Not to be confused with religious definition of the word.
+newtab-wallpaper-category-title-celestial = ციური სხეულები
+newtab-wallpaper-celestial-lunar-eclipse = მთვარის დაბნელება
+newtab-wallpaper-celestial-earth-night = ღამის სურათი დედამიწის ახლო ორბიტიდან
+newtab-wallpaper-celestial-starry-sky = ვარსკვლავებიანი ცა
+newtab-wallpaper-celestial-eclipse-time-lapse = მთვარის მიმდევრობითი დაბნელება
+newtab-wallpaper-celestial-black-hole = შავი ხვრელის გალაქტიკური გამოსახულება
+newtab-wallpaper-celestial-river = მდინარის თანამგზავრული გამოსახულება
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ დამკვეთი
+newtab-weather-menu-change-location = მდებარეობის შეცვლა
+newtab-weather-change-location-search-input-placeholder =
+    .aria-label = მდებარეობის მოძიება
+    .placeholder = მდებარეობის მოძიება
+newtab-weather-cancel-input =
+    .aria-label = გაუქმება
+    .title = გაუქმება
+# "Current" refers to the user's physical/geographic location detected via geolocation.
+newtab-weather-change-location-search-use-current =
+    .label = მიმდინარე მდებარეობის გამოყენება
+newtab-weather-menu-weather-display = ამინდის ჩვენება
+newtab-weather-todays-forecast = დღევანდელი ამინდი
+newtab-weather-see-full-forecast = იხილეთ სრული პროგნოზი
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = მარტივი
+newtab-weather-menu-change-weather-display-simple = მარტივ ხედზე გადართვა
+newtab-weather-menu-weather-display-option-detailed = ვრცელი
+newtab-weather-menu-change-weather-display-detailed = ვრცელ ხედზე გადართვა
+newtab-weather-menu-temperature-units = ტემპერატურის ერთეულები
+newtab-weather-menu-temperature-option-fahrenheit = ფარენჰაიტი
+newtab-weather-menu-temperature-option-celsius = ცელსიუსი
+newtab-weather-menu-change-temperature-units-fahrenheit = ფარენჰაიტზე გადართვა
+newtab-weather-menu-change-temperature-units-celsius = ცელსიუსზე გადართვა
+newtab-weather-menu-learn-more = ვრცლად
+newtab-weather-menu-detect-my-location = ჩემი მდებარეობის დადგენა
+# This message is shown if user is working offline
+newtab-weather-error-not-available = ამინდის მონაცემები მიუწვდომელია ახლა.
+newtab-weather-opt-in-see-weather = გსურთ ამინდის ნახვა თქვენი ადგილმდებარეობის მიხედვით?
+newtab-weather-opt-in-not-now =
+    .label = ახლა არა
+newtab-weather-opt-in-yes =
+    .label = დიახ
+newtab-weather-opt-in-headline = გაეცანით ადგილობრივ ამინდს
+newtab-weather-opt-in-use-location =
+    .label = მდებარეობის გამოყენება
+newtab-weather-opt-in-choose-location = მდებარეობის არჩევა
+# We'll be showing static (fake) weather data if the user has not opted in to using their location
+newtab-weather-static-city = ნიუ-იორკი
+# "Highest" here refers to the highest temperature of the day
+newtab-weather-high =
+    .aria-label = მაღალი
+# "Lowest" here refers to the lowest temperature of the day
+newtab-weather-low =
+    .aria-label = დაბალი
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast-description =
+    .aria-description = { $provider } ∙ დამკვეთი
+    .title = ამინდს გთავაზობთ { $provider }
+
+## Topic Labels
+
+newtab-topic-label-business = საქმიანობა
+newtab-topic-label-career = წინსვლა საქმეში
+newtab-topic-label-education = განათლება
+newtab-topic-label-arts = გართობა
+newtab-topic-label-food = საკვები
+newtab-topic-label-health = ჯანმრთელობა
+newtab-topic-label-hobbies = თამაშები
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = ფული
+newtab-topic-label-society-parenting = აღზრდა
+newtab-topic-label-government = პოლიტიკა
+newtab-topic-label-education-science = მეცნიერება
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = ცხოვრებისეული ხრიკები
+newtab-topic-label-sports = სპორტი
+newtab-topic-label-tech = ტექნოლოგია
+newtab-topic-label-travel = მოგზაურობა
+newtab-topic-label-home = სახლი და მებაღეობა
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = აირჩიეთ დარგი სიახლეების არხის მოსარგებად
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = აირჩიეთ ორი ან მეტი საკითხი. ჩვენი გამოცდილი ზედამხედველები შეარჩევენ თქვენზე მორგებულ მასალებს. შეგიძლიათ ნებისმიერ დროს შეცვალოთ.
+newtab-topic-selection-save-button = შენახვა
+newtab-topic-selection-cancel-button = გაუქმება
+newtab-topic-selection-button-maybe-later = მოგვიანებით გადავწყვეტ
+newtab-topic-selection-privacy-link = იხილეთ როგორ დაიცვათ და მართოთ მონაცემები
+newtab-topic-selection-button-update-interests = განაახლეთ შერჩეული მისწრაფებები
+newtab-topic-selection-button-pick-interests = აირციეთ მისწრაფებები
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = თვალის მიდევნება
+# Variables:
+#   $topic (string) - Topic that the user can follow
+newtab-section-follow-button-label =
+    .aria-label = გამოიწერეთ { $topic }
+newtab-section-following-button = გამოწერილი
+newtab-section-unfollow-button = თვალის მიდევნების შეწყვეტა
+# Variables:
+#   $topic (string) - Topic that the user is following and can unfollow
+newtab-section-unfollow-button-label =
+    .aria-label = გამოწერილი: გაუქმდეს { $topic }
+# A modal may appear next to the Follow button, directing users to try out the feature
+newtab-section-follow-highlight-title = გააუმჯობესეთ თქვენი არხი
+newtab-section-follow-highlight-subtitle = მიჰყევით თქვენს მისწრაფებებს, რომ იხილოთ კიდევ უფრო მეტი, რაც მოგწონთ.
+
+## Topic navigation
+## A row of buttons above the stories, each scrolling the page to that topic's section.
+
+newtab-topic-navigation-label =
+    .aria-label = თემები
+# Opens a menu listing the topics that did not fit in the row.
+newtab-topic-navigation-more-button = სხვა
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = შეზღუდვა
+newtab-section-blocked-button = შეზღუდულია
+newtab-section-unblock-button = შეზღუდვის მოხსნა
+# Variables:
+#   $topic (string) - Name of topic that user is following
+newtab-section-follow-topic =
+    .aria-label = გამოიწერეთ { $topic }
+# Variables:
+#   $topic (string) - Name of topic that user is unfollowing
+newtab-section-unfollow-topic =
+    .aria-label = გააუქმეთ { $topic }
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic =
+    .aria-label = შეიზღუდოს { $topic }
+# Variables:
+#   $topic (string) - Name of topic that user is unblocking
+newtab-section-unblock-topic =
+    .aria-label = მოიხსნას შეზღუდვისგან { $topic }
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-topic-p1 = ნამდვილად გსურთ ამ თემის შეზღუდვა?
+newtab-section-confirm-block-topic-p2 = შეზღუდული თემები აღარ გამოჩნდება თქვენს არხში.
+# Variables:
+#   $topic (string) - Name of topic that user is blocking
+newtab-section-block-topic-button = შეიზღუდოს { $topic }
+newtab-section-block-cancel-button = გაუქმება
+
+## Strings for custom wallpaper highlight
+
+newtab-section-mangage-topics-title = თემები
+newtab-section-manage-topics-button-v2 =
+    .label = თემების მართვა
+newtab-section-mangage-topics-followed-topics = მიდევნებული
+newtab-section-mangage-topics-followed-topics-empty-state = თქვენ ჯერ არცერთ თემას არ ადევნებთ თვალს.
+newtab-section-mangage-topics-blocked-topics = შეზღუდული
+newtab-section-mangage-topics-blocked-topics-empty-state = თქვენ ჯერ არცერთი თემა არ შეგიზღუდავთ.
+newtab-custom-wallpaper-title = მორგებული ფონები აქაა
+# 'Make firefox yours" means to customize or personalize
+newtab-custom-wallpaper-subtitle = ატვირთეთ საკუთარი ფონი ან შეარჩიეთ სასურველი ფერი, რომ გახადოთ { -brand-product-name } მეტად თქვენებური.
+newtab-custom-wallpaper-cta = მოსინჯვა
+
+## Strings for new user activation custom wallpaper highlight
+
+newtab-new-user-custom-wallpaper-title = აირჩიეთ ფონი, რომ გახადოთ { -brand-product-name } მეტად თქვენებური
+newtab-new-user-custom-wallpaper-subtitle = ახალი ჩანართის გახსნისას იგრძენით თავი შინ სასურველი ფონისა და ფერების შერჩევით.
+newtab-new-user-custom-wallpaper-cta = მოსინჯეთ ახლავე
+
+## Strings for Nova wallpaper feature highlight
+
+newtab-wallpaper-feature-highlight-title = ცინცხალი ფონები, ახლახან დამატებული
+newtab-wallpaper-feature-highlight-subtitle = აირჩიეთ თქვენთვის სასურველი და მოაწყვეთ ახალი ჩანართის გვერდი საკუთარი სახლივით.
+newtab-wallpaper-feature-highlight-cta = ფონის არჩევა
+
+## Strings for download mobile highlight
+
+newtab-download-mobile-highlight-title = ჩამოტვირთეთ { -brand-product-name } მობილურზე
+# "Scan the code" refers to scanning the QR code that appears above the body text that leads to Firefox for mobile download.
+newtab-download-mobile-highlight-body-variant-a = წააკითხეთ კოდი და უსაფრთხოდ გაიყოლეთ თან.
+newtab-download-mobile-highlight-body-variant-b = განაგრძეთ იქიდან, სადაც გაჩერდით, ჩანართების, პაროლებისა და სხვა მონაცემების დასინქრონებით.
+newtab-download-mobile-highlight-body-variant-c = იცოდით, რომ { -brand-product-name } შეგიძლიათ თან გაიყოლოთ? იგივე ბრაუზერი. თქვენს ჯიბეში.
+newtab-download-mobile-highlight-image =
+    .aria-label = QR-კოდი, რომ ჩამოტვირთოთ { -brand-product-name } მობილურზე
+
+## Strings for shortcuts highlight
+
+newtab-shortcuts-highlight-title = ხელთ იქონიეთ რჩეული მასალები
+newtab-shortcuts-highlight-subtitle = დაამატეთ მალსახმობი, რომ რჩეულ საიტებთან წვდომა ერთი წკაპით შეგეძლოთ.
+
+## Strings for reporting issues with ads and content
+
+newtab-report-content-why-reporting-this =
+    .label = რა არის მოხსენების მიზეზი?
+newtab-report-ads-reason-not-interested =
+    .label = არ იქცევს ჩემს ყურადღებას
+newtab-report-ads-reason-inappropriate =
+    .label = შეუსაბამოა
+newtab-report-ads-reason-seen-it-too-many-times =
+    .label = ზედმეტად ხშირად ვხედავ
+newtab-report-content-wrong-category =
+    .label = უმართებულოდაა დაჯგუფებული
+newtab-report-content-outdated =
+    .label = მოძველებულია
+newtab-report-content-inappropriate-offensive =
+    .label = შუსაბამო ან უხამსი შინაარსისაა
+newtab-report-content-spam-misleading =
+    .label = უსარგებლო ან თაღლითურია
+newtab-report-content-requires-payment-subscription =
+    .label = საჭიროებს გადახდას ან გამოწერას
+newtab-report-content-requires-payment-subscription-learn-more = ვრცლად
+newtab-report-cancel = გაუქმება
+newtab-report-submit = გაგზავნა
+newtab-toast-thanks-for-reporting =
+    .message = გმადლობთ, რომ მოგვახსენეთ.
+newtab-toast-widgets-hidden =
+    .message = აირჩიეთ ფანქრის ხატულა ჩანამატის ნებისმიერ დროს დასაბრუნებლად.
+# Variables:
+#   $topic (string) - Topic that the user has followed
+newtab-section-toast-follow =
+    .message = გამოწერილი გაქვთ { $topic }.
+# Variables:
+#   $topic (string) - Topic that the user has unfollowed
+newtab-section-toast-unfollow =
+    .message = აღარ გაქვთ გამოწერილი { $topic }.
+# Variables:
+#   $topic (string) - Topic that the user has blocked
+newtab-section-toast-block =
+    .message = აღარ იხილავთ ამბებს, რომელთაც შეეხება { $topic }.
+
+## Strings for task / to-do list productivity widget
+
+# "Add one" means adding a new task to the list (e.g., "Walk the dog")
+newtab-widget-lists-empty-cta = შესაძლებლობები უსაზღვროა. დაამატეთ რამე.
+# A simple label next to the default list name letting users know this is a new / beta feature
+newtab-widget-lists-label-new =
+    .label = სიახლე
+newtab-widget-lists-label-beta =
+    .label = Beta
+# When tasks have been previous marked as complete, they will appear in their own separate list beneath incomplete items
+# Variables:
+#   $number (number) - Amount of list items marked complete
+newtab-widget-lists-completed-list = შესრულებული ({ $number })
+newtab-widget-lists-celebration-headline = კარგად იმუშავეთ
+newtab-widget-lists-celebration-subhead = ყველა შესრულდა
+newtab-widget-task-list-menu-copy = ასლი
+newtab-widget-lists-menu-edit = სიის გადარქმევა
+newtab-widget-lists-menu-edit2 =
+    .aria-label = სიის გადარქმევა
+newtab-widget-lists-menu-create = ახალი სიის შექმნა
+newtab-widget-lists-menu-delete = ამ სიის წაშლა
+newtab-widget-lists-menu-copy = სიის ასლის აღება
+newtab-widget-lists-menu-learn-more = ვრცლად
+# "Change" is a verb here: the button switches which list is shown
+newtab-widget-lists-change-list =
+    .aria-label = სიის შეცვლა
+    .title = სიის შეცვლა
+newtab-widget-lists-button-add-item = ჩანაწერის დამატება
+newtab-widget-lists-input-add-an-item2 =
+    .aria-label = ჩანაწერის დამატება
+    .placeholder = ჩანაწერის დამატება
+newtab-widget-lists-input-error = დასამატებლად დაურთეთ წარწერა.
+newtab-widget-lists-input-menu-open-link = ბმულის გახსნა
+newtab-widget-lists-input-menu-move-up = აწევა
+newtab-widget-lists-input-menu-move-down = ჩამოწევა
+newtab-widget-lists-input-menu-delete = წაშლა
+newtab-widget-lists-input-menu-edit = ჩასწორება
+newtab-widget-lists-input-menu-edit2 =
+    .aria-label = ჩანაწერის ჩასწორება
+newtab-widget-lists-edit-clear =
+    .aria-label = გაუქმება
+    .title = გაუქმება
+# Lists is a noun, as in "options for the lists"
+newtab-widget-lists-menu-button =
+    .aria-label = სიების გამართვა
+# the + symbol emphasises the functionality of adding a new list
+newtab-widget-lists-dropdown-create =
+    .label = + ახალი სიის შექმნა
+newtab-widget-lists-name-label-default =
+    .label = დავალებების სია
+newtab-widget-lists-name-label-checklist =
+    .label = ჩამონათვალი
+newtab-widget-lists-name-placeholder-default =
+    .placeholder = დავალებების სია
+newtab-widget-lists-name-placeholder-checklist2 =
+    .aria-label = სიის გადარქმევა
+    .placeholder = ჩამონათვალი
+# The placeholder value of the name field for a newly created list
+newtab-widget-lists-name-placeholder-new2 =
+    .aria-label = სიის გადარქმევა
+    .placeholder = ახალი სია
+newtab-widget-section-title = ჩანამატები
+newtab-widget-menu-hide = ჩანამატის დამალვა
+newtab-widget-menu-change-size = ზომის შეცვლა
+# Parent label for a submenu in the widget menu that reorders the widget
+# among its siblings. "Left" and "Right" appear as items inside this submenu.
+newtab-widget-menu-move = გადატანა
+# Submenu item under "Move"; moves the widget one position to the left.
+# RTL locales should translate this as "Right".
+newtab-widget-menu-move-left = მარცხნივ
+# Submenu item under "Move"; moves the widget one position to the right.
+# RTL locales should translate this as "Left".
+newtab-widget-menu-move-right = მარჯვნივ
+newtab-widget-size-small = მომცრო
+newtab-widget-size-medium = საშუალო
+newtab-widget-size-large = მოზრდილი
+# Tooltip for hide all widgets button
+newtab-widget-section-hide-all-button =
+    .aria-label = ყველა ჩანამატის დამალვა
+    .title = ჩანამატების დამალვა
+newtab-widget-section-maximize =
+    .aria-label = ყველა ჩანამატი სრული ზომით
+    .title = ჩანამატების გაშლა
+newtab-widget-section-minimize =
+    .aria-label = ყველა ჩანამატი შემცირებული ზომით
+    .title = ჩანამატების ჩაკეცვა
+# Shown on the widgets section header button while the section is
+# auto-minimized to its title row, to open the section back up.
+newtab-widget-section-show-widgets =
+    .aria-label = გამოჩნდეს ჩანამატების არე
+    .title = ჩანამატების ჩვენება
+newtab-widget-section-menu-button =
+    .aria-label = ჩანამატების მენიუს გახსნა
+    .title = ჩანამატების მენიუ
+newtab-widget-add-widgets-button =
+    .aria-label = ჩანამატის დამატება
+    .title = ჩანამატის დამატება
+newtab-widget-section-menu-manage = ჩანამატების მართვა
+newtab-widget-section-menu-hide-all = ჩანამატების დამალვა
+newtab-widget-section-menu-learn-more = ვრცლად
+newtab-widget-section-feedback = მოგვახსენეთ თქვენი აზრი
+# Button shown when additional widgets are hidden beyond the
+# first row, allowing users to show them.
+newtab-widget-section-show-more =
+    .label = მეტი ჩანამატის გამოჩენა
+# Button shown when the widgets row is expanded to multiple rows,
+# allowing users to collapse it back to one row.
+newtab-widget-section-show-less =
+    .label = ნაკლები ჩანამატის გამოჩენა
+newtab-widget-lists-name-default = ჩამონათვალი
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+newtab-widget-timer-notification-title = წამმზომი
+newtab-widget-timer-notification-focus = საქმიანობის დრო ამოიწურა. კარგად გაისარჯეთ. გსურთ შესვენება?
+newtab-widget-timer-notification-break = შესვენების დრო ამოიწურა. მზად ხართ საქმიანობისთვის?
+newtab-widget-timer-notification-warning = შეტყობინებები გამორთულია
+newtab-widget-timer-mode-focus =
+    .label = საქმიანობა
+newtab-widget-timer-mode-break =
+    .label = შესვენება
+newtab-widget-timer-label-play =
+    .label = გაშვება
+newtab-widget-timer-label-pause =
+    .label = შეჩერება
+newtab-widget-timer-reset =
+    .title = ჩამოყრა
+newtab-widget-timer-menu-notifications = შეტყობინებების გამორთვა
+newtab-widget-timer-menu-notifications-on = შეტყობინებების ჩართვა
+newtab-widget-timer-menu-learn-more = ვრცლად
+newtab-widget-timer-menu-button =
+    .aria-label = წამმზომის გამართვა
+# The title displays above a set of top news headlines.
+newtab-daily-briefing-card-title = რჩეული ამბები
+newtab-daily-briefing-card-menu-dismiss = აცილება
+# Variables:
+#   $minutes (number) - Time since the feed has been refreshed
+newtab-daily-briefing-card-timestamp = განახლდა { $minutes } წუთის წინ
+newtab-widget-message-title = მოიკრიბეთ ყურადღება სიებისა და ჩაშენებული წამმზომის მეშვეობით
+# to-dos stands for "things to do".
+newtab-widget-message-copy = სწრაფი შეხსენებები იქნება ეს, თუ ყოველდღიური საქმიანობები, დაძაბული სამუშაო მონაკვეთები თუ შესვენებები განსატვირთად — მიჰყევით და ნუ გადაუხვევთ გეგმებს.
+# One spot refers to a dedicated section on new tab to manage and use widgets
+newtab-widget-message-focus-forecasts-title = ერთიანი სივრცე საქმისთვის, ამინდისთვის და სხვ.
+newtab-widget-message-focus-forecasts-body = გაიხალისეთ დღე ჩანამატებით, რომელთაც გთავაზობთ { -brand-product-name }. შეამოწმეთ ამინდი, მიმართეთ ყურადღება საქმისკენ ან თვალი ადევნეთ მსოფლიოს სხვადასხვა სასაათე სარტყელს.
+# "Make Firefox yours" refers to about:newtab. The call to action here ("Try it now")
+# is to customize the new tab page with a background image or color from
+# the built-in wallpaper collection or uploading your own image.
+newtab-promo-card-title-addons = გახადეთ { -brand-product-name } თქვენებური
+newtab-promo-card-body-addons = აირჩიეთ ფონი ჩვენი კრებულიდან ან შექმენით თავად.
+newtab-promo-card-cta-addons = მოსინჯეთ ახლავე
+newtab-promo-card-title = თანადგომა – { -brand-product-name }
+newtab-promo-card-body = ჩვენი დამკვეთები მხარს უჭერენ ჩვენს მიზანს უკეთესი ვებსივრცის ჩამოსაყალიბებლად
+newtab-promo-card-cta = ვრცლად
+newtab-promo-card-dismiss-button =
+    .aria-label = აცილება
+    .title = აცილება
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-start-aria =
+    .aria-label =
+        { $minutes ->
+            [one] გაეშვას { $minutes }-წუთიანი ათვლა
+           *[other] გაეშვას { $minutes }-წუთიანი ათვლა
+        }
+newtab-widget-timer-pause-aria =
+    .aria-label = წამმზომის შეჩერება
+# Variables:
+#   $minutes (number) - The currently selected timer duration in minutes
+newtab-widget-timer-spinbutton-name =
+    .aria-label =
+        { $minutes ->
+            [one] { $minutes } წთ
+           *[other] { $minutes } წთ
+        }
+newtab-widget-timer-decrease-min =
+    .title = დაკლება 1 წუთით
+newtab-widget-timer-increase-min =
+    .title = მომატება 1 წუთით
+newtab-widget-timer-mode-group =
+    .aria-label = უკუმთვლელი
+# Small label shown beneath the live time while the focus timer is running or paused.
+newtab-widget-timer-running-focus = საქმიანობა
+# Small label shown beneath the live time while the break timer is running or paused.
+newtab-widget-timer-running-break = შესვენება
+# Context-menu item to hide the Timer widget. Replaces the shared "Hide widget"
+# copy with a widget-specific string per the Nova design.
+newtab-widget-timer-menu-hide = წამმზომის დამალვა
+# Heading shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-heading-focus = კარგად გაისარჯეთ
+# Heading shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-heading-break = შესვენების დრო ამოიწურა
+# Message shown inside the Timer widget after a focus session ends.
+newtab-widget-timer-celebration-message-focus = შეისვენებთ?
+# Message shown inside the Timer widget after a break session ends.
+newtab-widget-timer-celebration-message-break = მზად ხართ საქმისთვის?
+
+##
+
+newtab-sports-widget-menu-follow-teams = გუნდის მიყოლა
+newtab-sports-widget-menu-view-schedule = განრიგის ნახვა
+newtab-sports-widget-menu-view-upcoming = მოახლოებულის ნახვა
+newtab-sports-widget-menu-view-results = შედეგების ნახვა
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-menu-key-dates = საკვანძო თარიღები
+newtab-sports-widget-menu-learn-more = ვრცლად
+# “Keep tabs on” is an informal expression meaning to stay updated on, stay informed on, or regularly follow something (in this case, World Cup matches and updates).
+newtab-sports-widget-keep-tabs = თვალი ადევნეთ მსოფლიო თასს
+newtab-sports-widget-get-updates = მიმდინარე შეხვედრების სიახლეები და სხვ.
+newtab-sports-widget-follow-teams =
+    .label = გუნდის მიყოლა
+newtab-sports-widget-view-matches =
+    .label = შეხვედრების ნახვა
+# Variables:
+#   $number (number) - Maximum number of teams a user can choose to follow in the team selection state
+newtab-sports-widget-follow-teams-title =
+    { $number ->
+        [one] გამოიწერეთ { $number } გუნდი
+       *[other] გამოიწერეთ { $number } გუნდი
+    }
+newtab-sports-widget-choose-wallpaper =
+    .label = ფონის არჩევა
+newtab-sports-widget-skip = აცილება
+newtab-sports-widget-search-country =
+    .aria-label = ქვეყნის ძიება
+    .placeholder = ქვეყნის ძიება
+newtab-sports-widget-cancel = გაუქმება
+newtab-sports-widget-back-button =
+    .aria-label = უკან
+newtab-sports-widget-done-button =
+    .label = მზადაა
+# Shown in the follow-teams list for a team that has been knocked out of the tournament.
+# Variables:
+#   $teamName (string) - the localized team name (e.g. "Canada").
+newtab-sports-widget-team-name-eliminated = { $teamName } (გამოვარდნილი)
+newtab-sports-widget-view-all =
+    .label = ყველას ნახვა
+newtab-sports-widget-show-less =
+    .label = შემოკლებულად
+# Toggle that filters the list of teams the user follows
+newtab-sports-widget-followed-only-toggle =
+    .label = მხოლოდ გამოწერილი გუნდები
+# Status shown when more matches are being fetched.
+newtab-sports-widget-loading-more = იტვირთება სხვა შეხვედრები…
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch =
+    .label = ყურება
+    .title = ეთერში ყურება
+# Watch is a verb (as in watch matches online).
+newtab-sports-widget-watch-icon =
+    .aria-label = ეთერში ყურება
+    .title = ეთერში ყურება
+newtab-sports-widget-watch-dialog-close =
+    .aria-label = დახურვა
+    .title = დახურვა
+# Tag: user can watch without paying (sign-in may still be required).
+newtab-sports-widget-watch-stream-free = უფასო
+# Tag: user can start watching via a trial; continued access may require payment after it ends.
+newtab-sports-widget-watch-stream-free-trial = უფასო საცდელი
+# Tag: provider offers both a no-cost or trial path and a paid path.
+newtab-sports-widget-watch-stream-free-paid = უფასო და ფასიანი
+# Tag: user must pay to watch (subscription, TV provider, premium plan, or add-on).
+newtab-sports-widget-watch-stream-paid = ფასიანი
+# Note: provider only streams some matches, not the full tournament.
+newtab-sports-widget-watch-stream-select-games-only = მხოლოდ თამაშების არჩევა
+# Heading for the list of streaming services available in the user’s country/region.
+newtab-sports-widget-watch-available-region = ხელმისაწვდომი თქვენს მხარეში
+# Heading for the list of streaming services available outside the user’s country/region.
+newtab-sports-widget-watch-available-other-regions = სხვა მხარეებში
+# Button that opens the provider’s stream page in a new tab.
+newtab-sports-widget-watch-play =
+    .aria-label = ეთერის გახსნა
+    .title = ეთერის გახსნა
+newtab-sports-widget-group-stage = ჯგუფური ეტაპი
+newtab-sports-widget-group-a = ჯგუფი A
+newtab-sports-widget-group-b = ჯგუფი B
+newtab-sports-widget-group-c = ჯგუფი C
+newtab-sports-widget-group-d = ჯგუფი D
+newtab-sports-widget-group-e = ჯგუფი E
+newtab-sports-widget-group-f = ჯგუფი F
+newtab-sports-widget-group-g = ჯგუფი G
+newtab-sports-widget-group-h = ჯგუფი H
+newtab-sports-widget-group-i = ჯგუფი I
+newtab-sports-widget-group-j = ჯგუფი J
+newtab-sports-widget-group-k = ჯგუფი K
+newtab-sports-widget-group-l = ჯგუფი L
+newtab-sports-widget-round-32 = 1/32-ფინალი
+newtab-sports-widget-round-16 = 1/16-ფინალი
+newtab-sports-widget-quarter-finals = მეოთხედფინალი
+# The "LIVE" string is meant to be uppercase in English, but other languages and locales may vary in how they handle this.
+newtab-sports-widget-live = ᲞᲘᲠᲓ.
+newtab-custom-widget-live-refresh =
+    .aria-label = ქულების გაახლება
+    .title = ქულების გაახლება
+# Milestone dates (e.g. group stage, semifinals, etc.). Refers to calendar dates.
+newtab-sports-widget-key-dates = საკვანძო თარიღები
+newtab-sports-widget-upcoming = მოახლოებული
+# Used for a match currently ongoing
+newtab-sports-widget-now = ახლა
+newtab-sports-widget-results = შედეგები
+newtab-sports-widget-semi-finals = ნახევარფინალი
+newtab-sports-widget-bronze-finals = ბრინჯაოსთვის
+# Final is the final match for 1st place.
+newtab-sports-widget-final = ფინალი
+# Variables:
+#   $start (Date) - Start date of a tournament stage
+#   $end (Date) - End date of a tournament stage
+newtab-sports-widget-key-date-range = { DATETIME($start, day: "numeric", month: "short") } – { DATETIME($end, day: "numeric", month: "short") }
+# Variables:
+#   $date (Date) - Date of a single tournament event
+newtab-sports-widget-key-date = { DATETIME($date, day: "numeric", month: "short") }
+newtab-sports-widget-delayed = შეყოვნებულია
+newtab-sports-widget-postponed = გადადებულია
+newtab-sports-widget-suspended = შეჩერებულია
+newtab-sports-widget-cancelled = გაუქმებულია
+newtab-sports-widget-information = შეხვედრის შესახებ
+newtab-sports-widget-no-live-data = მიმდინარე შეხვედრის ცნობები არ ახლდება
+newtab-sports-widget-view-results-link = შედეგების ნახვა
+newtab-sports-widget-third-place = მესამეადგილოსანი
+# Runner-up is the team in 2nd place.
+newtab-sports-widget-runner-up = მეორეადგილოსანი
+newtab-sports-widget-champions = გამარჯვებული
+newtab-sports-widget-world-cup-champions = 2026 მსოფლიოს გამარჯვებულები
+# Compact champions label for the medium-size widget result card; the larger
+# card uses newtab-sports-widget-world-cup-champions.
+newtab-sports-widget-world-cup-champions-short = 2026 გამარჯვებულები
+# Variables:
+#   $date (Date) - The match start time
+newtab-sports-widget-match-time = { DATETIME($date, hour: "2-digit", minute: "2-digit") }
+newtab-sports-widget-match-full-time = ძირითადი
+newtab-sports-widget-match-halftime = შესვენება
+newtab-sports-widget-match-extra-time = დამატებითი
+newtab-sports-widget-match-penalties = თერთმეტმეტრიანები
+# Separator shown between two teams in a placeholder match row when no upcoming
+# match details are available yet.
+newtab-sports-widget-match-vs = და
+# Note shown in the Upcoming tab when no match details are available yet.
+newtab-sports-widget-no-upcoming-matches = არ გამოგრჩეთ მომავალი შეხვედრის ცნობები
+
+## Sports widget live-games pagination. Shown when 2+ matches are live at the same time
+
+# arrow button that goes to the previous page of live matches.
+newtab-sports-widget-pagination-previous =
+    .aria-label = წინა
+    .title = წინა
+# arrow button that goes to the next page of live matches.
+newtab-sports-widget-pagination-next =
+    .aria-label = შემდეგი
+    .title = შემდეგი
+# Dot indicator that jumps directly to a given live match.
+# $index (number) - 1-based position of this dot in the list.
+# $total (number) - Total number of live matches.
+newtab-sports-widget-pagination-dot =
+    .aria-label = პირდ. შეხვედრა { $index }, სულ { $total }
+    .title = პირდ. შეხვედრა { $index }, სულ { $total }
+
+## Accessible labels for match rows in the sports widget. These are read by
+## screen readers to announce the match details and status.
+## Variables shared by all messages in this group:
+##   $homeTeam (String) - The full name of the home team (e.g. "Mexico")
+##   $awayTeam (String) - The full name of the away team (e.g. "Russia")
+
+# A finished match row (regular full-time result).
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+newtab-sports-widget-match-aria-label-results =
+    .aria-label = { $homeTeam }, { $homeScore } — { $awayTeam }, { $awayScore }
+# A finished match row that went to a penalty shootout.
+# Parenthesized values are the shootout score.
+# Variables:
+#   $homeScore (number) - The home team's regular-time score
+#   $awayScore (number) - The away team's regular-time score
+#   $homePenalty (number) - The home team's penalty shootout score
+#   $awayPenalty (number) - The away team's penalty shootout score
+newtab-sports-widget-match-aria-label-results-penalties =
+    .aria-label = { $homeTeam }, { $homeScore } ({ $homePenalty }) — { $awayTeam }, { $awayScore } ({ $awayPenalty })
+# A match that is currently in progress.
+# Variables:
+#   $homeScore (number) - The home team's current score
+#   $awayScore (number) - The away team's current score
+newtab-sports-widget-match-aria-label-now =
+    .aria-label = პირდაპირი: { $homeTeam }, { $homeScore } — { $awayTeam }, { $awayScore }
+# An upcoming scheduled match row. Announces kickoff time and date.
+# Variables:
+#   $date (Date) - The scheduled kickoff date/time
+newtab-sports-widget-match-aria-label-upcoming =
+    .aria-label = { $homeTeam } —{ $awayTeam }, { DATETIME($date, hour: "numeric", minute: "numeric") }, { DATETIME($date, day: "numeric", month: "long") }
+# An upcoming match row whose status is "delayed".
+newtab-sports-widget-match-aria-label-upcoming-delayed =
+    .aria-label = { $homeTeam } — { $awayTeam }, შეყოვნდა
+# An upcoming match row whose status is "postponed".
+newtab-sports-widget-match-aria-label-upcoming-postponed =
+    .aria-label = { $homeTeam } — { $awayTeam }, გადაიდო
+# An upcoming match row whose status is "suspended".
+newtab-sports-widget-match-aria-label-upcoming-suspended =
+    .aria-label = { $homeTeam } — { $awayTeam }, შეჩერდა
+# An upcoming match row whose status is "cancelled".
+newtab-sports-widget-match-aria-label-upcoming-cancelled =
+    .aria-label = { $homeTeam } — { $awayTeam }, გაუქმდა
+
+## Sports widget — team names (FIFA country codes)
+## Only includes names not adequately covered by standard country-code
+## internationalization tooling.
+
+newtab-sports-widget-team-name-label-bih =
+    .label = ბოსნია და ჰერცეგოვინა
+newtab-sports-widget-team-name-label-civ =
+    .label = კოტ-დ'ივუარი
+newtab-sports-widget-team-name-label-cod =
+    .label = კონგოს დემ. რესპ.
+newtab-sports-widget-team-name-label-eng =
+    .label = ინგლისი
+newtab-sports-widget-team-name-label-sco =
+    .label = შოტლანდია
+# Placeholder used in a match row's aria-label for an undecided team (shown visually as "--").
+newtab-sports-widget-team-tbd = გამოსავლენია
+
+## Sports widget OMC messages
+## Shown as on-screen messages promoting the Sports widget and World Cup wallpapers.
+
+newtab-sports-widget-message-wallpapers-title = აღნიშნეთ მსოფლიო თასის დაწყება ახალი ფონებით
+newtab-sports-widget-message-wallpapers-body = გადმოიტანეთ ყოველი თამაშის დღის მუხტი ბრაუზერში შეჯიბრების მიმდინარეობისას.
+newtab-sports-widget-message-wallpapers-cta = ფონის არჩევა
+newtab-sports-widget-message-wallpapers-semifinals-title = ახალი ფონი ნახევარფინალებისთვის
+newtab-sports-widget-message-wallpapers-semifinals-body = კარგად მოეწყვეთ მსოფლიო პირველობის უდიდესი თამაშებისთვის.
+newtab-sports-widget-message-add-widgets-cta =
+    .label = ჩანამატის დამატება
+newtab-sports-widget-message-day-in-play-title = გაიხალისეთ დღე ჩანამატებით, რომელთაც გთავაზობთ { -brand-product-name }
+newtab-sports-widget-message-day-in-play-body = თვალი ადევნეთ მსოფლიო თასს, მიმართეთ ყურადღება საქმისკენ, იხილეთ მსოფლიოს სხვადასხვა სასაათე სარტყელი და ა. შ.
+newtab-sports-widget-message-explore-widgets-cta =
+    .label = მოიძიეთ ჩანამატები
+
+## Survey prompts shown after the World Cup to gather feedback on the widgets experience.
+
+newtab-sports-widget-message-survey-title = დაგვეხმარეთ ჩანამატების გაუმჯობესებაში
+newtab-sports-widget-message-survey-body = მსოფლიო დასრულდა. გამოგვეხმაურეთ და გაგვიზიარეთ თქვენი შთაბეჭდილებები.
+newtab-sports-widget-message-survey-widget-title = როგორ მოგეწონათ მსოფლიო თასის ჩანამატი?
+newtab-sports-widget-message-survey-widget-body = გამოგვეხმაურეთ მომავალი ჩანამატების დასახვეწად. შემდეგ კი მოსინჯეთ რიგ-რიგობით.
+newtab-sports-widget-message-survey-cta =
+    .label = კითხვარის შევსება
+
+## Strings for activation window message variants. In certain experiment configurations,
+## the strings from these variants may be displayed in a message below the search input
+## for the first 48 hours of a new profile's lifetime. Some messages include buttons with
+## labels, but not all.
+
+newtab-activation-window-message-dismiss-button =
+    .aria-label = აცილება
+    .title = აცილება
+# "This space" refers to about:newtab. The call to action here ("make it your own")
+# is to customize newtab with a background image or colour, or by tweaking the
+# existing widgetry that appears on it.
+newtab-activation-window-message-customization-focus-header = მოაწყვეთ ეს სივრცე თქვენებურად
+newtab-activation-window-message-customization-focus-message = აირჩიეთ ახალთახალი ფონი, დაამატეთ რჩეული საიტების მალსახმობები და მუდმივად გაეცანით თქვენთვის საყურადღებო ამბებს.
+newtab-activation-window-message-customization-focus-primary-button =
+    .label = დაიწყეთ მორგება
+# "This space" refers to about:newtab. The sentiment of "plays by your rules" is
+# meant to evoke the idea that newtab is malleable and customizable. The call to
+# action is to customize newtab with a background image or colour, or by tweaking
+# the existing widgetry that appears on it.
+newtab-activation-window-message-values-focus-header = ეს სივრცე შეიძლება მოაწყოთ თქვენებურად
+newtab-activation-window-message-values-focus-message = { -brand-product-name } საშუალებას გაძლევთ გვერდები ინახულოთ ისე, როგორც მოგესურვებათ, ინტერნეტში შებიჯებისთანავე. გახადეთ { -brand-product-name } თქვენებური.
+
+## Strings for the Clock widget
+
+# Context menu item: toggle the clock card off.
+newtab-clock-widget-menu-hide = საათის დამალვა
+newtab-clock-widget-menu-learn-more = ვრცლად
+newtab-clock-widget-menu-edit = საათების ჩასწორება
+newtab-clock-widget-menu-switch-to-12h = გადართვა 12-საათიანზე
+newtab-clock-widget-menu-switch-to-24h = გადართვა 24-საათიანზე
+newtab-clock-widget-label-your-clocks = თქვენი საათები
+newtab-clock-widget-search-location-input =
+    .aria-label = ქალაქის ძიება
+    .label = მდებარეობა
+    .placeholder = ქალაქის ძიება
+# "Nickname (optional)" refers to a custom, user-defined label for a saved location
+# (e.g., "Home", "Office", or "School") to make it easier to recognize.
+# Not to be translated as a legal name, username, or alias used for identity verification.
+newtab-clock-widget-input-nickname =
+    .aria-label = მეტსახელი (არასავალდებულო)
+    .label = მეტსახელი (არასავალდებულო)
+    .placeholder = მეტსახელის დამატება
+# "Add new clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-button-add =
+    .aria-label = ახალი საათის დამატება
+    .title = ახალი საათის დამატება
+newtab-clock-widget-button-add-clock = დამატება
+newtab-clock-widget-button-cancel = გაუქმება
+newtab-clock-widget-button-back =
+    .aria-label = უკან
+    .title = უკან
+newtab-clock-widget-button-edit-clock =
+    .aria-label = საათის ჩასწორება
+    .title = საათის ჩასწორება
+newtab-clock-widget-button-save = შენახვა
+newtab-clock-widget-button-remove-clock =
+    .aria-label = საათის მოცილება
+    .title = საათის მოცილება
+# Accessible name for a clock row in the "Your clocks" management panel
+# when the row has no user-provided nickname. Read aloud by screen
+# readers when focus lands on the row.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+newtab-clock-widget-edit-item =
+    .aria-label = { $city }
+# Accessible name for a clock row when a user nickname has been set.
+# Variables:
+#   $city (string) - The city name displayed in the row.
+#   $nickname (string) - The user-provided nickname for the row.
+newtab-clock-widget-edit-item-with-nickname =
+    .aria-label = { $city }, მეტსახელი: { $nickname }
+newtab-clock-widget-add-clock-form =
+    .aria-label = საათის დამატება
+newtab-clock-widget-edit-clock-form =
+    .aria-label = საათის ჩასწორება
+# "Search results" is the accessible label for the listbox dropdown that appears
+# below the location search field, listing matching cities as the user types.
+# It means "results of the search", not "search within the results".
+newtab-clock-widget-search-results =
+    .aria-label = ძიების შედეგები
+# Fallback row in the search results that lets the user add a city that is
+# not in the list. $city (String) is the text the user has typed.
+newtab-clock-widget-add-custom = დაამატეთ „{ $city }“ ცალკე საათად
+# Text field for the display name of a user-added custom clock.
+newtab-clock-widget-custom-city-input =
+    .aria-label = ქალაქის სახელი
+    .label = ქალაქის სახელი
+    .placeholder = ამ საათის სახელი
+# Searchable time-zone field shown when adding a custom clock. The user
+# types a city they know and picks it to set the clock's time zone.
+newtab-clock-widget-custom-timezone-input =
+    .aria-label = სასაათე სარტყელი
+    .label = სასაათე სარტყელი
+    .placeholder = ძიება ქალაქით, სარტყლით ან UTC-საზომით
+newtab-clock-widget-custom-zone-results =
+    .aria-label = დროის სარტყლის შედეგები
+# Shown in the time-zone picker when the search matches no time zones.
+newtab-clock-widget-custom-zone-no-results = დროის სარტყელი არ მოინახა
+# Returns from the custom clock form back to the city search.
+newtab-clock-widget-custom-back = უკან
+# Shown in place of the search results when the user's query does not match any
+# supported city — e.g. typing a misspelled name or a place not in the IANA
+# time zone list.
+newtab-clock-widget-search-no-results = არაა თანხვედრა
+# "Open menu for clock" is an icon-only button in the widget toolbar — the
+# attributes are consumed as tooltip/screen-reader label only. The button
+# never renders visible text.
+newtab-clock-widget-menu-button =
+    .aria-label = საათის მენიუს გახსნა
+    .title = საათის მენიუს გახსნა
+# $nickname (String) - The user-defined nickname for a saved clock location (e.g., "Home", "Office").
+newtab-clock-widget-label-nickname-with-value = მეტსახელი: { $nickname }
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = ნიუ-იორკი
+newtab-clock-city-us-los-angeles = ლოს-ანჯელესი
+newtab-clock-city-us-chicago = ჩიკაგო
+newtab-clock-city-us-san-francisco = სან-ფრანცისკო
+newtab-clock-city-us-san-diego = სან-დიეგო
+newtab-clock-city-us-dallas = დალასი
+newtab-clock-city-us-houston = ჰიუსტონი
+newtab-clock-city-us-philadelphia = ფილადელფია
+newtab-clock-city-us-atlanta = ატლანტა
+newtab-clock-city-us-washington-dc = ვაშინგტონი
+newtab-clock-city-us-boston = ბოსტონი
+newtab-clock-city-us-miami = მაიამი
+newtab-clock-city-us-seattle = სიეტლი
+newtab-clock-city-us-denver = დენვერი
+newtab-clock-city-us-honolulu = ჰონოლულუ
+newtab-clock-city-us-anchorage = ანკორიჯი
+newtab-clock-city-de-berlin = ბერლინი
+newtab-clock-city-de-munich = მიუნხენი
+newtab-clock-city-de-frankfurt = მაინის ფრანკფურტი
+newtab-clock-city-de-hamburg = ჰამბურგი
+newtab-clock-city-fr-paris = პარიზი
+newtab-clock-city-fr-lyon = ლიონი
+newtab-clock-city-fr-marseille = მარსელი
+newtab-clock-city-fr-toulouse = ტულუზა
+newtab-clock-city-in-kolkata = კოლკატა
+newtab-clock-city-in-mumbai = მუმბაი
+newtab-clock-city-in-delhi = დელი
+newtab-clock-city-in-bangalore = ბენგალურუ
+newtab-clock-city-cn-shanghai = შანხაი
+newtab-clock-city-cn-beijing = პეკინი
+newtab-clock-city-cn-shenzhen = შენჭენი
+newtab-clock-city-br-sao-paulo = სან-პაულუ
+newtab-clock-city-br-rio-de-janeiro = რიო-დე-ჟანეირო
+newtab-clock-city-br-brasilia = ბრაზილია
+newtab-clock-city-id-jakarta = ჯაკარტა
+newtab-clock-city-id-surabaya = სურაბაია
+newtab-clock-city-id-makassar = მაკასარი
+newtab-clock-city-ca-toronto = ტორონტო
+newtab-clock-city-ca-montreal = მონრეალი
+newtab-clock-city-ca-vancouver = ვანკუვერი
+newtab-clock-city-au-sydney = სიდნეი
+newtab-clock-city-au-perth = პერთი
+newtab-clock-city-au-adelaide = ადელაიდა
+newtab-clock-city-pl-warsaw = ვარშავა
+newtab-clock-city-pl-krakow = კრაკოვი
+newtab-clock-city-jp-tokyo = ტოკიო
+newtab-clock-city-jp-osaka = ოსაკა
+newtab-clock-city-mx-mexico-city = მეხიკო
+newtab-clock-city-mx-guadalajara = გვადალახარა
+newtab-clock-city-it-rome = რომი
+newtab-clock-city-it-milan = მილანი
+newtab-clock-city-ru-moscow = მოსკოვი
+newtab-clock-city-ru-saint-petersburg = სანქტ-პეტერბურგი
+newtab-clock-city-gb-london = ლონდონი
+newtab-clock-city-gb-birmingham = ბირმინგემი
+newtab-clock-city-es-madrid = მადრიდი
+newtab-clock-city-es-barcelona = ბარსელონა
+newtab-clock-city-nl-amsterdam = ამსტერდამი
+newtab-clock-city-ch-zurich = ციურიხი
+newtab-clock-city-at-vienna = ვენა
+newtab-clock-city-cz-prague = პრაღა
+newtab-clock-city-ar-buenos-aires = ბუენოს-აირესი
+newtab-clock-city-gr-athens = ათენი
+newtab-clock-city-hu-budapest = ბუდაპეშტი
+newtab-clock-city-be-brussels = ბრიუსელი
+newtab-clock-city-ua-kyiv = კიევი
+newtab-clock-city-fi-helsinki = ჰელსინკი
+newtab-clock-city-co-bogota = ბოგოტა
+newtab-clock-city-ph-manila = მანილა
+newtab-clock-city-tr-istanbul = სტამბოლი
+newtab-clock-city-my-kuala-lumpur = კუალა-ლუმპური
+newtab-clock-city-eg-cairo = კაირო
+newtab-clock-city-se-stockholm = სტოკჰოლმი
+newtab-clock-city-ro-bucharest = ბუქარესტი
+newtab-clock-city-th-bangkok = ბანგკოკი
+newtab-clock-city-ng-lagos = ლაგოსი
+newtab-clock-city-tw-taipei = ტაიბეი
+newtab-clock-city-za-johannesburg = იოჰანესბურგი
+newtab-clock-city-cl-santiago = სანტიაგო
+newtab-clock-city-pk-karachi = კარაჩი
+newtab-clock-city-bg-sofia = სოფია
+newtab-clock-city-sg-singapore = სინგაპური
+newtab-clock-city-hk-hong-kong = ჰონგ-კონგი
+newtab-clock-city-sa-riyadh = ერ-რიადი
+newtab-clock-city-dk-copenhagen = კოპენჰაგენი
+newtab-clock-city-pe-lima = ლიმა
+newtab-clock-city-ke-nairobi = ნაირობი
+newtab-clock-city-nz-auckland = ოკლენდი
+newtab-clock-city-kr-seoul = სეული
+newtab-clock-city-lt-vilnius = ვილნიუსი
+newtab-clock-city-ie-dublin = დუბლინი
+newtab-clock-city-ae-dubai = დუბაი
+newtab-clock-city-lv-riga = რიგა
+newtab-clock-city-pt-lisbon = ლისაბონი
+newtab-clock-city-ir-tehran = თეირანი
+newtab-clock-city-bd-dhaka = დაკა
+newtab-clock-city-ec-guayaquil = გუაიაკილი
+newtab-clock-city-vn-ho-chi-minh-city = ჰოშიმინი
+newtab-clock-city-np-kathmandu = კატმანდუ
+newtab-clock-city-mm-yangon = იანგონი
