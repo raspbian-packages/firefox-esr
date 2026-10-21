@@ -1,0 +1,625 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Нов раздел
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button =
+    .title = Персонализирайте тази страница
+#  (developer note): @nova-cleanup(remove-string): Remove newtab-customize-panel-icon-button-label once Nova lands, will be using newtab-customize-panel-label instead
+newtab-customize-panel-icon-button-label = Персонализиране
+newtab-customize-panel-label =
+    .label = Персонализиране
+newtab-settings-dialog-label =
+    .aria-label = Настройки
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-title =
+    .label = Начална страница
+home-homepage-new-windows =
+    .label = Нови прозорци
+home-homepage-new-tabs =
+    .label = Нов раздел
+
+## Firefox Home content
+
+home-prefs-content-header =
+    .label = { -firefox-home-brand-name }
+home-prefs-search-header2 =
+    .label = Търсене
+home-prefs-stories-header2 =
+    .description = Изключително съдържание, подбрано от семейството на  { -brand-product-name }
+    .label = Истории
+home-prefs-widgets-header =
+    .label = Приспособления
+# Timer is a widget on New Tab, similar to the Pomodoro timer.
+home-prefs-timer-header =
+    .label = Таймер
+# Sports is a widget on New Tab showing sports scores and schedules.
+home-prefs-sports-widget-header =
+    .label = Спорт
+# Clock is a widget on New Tab that displays time zones around the world.
+home-prefs-clocks-header =
+    .label = Часовник
+home-prefs-firefox-logo-header =
+    .label = Лого на { -brand-short-name }
+# Informational message bar that appears in the Firefox Home section when the options are disabled.
+# The user must select Firefox Home as their homepage for either new tabs or new windows to enable
+# the features in settings.
+home-prefs-firefox-home-disabled-notice =
+    .message = За да използвате тези възможности, задайте за нови раздели или нови прозорци на { -firefox-home-brand-name }.
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } ред
+           *[other] { $num } реда
+        }
+# Dropdown option shown when an extension replaces the contents of new windows or tabs.
+# Variables:
+#   $extension (string) - Name of the extension
+home-prefs-homepage-extension-option =
+    .label = Разширение ({ $extension })
+home-restore-defaults-srd =
+    .label = Стандартни настройки
+    .accesskey = с
+home-mode-choice-default-fx-srd =
+    .label = { -firefox-home-brand-name } (По подразбиране)
+home-mode-choice-custom-srd =
+    .label = Потребителски адреси…
+home-mode-choice-blank-srd =
+    .label = Празна страница
+home-prefs-shortcuts-header-srd =
+    .label = Преки пътища
+home-prefs-shortcuts-select =
+    .aria-label = Преки пътища
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = Спонсорирани препратки
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Платени публикации
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Посетени страници
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Отметки
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Последни изтегляния
+home-prefs-recent-activity-header-srd =
+    .label = Последна активност
+home-prefs-recent-activity-select =
+    .aria-label = Последна активност
+home-prefs-weather-header-srd =
+    .label = Времето
+home-prefs-support-firefox-header-srd =
+    .label = Подкрепете { -brand-product-name }
+
+## Strings for the Privacy widget
+
+# Context menu item linking to more information about the Privacy widget.
+newtab-privacy-menu-learn-more = Научете повече
+
+## Privacy widget — informational messages
+##
+## Rotating "info" secondary messages. Each message has a body plus a matched
+## "-cta" button label sharing the same id stem (the CTA button isn't rendered
+## yet; the labels are authored so the pairing is ready).
+
+newtab-privacy-message-info-8-cta = Научете повече
+
+## Strings for the Picture of the Day widget
+
+# Title shown at the top of the widget, with the source name appended.
+# "Wikimedia Commons" is a brand name and should not be translated.
+newtab-picture-header = Картинка на деня · Общомедия (Wikimedia Commons)
+# Context menu item that opens the New Tab customization panel.
+newtab-picture-menu-manage-wallpaper = Управление на тапетите
+# Context menu item linking to more information about the widget.
+newtab-picture-menu-learn-more = Научете повече
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Търсене
+    .title = Търсене
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = Търсете с { $engine } или въведете адрес
+newtab-search-box-handoff-text-no-engine = Търсете или въведете адрес
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = Търсете с { $engine } или въведете адрес
+    .placeholder = Търсете с { $engine } или въведете адрес
+    .title = Търсете с { $engine } или въведете адрес
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = Търсете или въведете адрес
+    .placeholder = Търсете или въведете адрес
+    .title = Търсете или въведете адрес
+newtab-search-box-text = Търсене в интернет
+newtab-search-box-input =
+    .aria-label = Търсене в мрежата
+    .placeholder = Търсене в мрежата
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Добавяне на търсеща машина
+newtab-topsites-add-shortcut-header = Нова клавишна комбинация
+newtab-topsites-edit-shortcut-header = Промяна на икона
+newtab-topsites-add-shortcut-label = Добавяне на пряк път
+newtab-topsites-add-shortcut-title =
+    .aria-label = Добавяне на пряк път
+    .title = Добавяне на пряк път
+newtab-topsites-title-label = Заглавие
+newtab-topsites-title-input =
+    .placeholder = Въведете заглавие
+newtab-topsites-url-label = Адрес
+newtab-topsites-url-input =
+    .placeholder = Адрес
+newtab-topsites-url-validation = Необходим е валиден URL
+newtab-topsites-image-url-label = Адрес на изображение по желание
+newtab-topsites-use-custom-image-link = Използване изображение по желание
+newtab-topsites-use-image-link = Използване изображение по желание…
+newtab-topsites-image-validation = Изображението не може да бъде заредено. Опитайте с друг адрес.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Отказ
+newtab-topsites-delete-history-button = Премахване от историята
+newtab-topsites-save-button = Запазване
+newtab-topsites-preview-button = Преглед
+newtab-topsites-add-button = Добавяне
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Сигурни ли сте, че желаете да премахнете страницата навсякъде от историята?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Действието е необратимо.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = Спонсорирано
+
+## Label used by screen readers for pinned top sites
+
+# Variables:
+#   $title (string) - The label or hostname of the site.
+topsite-label-pinned =
+    .aria-label = { $title } (закачен)
+    .title = { $title }
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Отваряне на меню
+    .title = Отваряне на меню
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Отваряне на менюто за { $title }
+    .title = Отваряне на меню
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Променяне
+newtab-menu-open-new-window = Отваряне в раздел
+newtab-menu-open-new-private-window = Отваряне в поверителен прозорец
+newtab-menu-dismiss = Затваряне
+newtab-menu-pin = Закачане
+newtab-menu-unpin = Откачане
+newtab-menu-delete-history = Премахване от историята
+newtab-menu-show-privacy-info = Спонсори и поверителност
+# Report is a verb (i.e. report issue with the content).
+newtab-menu-report = Докладване
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Забраняване
+# Context menu option to open a support page explaining the New Tab personalization features and privacy controls.
+newtab-menu-section-learn-more = Научете повече
+
+## Context menu options for sponsored stories and new ad formats on New Tab.
+
+newtab-menu-manage-sponsored-content = Управление на спонсорирано съдържание
+newtab-menu-our-sponsors-and-your-privacy = Нашите спонсори и вашата поверителност
+newtab-menu-report-this-ad = Докладване на рекламата
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Премахване на отметка
+# Bookmark is a verb here.
+newtab-menu-bookmark = Добавяне в отметки
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Копиране на препратка за изтегляне
+newtab-menu-go-to-download-page = Към страницата за изтегляне
+newtab-menu-remove-download = Премахване от историята
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Показване във Finder
+       *[other] Отваряне на съдържащата папка
+    }
+newtab-menu-open-file = Отваряне на файла
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Посетена
+newtab-label-bookmarked = Отметната
+newtab-label-removed-bookmark = Отметката е премахната
+newtab-label-recommended = Тенденции
+newtab-label-saved = Запазено в { -pocket-brand-name }
+newtab-label-download = Изтеглено
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · Спонсорирано
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = Спонсорирано от { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } мин.
+# This string is used under fixed size ads to indicate sponsored content
+newtab-label-sponsored-fixed = Спонсорирано
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Политика за личните данни
+
+## Section Headers.
+
+newtab-section-header-topsites = Предпочитани страници
+newtab-section-header-recent-activity = Последна активност
+newtab-section-header-stories = Истории, провокиращи размисъл
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Днешният избор за вас
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Разглеждайте и тук ще ви покажем някои от най-добрите статии, видео и други страници, които сте посетили или отметнали наскоро.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Разгледахте всичко. Проверете по-късно за още истории. Нямате търпение? Изберете популярна тема, за да откриете повече в интернет.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = Изчетохте всичко!
+newtab-discovery-empty-section-topstories-content = Проверете по-късно за повече статии.
+newtab-discovery-empty-section-topstories-try-again-button = Нов опит
+newtab-discovery-empty-section-topstories-loading = Зареждане…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Ами сега! Почти заредихме тази секция, но не съвсем.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Ааах, нещо се обърка и съдържанието не е заредено.
+newtab-error-fallback-refresh-link = Презаредете страницата за повторен опит.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = Страници за преглед по-късно
+    .label = Препратки
+newtab-custom-shortcuts-nova =
+    .label = Препратки
+newtab-custom-row-description =
+    .description = Брой редове
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } ред
+           *[other] { $num } реда
+        }
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be having a description under "Recommended stories" anymore
+newtab-custom-stories-toggle =
+    .description = Изключително съдържание подбрано от семейството на { -brand-product-name }
+    .label = Препоръчани истории
+newtab-recommended-stories-toggle =
+    .label = Препоръчани истории
+newtab-custom-stories-personalized-toggle =
+    .label = Истории
+newtab-custom-stories-personalized-checkbox =
+    .label = Персонализирани истории въз основа на вашата активност
+newtab-custom-stories-personalized-checkbox-label = Персонализирани истории въз основа на вашата активност
+newtab-custom-weather-toggle =
+    .description = Времето днес накратко
+    .label = Времето
+newtab-custom-widget-weather-toggle =
+    .label = Времето
+newtab-custom-widget-lists-toggle =
+    .label = Списъци
+newtab-custom-widget-timer-toggle =
+    .label = Таймер
+newtab-custom-widget-privacy-toggle =
+    .label = Поверителност
+newtab-widget-manage-widget-button =
+    .label = Управление на приставките
+# Tooltip for close button
+newtab-custom-close-menu-button =
+    .aria-label = Затваряне на менюто
+    .title = Затваряне
+newtab-custom-settings = Настройки
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = Тапети
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. Nova has no reset button; the wallpapers toggle handles reset
+newtab-wallpaper-reset = Връщане на стандартни настройки
+#  (developer note): @nova-cleanup(remove-string): Remove old "Upload an image" string once Nova lands. The new "Add an image"  string will take over
+newtab-wallpaper-upload-image = Качване на изображение
+newtab-wallpaper-add-an-image = Добавяне...
+newtab-wallpaper-custom-color = Изберете цвят
+newtab-wallpaper-toggle-title =
+    .label = Тапети
+# Variables
+#   $file_size (number) - The number of the maximum image file size (in MB) that may be uploaded
+newtab-wallpaper-error-max-file-size = Изображението надхвърля ограничението за големина на файла от { $file_size }MB. Моля, опитайте се да качите по-малък файл.
+newtab-wallpaper-light-red-panda = Червена панда
+newtab-wallpaper-light-mountain = Бяла планина
+newtab-wallpaper-light-sky = Небе с лилави и розови облаци
+newtab-wallpaper-light-color = Сини, розови и жълти фигури
+newtab-wallpaper-light-landscape = Планински пейзаж със синя мъгла
+newtab-wallpaper-light-beach = Плаж с палма
+newtab-wallpaper-dark-aurora = Северно сияние
+newtab-wallpaper-dark-color = Червени и сини фигури
+newtab-wallpaper-dark-panda = Червена панда, скрита в гора
+newtab-wallpaper-dark-sky = Градски пейзаж с нощно небе
+newtab-wallpaper-dark-mountain = Планински пейзаж
+newtab-wallpaper-dark-city = Лилав градски пейзаж
+
+## Solid Colors
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Solid colors" string once Nova lands. The simplified "Colors" string will take over
+newtab-wallpaper-category-title-colors = Едноцветни
+newtab-wallpaper-blue = Синьо
+newtab-wallpaper-light-blue = Светлосиньо
+newtab-wallpaper-light-purple = Светло лилаво
+newtab-wallpaper-light-green = Светлозелено
+newtab-wallpaper-green = Зелено
+newtab-wallpaper-beige = Бежово
+newtab-wallpaper-yellow = Жълто
+newtab-wallpaper-orange = Оранжево
+newtab-wallpaper-pink = Розово
+newtab-wallpaper-light-pink = Светло розово
+newtab-wallpaper-red = Червено
+newtab-wallpaper-dark-blue = Тъмно синьо
+newtab-wallpaper-dark-purple = Тъмно лилаво
+newtab-wallpaper-dark-green = Тъмно зелено
+newtab-wallpaper-brown = Кафяво
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = Абстрактни
+newtab-wallpaper-abstract-green = Зелени фигури
+newtab-wallpaper-abstract-blue = Сини фигури
+newtab-wallpaper-abstract-purple = Лилави фигури
+newtab-wallpaper-abstract-orange = Оранжеви фигури
+newtab-wallpaper-gradient-orange = Преливащо се оранжево и розово
+newtab-wallpaper-abstract-blue-purple = Сини и лилави фигури
+newtab-wallpaper-abstract-white-curves = Бяло със засенчени извивки
+
+## Firefox wallpaper descriptions used for screen readers
+
+newtab-wallpaper-category-title-photographs = Снимки
+newtab-wallpaper-beach-at-sunrise = Плаж при изгрев
+newtab-wallpaper-beach-at-sunset = Плаж по залез
+newtab-wallpaper-storm-sky = Бурно небе
+newtab-wallpaper-sky-with-pink-clouds = Небе с розови облаци
+newtab-wallpaper-red-panda-yawns-in-a-tree = Червена панда се прозява на дърво
+newtab-wallpaper-white-mountains = Бели планини
+newtab-wallpaper-feature-highlight-header = Опитайте с малко цвят
+newtab-wallpaper-feature-highlight-button = Разбрах
+feature-highlight-wallpaper =
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+    .title = { -newtab-wallpaper-feature-highlight-header }
+
+## Celestial
+
+# “Celestial” referring to astronomy; positioned in or relating to the sky,
+# or outer space as observed in astronomy.
+# Not to be confused with religious definition of the word.
+newtab-wallpaper-category-title-celestial = Небесни
+newtab-wallpaper-celestial-lunar-eclipse = Лунно затъмнение
+
+## New Tab Weather
+
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = Накратко
+newtab-weather-menu-change-weather-display-simple = Превключване към опростен изглед
+newtab-weather-menu-weather-display-option-detailed = Подробно
+newtab-weather-menu-change-weather-display-detailed = Превключване към подробен изглед
+newtab-weather-menu-temperature-units = Единици за температура
+newtab-weather-menu-temperature-option-fahrenheit = Фаренхайт
+newtab-weather-menu-temperature-option-celsius = Целзий
+newtab-weather-menu-change-temperature-units-fahrenheit = Превключване към Фаренхайт
+newtab-weather-menu-change-temperature-units-celsius = Превключване към Целзий
+newtab-weather-menu-learn-more = Научете повече
+# This message is shown if user is working offline
+newtab-weather-error-not-available = В момента няма данни за времето.
+
+## Topic Labels
+
+newtab-topic-label-business = Бизнес
+newtab-topic-label-career = Кариера
+newtab-topic-label-education = Образование
+newtab-topic-label-arts = Развлечение
+newtab-topic-label-food = Храна
+newtab-topic-label-health = Здраве
+newtab-topic-label-hobbies = Игри
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Пари
+newtab-topic-label-society-parenting = Възпитание
+newtab-topic-label-government = Политика
+newtab-topic-label-education-science = Наука
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Лайфхакове
+newtab-topic-label-sports = Спорт
+newtab-topic-label-tech = Технологии
+newtab-topic-label-travel = Пътуване
+newtab-topic-label-home = Дом и градина
+
+## Topic Selection Modal
+
+newtab-topic-selection-button-maybe-later = Може би по-късно
+newtab-topic-selection-button-update-interests = Актуализирайте интересите си
+newtab-topic-selection-button-pick-interests = Изберете вашите интереси
+
+## Topic navigation
+## A row of buttons above the stories, each scrolling the page to that topic's section.
+
+# Opens a menu listing the topics that did not fit in the row.
+newtab-topic-navigation-more-button = Още
+
+## Strings for custom wallpaper highlight
+
+newtab-custom-wallpaper-cta = Опитайте
+
+## Strings for task / to-do list productivity widget
+
+newtab-widget-lists-menu-delete = Изтриване на този списък
+newtab-widget-lists-menu-learn-more = Научете повече
+newtab-widget-lists-input-menu-delete = Изтриване
+
+## Strings introduced by the Nova redesign of the Timer widget
+
+newtab-widget-timer-menu-learn-more = Научете повече
+newtab-promo-card-body = Нашите спонсори подкрепят мисията ни да изградим по-добра мрежа
+newtab-promo-card-cta = Научете повече
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = Ню Йорк
+newtab-clock-city-us-los-angeles = Лос Анджелис
+newtab-clock-city-us-chicago = Чикаго
+newtab-clock-city-us-san-francisco = Сан Франциско
+newtab-clock-city-us-san-diego = Сан Диего
+newtab-clock-city-us-dallas = Далас
+newtab-clock-city-us-houston = Хюстън
+newtab-clock-city-us-philadelphia = Филаделфия
+newtab-clock-city-us-atlanta = Атланта
+newtab-clock-city-us-washington-dc = Вашингтон
+newtab-clock-city-us-boston = Бостън
+newtab-clock-city-us-miami = Маями
+newtab-clock-city-us-seattle = Сиатъл
+newtab-clock-city-us-denver = Денвър
+newtab-clock-city-us-honolulu = Хонолулу
+newtab-clock-city-us-anchorage = Анкъридж
+newtab-clock-city-de-berlin = Берлин
+newtab-clock-city-de-munich = Мюнхен
+newtab-clock-city-de-frankfurt = Франкфурт на Майн
+newtab-clock-city-de-hamburg = Хамбург
+newtab-clock-city-fr-paris = Париж
+newtab-clock-city-fr-lyon = Лион
+newtab-clock-city-fr-marseille = Марсилия
+newtab-clock-city-fr-toulouse = Тулуза
+newtab-clock-city-in-kolkata = Колката
+newtab-clock-city-in-mumbai = Мумбай
+newtab-clock-city-in-delhi = Делхи
+newtab-clock-city-in-bangalore = Бенгалуру
+newtab-clock-city-cn-shanghai = Шанхай
+newtab-clock-city-cn-beijing = Пекин
+newtab-clock-city-cn-shenzhen = Шънджън
+newtab-clock-city-br-sao-paulo = Сао Пауло
+newtab-clock-city-br-rio-de-janeiro = Рио де Жанейро
+newtab-clock-city-br-brasilia = Бразилия
+newtab-clock-city-id-jakarta = Джакарта
+newtab-clock-city-id-surabaya = Сурабая
+newtab-clock-city-id-makassar = Макасар
+newtab-clock-city-ca-toronto = Торонто
+newtab-clock-city-ca-montreal = Монреал
+newtab-clock-city-ca-vancouver = Ванкувър
+newtab-clock-city-au-sydney = Сидни
+newtab-clock-city-au-perth = Пърт
+newtab-clock-city-au-adelaide = Аделаида
+newtab-clock-city-pl-warsaw = Варшава
+newtab-clock-city-pl-krakow = Краков
+newtab-clock-city-jp-tokyo = Токио
+newtab-clock-city-jp-osaka = Осака
+newtab-clock-city-mx-mexico-city = Мексико
+newtab-clock-city-mx-guadalajara = Гуадалахара
+newtab-clock-city-it-rome = Рим
+newtab-clock-city-it-milan = Милано
+newtab-clock-city-ru-moscow = Москва
+newtab-clock-city-ru-saint-petersburg = Санкт Петербург
+newtab-clock-city-gb-london = Лондон
+newtab-clock-city-gb-birmingham = Бирмингам
+newtab-clock-city-es-madrid = Мадрид
+newtab-clock-city-es-barcelona = Барселона
+newtab-clock-city-nl-amsterdam = Амстердам
+newtab-clock-city-ch-zurich = Цюрих
+newtab-clock-city-at-vienna = Виена
+newtab-clock-city-cz-prague = Прага
+newtab-clock-city-ar-buenos-aires = Буенос Айрес
+newtab-clock-city-gr-athens = Атина
+newtab-clock-city-hu-budapest = Будапеща
+newtab-clock-city-be-brussels = Брюксел
+newtab-clock-city-ua-kyiv = Киев
+newtab-clock-city-fi-helsinki = Хелзинки
+newtab-clock-city-co-bogota = Богота
+newtab-clock-city-ph-manila = Манила
+newtab-clock-city-tr-istanbul = Истанбул
+newtab-clock-city-my-kuala-lumpur = Куала Лумпур
+newtab-clock-city-eg-cairo = Кайро
+newtab-clock-city-se-stockholm = Стокхолм
+newtab-clock-city-ro-bucharest = Букурещ
+newtab-clock-city-th-bangkok = Банкок
+newtab-clock-city-ng-lagos = Лагос
+newtab-clock-city-tw-taipei = Тайпей
+newtab-clock-city-za-johannesburg = Йоханесбург
+newtab-clock-city-cl-santiago = Сантяго
+newtab-clock-city-pk-karachi = Карачи
+newtab-clock-city-bg-sofia = София
+newtab-clock-city-sg-singapore = Сингапур
+newtab-clock-city-hk-hong-kong = Хонконг
+newtab-clock-city-sa-riyadh = Рияд
+newtab-clock-city-dk-copenhagen = Копенхаген
+newtab-clock-city-pe-lima = Лима
+newtab-clock-city-ke-nairobi = Найроби
+newtab-clock-city-nz-auckland = Окланд
+newtab-clock-city-kr-seoul = Сеул
+newtab-clock-city-lt-vilnius = Вилнюс
+newtab-clock-city-ie-dublin = Дъблин
+newtab-clock-city-ae-dubai = Дубай
+newtab-clock-city-lv-riga = Рига
+newtab-clock-city-pt-lisbon = Лисабон
+newtab-clock-city-ir-tehran = Техеран
+newtab-clock-city-bd-dhaka = Дака
+newtab-clock-city-ec-guayaquil = Гуаякил
+newtab-clock-city-vn-ho-chi-minh-city = Хошимин
+newtab-clock-city-np-kathmandu = Катманду
+newtab-clock-city-mm-yangon = Янгон
