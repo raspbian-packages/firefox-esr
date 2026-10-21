@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Mentett címek
+autofill-manage-addresses-list-header = Címek
+autofill-manage-payment-methods-title = Mentett fizetési módok
+autofill-manage-cards-list-header = Kártyák
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Eltávolítás
+autofill-manage-add-button = Hozzáadás…
+autofill-manage-edit-button = Szerkesztés…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Menti a címet?
+address-capture-save-doorhanger-description = Mentse az információkat a { -brand-short-name }ba, hogy gyorsan ki tudja tölteni az űrlapokat.
+address-capture-update-doorhanger-header = Frissíti a címet?
+address-capture-edit-doorhanger-header = Cím szerkesztése
+address-capture-save-button =
+    .label = Mentés
+    .accessKey = M
+address-capture-not-now-button =
+    .label = Most nem
+    .accessKey = n
+address-capture-never-save-addresses-button =
+    .label = Sose mentsen el címeket
+    .accessKey = o
+address-capture-cancel-button =
+    .label = Mégse
+    .accessKey = s
+address-capture-update-button =
+    .label = Frissítés
+    .accessKey = F
+address-capture-manage-address-button =
+    .label = Címbeállítások
+address-capture-learn-more-button =
+    .label = További tudnivalók
+address-capture-open-menu-button =
+    .aria-label = Menü megnyitása
+address-capture-edit-address-link = Cím szerkesztése
+    .aria-label = Cím szerkesztése
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Cím hozzáadása
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Cím szerkesztése
+autofill-address-name = Név
+autofill-address-organization = Szervezet
+autofill-address-street-address = Utca, házszám
+autofill-address-street = Utca, házszám
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Szomszédság
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Falu vagy község
+autofill-address-island = Sziget
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Townland
+autofill-address-city = Város
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Kerület
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Postaállomás
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Külváros
+autofill-address-province = Tartomány
+autofill-address-state = Állam
+autofill-address-county = Megye
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Egyházközség
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Közigazgatási terület
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Terület
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Részleg
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Emirátus
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Oblaszt
+# Postal code field used in India (IN).
+autofill-address-pin = Pin
+autofill-address-postal-code = Irányítószám
+# Postal code field.
+autofill-address-zip = Irányítószám (Amerikai Egyesült Államok)
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eircode
+
+##
+
+autofill-address-country = Ország vagy régió
+autofill-address-country-only = Ország
+autofill-address-tel = Telefonszám
+autofill-address-email = E-mail
+autofill-cancel-button = Mégse
+autofill-save-button = Mentés
+autofill-country-warning-message-2 = Az űrlapkitöltés jelenleg csak egyes országokban érhető el.
+autofill-country-warning-message = Az űrlapkitöltés jelenleg csak egyes országbeli címekre érhető el.
+autofill-message-tooltip = Üzenet megtekintése az automatikus kitöltésről
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Kártya hozzáadása
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Kártya szerkesztése
+autofill-card-number-2 =
+    .label = Kártyaszám
+autofill-card-number = Kártyaszám
+autofill-card-invalid-number = Írjon be érvényes kártyaszámot
+autofill-card-name-on-card-2 =
+    .label = Kártyán szereplő név
+autofill-card-expires-month-2 =
+    .label = Lejárati hónap
+autofill-card-expires-year-2 =
+    .label = Lejárati év
+autofill-card-billing-address-2 =
+    .label = Számlázási cím
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = Kártyán szereplő név
+autofill-card-expires-month = Lejárat hónapja
+autofill-card-expires-year = Lejárat éve
+autofill-card-billing-address = Számlázási cím
+autofill-card-network = Kártyatípus
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = hitelkártyák, hitelkártya, hitel, kártyák, kártya, bankkártyák, bankkártya, bank, pénztárca, pénztár, fizetés, vásárlás
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Útlevél hozzáadása
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = Útlevél szerkesztése
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = Név
+autofill-passport-country =
+    .label = Ország
+autofill-passport-number =
+    .label = Szám
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = Kiállítás dátuma
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = Lejárat dátuma
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = HH
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = NN
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = ÉÉÉÉ
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = Útlevél mentése?
+passport-capture-save-doorhanger-description = Mentse az információkat a { -brand-short-name }ba, hogy gyorsan ki tudja tölteni az űrlapokat.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = Mentés
+    .accessKey = M
+passport-capture-not-now-button =
+    .label = Most nem
+    .accessKey = n
+passport-capture-never-save-button =
+    .label = Sose mentse az útleveleket
+    .accessKey = S
