@@ -1,0 +1,103 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## OS Prompt Dialog
+
+# The macos string is preceded by the operating system (macOS) with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-use-payment-method-os-prompt-macos = bruk lagret informasjon om betalingsmåte
+autofill-use-payment-method-os-prompt-windows = { -brand-short-name } prøver å bruke lagret informasjon om betalingsmåte. Bekreft tilgang til denne Windows-kontoen nedenfor.
+autofill-use-payment-method-os-prompt-other = { -brand-short-name } prøver å bruke lagret informasjon om betalingsmåte.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-edit-payment-method-os-prompt-macos = vis lagret informasjon om betalingsmåte
+autofill-edit-payment-method-os-prompt-windows = { -brand-short-name } prøver å vise lagret informasjon om betalingsmåte. Bekreft tilgang til denne Windows-kontoen nedenfor.
+autofill-edit-payment-method-os-prompt-other = { -brand-short-name } prøver å vise lagret informasjon om betalingsmåte.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-delete-payment-method-os-prompt-macos = slett lagret informasjon om betalingsmåte
+autofill-delete-payment-method-os-prompt-windows = { -brand-short-name } prøver å slette lagret informasjon om betalingsmåte. Bekreft tilgang til denne Windows-kontoen nedenfor.
+autofill-delete-payment-method-os-prompt-other = { -brand-short-name } prøver å slette lagret informasjon om betalingsmåte.
+# The button leads users to Form Autofill browser preferences.
+credit-card-doorhanger-options-button =
+    .title = Innstillinger for autoutfylling av skjema
+# The link leads users to Form Autofill browser preferences.
+autofill-options-link = Innstillinger for autoutfylling av skjema
+
+##
+
+# If Sync is enabled and credit card sync is available,
+# this checkbox is displayed on the doorhanger shown when saving credit card.
+credit-card-doorhanger-credit-cards-sync-checkbox = Synkroniser alle lagrede kort på tvers av enhetene mine
+credit-card-save-doorhanger-header = Lagre dette kortet trygt?
+credit-card-save-doorhanger-description = { -brand-short-name } krypterer kortnummeret ditt. Sikkerhetskoden din blir ikke lagret.
+credit-card-save-doorhanger-description-security-code = { -brand-short-name } krypterer kortnummeret og sikkerhetskoden din, slik at bare du kan bruke dem til å fylle ut betalingsskjemaer.
+credit-card-doorhanger-save-security-codes-checkbox =
+    .label = Lagre alltid sikkerhetskoder for betalingsmåter.
+credit-card-capture-save-button =
+    .label = Lagre
+    .accessKey = L
+credit-card-capture-cancel-button =
+    .label = Ikke nå
+    .accessKey = k
+credit-card-capture-never-save-button =
+    .label = Lagre aldri kort
+    .accessKey = L
+credit-card-update-doorhanger-header = Oppdatere kortet?
+credit-card-update-doorhanger-description = Kort som skal oppdateres:
+credit-card-capture-save-new-button =
+    .label = Lagre som nytt kort
+    .accessKey = L
+credit-card-capture-update-button =
+    .label = Oppdater eksisterende kort
+    .accessKey = O
+# Label for the button in the dropdown menu used to clear the populated form.
+autofill-clear-form-label = Tøm autoutfylt skjema
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-addresses-label = Behandle adresser
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-payment-methods-label = Behandle betalingsmåter
+# Used as the primary label of an autofill drop down suggestion when the focused
+# field is the card security code. The card's masked number is shown underneath
+# it as the secondary label. "CVC" is a common abbreviation for the code printed
+# on a payment card; use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code-label = CVC
+
+## Details of the card shown on the credit card capture doorhanger, below the
+## masked card number. Each message is used for a different combination of the
+## available details.
+## Variables:
+##   $name (String): The cardholder name
+##   $month (String): Two-digit month the card expires
+##   $year (String): Two-digit year the card expires
+
+credit-card-doorhanger-details-name = { $name }
+credit-card-doorhanger-details-expiration = { $month }/{ $year }
+credit-card-doorhanger-details-cvv = CVV lagret
+credit-card-doorhanger-details-name-expiration = { $name }, { $month }/{ $year }
+credit-card-doorhanger-details-name-cvv = { $name } | CVV lagret
+credit-card-doorhanger-details-expiration-cvv = { $month }/{ $year } | CVV lagret
+credit-card-doorhanger-details-name-expiration-cvv = { $name }, { $month }/{ $year } | CVV lagret
+
+## These are brand names and should only be translated when a locale-specific name for that brand is in common use
+
+autofill-card-network-amex = American Express
+autofill-card-network-cartebancaire = Carte Bancaire
+autofill-card-network-diners = Diners Club
+autofill-card-network-discover = Discover
+autofill-card-network-jcb = JCB
+autofill-card-network-mastercard = MasterCard
+autofill-card-network-mir = MIR
+autofill-card-network-unionpay = Union Pay
+autofill-card-network-visa = Visa
+# Used in autofill drop down suggestion to indicate what other categories Form Autofill will attempt to fill.
+autofill-category-address = adresse
+autofill-category-name = navn
+autofill-category-organization = organisasjon
+autofill-category-tel = telefon
+autofill-category-email = e-post
+# This string is used in drop down suggestion when users try to autofill credit
+# card on an insecure website (without https).
+autofill-insecure-field-warning-description = { -brand-short-name } har oppdaget et usikkert nettsted. Autoutfylling av skjemaer er midlertidig deaktivert.
