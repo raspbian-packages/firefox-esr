@@ -1,0 +1,103 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## OS Prompt Dialog
+
+# The macos string is preceded by the operating system (macOS) with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-use-payment-method-os-prompt-macos = utilizar a informação do método de pagamento armazenado
+autofill-use-payment-method-os-prompt-windows = O { -brand-short-name } está a tentar utilizar informações do método de pagamento armazenadas. Confirme o acesso a esta conta do Windows abaixo.
+autofill-use-payment-method-os-prompt-other = O { -brand-short-name } está a tentar utilizar informações do método de pagamento armazenadas.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-edit-payment-method-os-prompt-macos = mostrar informações armazenadas sobre o método de pagamento
+autofill-edit-payment-method-os-prompt-windows = O { -brand-short-name } está a tentar mostrar informações armazenadas sobre o método de pagamento. Confirme o acesso a esta conta do Windows abaixo.
+autofill-edit-payment-method-os-prompt-other = O { -brand-short-name } está a tentar mostrar informações armazenadas sobre o método de pagamento.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-delete-payment-method-os-prompt-macos = apagar os dados guardados do método de pagamento
+autofill-delete-payment-method-os-prompt-windows = O { -brand-short-name } está a tentar apagar informações armazenadas do método de pagamento. Confirme o acesso a esta conta do Windows abaixo.
+autofill-delete-payment-method-os-prompt-other = O { -brand-short-name } está a tentar apagar os dados guardados do método de pagamento.
+# The button leads users to Form Autofill browser preferences.
+credit-card-doorhanger-options-button =
+    .title = Opções de preenchimento automático de formulários
+# The link leads users to Form Autofill browser preferences.
+autofill-options-link = Opções de preenchimento automático de formulários
+
+##
+
+# If Sync is enabled and credit card sync is available,
+# this checkbox is displayed on the doorhanger shown when saving credit card.
+credit-card-doorhanger-credit-cards-sync-checkbox = Sincronizar todos os cartões guardados nos meus dispositivos
+credit-card-save-doorhanger-header = Guardar este cartão com segurança?
+credit-card-save-doorhanger-description = O { -brand-short-name } encripta o número do seu cartão. O seu código de segurança não será guardado.
+credit-card-save-doorhanger-description-security-code = O { -brand-short-name } encripta o número do seu cartão e o código de segurança, para que apenas você os possa utilizar para preencher formulários de pagamento.
+credit-card-doorhanger-save-security-codes-checkbox =
+    .label = Guardar sempre os códigos de segurança dos métodos de pagamento.
+credit-card-capture-save-button =
+    .label = Guardar
+    .accessKey = G
+credit-card-capture-cancel-button =
+    .label = Agora não
+    .accessKey = n
+credit-card-capture-never-save-button =
+    .label = Nunca guardar cartões
+    .accessKey = N
+credit-card-update-doorhanger-header = Atualizar cartão?
+credit-card-update-doorhanger-description = Cartão a atualizar:
+credit-card-capture-save-new-button =
+    .label = Adicionar como um novo cartão
+    .accessKey = c
+credit-card-capture-update-button =
+    .label = Atualizar cartão existente
+    .accessKey = u
+# Label for the button in the dropdown menu used to clear the populated form.
+autofill-clear-form-label = Limpar o formulário de autopreenchimento
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-addresses-label = Gerir endereços
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-payment-methods-label = Gerir métodos de pagamento
+# Used as the primary label of an autofill drop down suggestion when the focused
+# field is the card security code. The card's masked number is shown underneath
+# it as the secondary label. "CVC" is a common abbreviation for the code printed
+# on a payment card; use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code-label = CVC
+
+## Details of the card shown on the credit card capture doorhanger, below the
+## masked card number. Each message is used for a different combination of the
+## available details.
+## Variables:
+##   $name (String): The cardholder name
+##   $month (String): Two-digit month the card expires
+##   $year (String): Two-digit year the card expires
+
+credit-card-doorhanger-details-name = { $name }
+credit-card-doorhanger-details-expiration = { $month }/{ $year }
+credit-card-doorhanger-details-cvv = CVV guardado
+credit-card-doorhanger-details-name-expiration = { $name }, { $month }/{ $year }
+credit-card-doorhanger-details-name-cvv = { $name } | CVV guardado
+credit-card-doorhanger-details-expiration-cvv = { $month }/{ $year } | CVV guardado
+credit-card-doorhanger-details-name-expiration-cvv = { $name }, { $month }/{ $year } | CVV guardado
+
+## These are brand names and should only be translated when a locale-specific name for that brand is in common use
+
+autofill-card-network-amex = American Express
+autofill-card-network-cartebancaire = Carte Bancaire
+autofill-card-network-diners = Diners Club
+autofill-card-network-discover = Discover
+autofill-card-network-jcb = JCB
+autofill-card-network-mastercard = MasterCard
+autofill-card-network-mir = MIR
+autofill-card-network-unionpay = Union Pay
+autofill-card-network-visa = Visa
+# Used in autofill drop down suggestion to indicate what other categories Form Autofill will attempt to fill.
+autofill-category-address = endereço
+autofill-category-name = nome
+autofill-category-organization = organização
+autofill-category-tel = telefone
+autofill-category-email = email
+# This string is used in drop down suggestion when users try to autofill credit
+# card on an insecure website (without https).
+autofill-insecure-field-warning-description = O { -brand-short-name } detetou um site inseguro. O autopreenchimento de formulários está temporariamente desativado.
