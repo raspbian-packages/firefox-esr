@@ -1,0 +1,267 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = નવી ટૅબ
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = નવી ટૅબ્સ
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } પંક્તિ
+           *[other] { $num } પંક્તિઓ
+        }
+home-restore-defaults-srd =
+    .label = મૂળભૂતને પુન:સંગ્રહો
+    .accesskey = R
+home-mode-choice-custom-srd =
+    .label = પોતાના URLs...
+home-mode-choice-blank-srd =
+    .label = ખાલી પાનું
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = પ્રાયોજિત વાર્તાઓ
+home-prefs-highlights-option-visited-pages-srd =
+    .label = મુલાકાત લીધેલા પૃષ્ઠો
+home-prefs-highlights-options-bookmarks-srd =
+    .label = બુકમાર્ક્સ
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = સૌથી તાજેતરની ડાઉનલોડ
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = શોધો
+    .title = શોધો
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = શોધ એંજીન ઉમેરો
+newtab-topsites-title-label = શીર્ષક
+newtab-topsites-title-input =
+    .placeholder = શીર્ષક દાખલ કરો
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = URL ટાઇપ કરો અથવા પેસ્ટ કરો
+newtab-topsites-url-validation = માન્ય URL આવશ્યક છે
+newtab-topsites-image-url-label = વૈવિધ્યપૂર્ણ છબી URL
+newtab-topsites-use-custom-image-link = વૈવિધ્યપૂર્ણ છબીનો ઉપયોગ કરો
+newtab-topsites-use-image-link = વૈવિધ્યપૂર્ણ છબીનો ઉપયોગ કરો…
+newtab-topsites-image-validation = છબી લોડ થવામાં નિષ્ફળ. એક અલગ URL અજમાવી જુઓ.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = રદ કરો
+newtab-topsites-delete-history-button = ઇતિહાસમાંથી દૂર કરો
+newtab-topsites-save-button = સાચવો
+newtab-topsites-preview-button = પૂર્વદર્શન
+newtab-topsites-add-button = ઉમેરો
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = શું તમે ખરેખર તમારા ઇતિહાસમાંથી આ પૃષ્ઠનાં દરેક ઘટકને કાઢી નાખવા માંગો છો?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = આ ક્રિયા પૂર્વવત્ કરી શકાતી નથી.
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = મેનૂ ખોલો
+    .title = મેનૂ ખોલો
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = { $title } માટે સંદર્ભ મેનૂ ખોલો
+    .title = મેનૂ ખોલો
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = ફેરફાર કરો
+newtab-menu-open-new-window = નવી વિન્ડોમાં ખોલો
+newtab-menu-open-new-private-window = ખાનગી વિન્ડોમાં ખોલો
+newtab-menu-dismiss = રદ કરો
+newtab-menu-pin = પિન
+newtab-menu-unpin = અનપિન
+newtab-menu-delete-history = ઇતિહાસમાંથી દૂર કરો
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = બુકમાર્ક કાઢો
+# Bookmark is a verb here.
+newtab-menu-bookmark = બુકમાર્ક
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = ડાઉનલોડ કડીની નકલ કરો
+newtab-menu-go-to-download-page = ડાઉનલોડ પૃષ્ઠ પર જાઓ
+newtab-menu-remove-download = ઇતિહાસમાંથી દૂર કરો
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] ફાઇન્ડર માં બતાવો
+       *[other] સમાવેલ ફોલ્ડર ખોલો
+    }
+newtab-menu-open-file = ફાઇલ ખોલો
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = જોવામા આવેલ:
+newtab-label-bookmarked = બુકમાર્ક્સ
+newtab-label-recommended = વલણ
+newtab-label-saved = { -pocket-brand-name } પર સાચવ્યું
+newtab-label-download = ડાઉનલોડ કરેલું
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = ખાનગી સૂચના
+
+## Section Headers.
+
+newtab-section-header-topsites = ટોચની સાઇટ્સ
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = બ્રાઉઝ કરવું પ્રારંભ કરો અને અમે અહીં કેટલાક સરસ લેખો, વિડિઓઝ અને અન્ય પૃષ્ઠો દર્શાવીશું જે તમે તાજેતરમાં મુલાકાત લીધાં છે અથવા બુકમાર્ક કર્યા છે.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = તમે પકડાયા છો!
+newtab-discovery-empty-section-topstories-content = વધુ વાર્તાઓ માટે પાછળથી તપાસો.
+newtab-discovery-empty-section-topstories-try-again-button = ફરીથી પ્રયત્ન કરો
+newtab-discovery-empty-section-topstories-loading = લોડ કરી રહ્યું છે ...
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = અરે! અમે લગભગ આ વિભાગને લોડ કર્યો છે, પરંતુ તદ્દન નહીં.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = ઊફ્ફ, આ સામગ્રીને લોડ કરવામાં કંઈક ખોટું થયું.
+newtab-error-fallback-refresh-link = ફરી પ્રયાસ કરવા માટે પૃષ્ઠને તાજું કરો.
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = ન્યૂ યોર્ક સીટી
+newtab-clock-city-us-los-angeles = લોસ એન્જેલસ
+newtab-clock-city-us-chicago = શિકાગો
+newtab-clock-city-us-san-francisco = સેનફ્રાન્સિસ્કો
+newtab-clock-city-us-san-diego = સેન ડિયાગો
+newtab-clock-city-us-dallas = ડલ્લાસ
+newtab-clock-city-us-houston = હ્યુસ્ટન
+newtab-clock-city-us-philadelphia = ફિલાડેલ્ફિયા
+newtab-clock-city-us-atlanta = એટલાન્ટા
+newtab-clock-city-us-washington-dc = વોશિંગ્ટન,ડી.સી.
+newtab-clock-city-us-boston = બોસ્ટન
+newtab-clock-city-us-miami = માયામિ
+newtab-clock-city-us-seattle = સિએટલ
+newtab-clock-city-us-denver = ડેનવર
+newtab-clock-city-us-honolulu = હોનોલુલુ
+newtab-clock-city-us-anchorage = આંકરેજ
+newtab-clock-city-de-berlin = બર્લિન
+newtab-clock-city-de-munich = મ્યૂનિખ
+newtab-clock-city-de-frankfurt = ફ્રેંકફર્ટ
+newtab-clock-city-de-hamburg = હેમ્બર્ગ
+newtab-clock-city-fr-paris = પૅરિસ
+newtab-clock-city-fr-lyon = લિયોન
+newtab-clock-city-fr-marseille = માર્સેલી
+newtab-clock-city-fr-toulouse = તુલૂઝ
+newtab-clock-city-in-kolkata = કોલકાતા
+newtab-clock-city-in-mumbai = મુંબઈ
+newtab-clock-city-in-delhi = દિલ્હી
+newtab-clock-city-in-bangalore = બેંગલોર
+newtab-clock-city-cn-shanghai = શંઘાઈ
+newtab-clock-city-cn-beijing = બેઇજિંગ
+newtab-clock-city-cn-shenzhen = શેનઝેન
+newtab-clock-city-br-sao-paulo = સાઉ પાઉલો
+newtab-clock-city-br-rio-de-janeiro = રિયો ડિ જેનેરો
+newtab-clock-city-br-brasilia = બ્રાજ઼િલિયા
+newtab-clock-city-id-jakarta = જાકાર્તા
+newtab-clock-city-id-surabaya = સુરબયા
+newtab-clock-city-id-makassar = મકાસ્સર
+newtab-clock-city-ca-toronto = ટોરંટો
+newtab-clock-city-ca-montreal = મોન્ટ્રીયલ
+newtab-clock-city-ca-vancouver = વાનકુવર
+newtab-clock-city-au-sydney = સીડની
+newtab-clock-city-au-perth = પર્થ
+newtab-clock-city-au-adelaide = એડિલેઇડ
+newtab-clock-city-pl-warsaw = વૉરસો
+newtab-clock-city-pl-krakow = ક્રેકોવ
+newtab-clock-city-jp-tokyo = ટોક્યો
+newtab-clock-city-jp-osaka = ઓસાકા
+newtab-clock-city-mx-mexico-city = મેક્સિકો સિટી
+newtab-clock-city-mx-guadalajara = ગોડલજરા
+newtab-clock-city-it-rome = રોમ
+newtab-clock-city-it-milan = મિલાન
+newtab-clock-city-ru-moscow = મોસ્કો
+newtab-clock-city-ru-saint-petersburg = સેન્ટ પીટર્સબર્ગ
+newtab-clock-city-gb-london = લંડન
+newtab-clock-city-gb-birmingham = બર્મિંગહામ
+newtab-clock-city-es-madrid = મેડ્રિડ
+newtab-clock-city-es-barcelona = બાર્સિલોના
+newtab-clock-city-nl-amsterdam = એમ્સ્ટર્ડમ
+newtab-clock-city-ch-zurich = જ્યૂરિચ
+newtab-clock-city-at-vienna = વિયેના
+newtab-clock-city-cz-prague = પ્રાગ
+newtab-clock-city-ar-buenos-aires = બ્યુનોસ એરેસ
+newtab-clock-city-gr-athens = એથેન્સ
+newtab-clock-city-hu-budapest = બુડાપેસ્ટ
+newtab-clock-city-be-brussels = બ્રસેલ્સ
+newtab-clock-city-ua-kyiv = ક્યીવ
+newtab-clock-city-fi-helsinki = હેલસિંકી
+newtab-clock-city-co-bogota = બોગોટા
+newtab-clock-city-ph-manila = મનિલા
+newtab-clock-city-tr-istanbul = ઈસ્તાંબુલ
+newtab-clock-city-my-kuala-lumpur = કુઆલા લંપુર
+newtab-clock-city-eg-cairo = કાઈરો
+newtab-clock-city-se-stockholm = સ્ટોકહોમ
+newtab-clock-city-ro-bucharest = બુકારેસ્ટ
+newtab-clock-city-th-bangkok = બેંગકોક
+newtab-clock-city-ng-lagos = લાગોસ
+newtab-clock-city-tw-taipei = તાયપેઈ
+newtab-clock-city-za-johannesburg = જોહાનિસબર્ગ
+newtab-clock-city-cl-santiago = સેન્ટિયાગો
+newtab-clock-city-pk-karachi = કરાચી
+newtab-clock-city-bg-sofia = સોફિયા
+newtab-clock-city-sg-singapore = સિંગાપુર
+newtab-clock-city-hk-hong-kong = હોંગકોંગ
+newtab-clock-city-sa-riyadh = રિયાદ
+newtab-clock-city-dk-copenhagen = કોપનહેગન
+newtab-clock-city-pe-lima = લીમા
+newtab-clock-city-ke-nairobi = નૈરોબી
+newtab-clock-city-nz-auckland = ઓકલેન્ડ
+newtab-clock-city-kr-seoul = સિઓલ
+newtab-clock-city-lt-vilnius = વિલ્નીયસ
+newtab-clock-city-ie-dublin = ડબલિન
+newtab-clock-city-ae-dubai = દુબઈ
+newtab-clock-city-lv-riga = રીગા
+newtab-clock-city-pt-lisbon = લિસ્બન
+newtab-clock-city-ir-tehran = તેહરાન
+newtab-clock-city-bd-dhaka = ઢાકા
+newtab-clock-city-ec-guayaquil = ગ્વાયાક્વિલ
+newtab-clock-city-vn-ho-chi-minh-city = હો ચી મીન સિટી
+newtab-clock-city-np-kathmandu = કાઠમંડુ
+newtab-clock-city-mm-yangon = યાંગૂન

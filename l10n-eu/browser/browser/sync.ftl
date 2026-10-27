@@ -1,0 +1,126 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+fxa-toolbar-sync-syncing2 = Sinkronizatzen…
+sync-disconnect-dialog-title2 = Deskonektatu?
+sync-disconnect-dialog-body = { -brand-product-name }(e)k zure kontuarekin sinkronizatzeari utziko dio baina ez du gailu honetako zure nabigatze-daturik ezabatuko.
+sync-disconnect-dialog-button = Deskonektatu
+fxa-signout-dialog-title2 = Zure kontuko saioa amaitu?
+fxa-signout-dialog-body = Sinkronizatutako datuek zure kontuan jarraituko dute.
+fxa-signout-dialog2-button = Amaitu saioa
+fxa-signout-dialog2-checkbox = Ezabatu gailu honetako datuak (pasahitzak, historia, laster-markak, etab.).
+fxa-menu-sync-settings =
+    .label = Sinkronizazio-ezarpenak
+fxa-menu-turn-on-sync =
+    .value = Gaitu sinkronizazioa
+fxa-menu-turn-on-sync-default = Gaitu sinkronizazioa
+fxa-menu-connect-another-device =
+    .label = Konektatu beste gailu bat…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-device =
+    .label =
+        { $tabCount ->
+            [1] Bidali gailura
+           *[other] Send { $tabCount } tabs to device
+        }
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+# The following string intentionally omits the word "tab" from the singular and includes it in the plural.
+fxa-menu-send-to-mobile =
+    .label =
+        { $tabCount ->
+            [1] Bidali mugikorrera
+           *[other] Bidali { $tabCount } fitxa mugikorrera
+        }
+fxa-menu-send-to-mobile-device-missing2 = Ez duzu zure gailua ikusten?
+fxviewtabrow-send-to-mobile-not-verified = Kontua egiaztatu gabe
+fxviewtabrow-send-to-mobile-verify-account = Egiaztatu zure kontua
+fxa-menu-send-to-mobile-turn-on-sync = Aktibatu sinkronizazioa fitxak bidaltzeko
+fxa-menu-send-to-mobile-connect-device = Konektatu gailu bat fitxak bidaltzeko
+# This is shown dynamically within "Send tab to device" in fxa menu.
+fxa-menu-send-tab-to-device-syncnotready =
+    .label = Gailuak sinkronizatzen…
+# This is shown within "Send tab to device" in fxa menu if account is not configured.
+fxa-menu-send-tab-to-device-description = Bidali fitxa bat berehala saioa hasita duzun edozein gailutara.
+fxa-menu-sign-out =
+    .label = Amaitu saioa…
+fxa-menu-sync-description = Izan zure weberako sarbidea edonon
+# Subtitle shown under the account email on the signed-in account button in the
+# account menu, indicating that activating it opens account management.
+fxa-menu-manage-account-subtitle = Kudeatu kontua
+# Promo shown in the account menu when the user is signed out and no previously
+# signed-in account is remembered, prompting them to sign in and sync.
+fxa-menu-sign-in-promo-heading = Hasi saioa sinkronizatzeko
+fxa-menu-sign-in-promo-message = Izan zure datuak edonon
+fxa-menu-sign-in-promo-button =
+    .label = Hasi saioa
+# Card shown in the account menu when a previously signed-in account is
+# remembered but the user needs to sign in again. Shows the remembered email,
+# a reason, and a button to sign back in.
+fxa-menu-signed-out-sign-in-button =
+    .label = Hasi saioa
+# Reason shown when the session expired or credentials are no longer valid.
+fxa-menu-signed-out-message-login-failed = Saioa hasi gabe duzu
+# Reason shown when the remembered account still needs to verify their email.
+fxa-menu-signed-out-message-unverified = Amaitu konfigurazioa
+# Shown by the same card, and by the app menu's sign-in row, once the user has
+# signed out - the account they signed out of can no longer be identified, so
+# this copy stands in for the email.
+fxa-menu-signed-out-title = Hasi saioa sinkronizatzeko
+fxa-menu-signed-out-description = Saioa hasi gabe duzu
+fxa-avatar-sign-in = Hasi saioa
+fxa-avatar-sign-up = Eman izena
+fxa-avatar-tooltip =
+    .tooltiptext = Hasi saioa zure kontuan
+sync-setup-verify-continue = Jarraitu
+sync-setup-verify-title = Elkartzeko abisua
+sync-setup-verify-heading = Ziur zaude sinkronizatzeko saioa hasi nahi duzula?
+# The user was previously signed into sync. This dialog confirms to the user
+# that they will be merging the data from the previously signed in into the newly signed in one
+# Variables:
+#   $email - Email address of a user previously signed into sync.
+sync-setup-verify-description = Beste erabiltzaile batek sinkronizatzeko saioa hasita zeukan ordenagailu honetan. Saioa hasiz gero, nabigatzaile honen laster-markak, pasahitzak eta bestelako ezarpenak { $email } kontuarekin elkartuko dira
+
+## The following strings are for displaying elements in the FxA send tab submenu to prompt users to sign in, enable sync, pair a device, troubleshoot device issues, or verify account.
+
+fxa-menu-send-to-mobile-sign-in = Hasi saioa fitxak bidaltzeko
+
+## Sync warning strings that support the browser profiles feature, these will be shown when the user might be merging data
+
+# Dialog 1 - different account signing in without option to merge
+sync-profile-different-account-title = Kontuaren mugara heldu da profil honetarako
+sync-profile-different-account-header = Kontu hau aurretik beste kontu batera sinkronizatu da
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+sync-profile-different-account-description = Zure datuak antolatuta eta seguru mantentzeko, { -brand-product-name } profil bakoitza kontu bakarrarekin sinkroniza daiteke. { $acctEmail } erabiliz saioa hasteko, sortu profil berri bat.
+# Dialog 1 - different account signing in with merge option
+sync-profile-different-account-title-merge = Profila beste kontu batekin sinkronizatuta
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+#   $profileName (String) - Name of the current profile
+sync-profile-different-account-description-merge = Zure datuak antolatuta eta seguru mantentzeko, profil berria sortzea gomendatzen dugu { $acctEmail } erabiliz saioa hasteko. Profil honetan sinkronizatzen jarraitzea aukeratzen baduzu, bi kontuetako datuak betirako "{ $profileName }" profilean elkartuko dira.
+# Dialog 2 - account signed in on another profile without option to merge
+sync-account-in-use-header = Kontua erabiltzen ari da lehendik
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+#   $otherProfile (String) - Name of the other profile that is associated with the account
+sync-account-in-use-header-merge = { $acctEmail } kontuak lehendik ere saioa hasita du "{ $otherProfile }" profilean
+sync-account-in-use-description = Kontu hau profil bakarrarekin lot dezakezu ordenagailu honetan.
+# Dialog 2 - account signed in on another profile with merge option
+sync-account-already-signed-in-header = Kontu honek saioa hasita du beste profil batean. Bi profilak sinkronizatu?
+# Variables:
+#   $acctEmail (String) - Email of the account signing into sync.
+#   $currentProfile (String): Name of the current profile signing in
+#   $otherProfile (String): Name of the profile that is already signed in
+sync-account-in-use-description-merge = { $acctEmail } kontuak "{ $otherProfile }" profilean saioa hasita du ordenagailu honetan. "{ $currentProfile }" profila sinkronizatuz gero, bi profiletako datuak betirako elkartuko dira, hala nola pasahitzak eta laster-markak.
+# Variables:
+#   $profileName (String) - Name of the profile to switch to
+sync-button-switch-profile = Aldatu "{ $profileName }" profilera
+sync-button-create-profile = Sortu profil berri bat
+sync-button-sync-and-merge = Sinkronizatu eta elkartu datuak
+# Variables:
+#   $profileName (String) - Name of the profile to switch to
+sync-button-sync-profile = Sinkronizatu "{ $profileName }"

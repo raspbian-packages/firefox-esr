@@ -1,0 +1,103 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## OS Prompt Dialog
+
+# The macos string is preceded by the operating system (macOS) with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-use-payment-method-os-prompt-macos = uporabiti shranjene podatke o plačilnih sredstvih
+autofill-use-payment-method-os-prompt-windows = { -brand-short-name } poskuša uporabiti shranjene podatke o plačilnih sredstvih. Spodaj potrdite dostop do tega računa Windows.
+autofill-use-payment-method-os-prompt-other = { -brand-short-name } poskuša uporabiti shranjene podatke o plačilnih sredstvih.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-edit-payment-method-os-prompt-macos = prikazati shranjene podatke o načinu plačila
+autofill-edit-payment-method-os-prompt-windows = { -brand-short-name } poskuša prikazati shranjene podatke o plačilnem sredstvu. Spodaj potrdite dostop do tega računa Windows.
+autofill-edit-payment-method-os-prompt-other = { -brand-short-name } poskuša prikazati shranjene podatke o načinu plačila.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-delete-payment-method-os-prompt-macos = izbrisati shranjene podatke o plačilnih sredstvih
+autofill-delete-payment-method-os-prompt-windows = { -brand-short-name } poskuša izbrisati shranjene podatke o plačilnih sredstvih. Spodaj potrdite dostop do tega računa Windows.
+autofill-delete-payment-method-os-prompt-other = { -brand-short-name } poskuša izbrisati shranjene podatke o plačilnih sredstvih.
+# The button leads users to Form Autofill browser preferences.
+credit-card-doorhanger-options-button =
+    .title = Možnosti samodejnega izpolnjevanja obrazcev
+# The link leads users to Form Autofill browser preferences.
+autofill-options-link = Možnosti samodejnega izpolnjevanja obrazcev
+
+##
+
+# If Sync is enabled and credit card sync is available,
+# this checkbox is displayed on the doorhanger shown when saving credit card.
+credit-card-doorhanger-credit-cards-sync-checkbox = Sinhroniziraj vse shranjene kartice med napravami
+credit-card-save-doorhanger-header = Želite varno shraniti to kartico?
+credit-card-save-doorhanger-description = { -brand-short-name } šifrira številko vaše kartice. Varnostna koda se ne bo shranila.
+credit-card-save-doorhanger-description-security-code = { -brand-short-name } šifrira številko vaše kartice in varnostno kodo, tako da lahko z njimi izpolnjujete plačilne obrazce samo vi.
+credit-card-doorhanger-save-security-codes-checkbox =
+    .label = Vedno shranjuj varnostne kode za plačilna sredstva.
+credit-card-capture-save-button =
+    .label = Shrani
+    .accessKey = S
+credit-card-capture-cancel-button =
+    .label = Ne zdaj
+    .accessKey = z
+credit-card-capture-never-save-button =
+    .label = Nikoli ne shranjuj kartic
+    .accessKey = N
+credit-card-update-doorhanger-header = Želite posodobiti to kartico?
+credit-card-update-doorhanger-description = Posodabljanje kartice:
+credit-card-capture-save-new-button =
+    .label = Shrani kot novo kartico
+    .accessKey = n
+credit-card-capture-update-button =
+    .label = Posodobi obstoječo kartico
+    .accessKey = d
+# Label for the button in the dropdown menu used to clear the populated form.
+autofill-clear-form-label = Počisti obrazec
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-addresses-label = Upravljanje naslovov
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-payment-methods-label = Upravljanje plačilnih sredstev
+# Used as the primary label of an autofill drop down suggestion when the focused
+# field is the card security code. The card's masked number is shown underneath
+# it as the secondary label. "CVC" is a common abbreviation for the code printed
+# on a payment card; use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code-label = CVC
+
+## Details of the card shown on the credit card capture doorhanger, below the
+## masked card number. Each message is used for a different combination of the
+## available details.
+## Variables:
+##   $name (String): The cardholder name
+##   $month (String): Two-digit month the card expires
+##   $year (String): Two-digit year the card expires
+
+credit-card-doorhanger-details-name = { $name }
+credit-card-doorhanger-details-expiration = { $month }/{ $year }
+credit-card-doorhanger-details-cvv = CVV shranjen
+credit-card-doorhanger-details-name-expiration = { $name }, { $month }/{ $year }
+credit-card-doorhanger-details-name-cvv = { $name } | CVV shranjen
+credit-card-doorhanger-details-expiration-cvv = { $month }/{ $year } | CVV shranjen
+credit-card-doorhanger-details-name-expiration-cvv = { $name }, { $month }/{ $year } | CVV shranjen
+
+## These are brand names and should only be translated when a locale-specific name for that brand is in common use
+
+autofill-card-network-amex = American Express
+autofill-card-network-cartebancaire = Carte Bancaire
+autofill-card-network-diners = Diners Club
+autofill-card-network-discover = Discover
+autofill-card-network-jcb = JCB
+autofill-card-network-mastercard = MasterCard
+autofill-card-network-mir = MIR
+autofill-card-network-unionpay = Union Pay
+autofill-card-network-visa = Visa
+# Used in autofill drop down suggestion to indicate what other categories Form Autofill will attempt to fill.
+autofill-category-address = naslov
+autofill-category-name = ime
+autofill-category-organization = organizacija
+autofill-category-tel = telefon
+autofill-category-email = e-pošta
+# This string is used in drop down suggestion when users try to autofill credit
+# card on an insecure website (without https).
+autofill-insecure-field-warning-description = { -brand-short-name } je zaznal nevarno stran. Samodejno izpolnjevanje obrazcev je začasno onemogočeno.

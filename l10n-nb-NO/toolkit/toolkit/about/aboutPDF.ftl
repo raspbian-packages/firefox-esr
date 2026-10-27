@@ -1,0 +1,49 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+about-pdf-title = { -brand-short-name } PDF-redigerer
+about-pdf-header = { -brand-short-name } PDF
+about-pdf-tagline = Et gratis verktøy for å lese, slå sammen, signere, kommentere og mer — med innebygd personvern
+about-pdf-features-cta =
+    .label = Utforsk PDF-verktøy
+about-pdf-dropzone =
+    .title = Slipp en PDF her for å starte, eller trykk Enter
+about-pdf-dropzone-hint = Slipp en PDF her for å starte
+about-pdf-dropzone-privacy-hint = Filene forblir private på enheten din.
+about-pdf-dropzone-invalid-file = Denne filen støttes ikke. Velg en PDF for å fortsette.
+about-pdf-dropzone-error-generic = Opplastingen gikk ikke gjennom. Prøv igjen senere.
+about-pdf-browse-files =
+    .label = Bla gjennom filer
+# Title of the system file picker opened by the “Browse files” button.
+about-pdf-file-picker-title = Åpne PDF
+about-pdf-promo =
+    .heading = Gjør { -brand-short-name } til din foretrukne PDF-redigerer
+    .message = Åpne PDF-filer i { -brand-short-name } og håndter det grunnleggende på ett sted – fra markeringer og signaturer til sammenslåtte filer og kommentarer.
+about-pdf-set-default =
+    .label = Bruk som standard
+about-pdf-dismiss =
+    .label = Ignorer
+
+## The about:pdf#features page.
+
+about-pdf-features-header = { -brand-short-name } PDF-verktøy
+about-pdf-features-intro = Les, gjør merknader i og signer PDF-er direkte i nettleseren. Det er enkelt, gratis og privat.
+about-pdf-features-back =
+    .label = Tilbake
+about-pdf-feature-organize-heading = Organiser sider
+about-pdf-feature-organize-description = Endre rekkefølgen på, fjern, slå sammen og eksporter sider.
+about-pdf-feature-signatures-heading = Lagre signaturer
+about-pdf-feature-signatures-description = Opprett flere signaturer og legg dem til i skjemaer.
+about-pdf-feature-comments-heading = Legg til notater
+about-pdf-feature-comments-description = Legg igjen kommentarer og påminnelser mens du leser.
+about-pdf-feature-annotate-heading = Gjør merknader i PDF-er
+about-pdf-feature-annotate-description = Legg til tekst, uthevinger og tegninger.
+about-pdf-feature-images-heading = Last opp tilgjengelige bilder
+about-pdf-feature-images-description = Legg til alternativ-tekst slik at bildene fungerer for flere.
+about-pdf-feature-view-heading = Velg visning
+about-pdf-feature-view-description = Rull vertikalt eller horisontalt, eller bytt sideoppsett.
+about-pdf-feature-presentation-heading = Presenter PDF-filer i fullskjerm
+about-pdf-feature-presentation-description = Del en ryddig visning i presentasjonsmodus.
+about-pdf-feature-details-heading = Finn detaljer raskere
+about-pdf-feature-details-description = Bruk disposisjoner, vedlegg og egenskaper for å navigere i PDF-filer.

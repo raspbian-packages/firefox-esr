@@ -1,0 +1,50 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Settings
+
+site-data-settings-window =
+    .title = Lo Angija ki Data me kakube
+site-data-search-textbox =
+    .placeholder = Yeny kakube
+    .accesskey = S
+site-data-column-host =
+    .label = Kakube
+site-data-column-cookies =
+    .label = Angija
+site-data-column-last-used =
+    .label = Kitiyo kwede me agiki
+site-data-remove-selected =
+    .label = Kwany ma kiyero
+    .accesskey = K
+site-data-settings-dialog =
+    .buttonlabelaccept = Gwok alokaloka
+    .buttonaccesskeyaccept = o
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+site-storage-usage =
+    .value = { $value } { $unit }
+site-data-remove-all =
+    .label = Kwany weng
+    .accesskey = a
+site-data-remove-shown =
+    .label = Kwany ma kinyuto ni weng
+    .accesskey = a
+
+## Removing
+
+site-data-removing-dialog =
+    .buttonlabelaccept = Kwany
+    .title = { site-data-removing-header }
+site-data-removing-header = Kwanyo Angija ki Data me kakube
+site-data-removing-desc = Kwanyo angija ki data me kakube twero kwanyi woko ki ii kakube. Imoko ada ni imito timo alokaloka?
+site-data-removing-table = Ki bikwanyo woko angija ki data me kakube pi kakube magi
+
+## Clear all site data prompt
+
+site-data-clear-all-prompt-title = Jwa angija weng ki data me kakube
+site-data-clear-all-prompt-text = Yero ‘Jwa kombedi’ bi jwano angija ki data me kakube weng ma { -brand-short-name } ogwoko. Man twero kwanyi woko ki ii kakube ki kwanyo jami me kakube mape iwiyamo.
+site-data-clear-all-prompt-button = Jwa Kombedi

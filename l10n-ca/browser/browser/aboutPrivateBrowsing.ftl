@@ -1,0 +1,105 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+privatebrowsingpage-open-private-window-label = Obre una finestra privada
+    .accesskey = p
+about-private-browsing-search-placeholder = Cerca al web
+about-private-browsing-search-btn =
+    .title = Cerca al web
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff =
+    .title = Cerqueu amb { $engine } o escriviu una adreça
+about-private-browsing-handoff-no-engine =
+    .title = Escriviu una cerca o adreça
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff-text = Cerqueu amb { $engine } o escriviu una adreça
+about-private-browsing-handoff-text-no-engine = Escriviu una cerca o adreça
+about-private-browsing-not-private = Actualment no esteu en una finestra privada.
+about-private-browsing-hide-activity = Oculteu la vostra activitat i ubicació, arreu on navegueu
+about-private-browsing-get-privacy = Protegiu la vostra privadesa arreu on navegueu
+about-private-browsing-hide-activity-1 = Oculteu l'activitat de navegació i la ubicació amb el { -mozilla-vpn-brand-name }. Creeu una connexió segura amb un sol clic, fins i tot en connexions Wi-Fi públiques.
+about-private-browsing-prominent-cta = Protegiu la vostra privadesa amb el { -mozilla-vpn-brand-name }
+about-private-browsing-focus-promo-cta = Baixa el { -focus-brand-name }
+about-private-browsing-focus-promo-header = { -focus-brand-name }: Navegació privada a tot arreu
+about-private-browsing-focus-promo-text = La nostra aplicació mòbil dedicada a la navegació privada esborra l'historial i les galetes cada vegada que s'utilitza.
+about-private-browsing-focus-promo-header-c = Privadesa de nivell superior en el mòbil
+about-private-browsing-focus-promo-text-c = El { -focus-brand-name } esborra el vostre historial després de cada ús i bloca els anuncis i els elements de seguiment.
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = { $engineName } és el motor de cerca per defecte en les finestres privades
+about-private-browsing-search-banner-description =
+    { PLATFORM() ->
+        [windows] Per seleccionar un altre motor de cerca, aneu a les <a data-l10n-name="link-options">Opcions</a>
+       *[other] Per seleccionar un altre motor de cerca, aneu a les <a data-l10n-name="link-options">Preferències</a>
+    }
+about-private-browsing-search-banner-close-button =
+    .aria-label = Tanca
+about-private-browsing-promo-close-button =
+    .title = Tanca
+
+## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+about-private-browsing-pin-promo-header = La llibertat de la navegació privada en un clic
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Fixa al Dock
+       *[other] Fixa a la barra de tasques
+    }
+about-private-browsing-pin-promo-title = Ni galetes, ni historial, directament des del vostre escriptori. Navegueu sense sentir-vos observat.
+
+## Strings used in a promotion message for Firefox Relay
+
+about-private-browsing-relay-promo-header = Eviteu l'spam a la bústia d'entrada amb les màscares d'adreça electrònica
+about-private-browsing-relay-promo-title = Oculteu la vostra adreça real amb una màscara de correu electrònic quan us registreu, compreu o compartiu en línia.
+about-private-browsing-relay-promo-link-text = Proveu les màscares de correu electrònic
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `{ -brand-short-name } will show fewer cookie requests`
+about-private-browsing-cookie-banners-promo-heading = El { -brand-short-name } s'encarrega dels bàners de galetes
+about-private-browsing-cookie-banners-promo-body = Per a ser menys rastrejats i navegar amb menys distraccions, ara rebutgem automàticament molts bàners de galetes.
+
+## Strings for the info section of about:privatebrowsing
+
+about-private-browsing-felt-privacy-v1-info-header = No deixeu rastre en aquest dispositiu
+about-private-browsing-felt-privacy-v1-info-body = El { -brand-short-name } suprimeix les galetes, l'historial i les dades dels llocs en tancar totes les finestres privades.
+about-private-browsing-felt-privacy-v1-info-link = Qui podria veure la meva activitat?
+
+## Strings for the Nova redesign of about:privatebrowsing
+
+about-private-browsing-nova-info-body = Tancar totes les finestres privades suprimeix les galetes, l'historial i les dades del lloc.
+about-private-browsing-nova-info-link = Qui podria veure la meva activitat?
+about-private-browsing-private-window-basics-link = Conceptes bàsics de les finestres privades
+about-private-browsing-private-window-redesign-subheader = El { -brand-short-name } està dissenyat per protegir la vostra privadesa mentre navegueu, amb proteccions contra el seguiment integrades. En tancar aquesta finestra, s'esborren l'historial, les galetes i les dades del lloc per mantenir la vostra navegació privada de les altres persones que utilitzen aquest dispositiu.
+# "You're off the record" is an English idiom meant to communicate that you
+# are not being recorded. If there is not a comparable phrase in the locale,
+# fall back to "Your browsing will be deleted"
+about-private-browsing-nova-info-header = No s'està registrant res
+about-private-browsing-nova-info-subheader2 = Esborrarem totes les cerques i els inicis de sessió quan tanqueu totes les vostres finestres privades. Les proteccions incloses al { -brand-short-name } també estan activades, com ara el bloqueig dels elements de seguiment.
+
+## Strings for the Private Window basics spotlight
+
+about-private-browsing-spotlight-basics-title = Conceptes bàsics de les finestres privades
+about-private-browsing-spotlight-basics-subtitle = Les finestres privades ajuden a mantenir la vostra navegació privada respecte a altres usuaris d'aquest dispositiu. No us fan anònim ni esborren totes les teves dades.
+# This is a section header in the Private Window basics spotlight dialog,
+# introducing information about what users should know about Private Windows.
+about-private-browsing-spotlight-basics-what-to-know = Què cal saber
+about-private-browsing-spotlight-basics-activity-seen = És possible que, tot i així els llocs web, els motors de cerca, els proveïdors d'Internet o l'empresa per a la qual treballeu vegin algun tipus d'activitat.
+about-private-browsing-spotlight-basics-bookmarks-downloads = Les adreces d'interès i les baixades romanen al dispositiu i poden aparèixer a la barra d'adreces.
+# This is a section header in the Private Window basics spotlight dialog,
+# introducing additional privacy protection features available in { -brand-short-name }.
+about-private-browsing-spotlight-basics-more-privacy = Més proteccions de la privadesa
+about-private-browsing-spotlight-basics-malware-alerts = El { -brand-short-name } us avisa automàticament en cas de programari maliciós i llocs web enganyosos.
+# "Participating sites" refers to websites that honor Global Privacy Control (GPC) signals, either voluntarily or where legally required.
+about-private-browsing-spotlight-basics-no-sell-data = El { -brand-short-name } sol·licita automàticament als llocs web participants que no venguin ni comparteixin les vostres dades personals.
+about-private-browsing-spotlight-basics-vpn = Utilitzeu una VPN integrada per tal que sigui més difícil fer el seguiment de la vostra ubicació.
+# "Strict" refers to the Strict level of Enhanced Tracking Protection settings.
+# Translations should be consistent with the existing "Strict" string in about:preferences.
+about-private-browsing-spotlight-basics-strict-tracking = Canvieu a «Estricta» als paràmetres per augmentar les proteccions contra el seguiment.
+about-private-browsing-spotlight-basics-learn-more = Més informació

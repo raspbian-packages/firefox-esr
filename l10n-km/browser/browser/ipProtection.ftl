@@ -1,0 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Buttons used for all feature introduction callouts
+
+ipprotection-feature-introduction-button-secondary-not-now = មិន​មែន​ឥឡូវ
+ipprotection-feature-introduction-button-secondary-not-now-menuitem =
+    .label = មិន​មែន​ឥឡូវ
+
+## Feature discovery callout message advertising a feature where the user can turn on the VPN for specific sites only
+
+ipprotection-site-inclusions-callout-secondary-button-existing-users = មិន​មែន​ឥឡូវ

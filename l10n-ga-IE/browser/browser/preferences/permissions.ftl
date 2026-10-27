@@ -1,0 +1,66 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+permissions-window2 =
+    .style = min-width: 49em
+    .title = Eisceachtaí
+permissions-close-key =
+    .key = w
+permissions-address = Seoladh an tsuímh Ghréasáin
+    .accesskey = e
+permissions-block =
+    .label = Coisc
+    .accesskey = C
+permissions-session =
+    .label = Ceadaigh don Seisiún
+    .accesskey = S
+permissions-allow =
+    .label = Ceadaigh
+    .accesskey = C
+permissions-button-off =
+    .label = Múch
+    .accesskey = M
+permissions-button-off-temporarily =
+    .label = Múch go sealadach
+    .accesskey = T
+permissions-site-name =
+    .label = Suíomh Gréasáin
+permissions-status =
+    .label = Stádas
+permissions-remove =
+    .label = Bain Suíomh Gréasáin
+    .accesskey = R
+permissions-searchbox =
+    .placeholder = Cuardaigh Suíomh Gréasáin
+permissions-capabilities-allow =
+    .label = Ceadaigh
+permissions-capabilities-block =
+    .label = Coisc
+permissions-capabilities-prompt =
+    .label = Fiafraigh Díom i gCónaí
+permissions-capabilities-listitem-allow =
+    .value = Ceadaigh
+permissions-capabilities-listitem-block =
+    .value = Coisc
+permissions-capabilities-listitem-allow-session =
+    .value = Ceadaigh don Seisiún
+permissions-capabilities-listitem-off =
+    .value = As
+permissions-capabilities-listitem-off-temporarily =
+    .value = As go sealadach
+
+## Invalid Hostname Dialog
+
+permissions-invalid-uri-title = Óstainm neamhbhailí
+permissions-invalid-uri-label = Cuir óstainm bailí isteach, le do thoil
+
+## Exceptions - Add-ons
+
+permissions-exceptions-addons-desc = Is féidir na suímh a bhfuil cead acu breiseáin a shuiteáil a shonrú. Clóscríobh seoladh cruinn an tsuímh a theastaíonn uait a cheadú agus ansin cliceáil Ceadaigh.
+
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window2 =
+    .style = { permissions-window2.style }
+    .title = Socruithe - Uathsheinm

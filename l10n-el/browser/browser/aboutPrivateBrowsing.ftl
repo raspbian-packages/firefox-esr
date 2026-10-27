@@ -1,0 +1,105 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+privatebrowsingpage-open-private-window-label = Άνοιγμα ιδιωτικού παραθύρου
+    .accesskey = ι
+about-private-browsing-search-placeholder = Αναζήτηση στο διαδίκτυο
+about-private-browsing-search-btn =
+    .title = Αναζήτηση στο διαδίκτυο
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff =
+    .title = Αναζήτηση με { $engine } ή εισαγωγή διεύθυνσης
+about-private-browsing-handoff-no-engine =
+    .title = Αναζήτηση ή εισαγωγή διεύθυνσης
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff-text = Αναζήτηση με { $engine } ή εισαγωγή διεύθυνσης
+about-private-browsing-handoff-text-no-engine = Αναζήτηση ή εισαγωγή διεύθυνσης
+about-private-browsing-not-private = Αυτήν τη στιγμή, δεν βρίσκεστε σε ιδιωτικό παράθυρο.
+about-private-browsing-hide-activity = Αποκρύψτε τη δραστηριότητα και την τοποθεσία σας, όπου κι αν περιηγείστε
+about-private-browsing-get-privacy = Προστασία απορρήτου σε κάθε επίσκεψή σας
+about-private-browsing-hide-activity-1 = Αποκρύψτε τη δραστηριότητα και την τοποθεσία σας με το { -mozilla-vpn-brand-name }. Με ένα κλικ έχετε ασφαλή σύνδεση, ακόμα και σε δημόσιο Wi-Fi.
+about-private-browsing-prominent-cta = Προστατέψτε το απόρρητό σας με το { -mozilla-vpn-brand-name }
+about-private-browsing-focus-promo-cta = Λήψη του { -focus-brand-name }
+about-private-browsing-focus-promo-header = { -focus-brand-name }: Ιδιωτική περιήγηση εν κινήσει
+about-private-browsing-focus-promo-text = Η εφαρμογή ιδιωτικής περιήγησής μας για κινητές συσκευές διαγράφει το ιστορικό και τα cookie σας κάθε φορά.
+about-private-browsing-focus-promo-header-c = Απόρρητο ανώτερου επιπέδου στο κινητό
+about-private-browsing-focus-promo-text-c = Το { -focus-brand-name } διαγράφει το ιστορικό σας κάθε φορά, ενώ αποκλείει διαφημίσεις και ιχνηλάτες.
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = Το { $engineName } είναι η προεπιλεγμένη μηχανή αναζήτησης για ιδιωτικά παράθυρα
+about-private-browsing-search-banner-description =
+    { PLATFORM() ->
+        [windows] Για να επιλέξετε διαφορετική μηχανή αναζήτησης, μεταβείτε στις <a data-l10n-name="link-options">Επιλογές</a>
+       *[other] Για να επιλέξετε διαφορετική μηχανή αναζήτησης, μεταβείτε στις <a data-l10n-name="link-options">Προτιμήσεις</a>
+    }
+about-private-browsing-search-banner-close-button =
+    .aria-label = Κλείσιμο
+about-private-browsing-promo-close-button =
+    .title = Κλείσιμο
+
+## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+about-private-browsing-pin-promo-header = Ελευθερία ιδιωτικής περιήγησης με ένα κλικ
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Διατήρηση στο Dock
+       *[other] Καρφίτσωμα στη γραμμή εργασιών
+    }
+about-private-browsing-pin-promo-title = Χωρίς αποθήκευση cookie ή ιστορικού, απευθείας από την επιφάνεια εργασίας σας. Περιηγηθείτε σαν να μην σας παρακολουθεί κανείς.
+
+## Strings used in a promotion message for Firefox Relay
+
+about-private-browsing-relay-promo-header = Αποφύγετε τα ανεπιθύμητα μηνύματα με τις μάσκες email
+about-private-browsing-relay-promo-title = Αποκρύψτε την πραγματική σας διεύθυνση με μια μάσκα email κατά την εγγραφή σε ιστοτόπους, τις αγορές ή την κοινοποίησή της στο διαδίκτυο.
+about-private-browsing-relay-promo-link-text = Δοκιμή μασκών email
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `{ -brand-short-name } will show fewer cookie requests`
+about-private-browsing-cookie-banners-promo-heading = Το { -brand-short-name } φροντίζει για εσάς τα μηνύματα για cookie
+about-private-browsing-cookie-banners-promo-body = Απορρίπτουμε πλέον αυτόματα πολλά μηνύματα για cookie, ώστε να σας παρακολουθούν λιγότερο και να περιηγείστε στο διαδίκτυο χωρίς περισπασμούς.
+
+## Strings for the info section of about:privatebrowsing
+
+about-private-browsing-felt-privacy-v1-info-header = Περιηγηθείτε χωρίς να αφήνετε ίχνη σε αυτήν τη συσκευή
+about-private-browsing-felt-privacy-v1-info-body = Το { -brand-short-name } διαγράφει τα cookie, το ιστορικό και τα δεδομένα ιστοτόπων σας όταν κλείνετε όλα τα ιδιωτικά σας παράθυρα.
+about-private-browsing-felt-privacy-v1-info-link = Ποιος ενδέχεται να μπορεί να δει τη δραστηριότητά μου;
+
+## Strings for the Nova redesign of about:privatebrowsing
+
+about-private-browsing-nova-info-body = Κλείνοντας όλα τα ιδιωτικά παράθυρά σας, διαγράφονται τα cookie, το ιστορικό και τα δεδομένα ιστοτόπων σας.
+about-private-browsing-nova-info-link = Ποιος μπορεί ακόμα να δει τη δραστηριότητά μου;
+about-private-browsing-private-window-basics-link = Βασικές πληροφορίες για το ιδιωτικό παράθυρο
+about-private-browsing-private-window-redesign-subheader = Το { -brand-short-name } έχει σχεδιαστεί για να προστατεύει το απόρρητό σας κατά την περιήγηση, με ενσωματωμένη προστασία από καταγραφή. Το κλείσιμο αυτού του παραθύρου διαγράφει το ιστορικό, τα cookie και τα δεδομένα ιστοτόπων, ώστε η περιήγησή σας να παραμένει ιδιωτική από άλλους χρήστες αυτής της συσκευής.
+# "You're off the record" is an English idiom meant to communicate that you
+# are not being recorded. If there is not a comparable phrase in the locale,
+# fall back to "Your browsing will be deleted"
+about-private-browsing-nova-info-header = Η δραστηριότητά σας δεν θα αποθηκευτεί
+about-private-browsing-nova-info-subheader2 = Θα διαγραφεί κάθε αναζήτηση και σύνδεση όταν κλείσετε όλα τα ιδιωτικά παράθυρα. Τα ενσωματωμένα μέτρα προστασίας του { -brand-short-name }, όπως ο αποκλεισμός ιχνηλατών, είναι ενεργοποιημένα και εδώ.
+
+## Strings for the Private Window basics spotlight
+
+about-private-browsing-spotlight-basics-title = Βασικές πληροφορίες για το ιδιωτικό παράθυρο
+about-private-browsing-spotlight-basics-subtitle = Τα ιδιωτικά παράθυρα διατηρούν την περιήγησή σας απόρρητη από άλλους χρήστες αυτής της συσκευής. Δεν σας προσφέρουν ανωνυμία ούτε εκκαθαρίζουν όλα τα δεδομένα σας.
+# This is a section header in the Private Window basics spotlight dialog,
+# introducing information about what users should know about Private Windows.
+about-private-browsing-spotlight-basics-what-to-know = Τι πρέπει να γνωρίζετε
+about-private-browsing-spotlight-basics-activity-seen = Ορισμένες δραστηριότητές σας ενδέχεται να παραμένουν ορατές σε ιστοτόπους, μηχανές αναζήτησης, παρόχους διαδικτύου ή στον εργοδότη σας.
+about-private-browsing-spotlight-basics-bookmarks-downloads = Οι σελιδοδείκτες και οι λήψεις παραμένουν στη συσκευή σας και ενδέχεται να εμφανιστούν στη γραμμή διευθύνσεων.
+# This is a section header in the Private Window basics spotlight dialog,
+# introducing additional privacy protection features available in { -brand-short-name }.
+about-private-browsing-spotlight-basics-more-privacy = Πρόσθετα μέτρα προστασίας απορρήτου
+about-private-browsing-spotlight-basics-malware-alerts = Το { -brand-short-name } σάς ειδοποιεί αυτόματα για κακόβουλο λογισμικό και παραπλανητικούς ιστοτόπους.
+# "Participating sites" refers to websites that honor Global Privacy Control (GPC) signals, either voluntarily or where legally required.
+about-private-browsing-spotlight-basics-no-sell-data = Το { -brand-short-name } ζητά αυτόματα από τους συμμετέχοντες ιστοτόπους να μην πωλούν ούτε να κοινοποιούν τα προσωπικά σας δεδομένα.
+about-private-browsing-spotlight-basics-vpn = Χρησιμοποιήστε το ενσωματωμένο VPN για να κάνετε πιο δύσκολη την καταγραφή της τοποθεσίας σας.
+# "Strict" refers to the Strict level of Enhanced Tracking Protection settings.
+# Translations should be consistent with the existing "Strict" string in about:preferences.
+about-private-browsing-spotlight-basics-strict-tracking = Επιλέξτε την «Αυστηρή» λειτουργία στις ρυθμίσεις για ισχυρότερη προστασία από καταγραφή.
+about-private-browsing-spotlight-basics-learn-more = Μάθετε περισσότερα

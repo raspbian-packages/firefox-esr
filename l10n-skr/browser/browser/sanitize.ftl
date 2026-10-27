@@ -1,0 +1,148 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+sanitize-prefs2 =
+    .style = min-width: 34em
+    .title = تاریخ صاف کرݨ کیتے ترتیباں
+sanitize-prefs-style =
+    .style = width: 17em
+sanitize-dialog-title2 =
+    .style = min-width: 34em
+    .title = براؤزنگ ڈیٹا اَتے کوکیز کوں صاف کرو
+sanitize-dialog-title =
+    .style = min-width: 34em
+    .title = حالیہ تاریخ صاف کرو
+# When "Time range to clear" is set to "Everything", this message is used for the
+# title instead of dialog-title.
+sanitize-dialog-title-everything =
+    .style = min-width: 34em
+    .title = یکی تاریخ صاف کرو
+# Title used whenever this dialog is opened to delete data, whichever entry
+# point it was opened from. sanitize-dialog-title2 is still used for the clear
+# on shutdown context, which saves preferences rather than deleting anything.
+# Keep the .style in sync with it.
+sanitize-dialog-delete-title =
+    .style = min-width: 34em
+    .title = براؤزنگ ڈیٹا مٹاؤ
+clear-data-settings-label = جݙاں بند ہووے، { -brand-short-name } سبھ کجھ آپݨے آپ خالی کر سڳدا ہے
+sanitize-on-shutdown-description = جہڑیلے { -brand-short-name }بند تھی وین٘دا ہِے تاں خود کار طریقے نال سارے ݙِٹّھے ڳئے شئیں کوں صاف کرو۔
+
+## clear-time-duration-prefix is followed by a dropdown list, with
+## values localized using clear-time-duration-value-* messages.
+## clear-time-duration-suffix is left empty in English, but can be
+## used in other languages to change the structure of the message.
+##
+## This results in English:
+## Time range to clear: (Last Hour, Today, etc.)
+
+clear-time-duration-prefix =
+    .value = خالی کرݨ کیتے وقت دی رینج:{ " " }
+    .accesskey = T
+clear-time-duration-prefix2 =
+    .value = کݙݨ:
+    .accesskey = W
+clear-time-duration-value-last-hour =
+    .label = چھیکڑی گھنٹہ
+clear-time-duration-value-last-2-hours =
+    .label = چھیکڑی ݙو گھنٹے
+clear-time-duration-value-last-4-hours =
+    .label = چھیکڑی چار گھنٹے
+# Variables:
+#   $midnightTime (String) - Time of midnight (00:00 hours) - to inform the user that history will be cleared after midnight
+clear-time-duration-value-since-midnight =
+    .label = { $midnightTime } کنوں
+clear-time-duration-value-today =
+    .label = اڄ
+clear-time-duration-value-everything =
+    .label = ہر شئے
+clear-time-duration-suffix =
+    .value = { "" }
+
+## These strings are used as section comments and checkboxes
+## to select the items to remove
+
+history-section-label = تاریخ
+item-history-and-downloads =
+    .label = براؤزنگ تے ڈاؤن لوڈ تاریخ
+    .accesskey = B
+item-history-and-downloads-description2 = سائٹ تے ڈاؤن لوڈ ہسٹری صاف کریندے
+item-cookies =
+    .label = کوکیاں
+    .accesskey = C
+# Variables:
+#   $amount (Number) - Amount of site data currently stored on disk
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cookies-site-data-with-size =
+    .label = کوکیز اَتے سائٹ دا ڈیٹا ({ $amount }{ $unit })
+    .accesskey = e
+item-cookies-site-data =
+    .label = کوکیاں تے سائٹ ڈیٹا
+    .accesskey = e
+item-cookies-site-data-description = تُہاکُوں خالی سائٹاں یا خالی شاپنگ ٹوکریاں کنوں سائن آؤٹ کر سڳدا ہِے
+item-active-logins =
+    .label = لاگ انز فعال کرو
+    .accesskey = l
+item-cache =
+    .label = کیشے
+    .accesskey = a
+# Variables:
+#   $amount (Number) - Amount of cached data
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cached-content-with-size =
+    .label = عارضی کیشئیڈ فائلاں اَتے پَنّے ({ $amount }{ $unit })
+    .accesskey = f
+item-cached-content =
+    .label = عارضی کیشئیڈ فائلاں اَتے پَنّے
+    .accesskey = f
+item-cached-content-description = آئٹماں کوں صاف کرین٘دا ہِے جہڑے سائٹاں کوں تِکھائی نال لوڈ کرݨ وِچ مَدَت کرین٘دے ہِن
+item-form-search-history =
+    .label = فارم تے ڳولݨ تاریخ
+    .accesskey = F
+item-site-prefs =
+    .label = سائٹ ترتیباں
+    .accesskey = i
+item-formdata-prefs =
+    .label = محفوظ کیتی ڳئی فارم معلومات
+    .accesskey = o
+item-formdata-description = فارم وچ درج کیتیاں ڳئیاں شیواں، جیویں ناں، ای میل تے بیاں شیواں صاف کریندے
+item-site-prefs-description = تُہاݙی اجازت اَتے سائٹ ترجیح کوں اصل ترتبیاں اُتے وَلا سیٹ کرو
+data-section-label = ڈیٹا
+item-site-settings =
+    .label = سائٹ ترتیباں
+    .accesskey = S
+item-offline-apps =
+    .label = آف لائن ویب سائٹ ڈیٹا
+    .accesskey = O
+sanitize-everything-undo-warning = ایہ عمل آیا ون٘ڄایا نئیں تھی سڳدا۔
+window-close =
+    .key = w
+sanitize-button-ok =
+    .label = ہݨ صاف کرو
+sanitize-button-ok2 =
+    .label = صاف کرو
+sanitize-button-ok-on-shutdown =
+    .label = تبدیلیاں محفوظ کرو
+# Confirm button used whenever this dialog is opened to delete data, whichever
+# entry point it was opened from.
+sanitize-button-delete =
+    .label = مٹاؤ
+# Icon-only button in the dialog's top right corner. Dismisses the dialog
+# without deleting anything, the same as the Cancel button.
+sanitize-dialog-close-button =
+    .title = بند کرو
+# The label for the default button between the user clicking it and the window
+# closing.  Indicates the items are being cleared.
+sanitize-button-clearing =
+    .label = صاف کریندا پئے
+# Warning that appears when "Time range to clear" is set to "Everything" in Clear
+# Recent History dialog, provided that the user has not modified the default set
+# of history items to clear.
+sanitize-everything-warning = ساری تاریخ خالی کر ݙتی ویسے
+# Warning that appears when "Time range to clear" is set to "Everything" in Clear
+# Recent History dialog, provided that the user has modified the default set of
+# history items to clear.
+sanitize-selected-warning = تمام منتخب چیزاں خالی کر ݙتے ویسن
+# Label shown next to the loading spinner while calculating the size of cached data
+# and cookies in the clear data dialog.
+sanitize-calculating-size = حساب لڳدا پیا…
