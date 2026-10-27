@@ -1,0 +1,318 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Yangi varaq
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = Yangi varaqlar
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } qator
+           *[other] { $num } qator
+        }
+home-restore-defaults-srd =
+    .label = Asliga tiklash
+    .accesskey = t
+home-mode-choice-custom-srd =
+    .label = Boshqa URL manzillar
+home-mode-choice-blank-srd =
+    .label = Bo‘sh sahifa
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Homiylik maqolalari
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Kirilgan sahifalar
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Xatcho‘plar
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Oxirgi yuklanmalar
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Qidiruv
+    .title = Qidiruv
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = { $engine } orqali qidiring yoki manzilni kiriting
+newtab-search-box-handoff-text-no-engine = Izlang yoki manzilni kiriting
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = { $engine } orqali qidiring yoki manzilni kiriting
+    .placeholder = { $engine } orqali qidiring yoki manzilni kiriting
+    .title = { $engine } orqali qidiring yoki manzilni kiriting
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = Qidiring yoki manzilni kiriting
+    .placeholder = Qidiring yoki manzilni kiriting
+    .title = Qidiring yoki manzilni kiriting
+newtab-search-box-text = Internetdan qidirish
+newtab-search-box-input =
+    .aria-label = Internetdan izlash
+    .placeholder = Internetdan qidirish
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Qidiruv tizimini qoʻshish
+newtab-topsites-add-shortcut-header = Yangi tugmalar birikmasi
+newtab-topsites-edit-shortcut-header = Tugmalar birikmasini tahrirlash
+newtab-topsites-title-label = Nomi
+newtab-topsites-title-input =
+    .placeholder = Nomini kiriting
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = URL manzilini kiriting
+newtab-topsites-url-validation = URL manzilini bexato kiriting
+newtab-topsites-image-url-label = Rasmning URL manzili
+newtab-topsites-use-custom-image-link = Boshqa rasmdan foydalaning
+newtab-topsites-use-image-link = Boshqa rasmdan foydalaning…
+newtab-topsites-image-validation = Rasm yuklanmadi. Boshqa URL manzildan foydalaning.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Bekor qilish
+newtab-topsites-delete-history-button = Tarixdan oʻchirish
+newtab-topsites-save-button = Saqlash
+newtab-topsites-preview-button = Koʻrib chiqish
+newtab-topsites-add-button = Qoʻshish
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Ushbu sahifaning har bir nusxasini tarixingizdan oʻchirmoqchimisiz?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Bu amalni ortga qaytarib boʻlmaydi.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = Homiylik qilgan
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Menyuni ochish
+    .title = Menyuni ochish
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = { $title } uchun matn menyusini ochish
+    .title = Menyuni ochish
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Tahrirlash
+newtab-menu-open-new-window = Yangi oynada ochish
+newtab-menu-open-new-private-window = Yangi maxfiy oynada ochish
+newtab-menu-dismiss = Rad etish
+newtab-menu-pin = Yopishtirish
+newtab-menu-unpin = Ajratish
+newtab-menu-delete-history = Tarixdan oʻchirish
+newtab-menu-show-privacy-info = Bizning homiylarimiz va sizning maxfiyligingiz
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Xatcho‘pni olib tashlash
+# Bookmark is a verb here.
+newtab-menu-bookmark = Xatcho‘p
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Havoladan nusxa olish
+newtab-menu-go-to-download-page = Yuklab olish sahifasiga o‘tish
+newtab-menu-remove-download = Tarixdan olib tashlash
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Topkichda ko‘rsatish
+       *[other] Saqlangan jildni ochish
+    }
+newtab-menu-open-file = Faylni ochish
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Kirilgan
+newtab-label-bookmarked = Xatcho‘pga qo‘shilgan
+newtab-label-removed-bookmark = Xatchoʻp olib tashlandi
+newtab-label-recommended = Trendda
+newtab-label-saved = { -pocket-brand-name } xizmatiga saqlandi
+newtab-label-download = Yuklab olindi
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · Reklama huquqi asosida
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = Homiydan ({ $sponsor })
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } daq
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Maxfiylik eslatmalari
+
+## Section Headers.
+
+newtab-section-header-topsites = Ommabop saytlar
+newtab-section-header-recent-activity = Soʻnggi faoliyat
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Saytlarni koʻrishni boshlashingiz bilan biz sizga ajoyib maqola, video va oxirgi kirilgan yoki xatchoʻplarga qoʻshilgan sahifalarni koʻrsatamiz.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = Hammasini oʻqib chiqdingiz!
+newtab-discovery-empty-section-topstories-content = Yana boshqa maqolalarni oʻqish uchun keyinroq tashrif buyuring.
+newtab-discovery-empty-section-topstories-try-again-button = Yana urining
+newtab-discovery-empty-section-topstories-loading = Yuklanmoqda...
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Obbo! Biz deyarli bu qismni yuklab boʻlgandik, lekin ulgurmabmiz.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Kontent yuklanayotganda qandaydir xatolik yuz berdi.
+newtab-error-fallback-refresh-link = Yana urinib ko‘rish uchun sahifani yangilang.
+
+## New Tab Appearance (browser theme picker)
+
+newtab-custom-settings = Boshqa sozlamalarni boshqarish
+
+## New Tab Wallpapers
+
+#  (developer note): @nova-cleanup(remove-string): Remove old "Wallpapers" heading string once Nova lands. The newtab-wallpaper-toggle-title string will take over
+newtab-wallpaper-title = Fon rasmlari
+newtab-wallpaper-toggle-title =
+    .label = Fon rasmlari
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = Nyu-York
+newtab-clock-city-us-los-angeles = Los Anjeles
+newtab-clock-city-us-chicago = Chikago
+newtab-clock-city-us-san-francisco = San Fransisko
+newtab-clock-city-us-san-diego = San Diego
+newtab-clock-city-us-dallas = Dallas
+newtab-clock-city-us-houston = Xyuston
+newtab-clock-city-us-philadelphia = Filadelfiya
+newtab-clock-city-us-atlanta = Atlanta
+newtab-clock-city-us-washington-dc = Vashington
+newtab-clock-city-us-boston = Boston
+newtab-clock-city-us-miami = Mayami
+newtab-clock-city-us-seattle = Sietl
+newtab-clock-city-us-denver = Denver
+newtab-clock-city-us-honolulu = Gonolulu
+newtab-clock-city-us-anchorage = Ankorij
+newtab-clock-city-de-berlin = Berlin
+newtab-clock-city-de-munich = Myunxen
+newtab-clock-city-de-frankfurt = Frankfurt am Main
+newtab-clock-city-de-hamburg = Gamburg
+newtab-clock-city-fr-paris = Parij
+newtab-clock-city-fr-lyon = Lion
+newtab-clock-city-fr-marseille = Marsel
+newtab-clock-city-fr-toulouse = Tuluza
+newtab-clock-city-in-kolkata = Kalkutta
+newtab-clock-city-in-mumbai = Mumbay
+newtab-clock-city-in-delhi = Dehli
+newtab-clock-city-in-bangalore = Bangalor
+newtab-clock-city-cn-shanghai = Shanxay
+newtab-clock-city-cn-beijing = Pekin
+newtab-clock-city-cn-shenzhen = Shenchjen
+newtab-clock-city-br-sao-paulo = San Paulu
+newtab-clock-city-br-rio-de-janeiro = Rio-de-Janeyro
+newtab-clock-city-br-brasilia = Brazilia
+newtab-clock-city-id-jakarta = Jakarta
+newtab-clock-city-id-surabaya = Surabaya
+newtab-clock-city-id-makassar = Makasar
+newtab-clock-city-ca-toronto = Toronto
+newtab-clock-city-ca-montreal = Monreal
+newtab-clock-city-ca-vancouver = Vankuver
+newtab-clock-city-au-sydney = Sidney
+newtab-clock-city-au-perth = Pert
+newtab-clock-city-au-adelaide = Adelaida
+newtab-clock-city-pl-warsaw = Varshava
+newtab-clock-city-pl-krakow = Krakov
+newtab-clock-city-jp-tokyo = Tokio
+newtab-clock-city-jp-osaka = Osaka
+newtab-clock-city-mx-mexico-city = Mexiko shahri
+newtab-clock-city-mx-guadalajara = Gvadalahara
+newtab-clock-city-it-rome = Rim
+newtab-clock-city-it-milan = Milan
+newtab-clock-city-ru-moscow = Moskva
+newtab-clock-city-ru-saint-petersburg = Sankt-Peterburg
+newtab-clock-city-gb-london = London
+newtab-clock-city-gb-birmingham = Birmingem
+newtab-clock-city-es-madrid = Madrid
+newtab-clock-city-es-barcelona = Barselona
+newtab-clock-city-nl-amsterdam = Amsterdam
+newtab-clock-city-ch-zurich = Syurix
+newtab-clock-city-at-vienna = Vena
+newtab-clock-city-cz-prague = Praga
+newtab-clock-city-ar-buenos-aires = Buenos Ayres
+newtab-clock-city-gr-athens = Afina
+newtab-clock-city-hu-budapest = Budapesht
+newtab-clock-city-be-brussels = Bryussel
+newtab-clock-city-ua-kyiv = Kiyev
+newtab-clock-city-fi-helsinki = Xelsinki
+newtab-clock-city-co-bogota = Bogota
+newtab-clock-city-ph-manila = Manila
+newtab-clock-city-tr-istanbul = Istanbul
+newtab-clock-city-my-kuala-lumpur = Kuala-Lumpur
+newtab-clock-city-eg-cairo = Qohira
+newtab-clock-city-se-stockholm = Stokgolm
+newtab-clock-city-ro-bucharest = Buharest
+newtab-clock-city-th-bangkok = Bangkok
+newtab-clock-city-ng-lagos = Lagos
+newtab-clock-city-tw-taipei = Taypey
+newtab-clock-city-za-johannesburg = Yoxannesburg
+newtab-clock-city-cl-santiago = Santiyago
+newtab-clock-city-pk-karachi = Karochi
+newtab-clock-city-bg-sofia = Sofiya
+newtab-clock-city-sg-singapore = Singapur
+newtab-clock-city-hk-hong-kong = Gonkong
+newtab-clock-city-sa-riyadh = Ar-Riyod
+newtab-clock-city-dk-copenhagen = Kopengagen
+newtab-clock-city-pe-lima = Lima
+newtab-clock-city-ke-nairobi = Nayrobi
+newtab-clock-city-nz-auckland = Oklend
+newtab-clock-city-kr-seoul = Seul
+newtab-clock-city-lt-vilnius = Vilnyus
+newtab-clock-city-ie-dublin = Dublin
+newtab-clock-city-ae-dubai = Dubay
+newtab-clock-city-lv-riga = Riga
+newtab-clock-city-pt-lisbon = Lissabon
+newtab-clock-city-ir-tehran = Tehron
+newtab-clock-city-bd-dhaka = Dakka
+newtab-clock-city-ec-guayaquil = Guayakil
+newtab-clock-city-vn-ho-chi-minh-city = Xoshimin
+newtab-clock-city-np-kathmandu = Katmandu
+newtab-clock-city-mm-yangon = Yangon
