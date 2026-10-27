@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+profiledowngrade-window2 =
+    .style = min-width: 490px;
+    .title = Vi lanĉis malnovan version de { -brand-product-name }
+profiledowngrade-window-create =
+    .label = Krei novan profilon
+profiledowngrade-sync2 = Uzo de malnova versio de { -brand-product-name } povas difekti legosignojn kaj retuman historion, kiuj jam estas konservitaj en ekzistanta profilo de { -brand-product-name }. Por protekti viajn datumojn, kreu novan profilon por tiu ĉi instalo de { -brand-short-name }. Vi povas ĉiam komenci seancon kun konto por speguli viajn legosignojn kaj retuman historion inter profiloj.
+profiledowngrade-nosync = Uzo de malnova versio de { -brand-product-name } povas difekti legosignojn kaj retuman historion, kiuj jam estas konservitaj en ekzistanta profilo de { -brand-product-name }. Por protekti viajn datumojn, kreu novan profilon por tiu ĉi instalaĵo de { -brand-short-name }.
+profiledowngrade-quit =
+    .label =
+        { PLATFORM() ->
+            [windows] Fini
+           *[other] Fini
+        }
