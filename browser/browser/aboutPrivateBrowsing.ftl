@@ -1,0 +1,105 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+privatebrowsingpage-open-private-window-label = Otwórz okno w trybie prywatnym
+    .accesskey = O
+about-private-browsing-search-placeholder = Szukaj w Internecie
+about-private-browsing-search-btn =
+    .title = Szukaj w Internecie
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff =
+    .title = Wprowadź adres lub szukaj w { $engine }
+about-private-browsing-handoff-no-engine =
+    .title = Wprowadź adres lub szukaj
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff-text = Wprowadź adres lub szukaj w { $engine }
+about-private-browsing-handoff-text-no-engine = Wprowadź adres lub szukaj
+about-private-browsing-not-private = Okno bez aktywnego trybu prywatnego.
+about-private-browsing-hide-activity = Ukryj swoje działania i położenie wszędzie, gdzie przeglądasz
+about-private-browsing-get-privacy = Zapewnij sobie ochronę prywatności wszędzie, gdzie przeglądasz
+about-private-browsing-hide-activity-1 = Ukryj swoje działania w Internecie i położenie za pomocą { -mozilla-vpn-brand-name }. Jedno kliknięcie tworzy bezpieczne połączenie, nawet w publicznej sieci Wi-Fi.
+about-private-browsing-prominent-cta = Zachowaj prywatność dzięki { -mozilla-vpn-brand-name }
+about-private-browsing-focus-promo-cta = Pobierz { -focus-brand-name }
+about-private-browsing-focus-promo-header = { -focus-brand-name }: prywatne przeglądanie także w drodze
+about-private-browsing-focus-promo-text = Nasza wyspecjalizowana w prywatności przeglądarka na telefon czyści historię i ciasteczka za każdym razem.
+about-private-browsing-focus-promo-header-c = Prywatność wyższego poziomu na telefonie
+about-private-browsing-focus-promo-text-c = { -focus-brand-name } czyści historię za każdym razem, a do tego blokuje reklamy i elementy śledzące.
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = { $engineName } to domyślna wyszukiwarka w prywatnych oknach
+about-private-browsing-search-banner-description =
+    { PLATFORM() ->
+        [windows] W <a data-l10n-name="link-options">opcjach</a> można wybrać inną wyszukiwarkę
+       *[other] W <a data-l10n-name="link-options">preferencjach</a> można wybrać inną wyszukiwarkę
+    }
+about-private-browsing-search-banner-close-button =
+    .aria-label = Zamknij
+about-private-browsing-promo-close-button =
+    .title = Zamknij
+
+## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+about-private-browsing-pin-promo-header = Wolność trybu prywatnego pod jednym kliknięciem
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Zatrzymaj w Docku
+       *[other] Przypnij do paska zadań
+    }
+about-private-browsing-pin-promo-title = Żadnych zapisanych ciasteczek ani historii, prosto z pulpitu. Przeglądaj, jak gdyby nikt nie patrzył.
+
+## Strings used in a promotion message for Firefox Relay
+
+about-private-browsing-relay-promo-header = Zapobiegaj spamowi w skrzynce odbiorczej za pomocą masek dla adresu e-mail
+about-private-browsing-relay-promo-title = Ukryj swój prawdziwy adres za pomocą maski dla adresu e-mail, gdy się logujesz, robisz zakupy lub udostępniasz go w Internecie.
+about-private-browsing-relay-promo-link-text = Wypróbuj maski dla adresu e-mail
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `{ -brand-short-name } will show fewer cookie requests`
+about-private-browsing-cookie-banners-promo-heading = { -brand-short-name } zajmie się za Ciebie informacjami o ciasteczkach
+about-private-browsing-cookie-banners-promo-body = Teraz automatycznie odrzucamy wiele próśb o akceptację ciasteczek, dzięki czemu mniej Cię śledzą i możesz nie odrywać się od przeglądania.
+
+## Strings for the info section of about:privatebrowsing
+
+about-private-browsing-felt-privacy-v1-info-header = Nie zostawiaj śladów na tym urządzeniu
+about-private-browsing-felt-privacy-v1-info-body = { -brand-short-name } usuwa Twoje ciasteczka, historię i dane witryn po zamknięciu wszystkich prywatnych okien.
+about-private-browsing-felt-privacy-v1-info-link = Kto może zobaczyć, co robię?
+
+## Strings for the Nova redesign of about:privatebrowsing
+
+about-private-browsing-nova-info-body = Zamknięcie wszystkich prywatnych okien spowoduje usunięcie ciasteczek, historii i danych witryn.
+about-private-browsing-nova-info-link = Kto nadal może widzieć co robię?
+about-private-browsing-private-window-basics-link = Informacje o oknie prywatnym
+about-private-browsing-private-window-redesign-subheader = { -brand-short-name } chroni Twoją prywatność podczas przeglądania Internetu dzięki wbudowanej ochronie przed śledzeniem. Zamknięcie tego okna usuwa jego historię, ciasteczka i dane witryn, dzięki czemu inni użytkownicy tego urządzenia nie zobaczą tego, co robisz.
+# "You're off the record" is an English idiom meant to communicate that you
+# are not being recorded. If there is not a comparable phrase in the locale,
+# fall back to "Your browsing will be deleted"
+about-private-browsing-nova-info-header = Historia przeglądania zostanie usunięta
+about-private-browsing-nova-info-subheader2 = Gdy zamkniesz wszystkie okna prywatne, usuniemy wszystkie wyszukiwania i logowania. Wbudowana ochrona { -brand-short-name(case: "gen") }, taka jak blokowanie elementów śledzących, też tu działa.
+
+## Strings for the Private Window basics spotlight
+
+about-private-browsing-spotlight-basics-title = Informacje o oknie prywatnym
+about-private-browsing-spotlight-basics-subtitle = Okna prywatne pomagają ukryć Twoje działania w Internecie przed innymi użytkownikami tego urządzenia. Nie zapewniają jednak anonimowości ani nie usuwają wszystkich Twoich danych.
+# This is a section header in the Private Window basics spotlight dialog,
+# introducing information about what users should know about Private Windows.
+about-private-browsing-spotlight-basics-what-to-know = Co warto wiedzieć
+about-private-browsing-spotlight-basics-activity-seen = Część Twoich działań może być nadal widoczna dla witryn, wyszukiwarek, dostawcy Internetu lub pracodawcy.
+about-private-browsing-spotlight-basics-bookmarks-downloads = Dodane zakładki i pobrane pliki pozostają na urządzeniu i mogą pojawiać się na pasku adresu.
+# This is a section header in the Private Window basics spotlight dialog,
+# introducing additional privacy protection features available in { -brand-short-name }.
+about-private-browsing-spotlight-basics-more-privacy = Dodatkowa ochrona prywatności
+about-private-browsing-spotlight-basics-malware-alerts = { -brand-short-name } automatycznie ostrzega przed złośliwym oprogramowaniem i witrynami podejrzanymi o oszustwo.
+# "Participating sites" refers to websites that honor Global Privacy Control (GPC) signals, either voluntarily or where legally required.
+about-private-browsing-spotlight-basics-no-sell-data = { -brand-short-name } automatycznie informuje witryny respektujące ten sygnał, że mają nie sprzedawać ani nie udostępniać Twoich danych.
+about-private-browsing-spotlight-basics-vpn = Skorzystaj z wbudowanej sieci VPN, aby utrudnić śledzenie Twojego położenia.
+# "Strict" refers to the Strict level of Enhanced Tracking Protection settings.
+# Translations should be consistent with the existing "Strict" string in about:preferences.
+about-private-browsing-spotlight-basics-strict-tracking = Wzmocnij ochronę przed śledzeniem, przełączając ją na tryb ścisły w ustawieniach.
+about-private-browsing-spotlight-basics-learn-more = Więcej informacji
