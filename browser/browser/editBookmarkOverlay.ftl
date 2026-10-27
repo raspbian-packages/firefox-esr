@@ -1,0 +1,62 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+bookmark-overlay-name-2 =
+    .value = Όνομα
+    .accesskey = Ό
+bookmark-overlay-url =
+    .value = URL
+    .accesskey = U
+# Location refers to the position of the bookmark within the browser's
+# bookmarks, not to its URL or address.
+bookmark-overlay-location-2 =
+    .value = Τοποθεσία
+    .accesskey = Τ
+bookmark-overlay-choose =
+    .label = Επιλογή…
+bookmark-overlay-folders-expander2 =
+    .tooltiptext = Εμφάνιση όλων των φακέλων σελιδοδεικτών
+bookmark-overlay-folders-expander-hide =
+    .tooltiptext = Απόκρυψη
+# bookmark-overlay-folders-tree is used to provide an accessible name to the tree view of the Bookmarks directory, when it is expanded
+bookmark-overlay-folders-tree =
+    .aria-label = Φάκελοι
+bookmark-overlay-new-folder-button =
+    .label = Νέος φάκελος
+    .accesskey = ο
+bookmark-overlay-tags-2 =
+    .value = Ετικέτες
+    .accesskey = Ε
+bookmark-overlay-tags-empty-description =
+    .placeholder = Διαχωρίστε τις ετικέτες με κόμματα
+bookmark-overlay-tags-expander2 =
+    .tooltiptext = Εμφάνιση όλων των ετικετών
+bookmark-overlay-tags-expander-hide =
+    .tooltiptext = Απόκρυψη
+bookmark-overlay-keyword-2 =
+    .value = Λέξη-κλειδί
+    .accesskey = Λ
+bookmark-overlay-tags-caption-label = Χρησιμοποιήστε ετικέτες για να οργανώσετε και να αναζητήσετε σελιδοδείκτες από τη γραμμή διευθύνσεων
+bookmark-overlay-keyword-caption-label-2 = Χρησιμοποιήστε μια λέξη-κλειδί για να ανοίξετε σελιδοδείκτες απευθείας από τη γραμμή διευθύνσεων
+
+## Bookmark properties dialog
+
+bookmark-properties-save-button =
+    .label = Αποθήκευση
+
+## Titles of the dialog used to add or edit bookmarks and folders.
+
+bookmark-properties-title-add-bookmark = Προσθήκη σελιδοδείκτη
+# Title used when bookmarking multiple tabs at once into a new folder.
+bookmark-properties-title-add-multiple-bookmarks = Νέοι σελιδοδείκτες
+bookmark-properties-title-add-folder = Προσθήκη φακέλου σελιδοδεικτών
+bookmark-properties-title-edit-bookmark = Επεξεργασία σελιδοδείκτη
+bookmark-properties-title-edit-folder = Επεξεργασία φακέλου σελιδοδεικτών
+
+## Default names for newly created bookmarks and folders.
+
+# Default name of the folder created when bookmarking all tabs.
+bookmark-properties-default-name-all-tabs-folder = [Όνομα φακέλου]
+bookmark-properties-default-name-folder = Νέος φάκελος
+bookmark-properties-default-name-bookmark = Νέος σελιδοδείκτης
