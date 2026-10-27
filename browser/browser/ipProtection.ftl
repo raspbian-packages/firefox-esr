@@ -1,0 +1,456 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Toolbar button tooltip reflects VPN state
+
+ipprotection-button =
+    .label = VPN
+    .tooltiptext = VPN
+ipprotection-button-error =
+    .label = Включить VPN
+    .tooltiptext = Включить VPN
+
+##
+
+# The word "Beta" is intended to be uppercase in the experiment label.
+ipprotection-experiment-badge =
+    .label = БЕТА
+ipprotection-help-button =
+    .tooltiptext = Открыть страницу поддержки VPN
+ipprotection-title = VPN
+
+## Buttons used for all feature introduction callouts
+
+ipprotection-feature-introduction-title = Представляем VPN, теперь прямо в вашем браузере
+ipprotection-feature-introduction-title-1 = Попробуйте VPN, встроенный в { -brand-product-name }
+ipprotection-feature-introduction-link-text-2 = Используйте наш новый <a data-l10n-name="learn-more-vpn">встроенный VPN</a>, чтобы скрыть своё местоположение и защитить свои данные.
+ipprotection-feature-introduction-title-privacy = Добавьте ещё один уровень приватности
+ipprotection-feature-introduction-title-privacy-1 = Добавьте ещё один уровень приватности со встроенным VPN
+ipprotection-feature-introduction-link-text-privacy-1 = <a data-l10n-name="learn-more-vpn">Встроенный в { -brand-product-name }</a> VPN помогает защитить ваш веб-сёрфинг. Выберите одно из нескольких местоположений, чтобы обеспечить приватность вашего веб-сёрфинга.
+ipprotection-feature-introduction-link-text-privacy-2 = <a data-l10n-name="learn-more-vpn">Встроенный в { -brand-product-name }</a> VPN помогает защитить ваш веб-сёрфинг. Выберите одно из 5 местоположений, чтобы повысить приватность вашего веб-сёрфинга.
+ipprotection-feature-introduction-link-text-privacy-3 = Получите <a data-l10n-name="learn-more-vpn">дополнительную приватность</a>, выбрав одно из множества местоположений, чтобы скрывать своё пребывание в Интернете.
+# Used for multiple discovery callouts after release of the site inclusions feature
+ipprotection-feature-introduction-description-inclusions = Помогите скрыть свое местоположение для <a data-l10n-name="learn-more-vpn">дополнительной конфиденциальности</a> при веб-сёрфинге. Включает или выключает VPN для определенных сайтов.
+ipprotection-feature-introduction-text-summer-promo-1 = Включите его, чтобы сделать ваш веб-сёрфинг более приватным. <a data-l10n-name="summer-promo-link">Получите неограниченную пропускную способность</a> и больше местоположений для веб-сёрфинга. Теперь до 31 августа.
+ipprotection-feature-introduction-title-summer-promo = Есть планы на дорогу? Возьмите приватность с собой.
+ipprotection-feature-introduction-description-summer-promo = Возьмите больше со встроенным VPN в { -brand-product-name }: больше местоположений, неограниченная пропускная способность. Теперь до 31 августа.
+ipprotection-feature-introduction-link-text-private-browsing-2 = Используйте наш новый <a data-l10n-name="learn-more-vpn">встроенный VPN</a>, чтобы скрыть своё местоположение и защитить свои данные, даже когда вы находитесь в приватном окне.
+ipprotection-feature-introduction-description-private-browsing = Работайте в интернете с дополнительной защитой, скрывая своё местоположение, даже когда вы находитесь в приватном окне.
+# Alternate version of the feature discovery callout copy used after we've released site inclusions for the VPN. Users have the option to turn the VPN on for specific sites only
+ipprotection-feature-introduction-description-private-browsing-1 = Помогите скрыть свое местоположение для <a data-l10n-name="learn-more-vpn">дополнительной конфиденциальности</a> при веб-сёрфинге. Установите правила, чтобы включать VPN для дополнительной конфиденциальности или просмотра на основе местоположения, и выключать там, где это не нужно.
+ipprotection-feature-introduction-title-captive-portal = Используете общедоступный Wi-Fi? Попробуйте встроенный в { -brand-product-name } VPN.
+ipprotection-feature-introduction-description-captive-portal = Работайте в интернете с дополнительной защитой, скрывая своё местоположение даже при подключении к общедоступной сети Wi-Fi.
+# Used for discovery callouts for both captive portal login and private browsing
+ipprotection-feature-introduction-link-text-captive-portal-1 = Получите <a data-l10n-name="learn-more-vpn">дополнительную приватность</a>, выбрав одно из нескольких местоположений, в котором вы находитесь в Интернете.
+ipprotection-feature-introduction-button-primary = Далее
+ipprotection-feature-introduction-button-secondary-not-now = Не сейчас
+ipprotection-feature-introduction-button-secondary-not-now-menuitem =
+    .label = Не сейчас
+ipprotection-feature-introduction-button-secondary-no-thanks = Нет, спасибо
+ipprotection-feature-introduction-button-secondary-no-thanks-menuitem =
+    .label = Нет, спасибо
+ipprotection-feature-introduction-button-secondary-remove = Убрать VPN с панели инструментов
+ipprotection-feature-introduction-button-secondary-remove-1 =
+    .label = Убрать VPN с панели инструментов
+ipprotection-feature-introduction-button-open-vpn = Открыть VPN
+ipprotection-feature-introduction-button-get-started = Начать
+
+## Callout shown when the user opens a private browsing window
+
+ipprotection-feature-introduction-title-private-browsing = Обеспечьте максимальную приватность с помощью встроенного VPN в { -brand-product-name }
+
+## Summer promo offramp callout buttons
+
+# Generic summer promo offramp message
+ipprotection-summer-promo-offramp-generic-title = Ваши встроенные лимиты VPN будут сброшены 1 сентября
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-summer-promo-offramp-generic-description = Используйте { $maxUsage } ГБ и 6 местоположений для дополнительной приватности, чтобы затруднить отслеживание вашего веб-сёрфинга.
+# Generic summer promo offramp message for users who cannot upgrade to Mozilla VPN due to locale and already have Firefox as their default browser
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-summer-promo-offramp-generic-description-default-browser-users-no-upgrade = Используйте свои { $maxUsage } ГБ и более 20 местоположений для дополнительной приватности, чтобы затруднить отслеживание вашего веб-сёрфинга.
+# Mozilla VPN subscriber summer promo offramp message
+# Message shown to current subscribers of Mozilla VPN
+# Refers to subscribers now receiving unlimited bandwidth and more locations in the Firefox built-in VPN
+ipprotection-summer-promo-offramp-subscriber-title = Ваш встроенный VPN стал ещё лучше
+ipprotection-summer-promo-offramp-subscriber-description = Теперь вы получаете неограниченную пропускную способность и больше местоположений, как подписчик { -mozilla-vpn-brand-name }.
+# Default browser incentive summer promo offramp message
+# "Make Firefox your go-to browser" refers to setting Firefox to default.
+# This appears in a promo message with a button labeled "Set to default"
+ipprotection-summer-promo-offramp-default-browser-incentive-title = Сохраните свои дополнительные местоположения встроенного VPN
+ipprotection-summer-promo-offramp-default-browser-incentive-description = Сделайте { -brand-product-name } своим любимым браузером и получите более 20 дополнительных метоположений для сёрфинга после 31 августа.
+# Mozilla VPN upsell summer promo offramp message
+# "Level up" refers to enhancing VPN functionality from the Firefox built-in VPN
+ipprotection-summer-promo-offramp-subscription-upsell-title = Выйдите на новый уровень с { -mozilla-vpn-brand-name }
+ipprotection-summer-promo-offramp-subscription-upsell-description = Сохраните неограниченную пропускную способность после 31 августа, с более чем 300 местоположениями на 5 устройствах, что затруднит отслеживание вашего веб-сёрфинга.
+ipprotection-summer-promo-offramp-open-vpn-primary-button = Открыть VPN
+ipprotection-summer-promo-offramp-set-to-default-primary-button = Установить по умолчанию
+ipprotection-summer-promo-offramp-get-subscription-button = Получить { -mozilla-vpn-brand-name }
+ipprotection-summer-promo-offramp-dismiss-secondary-button = Убрать
+
+## Site settings callout
+
+ipprotection-site-settings-callout-title = Выберите, где вы используете VPN
+ipprotection-site-settings-callout-subtitle = Отключите VPN для определённого сайта, и мы запомним это в следующий раз, когда вы посетите его.
+ipprotection-site-settings-callout-button = Понятно
+
+## Location selection callout
+
+ipprotection-location-selection-callout-title = Новинка: Измените свое местоположение
+ipprotection-location-selection-callout-description-1 = <a data-l10n-name="learn-more-vpn">Встроенный в { -brand-product-name } VPN</a> позволяет вам выбрать одно из 5 местоположений или позволить нам выбрать самое быстрое для вас.
+ipprotection-location-selection-callout-primary-button = Попробовать
+ipprotection-location-selection-callout-secondary-button = Убрать
+
+## VPN for Android promo callout
+
+ipprotection-android-promo-callout-title = Возьмите с собой встроенный VPN на Android
+ipprotection-android-promo-callout-description = Отсканируйте QR-код, чтобы получить { -brand-product-name } для Android, и включите встроенный VPN для большей приватности в пути. Скоро на iOS.
+ipprotection-android-promo-callout-primary-button = Понятно
+
+## Feature discovery callout message advertising a feature where the user can turn on the VPN for specific sites only
+
+# Here 'browse on' means continue browsing
+ipprotection-site-inclusions-callout-title-existing-users = Установите встроенные правила VPN, а затем сёрфите дальше
+ipprotection-site-inclusions-callout-title-lapsed-users = Попробуйте встроенный VPN, теперь сайт за сайтом
+ipprotection-site-inclusions-callout-description-1 = Включите VPN, когда вам нужна дополнительная приватность или местоположение в Интернете, и выключите там, где вам это не нужно.
+ipprotection-site-inclusions-callout-description = Включите это, когда вам нужна дополнительная приватность или сёрфинг на основе местоположения, и выключите, если это вам не нужно.
+ipprotection-site-inclusions-callout-primary-button = Установить правила
+ipprotection-site-inclusions-callout-secondary-button-existing-users = Не сейчас
+ipprotection-site-inclusions-callout-secondary-button-lapsed-users = Убрать
+
+## Panel
+
+# Also used for the callout shown in private browsing
+unauthenticated-vpn-title = Попробуйте VPN, встроенный в { -brand-product-name }
+unauthenticated-hide-location-message-3 = <a data-l10n-name="learn-more-vpn">Скройте своё местоположение</a> при просмотре через { -brand-product-name }.
+unauthenticated-private-location-message = Помогает <a data-l10n-name="learn-more-vpn">сохранить ваше местоположение приватным</a> в { -brand-product-name }.
+unauthenticated-choose-location-message-1 = Выберите нужное вам местоположение или позвольте { -brand-product-name } выбрать самое быстрое.
+unauthenticated-site-rules-message = Контролируйте, какие сайты используют VPN, а какие нет.
+unauthenticated-get-started = Начать
+unauthenticated-terms-of-service-privacy-notice = Продолжая, вы принимаете <a data-l10n-name="vpn-terms-of-service">Условия использования</a> и <a data-l10n-name="vpn-privacy-notice">Уведомление о конфиденциальности</a>.
+site-exclusion-toggle-enabled-1 =
+    .aria-label = VPN для этого сайта включён
+    .label = Использовать VPN для этого сайта
+site-exclusion-toggle-disabled-1 =
+    .aria-label = VPN для этого сайта отключён
+    .label = Использовать VPN для этого сайта
+site-exclusion-toggle-description = Сайт не работает? Попробуйте отключить VPN.
+# Manages rules for VPN to turn on or off automatically for certain websites
+site-rules-manage-rules-link-text = Управление правилами VPN
+# Heading for user defined rules on VPN usage for particular websites
+site-rules-status-heading = Ваше правило
+# Used in the panel when a user navigates to a site where the VPN is off due to a site exclusion
+site-rules-description-exclusion = VPN для этого сайта отключён
+# Used in the panel when a user navigates to a site where the VPN is on due to a site inclusion
+site-rules-description-inclusion = VPN для этого сайта включён
+# Message shown in the panel the first time a user turns on the VPN, offering to always turn on VPN for the current website
+# Variables
+#   $website (string) - The host of the current website (e.g. "example.com")
+site-rules-inclusion-prompt =
+    .heading = Всегда включать VPN для { $website }?
+    .message = Обновляйте свои правила в любое время в настройках.
+ipprotection-settings-link =
+    .label = Настройки
+
+## Status card
+
+# Button to turn off the VPN
+ipprotection-button-turn-vpn-off = Отключить VPN
+# Button to turn off the VPN when the VPN panel is open while viewing
+# a page from an excluded site.
+ipprotection-button-turn-vpn-off-excluded-site = Отключить VPN везде
+# Button to turn on the VPN
+ipprotection-button-turn-vpn-on = Включить VPN
+# Button while VPN is connecting
+ipprotection-button-connecting = Включение…
+ipprotection-connection-status-connected-1 = VPN включён
+    .aria-label = VPN включён
+ipprotection-connection-status-disconnected-1 = VPN отключён
+    .aria-label = VPN отключён
+ipprotection-connection-status-excluded-1 = VPN для этого сайта отключён
+    .aria-label = VPN для этого сайта отключён
+ipprotection-connection-status-connecting-1 = VPN подключается…
+    .aria-label = VPN подключается…
+
+## Location controls
+
+# The button displays the selected VPN location.
+# This shows the default selection, "Recommended" which is the recommended location as determined by Firefox.
+ipprotection-recommended-location-button = Местоположение: Рекомендуемое
+ipprotection-recommended-location-description = { -brand-product-name } находит самое быстрое местоположение
+ipprotection-recommended-location-badge = НОВОЕ
+# Variables
+#   $country (string) - The country selected for the VPN server location
+ipprotection-location-country-button = Местонахождение: { $country }
+ipprotection-locations-subview =
+    .title = Выбрать местоположение
+ipprotection-locations-subview-description = Выберите другое местоположение для веб-сёрфинга.
+ipprotecion-locations-subview-recommended-label = Рекомендуемые
+ipprotection-locations-subview-recommended-description = Находит самое быстрое местоположение
+# Label shown next to a VPN location that the user cannot select.
+# The aria-label is for accessibility, and should communicate that the
+# location is unavailable and the button is disabled.
+ipprotection-locations-unavailable-label-1 = Недоступно
+    .aria-label = Недоступно, отключено
+# Label shown next to a VPN location that the user cannot select.
+ipprotection-locations-unavailable-label = Недоступно
+ipprotection-locations-subview-promo =
+    .heading = Улучшите защиту с помощью { -mozilla-vpn-brand-name }
+    .message = Выберите из более 300 местоположений и защитите все свои приложения на до 5 устройствах.
+ipprotection-locations-subview-promo-button = Получить { -mozilla-vpn-brand-name }
+
+## VPN paused state
+
+upgrade-vpn-title = Получите дополнительную защиту за пределами браузера
+upgrade-vpn-description = Выберите местоположение VPN, используйте VPN для всех своих приложений и до 5 устройств, и оставайтесь в безопасности в любой сети — дома или в общедоступной сети Wi-Fi.
+upgrade-vpn-button = Попробуйте { -mozilla-vpn-brand-name }
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-connection-status-paused-description-1 = Вы использовали все { $maxUsage } ГБ данных вашего VPN. Доступ будет сброшен в следующем месяце.
+ipprotection-connection-status-paused-title-2 = VPN приостановлен
+    .aria-label = VPN приостановлен
+
+## Messages and errors
+
+ipprotection-connection-status-generic-error-description = Попробуйте снова через несколько минут.
+ipprotection-connection-status-generic-error-try-again = Подождите некоторое время и попробуйте снова.
+ipprotection-connection-status-network-error-title-1 = Проверьте своё соединение с Интернетом
+    .aria-label = Проверьте своё соединение с Интернетом
+ipprotection-connection-status-network-error-description = Подключитесь к Интернету, затем попробуйте включить VPN.
+ipprotection-connection-status-blocked-error-title-1 = VPN недоступен
+    .aria-label = VPN недоступен
+# "Where" refers to the user's location. It does not refer to apps or devices because the built-in VPN only protects a user's browsing in Firefox
+ipprotection-connection-status-blocked-error-description-1 = Местные законы и ограничения ограничивают места, где вы можете использовать VPN. <a data-l10n-name="learn-more-link">Подробнее</a>
+ipprotection-connection-status-blocked-error-description = Местные законы не позволяют нам предоставлять сервис VPN в этом регионе. <a data-l10n-name="learn-more-link">Подробнее</a>
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-message-bandwidth-warning =
+    .heading = Приближаемся к вашему лимиту VPN
+    .message = У вас осталось в этом месяце { $usageLeft } ГБ из { $maxUsage } ГБ.
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-message-bandwidth-warning-mb =
+    .heading = Приближаемся к вашему лимиту VPN
+    .message = У вас осталось в этом месяце { $usageLeft } МБ из { $maxUsage } ГБ.
+ipprotection-message-continuous-onboarding-intro = Включите VPN, чтобы скрыть своё местоположение и добавить дополнительное шифрование в ваш веб-сёрфинг.
+ipprotection-message-continuous-onboarding-autostart = <a data-l10n-name="setting-link">Настройте VPN на включение</a> каждый раз при открытии { -brand-short-name } для получения дополнительного уровня защиты.
+ipprotection-message-continuous-onboarding-site-settings = { -brand-short-name } будет помнить, какие веб-сайты вы разрешили использовать VPN. Обновите их в <a data-l10n-name="setting-link">настройках</a> в любое время.
+confirmation-hint-ipprotection-navigated-to-excluded-site = VPN для этого сайта отключён
+ipprotection-open-button = Открыть { -brand-product-name }
+ipprotection-come-back-title = Вернитесь, чтобы попробовать встроенный VPN
+ipprotection-message-body-hide-location = Скрывайте свое местоположение при веб-сёрфинге в { -brand-product-name } для повышения приватности и контроля.
+ipprotection-connection-status-generic-error-title-1 = Не удалось подключиться к VPN
+    .aria-label = Не удалось подключиться к VPN
+
+## IP Protection bandwidth callouts
+
+ipprotection-bandwidth-upgrade-title = Нравится встроенный VPN? Получите ещё больше защиты за пределами { -brand-product-name } с помощью { -mozilla-vpn-brand-name }.
+ipprotection-bandwidth-upgrade-text = Выберите местоположение VPN и добавьте защиту для всех своих приложений на 5 устройствах, независимо от того, находитесь ли вы дома или подключены к общедоступной сети Wi-Fi.
+
+## IP Protection bandwidth warning infobar
+
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+ip-protection-bandwidth-warning-infobar-message-75 = <strong>Приближаемся к лимиту VPN.</strong> У вас осталось { $usageLeft } ГБ. Ваши данные будут сброшены в начале следующего месяца.
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+ip-protection-bandwidth-warning-infobar-message-90 = <strong>У вас почти закончились данные VPN.</strong> У вас осталось { $usageLeft } ГБ. Как только вы всё это используете, ваш VPN будет приостановлен до сброса ваших данных первого числа следующего месяца.
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+ip-protection-bandwidth-warning-infobar-message-90-mb = <strong>У вас почти закончились данные VPN.</strong> У вас осталось { $usageLeft } МБ. Как только вы всё это используете, ваш VPN будет приостановлен до сброса ваших данных первого числа следующего месяца.
+
+## IP Protection Settings
+
+ip-protection-description =
+    .description = Встроенный VPN для повышения приватности при веб-сёрфинге на { -brand-short-name }
+    .label = VPN
+ip-protection-description-1 =
+    .description = Получите дополнительную приватность, скрыв ваше местоположение во время веб-сёрфинга.
+    .label = Встроенный VPN
+ip-protection-learn-more = Подробнее
+ip-protection-not-opted-in-4 =
+    .heading = Попробуйте VPN, встроенный в { -brand-short-name }
+    .message = Сёрфите с дополнительной защитой, скрывая своё местоположение.
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-not-opted-in-inclusions-enabled =
+    .heading = Готовы попробовать?
+    .message = Получайте { $maxUsage } ГБ бесплатно каждый месяц и выберите, какие сайты используют VPN.
+ip-protection-not-opted-in-button = Начало работы
+# Variables:
+#   $count (number) - The number of sites saved as VPN exclusions.
+ip-protection-site-exceptions-all-sites-button =
+    .description =
+        { $count ->
+            [one] { $count } веб-сайт
+            [few] { $count } веб-сайта
+           *[many] { $count } веб-сайтов
+        }
+    .label = Управление настройками веб-сайтов
+ip-protection-site-rules-header-1 =
+    .heading = Управление правилами VPN
+ip-protection-site-rules-button-1 =
+    .description = Устанавливает правила для сайтов, которым необходима дополнительная приватность или отключение VPN.
+    .label = Управление правилами VPN
+ip-protection-site-rules-list-section-1 =
+    .description = Установите правила для автоматического включения или отключения VPN.
+    .label = Правила веб-сайта
+ip-protection-site-rules-add-button =
+    .label = Установить правило
+ip-protection-site-rules-delete-all-button =
+    .label = Удалить все правила
+ip-protection-site-rules-empty = Установленные вами правила появятся здесь.
+# Shown on a website whose rule turns the VPN on for it
+ip-protection-site-rules-rule-included = VPN всегда включён
+# Shown on a website whose rule turns the VPN off for it
+ip-protection-site-rules-rule-excluded = VPN всегда отключён
+# Variables:
+#   $website (string) - The website the rule applies to, e.g. https://example.com
+ip-protection-site-rules-edit-button =
+    .aria-label = Изменить правило для { $website }
+    .title = Изменить
+# Variables:
+#   $website (string) - The website the rule applies to, e.g. https://example.com
+ip-protection-site-rules-delete-button =
+    .aria-label = Удалить правило для { $website }
+    .title = Удалить
+ip-protection-site-rules-header =
+    .heading = Управление правилами веб-сайтов
+ip-protection-site-rules-button =
+    .description = Устанавливает правила для сайтов, которым необходима дополнительная приватность или отключение VPN.
+    .label = Управление правилами веб-сайтов
+ip-protection-autostart =
+    .label = Включать VPN автоматически
+ip-protection-autostart-checkbox =
+    .label = При открытии { -brand-short-name }
+ip-protection-autostart-private-checkbox =
+    .label = В приватных окнах
+ip-protection-vpn-upgrade-link =
+    .description = Выберите пользовательские местоположения VPN и добавьте защиту ко всем своим приложениям на пяти устройствах, независимо от того, находитесь ли вы дома или подключены к общедоступному Wi-Fi.
+    .label = Получите ещё больше защиты за пределами { -brand-short-name } с помощью { -mozilla-vpn-brand-name }
+ip-protection-vpn-upgrade-link-1 =
+    .description = Выберите из более 300 местоположений и защитите все свои приложения на до 5 устройствах.
+    .label = Улучшите защиту с помощью { -mozilla-vpn-brand-name }
+
+## IP Protection dialogs
+
+ip-protection-exceptions-dialog-window =
+    .title = Управление настройками веб-сайтов
+ip-protection-exclusions-desc = Использовать VPN для всех веб-сайтов, кроме перечисленных в этом списке. Добавьте веб-сайт здесь или открыв VPN.
+ip-protection-site-rule-window =
+    .title = Установить правила
+ip-protection-edit-site-rule-window =
+    .title = Изменить правило
+ip-protection-site-rule-dialog =
+    .buttonlabelaccept = Установить
+    .buttonaccesskeyaccept = Ы
+ip-protection-edit-site-rule-dialog =
+    .buttonlabelaccept = Сохранить
+    .buttonaccesskeyaccept = Ы
+# VPN status refers to a state of 'always on' or 'always off' applied to a site
+ip-protection-site-rule-intro = Введите сайт, затем выберите его VPN-статус.
+# "ex:" is short for "example".
+ip-protection-site-rule-website-field =
+    .label = Веб-сайт
+    .placeholder = пример: acme.com
+# VPN status refers to a state of 'always on' or 'always off' applied to a site
+ip-protection-site-rule-status-field =
+    .label = VPN-статус
+ip-protection-site-rule-status-on =
+    .label = Всегда включён
+ip-protection-site-rule-status-off =
+    .label = Всегда отключён
+# Shown below the website field when what was typed is not a website address.
+ip-protection-site-rule-invalid-error = Введите корректный адрес веб-сайта.
+# Shown below the website field when the typed website already has a rule.
+ip-protection-site-rule-duplicate-error = Для этого сайта уже задано правило.
+# Shown at the top of the dialog when the rule could not be saved.
+ip-protection-site-rule-save-error =
+    .message = Ошибка создания правила. Повторите попытку.
+# Variables:
+#   $website (string) - The website the rule applies to, e.g. https://example.com
+ip-protection-delete-site-rule-message = Удалить правило для { $website }?
+ip-protection-delete-site-rule-cancel =
+    .label = Отмена
+ip-protection-delete-site-rule-confirm =
+    .label = Удалить
+ip-protection-delete-all-site-rules-message = Удалить все правила для веб-сайтов?
+ip-protection-delete-all-site-rules-confirm =
+    .label = Удалить все правила
+# Shown in place of the delete confirmation when deleting a rule fails.
+ip-protection-delete-site-rule-error = Не удалось удалить правило
+# Shown in place of the delete confirmation when deleting all rules fails.
+ip-protection-delete-all-site-rules-error = Не удалось удалить правила
+ip-protection-delete-site-rule-retry =
+    .label = Попробовать снова
+
+## IP Protection Bandwidth
+
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-this-month-gb = В этом месяце осталось { $usageLeft } ГБ из { $maxUsage } ГБ
+# The text inside the <span> is emphasized to highlight the amount of data left.
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-gb-1 = Осталось <span data-l10n-name="usage">{ $usageLeft } ГБ</span> из { $maxUsage } ГБ
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-gb = Осталось { $usageLeft } ГБ из { $maxUsage } ГБ
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-this-month-mb = В этом месяце осталось { $usageLeft } МБ из { $maxUsage } ГБ
+# The text inside the <span> is emphasized to highlight the amount of data left.
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-mb-1 = Осталось <span data-l10n-name="usage">{ $usageLeft } МБ</span> из { $maxUsage } ГБ
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-mb = Осталось { $usageLeft } МБ из { $maxUsage } ГБ
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-hit-for-the-month = Вы использовали все { $maxUsage } ГБ данных вашего VPN. Доступ будет сброшен в следующем месяце.
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-help-text = Сбрасывается на { $maxUsage } ГБ первого числа каждого месяца.
+ip-protection-bandwidth-header-1 = Месячный лимит данных
+
+## IP Protection bandwidth reset callout
+
+# Variables
+#  $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-bandwidth-reset-title = { $maxUsage } ГБ VPN, обновлён и готов к работе
+ipprotection-bandwidth-reset-text = Включите VPN для дополнительного повышения приватности, бесплатно каждый месяц.
+ipprotection-bandwidth-reset-button = Понятно
+
+## IP Protection add-on breakage warnings
+
+ipp-activator-breakage-sign-in-warning = <strong>Этот веб-сайт может не работать через VPN.</strong> Попробуйте войти или отключить VPN на время использования этого веб-сайта.
+ipp-activator-breakage-turn-off-warning = <strong>Этот веб-сайт может не работать через VPN.</strong> Попробуйте отключить VPN на время использования этого веб-сайта.
+
+## IP Protection alerts
+
+vpn-paused-alert-title = VPN приостановлен
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+vpn-paused-alert-body = Вы использовали все { $maxUsage } ГБ данных вашего VPN. Доступ к VPN будет сброшен в следующем месяце.
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+vpn-error-page-paused-description = Вы использовали все { $maxUsage } ГБ данных вашего VPN. Доступ будет сброшен в следующем месяце.
+vpn-error-page-continue-description = Выберите, как продолжить без VPN
+vpn-error-page-keep-browsing = Продолжить веб-сёрфинг в этой сессии
+vpn-error-page-new-session = Начать новую сессию
+vpn-paused-alert-close-tabs-button = Закрыть все вкладки
+vpn-paused-alert-continue-wo-vpn-button = Продолжить без VPN
+vpn-error-alert-title = VPN сейчас не работает.
+vpn-error-alert-body = Попробуйте снова позже.
