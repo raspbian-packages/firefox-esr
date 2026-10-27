@@ -1,0 +1,334 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = New Tab
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = New tabs
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } row
+           *[other] { $num } rows
+        }
+home-restore-defaults-srd =
+    .label = Restore Staunarts
+    .accesskey = R
+home-mode-choice-custom-srd =
+    .label = Custom URLs…
+home-mode-choice-blank-srd =
+    .label = Blank Page
+home-prefs-shortcuts-header-srd =
+    .label = Shortcuts
+home-prefs-shortcuts-select =
+    .aria-label = Shortcuts
+home-prefs-shortcuts-by-option-sponsored-srd =
+    .label = Sponsored shortcuts
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Sponsored Stories
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Veesitit Pages
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Buikmerks
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Maist Recent Doonload
+home-prefs-recent-activity-header-srd =
+    .label = Recent activity
+home-prefs-recent-activity-select =
+    .aria-label = Recent activity
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Sairch
+    .title = Sairch
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-text = Sairch wi { $engine } or inpit address
+newtab-search-box-handoff-text-no-engine = Sairch or inpit address
+# Variables:
+#   $engine (string) - The name of the user's default search engine
+newtab-search-box-handoff-input =
+    .aria-label = Sairch wi { $engine } or inpit address
+    .placeholder = Sairch wi { $engine } or inpit address
+    .title = Sairch wi { $engine } or inpit address
+newtab-search-box-handoff-input-no-engine =
+    .aria-label = Sairch or inpit address
+    .placeholder = Sairch or inpit address
+    .title = Sairch or inpit address
+newtab-search-box-text = Sairch the wab
+newtab-search-box-input =
+    .aria-label = Sairch the wab
+    .placeholder = Sairch the wab
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Eik On Airt-oot Engine
+newtab-topsites-add-shortcut-header = New Shortcut
+newtab-topsites-edit-shortcut-header = Edit Shortcut
+newtab-topsites-title-label = Title
+newtab-topsites-title-input =
+    .placeholder = Inpit a title
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Type or paste a URL
+newtab-topsites-url-validation = Suithfest URL needit
+newtab-topsites-image-url-label = Custom Image URL
+newtab-topsites-use-custom-image-link = Yaise an image o yer ain
+newtab-topsites-use-image-link = Yaise an image o yer ain...
+newtab-topsites-image-validation = Image couldnae load. Try anither URL.
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Stap
+newtab-topsites-delete-history-button = Dicht fae Historie
+newtab-topsites-save-button = Save
+newtab-topsites-preview-button = Preview
+newtab-topsites-add-button = Eik on
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Are ye shair ye're wantin tae dicht ilka instance o this page fae yer historie?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = This action cannae be unduin.
+
+## Top Sites - Sponsored label
+
+newtab-topsite-sponsored = Sponsored
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Open menu
+    .title = Open menu
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Open context menu fur { $title }
+    .title = Open menu
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Edit
+newtab-menu-open-new-window = Open in a New Windae
+newtab-menu-open-new-private-window = Open in a New Private Windae
+newtab-menu-dismiss = Dismiss
+newtab-menu-pin = Peen
+newtab-menu-unpin = Remuive Peen
+newtab-menu-delete-history = Dicht fae Historie
+newtab-menu-show-privacy-info = Oor sponsors & yer privacy
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Remuive Buikmerk
+# Bookmark is a verb here.
+newtab-menu-bookmark = Buikmerk
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Copy Doonload Link
+newtab-menu-go-to-download-page = Gang Tae Doonload Page
+newtab-menu-remove-download = Remuive fae Historie
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Kythe in Finder
+       *[other] Open Conteenin Folder
+    }
+newtab-menu-open-file = Open File
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Veesitit
+newtab-label-bookmarked = Buikmerkt
+newtab-label-removed-bookmark = Buikmerk remuived
+newtab-label-recommended = Trendin
+newtab-label-saved = Saved tae { -pocket-brand-name }
+newtab-label-download = Doonloadit
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
+newtab-label-sponsored = { $sponsorOrSource } · Sponsored
+# This string is used at the bottom of story cards to indicate sponsored content
+# Variables:
+#   $sponsor (string) - The name of a sponsor
+newtab-label-sponsored-by = Sponsored by { $sponsor }
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } min
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Privacy Notice
+
+## Section Headers.
+
+newtab-section-header-topsites = Tap Sites
+newtab-section-header-recent-activity = Recent activity
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Stert stravaigin, and we'll shaw some o the smashin airticles, videos, and ither pages ye've recently veesitit or buikmerkt here.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-header = Ye're aw caught up!
+newtab-discovery-empty-section-topstories-content = Check back efter for mair stories.
+newtab-discovery-empty-section-topstories-try-again-button = Try Aince Mair
+newtab-discovery-empty-section-topstories-loading = Loadin…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Och! We'd nearly loadit this section, but it didnae quite happen.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Och, sowt went wrang when loadin this content.
+newtab-error-fallback-refresh-link = Refresh page fur tae gie it anither shottie.
+
+## New Tab Appearance (browser theme picker)
+
+#  (developer note): @nova-cleanup(remove-string): Remove old string once Nova lands. The newtab-custom-shortcuts-nova string will take over
+newtab-custom-shortcuts-toggle =
+    .description = Sites ye save or veesit
+    .label = Shortcuts
+newtab-custom-shortcuts-nova =
+    .label = Shortcuts
+# Variables
+#   $num (number) - Number of rows to display
+#  (developer note): @nova-cleanup(remove-string): Remove string once Nova lands. We won't be using "row"/"rows" anymore for the dropdown
+newtab-custom-row-selector2 =
+    .label =
+        { $num ->
+            [one] { $num } row
+           *[other] { $num } rows
+        }
+newtab-custom-settings = Manage mair settins
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = New York
+newtab-clock-city-us-los-angeles = Los Angeles
+newtab-clock-city-us-chicago = Chicago
+newtab-clock-city-us-san-francisco = San Francisco
+newtab-clock-city-us-san-diego = San Diego
+newtab-clock-city-us-dallas = Dallas
+newtab-clock-city-us-houston = Houston
+newtab-clock-city-us-philadelphia = Philadelphia
+newtab-clock-city-us-washington-dc = Washington, D.C.
+newtab-clock-city-us-boston = Boston
+newtab-clock-city-us-miami = Miami
+newtab-clock-city-us-seattle = Seattle
+newtab-clock-city-us-denver = Denver
+newtab-clock-city-us-honolulu = Honolulu
+newtab-clock-city-de-berlin = Berlin
+newtab-clock-city-de-munich = Munich
+newtab-clock-city-de-frankfurt = Frankfurt
+newtab-clock-city-de-hamburg = Hamburgh
+newtab-clock-city-fr-paris = Paris
+newtab-clock-city-fr-lyon = Lyon
+newtab-clock-city-fr-marseille = Marseille
+newtab-clock-city-fr-toulouse = Toulouse
+newtab-clock-city-in-kolkata = Kolkata
+newtab-clock-city-in-mumbai = Mumbai
+newtab-clock-city-in-delhi = Delhi
+newtab-clock-city-in-bangalore = Bangalore
+newtab-clock-city-cn-shanghai = Shanghai
+newtab-clock-city-cn-beijing = Beijing
+newtab-clock-city-cn-shenzhen = Shenzhen
+newtab-clock-city-br-sao-paulo = São Paulo
+newtab-clock-city-br-rio-de-janeiro = Rio de Janeiro
+newtab-clock-city-br-brasilia = Brasília
+newtab-clock-city-id-jakarta = Jakarta
+newtab-clock-city-id-surabaya = Surabaya
+newtab-clock-city-id-makassar = Makassar
+newtab-clock-city-ca-toronto = Toronto
+newtab-clock-city-ca-montreal = Montreal
+newtab-clock-city-ca-vancouver = Vancouver
+newtab-clock-city-au-sydney = Sydney
+newtab-clock-city-au-perth = Perth
+newtab-clock-city-au-adelaide = Adelaide
+newtab-clock-city-pl-warsaw = Warsaw
+newtab-clock-city-pl-krakow = Cracow
+newtab-clock-city-jp-tokyo = Tokyo
+newtab-clock-city-jp-osaka = Osaka
+newtab-clock-city-mx-mexico-city = Mexico Ceety
+newtab-clock-city-mx-guadalajara = Guadalajara
+newtab-clock-city-it-rome = Roum
+newtab-clock-city-it-milan = Milan
+newtab-clock-city-ru-moscow = Moscow
+newtab-clock-city-ru-saint-petersburg = Saunt Petersburg
+newtab-clock-city-gb-london = Lunnon
+newtab-clock-city-gb-birmingham = Birmingham
+newtab-clock-city-es-madrid = Madrid
+newtab-clock-city-es-barcelona = Barcelona
+newtab-clock-city-nl-amsterdam = Amsterdam
+newtab-clock-city-ch-zurich = Zürich
+newtab-clock-city-at-vienna = Vienna
+newtab-clock-city-cz-prague = Prague
+newtab-clock-city-ar-buenos-aires = Buenos Aires
+newtab-clock-city-gr-athens = Athens
+newtab-clock-city-hu-budapest = Budapest
+newtab-clock-city-be-brussels = Brussels
+newtab-clock-city-ua-kyiv = Kyiv
+newtab-clock-city-fi-helsinki = Helsinki
+newtab-clock-city-co-bogota = Bogotá
+newtab-clock-city-ph-manila = Manila
+newtab-clock-city-tr-istanbul = Istanbul
+newtab-clock-city-my-kuala-lumpur = Kuala Lumpur
+newtab-clock-city-eg-cairo = Cairo
+newtab-clock-city-se-stockholm = Stockholm
+newtab-clock-city-ro-bucharest = Bucharest
+newtab-clock-city-th-bangkok = Bangkok
+newtab-clock-city-ng-lagos = Lagos
+newtab-clock-city-tw-taipei = Taipei
+newtab-clock-city-za-johannesburg = Johannesburg
+newtab-clock-city-cl-santiago = Santiago
+newtab-clock-city-pk-karachi = Karachi
+newtab-clock-city-bg-sofia = Sofia
+newtab-clock-city-sg-singapore = Singapore
+newtab-clock-city-hk-hong-kong = Hong Kong
+newtab-clock-city-sa-riyadh = Riyadh
+newtab-clock-city-dk-copenhagen = Colpenhaven
+newtab-clock-city-pe-lima = Lima
+newtab-clock-city-ke-nairobi = Nairobi
+newtab-clock-city-nz-auckland = Auckland
+newtab-clock-city-kr-seoul = Seoul
+newtab-clock-city-lt-vilnius = Vilnius
+newtab-clock-city-ie-dublin = Dublin
+newtab-clock-city-ae-dubai = Dubai
+newtab-clock-city-lv-riga = Riga
+newtab-clock-city-pt-lisbon = Lisbon
+newtab-clock-city-ir-tehran = Tehran
+newtab-clock-city-bd-dhaka = Dhaka
+newtab-clock-city-ec-guayaquil = Guayaquil
+newtab-clock-city-vn-ho-chi-minh-city = Ho Chi Minh
+newtab-clock-city-np-kathmandu = Kathmandu
+newtab-clock-city-mm-yangon = Yangon
