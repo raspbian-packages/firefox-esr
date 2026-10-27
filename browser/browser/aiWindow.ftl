@@ -1,0 +1,378 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Chrome
+
+main-context-menu-open-link-new-smart-window =
+    .label = リンクを新しい{ -smart-window-brand-name }で開く
+    .accesskey = S
+appmenuitem-new-ai-window =
+    .label = 新しい{ -smart-window-brand-name }
+    .value = 新しい{ -smart-window-brand-name }
+appmenuitem-new-classic-window =
+    .label = 新しいクラシックウィンドウ
+menu-file-new-ai-window =
+    .label = 新しい{ -smart-window-brand-name }
+menu-file-new-classic-window =
+    .label = 新しいクラシックウィンドウ
+menu-history-chats =
+    .label = チャット
+menu-history-chats-recent =
+    .label = 最近のチャット
+smartwindow-fullpage-heading = { -smart-window-brand-name }
+smartwindow-document-title = 新しいタブ
+
+## Smart Window Toggle Button
+
+ai-window-toggleview-switch-classic =
+    .label = クラシックウィンドウ
+    .value = クラシックウィンドウ
+ai-window-toggleview-switch-classic-description =
+    .label = 標準のブラウジング
+    .value = 標準のブラウジング
+ai-window-toggleview-switch-ai =
+    .label = { -smart-window-brand-name }
+    .value = { -smart-window-brand-name }
+ai-window-toggleview-switch-ai-description =
+    .label = 閲覧しながら質問できます
+    .value = 閲覧しながら質問できます
+ai-window-toggleview-switch-private =
+    .label = プライベートウィンドウ
+ai-window-toggleview-open-private =
+    .label = 新しいプライベートウィンドウを開く
+ai-window-toggleview-status-label-active = { -smart-window-brand-name }
+ai-window-toggleview-status-label-inactive = クラシックウィンドウ
+toolbar-switcher-customizable-label =
+    .label = { -smart-window-brand-name }切り替え
+    .tooltiptext = スマートウィンドウとクラシックウィンドウを切り替えます。
+
+## Input CTA
+
+aiwindow-input-cta-submit-label-chat = 尋ねる
+aiwindow-input-cta-submit-label-navigate = 移動
+aiwindow-input-cta-submit-label-search = 検索
+aiwindow-input-cta-submit-label-stop = 停止
+# Text announced to screen readers when response generation starts.
+aiwindow-generation-started-announcement = 応答の生成を開始しました
+aiwindow-input-cta-menu-label-chat = 尋ねる
+aiwindow-input-cta-menu-label-navigate = サイトへ移動する
+# $searchEngineName (string) - The name of the default search engine
+aiwindow-input-cta-menu-label-search = { $searchEngineName } で検索する
+aiwindow-input-cta-menu-label-search-with = 検索エンジン...
+aiwindow-input-cta-search-submenu-header = 検索
+aiwindow-input-cta-stop-button =
+    .aria-label = 応答の生成を停止
+    .title = 応答を停止します
+
+## Smartbar
+
+smartbar-placeholder =
+    .placeholder = 尋ねるか、検索語句または URL を入力してください
+smartbar-placeholder-hint-1 = @ 文字で最近開いたタブを示します...
+smartbar-placeholder-hint-2 = 何でも尋ねてください...
+smartbar-placeholder-hint-3 = ウェブアドレスを入力してください...
+smartbar-placeholder-hint-4 = ウェブを検索してください...
+
+## Mentions
+
+smartbar-mention-typing-placeholder = タブまたはサイトにタグを付けます
+smartbar-mentions-list-no-results-label = 結果が見つかりませんでした
+smartbar-mentions-list-recent-tabs-label = 最近開いたタブ
+
+## Context mentions menu toggle button
+
+smartbar-context-menu-button =
+    .aria-label = タブまたはサイトを追加
+    .tooltiptext = タブまたはサイトを追加します
+
+## Website Chip
+
+aiwindow-website-chip-placeholder = タブまたはサイトにタグを付けます
+aiwindow-website-chip-history-deleted = 履歴を削除しました
+aiwindow-website-chip-remove-button =
+    .aria-label = 削除
+
+## Firstrun onboarding
+
+aiwindow-firstrun-title = { -smart-window-brand-name }へようこそ
+aiwindow-firstrun-model-title = どれを重視しますか？
+aiwindow-firstrun-model-title-v2 = 始めに AI モデルを選んでください
+aiwindow-firstrun-model-subtitle = AI モデルを選んで{ -smart-window-brand-name }を強化。いつでも切り替えられます。
+aiwindow-firstrun-model-subtitle-v2 = 各モデルは開いているタブの要約、比較、探索に役立ちます。いつでも切り替えられます。
+aiwindow-firstrun-model-fast-label = 高速
+aiwindow-firstrun-model-fast-body = すばやく答えます
+# $shortName (string) - The short name of the model version
+aiwindow-firstrun-model-fast-label-v2 = 高速: { $shortName }
+aiwindow-firstrun-model-fast-body-v2 = 移動中などすばやく回答が欲しい場合に最適です
+# $model (string) - The name of the AI model
+# $ownerName (string) - The name of the model owner/provider
+# $shortName (string) - The short name of the model version
+aiwindow-firstrun-model-chip-subtitle = { $ownerName } による AI モデル { $model }
+aiwindow-firstrun-model-allpurpose-label = 柔軟
+aiwindow-firstrun-model-allpurpose-body = 多くのニーズに適応します
+# $shortName (string) - The short name of the model version
+aiwindow-firstrun-model-flexible-label = 柔軟: { $shortName }
+aiwindow-firstrun-model-flexible-body = 様々なタスクに適応します
+# Recommended represents the chat brand and model we recommend for users. Only affects European users.
+aiwindow-firstrun-model-recommended = おすすめ
+aiwindow-firstrun-model-personal-label = 私的
+aiwindow-firstrun-model-personal-body = 最も適した回答を返します
+# $shortName (string) - The short name of the model version
+aiwindow-firstrun-model-personal-label-v2 = 私的: { $shortName }
+aiwindow-firstrun-model-personal-body-v2 = 言語を越えて私的な用途に役立ちます
+aiwindow-firstrun-button = はじめましょう
+aiwindow-firstrun-back-button = 戻る
+aiwindow-firstrun-next-button = 次へ
+
+## These are labels describing model types in the smartbar model select.
+
+aiwindow-input-model-select-button-label-fast = 高速
+aiwindow-input-model-select-button-label-allpurpose = 柔軟
+aiwindow-input-model-select-button-label-personal = 私的
+aiwindow-input-model-select-button-label-custom = カスタム
+aiwindow-input-model-select-button-description-custom = 使用する LLM を指定します
+# Variables:
+# $ownerName (string) - The name of the model owner/provider
+# $model (string) - The model name
+aiwindow-input-model-select-menu-item-description = { $ownerName } { $model }
+aiwindow-input-model-select-menu-item-description-custom = LLM を指定する
+aiwindow-input-model-select-default-badge =
+    .label = 既定
+    .title = 選択された既定の AI モデル
+aiwindow-input-model-select-settings-link = AI モデルの設定
+
+## Firstrun memories onboarding
+
+aiwindow-firstrun-memories-title = あなたの指示に適応して回答します
+aiwindow-firstrun-memories-subtitle = { -smart-window-brand-name }はチャット、ブラウジングまたはその両方から学習して AI メモリーを作成するので、使い続けるほど役立つ回答が得られます。
+aiwindow-firstrun-memories-conversation-title = 会話を続けましょう
+aiwindow-firstrun-memories-conversation-body = チャットから学習することによって、同じ質問を繰り返すことが減ります。
+aiwindow-firstrun-memories-relevance-title = 相応しい回答を得られます
+aiwindow-firstrun-memories-relevance-body = ブラウジングから学習して{ -smart-window-brand-name }に全体像を与えます。
+aiwindow-firstrun-memories-privacy-title = プライバシーを保護するよう設計されています
+aiwindow-firstrun-memories-privacy-body = AI メモリーは端末にのみ保存されます。いつでも削除したり無効にしたりできます。
+aiwindow-firstrun-memories-choose-label = { -smart-window-brand-name }の学習先を選んでください
+aiwindow-firstrun-memories-checkbox-chats = { -smart-window-brand-name }のチャット
+aiwindow-firstrun-memories-checkbox-browsing = { -brand-product-name }で閲覧したサイト
+aiwindow-firstrun-memories-update-settings = いつでも設定変更できます。
+aiwindow-firstrun-memories-no-create = 了解。{ -smart-window-brand-name }は AI メモリーを作成しません。いつでも設定で切り替えられます。
+
+## Firstrun set as default onboarding
+
+aiwindow-firstrun-default-title = いつでも{ -smart-window-brand-name }を使えるようにする
+aiwindow-firstrun-default-subtitle = 閲覧、検索、尋ねることが一か所でできます。プライベートウィンドウやクラシックウィンドウもいつでも開けます。
+aiwindow-firstrun-default-checkbox-label = { -brand-product-name } の起動時に常に{ -smart-window-brand-name }を開く
+aiwindow-firstrun-default-checkbox-description = いつでも設定で切り替えられます
+
+## Ask Toolbar Button
+
+smartwindow-ask-button =
+    .label = 尋ねる
+
+## Memories toggle button
+
+aiwindow-memories-on =
+    .tooltiptext = 役立つ場合は応答に AI メモリーを使用します
+    .aria-label = AI メモリー有効
+aiwindow-memories-off =
+    .tooltiptext = 応答に AI メモリーを使用しません
+    .aria-label = AI メモリー無効
+
+## New Chat Button
+
+aiwindow-new-chat =
+    .tooltiptext = 新しいチャット
+    .aria-label = 新しいチャット
+
+## Close Sidebar Button
+
+aiwindow-close-sidebar =
+    .tooltiptext = 閉じる
+    .aria-label = 閉じる
+
+## Chat History Menu
+## The menu opened from the "..." button next to the new chat button. Its main
+## view links to the chat history subview and Smart Window settings; the chat
+## history subview lists recent chats and a shortcut to all chats.
+
+aiwindow-history-menu =
+    .tooltiptext = 他のオプション
+    .aria-label = 他のオプション
+aiwindow-history-menu-chat-history = チャット履歴
+aiwindow-history-menu-back =
+    .tooltiptext = 戻る
+    .aria-label = 戻る
+aiwindow-history-menu-view-all-chats = すべてのチャットを表示
+aiwindow-history-menu-settings = { -smart-window-brand-name }の設定
+
+## Fullpage top actions
+## Labeled buttons shown at the top of the fullpage Smart Window.
+
+aiwindow-fullpage-new-chat =
+    .label = 新しいチャット
+aiwindow-fullpage-chat-history =
+    .label = チャット履歴
+# "More" is the label for a button that opens a menu of additional Smart Window
+# options (currently Smart Window settings) — i.e. "more actions/options", not
+# more content or more chat history.
+aiwindow-fullpage-more =
+    .label = その他のオプション
+    .title = その他のオプション
+
+## Sign out dialog
+
+fxa-signout-dialog-body-aiwindow = 同期したデータはアカウントに残ります。{ -smart-window-brand-name(plural-form: "true") }を開くとクラシックウィンドウに切り替わります。
+
+## Smart Window Toggle Button (in-page)
+
+smartwindow-switch-to-smart-window = { -smart-window-brand-name }に切り替える
+
+## Fullpage Footer Actions
+
+smartwindow-footer-chats =
+    .tooltiptext = チャット
+    .aria-label = チャット
+    .label = チャット
+smartwindow-footer-history =
+    .tooltiptext = 履歴
+    .aria-label = 履歴
+    .label = 履歴
+
+## Disclaimer
+## Text displayed to user to warn user about potential mistakes.
+
+smartwindow-disclaimer = AI も誤った回答をすることがあります。
+
+## FirefoxView Chats
+## Chats in this context refers to chats saved from the Smart Window Assistant
+
+firefoxview-chats-nav = チャット
+    .title = チャット
+firefoxview-chats-header = チャット
+firefoxview-chat-context-delete = チャットから削除
+    .accesskey = D
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-chats =
+    .placeholder = チャットを検索します
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-chat-date-today = 今日 - { DATETIME($date, dateStyle: "full") }
+firefoxview-chat-date-yesterday = 昨日 - { DATETIME($date, dateStyle: "full") }
+firefoxview-chat-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-chat-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+## Message displayed in Firefox View when the user has no chat data
+
+firefoxview-chats-empty-header = 以前のチャットに戻る
+firefoxview-chats-empty-description = { -smart-window-brand-name }を利用した時のチャットがここに保存されます。
+
+## Count displayed in fxview chat search results
+
+
+# Variables:
+#   $count (Number) - The number of chats matching the search query.
+
+firefoxview-search-chat-results-count = { $count } 件のチャット
+
+## Clear browsing data dialog
+
+item-history-downloads-and-chat =
+    .label = 閲覧、ダウンロード、チャットの履歴
+    .accesskey = B
+item-history-downloads-and-chat-description = 閲覧サイト、ダウンロード、チャットの履歴を消去します
+
+## Natural Language Interactions
+
+smart-window-confirm-select-all =
+    .aria-label = すべて選択
+    .label = すべて選択
+smart-window-confirm-deselect-all =
+    .aria-label = すべての選択を解除
+    .label = すべての選択を解除
+smart-window-close-confirm =
+    .tooltiptext = 要求をキャンセルして閉じます
+    .aria-label = 要求をキャンセルして閉じる
+smart-window-confirm-close-tab = 閉じる
+# Variables
+#   $count (number) - Number of tabs to close
+smart-window-confirm-close-tabs = { $count } 個のタブを閉じる
+
+## Natural Language action callouts
+
+# Shown after the Smart Window closes the user’s current tab in response to a
+# natural language prompt action, anchored to the toolbar menu button.
+smartwindow-close-tab-callout-title = タブを閉じました
+smartwindow-close-tab-callout-subtitle = 閉じたタブはいつでも履歴から開き直せます。
+
+## Smart Window new tab promo
+
+smart-window-default-promo-heading = { -smart-window-brand-name }を既定に設定しますか？
+smart-window-default-promo-message = { -brand-short-name } を起動すると毎回{ -smart-window-brand-name }を開きます。
+smart-window-default-promo-primary-button = 既定に設定
+smart-window-default-promo-additional-button = 後で
+
+## Feedback modal
+
+aiwindow-feedback-modal-title = フィードバックを共有
+aiwindow-feedback-what-worked-well = どのような機能がうまく動作しましたか？ ただし、個人情報は記入しないでください。
+aiwindow-feedback-choose-any = 当てはまるものを選んでください
+aiwindow-feedback-add-details = よろしければ詳細を追加してください。ただし、個人情報は記入しないでください。
+aiwindow-feedback-disclaimer = 送信するとフィードバックとこのチャットが共有され、{ -brand-shorter-name } の{ -smart-window-brand-name }の改善に役立てられます。あなたの他のチャットはプライベートで保護されます。<a data-l10n-name="learn-more">詳細情報</a>
+aiwindow-feedback-submit = 送信
+aiwindow-feedback-cancel = キャンセル
+aiwindow-feedback-reason-incorrect-or-misleading = 不正確または実際と異なる
+aiwindow-feedback-reason-doesnt-address-my-request = 要求に応えていない
+aiwindow-feedback-reason-lacks-personalization = パーソナライズに欠け、文脈に沿わない
+aiwindow-feedback-reason-performance-or-usability = パフォーマンスまたはユーザビリティに問題がある
+aiwindow-feedback-reason-harmful-or-offensive = 有害または攻撃的
+aiwindow-feedback-reason-other = その他
+aiwindow-feedback-preview-report = チャットの詳細を表示
+aiwindow-feedback-preview-report-with-page = チャットとページの詳細を表示
+aiwindow-feedback-include-page-content = このチャットで参照されたページを共有する
+
+## Smart Window ai-chat-grid
+
+aiwindow-ai-chat-grid-view-controls =
+    .aria-label = 表示レイアウトを切り替える
+aiwindow-ai-chat-grid-list-view =
+    .aria-label = モード切り替え: リストビュー
+    .tooltiptext = リストビュー
+aiwindow-ai-chat-grid-grid-view =
+    .aria-label = モード切り替え: グリッドビュー
+    .tooltiptext = グリッドビュー
+
+## Smart Window new-tab conversation starters
+## These are short suggested user queries used to prompt the AI assistant when clicked on.
+## They then become the first message in the conversation.
+## When localizing, please write them as short instructions a user would give to an assistant.
+## They should also be concise and direct, but not at the expense of losing meaning.
+
+aiwindow-starter-writing-first-draft = Write a first draft in Japanese language
+aiwindow-starter-writing-improve = Improve writing in right context
+aiwindow-starter-writing-proofread = Proofread a message
+aiwindow-starter-planning-simplify = Simplify a topic in Japanese language
+aiwindow-starter-planning-brainstorm = Brainstorm ideas
+aiwindow-starter-planning-plan = Help make a plan
+aiwindow-starter-browsing-history = Find tabs in history
+aiwindow-starter-browsing-summarize = Summarize tabs
+aiwindow-starter-browsing-compare = Compare tabs
+
+## Conversation Starter Scroll Buttons
+## Scrolls the conversation-starter pill row toward its start/end.
+
+aiwindow-starter-scroll-start =
+    .tooltiptext = 後方へスクロールします
+    .aria-label = 後方へスクロール
+aiwindow-starter-scroll-end =
+    .tooltiptext = 前方へスクロールします
+    .aria-label = 前方へスクロール
+# Dismisses a "pick up where you left off" resume-activity suggestion pill.
+# Variables:
+#   $text (String) - The suggestion headline being dismissed
+aiwindow-starter-dismiss =
+    .title = { $text } を閉じます
+    .aria-label = { $text } を閉じる
