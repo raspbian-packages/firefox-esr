@@ -1,0 +1,451 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Toolbar button tooltip reflects VPN state
+
+ipprotection-button =
+    .label = VPN
+    .tooltiptext = VPN
+ipprotection-button-error =
+    .label = 開啟 VPN
+    .tooltiptext = 開啟 VPN
+
+##
+
+# The word "Beta" is intended to be uppercase in the experiment label.
+ipprotection-experiment-badge =
+    .label = BETA
+ipprotection-help-button =
+    .tooltiptext = 開啟 VPN 技術支援頁面
+ipprotection-title = VPN
+
+## Buttons used for all feature introduction callouts
+
+ipprotection-feature-introduction-title = 向您介紹直接內建於瀏覽器的 VPN 功能
+ipprotection-feature-introduction-title-1 = 試用 { -brand-product-name } 的內建 VPN
+ipprotection-feature-introduction-link-text-2 = 請使用我們全新推出的<a data-l10n-name="learn-more-vpn">內建 VPN</a> 功能，來隱藏所在位置，並保護您的資料。
+ipprotection-feature-introduction-title-privacy = 加上一層隱私保護
+ipprotection-feature-introduction-title-privacy-1 = 透過內建 VPN 功能，為隱私再添一層防護
+ipprotection-feature-introduction-link-text-privacy-1 = <a data-l10n-name="learn-more-vpn">{ -brand-product-name } 的內建 VPN</a> 可幫助保護您的上網安全。從多個連線位置任選，讓您上網更有隱私。
+ipprotection-feature-introduction-link-text-privacy-2 = <a data-l10n-name="learn-more-vpn">{ -brand-product-name } 的內建 VPN</a> 可幫助保護您的上網安全。從多個連線位置任選，讓您上網更有隱私。
+ipprotection-feature-introduction-link-text-privacy-3 = 從多個地點任選，隱藏您的實際上網位置，讓<a data-l10n-name="learn-more-vpn">上網更有隱私</a>。
+# Used for multiple discovery callouts after release of the site inclusions feature
+ipprotection-feature-introduction-description-inclusions = 在您上網時隱藏實際所在地點，以獲得<a data-l10n-name="learn-more-vpn">更多隱私保障</a>。您可以只針對特定網站開啟或關閉 VPN。
+ipprotection-feature-introduction-text-summer-promo-1 = 開啟後即可讓您上網更有隱私。即日起至 8 月 31 日止可<a data-l10n-name="summer-promo-link">獲得無限頻寬</a>與更多連線位置。
+ipprotection-feature-introduction-title-summer-promo = 準備要旅行嗎？讓隱私隨身帶著走。
+ipprotection-feature-introduction-description-summer-promo = 使用 { -brand-product-name } 內建的 VPN 讓您走得更遠：更多地點、頻寬不設限。即日起至 8 月 31 日止。
+ipprotection-feature-introduction-link-text-private-browsing-2 = 請使用我們全新推出的<a data-l10n-name="learn-more-vpn">內建 VPN</a> 功能，來隱藏所在位置，並保護您的資料，就算在隱私瀏覽視窗中也能受到保護。
+ipprotection-feature-introduction-description-private-browsing = 隱藏您的實際所在位置，就算是在隱私視窗中也能獲得額外保護。
+# Alternate version of the feature discovery callout copy used after we've released site inclusions for the VPN. Users have the option to turn the VPN on for specific sites only
+ipprotection-feature-introduction-description-private-browsing-1 = 在您上網時隱藏實際所在地點，以獲得<a data-l10n-name="learn-more-vpn">更多隱私保障</a>。您可以設定規則，對需要更多隱私保護或根據地點顯示不同資訊的網站開啟 VPN，或在不需要的地方關閉。
+ipprotection-feature-introduction-title-captive-portal = 透過公共 Wi-Fi 上網嗎？請試用 { -brand-product-name } 的內建 VPN。
+ipprotection-feature-introduction-description-captive-portal = 隱藏您的實際所在位置，就算是使用公共 Wi-Fi 也能獲得額外保護。
+# Used for discovery callouts for both captive portal login and private browsing
+ipprotection-feature-introduction-link-text-captive-portal-1 = 從多個地點任選，隱藏您的實際上網位置，讓<a data-l10n-name="learn-more-vpn">上網更有隱私</a>。
+ipprotection-feature-introduction-button-primary = 下一個
+ipprotection-feature-introduction-button-secondary-not-now = 現在不要
+ipprotection-feature-introduction-button-secondary-not-now-menuitem =
+    .label = 現在不要
+ipprotection-feature-introduction-button-secondary-no-thanks = 不要，謝謝
+ipprotection-feature-introduction-button-secondary-no-thanks-menuitem =
+    .label = 不要，謝謝
+ipprotection-feature-introduction-button-secondary-remove = 自工具列移除 VPN
+ipprotection-feature-introduction-button-secondary-remove-1 =
+    .label = 自工具列移除 VPN
+ipprotection-feature-introduction-button-open-vpn = 開啟 VPN
+ipprotection-feature-introduction-button-get-started = 開始使用
+
+## Callout shown when the user opens a private browsing window
+
+ipprotection-feature-introduction-title-private-browsing = 使用 { -brand-product-name } 內建的 VPN，最大化隱私保護
+
+## Summer promo offramp callout buttons
+
+# Generic summer promo offramp message
+ipprotection-summer-promo-offramp-generic-title = 您內建 VPN 的限制將於 9 月 1 日重設
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-summer-promo-offramp-generic-description = 透過 { $maxUsage } GB 流量與 6 個連線位置加強您的上網隱私，更難被追蹤。
+# Generic summer promo offramp message for users who cannot upgrade to Mozilla VPN due to locale and already have Firefox as their default browser
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-summer-promo-offramp-generic-description-default-browser-users-no-upgrade = 透過 { $maxUsage } GB 流量與超過 20 個連線位置加強您的上網隱私，更難被追蹤。
+# Mozilla VPN subscriber summer promo offramp message
+# Message shown to current subscribers of Mozilla VPN
+# Refers to subscribers now receiving unlimited bandwidth and more locations in the Firefox built-in VPN
+ipprotection-summer-promo-offramp-subscriber-title = 您的內建 VPN 升級了
+ipprotection-summer-promo-offramp-subscriber-description = 作為 { -mozilla-vpn-brand-name } 訂閱者，您現在可獲得無限頻寬與更多連線位置。
+# Default browser incentive summer promo offramp message
+# "Make Firefox your go-to browser" refers to setting Firefox to default.
+# This appears in a promo message with a button labeled "Set to default"
+ipprotection-summer-promo-offramp-default-browser-incentive-title = 保留內建 VPN 額外的連線位置
+ipprotection-summer-promo-offramp-default-browser-incentive-description = 將 { -brand-product-name } 設為您的預設瀏覽器，即可於 8 月 31 起獲得額外 20 個連線位置。
+# Mozilla VPN upsell summer promo offramp message
+# "Level up" refers to enhancing VPN functionality from the Firefox built-in VPN
+ipprotection-summer-promo-offramp-subscription-upsell-title = 讓 { -mozilla-vpn-brand-name } 升級
+ipprotection-summer-promo-offramp-subscription-upsell-description = 於 8 月 31 起保留無限頻寬，還有能在最多 5 台裝置透過超過 300 個位置連線，讓您上網更難被追蹤。
+ipprotection-summer-promo-offramp-open-vpn-primary-button = 開啟 VPN
+ipprotection-summer-promo-offramp-set-to-default-primary-button = 設為預設瀏覽器
+ipprotection-summer-promo-offramp-get-subscription-button = 獲得 { -mozilla-vpn-brand-name }
+ipprotection-summer-promo-offramp-dismiss-secondary-button = 知道了！
+
+## Site settings callout
+
+ipprotection-site-settings-callout-title = 選擇要透過 VPN 連線的網站
+ipprotection-site-settings-callout-subtitle = 對特定網站關閉 VPN，下次造訪時我們會幫您記住這個偏好。
+ipprotection-site-settings-callout-button = 知道了！
+
+## Location selection callout
+
+ipprotection-location-selection-callout-title = 新功能：切換您的所在位置
+ipprotection-location-selection-callout-description-1 = <a data-l10n-name="learn-more-vpn">{ -brand-product-name } 的內建 VPN</a> 讓您可從多個位置任選上網，或由我們自動為您挑選最快的位置。
+ipprotection-location-selection-callout-primary-button = 試試看
+ipprotection-location-selection-callout-secondary-button = 知道了！
+
+## VPN for Android promo callout
+
+ipprotection-android-promo-callout-title = 在 Android 把內建 VPN 功能隨身帶著走
+ipprotection-android-promo-callout-description = 掃描 QR Code 即可下載 { -brand-product-name } for Android，並開啟內建 VPN 功能，讓您隨時隨地都有更多隱私保護。iOS 版即將推出。
+ipprotection-android-promo-callout-primary-button = 知道了！
+
+## Feature discovery callout message advertising a feature where the user can turn on the VPN for specific sites only
+
+# Here 'browse on' means continue browsing
+ipprotection-site-inclusions-callout-title-existing-users = 設定內建 VPN 規則，然後繼續上網
+ipprotection-site-inclusions-callout-title-lapsed-users = 試用內建 VPN 功能，現在可針對特定網站單獨開啟
+ipprotection-site-inclusions-callout-description-1 = 針對需加強隱私保護，或瀏覽特定地區內容時開啟 VPN，不需要時則關閉。
+ipprotection-site-inclusions-callout-description = 針對需加強隱私保護，或瀏覽特定地區內容時開啟，不需要時則關閉。
+ipprotection-site-inclusions-callout-primary-button = 設定規則
+ipprotection-site-inclusions-callout-secondary-button-existing-users = 現在不要
+ipprotection-site-inclusions-callout-secondary-button-lapsed-users = 知道了！
+
+## Panel
+
+# Also used for the callout shown in private browsing
+unauthenticated-vpn-title = 試用 { -brand-product-name } 的內建 VPN
+unauthenticated-hide-location-message-3 = 使用 { -brand-product-name } 上網時<a data-l10n-name="learn-more-vpn">隱藏您的實際所在位置</a>。
+unauthenticated-private-location-message = 使用 { -brand-product-name } 上網時可幫助<a data-l10n-name="learn-more-vpn">隱藏您的實際所在位置</a>。
+unauthenticated-choose-location-message-1 = 從多個連線位置挑選，或交由 { -brand-product-name } 為您自動選擇最快的地點。
+unauthenticated-site-rules-message = 控制哪些網站要經由 VPN 開啟，哪些不要。
+unauthenticated-get-started = 開始使用
+unauthenticated-terms-of-service-privacy-notice = 繼續使用，代表您同意我們的<a data-l10n-name="vpn-terms-of-service">服務條款</a>及<a data-l10n-name="vpn-privacy-notice">隱私權公告</a>。
+site-exclusion-toggle-enabled-1 =
+    .aria-label = 已對此網站開啟 VPN 連線
+    .label = 使用 VPN 開啟此網站
+site-exclusion-toggle-disabled-1 =
+    .aria-label = 已對此網站關閉 VPN 連線
+    .label = 使用 VPN 開啟此網站
+site-exclusion-toggle-description = 網站無法正常運作？可關閉 VPN 試試。
+# Manages rules for VPN to turn on or off automatically for certain websites
+site-rules-manage-rules-link-text = 管理 VPN 規則
+# Heading for user defined rules on VPN usage for particular websites
+site-rules-status-heading = 您的規則
+# Used in the panel when a user navigates to a site where the VPN is off due to a site exclusion
+site-rules-description-exclusion = 已對此網站關閉 VPN 連線
+# Used in the panel when a user navigates to a site where the VPN is on due to a site inclusion
+site-rules-description-inclusion = 已對此網站開啟 VPN 連線
+# Message shown in the panel the first time a user turns on the VPN, offering to always turn on VPN for the current website
+# Variables
+#   $website (string) - The host of the current website (e.g. "example.com")
+site-rules-inclusion-prompt =
+    .heading = 要總是為 { $website } 開啟 VPN 嗎？
+    .message = 隨時到設定中更新規則。
+ipprotection-settings-link =
+    .label = 設定
+
+## Status card
+
+# Button to turn off the VPN
+ipprotection-button-turn-vpn-off = 關閉 VPN
+# Button to turn off the VPN when the VPN panel is open while viewing
+# a page from an excluded site.
+ipprotection-button-turn-vpn-off-excluded-site = 關閉所有網站的 VPN
+# Button to turn on the VPN
+ipprotection-button-turn-vpn-on = 開啟 VPN
+# Button while VPN is connecting
+ipprotection-button-connecting = 正在開啟…
+ipprotection-connection-status-connected-1 = 已開啟 VPN
+    .aria-label = 已開啟 VPN
+ipprotection-connection-status-disconnected-1 = 已關閉 VPN
+    .aria-label = 已關閉 VPN
+ipprotection-connection-status-excluded-1 = 已對此網站關閉 VPN 連線
+    .aria-label = 已對此網站關閉 VPN 連線
+ipprotection-connection-status-connecting-1 = VPN 連線中…
+    .aria-label = VPN 連線中…
+
+## Location controls
+
+# The button displays the selected VPN location.
+# This shows the default selection, "Recommended" which is the recommended location as determined by Firefox.
+ipprotection-recommended-location-button = 位置：建議地點
+ipprotection-recommended-location-description = 由 { -brand-product-name } 自動尋找最快位置
+ipprotection-recommended-location-badge = 新功能
+# Variables
+#   $country (string) - The country selected for the VPN server location
+ipprotection-location-country-button = 位置：{ $country }
+ipprotection-locations-subview =
+    .title = 選擇位置
+ipprotection-locations-subview-description = 請選擇另一個要連線的位置。
+ipprotecion-locations-subview-recommended-label = 推薦
+ipprotection-locations-subview-recommended-description = 尋找最快位置
+# Label shown next to a VPN location that the user cannot select.
+# The aria-label is for accessibility, and should communicate that the
+# location is unavailable and the button is disabled.
+ipprotection-locations-unavailable-label-1 = 無法使用
+    .aria-label = 無法使用，已停用
+# Label shown next to a VPN location that the user cannot select.
+ipprotection-locations-unavailable-label = 無法使用
+ipprotection-locations-subview-promo =
+    .heading = 用 { -mozilla-vpn-brand-name } 獲得更佳保護
+    .message = 用最多 5 台裝置，從超過 300 個位置連線並保護您的所有應用程式。
+ipprotection-locations-subview-promo-button = 獲得 { -mozilla-vpn-brand-name }
+
+## VPN paused state
+
+upgrade-vpn-title = 替瀏覽器以外的連線也加上一道保護
+upgrade-vpn-description = 挑選連線位置，使用 VPN 幫最多 5 台裝置中的所有應用程式都加上保護。不論是在家或透過公共 Wi-Fi，任何網路環境都能使用。
+upgrade-vpn-button = 請試用 { -mozilla-vpn-brand-name }
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-connection-status-paused-description-1 = 您已用完 { $maxUsage } GB 的 VPN 流量。將於下個月重設使用權。
+ipprotection-connection-status-paused-title-2 = 已暫停 VPN
+    .aria-label = 已暫停 VPN
+
+## Messages and errors
+
+ipprotection-connection-status-generic-error-description = 請稍候幾分鐘再試一次。
+ipprotection-connection-status-generic-error-try-again = 請稍候再試。
+ipprotection-connection-status-network-error-title-1 = 請檢查您的網際網路連線是否正常
+    .aria-label = 請檢查您的網際網路連線是否正常
+ipprotection-connection-status-network-error-description = 請連線到網際網路，再嘗試開啟 VPN。
+ipprotection-connection-status-blocked-error-title-1 = 無法使用 VPN
+    .aria-label = 無法使用 VPN
+# "Where" refers to the user's location. It does not refer to apps or devices because the built-in VPN only protects a user's browsing in Firefox
+ipprotection-connection-status-blocked-error-description-1 = 您當地的法規會限制您可以使用 VPN 的地方。<a data-l10n-name="learn-more-link">更多資訊</a>
+ipprotection-connection-status-blocked-error-description = 由於此地區的相關法律規定，我們無法提供 VPN 服務。<a data-l10n-name="learn-more-link">更多資訊</a>
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-message-bandwidth-warning =
+    .heading = VPN 流量即將用完
+    .message = 這個月您還剩下 { $usageLeft } GB 可以使用。（上限 { $maxUsage } GB）
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-message-bandwidth-warning-mb =
+    .heading = VPN 流量即將用完
+    .message = 這個月可使用 { $maxUsage } GB，剩餘 { $usageLeft } MB 可用。
+ipprotection-message-continuous-onboarding-intro = 開啟 VPN 即可隱藏您的所在位置，並在上網時多加一層加密保護。
+ipprotection-message-continuous-onboarding-autostart = 設定在每次開啟 { -brand-short-name } 時<a data-l10n-name="setting-link">就自動開啟 VPN</a>，讓您受到更多一層保護。
+ipprotection-message-continuous-onboarding-site-settings = { -brand-short-name } 會記得您設定要讓哪些網站透過 VPN 開啟。也可隨時到<a data-l10n-name="setting-link">設定</a>當中調整。
+confirmation-hint-ipprotection-navigated-to-excluded-site = 已對此網站關閉 VPN 連線
+ipprotection-open-button = 開啟 { -brand-product-name }
+ipprotection-come-back-title = 回來試用內建 VPN 功能
+ipprotection-message-body-hide-location = 在 { -brand-product-name } 上網時隱藏您的實際所在位置，讓您更有隱私，更有掌控。
+ipprotection-connection-status-generic-error-title-1 = 無法連線至 VPN
+    .aria-label = 無法連線至 VPN
+
+## IP Protection bandwidth callouts
+
+ipprotection-bandwidth-upgrade-title = 喜歡內建的 VPN 功能嗎？請使用 { -mozilla-vpn-brand-name } 幫 { -brand-product-name } 以外的程式獲得更多保護。
+ipprotection-bandwidth-upgrade-text = 挑選 VPN 連線位置，幫最多 5 台裝置中的所有應用程式都加上保護。不論是在家或透過公共 Wi-Fi 上網都能使用。
+
+## IP Protection bandwidth warning infobar
+
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+ip-protection-bandwidth-warning-infobar-message-75 = <strong>您已經用了不少 VPN 流量。</strong>目前剩餘 { $usageLeft } GB 流量，將於下個月初重設流量限制。
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+ip-protection-bandwidth-warning-infobar-message-90 = <strong>您的 VPN 流量即將用完。</strong>目前剩餘 { $usageLeft } GB 流量。流量用完之後將暫停 VPN 連線保護，並於下個月初重設流量限制。
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+ip-protection-bandwidth-warning-infobar-message-90-mb = <strong>您的 VPN 流量即將用完。</strong>目前剩餘 { $usageLeft } MB 流量。流量用完之後將暫停 VPN 連線保護，並於下個月初重設流量限制。
+
+## IP Protection Settings
+
+ip-protection-description =
+    .description = 內建 VPN 功能，讓您在使用 { -brand-short-name } 加強保護隱私。
+    .label = VPN
+ip-protection-description-1 =
+    .description = 透過隱藏上網時的實際位置，獲得更加一層的隱私保護。
+    .label = 內建 VPN
+ip-protection-learn-more = 更多資訊
+ip-protection-not-opted-in-4 =
+    .heading = 試用 { -brand-short-name } 的內建 VPN
+    .message = 隱藏您的實際所在位置，讓上網更加一層保護。
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-not-opted-in-inclusions-enabled =
+    .heading = 準備好試用了嗎？
+    .message = 每月免費獲得 { $maxUsage } GB 的免費流量，並可自行選擇要讓哪些網站透過 VPN 連線。
+ip-protection-not-opted-in-button = 開始使用
+# Variables:
+#   $count (number) - The number of sites saved as VPN exclusions.
+ip-protection-site-exceptions-all-sites-button =
+    .description = { $count } 個網站
+    .label = 管理網站設定
+ip-protection-site-rules-header-1 =
+    .heading = 管理 VPN 規則
+ip-protection-site-rules-button-1 =
+    .description = 為需要加強保護隱私或關閉 VPN 才能使用的網站設定規則。
+    .label = 管理 VPN 規則
+ip-protection-site-rules-list-section-1 =
+    .description = 設定自動開啟或關閉 VPN 的規則。
+    .label = 網站規則
+ip-protection-site-rules-add-button =
+    .label = 設定規則
+ip-protection-site-rules-delete-all-button =
+    .label = 刪除所有規則
+ip-protection-site-rules-empty = 您設定的規則將顯示於此處。
+# Shown on a website whose rule turns the VPN on for it
+ip-protection-site-rules-rule-included = 永遠開啟 VPN
+# Shown on a website whose rule turns the VPN off for it
+ip-protection-site-rules-rule-excluded = 永遠關閉 VPN
+# Variables:
+#   $website (string) - The website the rule applies to, e.g. https://example.com
+ip-protection-site-rules-edit-button =
+    .aria-label = 編輯 { $website } 的規則
+    .title = 編輯
+# Variables:
+#   $website (string) - The website the rule applies to, e.g. https://example.com
+ip-protection-site-rules-delete-button =
+    .aria-label = 刪除 { $website } 的規則
+    .title = 刪除
+ip-protection-site-rules-header =
+    .heading = 管理網站規則
+ip-protection-site-rules-button =
+    .description = 為需要加強保護隱私或關閉 VPN 才能使用的網站，設定規則。
+    .label = 管理網站規則
+ip-protection-autostart =
+    .label = 自動開啟 VPN
+ip-protection-autostart-checkbox =
+    .label = 當我開啟 { -brand-short-name } 時
+ip-protection-autostart-private-checkbox =
+    .label = 於隱私視窗中
+ip-protection-vpn-upgrade-link =
+    .description = 自行選擇 VPN 連線位置，幫最多 5 台裝置中的所有應用程式都加上保護。不論是在家或透過公共 Wi-Fi 上網都能使用。
+    .label = 請使用 { -mozilla-vpn-brand-name } 幫 { -brand-short-name } 以外的程式獲得更多保護。
+ip-protection-vpn-upgrade-link-1 =
+    .description = 用最多 5 台裝置，從超過 300 個位置連線並保護您的所有應用程式。
+    .label = 用 { -mozilla-vpn-brand-name } 獲得更佳保護
+
+## IP Protection dialogs
+
+ip-protection-exceptions-dialog-window =
+    .title = 管理網站設定
+ip-protection-exclusions-desc = 對所有網站開啟 VPN 上網，但排除此清單中的網站。可在此處或開啟 VPN 來新增網站。
+ip-protection-site-rule-window =
+    .title = 設定規則
+ip-protection-edit-site-rule-window =
+    .title = 編輯規則
+ip-protection-site-rule-dialog =
+    .buttonlabelaccept = 設定
+    .buttonaccesskeyaccept = S
+ip-protection-edit-site-rule-dialog =
+    .buttonlabelaccept = 儲存
+    .buttonaccesskeyaccept = S
+# VPN status refers to a state of 'always on' or 'always off' applied to a site
+ip-protection-site-rule-intro = 請輸入網站，然後選擇該網站的 VPN 狀態。
+# "ex:" is short for "example".
+ip-protection-site-rule-website-field =
+    .label = 網站
+    .placeholder = 例如：acme.com
+# VPN status refers to a state of 'always on' or 'always off' applied to a site
+ip-protection-site-rule-status-field =
+    .label = VPN 狀態
+ip-protection-site-rule-status-on =
+    .label = 永遠開啟
+ip-protection-site-rule-status-off =
+    .label = 永遠關閉
+# Shown below the website field when what was typed is not a website address.
+ip-protection-site-rule-invalid-error = 請輸入有效的網站網址。
+# Shown below the website field when the typed website already has a rule.
+ip-protection-site-rule-duplicate-error = 此網站已有規則。
+# Shown at the top of the dialog when the rule could not be saved.
+ip-protection-site-rule-save-error =
+    .message = 建立規則時發生錯誤，請再試一次。
+# Variables:
+#   $website (string) - The website the rule applies to, e.g. https://example.com
+ip-protection-delete-site-rule-message = 要刪除 { $website } 的規則嗎？
+ip-protection-delete-site-rule-cancel =
+    .label = 取消
+ip-protection-delete-site-rule-confirm =
+    .label = 刪除
+ip-protection-delete-all-site-rules-message = 要刪除所有網站規則嗎？
+ip-protection-delete-all-site-rules-confirm =
+    .label = 刪除所有規則
+# Shown in place of the delete confirmation when deleting a rule fails.
+ip-protection-delete-site-rule-error = 無法刪除規則
+# Shown in place of the delete confirmation when deleting all rules fails.
+ip-protection-delete-all-site-rules-error = 無法刪除規則
+ip-protection-delete-site-rule-retry =
+    .label = 重試
+
+## IP Protection Bandwidth
+
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-this-month-gb = 本月剩餘 { $usageLeft } GB（上限 { $maxUsage } GB）
+# The text inside the <span> is emphasized to highlight the amount of data left.
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-gb-1 = { $maxUsage } GB 流量，剩餘 <span data-l10n-name="usage">{ $usageLeft } GB</span>
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-gb = 剩餘 { $usageLeft } GB（上限 { $maxUsage } GB）
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-this-month-mb = 本月剩餘 { $usageLeft } MB（上限 { $maxUsage } GB）
+# The text inside the <span> is emphasized to highlight the amount of data left.
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-mb-1 = { $maxUsage } GB 流量，剩餘 <span data-l10n-name="usage">{ $usageLeft } MB</span>
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-mb = 剩餘 { $usageLeft } MB（上限 { $maxUsage } GB）
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-hit-for-the-month = 您已用完 { $maxUsage } GB 的 VPN 流量。將於下個月重設使用權。
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-help-text = 每月月初重設為 { $maxUsage } GB。
+ip-protection-bandwidth-header-1 = 每月流量限制
+
+## IP Protection bandwidth reset callout
+
+# Variables
+#  $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-bandwidth-reset-title = 已恢復 { $maxUsage } GB VPN 流量，可以立刻使用
+ipprotection-bandwidth-reset-text = 開啟 VPN 加上一層隱私保護，每月都有免費流量。
+ipprotection-bandwidth-reset-button = 知道了！
+
+## IP Protection add-on breakage warnings
+
+ipp-activator-breakage-sign-in-warning = <strong>此網站可能無法透過 VPN 使用。</strong>請登入或關閉 VPN 後再開啟此網站。
+ipp-activator-breakage-turn-off-warning = <strong>此網站可能無法透過 VPN 使用。</strong>請先關閉 VPN 後再開啟此網站。
+
+## IP Protection alerts
+
+vpn-paused-alert-title = 已暫停 VPN
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+vpn-paused-alert-body = 您已用完 { $maxUsage } GB 的 VPN 流量。將於下個月重設使用權。
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+vpn-error-page-paused-description = 您已用完 { $maxUsage } GB 的 VPN 流量。將於下個月重設使用權。
+vpn-error-page-continue-description = 選擇在沒有 VPN 的情況下，要如何繼續上網
+vpn-error-page-keep-browsing = 繼續於此階段中瀏覽
+vpn-error-page-new-session = 開始新階段
+vpn-paused-alert-close-tabs-button = 關閉所有分頁
+vpn-paused-alert-continue-wo-vpn-button = 不使用 VPN 繼續
+vpn-error-alert-title = VPN 發生錯誤，目前無法使用。
+vpn-error-alert-body = 請稍後再試。
