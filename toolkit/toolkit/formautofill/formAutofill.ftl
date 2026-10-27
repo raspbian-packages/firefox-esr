@@ -1,0 +1,103 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## OS Prompt Dialog
+
+# The macos string is preceded by the operating system (macOS) with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-use-payment-method-os-prompt-macos = сақталған төлем әдісі ақпаратын қолдану
+autofill-use-payment-method-os-prompt-windows = { -brand-short-name } сақталған төлем әдісі ақпаратын қолданғысы келеді. Бұл Windows тіркелгісіне қатынау рұқсатын төменде растаңыз.
+autofill-use-payment-method-os-prompt-other = { -brand-short-name } сақталған төлем әдісі ақпаратын қолданғысы келеді.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-edit-payment-method-os-prompt-macos = сақталған төлем әдісі ақпаратын көрсету
+autofill-edit-payment-method-os-prompt-windows = { -brand-short-name } сақталған төлем әдісі ақпаратын көрсеткісі келеді. Бұл Windows тіркелгісіне қатынау рұқсатын төменде растаңыз.
+autofill-edit-payment-method-os-prompt-other = { -brand-short-name } сақталған төлем әдісі ақпаратын көрсеткісі келеді.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-delete-payment-method-os-prompt-macos = сақталған төлем әдісі ақпаратын өшіру
+autofill-delete-payment-method-os-prompt-windows = { -brand-short-name } сақталған төлем әдісі ақпаратын өшіргісі келеді. Бұл Windows тіркелгісіне қол жеткізу рұқсатын төменде растаңыз.
+autofill-delete-payment-method-os-prompt-other = { -brand-short-name } сақталған төлем әдісі ақпаратын өшіргісі келеді.
+# The button leads users to Form Autofill browser preferences.
+credit-card-doorhanger-options-button =
+    .title = Формаларды автотолтыру опциялары
+# The link leads users to Form Autofill browser preferences.
+autofill-options-link = Формаларды автотолтыру опциялары
+
+##
+
+# If Sync is enabled and credit card sync is available,
+# this checkbox is displayed on the doorhanger shown when saving credit card.
+credit-card-doorhanger-credit-cards-sync-checkbox = Барлық сақталған карталарды барлық құрылғыларымда синхрондау
+credit-card-save-doorhanger-header = Бұл картаны қауіпсіз сақтау керек пе?
+credit-card-save-doorhanger-description = { -brand-short-name } картаңыздың нөмірін шифрлейді. Қауіпсіздік кодыңыз сақталмайтын болады.
+credit-card-save-doorhanger-description-security-code = { -brand-short-name } картаңыздың нөмірі мен қауіпсіздік кодын шифрлейді, сондықтан оларды тек сіз ғана төлем формаларын толтыру үшін пайдалана аласыз.
+credit-card-doorhanger-save-security-codes-checkbox =
+    .label = Төлем әдістері үшін қауіпсіздік кодтарын әрқашан сақтау.
+credit-card-capture-save-button =
+    .label = Сақтау
+    .accessKey = С
+credit-card-capture-cancel-button =
+    .label = Қазір емес
+    .accessKey = м
+credit-card-capture-never-save-button =
+    .label = Карталарды ешқашан сақтамау
+    .accessKey = н
+credit-card-update-doorhanger-header = Картаны жаңарту керек пе?
+credit-card-update-doorhanger-description = Жаңартылатын карта:
+credit-card-capture-save-new-button =
+    .label = Жаңа карта ретінде сақтау
+    .accessKey = к
+credit-card-capture-update-button =
+    .label = Бар болып тұрған картан жаңарту
+    .accessKey = ж
+# Label for the button in the dropdown menu used to clear the populated form.
+autofill-clear-form-label = Автотолтыру формасын тазарту
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-addresses-label = Адрестерді басқару
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-payment-methods-label = Төлем әдістерін басқару
+# Used as the primary label of an autofill drop down suggestion when the focused
+# field is the card security code. The card's masked number is shown underneath
+# it as the secondary label. "CVC" is a common abbreviation for the code printed
+# on a payment card; use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code-label = CVC
+
+## Details of the card shown on the credit card capture doorhanger, below the
+## masked card number. Each message is used for a different combination of the
+## available details.
+## Variables:
+##   $name (String): The cardholder name
+##   $month (String): Two-digit month the card expires
+##   $year (String): Two-digit year the card expires
+
+credit-card-doorhanger-details-name = { $name }
+credit-card-doorhanger-details-expiration = { $month }/{ $year }
+credit-card-doorhanger-details-cvv = CVV сақталды
+credit-card-doorhanger-details-name-expiration = { $name }, { $month }/{ $year }
+credit-card-doorhanger-details-name-cvv = { $name } | CVV сақталды
+credit-card-doorhanger-details-expiration-cvv = { $month }/{ $year } | CVV сақталды
+credit-card-doorhanger-details-name-expiration-cvv = { $name }, { $month }/{ $year } | CVV сақталды
+
+## These are brand names and should only be translated when a locale-specific name for that brand is in common use
+
+autofill-card-network-amex = American Express
+autofill-card-network-cartebancaire = Carte Bancaire
+autofill-card-network-diners = Diners Club
+autofill-card-network-discover = Discover
+autofill-card-network-jcb = JCB
+autofill-card-network-mastercard = MasterCard
+autofill-card-network-mir = MIR
+autofill-card-network-unionpay = Union Pay
+autofill-card-network-visa = Visa
+# Used in autofill drop down suggestion to indicate what other categories Form Autofill will attempt to fill.
+autofill-category-address = адрес
+autofill-category-name = аты
+autofill-category-organization = ұйым
+autofill-category-tel = телефон
+autofill-category-email = эл. пошта
+# This string is used in drop down suggestion when users try to autofill credit
+# card on an insecure website (without https).
+autofill-insecure-field-warning-description = { -brand-short-name } қауіпсіз емес сайтты анықтады. Формаларды автотолтыру уақытша сөндірілген.
