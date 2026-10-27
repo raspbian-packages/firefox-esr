@@ -1,0 +1,329 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+profile-window-heading = Selecciona un perfil de { -brand-short-name }
+profile-window-body = Mantén tu trabajo y tu navegación personal, incluyendo contraseñas y marcadores totalmente separados. O crea perfiles para cualquiera que use este dispositivo.
+# This checkbox appears in the Choose profile window that appears when the browser is opened. "Show this" refers to this window, which is displayed when the checkbox is enabled.
+profile-window-checkbox-label-2 =
+    .label = Selecciona un perfil cuando abras { -brand-short-name }
+# This subcopy appears below the checkbox when it is unchecked
+profile-window-checkbox-subcopy = { -brand-short-name } se abrirá en tu perfil utilizado recientemente.
+profile-window-create-profile = Crear un perfil
+profile-card-edit-button =
+    .aria-label = Editar perfil
+    .title = Editar perfil
+profile-card-delete-button =
+    .aria-label = Eliminar perfil
+    .title = Eliminar perfil
+# Variables
+#   $profileName (string) - The name of the profile
+profile-card =
+    .aria-label = Abrir { $profileName }
+    .title = Abrir { $profileName }
+# Variables
+#   $number (number) - The number of the profile
+default-profile-name = Perfil { $number }
+# The word 'original' is used in the sense that it is the initial or starting profile when you install Firefox.
+original-profile-name = Perfil original
+default-desktop-shortcut-name = { -brand-short-name }
+edit-profile-page-title = Editar perfil
+edit-profile-page-header = Editar tu perfil
+edit-profile-page-profile-name-label = Nombre del perfil
+edit-profile-page-theme-header-2 =
+    .label = Tema
+edit-profile-page-explore-themes = Explorar más temas
+edit-profile-page-desktop-shortcut-toggle-2 =
+    .label = Crear acceso directo en el escritorio
+edit-profile-page-desktop-shortcut-header = Crear acceso directo en el escritorio
+edit-profile-page-desktop-shortcut-toggle =
+    .aria-label = Crear acceso directo en el escritorio
+edit-profile-page-avatar-header-2 =
+    .label = Avatar
+edit-profile-page-delete-button =
+    .label = Eliminar
+edit-profile-page-avatar-selector-opener-button =
+    .title = Editar avatar
+edit-profile-page-avatar-selector-opener-link = Editar
+avatar-selector-icon-tab = Ícono
+avatar-selector-custom-tab = Personalizar
+avatar-selector-cancel-button =
+    .label = Cancelar
+avatar-selector-save-button =
+    .label = Guardar
+avatar-selector-upload-file = Sube un archivo
+avatar-selector-drag-file = O arrastra un archivo aquí
+avatar-selector-add-image = Agregar una imagen
+avatar-selector-crop = Recortar
+edit-profile-page-no-name = Dale un nombre a este perfil para identificarlo fácilmente. Puedes cambiarle el nombre cuando quieras.
+edit-profile-page-duplicate-name = Ese nombre ya se está utilizando. Intenta con otro.
+edit-profile-page-profile-saved = Guardado
+new-profile-page-title = Nuevo perfil
+new-profile-page-header = Personaliza tu nuevo perfil
+new-profile-page-header-description = Cada perfil es único y su historial de navegación y configuraciones se mantendrán separados de otros perfiles. Además, la protección de privacidad avanzada de { -brand-short-name } estará activada por defecto.
+new-profile-page-learn-more = Más información
+new-profile-page-input-placeholder =
+    .placeholder = Elige un nombre como “Trabajo” o “Personal”
+new-profile-page-done-button =
+    .label = Terminar de editar
+# Variables
+#   $profilename (String) - The name of the copied profile.
+copied-profile-page-header-2 = Tu copia de “{ $profilename }” está lista para personalizar
+copied-profile-page-header-description = Copiamos tus datos y configuración a un nuevo perfil. Ahora, puedes darle un nombre, elegir un estilo y personalizarlo.
+restored-profile-page-header = Personaliza tu perfil restaurado
+restored-profile-page-header-description = Cada perfil es único y su historial de navegación y configuraciones se mantendrán separados de otros perfiles. Además, la protección de privacidad avanzada de { -brand-short-name } estará activada por defecto.
+restored-profile-page-learn-more = Más información
+profile-window-title-2 = { -brand-short-name } - Selecciona un perfil
+profile-window-logo =
+    .alt = Logotipo de { -brand-short-name }
+
+## Delete profile dialogue that allows users to review what they will lose if they choose to delete their profile. Each item (open windows, etc.) is displayed in a table, followed by a column with the number of items.
+
+# Variables
+#   $profilename (String) - The name of the profile.
+delete-profile-header = ¿Eliminar el perfil { $profilename }?
+delete-profile-description = { -brand-short-name } eliminará permanentemente los siguientes datos de este dispositivo:
+# Open is an adjective, as in "browser windows currently open".
+delete-profile-windows = Ventanas abiertas
+# Open is an adjective, as in "browser tabs currently open".
+delete-profile-tabs = Pestañas abiertas
+delete-profile-bookmarks = Marcadores
+delete-profile-history = Historial (páginas visitadas, cookies, datos del sitio)
+delete-profile-autofill = Autocompletar datos (direcciones, métodos de pago)
+delete-profile-logins = Contraseñas
+# Variables
+#   $profilename (String) - The name of the profile.
+delete-profile-page-title-2 = Eliminar el perfil “{ $profilename }”
+# Variables
+#   $profilename (String) - The name of the profile.
+delete-profile-header-2 = ¿Eliminar el perfil “{ $profilename }“?
+
+##
+
+# Button label
+delete-profile-cancel = Cancelar
+# Button label
+delete-profile-confirm = Eliminar
+
+## These strings are color themes available to select from the profile selection screen. Theme names should be localized.
+
+# The default system theme
+profiles-system-theme = Sistema
+profiles-system-theme-title =
+    .title = Aplicar tema del sistema
+profiles-gray-theme = Gris
+profiles-gray-theme-title =
+    .title = Aplicar tema gris
+profiles-yellow-theme = Amarillo
+profiles-yellow-theme-title =
+    .title = Aplicar tema amarillo
+profiles-orange-theme = Naranja
+profiles-orange-theme-title =
+    .title = Aplicar tema naranja
+profiles-red-theme = Rojo
+profiles-red-theme-title =
+    .title = Aplicar tema rojo
+profiles-pink-theme = Rosa
+profiles-pink-theme-title =
+    .title = Aplicar tema rosa
+profiles-purple-theme = Morado
+profiles-purple-theme-title =
+    .title = Aplicar tema morado
+profiles-violet-theme = Violeta
+profiles-violet-theme-title =
+    .title = Aplicar tema violeta
+profiles-blue-theme = Azul
+profiles-blue-theme-title =
+    .title = Aplicar tema azul
+profiles-green-theme = Verde
+profiles-green-theme-title =
+    .title = Aplicar tema verde
+profiles-cyan-theme = Cian
+profiles-cyan-theme-title =
+    .title = Aplicar tema cian
+profiles-custom-theme-title =
+    .title = Aplicar tema personalizado
+
+## Data collection settings changed (multi-profile)
+
+# Full infobar message with inline bold title followed by body text
+multiprofile-data-collection-message = <strong>Se cambiaron las configuraciones de recopilación de datos.</strong> Los cambios realizados en otro perfil se aplican a todos los perfiles de este dispositivo.
+# Primary button label to open the Data collection section in Settings
+multiprofile-data-collection-view-settings = Ver configuración
+# Secondary button label to dismiss the infobar without action
+multiprofile-data-collection-dismiss = Descartar
+
+## Alternative text for default profile icons
+
+book-avatar-alt =
+    .alt = Libro
+briefcase-avatar-alt =
+    .alt = Maletín
+picture-avatar-alt =
+    .alt = Imagen
+# Craft refers to hobby arts and crafts, represented by a button/fastener commonly found on clothing like shirts
+craft-avatar-alt =
+    .alt = Artesanía
+flower-avatar-alt =
+    .alt = Flor
+folder-avatar-alt =
+    .alt = Carpeta
+hammer-avatar-alt =
+    .alt = Martillo
+heart-avatar-alt =
+    .alt = Corazón
+heart-rate-avatar-alt =
+    .alt = Frecuencia cardíaca
+clock-avatar-alt =
+    .alt = Reloj
+leaf-avatar-alt =
+    .alt = Hoja
+lightbulb-avatar-alt =
+    .alt = Bombilla
+makeup-avatar-alt =
+    .alt = Maquillaje
+# Message refers to a text message, not a traditional letter/envelope message
+message-avatar-alt =
+    .alt = Mensaje
+musical-note-avatar-alt =
+    .alt = Nota musical
+palette-avatar-alt =
+    .alt = Paleta
+paw-print-avatar-alt =
+    .alt = Huella de pata
+plane-avatar-alt =
+    .alt = Avión
+# Present refers to a gift box, not the current time period
+present-avatar-alt =
+    .alt = Presente
+shopping-avatar-alt =
+    .alt = Carrito de compras
+soccer-ball-avatar-alt =
+    .alt = Balón de fútbol
+sparkle-single-avatar-alt =
+    .alt = Brillar
+star-avatar-alt =
+    .alt = Estrella
+video-game-controller-avatar-alt =
+    .alt = Controlador de videojuegos
+custom-avatar-alt =
+    .alt = Avatar personalizado
+# Globe refers to the generic globe/world icon that appears in browser tabs when a website doesn't have its own favicon.
+globe-avatar-alt =
+    .alt = Globo
+# Diamond refers to the precious stone, not the geometric shape
+diamond-avatar-alt =
+    .alt = Diamante
+barbell-avatar-alt =
+    .alt = Barra con pesas
+bike-avatar-alt =
+    .alt = Bicicleta
+
+## Tooltips for default avatar icons
+
+book-avatar = Libro
+briefcase-avatar = Maletín
+clock-avatar = Reloj
+# Craft refers to hobby arts and crafts, represented by a button/fastener commonly found on clothing like shirts
+craft-avatar = Artesanía
+custom-avatar = Avatar personalizado
+# Diamond refers to the precious stone, not the geometric shape
+diamond-avatar = Diamante
+flower-avatar = Flor
+folder-avatar = Carpeta
+# Globe refers to the generic globe/world icon that appears in browser tabs when a website doesn't have its own favicon.
+globe-avatar = Globo
+hammer-avatar = Martillo
+heart-avatar = Corazón
+heart-rate-avatar = Frecuencia cardíaca
+leaf-avatar = Hoja
+lightbulb-avatar = Bombilla
+makeup-avatar = Maquillaje
+# Message refers to a text message, not a traditional letter/envelope message
+message-avatar = Mensaje
+musical-note-avatar = Nota musical
+palette-avatar = Paleta
+paw-print-avatar = Huella de pata
+picture-avatar = Imagen
+plane-avatar = Avión
+# Present refers to a gift box, not the current time period
+present-avatar = Regalo
+shopping-avatar = Carrito de compras
+soccer-ball-avatar = Balón de fútbol
+sparkle-single-avatar = Brillo
+star-avatar = Estrella
+video-game-controller-avatar = Controlador de videojuegos
+custom-avatar-crop-back-button =
+    .aria-label = Atrás
+custom-avatar-crop-view =
+    .aria-label = Vista de imagen recortada
+custom-avatar-crop-area =
+    .aria-label = Ajustar el área de recorte
+custom-avatar-drag-handle =
+    .aria-label = Cambiar el tamaño del área de recorte
+profiles-appmenu-callout-tour-title = Tu nuevo perfil está listo para funcionar
+# "Spin up another" means creating another profile, “Hop between your digital lives" is referring to switching between different profiles such as work, personal, etc.
+profiles-appmenu-callout-tour-subtitle = En el menú ☰, toca el nombre de tu perfil para crear otro, editar este o alternar entre tus vidas digitales.
+profiles-appmenu-callout-tour-primary-button = Muéstrame cómo
+barbell-avatar = Barra
+bike-avatar = Bicicleta
+barbell-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de barra
+bike-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de bicicleta
+book-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de libro
+briefcase-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de maletín
+picture-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de imagen
+# Craft refers to hobby arts and crafts, represented by a button/fastener commonly found on clothing like shirts
+craft-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de artesanía
+# Globe refers to the generic globe/world icon that appears in browser tabs when a website doesn't have its own favicon.
+globe-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de globo
+diamond-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de diamante
+flower-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de flor
+folder-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de carpeta
+hammer-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de martillo
+heart-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de corazón
+heart-rate-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de frecuencia cardíaca
+clock-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de reloj
+leaf-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de hoja
+lightbulb-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de bombilla
+makeup-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de maquillaje
+# Message refers to a text message, not a traditional letter/envelope message
+message-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de mensaje
+musical-note-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de nota musical
+palette-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de paleta
+paw-print-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de huella de pata
+plane-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de avión
+# Present refers to a gift box, not the current time period
+present-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de regalo
+shopping-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de carrito de compras
+soccer-ball-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de balón de fútbol
+sparkle-single-avatar-tooltip =
+    .tooltiptext = Aplicar avatar brillante
+star-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de estrella
+video-game-controller-avatar-tooltip =
+    .tooltiptext = Aplicar avatar de controlador de videojuego
