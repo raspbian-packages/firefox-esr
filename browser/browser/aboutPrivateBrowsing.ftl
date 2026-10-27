@@ -1,0 +1,105 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+privatebrowsingpage-open-private-window-label = Priwatne wokno wočinić
+    .accesskey = P
+about-private-browsing-search-placeholder = Web přepytać
+about-private-browsing-search-btn =
+    .title = Web přepytać
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff =
+    .title = Pytajće z { $engine } abo zapodajće adresu
+about-private-browsing-handoff-no-engine =
+    .title = Pytać abo adresu zapodać
+# Variables
+#  $engine (String): the name of the user's default search engine
+about-private-browsing-handoff-text = Pytajće z { $engine } abo zapodajće adresu
+about-private-browsing-handoff-text-no-engine = Pytać abo adresu zapodać
+about-private-browsing-not-private = Tuchwilu njejsće w priwatnym woknje.
+about-private-browsing-hide-activity = Schowajće swoju aktiwitu a stejnišćo, hdźežkuli wobhladowak wužiwaće
+about-private-browsing-get-privacy = Wobstarajće sej škit priwatnosće wšudźe, hdźež přehladujeće
+about-private-browsing-hide-activity-1 = Schowajće přehladowansku aktiwitu a stejnišćo z { -mozilla-vpn-brand-name }. Z jednym kliknjenjom wutworiće zwisk, samo w zjawnym WLAN:
+about-private-browsing-prominent-cta = Škitajće swoju priwatnosć z { -mozilla-vpn-brand-name }
+about-private-browsing-focus-promo-cta = { -focus-brand-name } sćahnyć
+about-private-browsing-focus-promo-header = { -focus-brand-name }: Priwatny modus po puću
+about-private-browsing-focus-promo-text = Naše mobilne, za priwatny modus myslene nałoženje wašu historiju a placki kóždy čas prózdni.
+about-private-browsing-focus-promo-header-c = Priwatnosć přichodneho schodźenka za mobilne graty
+about-private-browsing-focus-promo-text-c = { -focus-brand-name } wašu historiju kóždy raz zhaša, hdyž wabjenje a přesćěhowaki blokujeće.
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = { $engineName } je waša standardna pytawa w priwatnych woknach
+about-private-browsing-search-banner-description =
+    { PLATFORM() ->
+        [windows] Zo byšće druhu pytawu wubrał, dźiće k <a data-l10n-name="link-options">nastajenjam</a>
+       *[other] Zo byšće druhu pytawu wubrał, dźiće k <a data-l10n-name="link-options">nastajenjam</a>
+    }
+about-private-browsing-search-banner-close-button =
+    .aria-label = Začinić
+about-private-browsing-promo-close-button =
+    .title = Začinić
+
+## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+about-private-browsing-pin-promo-header = Swoboda priwatneho modusa z jednym kliknjenjom
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Na doku wobchować
+       *[other] K nadawkowej lajsće připjeć
+    }
+about-private-browsing-pin-promo-title = Žane składowane placki abo žana historiju, direktnje z wašeho desktopa. Přehladujće kaž njeby was nichtó wobkedźbował.
+
+## Strings used in a promotion message for Firefox Relay
+
+about-private-browsing-relay-promo-header = Škitajće póstowy dochad z e-mejlowymi maskami před spamom
+about-private-browsing-relay-promo-title = Schowajće swoju woprawdźitu adresu z e-mejlowej masku, hdyž so registrujeće, nakupujeće abo ju online dźěliće.
+about-private-browsing-relay-promo-link-text = E-mejlowe maski wupruwować
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `{ -brand-short-name } will show fewer cookie requests`
+about-private-browsing-cookie-banners-promo-heading = { -brand-short-name }  so za was wo plackowe chorhoje stara
+about-private-browsing-cookie-banners-promo-body = Nětko wjele plackowych chorhojow awtomatisce wotpokazujemy, zo bychu was mjenje slědował a zo byšće so k přehladowanju bjez wotwjedźenja wróćił.
+
+## Strings for the info section of about:privatebrowsing
+
+about-private-browsing-felt-privacy-v1-info-header = Na tutym graće žane slědy njezawostajić
+about-private-browsing-felt-privacy-v1-info-body = { -brand-short-name } waše placki, historiju a sydłowe daty zhaša, hdyž wšě swoje priwatne wokna začinjeće.
+about-private-browsing-felt-privacy-v1-info-link = Štó móhł moju aktiwitu widźeć?
+
+## Strings for the Nova redesign of about:privatebrowsing
+
+about-private-browsing-nova-info-body = Hdyž swoje priwatne wokna začinjeće, so waše placki, historija a sydłowe daty zhašeja.
+about-private-browsing-nova-info-link = Štó móhł hišće moju aktiwitu widźeć?
+about-private-browsing-private-window-basics-link = Zakłady priwatneho wokna
+about-private-browsing-private-window-redesign-subheader = { -brand-short-name } je za to mysleny, wašu priwatnosć škitać, hdyž přehladujeće, ze zatwarjenym přesćěhowanskim škitom. Hdyž tute wokno začinjeće, so jeho historija, placki a sydłowe daty zhašeja, zo by so waše přehladowanje před druhimi škita, kotřiž tutón grat wužiwaja.
+# "You're off the record" is an English idiom meant to communicate that you
+# are not being recorded. If there is not a comparable phrase in the locale,
+# fall back to "Your browsing will be deleted"
+about-private-browsing-nova-info-header = Waše přehladowanje so njeskładuje
+about-private-browsing-nova-info-subheader2 = Zhašamy kóžde pytanje a přizjewjenje, hdyž wšě swoje priwatne wokna začinjeće. Škit, kotryž je w { -brand-short-name } zatwarjeny, je tu tež zmóžnjeny, na přikład blokowanje přesćěhowakow.
+
+## Strings for the Private Window basics spotlight
+
+about-private-browsing-spotlight-basics-title = Zakłady priwatneho wokna
+about-private-browsing-spotlight-basics-subtitle = Priwatne wokna pomhaja, waše přehladowanje před druhimi na tutym graće škitać. Nječinja was anonymne a njeprózdnja waše daty.
+# This is a section header in the Private Window basics spotlight dialog,
+# introducing information about what users should know about Private Windows.
+about-private-browsing-spotlight-basics-what-to-know = Što trjebaće wědźeć
+about-private-browsing-spotlight-basics-activity-seen = Někotra aktiwita so snano přez sydła, pytawy, internetnych poskićowarjow abo wašu dźěłodawarja widźi.
+about-private-browsing-spotlight-basics-bookmarks-downloads = Zapołožki a sćehnjenja na wašim graće wostawaja a móža so w adresowym polu jewić.
+# This is a section header in the Private Window basics spotlight dialog,
+# introducing additional privacy protection features available in { -brand-short-name }.
+about-private-browsing-spotlight-basics-more-privacy = Dalši škit priwatnosće
+about-private-browsing-spotlight-basics-malware-alerts = { -brand-short-name } was awtomatisce wo škódnej software a wobšudne sydła warnuje.
+# "Participating sites" refers to websites that honor Global Privacy Control (GPC) signals, either voluntarily or where legally required.
+about-private-browsing-spotlight-basics-no-sell-data = { -brand-short-name } awtomatisce wobdźělace so sydła prosy, zo njebychu waše wosobinske daty předawali abo dźělili.
+about-private-browsing-spotlight-basics-vpn = Wužiwajće zatwarjeny VPN, zo byšće slědźenje swojeho stejnišća poćežił.
+# "Strict" refers to the Strict level of Enhanced Tracking Protection settings.
+# Translations should be consistent with the existing "Strict" string in about:preferences.
+about-private-browsing-spotlight-basics-strict-tracking = Wužiwajće Striktny w nastajenjach za mócniši přesćěhowanski škit.
+about-private-browsing-spotlight-basics-learn-more = Dalše informacije
