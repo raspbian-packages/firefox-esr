@@ -1,0 +1,192 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The address and credit card autofill management dialog in browser preferences
+
+autofill-manage-addresses-title = Adrese salvate
+autofill-manage-addresses-list-header = Adrese
+autofill-manage-payment-methods-title = Metode de plată salvate
+autofill-manage-cards-list-header = Carduri
+autofill-manage-dialog =
+    .style = min-width: 560px
+autofill-manage-remove-button = Elimină
+autofill-manage-add-button = Adaugă…
+autofill-manage-edit-button = Editează…
+
+## Labels for address fields (e.g. for a mailing address) used as part of the form
+## autofill feature. For more information on the address structure (e.g. levels),
+## see also https://developers.google.com/maps/documentation/javascript/geocoding
+
+address-capture-save-doorhanger-header = Salvezi adresa?
+address-capture-save-doorhanger-description = Salvează informațiile în { -brand-short-name } pentru a putea completa rapid formularele.
+address-capture-update-doorhanger-header = Actualizezi adresa?
+address-capture-edit-doorhanger-header = Editează adresa
+address-capture-save-button =
+    .label = Salvează
+    .accessKey = S
+address-capture-not-now-button =
+    .label = Nu acum
+    .accessKey = N
+address-capture-never-save-addresses-button =
+    .label = Nu salva niciodată adresele
+    .accessKey = v
+address-capture-cancel-button =
+    .label = Anulează
+    .accessKey = C
+address-capture-update-button =
+    .label = Actualizează
+    .accessKey = U
+address-capture-manage-address-button =
+    .label = Setări adresă
+address-capture-learn-more-button =
+    .label = Află mai multe
+address-capture-open-menu-button =
+    .aria-label = Deschide meniul
+address-capture-edit-address-link = Editează adresa
+    .aria-label = Editează adresa
+# The dialog title for creating addresses in browser preferences.
+autofill-add-address-title = Adaugă o adresă
+# The dialog title for editing addresses in browser preferences.
+autofill-edit-address-title = Editează adresa
+autofill-address-name = Nume
+autofill-address-organization = Organizație
+autofill-address-street-address = Strada
+autofill-address-street = Adresă poștală
+# Used in Iran (IR), Mexico (MX) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-neighborhood = Cartier
+# Used in Malaysia (MY) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-village-township = Sat sau comună
+autofill-address-island = Insulă
+# Used in Ireland (IE) as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-townland = Comună
+autofill-address-city = Oraș
+# Used in Hong Kong (HK), Sudan (SD), Syria (SY), Türkiye (TR) as as secondary address information (2 levels below the country level).
+# Used in Korea as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-district = Raion
+# Used in United Kingdom (GB), Norway (NO), Sweden (SE) as as secondary address information (2 levels below the country level).
+autofill-address-post-town = Oficiu poștal
+# Used in Australia (AU) as as secondary address information (below the country level).
+# Used for international addresses as sublocality (civil entity below a locality, e.g. within a city).
+autofill-address-suburb = Suburbie
+autofill-address-province = Provincie
+autofill-address-state = Stat
+autofill-address-county = Județ
+# Used in Barbados (BB), Jamaica (JM) as primary address information (1 level below the country level).
+autofill-address-parish = Parohie
+# Used in Japan (JP) as primary address information (1 level below the country level).
+autofill-address-prefecture = Prefectură
+# Used in Honk Kong (HK) as primary address information (1 level below the country level).
+autofill-address-area = Zonă
+# Used in Korea (KO) as primary address information (1 level below the country level).
+autofill-address-do-si = Do/Si
+# Used in Nicaragua (NI), Colombia (CO) as primary address information (1 level below the country level).
+autofill-address-department = Departament
+# Used in United Arab Emirates (AE) as primary address information (1 level below the country level).
+autofill-address-emirate = Emirat
+# Used in Russia (RU), Ukraine (UA) as primary address information (1 level below the country level).
+autofill-address-oblast = Oblast
+# Postal code field used in India (IN).
+autofill-address-pin = Cod poștal
+autofill-address-postal-code = Cod poștal
+# Postal code field.
+autofill-address-zip = Cod zip
+# Postal code field used in Ireland (IE).
+autofill-address-eircode = Eircode (Irlanda)
+
+##
+
+autofill-address-country = Țară sau regiune
+autofill-address-country-only = Țara
+autofill-address-tel = Număr de telefon
+autofill-address-email = E-mail
+autofill-cancel-button = Anulează
+autofill-save-button = Salvează
+autofill-country-warning-message-2 = Completarea automată a formularelor este disponibilă în prezent numai pentru anumite țări
+autofill-country-warning-message = Completarea automată a formularelor este în prezent disponibilă numai pentru anumite țări.
+autofill-message-tooltip = Vezi mesajul despre completarea automată
+# The dialog title for creating credit cards in browser preferences.
+autofill-add-card-title = Adaugă card
+# The dialog title for editing credit cards in browser preferences.
+autofill-edit-card-title2 = Editează card
+autofill-card-number-2 =
+    .label = Numărul cardului
+autofill-card-number = Numărul cardului
+autofill-card-invalid-number = Te rugăm să introduci un număr de card valid
+autofill-card-name-on-card-2 =
+    .label = Numele de pe card
+autofill-card-expires-month-2 =
+    .label = Expiră în luna
+autofill-card-expires-year-2 =
+    .label = Expiră în anul
+autofill-card-billing-address-2 =
+    .label = Adresă de facturare
+# "CVV" is a common abbreviation for the security code printed on a payment
+# card. Use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code =
+    .label = CVV
+autofill-card-name-on-card = Numele de pe card
+autofill-card-expires-month = Luna expirării
+autofill-card-expires-year = Anul expirării
+autofill-card-billing-address = Adresă de facturare
+autofill-card-network = Tipul cardului
+# This string is never actually displayed, but is used to make it easier to
+# find the payment methods section of about:settings via the search input. It's
+# simply a comma separated list of additional search keywords for the payment
+# methods section. Localizers should choose terms that make sense for payment
+# methods in their region.
+autofill-card-search-term-credit-cards = carduri de credit, credit, carduri, carduri de debit, debit, portofel, finalizarea comenzii
+
+## The passport autofill management dialog in browser preferences
+
+# The dialog title for creating a passport in browser preferences.
+autofill-add-passport-title = Adăugă pașaport
+# The dialog title for editing a passport in browser preferences.
+autofill-edit-passport-title = Editează pașaportul
+
+## Passport field labels shared by the passport capture doorhanger and the
+## passport management dialog. The labels are exposed as a .label attribute so
+## they can be assigned directly to moz-input-text and moz-select fields.
+
+autofill-passport-name =
+    .label = Nume
+autofill-passport-country =
+    .label = Țară
+autofill-passport-number =
+    .label = Număr
+# Heading shown above the passport issue date fields.
+autofill-passport-issue-date = Data emiterii
+# Heading shown above the passport expiration date fields.
+autofill-passport-expiry-date = Data expirării
+# Month dropdown label for passport dates.
+autofill-passport-date-month =
+    .label = LL
+# Day dropdown label for passport dates.
+autofill-passport-date-day =
+    .label = ZZ
+# Year dropdown label for passport dates.
+autofill-passport-date-year =
+    .label = AAAA
+
+## The passport capture doorhanger
+
+# Header of the doorhanger shown when Firefox offers to save a passport.
+passport-capture-save-doorhanger-header = Salvezi pașaportul?
+passport-capture-save-doorhanger-description = Salvează informațiile în { -brand-short-name } pentru a putea completa rapid formulare.
+# Accessible label for a passport date part input in the capture doorhanger.
+# The date parts (month/day/year) show their format hint (MM/DD/YYYY) as
+# placeholder text rather than a visible label, so the accessible name combines
+# the date group heading with the part hint. $heading is the group heading
+# (e.g. "Issue date") and $part is the part hint (e.g. "MM"); translators can
+# reorder them to match their locale.
+passport-capture-date-part-aria-label = { $heading } { $part }
+passport-capture-save-button =
+    .label = Salvează
+    .accessKey = S
+passport-capture-not-now-button =
+    .label = Nu acum
+    .accessKey = w
+passport-capture-never-save-button =
+    .label = Nu salva niciodată pașapoarte
+    .accessKey = N

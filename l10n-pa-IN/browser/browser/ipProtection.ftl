@@ -1,0 +1,455 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## Toolbar button tooltip reflects VPN state
+
+ipprotection-button =
+    .label = VPN
+    .tooltiptext = VPN
+ipprotection-button-error =
+    .label = VPN ਨੂੰ ਚਾਲੂ ਕਰੋ
+    .tooltiptext = VPN ਨੂੰ ਚਾਲੂ ਕਰੋ
+
+##
+
+# The word "Beta" is intended to be uppercase in the experiment label.
+ipprotection-experiment-badge =
+    .label = ਬੀਟਾ
+ipprotection-help-button =
+    .tooltiptext = VPN ਸਹਿਯੋਗ ਸਫ਼ੇ ਨੂੰ ਖੋਲ੍ਹੋ
+ipprotection-title = VPN
+
+## Buttons used for all feature introduction callouts
+
+ipprotection-feature-introduction-title = VPN ਪੇਸ਼ ਹੈ, ਹੁਣ ਤੁਹਾਡੇ ਬਰਾਊਜ਼ਰ ਦੇ ਵਿੱਚ ਹੀ
+ipprotection-feature-introduction-title-1 = { -brand-product-name } ਦੇ ਨਾਲ ਮੌਜੂਦ VPN ਨੂੰ ਅਜ਼ਮਾਓ
+ipprotection-feature-introduction-link-text-2 = ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾਉਣ ਅਤੇ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ ਸਾਡੇ ਨਵੇਂ <a data-l10n-name="learn-more-vpn">ਨਾਲ ਮੌਜੂਦ VPN</a> ਨੂੰ ਵਰਤੋਂ।
+ipprotection-feature-introduction-title-privacy = ਪਰਦੇਦਾਰੀ ਲਈ ਇੱਕ ਹੋਰ ਪਰਤ ਜੋੜੋ
+ipprotection-feature-introduction-title-privacy-1 = ਵਿੱਚ ਮੌਜੂਦ VPN ਨਾਲ ਪਰਦੇਦਾਰੀ ਦੀ ਇੱਕ ਹੋਰ ਕੰਧ ਜੋੜੋ
+ipprotection-feature-introduction-link-text-privacy-1 = <a data-l10n-name="learn-more-vpn">{ -brand-product-name } ਦਾ ਵਿੱਚ ਮੌਜੂਦ VPN</a> ਤੁਹਾਡੇ ਬਰਾਊਜ਼ਿੰਗ ਲਈ ਸੁਰੱਖਿਆ ਦਿੰਦਾ ਹੈ। ਆਪਣੇ ਬਰਾਊਜ਼ ਕਰਨ ਦੀ ਥਾਂ ਨੂੰ ਪ੍ਰਾਈਵੇਟ ਰੱਖਣ ਵਾਸਤੇ ਕਈ ਟਿਕਾਣਿਆਂ ਵਿੱਚੋਂ ਕਿਸੇ ਦੀ ਚੋਣ ਕਰੋ।
+ipprotection-feature-introduction-link-text-privacy-2 = <a data-l10n-name="learn-more-vpn">{ -brand-product-name } ਵਿੱਚ ਮੌਜੂਦ VPN</a> ਤੁਹਾਡੇ ਬਰਾਊਜ਼ ਕਰਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ ਮਦਦ ਕਰਦਾ ਹੈ। ਆਪਣੇ ਬਰਾਊਜ਼ ਕਰਨ ਨੂੰ ਵੱਧ ਪ੍ਰਾਈਵੇਟ ਰੱਖਣ ਲਈ ਕਈ ਟਿਕਾਣਿਆਂ ਵਿੱਚੋਂ ਚੁਣੋ।
+ipprotection-feature-introduction-link-text-privacy-3 = ਤੁਸੀਂ ਜਿੱਥੋਂ ਬਰਾਊਜ਼ ਕਰਦੇ ਹੋ, ਉਸ ਨੂੰ ਲੁਕਾਉਣ ਲਈ ਕਈ ਟਿਕਾਣਿਆਂ ਵਿੱਚੋਂ ਚੁਣ ਕੇ <a data-l10n-name="learn-more-vpn">ਵਧੀਕ ਪਰਦੇਦਾਰੀ</a> ਲਵੋ।
+# Used for multiple discovery callouts after release of the site inclusions feature
+ipprotection-feature-introduction-description-inclusions = ਜਦੋਂ ਤੁਸੀਂ ਬਰਾਊਜ਼ ਕਰਦੇ ਹੋ ਤਾਂ <a data-l10n-name="learn-more-vpn">ਵਧੀਕ ਪਰਦੇਦਾਰੀ</a> ਲਈ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾਉਣ ਲਈ ਮਦਦ ਕਰਦਾ ਹੈ। ਕੁਝ ਖਾਸ ਸਾਈਟਾਂ ਲਈ VPN ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰੋ।
+ipprotection-feature-introduction-text-summer-promo-1 = ਆਪਣੀ ਬਰਾਊਜ਼ਿੰਗ ਨੂੰ ਪ੍ਰਾਈਵੇਟ ਰੱਖਣ ਲਈ ਇਸ ਨੂੰ ਚਾਲੂ ਕਰੋ। <a data-l10n-name="summer-promo-link">ਬੇਅੰਤ ਬੈਂਡਵਿਦਥ</a> ਅਤੇ ਬਰਾਊਜ਼ ਕਰਨ ਲਈ ਹੋਰ ਟਿਕਾਣੇ ਲਵੋ। ਹੁਣ 31 ਅਗਸਤ ਤੱਕ।
+ipprotection-feature-introduction-title-summer-promo = ਸੈਰ ਸਪਾਟਾ ਦਾ ਸੋਚ ਰਹੇ ਹੋ? ਆਪਣੇ ਨਾਲ ਪਰਦੇਦਾਰੀ ਨੂੰ ਰੱਖੋ।
+ipprotection-feature-introduction-description-summer-promo = { -brand-product-name } ਨਾਲ ਮੌਜੂਦ VPN ਦਾ ਫਾਇਦਾ ਲਵੋ: ਹੋਰ ਟਿਕਾਣੇ, ਬੇਅੰਤ ਬੈਂਡਵਿਦਥ। ਹੁਣ 31 ਅਗਸਤ ਤੱਕ।
+ipprotection-feature-introduction-link-text-private-browsing-2 = ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾਉਣ ਅਤੇ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਜਦੋਂ ਕਿ ਤੁਸੀਂ ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ ਨੂੰ ਵਰਤਦੇ ਹੋਵੋ, ਸਾਡੇ ਨਵੇਂ <a data-l10n-name="learn-more-vpn">ਨਾਲ ਮੌਜੂਦ VPN</a> ਨੂੰ ਵਰਤੋਂ।
+ipprotection-feature-introduction-description-private-browsing = ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾ ਕੇ ਵਾਧੂ ਸੁਰੱਖਿਆ ਨਾਲ ਬਰਾਊਜ਼ ਕਰੋ, ਜਦੋਂ ਕਿ ਤੁਸੀਂ ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ ਵਿੱਚ ਹੋਵੋ।
+# Alternate version of the feature discovery callout copy used after we've released site inclusions for the VPN. Users have the option to turn the VPN on for specific sites only
+ipprotection-feature-introduction-description-private-browsing-1 = ਜਦੋਂ ਤੁਸੀਂ ਬਰਾਊਜ਼ ਕਰਦੇ ਹੋ ਤਾਂ <a data-l10n-name="learn-more-vpn">ਵਧੀਕ ਪਰਦੇਦਾਰੀ</a> ਲਈ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾਉਣ ਲਈ ਮਦਦ ਕਰਦਾ ਹੈ। ਵਧੀਕ ਪਰਦੇਦਾਰੀ ਜਾਂ ਟਿਕਾਣਾ ਅਧਾਰਿਤ ਬਰਾਊਜ਼ ਕਰਨ ਲਈ VPN ਨੂੰ ਚਾਲੂ ਕਰਨ ਜਾਂ ਜਿੱਥੇ ਲੋੜ ਨਾ ਹੋਵੇ ਤਾਂ ਬੰਦ ਕਰਨ ਲਈ ਨਿਯਮ ਬਣਾਓ।
+ipprotection-feature-introduction-title-captive-portal = ਪਬਲਿਕ Wi-Fi ਵਰਤ ਰਹੇ ਹੋ? { -brand-product-name } ਦੇ ਵਿਚੇ ਮੌਜੂਦ VPN ਨੂੰ ਅਜ਼ਮਾਓ।
+ipprotection-feature-introduction-description-captive-portal = ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾ ਕੇ ਵਾਧੂ ਸੁਰੱਖਿਆ ਨਾਲ ਬਰਾਊਜ਼ ਕਰੋ, ਜਦੋਂ ਕਿ ਤੁਸੀਂ ਪਬਲਿਕ Wi-Fi ਵੀ ਵਰਤਦੇ ਹੋਵੋ।
+# Used for discovery callouts for both captive portal login and private browsing
+ipprotection-feature-introduction-link-text-captive-portal-1 = ਤੁਹਾਡੇ ਵਲੋਂ ਬਰਾਊਜ਼ ਕਰਨ ਦੀ ਥਾਂ ਨੂੰ ਲੁਕਾਉਣ ਲਈ ਕਈ ਟਿਕਾਣਿਆਂ ਵਿਚੋਂ ਕਿਸੇ ਨੂੰ ਚੁਣ ਕੇ <a data-l10n-name="learn-more-vpn">ਵਧੀਕ ਪਰਦੇਦਾਰੀ</a> ਲਵੋ।
+ipprotection-feature-introduction-button-primary = ਅੱਗੇ
+ipprotection-feature-introduction-button-secondary-not-now = ਹੁਣੇ ਨਹੀਂ
+ipprotection-feature-introduction-button-secondary-not-now-menuitem =
+    .label = ਹੁਣੇ ਨਹੀਂ
+ipprotection-feature-introduction-button-secondary-no-thanks = ਨਹੀਂ, ਧੰਨਵਾਦ
+ipprotection-feature-introduction-button-secondary-no-thanks-menuitem =
+    .label = ਨਹੀਂ, ਧੰਨਵਾਦ
+ipprotection-feature-introduction-button-secondary-remove = ਟੂਲਬਾਰ 'ਚੋਂ VPN ਨੂੰ ਹਟਾਓ
+ipprotection-feature-introduction-button-secondary-remove-1 =
+    .label = ਟੂਲਬਾਰ 'ਚੋਂ VPN ਨੂੰ ਹਟਾਓ
+ipprotection-feature-introduction-button-open-vpn = VPN ਨੂੰ ਖੋਲ੍ਹੋ
+ipprotection-feature-introduction-button-get-started = ਸ਼ੁਰੂ ਕਰੀਏ
+
+## Callout shown when the user opens a private browsing window
+
+ipprotection-feature-introduction-title-private-browsing = { -brand-product-name } ਦੇ ਵਿੱਚ ਮੌਜੂਦ VPN ਨਾਲ ਵੱਧ ਤੋਂ ਵੱਧ ਪਰਦੇਦਾਰੀ
+
+## Summer promo offramp callout buttons
+
+# Generic summer promo offramp message
+ipprotection-summer-promo-offramp-generic-title = ਤੁਹਾਡੇ ਨਾਲ ਮੌਜੂਦ VPN ਦੀ ਹੱਦ 1 ਸਤੰਬਰ ਨੂੰ ਮੁੜ-ਸੈਟ ਹੁੰਦੀ ਹੈ
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-summer-promo-offramp-generic-description = ਤੁਹਾਡੇ ਬਰਾਊਜ਼ ਕਰਨ ਨੂੰ ਵਾਪਸ ਤੁਹਾਡੇ ਤੱਕ ਸੂਹ ਲੈਣ ਤੋਂ ਹੋਰ ਔਖਾ ਬਣਾਉਣ ਵਾਸਤੇ ਵਾਧੂ ਪਰਦੇਦਾਰੀ ਲਈ ਆਪਣੇ { $maxUsage } GB ਅਤੇ 6 ਟਿਕਾਣਿਆਂ ਨੂੰ ਵਰਤੋਂ।
+# Generic summer promo offramp message for users who cannot upgrade to Mozilla VPN due to locale and already have Firefox as their default browser
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-summer-promo-offramp-generic-description-default-browser-users-no-upgrade = ਤੁਹਾਡੇ ਬਰਾਊਜ਼ ਕਰਨ ਨੂੰ ਵਾਪਸ ਤੁਹਾਡੇ ਤੱਕ ਸੂਹ ਲੈਣ ਤੋਂ ਹੋਰ ਔਖਾ ਬਣਾਉਣ ਵਾਸਤੇ ਵਧੀਕ ਪਰਦੇਦਾਰੀ ਲਈ ਆਪਣੇ { $maxUsage } GB ਅਤੇ 20 ਤੋਂ ਵੱਧ ਟਿਕਾਣਿਆਂ ਨੂੰ ਵਰਤੋਂ।
+# Mozilla VPN subscriber summer promo offramp message
+# Message shown to current subscribers of Mozilla VPN
+# Refers to subscribers now receiving unlimited bandwidth and more locations in the Firefox built-in VPN
+ipprotection-summer-promo-offramp-subscriber-title = ਤੁਹਾਡੇ ਨਾਲ ਮੌਜੂਦ VPN ਹੁਣ ਹੋਰ ਬੇਹਤਰ ਹੋ ਗਿਆ ਹੈ
+ipprotection-summer-promo-offramp-subscriber-description = ਹੁਣ { -mozilla-vpn-brand-name } ਮੈਂਬਰ ਦੇ ਵਜੋਂ ਤੁਹਾਡੇ ਕੋਲ ਬੇਅੰਤ ਬੈਂਡਵਿਡਥ ਅਤੇ ਵੱਧ ਟਿਕਾਣੇ ਮੌਜੂਦ ਹਨ।
+# Default browser incentive summer promo offramp message
+# "Make Firefox your go-to browser" refers to setting Firefox to default.
+# This appears in a promo message with a button labeled "Set to default"
+ipprotection-summer-promo-offramp-default-browser-incentive-title = ਆਪਣੇ ਵਧੀਕ ਨਾਲ ਮੌਜੂਦ VPN ਟਿਕਾਣਿਆਂ ਨੂੰ ਰੱਖੋ
+ipprotection-summer-promo-offramp-default-browser-incentive-description = { -brand-product-name } ਨੂੰ ਆਪਣੇ ਨਾਲ ਰੱਖੋ ਅਤੇ ਅਗਸਤ 31 ਤੋਂ ਬਾਅਦ ਬਰਾਊਜ਼ ਕਰਨ ਲਈ 20 ਤੋਂ ਵੱਧ ਹੋਰ ਥਾਵਾਂ ਲਵੋ।
+# Mozilla VPN upsell summer promo offramp message
+# "Level up" refers to enhancing VPN functionality from the Firefox built-in VPN
+ipprotection-summer-promo-offramp-subscription-upsell-title = { -mozilla-vpn-brand-name } ਨਾਲ ਪੱਧਰ ਵਧਾਓ
+ipprotection-summer-promo-offramp-subscription-upsell-description = 31 ਅਗਸਤ ਤੋਂ ਬਾਅਦ ਬੇਅੰਤ ਬੈਂਡਵਿਡਥ ਰੱਖੋ। 5 ਡਿਵਾਈਸਾਂ ਤੋਂ 300+ ਟਿਕਾਣਿਆਂ ਨਾਲ ਬਰਾਊਜ਼ ਕਰਨ ਦੌਰਾਨ ਤੁਹਾਡੀ ਸੂਹ ਲੈਣ ਨੂੰ ਵੱਧ ਔਖਾ ਬਣਾਉ।
+ipprotection-summer-promo-offramp-open-vpn-primary-button = VPN ਨੂੰ ਖੋਲ੍ਹੋ
+ipprotection-summer-promo-offramp-set-to-default-primary-button = ਮੂਲ ਵਜੋਂ ਸੈੱਟ ਕਰੋ
+ipprotection-summer-promo-offramp-get-subscription-button = { -mozilla-vpn-brand-name } ਲਵੋ
+ipprotection-summer-promo-offramp-dismiss-secondary-button = ਖ਼ਾਰਜ ਕਰੋ
+
+## Site settings callout
+
+ipprotection-site-settings-callout-title = ਚੁਣੋ ਕਿ ਕਿੱਥੇ ਤੁਸੀਂ VPN ਵਰਤਦੇ ਹੋ
+ipprotection-site-settings-callout-subtitle = ਖਾਸ ਸਾਈਟ ਲਈ VPN ਨੂੰ ਬੰਦ ਕਰੋ ਅਤੇ ਅਸੀਂ ਤੁਹਾਡੇ ਵਲੋਂ ਅਗਲੀ ਵਾਰ ਉਸ ਨੂੰ ਖੋਲ੍ਹਣ ਸਮੇਂ ਯਾਦ ਰੱਖਾਂਗੇ।
+ipprotection-site-settings-callout-button = ਸਮਝੇ
+
+## Location selection callout
+
+ipprotection-location-selection-callout-title = ਨਵਾਂ: ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਬਦਲੋ
+ipprotection-location-selection-callout-description-1 = <a data-l10n-name="learn-more-vpn">{ -brand-product-name } ਦੇ ਵਿੱਚ ਮੌਜੂਦ VPN</a> ਤੁਹਾਨੂੰ ਕਈ ਬਰਾਊਜ਼ ਕਰਨ ਵਾਲੇ ਟਿਕਾਣਿਆਂ ਵਿੱਚੋਂ ਚੁਣਨ ਦਿੰਦਾ ਹੈ ਜਾਂ ਅਸੀਂ ਤੁਹਾਡੇ ਲਈ ਸਭ ਤੋਂ ਤੇਜ਼ ਦੀ ਚੋਣ ਕਰਦੇ ਹਾਂ।
+ipprotection-location-selection-callout-primary-button = ਅਜ਼ਮਾਓ
+ipprotection-location-selection-callout-secondary-button = ਖ਼ਾਰਜ ਕਰੋ
+
+## VPN for Android promo callout
+
+ipprotection-android-promo-callout-title = ਐਂਡਰਾਇਡ ਉੱਤੇ ਆਪਣੇ ਨਾਲ ਵਿੱਚ ਮੌਜੂਦ VPN ਨੂੰ ਨਾਲ ਰੱਖੋ
+ipprotection-android-promo-callout-description = ਐਂਡਰਾਇਡ ਲਈ { -brand-product-name } ਲੈਣ ਵਾਸਤੇ QR ਕੋਡ ਸਕੈਨ ਕਰੋ ਅਤੇ ਹਰ ਵੇਲੇ ਵੱਧ ਪਰਦੇਦਾਰੀ ਲਈ ਵਿੱਚ ਮੌਜੂਦ VPN ਨੂੰ ਚਾਲੂ ਕਰੋ। ਛੇਤੀ ਹੀ iOS ਤੇ ਵੀ ਆ ਰਿਹਾ ਹੈ।
+ipprotection-android-promo-callout-primary-button = ਸਮਝੇ
+
+## Feature discovery callout message advertising a feature where the user can turn on the VPN for specific sites only
+
+# Here 'browse on' means continue browsing
+ipprotection-site-inclusions-callout-title-existing-users = ਵਿੱਚ ਮੌਜੂਦ VPN ਲਈ ਨਿਯਮ ਬਣਾਓ ਅਤੇ ਫੇਰ ਬਰਾਊਜ਼ ਕਰੋ
+ipprotection-site-inclusions-callout-title-lapsed-users = ਵਿੱਚ ਮੌਜੂਦ VPN ਨੂੰ ਅਜ਼ਮਾਓ, ਹੁਣ ਹਰ ਸਾਈਟ ਲਈ ਵੱਖਰਾ-ਵੱਖਰਾ
+ipprotection-site-inclusions-callout-description-1 = ਜਦੋਂ ਵਧੀਕ ਪਰਦੇਦਾਰੀ ਜਾਂ ਟਿਕਾਣਾ ਅਧਾਰਿਤ ਬਰਾਊਜ਼ ਕਰਨ ਦੀ ਲੋੜ ਹੋਵੇ ਤਾਂ VPN ਨੂੰ ਚਾਲੂ ਕਰੋ ਅਤੇ ਜਦੋਂ ਨਾ ਚਾਹੋ ਤਾਂ ਬੰਦ ਕਰੋ।
+ipprotection-site-inclusions-callout-description = ਜਦੋਂ ਵਧੀਕ ਪਰਦੇਦਾਰੀ ਜਾਂ ਟਿਕਾਣਾ ਅਧਾਰਿਤ ਬਰਾਊਜ਼ ਕਰਨ ਦੀ ਲੋੜ ਹੋਵੇ ਤਾਂ ਚਾਲੂ ਕਰੋ ਅਤੇ ਜਦੋਂ ਨਾ ਚਾਹੋ ਤਾਂ ਬੰਦ ਕਰੋ।
+ipprotection-site-inclusions-callout-primary-button = ਨਿਯਮ ਬਣਾਓ
+ipprotection-site-inclusions-callout-secondary-button-existing-users = ਹੁਣੇ ਨਹੀਂ
+ipprotection-site-inclusions-callout-secondary-button-lapsed-users = ਖ਼ਾਰਜ ਕਰੋ
+
+## Panel
+
+# Also used for the callout shown in private browsing
+unauthenticated-vpn-title = { -brand-product-name } ਦੇ ਨਾਲ ਮੌਜੂਦ VPN ਨੂੰ ਅਜ਼ਮਾਓ
+unauthenticated-hide-location-message-3 = { -brand-product-name } ਬਰਾਊਜ਼ ਕਰਨ ਦੇ ਦੌਰਾਨ <a data-l10n-name="learn-more-vpn">ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾਓ</a>।
+unauthenticated-private-location-message = { -brand-product-name } ਵਿੱਚ <a data-l10n-name="learn-more-vpn">ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਪ੍ਰਾਈਵੇਟ</a> ਰੱਖਣ ਲਈ ਮਦਦ ਕਰਦਾ ਹੈ।
+unauthenticated-choose-location-message-1 = ਕਈ ਟਿਕਾਣਿਆਂ ਵਿੱਚੋਂ ਕਿਸੇ ਨੂੰ ਚੁਣੋ ਜਾਂ { -brand-product-name } ਨੂੰ ਸਭ ਤੋਂ ਤੇਜ਼ ਨੂੰ ਚੁਣਨ ਦਿਓ।
+unauthenticated-site-rules-message = ਕੰਟਰੋਲ ਕਰੋ ਕਿਹੜੀਆਂ ਸਾਈਟਾਂ ਲਈ VPN ਚਾਲੂ ਕਰਨਾ ਹੈ ਅਤੇ ਕਿਹੜੀਆਂ ਲਈ ਨਹੀਂ।
+unauthenticated-get-started = ਸ਼ੁਰੂ ਕਰੀਏ
+unauthenticated-terms-of-service-privacy-notice = ਜਾਰੀ ਰੱਖਣ ਨਾਲ ਤੁਸੀਂ <a data-l10n-name="vpn-terms-of-service">ਸੇਵਾ ਦੀਆਂ ਸ਼ਰਤਾਂ</a> ਅਤੇ <a data-l10n-name="vpn-privacy-notice">ਪਰਦੇਦਾਰੀ ਨੀਤੀ</a> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।
+site-exclusion-toggle-enabled-1 =
+    .aria-label = ਇਸ ਸਾਈਟ ਲਈ VPN ਚਾਲੂ ਹੈ
+    .label = ਇਸ ਸਾਈਟ ਲਈ VPN ਨੂੰ ਵਰਤੋਂ
+site-exclusion-toggle-disabled-1 =
+    .aria-label = ਇਸ ਸਾਈਟ ਲਈ VPN ਬੰਦ ਹੈ
+    .label = ਇਸ ਸਾਈਟ ਲਈ VPN ਨੂੰ ਵਰਤੋਂ
+site-exclusion-toggle-description = ਸਾਈਟ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੀ ਹੈ? VPN ਨੂੰ ਬੰਦ ਕਰਕੇ ਵੇਖਿਓ।
+# Manages rules for VPN to turn on or off automatically for certain websites
+site-rules-manage-rules-link-text = VPN ਨਿਯਮਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+# Heading for user defined rules on VPN usage for particular websites
+site-rules-status-heading = ਤੁਹਾਡਾ ਨਿਯਮ
+# Used in the panel when a user navigates to a site where the VPN is off due to a site exclusion
+site-rules-description-exclusion = ਇਸ ਸਾਈਟ ਲਈ VPN ਬੰਦ ਹੈ
+# Used in the panel when a user navigates to a site where the VPN is on due to a site inclusion
+site-rules-description-inclusion = ਇਸ ਸਾਈਟ ਲਈ VPN ਚਾਲੂ ਹੈ
+# Message shown in the panel the first time a user turns on the VPN, offering to always turn on VPN for the current website
+# Variables
+#   $website (string) - The host of the current website (e.g. "example.com")
+site-rules-inclusion-prompt =
+    .heading = ਕੀ { $website } ਲਈ ਹਮੇਸ਼ਾਂ VPN ਚਾਲੂ ਕਰਨਾ ਹੈ?
+    .message = ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਆਪਣੇ ਨਿਯਮਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।
+ipprotection-settings-link =
+    .label = ਸੈਟਿੰਗਾਂ
+
+## Status card
+
+# Button to turn off the VPN
+ipprotection-button-turn-vpn-off = VPN ਬੰਦ ਕਰੋ
+# Button to turn off the VPN when the VPN panel is open while viewing
+# a page from an excluded site.
+ipprotection-button-turn-vpn-off-excluded-site = VPN ਨੂੰ ਹਰ ਥਾਂ ਲਈ ਬੰਦ ਕਰੋ
+# Button to turn on the VPN
+ipprotection-button-turn-vpn-on = VPN ਚਾਲੂ ਕਰੋ
+# Button while VPN is connecting
+ipprotection-button-connecting = …ਚਾਲੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ
+ipprotection-connection-status-connected-1 = VPN ਚਾਲੂ ਹੈ
+    .aria-label = VPN ਚਾਲੂ ਹੈ
+ipprotection-connection-status-disconnected-1 = VPN ਬੰਦ ਹੈ
+    .aria-label = VPN ਬੰਦ ਹੈ
+ipprotection-connection-status-excluded-1 = ਇਸ ਸਾਈਟ ਲਈ VPN ਬੰਦ ਹੈ
+    .aria-label = ਇਸ ਸਾਈਟ ਲਈ VPN ਬੰਦ ਹੈ
+ipprotection-connection-status-connecting-1 = …VPN ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ
+    .aria-label = …VPN ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ
+
+## Location controls
+
+# The button displays the selected VPN location.
+# This shows the default selection, "Recommended" which is the recommended location as determined by Firefox.
+ipprotection-recommended-location-button = ਟਿਕਾਣਾ: ਸਿਫ਼ਾਰਸ਼ੀ
+ipprotection-recommended-location-description = { -brand-product-name } ਸਭ ਤੋਂ ਤੇਜ਼ ਟਿਕਾਣਾ ਲੱਭਦਾ ਹੈ
+ipprotection-recommended-location-badge = ਨਵਾਂ
+# Variables
+#   $country (string) - The country selected for the VPN server location
+ipprotection-location-country-button = ਦੇਸ਼: { $country }
+ipprotection-locations-subview =
+    .title = ਟਿਕਾਣੇ ਨੂੰ ਚੁਣੋ
+ipprotection-locations-subview-description = ਬਰਾਊਜ਼ ਕਰਨ ਲਈ ਕਿਸੇ ਵੱਖਰੇ ਟਿਕਾਣੇ ਨੂੰ ਚੁਣੋ।
+ipprotecion-locations-subview-recommended-label = ਸਿਫ਼ਾਰਸ਼ੀ
+ipprotection-locations-subview-recommended-description = ਸਭ ਤੋਂ ਤੇਜ਼ ਟਿਕਾਣੇ ਨੂੰ ਲੱਭਦਾ ਹੈ
+# Label shown next to a VPN location that the user cannot select.
+# The aria-label is for accessibility, and should communicate that the
+# location is unavailable and the button is disabled.
+ipprotection-locations-unavailable-label-1 = ਗ਼ੈਰ-ਮੌਜੂਦ
+    .aria-label = ਗ਼ੈਰ-ਮੌਜੂਦ, ਅਸਮਰੱਥ ਹੈ
+# Label shown next to a VPN location that the user cannot select.
+ipprotection-locations-unavailable-label = ਨਾ-ਮੌਜੂਦ
+ipprotection-locations-subview-promo =
+    .heading = { -mozilla-vpn-brand-name } ਨਾਲ ਹੋਰ ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਵੋ
+    .message = 300+ ਤੋਂ ਵੱਧ ਟਿਕਾਣਿਆਂ ਵਿੱਚੋਂ ਚੁਣੋ ਅਤੇ 5 ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਨੂੰ ਸੁਰੱਖਿਆ ਦਿਓ।
+ipprotection-locations-subview-promo-button = { -mozilla-vpn-brand-name } ਲਵੋ
+
+## VPN paused state
+
+upgrade-vpn-title = ਬਰਾਊਜ਼ਰ ਤੋਂ ਪਾਰ ਵੀ ਵਧੀਕ ਸੁਰੱਖਿਆ ਲਵੋ
+upgrade-vpn-description = ਆਪਣੇ VPN ਟਿਕਾਣੇ ਨੂੰ ਚੁਣੋ, ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ 5 ਡਿਵਾਈਸਾਂ ਲਈ VPN ਨੂੰ ਚੁਣੋ। ਕਿਸੇ ਵੀ ਨੈੱਟਵਰਕ ਉੱਤੇ ਸੁਰੱਖਿਅਤ ਰਹੋ — ਘਰੇ ਜਾਂ ਪਬਲਿਕ Wi-Fi ਉੱਤੇ।
+upgrade-vpn-button = { -mozilla-vpn-brand-name } ਨੂੰ ਅਜ਼ਮਾਓ
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-connection-status-paused-description-1 = ਤੁਸੀਂ ਆਪਣੇ VPN ਡਾਟੇ ਲਈ ਸਾਰਾ { $maxUsage } GB ਵਰਤ ਚੁੱਕੇ ਹੋ। ਬਾਕੀ ਡਾਟੇ ਲਈ ਪਹੁੰਚ ਅਗਲੇ ਮਹੀਨੇ ਹੋਵੇਗੀ।
+ipprotection-connection-status-paused-title-2 = VPN ਰੁਕਿਆ ਹੈ
+    .aria-label = VPN ਰੁਕਿਆ ਹੈ
+
+## Messages and errors
+
+ipprotection-connection-status-generic-error-description = ਕੁਝ ਕੁ ਮਿੰਟਾਂ ਬਾਅਦ ਫੇਰ ਕੋਸ਼ਿਸ ਕਰਿਓ।
+ipprotection-connection-status-generic-error-try-again = ਬਾਅਦ ਵਿੱਚ ਕੋਸ਼ਿਸ ਕਰੋ ਜੀ।
+ipprotection-connection-status-network-error-title-1 = ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਦੀ ਜਾਂਚ ਕਰੋ
+    .aria-label = ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਦੀ ਜਾਂਚ ਕਰੋ
+ipprotection-connection-status-network-error-description = ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ ਅਤੇ ਫੇਰ VPN ਨੂੰ ਚਾਲੂ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਿਓ।
+ipprotection-connection-status-blocked-error-title-1 = VPN ਮੌਜੂਦ ਨਹੀਂ ਹੈ
+    .aria-label = VPN ਮੌਜੂਦ ਨਹੀਂ ਹੈ
+# "Where" refers to the user's location. It does not refer to apps or devices because the built-in VPN only protects a user's browsing in Firefox
+ipprotection-connection-status-blocked-error-description-1 = ਲੋਕਲ ਕਨੂੰਨ ਅਤੇ ਪਾਬੰਦੀਆਂ ਤੁਹਾਡੇ VPN ਵਰਤਣ ਨੂੰ ਸੀਮਿਤ ਕਰ ਸਕਦੀਆਂ ਹਨ। <a data-l10n-name="learn-more-link">ਹੋਰ ਜਾਣੋ</a>
+ipprotection-connection-status-blocked-error-description = ਇਸ ਖੇਤਰ ਦੇ ਲੋਕਲ ਕਨੂੰਨ ਸਾਨੂੰ VPN ਸੇਵਾ ਦੇਣ ਤੋਂ ਰੋਕਦੇ ਹਨ। <a data-l10n-name="learn-more-link">ਹੋਰ ਜਾਣੋ</a>
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-message-bandwidth-warning =
+    .heading = ਆਪਣੀ VPN ਹੱਦ ਦੇ ਨੇੜੇ ਅੱਪੜੇ ਹੋ
+    .message = ਇਸ ਮਹੀਨੇ ਲਈ ਤੁਹਾਡੇ ਕੋਲ { $maxUsage } GB ਵਿੱਚੋਂ { $usageLeft } GB ਬਾਕੀ ਬਚਿਆ ਹੈ।
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-message-bandwidth-warning-mb =
+    .heading = ਆਪਣੀ VPN ਹੱਦ ਦੇ ਨੇੜੇ ਅੱਪੜੇ ਹੋ
+    .message = ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਮਹੀਨੇ ਲਈ ਮੌਜੂਦ { $maxUsage } GB ਵਿੱਚੋਂ { $usageLeft } MB ਬਾਕੀ ਬਚਿਆ ਹੈ।
+ipprotection-message-continuous-onboarding-intro = ਬਰਾਊਜ਼ ਕਰਨ ਦੇ ਦੌਰਾਨ ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾਉਣ ਅਤੇ ਵਾਧੂ ਇੰਕ੍ਰਿਪਸ਼ਨ ਜੋੜਨ ਲਈ VPN ਨੂੰ ਚਾਲੂ ਕਰੋ।
+ipprotection-message-continuous-onboarding-autostart = ਵਾਧੂ ਸੁਰੱਖਿਆ ਜੋੜਨ ਲਈ ਜਦੋਂ ਵੀ ਤੁਸੀਂ { -brand-short-name } ਨੂੰ ਖੋਲ੍ਹੋ ਤਾਂ ਹਰ ਵਾਰ <a data-l10n-name="setting-link">VPN ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਸੈੱਟ ਕਰੋ</a>।
+ipprotection-message-continuous-onboarding-site-settings = { -brand-short-name } ਯਾਦ ਰੱਖੇਗਾ ਕਿ ਕਿਹੜੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਲਈ ਤੁਸੀਂ VPN ਸੈੱਟ ਕੀਤਾ ਹੈ। ਇਹਨਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਵੇਲੇ <a data-l10n-name="setting-link">ਸੈਟਿੰਗਾਂ</a> ਵਿੱਚ ਅੱਪਡੇਟ ਕਰੋ।
+confirmation-hint-ipprotection-navigated-to-excluded-site = ਇਸ ਸਾਈਟ ਲਈ VPN ਬੰਦ ਹੈ
+ipprotection-open-button = { -brand-product-name } ਨੂੰ ਖੋਲ੍ਹੋ
+ipprotection-come-back-title = ਨਾਲ ਮੌਜੂਦ VPN ਨੂੰ ਅਜ਼ਮਾਉਣ ਲਈ ਵਾਪਸ ਜਾਓ
+ipprotection-message-body-hide-location = ਹੋਰ ਪਰਦੇਦਾਰੀ ਅਤੇ ਕੰਟਰੋਲ ਵਾਸਤੇ { -brand-product-name } ਵਿੱਚ ਬਰਾਊਜ਼ ਕਰਨ ਦੇ ਦੌਰਾਨ ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾਓ।
+ipprotection-connection-status-generic-error-title-1 = VPN ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ
+    .aria-label = VPN ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ
+
+## IP Protection bandwidth callouts
+
+ipprotection-bandwidth-upgrade-title = ਨਾਲ ਹੀ ਮੌਜੂਦ VPN ਪਸੰਦ ਆਇਆ ਹੈ? { -mozilla-vpn-brand-name } ਨਾਲ { -brand-product-name } ਤੋਂ ਬਿਨਾਂ ਵੀ ਸੁਰੱਖਿਆ ਲਵੋ।
+ipprotection-bandwidth-upgrade-text = ਇੱਕ VPN ਟਿਕਾਣੇ ਨੂੰ ਚੁਣੋ ਅਤੇ 5 ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਲਈ ਸੁਰੱਖਿਆ ਪੱਧਰ ਨੂੰ ਜੋੜੋ, ਭਾਵੇਂ ਤੁਸੀਂ ਘਰੇ ਹੋ ਜਾਂ ਪਬਲਿਕ Wi-Fi ਉੱਤੇ।
+
+## IP Protection bandwidth warning infobar
+
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+ip-protection-bandwidth-warning-infobar-message-75 = <strong>ਆਪਣੀ VPN ਹੱਦ ਦੇ ਨੇੜੇ ਅੱਪੜ ਰਹੇ ਹੋ।</strong> ਤੁਹਾਡੇ ਕੋਲ { $usageLeft } GB ਬਾਕੀ ਬਚਿਆ ਹੈ। ਤੁਹਾਡਾ ਡਾਟਾ ਅਗਲੇ ਮਹੀਨੇ ਦੇ ਸ਼ੁਰੂ ਵਿੱਚ ਮੁੜ-ਸੈੱਟ ਹੋਵੇਗਾ।
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+ip-protection-bandwidth-warning-infobar-message-90 = <strong>ਤੁਹਾਡੇ ਕੋਲ VPN ਲਗਭਗ ਖ਼ਤਮ ਹੋ ਗਿਆ ਹੈ।</strong> ਤੁਹਾਡੇ ਕੋਲ { $usageLeft } GB ਬਾਕੀ ਬਚਿਆ ਹੈ। ਜਦੋਂ ਤੁਸੀਂ ਇਸ ਨੂੰ ਵਰਤ ਲਿਆ ਤਾਂ ਤੁਹਾਡਾ VPN ਅਗਲੇ ਮਹੀਨੇ ਦੇ ਪਹਿਲੀ ਤਾਰੀਖੀ ਨੂੰ ਮੁੜ-ਸੈੱਟ ਹੋਣ ਤੱਕ ਰੁਕ ਜਾਵੇਗਾ।
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+ip-protection-bandwidth-warning-infobar-message-90-mb = <strong>ਤੁਹਾਡੇ ਕੋਲ VPN ਲਗਭਗ ਖ਼ਤਮ ਹੋ ਗਿਆ ਹੈ।</strong> ਤੁਹਾਡੇ ਕੋਲ { $usageLeft } MB ਬਾਕੀ ਬਚਿਆ ਹੈ। ਜਦੋਂ ਤੁਸੀਂ ਇਸ ਨੂੰ ਵਰਤ ਲਿਆ ਤਾਂ ਤੁਹਾਡਾ VPN ਅਗਲੇ ਮਹੀਨੇ ਦੇ ਪਹਿਲੀ ਤਾਰੀਖੀ ਨੂੰ ਮੁੜ-ਸੈੱਟ ਹੋਣ ਤੱਕ ਰੁਕ ਜਾਵੇਗਾ।
+
+## IP Protection Settings
+
+ip-protection-description =
+    .description = ਜਦੋਂ ਵੀ ਤੁਸੀਂ { -brand-short-name } ਨਾਲ ਬਰਾਊਜ਼ ਕਰੋ ਤਾਂ ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਵਧਾਉਣ ਲਈ ਨਾਲ ਮੌਜੂਦ VPN ਹੈ।
+    .label = VPN
+ip-protection-description-1 =
+    .description = ਬਰਾਊਜ਼ ਕਰਨ ਦੇ ਦੌਰਾਨ ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾ ਕੇ ਵਧੇਰੇ ਪਰਦੇਦਾਰੀ ਬਣਾਓ।
+    .label = ਵਿਚੇ ਮੌਜੂਦ VPN
+ip-protection-learn-more = ਹੋਰ ਜਾਣੋ
+ip-protection-not-opted-in-4 =
+    .heading = { -brand-short-name } ਦੇ ਵਿਚੇ ਮੌਜੂਦ VPN ਨੂੰ ਅਜ਼ਮਾਓ
+    .message = ਆਪਣੇ ਟਿਕਾਣੇ ਨੂੰ ਲੁਕਾਉਣ ਲਈ ਵਧੀਕ ਸੁਰੱਖਿਆ ਨਾਲ ਬਰਾਊਜ਼ ਕਰੋ।
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-not-opted-in-inclusions-enabled =
+    .heading = ਇਸ ਨੂੰ ਅਜ਼ਮਾਉਣ ਲਈ ਤਿਆਰ ਹੋ?
+    .message = ਹਰ ਮਰੀਨੇ { $maxUsage } GB ਮੁਫ਼ਤ ਲਵੋ ਅਤੇ ਚੁਣੋ ਕਿ ਕਿਹੜੀ ਸਾਈਟ ਲਈ VPN ਨੂੰ ਵਰਤਣਾ ਹੈ।
+ip-protection-not-opted-in-button = ਸ਼ੁਰੂ ਕਰੀਏ
+# Variables:
+#   $count (number) - The number of sites saved as VPN exclusions.
+ip-protection-site-exceptions-all-sites-button =
+    .description =
+        { $count ->
+            [one] { $count } ਵੈੱਬਸਾਈਟ
+           *[other] { $count } ਵੈੱਬਸਾਈਟਾਂ
+        }
+    .label = ਵੈੱਬਸਾਈਟ ਸੈਟਿੰਗਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+ip-protection-site-rules-header-1 =
+    .heading = VPN ਨਿਯਮਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+ip-protection-site-rules-button-1 =
+    .description = ਸਾਈਟਾਂ ਲਈ ਨਿਯਮ ਬਣਾਓ, ਜਿੰਨ੍ਹਾਂ ਲਈ ਵਧੀਕ ਪਰਦੇਦਾਰੀ ਚਾਹੀਦੀ ਹੈ ਜਾਂ VPN ਬੰਦ ਰੱਖਣਾ ਹੈ।
+    .label = VPN ਨਿਯਮਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+ip-protection-site-rules-list-section-1 =
+    .description = VPN ਨੂੰ ਆਪਣੇ-ਆਪ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰਨ ਲਈ ਨਿਯਮ ਸੈੱਟ ਕਰੋ।
+    .label = ਵੈੱਬਸਾਈਟ ਨਿਯਮ
+ip-protection-site-rules-add-button =
+    .label = ਨਿਯਮ ਬਣਾਓ
+ip-protection-site-rules-delete-all-button =
+    .label = ਸਾਰੇ ਨਿਯਮਾਂ ਨੂੰ ਹਟਾਓ
+ip-protection-site-rules-empty = ਤੁਹਾਡੇ ਵਲੋਂ ਬਣਾਏ ਨਿਯਮ ਇੱਥੇ ਹੋਣਗੇ।
+# Shown on a website whose rule turns the VPN on for it
+ip-protection-site-rules-rule-included = VPN ਹਮੇਸ਼ਾਂ ਚਾਲੂ
+# Shown on a website whose rule turns the VPN off for it
+ip-protection-site-rules-rule-excluded = VPN ਹਮੇਸ਼ਾਂ ਬੰਦ
+# Variables:
+#   $website (string) - The website the rule applies to, e.g. https://example.com
+ip-protection-site-rules-edit-button =
+    .aria-label = { $website } ਲਈ ਨਿਯਮ ਨੂੰ ਸੋਧੋ
+    .title = ਸੋਧੋ
+# Variables:
+#   $website (string) - The website the rule applies to, e.g. https://example.com
+ip-protection-site-rules-delete-button =
+    .aria-label = { $website } ਲਈ ਨਿਯਮ ਨੂੰ ਹਟਾਓ
+    .title = ਹਟਾਓ
+ip-protection-site-rules-header =
+    .heading = ਵੈੱਬਸਾਈਟ ਨਿਯਮਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+ip-protection-site-rules-button =
+    .description = ਸਾਈਟਾਂ ਲਈ ਨਿਯਮ ਬਣਾਓ, ਜਿੰਨ੍ਹਾਂ ਲਈ ਵਧੀਕ ਪਰਦੇਦਾਰੀ ਚਾਹੀਦੀ ਹੈ ਜਾਂ VPN ਬੰਦ ਰੱਖਣਾ ਹੈ।
+    .label = ਵੈੱਬਸਾਈਟ ਨਿਯਮਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+ip-protection-autostart =
+    .label = VPN ਨੂੰ ਆਪਣੇ-ਆਪ ਚਾਲੂ ਕਰੋ
+ip-protection-autostart-checkbox =
+    .label = ਜਦੋਂ ਵੀ ਮੈਂ { -brand-short-name } ਨੂੰ ਖੋਲ੍ਹਾਂ
+ip-protection-autostart-private-checkbox =
+    .label = ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋਆਂ ਵਿੱਚ
+ip-protection-vpn-upgrade-link =
+    .description = ਪਸੰਦੀਦਾ VPN ਟਿਕਾਣੇ ਚੁਣੋ ਅਤੇ ਪੰਜ ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੋ, ਭਾਵੇਂ ਘਰੇ ਹੋਵੇ ਜਾਂ ਪਬਲਿਕ Wi-Fi ਉੱਤੇ।
+    .label = { -mozilla-vpn-brand-name } ਨਾਲ { -brand-short-name } ਤੋਂ ਬਿਨਾਂ ਵੀ ਹੋਰ ਸੁਰੱਖਿਆ ਲਵੋ
+ip-protection-vpn-upgrade-link-1 =
+    .description = 300+ ਟਿਕਾਣਿਆਂ ਵਿੱਚੋਂ ਚੁਣੋ ਅਤੇ 5 ਡਿਵਾਈਸਾਂ ਤੱਕ ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੋ।
+    .label = { -mozilla-vpn-brand-name } ਨਾਲ ਹੋਰ ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਵੋ
+
+## IP Protection dialogs
+
+ip-protection-exceptions-dialog-window =
+    .title = ਵੈੱਬਸਾਈਟ ਸੈਟਿੰਗਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+ip-protection-exclusions-desc = ਇਸ ਸੂਚੀ ਵਿੱਚ ਦਿੱਤੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਤੋਂ ਬਿਨਾਂ ਸਾਰੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਲਈ VPN ਨੂੰ ਵਰਤੋਂ। ਵੈੱਬਸਾਈਟ ਨੂੰ ਜੋੜੋ ਜਾਂ VPN ਖੋਲ੍ਹਣ ਦੇ ਬਾਅਦ।
+ip-protection-site-rule-window =
+    .title = ਨਿਯਮ ਬਣਾਓ
+ip-protection-edit-site-rule-window =
+    .title = ਨਿਯਮ ਨੂੰ ਸੋਧੋ
+ip-protection-site-rule-dialog =
+    .buttonlabelaccept = ਬਣਾਓ
+    .buttonaccesskeyaccept = S
+ip-protection-edit-site-rule-dialog =
+    .buttonlabelaccept = ਸੰਭਾਲੋ
+    .buttonaccesskeyaccept = S
+# VPN status refers to a state of 'always on' or 'always off' applied to a site
+ip-protection-site-rule-intro = ਸਾਈਟ ਦਿਓ ਅਤੇ ਫੇਰ ਉਸ ਲਈ VPN ਸਥਿਤੀ ਨਿਰਧਾਰਿਤ ਕਰੋ।
+# "ex:" is short for "example".
+ip-protection-site-rule-website-field =
+    .label = ਵੈੱਬਸਾਈਟ
+    .placeholder = ਜਿਵੇਂ: acme.com
+# VPN status refers to a state of 'always on' or 'always off' applied to a site
+ip-protection-site-rule-status-field =
+    .label = VPN ਸਥਿਤੀ
+ip-protection-site-rule-status-on =
+    .label = ਹਮੇਸ਼ਾਂ ਚਾਲੂ
+ip-protection-site-rule-status-off =
+    .label = ਹਮੇਸ਼ਾਂ ਬੰਦ
+# Shown below the website field when what was typed is not a website address.
+ip-protection-site-rule-invalid-error = ਵਾਜਬ ਵੈੱਬਸਾਟਈ ਸਿਰਨਾਵਾਂ ਦਿਓ।
+# Shown below the website field when the typed website already has a rule.
+ip-protection-site-rule-duplicate-error = ਇਸ ਸਾਈਟ ਲਈ ਪਹਿਲਾਂ ਹੀ ਨਿਯਮ ਹੈ।
+# Shown at the top of the dialog when the rule could not be saved.
+ip-protection-site-rule-save-error =
+    .message = ਨਿਯਮ ਬਣਾਉਣ ਦੌਰਾਨ ਗਲਤੀ ਆਈ। ਫੇਰ ਕੋਸ਼ਿਸ ਕਰਿਓ।
+# Variables:
+#   $website (string) - The website the rule applies to, e.g. https://example.com
+ip-protection-delete-site-rule-message = ਕੀ { $website } ਲਈ ਨਿਯਮ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?
+ip-protection-delete-site-rule-cancel =
+    .label = ਰੱਦ ਕਰੋ
+ip-protection-delete-site-rule-confirm =
+    .label = ਹਟਾਓ
+ip-protection-delete-all-site-rules-message = ਕੀ ਸਾਰੇ ਵੈੱਬਸਾਈਟ ਨਿਯਮਾਂ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?
+ip-protection-delete-all-site-rules-confirm =
+    .label = ਸਾਰੇ ਨਿਯਮਾਂ ਨੂੰ ਹਟਾਓ
+# Shown in place of the delete confirmation when deleting a rule fails.
+ip-protection-delete-site-rule-error = ਨਿਯਮ ਨੂੰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ
+# Shown in place of the delete confirmation when deleting all rules fails.
+ip-protection-delete-all-site-rules-error = ਨਿਯਮਾਂ ਨੂੰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ
+ip-protection-delete-site-rule-retry =
+    .label = ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰਿਓ
+
+## IP Protection Bandwidth
+
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-this-month-gb = ਇਸ ਮਹੀਨੇ ਲਈ { $maxUsage } GB ਵਿੱਚੋਂ { $usageLeft } GB ਬਾਕੀ ਹੈ
+# The text inside the <span> is emphasized to highlight the amount of data left.
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-gb-1 = { $maxUsage } GB ਵਿੱਚੋਂ <span data-l10n-name="usage">{ $usageLeft } GB</span> ਬਾਕੀ
+# Variables
+#   $usageLeft (string) - The amount of data a user has left in a month (in GB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-gb = { $maxUsage } GB ਵਿੱਚੋਂ { $usageLeft } GB ਬਾਕੀ ਬਚਿਆ ਹੈ
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-this-month-mb = ਇਸ ਮਹੀਨੇ ਲਈ { $maxUsage } GB ਵਿੱਚੋਂ { $usageLeft } MB ਬਾਕੀ ਹੈ
+# The text inside the <span> is emphasized to highlight the amount of data left.
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-mb-1 = { $maxUsage } GB ਵਿੱਚੋਂ <span data-l10n-name="usage">{ $usageLeft } MB</span> ਬਾਕੀ
+# Variables
+#   $usageLeft (number) - The amount of data a user has left in a month (in MB)
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-left-mb = { $maxUsage } GB ਵਿੱਚੋਂ { $usageLeft } MB ਬਾਕੀ ਬਚਿਆ ਹੈ
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-hit-for-the-month = ਤੁਸੀਂ ਆਪਣੇ VPN ਡਾਟੇ ਲਈ ਸਾਰਾ { $maxUsage } GB ਵਰਤ ਚੁੱਕੇ ਹੋ। ਬਾਕੀ ਡਾਟੇ ਲਈ ਪਹੁੰਚ ਅਗਲੇ ਮਹੀਨੇ ਹੋਵੇਗੀ।
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ip-protection-bandwidth-help-text = ਹਰ ਮਹੀਨੇ ਦੀ ਪਹਿਲੀਂ ਤਾਰੀਖ ਨੂੰ { $maxUsage } GB ਲਈ ਮੁੜ-ਸੈੱਟ ਹੁੰਦਾ ਹੈ।
+ip-protection-bandwidth-header-1 = ਮਹੀਨੇਵਾਰ ਡਾਟਾ ਹੱਦ
+
+## IP Protection bandwidth reset callout
+
+# Variables
+#  $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+ipprotection-bandwidth-reset-title = VPN ਲਈ { $maxUsage } GB, ਮੁੜ-ਸੈੱਟ ਕੀਤਾ ਅਤੇ ਵਰਤਣ ਲਈ ਤਿਆਰ ਹੈ
+ipprotection-bandwidth-reset-text = ਵਧੀਕ ਪਰਦੇਦਾਰੀ ਦੇਣ ਲਈ VPN ਨੂੰ ਚਾਲੂ ਕਰੋ, ਹਰ ਮਹੀਨੇ ਮੁਫ਼ਤ।
+ipprotection-bandwidth-reset-button = ਸਮਝੇ
+
+## IP Protection add-on breakage warnings
+
+ipp-activator-breakage-sign-in-warning = <strong>ਇਹ ਵੈੱਬਸਾਈਟ ਸ਼ਾਇਦ VPN ਨਾਲ ਕੰਮ ਨਹੀਂ ਕਰਦੀ ਹੈ।</strong> ਇਸ ਵੈੱਬਸਾਈਟ ਨੂੰ ਵਰਤਣ ਦੌਰਾਨ ਸਾਈਨ ਇਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ ਕਰੋ ਜਾਂ VPN ਨੂੰ ਬੰਦ ਕਰਕੇ।
+ipp-activator-breakage-turn-off-warning = <strong>ਇਹ ਵੈੱਬਸਾਈਟ ਸ਼ਾਇਦ VPN ਨਾਲ ਕੰਮ ਨਹੀਂ ਕਰਦੀ ਹੈ।</strong> ਇਸ ਵੈੱਬਸਾਈਟ ਨੂੰ ਵਰਤਣ ਦੌਰਾਨ VPN ਨੂੰ ਬੰਦ ਕਰਕੇ ਕੋਸ਼ਿਸ ਕਰੋ।
+
+## IP Protection alerts
+
+vpn-paused-alert-title = VPN ਰੁਕਿਆ ਹੈ
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+vpn-paused-alert-body = ਤੁਸੀਂ ਆਪਣੇ VPN ਡਾਟੇ ਲਈ ਸਾਰੇ { $maxUsage } GB ਨੂੰ ਵਰਤ ਚੁੱਕੇ ਹੋ। VPN ਪਹੁੰਚ ਅਗਲੇ ਮਹੀਨੇ ਮੁੜ-ਸੈੱਟ ਹੋਵੇਗੀ।
+# Variables
+#   $maxUsage (number) - The maximum amount of data a user can use in a month (in GB)
+vpn-error-page-paused-description = ਤੁਸੀਂ ਆਪਣੇ VPN ਡਾਟੇ ਲਈ ਸਾਰਾ { $maxUsage } GB ਵਰਤ ਚੁੱਕੇ ਹੋ। ਬਾਕੀ ਡਾਟੇ ਲਈ ਪਹੁੰਚ ਅਗਲੇ ਮਹੀਨੇ ਹੋਵੇਗੀ।
+vpn-error-page-continue-description = VPN ਤੋਂ ਬਿਨਾਂ ਜਾਰੀ ਰੱਖਣ ਦੀ ਚੋਣ ਕਰੋ
+vpn-error-page-keep-browsing = ਇਸ ਸ਼ੈਸ਼ਨ ਵਿੱਚ ਬਰਾਊਜ਼ਰ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ
+vpn-error-page-new-session = ਨਵਾਂ ਸੈਸ਼ਨ ਸ਼ੁਰੂ ਕਰੋ
+vpn-paused-alert-close-tabs-button = ਸਾਰੀਆਂ ਟੈਬਾਂ ਬੰਦ ਕਰੋ
+vpn-paused-alert-continue-wo-vpn-button = VPN ਤੋਂ ਬਿਨਾਂ ਜਾਰੀ ਰੱਖੋ
+vpn-error-alert-title = ਇਸ ਵੇਲੇ VPN ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ।
+vpn-error-alert-body = ਬਾਅਦ ਵਿੱਚ ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।

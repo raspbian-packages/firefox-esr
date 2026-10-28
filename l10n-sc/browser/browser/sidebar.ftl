@@ -1,0 +1,268 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+menu-view-genai-chat =
+    .label = Chatbot IA
+menu-view-contextual-password-manager =
+    .label = Craes
+# Label for the Open Tabs entry in the View > Sidebars menu bar menu.
+# "Open Tabs" is a noun phrase referring to the tabs currently open in
+# the browser, not an instruction to open tabs.
+menu-view-open-tabs =
+    .label = Ischedas abertas
+sidebar-options-menu-button =
+    .title = Aberi su menù
+
+## Labels for sidebar history panel
+
+# Variables:
+#   $date (string) - Date to be formatted based on locale
+sidebar-history-date-today =
+    .heading = Oe - { DATETIME($date, dateStyle: "full") }
+sidebar-history-date-yesterday =
+    .heading = Erisero - { DATETIME($date, dateStyle: "full") }
+sidebar-history-date-this-month =
+    .heading = { DATETIME($date, dateStyle: "full") }
+sidebar-history-date-prev-month =
+    .heading = { DATETIME($date, month: "long", year: "numeric") }
+sidebar-history-delete =
+    .title = Cantzella dae sa cronologia
+sidebar-history-clear =
+    .label = Isbòida sa cronologia
+sidebar-history-sort-by-heading-menucaption =
+    .label = Assenta dae:
+sidebar-history-sort-option-date =
+    .label = Data
+sidebar-history-sort-option-site =
+    .label = Situ
+sidebar-history-sort-option-date-and-site =
+    .label = Data e situ
+sidebar-history-sort-option-last-visited =
+    .label = Ùrtima bìsita
+
+## Labels for sidebar search
+
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+sidebar-search-results-header =
+    .heading = Resurtados de sa chirca de “{ $query }”
+
+## Labels for sidebar customize panel
+
+sidebar-customize-firefox-settings = Gesti sa cunfiguratzione de { -brand-short-name }
+sidebar-vertical-tabs =
+    .label = Ischedas verticales
+sidebar-settings2 =
+    .label = Cunfiguratzione
+sidebar-hide-tabs-and-sidebar =
+    .label = Cua is ischedas e sa barra laterale
+sidebar-show-on-the-right =
+    .label = Move sa barra laterale a manu dereta
+sidebar-show-on-the-left =
+    .label = Move sa barra laterale a manu manca
+# Option to automatically expand the collapsed sidebar when the mouse pointer
+# hovers over it.
+expand-sidebar-on-hover =
+    .label = Ismànnia sa barra laterale a su passàgiu de su puntadore
+sidebar-customize-firefox-tools-header2 =
+    .label = Ainas
+
+## Labels for sidebar context menu items
+
+sidebar-context-menu-manage-extension =
+    .label = Gesti s’estensione
+sidebar-context-menu-report-extension =
+    .label = Sinnala s’estensione
+sidebar-context-menu-open-in-tab =
+    .label = Aberi in un’ischeda noa
+sidebar-context-menu-open-in-container-tab =
+    .label = Aberi in un’ischeda de cuntenutu noa
+sidebar-context-menu-open-in-window =
+    .label = Aberi in una ventana noa
+sidebar-context-menu-open-in-private-window =
+    .label = Aberi in una ventana privada noa
+sidebar-context-menu-bookmark-tab =
+    .label = Agiunghe s’ischeda a is sinnalibros…
+sidebar-context-menu-copy-link =
+    .label = Còpia su ligòngiu
+sidebar-context-menu-hide-sidebar =
+    .label = Cua sa barra laterale
+sidebar-context-menu-enable-vertical-tabs =
+    .label = Ativa is ischedas verticales
+sidebar-context-menu-customize-sidebar =
+    .label = Personaliza sa barra laterale
+# Variables:
+#   $deviceName (String) - The name of the device the user is closing a tab for
+sidebar-context-menu-close-remote-tab =
+    .label = Serra s’ischeda in { $deviceName }
+sidebar-context-menu-remove-extension2 =
+    .label = Boga dae { -brand-short-name }
+sidebar-context-menu-unpin-extension =
+    .label = Boga dae sa barra laterale
+
+## Labels for sidebar history context menu items
+
+sidebar-history-context-menu-delete-page-2 =
+    .label = Cantzella sa pàgina dae sa cronologia
+sidebar-history-context-menu-bookmark-page =
+    .label = Agiunghe a is sinnalibros…
+sidebar-history-context-menu-delete-pages =
+    .label = Cantzella pàginas dae sa cronologia
+
+## Labels for sidebar bookmarks context menu items
+
+sidebar-bookmarks-context-menu-delete-separator =
+    .label = Cantzella
+
+## Labels for sidebar open tabs context menu items
+
+# Label for the context menu item that closes the tab the user
+# right-clicked in the Open Tabs sidebar panel.
+sidebar-opentabs-context-close-tab =
+    .label = Serra s’ischeda
+
+## Labels for the open tabs hover preview
+
+# Heading at the top of the preview shown when hovering the Open Tabs button
+# in the sidebar. "Recent tabs" refers to the tabs that were active most
+# recently, not to tabs that were recently opened.
+sidebar-opentabs-preview-heading = Ischedas reghentes
+# Tooltip for the button that closes a tab from the Open Tabs hover preview.
+# Variables:
+#   $tabTitle (String) - Title of tab being closed
+sidebar-opentabs-preview-close-tab =
+    .title = Serra { $tabTitle }
+# Tooltip for the button that mutes a tab from the Open Tabs hover preview.
+sidebar-opentabs-preview-mute-tab =
+    .title = Pone s’ischeda a sa muda
+# Tooltip for the button that unmutes a tab from the Open Tabs hover preview.
+sidebar-opentabs-preview-unmute-tab =
+    .title = Ativa s’àudio de s’ischeda
+
+## Labels for sidebar menu items.
+
+sidebar-menu-genai-chat-label =
+    .label = Chatbot IA
+sidebar-menu-history-label =
+    .label = Cronologia
+sidebar-menu-synced-tabs-label =
+    .label = Ischedas dae àteros dispositivos
+# Label for the Open Tabs panel in the sidebar tools list and customize
+# menu. "Open tabs" is a noun phrase referring to the tabs currently open
+# in the browser, not an instruction to open tabs.
+sidebar-menu-open-tabs-label =
+    .label = Ischedas abertas
+sidebar-menu-bookmarks-label =
+    .label = Sinnalibros
+sidebar-menu-customize-label =
+    .label = Personaliza sa barra laterale
+sidebar-menu-contextual-password-manager-label =
+    .label = Craes
+sidebar-menu-more-tools-label =
+    .label = Àteras ainas
+
+## Tooltips for sidebar menu items.
+
+# The tooltip to show over the history icon, when history is not currently showing.
+# Variables:
+#   $shortcut (String) - The OS specific keyboard shortcut.
+sidebar-menu-open-history-tooltip = Aberi sa cronologia ({ $shortcut })
+# The tooltip to show over the history icon, when history is currently showing.
+# Variables:
+#   $shortcut (String) - The OS specific keyboard shortcut.
+sidebar-menu-close-history-tooltip = Serra sa cronologia ({ $shortcut })
+# The tooltip to show over the bookmarks icon, when bookmarks is not currently showing.
+# Variables:
+#   $shortcut (String) - The OS specific keyboard shortcut.
+sidebar-menu-open-bookmarks-tooltip = Aberi is sinnalibros ({ $shortcut })
+# The tooltip to show over the bookmarks icon, when bookmarks is currently showing.
+# Variables:
+#   $shortcut (String) - The OS specific keyboard shortcut.
+sidebar-menu-close-bookmarks-tooltip = Serra is sinnalibros ({ $shortcut })
+
+## Tooltips displayed over the AI chatbot icon.
+## Variables:
+##   $shortcut (String) - The OS specific keyboard shortcut.
+##   $provider (String) - The name of the AI chatbot provider (if available).
+
+sidebar-menu-open-ai-chatbot-tooltip-generic = Aberi su chatbot IA ({ $shortcut })
+sidebar-menu-open-ai-chatbot-provider-tooltip = Aberi { $provider } ({ $shortcut })
+sidebar-menu-close-ai-chatbot-tooltip-generic = Aberi su chatbot IA ({ $shortcut })
+sidebar-menu-close-ai-chatbot-provider-tooltip = Serra { $provider } ({ $shortcut })
+
+## Headings for sidebar menu panels.
+
+sidebar-menu-customize-header =
+    .heading = Personaliza sa barra laterale
+sidebar-menu-history-header =
+    .heading = Cronologia
+sidebar-menu-syncedtabs-header =
+    .heading = Ischedas dae àteros dispositivos
+# Heading shown at the top of the Open Tabs sidebar panel. "Open tabs"
+# refers to the tabs currently open in the browser.
+sidebar-menu-open-tabs-header =
+    .heading = Ischedas abertas
+sidebar-menu-cpm-header =
+    .heading = Craes
+sidebar-menu-bookmarks-header =
+    .heading = Sinnalibros
+sidebar-panel-header-close-button =
+    .tooltiptext = Serra
+
+## Labels for sidebar bookmarks panel folder names.
+
+sidebar-bookmarks-folder-menu = Menù de is sinnalibros
+sidebar-bookmarks-folder-toolbar = Barra de is sinnalibros
+sidebar-bookmarks-folder-other = Àteros sinnalibros
+sidebar-bookmarks-folder-mobile = Sinnalibros de su dispositivu mòbile
+
+## Titles for sidebar menu panels.
+
+sidebar-customize-title = Personaliza sa barra laterale
+sidebar-history-title = Cronologia
+sidebar-syncedtabs-title = Ischedas dae àteros dispositivos
+# Title of the Open Tabs sidebar panel. "Open tabs" refers to the tabs
+# currently open in the browser.
+sidebar-opentabs-title = Ischedas abertas
+sidebar-bookmarks-title = Sinnalibros
+
+## Context for closing synced tabs when hovering over the items
+
+# Context for hovering over the close tab button that will
+# send a push to the device to close said tab
+# Variables:
+#   $deviceName (String) - the name of the device the user is closing a tab for
+synced-tabs-context-close-tab-title =
+    .title = Serra s’ischeda in { $deviceName }
+show-sidebars =
+    .label = Barras laterales
+    .tooltiptext = Ammustra is barras laterales
+
+## Tooltips for the sidebar toolbar widget.
+
+# Variables:
+#   $shortcut (String) - The OS specific keyboard shortcut.
+sidebar-widget-expand-sidebar2 =
+    .label = Barras laterales
+    .tooltiptext = Ismànnia sa barra laterale ({ $shortcut })
+# Variables:
+#   $shortcut (String) - The OS specific keyboard shortcut.
+sidebar-widget-collapse-sidebar2 =
+    .label = Barras laterales
+    .tooltiptext = Mìnima sa barra laterale ({ $shortcut })
+# Variables:
+#   $shortcut (String) - The OS specific keyboard shortcut.
+sidebar-widget-show-sidebar2 =
+    .label = Barras laterales
+    .tooltiptext = Ammustra sa barra laterale ({ $shortcut })
+# Variables:
+#   $shortcut (String) - The OS specific keyboard shortcut.
+sidebar-widget-hide-sidebar2 =
+    .label = Barras laterales
+    .tooltiptext = Cua sa barra laterale ({ $shortcut })
+# Promotional message displayed in the expanded sidebar state for Vertical Tabs
+# users who do not have any pinned tabs. Indicates that they can drop tabs in
+# this area to pin them.
+sidebar-pins-promo-text = Traga is ischedas de importu inoghe pro ddas tènnere a portada

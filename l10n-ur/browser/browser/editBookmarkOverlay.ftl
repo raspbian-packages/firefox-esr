@@ -1,0 +1,55 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+bookmark-overlay-name-2 =
+    .value = نام
+    .accesskey = N
+bookmark-overlay-url =
+    .value = URL
+    .accesskey = U
+# Location refers to the position of the bookmark within the browser's
+# bookmarks, not to its URL or address.
+bookmark-overlay-location-2 =
+    .value = محل وقوع
+    .accesskey = L
+bookmark-overlay-choose =
+    .label = انتخاب کریں ...
+bookmark-overlay-folders-expander2 =
+    .tooltiptext = تمام بک مارک پوشے دکھائیں
+bookmark-overlay-folders-expander-hide =
+    .tooltiptext = چھپائیں
+bookmark-overlay-new-folder-button =
+    .label = نیا پوشہ
+    .accesskey = پ
+bookmark-overlay-tags-2 =
+    .value = ٹیگ
+    .accesskey = T
+bookmark-overlay-tags-empty-description =
+    .placeholder = ٹیگ کاموں سے الگ کریں
+bookmark-overlay-tags-expander2 =
+    .tooltiptext = تمام ٹیگ دکھائیں
+bookmark-overlay-tags-expander-hide =
+    .tooltiptext = چھپائیں
+bookmark-overlay-keyword-2 =
+    .value = کلیدی لفظ
+    .accesskey = K
+
+## Bookmark properties dialog
+
+bookmark-properties-save-button =
+    .label = محفوظ کریں
+
+## Titles of the dialog used to add or edit bookmarks and folders.
+
+bookmark-properties-title-add-bookmark = بک مارک شامل کریں
+# Title used when bookmarking multiple tabs at once into a new folder.
+bookmark-properties-title-add-multiple-bookmarks = نئی بک مارک
+bookmark-properties-title-edit-bookmark = بُک مارک کی تدوین کریں
+
+## Default names for newly created bookmarks and folders.
+
+# Default name of the folder created when bookmarking all tabs.
+bookmark-properties-default-name-all-tabs-folder = [Folder Name]
+bookmark-properties-default-name-folder = نیا پوشہ
+bookmark-properties-default-name-bookmark = نئی بک مارک

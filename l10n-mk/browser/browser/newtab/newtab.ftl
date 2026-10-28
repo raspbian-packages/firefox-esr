@@ -1,0 +1,263 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Firefox Home / New Tab strings for about:home / about:newtab.
+
+newtab-page-title = Ново јазиче
+
+## Strings for "Homepage" and "Firefox Home" sections of about:settings#home.
+## Homepage panel
+
+home-homepage-new-tabs =
+    .label = Нови јазичиња
+
+## Firefox Home content
+
+# Variables:
+#   $num (number) - Number of rows displayed
+home-prefs-sections-rows-option-srd =
+    .label =
+        { $num ->
+            [one] { $num } ред
+           *[other] { $num } редови
+        }
+home-mode-choice-blank-srd =
+    .label = Празна страница
+home-prefs-shortcuts-header-srd =
+    .label = Кратенки
+home-prefs-shortcuts-select =
+    .aria-label = Кратенки
+home-prefs-recommended-by-option-sponsored-stories-srd =
+    .label = Спонзорирани приказни
+home-prefs-highlights-option-visited-pages-srd =
+    .label = Посетени страници
+home-prefs-highlights-options-bookmarks-srd =
+    .label = Обележувачи
+home-prefs-highlights-option-most-recent-download-srd =
+    .label = Последно преземање
+
+## Search box component.
+
+# "Search" is a verb/action
+newtab-search-box-search-button =
+    .aria-label = Барај
+    .title = Барај
+
+## Clear text button for the URL and image URL input fields in the Top Sites form.
+
+newtab-topsites-add-search-engine-header = Додај сервис за пребарување
+newtab-topsites-title-label = Наслов
+newtab-topsites-title-input =
+    .placeholder = Внесете наслов
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
+    .placeholder = Внесете или вметнете URL
+newtab-topsites-url-validation = Потребен е валиден URL
+newtab-topsites-use-custom-image-link = Користи сопствена слика
+newtab-topsites-use-image-link = Користи сопствена слика…
+
+## Top Sites - General form dialog buttons. These are verbs/actions.
+
+newtab-topsites-cancel-button = Откажи
+newtab-topsites-delete-history-button = Избриши од историја
+newtab-topsites-save-button = Сними
+newtab-topsites-preview-button = Преглед
+newtab-topsites-add-button = Додај
+
+## Top Sites - Delete history confirmation dialog.
+
+newtab-confirm-delete-history-p1 = Дали сте сигурни дека сакате да ја избришете оваа страница отсекаде во вашата историја на прелистување?
+# "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = Ова е неповратна акција.
+
+## Context Menu - Action Tooltips.
+
+# General tooltip for context menus.
+newtab-menu-section-tooltip =
+    .aria-label = Отвори мени
+    .title = Отвори мени
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .aria-label = Отвори мени за констект за { $title }
+    .title = Отвори мени
+
+## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
+
+newtab-menu-edit-topsites = Уреди
+newtab-menu-open-new-window = Отвори во нов прозорец
+newtab-menu-open-new-private-window = Отвори во нов приватен прозорец
+newtab-menu-dismiss = Откажи
+newtab-menu-pin = Прикачи
+newtab-menu-unpin = Откачи
+newtab-menu-delete-history = Избриши од историја
+
+##
+
+# Bookmark is a noun in this case, "Remove bookmark".
+newtab-menu-remove-bookmark = Отстрани обележувач
+# Bookmark is a verb here.
+newtab-menu-bookmark = Обележувач
+
+## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
+## it is a noun. As in, "Copy the link that belongs to this downloaded item".
+
+newtab-menu-copy-download-link = Копирај врска за преземање
+newtab-menu-go-to-download-page = Оди до страницата за преземање
+newtab-menu-remove-download = Избриши од историјата
+
+## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
+## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
+## system for each operating system.
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Покажи во Finder
+       *[other] Отвори ја папката со преземања
+    }
+newtab-menu-open-file = Отвори датотека
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device.
+
+newtab-label-visited = Посетени
+newtab-label-bookmarked = Обележани
+newtab-label-removed-bookmark = Обележувачот е остранет
+newtab-label-recommended = Во тренд
+newtab-label-saved = Снимено во { -pocket-brand-name }
+newtab-label-download = Преземено
+
+## Section Menu: These strings are displayed in the section context menu and are
+## meant as a call to action for the given section.
+
+newtab-section-menu-privacy-notice = Белешка за приватност
+
+## Section Headers.
+
+newtab-section-header-topsites = Популарни мрежни места
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
+
+newtab-empty-section-highlights = Започнете со прелистување и ние овде ќе ви прикажеме некои од одличните написи, видеа и други страници што неодамна сте ги поселите или обележале.
+
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
+
+newtab-discovery-empty-section-topstories-content = Проверете подоцна за повеќе приказни.
+newtab-discovery-empty-section-topstories-try-again-button = Обиди се повторно
+newtab-discovery-empty-section-topstories-loading = Се вчитува…
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Упс! Скоро го вчитавме овој дел, но не баш.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render.
+
+newtab-error-fallback-info = Упс, нешто отиде погрешно со прикажување на оваа содржина
+newtab-error-fallback-refresh-link = Освежете ја страницата за да се обидете повторно.
+
+## Strings for the Clock widget
+
+# Curated World Clock city names. The value is the city name shown on the
+# clock; translate to your locale's usual spelling for the city.
+newtab-clock-city-us-new-york = Њујорк
+newtab-clock-city-us-los-angeles = Лос Анџелес
+newtab-clock-city-us-chicago = Чикаго
+newtab-clock-city-us-san-francisco = Сан Франциско
+newtab-clock-city-us-san-diego = Сан Диего
+newtab-clock-city-us-dallas = Далас
+newtab-clock-city-us-houston = Хјустон
+newtab-clock-city-us-philadelphia = Филаделфија
+newtab-clock-city-us-atlanta = Атланта
+newtab-clock-city-us-washington-dc = Вашингтон
+newtab-clock-city-us-boston = Бостон
+newtab-clock-city-us-miami = Мајами
+newtab-clock-city-us-seattle = Сиетл
+newtab-clock-city-us-denver = Денвер
+newtab-clock-city-us-honolulu = Хонолулу
+newtab-clock-city-us-anchorage = Енкориџ
+newtab-clock-city-de-berlin = Берлин
+newtab-clock-city-de-munich = Минхен
+newtab-clock-city-de-frankfurt = Франкфурт на Мајна
+newtab-clock-city-de-hamburg = Хамбург
+newtab-clock-city-fr-paris = Париз
+newtab-clock-city-fr-lyon = Лион
+newtab-clock-city-fr-marseille = Марсеј
+newtab-clock-city-fr-toulouse = Тулузa
+newtab-clock-city-in-kolkata = Колката
+newtab-clock-city-in-mumbai = Мумбај
+newtab-clock-city-in-delhi = Делхи
+newtab-clock-city-in-bangalore = Бенгалуру
+newtab-clock-city-cn-shanghai = Шангај
+newtab-clock-city-cn-beijing = Пекинг
+newtab-clock-city-cn-shenzhen = Шенџен
+newtab-clock-city-br-sao-paulo = Саун Пауло
+newtab-clock-city-br-rio-de-janeiro = Рио де Жанеиро
+newtab-clock-city-br-brasilia = Бразилија
+newtab-clock-city-id-jakarta = Џакарта
+newtab-clock-city-id-makassar = Макасар
+newtab-clock-city-ca-toronto = Торонто
+newtab-clock-city-ca-montreal = Монтреал
+newtab-clock-city-ca-vancouver = Ванкувер
+newtab-clock-city-au-sydney = Сиднеј
+newtab-clock-city-au-perth = Перт
+newtab-clock-city-au-adelaide = Аделаида
+newtab-clock-city-pl-warsaw = Варшава
+newtab-clock-city-pl-krakow = Краков
+newtab-clock-city-jp-tokyo = Токио
+newtab-clock-city-jp-osaka = Осака
+newtab-clock-city-mx-mexico-city = Мексико
+newtab-clock-city-mx-guadalajara = Гвадалахара
+newtab-clock-city-it-rome = Рим
+newtab-clock-city-it-milan = Милано
+newtab-clock-city-ru-moscow = Москва
+newtab-clock-city-ru-saint-petersburg = Санкт Петербург
+newtab-clock-city-gb-london = Лондон
+newtab-clock-city-gb-birmingham = Бирмингем
+newtab-clock-city-es-madrid = Мадрид
+newtab-clock-city-es-barcelona = Барселона
+newtab-clock-city-nl-amsterdam = Амстердам
+newtab-clock-city-ch-zurich = Цирих
+newtab-clock-city-at-vienna = Виена
+newtab-clock-city-cz-prague = Прага
+newtab-clock-city-ar-buenos-aires = Буенос Аирес
+newtab-clock-city-gr-athens = Атина
+newtab-clock-city-hu-budapest = Будимпешта
+newtab-clock-city-be-brussels = Брисел
+newtab-clock-city-ua-kyiv = Киев
+newtab-clock-city-fi-helsinki = Хелсинки
+newtab-clock-city-co-bogota = Богота
+newtab-clock-city-ph-manila = Манила
+newtab-clock-city-tr-istanbul = Истанбул
+newtab-clock-city-my-kuala-lumpur = Куала Лумпур
+newtab-clock-city-eg-cairo = Каиро
+newtab-clock-city-se-stockholm = Стокхолм
+newtab-clock-city-ro-bucharest = Букурешт
+newtab-clock-city-th-bangkok = Бангкок
+newtab-clock-city-ng-lagos = Лагос
+newtab-clock-city-tw-taipei = Тајпеј
+newtab-clock-city-za-johannesburg = Јоханесбург
+newtab-clock-city-cl-santiago = Сантјаго
+newtab-clock-city-pk-karachi = Карачи
+newtab-clock-city-bg-sofia = Софија
+newtab-clock-city-sg-singapore = Сингапур
+newtab-clock-city-hk-hong-kong = Хонгконг
+newtab-clock-city-sa-riyadh = Ријад
+newtab-clock-city-dk-copenhagen = Копенхаген
+newtab-clock-city-pe-lima = Лима
+newtab-clock-city-ke-nairobi = Најроби
+newtab-clock-city-nz-auckland = Окленд
+newtab-clock-city-kr-seoul = Сеул
+newtab-clock-city-lt-vilnius = Вилнус
+newtab-clock-city-ie-dublin = Даблин
+newtab-clock-city-ae-dubai = Дубаи
+newtab-clock-city-lv-riga = Рига
+newtab-clock-city-pt-lisbon = Лисабон
+newtab-clock-city-ir-tehran = Техеран
+newtab-clock-city-bd-dhaka = Дака
+newtab-clock-city-ec-guayaquil = Гвајакил
+newtab-clock-city-vn-ho-chi-minh-city = Хо Ши Мин
+newtab-clock-city-np-kathmandu = Катманду
+newtab-clock-city-mm-yangon = Јангон

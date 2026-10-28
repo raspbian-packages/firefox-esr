@@ -1,0 +1,278 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## The following feature names must be treated as a brand.
+##
+## They cannot be:
+## - Transliterated.
+## - Translated.
+##
+## Declension should be avoided where possible, leaving the original
+## brand unaltered in prominent UI positions.
+##
+## For further details, consult:
+## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
+
+-facebook-container-brand-name = Facebook Container
+-monitor-brand-name = Firefox Monitor
+-monitor-brand-short-name = Monitor
+-mozmonitor-brand-name = Mozilla Monitor
+-pocket-brand-name = Pocket
+-send-brand-name = Firefox Send
+-screenshots-brand-name = Firefox Screenshots
+-mozilla-vpn-brand-name = Mozilla VPN
+-profiler-brand-name = Firefox Profiler
+-translations-brand-name = Firefox Translations
+-focus-brand-name = Firefox Focus
+-relay-brand-name = Firefox Relay
+-relay-brand-short-name = Relay
+-fakespot-brand-name = Fakespot
+-solo-ai-brand-name = Solo
+-thunderbird-brand-name =
+    { $case ->
+        [gen] Mozilli Thunderbird
+        [dat] Mozilli Thunderbird
+        [acc] Mozillę Thunderbird
+        [ins] Mozillą Thunderbird
+        [loc] Mozilli Thunderbird
+       *[nom] Mozilla Thunderbird
+    }
+-thunderbird-brand-short-name =
+    { $case ->
+        [gen] Thunderbirda
+        [dat] Thunderbirdowi
+        [acc] Thunderbirda
+        [ins] Thunderbirdem
+        [loc] Thunderbirdzie
+       *[nom] Thunderbird
+    }
+-mdn-brand-name =
+    { $case ->
+        [gen]
+            { $capitalization ->
+                [lower] dokumentacji MDN
+               *[upper] Dokumentacji MDN
+            }
+        [dat]
+            { $capitalization ->
+                [lower] dokumentacji MDN
+               *[upper] Dokumentacji MDN
+            }
+        [acc]
+            { $capitalization ->
+                [lower] dokumentacji MDN
+               *[upper] Dokumentacji MDN
+            }
+        [ins]
+            { $capitalization ->
+                [lower] dokumentacją MDN
+               *[upper] Dokumentacją MDN
+            }
+        [loc]
+            { $capitalization ->
+                [lower] dokumentacji MDN
+               *[upper] Dokumentacji MDN
+            }
+       *[nom]
+            { $capitalization ->
+                [lower] dokumentacja MDN
+               *[upper] Dokumentacja MDN
+            }
+    }
+-yelp-brand-name = Yelp
+
+##
+
+# Note the name of the website is capitalized.
+-fakespot-website-name = Fakespot.com
+# The particle "by" can be localized, "Fakespot" and "Mozilla" should not be localized or transliterated.
+-fakespot-brand-full-name = Fakespot od Mozilli
+# “Suggest” can be localized, “Firefox” must be treated as a brand
+# and kept in English.
+-firefox-suggest-brand-name =
+    { $case ->
+        [gen]
+            { $capitalization ->
+                [lower] podpowiedzi Firefoksa
+               *[upper] Podpowiedzi Firefoksa
+            }
+        [dat]
+            { $capitalization ->
+                [lower] podpowiedziom Firefoksa
+               *[upper] Podpowiedziom Firefoksa
+            }
+        [acc]
+            { $capitalization ->
+                [lower] podpowiedzi Firefoksa
+               *[upper] Podpowiedzi Firefoksa
+            }
+        [ins]
+            { $capitalization ->
+                [lower] podpowiedziami Firefoksa
+               *[upper] Podpowiedziami Firefoksa
+            }
+        [loc]
+            { $capitalization ->
+                [lower] podpowiedziach Firefoksa
+               *[upper] Podpowiedziach Firefoksa
+            }
+       *[nom]
+            { $capitalization ->
+                [lower] podpowiedzi Firefoksa
+               *[upper] Podpowiedzi Firefoksa
+            }
+    }
+# ”Home" can be localized, “Firefox” must be treated as a brand
+# and kept in English.
+-firefox-home-brand-name =
+    { $case ->
+        [gen]
+            { $capitalization ->
+                [lower] strony startowej Firefoksa
+               *[upper] Strony startowej Firefoksa
+            }
+        [dat]
+            { $capitalization ->
+                [lower] stronie startowej Firefoksa
+               *[upper] Stronie startowej Firefoksa
+            }
+        [acc]
+            { $capitalization ->
+                [lower] stronę startową Firefoksa
+               *[upper] Stronę startową Firefoksa
+            }
+        [ins]
+            { $capitalization ->
+                [lower] stroną startową Firefoksa
+               *[upper] Stroną startową Firefoksa
+            }
+        [loc]
+            { $capitalization ->
+                [lower] stronie startowej Firefoksa
+               *[upper] Stronie startowej Firefoksa
+            }
+       *[nom]
+            { $capitalization ->
+                [lower] strona startowa Firefoksa
+               *[upper] Strona startowa Firefoksa
+            }
+    }
+# View" can be localized, “Firefox” must be treated as a brand
+# and kept in English.
+-firefoxview-brand-name =
+    { $case ->
+        [gen]
+            { $capitalization ->
+                [lower] przeglądu Firefoksa
+               *[upper] Przeglądu Firefoksa
+            }
+        [dat]
+            { $capitalization ->
+                [lower] przeglądowi Firefoksa
+               *[upper] Przeglądowi Firefoksa
+            }
+        [acc]
+            { $capitalization ->
+                [lower] przegląd Firefoksa
+               *[upper] Przegląd Firefoksa
+            }
+        [ins]
+            { $capitalization ->
+                [lower] przeglądem Firefoksa
+               *[upper] Przeglądem Firefoksa
+            }
+        [loc]
+            { $capitalization ->
+                [lower] przeglądzie Firefoksa
+               *[upper] Przeglądzie Firefoksa
+            }
+       *[nom]
+            { $capitalization ->
+                [lower] przegląd Firefoksa
+               *[upper] Przegląd Firefoksa
+            }
+    }
+# Firefox Labs is the name for a page in Settings to allow users to learn about
+# experimental and in-development features, and turn those features on and off.
+# The "Labs" portion can be localized, “Firefox” must be treated as a brand
+# and kept in English.
+-firefoxlabs-brand-name =
+    { $case ->
+        [gen]
+            { $capitalization ->
+                [lower] laboratorium Firefoksa
+               *[upper] Laboratorium Firefoksa
+            }
+        [dat]
+            { $capitalization ->
+                [lower] laboratorium Firefoksa
+               *[upper] Laboratorium Firefoksa
+            }
+        [acc]
+            { $capitalization ->
+                [lower] laboratorium Firefoksa
+               *[upper] Laboratorium Firefoksa
+            }
+        [ins]
+            { $capitalization ->
+                [lower] laboratorium Firefoksa
+               *[upper] Laboratorium Firefoksa
+            }
+        [loc]
+            { $capitalization ->
+                [lower] laboratorium Firefoksa
+               *[upper] Laboratorium Firefoksa
+            }
+       *[nom]
+            { $capitalization ->
+                [lower] laboratorium Firefoksa
+               *[upper] Laboratorium Firefoksa
+            }
+    }
+-smart-window-brand-name =
+    { $case ->
+        [gen]
+            { $capitalization ->
+                [upper-singular] Inteligentnego okna
+                [lower-plural] inteligentnych okien
+                [upper-plural] Inteligentnych okien
+               *[lower-singular] inteligentnego okna
+            }
+        [dat]
+            { $capitalization ->
+                [upper-singular] Inteligentnemu oknu
+                [lower-plural] inteligentnym oknom
+                [upper-plural] Inteligentnym oknom
+               *[lower-singular] inteligentnemu oknu
+            }
+        [acc]
+            { $capitalization ->
+                [upper-singular] Inteligentne okno
+                [lower-plural] inteligentne okna
+                [upper-plural] Inteligentne okna
+               *[lower-singular] inteligentne okno
+            }
+        [ins]
+            { $capitalization ->
+                [upper-singular] Inteligentnym oknem
+                [lower-plural] inteligentnymi oknami
+                [upper-plural] Inteligentnymi oknami
+               *[lower-singular] inteligentnym oknem
+            }
+        [loc]
+            { $capitalization ->
+                [upper-singular] Inteligentnym oknie
+                [lower-plural] inteligentnych oknach
+                [upper-plural] Inteligentnych oknach
+               *[lower-singular] inteligentnym oknie
+            }
+       *[nom]
+            { $capitalization ->
+                [upper-singular] Inteligentne okno
+                [lower-plural] inteligentne okna
+                [upper-plural] Inteligentne okna
+               *[lower-singular] inteligentne okno
+            }
+    }

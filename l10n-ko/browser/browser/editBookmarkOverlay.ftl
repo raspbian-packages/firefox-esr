@@ -1,0 +1,62 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+bookmark-overlay-name-2 =
+    .value = 이름
+    .accesskey = N
+bookmark-overlay-url =
+    .value = URL
+    .accesskey = U
+# Location refers to the position of the bookmark within the browser's
+# bookmarks, not to its URL or address.
+bookmark-overlay-location-2 =
+    .value = 위치
+    .accesskey = L
+bookmark-overlay-choose =
+    .label = 선택…
+bookmark-overlay-folders-expander2 =
+    .tooltiptext = 북마크 폴더 모두 보기
+bookmark-overlay-folders-expander-hide =
+    .tooltiptext = 숨기기
+# bookmark-overlay-folders-tree is used to provide an accessible name to the tree view of the Bookmarks directory, when it is expanded
+bookmark-overlay-folders-tree =
+    .aria-label = 폴더
+bookmark-overlay-new-folder-button =
+    .label = 새 폴더
+    .accesskey = o
+bookmark-overlay-tags-2 =
+    .value = 태그
+    .accesskey = T
+bookmark-overlay-tags-empty-description =
+    .placeholder = 쉼표로 태그 구분
+bookmark-overlay-tags-expander2 =
+    .tooltiptext = 태그 모두 보기
+bookmark-overlay-tags-expander-hide =
+    .tooltiptext = 숨기기
+bookmark-overlay-keyword-2 =
+    .value = 키워드
+    .accesskey = K
+bookmark-overlay-tags-caption-label = 태그를 사용하여 주소 표시줄에서 북마크를 구성하고 검색할 수 있습니다
+bookmark-overlay-keyword-caption-label-2 = 단일 키워드를 사용하여 주소 표시줄에서 직접 북마크를 열 수 있습니다
+
+## Bookmark properties dialog
+
+bookmark-properties-save-button =
+    .label = 저장
+
+## Titles of the dialog used to add or edit bookmarks and folders.
+
+bookmark-properties-title-add-bookmark = 북마크 추가
+# Title used when bookmarking multiple tabs at once into a new folder.
+bookmark-properties-title-add-multiple-bookmarks = 새 북마크
+bookmark-properties-title-add-folder = 북마크 폴더 추가
+bookmark-properties-title-edit-bookmark = 북마크 편집
+bookmark-properties-title-edit-folder = 북마크 폴더 편집
+
+## Default names for newly created bookmarks and folders.
+
+# Default name of the folder created when bookmarking all tabs.
+bookmark-properties-default-name-all-tabs-folder = [폴더 이름]
+bookmark-properties-default-name-folder = 새 폴더
+bookmark-properties-default-name-bookmark = 새 북마크

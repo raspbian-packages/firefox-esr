@@ -1,0 +1,103 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+## OS Prompt Dialog
+
+# The macos string is preceded by the operating system (macOS) with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-use-payment-method-os-prompt-macos = skłaźone informacije płaśeńskeje metody wužywaś
+autofill-use-payment-method-os-prompt-windows = { -brand-short-name } wopytujo, skłaźone informacije płaśeńskeje metody wužywaś. Wobkšuśćo pśistup k Windowsowemu kontoju dołojce.
+autofill-use-payment-method-os-prompt-other = { -brand-short-name } wopytujo, skłaźone informacije płaśeńskeje metody wužywaś.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-edit-payment-method-os-prompt-macos = skłaźone informacije płaśeńskeje metody pokazaś
+autofill-edit-payment-method-os-prompt-windows = { -brand-short-name } wopytujo, skłaźone informacije płaśeńskeje metody pokazaś. Wobkšuśćo pśistup k Windowsowemu kontoju dołojce.
+autofill-edit-payment-method-os-prompt-other = { -brand-short-name } wopytujo, skłaźone informacije płaśeńskeje metody pokazaś.
+# In macOS, this string is preceded by the operating system with "Firefox is trying to ",
+# and has a period added to its end. Make sure to test in your locale.
+autofill-delete-payment-method-os-prompt-macos = skłaźone informacije płaśeńskeje metody lašowaś
+autofill-delete-payment-method-os-prompt-windows = { -brand-short-name } wopytujo, skłaźone informacije płaśeńskeje metody lašowaś. Wobkšuśćo pśistup k Windowsowemu kontoju dołojce.
+autofill-delete-payment-method-os-prompt-other = { -brand-short-name } wopytujo, skłaźone informacije płaśeńskeje metody lašowaś.
+# The button leads users to Form Autofill browser preferences.
+credit-card-doorhanger-options-button =
+    .title = Nastajenja za awtomatiske wupołnjowanje formularow
+# The link leads users to Form Autofill browser preferences.
+autofill-options-link = Nastajenja za awtomatiske wupołnjowanje formularow
+
+##
+
+# If Sync is enabled and credit card sync is available,
+# this checkbox is displayed on the doorhanger shown when saving credit card.
+credit-card-doorhanger-credit-cards-sync-checkbox = Wšykne skłaźone kórty pśez móje rědy synchronizěrowaś
+credit-card-save-doorhanger-header = Toś tu kórtu wěsće składowaś?
+credit-card-save-doorhanger-description = { -brand-short-name } waš kórtowy numer koděrujo. Waš wěstotny kod njebuźo se składowaś.
+credit-card-save-doorhanger-description-security-code = { -brand-short-name } waš kórtowy numer a wěstotny kode koděrujo, aby jano wy mógł je wužywaś, aby płaśeńske formulary wupołnił.
+credit-card-doorhanger-save-security-codes-checkbox =
+    .label = Wěstotne kody za płaśeńske metody pśecej składowaś.
+credit-card-capture-save-button =
+    .label = Składowaś
+    .accessKey = S
+credit-card-capture-cancel-button =
+    .label = Nic něnto
+    .accessKey = N
+credit-card-capture-never-save-button =
+    .label = Kórty nigda njeskładowaś
+    .accessKey = K
+credit-card-update-doorhanger-header = Kórtu aktualizěrowaś?
+credit-card-update-doorhanger-description = Kórta, kótaraž se ma aktualizěrowaś:
+credit-card-capture-save-new-button =
+    .label = Ako nowu kórtu składowaś
+    .accessKey = A
+credit-card-capture-update-button =
+    .label = Eksistěrujucu kórtu aktualizěrowaś
+    .accessKey = E
+# Label for the button in the dropdown menu used to clear the populated form.
+autofill-clear-form-label = Awtomatiski wupołnjony formular wuprozniś
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-addresses-label = Adrese zastojaś
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-payment-methods-label = Płaśeńske metody zastojaś
+# Used as the primary label of an autofill drop down suggestion when the focused
+# field is the card security code. The card's masked number is shown underneath
+# it as the secondary label. "CVC" is a common abbreviation for the code printed
+# on a payment card; use whichever abbreviation is most familiar in your locale.
+autofill-card-security-code-label = CVC
+
+## Details of the card shown on the credit card capture doorhanger, below the
+## masked card number. Each message is used for a different combination of the
+## available details.
+## Variables:
+##   $name (String): The cardholder name
+##   $month (String): Two-digit month the card expires
+##   $year (String): Two-digit year the card expires
+
+credit-card-doorhanger-details-name = { $name }
+credit-card-doorhanger-details-expiration = { $month }/{ $year }
+credit-card-doorhanger-details-cvv = CVV skłaźony
+credit-card-doorhanger-details-name-expiration = { $name }, { $month }/{ $year }
+credit-card-doorhanger-details-name-cvv = { $name } | CVV skłaźony
+credit-card-doorhanger-details-expiration-cvv = { $month }/{ $year } | CVV skłaźony
+credit-card-doorhanger-details-name-expiration-cvv = { $name }, { $month }/{ $year } | CVV skłaźony
+
+## These are brand names and should only be translated when a locale-specific name for that brand is in common use
+
+autofill-card-network-amex = American Express
+autofill-card-network-cartebancaire = Carte Bancaire
+autofill-card-network-diners = Diners Club
+autofill-card-network-discover = Discover
+autofill-card-network-jcb = JCB
+autofill-card-network-mastercard = MasterCard
+autofill-card-network-mir = MIR
+autofill-card-network-unionpay = Union Pay
+autofill-card-network-visa = Visa
+# Used in autofill drop down suggestion to indicate what other categories Form Autofill will attempt to fill.
+autofill-category-address = adresa
+autofill-category-name = mě
+autofill-category-organization = organizacija
+autofill-category-tel = telefon
+autofill-category-email = e-mail
+# This string is used in drop down suggestion when users try to autofill credit
+# card on an insecure website (without https).
+autofill-insecure-field-warning-description = { -brand-short-name } jo njewěste sedło namakał. Awtomatiske wupołnjenje jo nachylu znjemóžnjone

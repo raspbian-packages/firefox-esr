@@ -1,0 +1,83 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+### Import Logins Autocomplete
+
+
+## Variables:
+##   $host (String) - Host name of the current site.
+
+autocomplete-import-logins-chrome =
+    <div data-l10n-name = "line1">Importar a sua credencial do Google Chrome </div>
+    <div data-l10n-name = "line2">para o { $host } e outros sites</div>
+autocomplete-import-logins-chromium =
+    <div data-l10n-name = "line1">Importar a sua credencial do Chromium </div>
+    <div data-l10n-name = "line2">para o { $host } e outros sites</div>
+autocomplete-import-logins-chromium-edge =
+    <div data-l10n-name = "line1">Importar a sua credencial do Microsoft Edge </div>
+    <div data-l10n-name = "line2">para o { $host } e outros sites</div>
+
+##
+
+autocomplete-import-learn-more = Saber mais
+
+## Secondary actions shown on form autocomplete dropdown rows.
+## Gated by the browser.autocomplete.removeRecords.enabled pref.
+
+autocomplete-edit-password = Editar esta palavra-passe
+autocomplete-delete-password = Apagar esta palavra-passe
+autocomplete-edit-address = Editar este endereço
+# Tooltip for the trash button on an address row.
+autocomplete-delete-address = Apagar este endereço
+# Accessible name for the button. Names the address so screen reader
+# users know which entry the button deletes.
+# Variables:
+#   $entry (String) - The saved address the button would delete.
+autocomplete-delete-address-entry = Apagar endereço { $entry }
+autocomplete-edit-payment-method = Editar este método de pagamento
+# Tooltip for the trash button on a payment method row.
+autocomplete-delete-payment-method = Apagar este método de pagamento
+# Accessible name for the button. Names the payment method so screen reader
+# users know which entry the button deletes.
+# Variables:
+#   $entry (String) - The saved payment method the button would delete.
+autocomplete-delete-payment-method-entry = Apagar o método de pagamento { $entry }
+# Tooltip for the trash button on a form history entry.
+autocomplete-delete-entry = Apagar
+# aria-label for the trash button on a form history entry.
+# Variables:
+#   $entry (String) - The text of the saved form history entry that would be deleted.
+autocomplete-delete-form-history-entry2 = Apagar { $entry } do histórico de formulários
+# aria-label and tooltip for the button that opens the edit/delete menu.
+# Variables:
+#   $entry (String) - The dropdown row the actions apply to, such as a username, an address, or a payment method.
+autocomplete-more-actions2 = Mais ações para { $entry }
+# Tooltip for the button that opens the edit/delete menu.
+autocomplete-more-options = Mais opções
+# Accessible name for the button that opens the edit/delete menu. It names the
+# row so screen reader users know which entry the menu belongs to.
+# Variables:
+#   $entry (String) - The dropdown row the actions apply to, such as a username, an address, or a payment method.
+autocomplete-more-options-for-entry = Mais opções para { $entry }
+
+## Confirmation shown before a record is removed from the autocomplete dropdown.
+## Gated by the browser.autocomplete.removeRecords.enabled pref.
+
+autocomplete-remove-record-message = Não pode desfazer esta ação.
+autocomplete-delete-record-button = Apagar
+autocomplete-delete-password-title = Apagar palavra-passe?
+autocomplete-delete-address-title = Apagar endereço?
+autocomplete-delete-payment-method-title = Apagar método de pagamento?
+
+## Device sign-in prompt shown before a password is removed from the autocomplete
+## dropdown. The -win and -macosx variants are selected at runtime; other platforms
+## do not support device sign-in and fall back to the Primary Password dialog.
+
+autocomplete-remove-password-os-auth-dialog-message-win = Para apagar a sua palavra-passe, introduza as suas credenciais de autenticação do Windows. Isto ajuda a proteger a segurança das suas contas.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# strings together will be presented by the operating system.
+autocomplete-remove-password-os-auth-dialog-message-macosx = apagar a palavra-passe guardada
+autocomplete-remove-password-os-auth-dialog-caption = { -brand-full-name }
